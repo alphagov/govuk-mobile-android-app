@@ -88,6 +88,7 @@ android {
 
 sonar {
     properties {
+        property("sonar.projectName", "govuk-mobile-android-app")
         property("sonar.projectKey", "alphagov_govuk-mobile-android-app")
         property("sonar.organization", "alphagov")
         property("sonar.host.url", "https://sonarcloud.io")
