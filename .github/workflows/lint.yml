@@ -25,4 +25,4 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Lint
-        run: ./gradlew lintDebug
+        run: ./gradlew lint

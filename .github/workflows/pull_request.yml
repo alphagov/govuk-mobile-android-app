@@ -14,3 +14,7 @@ jobs:
     uses: ./.github/workflows/lint.yml
   unit-test:
     uses: ./.github/workflows/unit_test.yml
+  sonar-scanner:
+    uses: ./.github/workflows/sonar_scanner.yml
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
