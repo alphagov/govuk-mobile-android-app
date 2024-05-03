@@ -25,4 +25,4 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Unit Test with Code Coverage
-        run: ./gradlew JacocoDebugCodeCoverage
+        run: ./gradlew test

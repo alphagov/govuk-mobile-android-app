@@ -1,10 +1,20 @@
-import java.util.Locale
-
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    jacoco
     id("org.sonarqube") version "4.4.1.3373"
+}
+
+sonar {
+    properties {
+        property("sonar.projectName", "govuk-mobile-android-app")
+        property("sonar.projectKey", "alphagov_govuk-mobile-android-app")
+        property("sonar.organization", "alphagov")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.sourceEncoding", "UTF-8")
+        property("sonar.qualitygate.wait", "true")
+        property("sonar.androidLint.reportPaths", "${projectDir}/build/reports/lint-results-debug.xml")
+        property("sonar.coverage.jacoco.xmlReportPaths", "${projectDir}/build/test-results/testDebugUnitTest/TEST-*.xml")
+    }
 }
 
 android {
@@ -61,39 +71,6 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-
-    // testOptions {
-    //     managedDevices {
-    //         localDevices {
-    //             create("pixel3api33") {
-    //                 device = "Pixel 3"
-    //                 apiLevel = 33
-    //                 systemImageSource = "aosp"
-    //             }
-    //             create("pixelCapi29") {
-    //                 device = "Pixel C"
-    //                 apiLevel = 29
-    //                 systemImageSource = "aosp"
-    //             }
-    //         }
-    //         groups {
-    //             create("phoneAndTablet") {
-    //                 targetDevices.add(devices["pixel3api33"])
-    //                 targetDevices.add(devices["pixelCapi29"])
-    //             }
-    //         }
-    //     }
-    // }
-}
-
-sonar {
-    properties {
-        property("sonar.projectName", "govuk-mobile-android-app")
-        property("sonar.projectKey", "alphagov_govuk-mobile-android-app")
-        property("sonar.organization", "alphagov")
-        property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.androidLint.reportPaths", layout.buildDirectory.dir("reports/lint-results-debug.xml"))
-    }
 }
 
 dependencies {
@@ -113,71 +90,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-}
-
-jacoco {
-    toolVersion = "0.8.11"
-}
-
-val exclusions =
-    listOf(
-        "**/R.class",
-        "**/R\$*.class",
-        "**/BuildConfig.*",
-        "**/Manifest*.*",
-        "**/*Test*.*"
-    )
-
-tasks.withType(Test::class) {
-    configure<JacocoTaskExtension> {
-        isIncludeNoLocationClasses = true
-        excludes = listOf("jdk.internal.*")
-    }
-}
-
-android {
-    applicationVariants.all(
-        closureOf<com.android.build.gradle.internal.api.BaseVariantImpl> {
-            val variant =
-                this@closureOf.name.replaceFirstChar {
-                    if (it.isLowerCase()) {
-                        it.titlecase(
-                            Locale.getDefault()
-                        )
-                    } else {
-                        it.toString()
-                    }
-                }
-
-            val unitTests = "test${variant}UnitTest"
-            // val androidTests = "connected${variant}AndroidTest"
-
-            tasks.register<JacocoReport>("Jacoco${variant}CodeCoverage") {
-                // dependsOn(listOf(unitTests, androidTests))
-                dependsOn(listOf(unitTests))
-                group = "Reporting"
-                description = "Jacoco coverage report"
-                reports {
-                    xml.required.set(true)
-                    html.required.set(true)
-                }
-                sourceDirectories.setFrom(layout.projectDirectory.dir("src/main"))
-                classDirectories.setFrom(
-                    files(
-                        fileTree(layout.buildDirectory.dir("intermediates/javac/")) {
-                            exclude(exclusions)
-                        },
-                        fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/")) {
-                            exclude(exclusions)
-                        }
-                    )
-                )
-                executionData.setFrom(
-                    files(
-                        fileTree(layout.buildDirectory) { include(listOf("**/*.exec", "**/*.ec")) }
-                    )
-                )
-            }
-        }
-    )
 }
