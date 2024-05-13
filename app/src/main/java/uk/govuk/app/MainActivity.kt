@@ -3,6 +3,7 @@ package uk.govuk.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -11,6 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import uk.govuk.app.ui.theme.GovukmobileandroidappTheme
+import uk.govuk.homepage.HomepageStart
+import uk.govuk.onboarding.OnboardingStart
+import uk.govuk.services.ServicesStart
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +27,12 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("GOV.UK Android App")
+                    Column {
+                        Greeting("GOV.UK Android App")
+                        OnboardingStart()
+                        HomepageStart()
+                        ServicesStart()
+                    }
                 }
             }
         }
