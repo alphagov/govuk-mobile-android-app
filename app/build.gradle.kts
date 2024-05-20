@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("org.sonarqube") version "4.4.1.3373"
+    id("maven-publish")
 }
 
 sonar {
@@ -73,8 +74,9 @@ android {
     }
 }
 
-dependencies {
+val moduleBranch = "develop-SNAPSHOT"
 
+dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -83,11 +85,17 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation("com.github.alphagov:govuk-mobile-android-onboarding:$moduleBranch")
+    implementation("com.github.alphagov:govuk-mobile-android-services:$moduleBranch")
+    implementation("com.github.alphagov:govuk-mobile-android-homepage:$moduleBranch")
+
     testImplementation(libs.junit)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
