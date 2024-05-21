@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("jacoco")
     id("org.sonarqube") version "4.4.1.3373"
     id("maven-publish")
 }
@@ -38,7 +39,7 @@ android {
     buildTypes {
         debug {
             enableUnitTestCoverage = true
-            // enableAndroidTestCoverage = true
+            enableAndroidTestCoverage = true
         }
 
         release {
