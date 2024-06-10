@@ -16,11 +16,13 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url = uri("https://jitpack.io")
-        }
     }
 }
 
 rootProject.name = "govuk-mobile-android-app"
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":app")
+include(":feature")
+include(":feature:home")
+include(":feature:settings")
