@@ -1,9 +1,10 @@
+import com.android.build.gradle.internal.scope.ProjectInfo.Companion.getBaseName
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("jacoco")
     id("org.sonarqube") version "4.4.1.3373"
-    id("maven-publish")
 }
 
 sonar {
@@ -75,20 +76,20 @@ android {
     }
 }
 
-val moduleBranch = "develop-SNAPSHOT"
-
 dependencies {
+    implementation(projects.feature.home)
+    implementation(projects.feature.settings)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material)
     implementation(libs.androidx.material3)
-    implementation("com.github.alphagov:govuk-mobile-android-onboarding:$moduleBranch")
-    implementation("com.github.alphagov:govuk-mobile-android-services:$moduleBranch")
-    implementation("com.github.alphagov:govuk-mobile-android-homepage:$moduleBranch")
 
     testImplementation(libs.junit)
 
