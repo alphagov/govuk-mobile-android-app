@@ -1,4 +1,4 @@
-package uk.govuk.app.settings.ui
+package uk.govuk.app.onboarding.ui
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
