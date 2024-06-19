@@ -79,6 +79,7 @@ android {
 dependencies {
     implementation(projects.feature.home)
     implementation(projects.feature.settings)
+    implementation(projects.feature.onboarding)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
