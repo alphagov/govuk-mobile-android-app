@@ -1,7 +1,9 @@
 package uk.govuk.app.home.ui.navigation
 
+import android.content.Intent
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import uk.govuk.app.home.ui.HomeRoute
 
@@ -13,6 +15,13 @@ fun NavGraphBuilder.homeGraph() {
         route = HOME_GRAPH_ROUTE,
         startDestination = HOME_ROUTE
     ) {
-        composable(HOME_ROUTE) { HomeRoute() }
+        composable(HOME_ROUTE,
+            deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "/home"
+                    action = Intent.ACTION_VIEW
+                }
+            )
+        ) { HomeRoute() }
     }
 }
