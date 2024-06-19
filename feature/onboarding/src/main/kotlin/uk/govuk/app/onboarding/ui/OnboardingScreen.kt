@@ -3,9 +3,7 @@ package uk.govuk.app.onboarding.ui
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,6 +13,8 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import uk.govuk.app.onboarding.R
+import uk.govuk.app.onboarding.ui.theme.Black30
 
 
 @Composable
@@ -63,50 +64,65 @@ private fun OnboardingScreen() {
         state = pagerState,
         verticalAlignment = Alignment.Top
     ) { pageIndex ->
-        Column(
-            modifier = Modifier.fillMaxWidth()
-                .padding(32.dp)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Image(
-                painter = painterResource(id = pages[pageIndex].image),
-                contentDescription = null
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .weight(1f)
+                    .padding(start = 32.dp, top = 32.dp, end = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Image(
+                    painter = painterResource(id = pages[pageIndex].image),
+                    contentDescription = null
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Text(
+                    text = pages[pageIndex].title,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = pages[pageIndex].body,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Divider(
+                thickness = 1.dp,
+                color = Black30
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Text(
-                text = pages[pageIndex].title,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = pages[pageIndex].body,
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center
-            )
-
-            Row() {
+            Column(
+                modifier = Modifier
+                    .padding(start = 32.dp, top = 16.dp, end = 32.dp, bottom = 32.dp)
+            ) {
                 Button(
                     onClick = { },
-                    modifier = Modifier.weight(1f)
-                        .padding(start = 11.dp, top = 8.dp, end = 11.dp, bottom = 8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
                     Text(text = "Continue")
                 }
-            }
 
-            TextButton(
-                onClick = { },
-                modifier = Modifier.padding(start = 11.dp, top = 16.dp, end = 11.dp, bottom = 32.dp)
-            ) {
-                Text("Skip")
+                TextButton(
+                    onClick = { },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Skip",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }
     }
