@@ -3,14 +3,20 @@ package uk.govuk.app.onboarding.ui
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -19,14 +25,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import uk.govuk.app.onboarding.R
 import uk.govuk.app.onboarding.ui.theme.Black30
+import uk.govuk.app.onboarding.ui.theme.LightGrey
 
 
 @Composable
@@ -102,30 +112,96 @@ private fun OnboardingScreen() {
 
             Column(
                 modifier = Modifier
-                    .padding(start = 32.dp, top = 16.dp, end = 32.dp, bottom = 32.dp)
+                    .padding(start = 32.dp, top = 16.dp, end = 32.dp, bottom = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Button(
-                    onClick = { },
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                ) {
-                    Text(text = "Continue")
-                }
+                val coroutineScope = rememberCoroutineScope()
 
-                TextButton(
-                    onClick = { },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Skip",
-                        color = MaterialTheme.colorScheme.primary
+                if (pageIndex < pagerState.pageCount - 1) {
+                    PrimaryButton(
+                        text = "Continue",
+                        onClick = {
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(pageIndex + 1)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    SecondaryButton(text = "Skip")
+                } else {
+                    PrimaryButton(
+                        text = "Done",
+                        onClick = { },
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
+                Spacer(modifier = Modifier.height(16.dp))
+                PagerIndicator(pagerState.pageCount, pageIndex)
             }
         }
     }
+}
+
+@Composable
+private fun PrimaryButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+    ) {
+        Text(text = text)
+    }
+}
+
+@Composable
+private fun SecondaryButton(text: String) {
+    TextButton(
+        onClick = { },
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = text,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+private fun PagerIndicator(
+    pageCount: Int,
+    currentPage: Int,
+    modifier: Modifier = Modifier
+) {
+    Row(modifier = modifier) {
+        for (i in 0 until pageCount) {
+            if (i == currentPage) {
+                FilledCircle(Modifier.padding(horizontal = 8.dp))
+            } else {
+                OutlinedCircle(Modifier.padding(horizontal = 8.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun OutlinedCircle(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .size(16.dp)
+            .clip(CircleShape)
+            .border(2.dp, LightGrey, CircleShape)
+    )
+}
+
+@Composable
+private fun FilledCircle(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .size(16.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.primary)
+    )
 }
 
 private data class OnboardingPage(
