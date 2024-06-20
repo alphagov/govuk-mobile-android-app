@@ -35,7 +35,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import uk.govuk.app.onboarding.R
-import uk.govuk.app.onboarding.ui.theme.Black30
 import uk.govuk.app.onboarding.ui.theme.LightGrey
 
 
@@ -107,7 +106,7 @@ private fun OnboardingScreen() {
 
             Divider(
                 thickness = 1.dp,
-                color = Black30
+                color = MaterialTheme.colorScheme.outline,
             )
 
             Column(
