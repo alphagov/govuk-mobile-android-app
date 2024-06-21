@@ -16,14 +16,16 @@ private val DarkColorScheme = darkColorScheme(
     primary = GovUkDarkModeBlue,
     onPrimary = GovUkText,
     secondary = PurpleGrey80,
-    tertiary = Pink80
+    tertiary = Pink80,
+    outline = OutlineDarkMode
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = GovUkBlue,
     onPrimary = Color.White,
     secondary = PurpleGrey40,
-    tertiary = Pink40
+    tertiary = Pink40,
+    outline = Outline
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
