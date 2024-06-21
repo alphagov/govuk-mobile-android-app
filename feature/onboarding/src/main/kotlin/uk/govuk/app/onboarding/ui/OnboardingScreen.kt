@@ -5,6 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -33,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowHeightSizeClass
 import kotlinx.coroutines.launch
 import uk.govuk.app.onboarding.R
 import uk.govuk.app.onboarding.ui.theme.LightGrey
@@ -74,19 +77,24 @@ private fun OnboardingScreen() {
         verticalAlignment = Alignment.Top
     ) { pageIndex ->
         Column(modifier = Modifier.fillMaxWidth()) {
+            val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+
             Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
+                    .fillMaxWidth()
                     .weight(1f)
                     .padding(start = 32.dp, top = 32.dp, end = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Image(
-                    painter = painterResource(id = pages[pageIndex].image),
-                    contentDescription = null
-                )
+                if (windowSizeClass.windowHeightSizeClass != WindowHeightSizeClass.COMPACT) {
+                    Image(
+                        painter = painterResource(id = pages[pageIndex].image),
+                        contentDescription = null
+                    )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
 
                 Text(
                     text = pages[pageIndex].title,
@@ -115,18 +123,18 @@ private fun OnboardingScreen() {
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 val coroutineScope = rememberCoroutineScope()
+                val onClick: () -> Unit = {
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(pageIndex + 1)
+                    }
+                }
 
                 if (pageIndex < pagerState.pageCount - 1) {
-                    PrimaryButton(
-                        text = "Continue",
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(pageIndex + 1)
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    SecondaryButton(text = "Skip")
+                    if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
+                        MediumButtonGroup(onClick)
+                    } else {
+                        CompactButtonGroup(onClick)
+                    }
                 } else {
                     PrimaryButton(
                         text = "Done",
@@ -142,6 +150,30 @@ private fun OnboardingScreen() {
 }
 
 @Composable
+private fun CompactButtonGroup(onClick: () -> Unit) {
+    PrimaryButton(
+        text = "Continue",
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth()
+    )
+    SecondaryButton(text = "Skip")
+}
+
+@Composable
+private fun MediumButtonGroup(onClick: () -> Unit) {
+    Row(modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
+        PrimaryButton(
+            text = "Continue",
+            onClick = onClick,
+            modifier = Modifier.weight(0.5f)
+        )
+        SecondaryButton(text = "Skip", modifier = Modifier.weight(0.5f))
+    }
+}
+
+@Composable
 private fun PrimaryButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(
         onClick = onClick,
@@ -153,11 +185,10 @@ private fun PrimaryButton(text: String, onClick: () -> Unit, modifier: Modifier 
 }
 
 @Composable
-private fun SecondaryButton(text: String) {
+private fun SecondaryButton(text: String, modifier: Modifier = Modifier) {
     TextButton(
         onClick = { },
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
     ) {
         Text(
             text = text,
@@ -169,10 +200,12 @@ private fun SecondaryButton(text: String) {
 @Composable
 private fun PagerIndicator(
     pageCount: Int,
-    currentPage: Int,
-    modifier: Modifier = Modifier
+    currentPage: Int
 ) {
-    Row(modifier = modifier) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
         for (i in 0 until pageCount) {
             if (i == currentPage) {
                 FilledCircle(Modifier.padding(horizontal = 8.dp))
