@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -53,18 +54,18 @@ fun OnboardingRoute() {
 private fun OnboardingScreen() {
     val pages = listOf(
         OnboardingPage(
-            title = "Get things done on the go",
-            body = "Access government services and information on your phone using the GOV.UK app",
+            title = stringResource(id = R.string.getThingsDoneScreenTitle),
+            body = stringResource(id = R.string.getThingsDoneScreenBody),
             image = R.drawable.image_1
         ),
         OnboardingPage(
-            title = "Quickly get back to previous pages",
-            body = "Pages you’ve visited are saved so you can easily return to them",
+            title = stringResource(id = R.string.backToPreviousScreenTitle),
+            body = stringResource(id = R.string.backToPreviousScreenBody),
             image = R.drawable.image_2
         ),
         OnboardingPage(
-            title = "Tailored to you",
-            body = "Choose topics that are relevant to you so you can find what you need faster",
+            title = stringResource(id = R.string.tailoredToYouScreenTitle),
+            body = stringResource(id = R.string.tailoredToYouScreenBody),
             image = R.drawable.image_3
         ),
     )
@@ -141,7 +142,7 @@ private fun OnboardingScreen() {
                     }
                 } else {
                     PrimaryButton(
-                        text = "Done",
+                        text = stringResource(id = R.string.doneButton),
                         onClick = { },
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -156,11 +157,11 @@ private fun OnboardingScreen() {
 @Composable
 private fun CompactButtonGroup(onClick: () -> Unit) {
     PrimaryButton(
-        text = "Continue",
+        text = stringResource(id = R.string.continueButton),
         onClick = onClick,
         modifier = Modifier.fillMaxWidth()
     )
-    SecondaryButton(text = "Skip")
+    SecondaryButton(text = stringResource(id = R.string.skipButton))
 }
 
 @Composable
@@ -169,11 +170,11 @@ private fun MediumButtonGroup(onClick: () -> Unit) {
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         PrimaryButton(
-            text = "Continue",
+            text = stringResource(id = R.string.continueButton),
             onClick = onClick,
             modifier = Modifier.weight(0.5f)
         )
-        SecondaryButton(text = "Skip", modifier = Modifier.weight(0.5f))
+        SecondaryButton(text = stringResource(id = R.string.skipButton), modifier = Modifier.weight(0.5f))
     }
 }
 
