@@ -42,16 +42,15 @@ import kotlinx.coroutines.launch
 import uk.govuk.app.onboarding.R
 import uk.govuk.app.onboarding.ui.theme.LightGrey
 
+private data class OnboardingPage(
+    val title: String,
+    val body: String,
+    @DrawableRes val image: Int
+)
 
 @Composable
-fun OnboardingRoute() {
+fun OnboardingRoute(modifier: Modifier = Modifier) {
     // Collect UI state from view model here and pass to screen (if necessary)
-    OnboardingScreen()
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun OnboardingScreen() {
     val pages = listOf(
         OnboardingPage(
             title = stringResource(id = R.string.getThingsDoneScreenTitle),
@@ -70,12 +69,22 @@ private fun OnboardingScreen() {
         ),
     )
 
+    OnboardingScreen(pages, modifier)
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun OnboardingScreen(
+    pages: List<OnboardingPage>,
+    modifier: Modifier = Modifier
+) {
     val pagerState = rememberPagerState(pageCount = {
         pages.count()
     })
 
     HorizontalPager(
         state = pagerState,
+        modifier = modifier,
         verticalAlignment = Alignment.Top
     ) { pageIndex ->
         Column(modifier = Modifier
@@ -136,9 +145,9 @@ private fun OnboardingScreen() {
 
                 if (pageIndex < pagerState.pageCount - 1) {
                     if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
-                        MediumButtonGroup(onClick)
+                        HorizontalButtonGroup(onClick)
                     } else {
-                        CompactButtonGroup(onClick)
+                        VerticalButtonGroup(onClick)
                     }
                 } else {
                     PrimaryButton(
@@ -155,18 +164,29 @@ private fun OnboardingScreen() {
 }
 
 @Composable
-private fun CompactButtonGroup(onClick: () -> Unit) {
-    PrimaryButton(
-        text = stringResource(id = R.string.continueButton),
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
-    )
-    SecondaryButton(text = stringResource(id = R.string.skipButton))
+private fun VerticalButtonGroup(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier) {
+        PrimaryButton(
+            text = stringResource(id = R.string.continueButton),
+            onClick = onClick,
+            modifier = Modifier.fillMaxWidth()
+        )
+        SecondaryButton(
+            text = stringResource(id = R.string.skipButton),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
 }
 
 @Composable
-private fun MediumButtonGroup(onClick: () -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth(),
+private fun HorizontalButtonGroup(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         PrimaryButton(
@@ -174,12 +194,19 @@ private fun MediumButtonGroup(onClick: () -> Unit) {
             onClick = onClick,
             modifier = Modifier.weight(0.5f)
         )
-        SecondaryButton(text = stringResource(id = R.string.skipButton), modifier = Modifier.weight(0.5f))
+        SecondaryButton(
+            text = stringResource(id = R.string.skipButton),
+            modifier = Modifier.weight(0.5f)
+        )
     }
 }
 
 @Composable
-private fun PrimaryButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun PrimaryButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Button(
         onClick = onClick,
         modifier = modifier,
@@ -190,7 +217,10 @@ private fun PrimaryButton(text: String, onClick: () -> Unit, modifier: Modifier 
 }
 
 @Composable
-private fun SecondaryButton(text: String, modifier: Modifier = Modifier) {
+private fun SecondaryButton(
+    text: String,
+    modifier: Modifier = Modifier
+) {
     TextButton(
         onClick = { },
         modifier = modifier
@@ -205,10 +235,11 @@ private fun SecondaryButton(text: String, modifier: Modifier = Modifier) {
 @Composable
 private fun PagerIndicator(
     pageCount: Int,
-    currentPage: Int
+    currentPage: Int,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
         for (i in 0 until pageCount) {
@@ -240,9 +271,3 @@ private fun FilledCircle(modifier: Modifier = Modifier) {
             .background(MaterialTheme.colorScheme.primary)
     )
 }
-
-private data class OnboardingPage(
-    val title: String,
-    val body: String,
-    @DrawableRes val image: Int
-)
