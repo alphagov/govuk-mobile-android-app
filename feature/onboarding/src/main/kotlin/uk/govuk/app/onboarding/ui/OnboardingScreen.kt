@@ -1,6 +1,7 @@
 package uk.govuk.app.onboarding.ui
 
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -139,7 +140,10 @@ private fun OnboardingScreen(
                 val coroutineScope = rememberCoroutineScope()
                 val onClick: () -> Unit = {
                     coroutineScope.launch {
-                        pagerState.animateScrollToPage(pageIndex + 1)
+                        pagerState.animateScrollToPage(
+                            pageIndex + 1,
+                            animationSpec = tween(500)
+                        )
                     }
                 }
 
