@@ -78,8 +78,11 @@ fun OnboardingRoute(modifier: Modifier = Modifier) {
 
     OnboardingScreen(
         pages,
-        {
+        onDone = {
             viewModel.onDone()
+        },
+        onSkip = {
+            viewModel.onSkip()
         },
         modifier
     )
@@ -90,6 +93,7 @@ fun OnboardingRoute(modifier: Modifier = Modifier) {
 private fun OnboardingScreen(
     pages: List<OnboardingPage>,
     onDone: () -> Unit,
+    onSkip: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(pageCount = {
@@ -166,12 +170,12 @@ private fun OnboardingScreen(
                     if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
                         HorizontalButtonGroup(
                             onContinue = onContinue,
-                            onSkip = onDone
+                            onSkip = onSkip
                         )
                     } else {
                         VerticalButtonGroup(
                             onContinue = onContinue,
-                            onSkip = onDone
+                            onSkip = onSkip
                         )
                     }
                 } else {
