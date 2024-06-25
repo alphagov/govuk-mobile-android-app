@@ -16,6 +16,9 @@ hilt = "2.51.1"
 ksp = "2.0.0-1.0.22"
 datastorePreferences = "1.1.1"
 
+mockk = "1.13.11"
+coroutineTest = "1.8.1"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -40,6 +43,8 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-adaptive-android = { group = "androidx.compose.material3.adaptive", name = "adaptive-android", version.ref = "adaptiveAndroid" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
 
+mockk = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
+coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutineTest" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
