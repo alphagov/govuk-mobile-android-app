@@ -39,10 +39,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.window.core.layout.WindowHeightSizeClass
 import kotlinx.coroutines.launch
-import uk.govuk.app.onboarding.OnboardingViewModel
 import uk.govuk.app.onboarding.R
 import uk.govuk.app.onboarding.ui.theme.LightGrey
 
@@ -54,9 +52,10 @@ private data class OnboardingPage(
 )
 
 @Composable
-fun OnboardingRoute(modifier: Modifier = Modifier) {
-    val viewModel: OnboardingViewModel = viewModel()
-
+fun OnboardingRoute(
+    onboardingCompleted: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     // Collect UI state from view model here and pass to screen (if necessary)
     val pages = listOf(
         OnboardingPage(
@@ -78,12 +77,8 @@ fun OnboardingRoute(modifier: Modifier = Modifier) {
 
     OnboardingScreen(
         pages,
-        onDone = {
-            viewModel.onDone()
-        },
-        onSkip = {
-            viewModel.onSkip()
-        },
+        onDone = onboardingCompleted,
+        onSkip = onboardingCompleted,
         modifier
     )
 }

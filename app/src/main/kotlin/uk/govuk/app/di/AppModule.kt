@@ -1,4 +1,4 @@
-package uk.govuk.app.onboarding.di
+package uk.govuk.app.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -16,7 +16,7 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-internal class OnboardingModule {
+internal class AppModule {
 
     @Singleton
     @Provides
@@ -25,7 +25,7 @@ internal class OnboardingModule {
             corruptionHandler = ReplaceFileCorruptionHandler(
                 produceNewData = { emptyPreferences() }
             ),
-            produceFile = { context.preferencesDataStoreFile("onboarding_preferences") }
+            produceFile = { context.preferencesDataStoreFile("app_preferences") }
         )
     }
 }

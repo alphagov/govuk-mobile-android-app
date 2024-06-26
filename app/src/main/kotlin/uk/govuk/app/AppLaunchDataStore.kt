@@ -1,4 +1,4 @@
-package uk.govuk.app.onboarding
+package uk.govuk.app
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
-internal class OnboardingDataStore @Inject constructor(
+internal class AppLaunchDataStore @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
 
