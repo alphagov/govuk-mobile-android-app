@@ -23,9 +23,13 @@ import androidx.navigation.compose.rememberNavController
 import uk.govuk.app.AppLaunchState
 import uk.govuk.app.AppLaunchViewModel
 import uk.govuk.app.home.ui.navigation.homeGraph
-import uk.govuk.app.onboarding.ui.OnboardingRoute
+import uk.govuk.app.onboarding.ui.navigation.ONBOARDING_GRAPH_ROUTE
+import uk.govuk.app.onboarding.ui.navigation.onboardingGraph
 import uk.govuk.app.settings.ui.navigation.settingsGraph
 import uk.govuk.app.ui.navigation.TopLevelDestination
+
+private const val SPLASH_ROUTE = "splash"
+private const val ONBOARDING_COMPLETED_ROUTE = "onboarding_completed"
 
 @Composable
 fun GovUkApp() {
@@ -35,22 +39,27 @@ fun GovUkApp() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = "splash"
+        startDestination = SPLASH_ROUTE
     ) {
-        composable("splash") { } // Todo - splash screen to go here
-        composable("onboarding") {
-            OnboardingRoute(onboardingCompleted = {
-                viewModel.onboardingCompleted()
-                navController.navigate("onboarding_completed")
-            } )
+        composable(SPLASH_ROUTE) { } // Todo - splash screen to go here
+        onboardingGraph {
+            viewModel.onboardingCompleted()
+            navController.popBackStack()
+            navController.navigate(ONBOARDING_COMPLETED_ROUTE)
         }
-        composable("onboarding_completed") { BottomNavScaffold() }
+        composable(ONBOARDING_COMPLETED_ROUTE) { BottomNavScaffold() }
     }
 
     appLaunchState?.let {
         when (it) {
-            AppLaunchState.ONBOARDING_REQUIRED -> navController.navigate("onboarding")
-            AppLaunchState.ONBOARDING_COMPLETED -> navController.navigate("onboarding_completed")
+            AppLaunchState.ONBOARDING_REQUIRED -> {
+                navController.popBackStack()
+                navController.navigate(ONBOARDING_GRAPH_ROUTE)
+            }
+            AppLaunchState.ONBOARDING_COMPLETED -> {
+                navController.popBackStack()
+                navController.navigate(ONBOARDING_COMPLETED_ROUTE)
+            }
         }
     }
 }

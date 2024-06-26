@@ -52,11 +52,11 @@ private data class OnboardingPage(
 )
 
 @Composable
-fun OnboardingRoute(
+internal fun OnboardingRoute(
     onboardingCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Collect UI state from view model here and pass to screen (if necessary)
+    // Todo - should probably move this to view model
     val pages = listOf(
         OnboardingPage(
             title = stringResource(id = R.string.getThingsDoneScreenTitle),
