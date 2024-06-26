@@ -1,4 +1,4 @@
-package uk.govuk.app
+package uk.govuk.app.launch
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

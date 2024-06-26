@@ -1,4 +1,4 @@
-package uk.govuk.app
+package uk.govuk.app.launch
 
 import javax.inject.Inject
 

@@ -20,13 +20,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import uk.govuk.app.AppLaunchState
-import uk.govuk.app.AppLaunchViewModel
 import uk.govuk.app.home.ui.navigation.homeGraph
+import uk.govuk.app.launch.AppLaunchState
+import uk.govuk.app.launch.AppLaunchViewModel
+import uk.govuk.app.navigation.TopLevelDestination
 import uk.govuk.app.onboarding.ui.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.govuk.app.onboarding.ui.navigation.onboardingGraph
 import uk.govuk.app.settings.ui.navigation.settingsGraph
-import uk.govuk.app.ui.navigation.TopLevelDestination
 
 private const val SPLASH_ROUTE = "splash"
 private const val ONBOARDING_COMPLETED_ROUTE = "onboarding_completed"

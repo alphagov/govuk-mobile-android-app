@@ -1,4 +1,4 @@
-package uk.govuk.app
+package uk.govuk.app.launch
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
