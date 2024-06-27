@@ -16,6 +16,7 @@ adaptiveAndroid = "1.0.0-beta03"
 hilt = "2.51.1"
 ksp = "2.0.0-1.0.22"
 datastorePreferences = "1.1.1"
+sonarQube = "5.0.0.4638"
 
 mockk = "1.13.11"
 coroutineTest = "1.8.1"
@@ -56,6 +57,7 @@ compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+sonarQube = { id = "org.sonarqube", version.ref = "sonarQube" }
 
 
 

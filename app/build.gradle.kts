@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     id("jacoco")
-    id("org.sonarqube") version "4.4.1.3373"
+    alias(libs.plugins.sonarQube)
 }
 
 sonar {
