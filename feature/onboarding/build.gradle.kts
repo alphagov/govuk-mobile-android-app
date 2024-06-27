@@ -3,6 +3,9 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -21,10 +24,6 @@ android {
     buildFeatures {
         compose = true
     }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
 }
 
 dependencies {
@@ -38,6 +37,10 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material3)
     implementation(libs.androidx.adaptive.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.hilt.android)
+
+    ksp(libs.hilt.compiler)
 
     testImplementation(libs.junit)
 

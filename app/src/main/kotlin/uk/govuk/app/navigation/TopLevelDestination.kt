@@ -1,4 +1,4 @@
-package uk.govuk.app.ui.navigation
+package uk.govuk.app.navigation
 
 import androidx.annotation.StringRes
 import uk.govuk.app.R

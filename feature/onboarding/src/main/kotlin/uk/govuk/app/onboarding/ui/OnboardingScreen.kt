@@ -44,6 +44,7 @@ import kotlinx.coroutines.launch
 import uk.govuk.app.onboarding.R
 import uk.govuk.app.onboarding.ui.theme.LightGrey
 
+
 private data class OnboardingPage(
     val title: String,
     val body: String,
@@ -51,8 +52,11 @@ private data class OnboardingPage(
 )
 
 @Composable
-fun OnboardingRoute(modifier: Modifier = Modifier) {
-    // Collect UI state from view model here and pass to screen (if necessary)
+internal fun OnboardingRoute(
+    onboardingCompleted: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // Todo - should probably move this to view model
     val pages = listOf(
         OnboardingPage(
             title = stringResource(id = R.string.getThingsDoneScreenTitle),
@@ -71,13 +75,20 @@ fun OnboardingRoute(modifier: Modifier = Modifier) {
         ),
     )
 
-    OnboardingScreen(pages, modifier)
+    OnboardingScreen(
+        pages,
+        onDone = onboardingCompleted,
+        onSkip = onboardingCompleted,
+        modifier
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun OnboardingScreen(
     pages: List<OnboardingPage>,
+    onDone: () -> Unit,
+    onSkip: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(pageCount = {
@@ -141,7 +152,7 @@ private fun OnboardingScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 val coroutineScope = rememberCoroutineScope()
-                val onClick: () -> Unit = {
+                val onContinue: () -> Unit = {
                     coroutineScope.launch {
                         pagerState.animateScrollToPage(
                             pageIndex + 1,
@@ -152,14 +163,20 @@ private fun OnboardingScreen(
 
                 if (pageIndex < pagerState.pageCount - 1) {
                     if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
-                        HorizontalButtonGroup(onClick)
+                        HorizontalButtonGroup(
+                            onContinue = onContinue,
+                            onSkip = onSkip
+                        )
                     } else {
-                        VerticalButtonGroup(onClick)
+                        VerticalButtonGroup(
+                            onContinue = onContinue,
+                            onSkip = onSkip
+                        )
                     }
                 } else {
                     PrimaryButton(
                         text = stringResource(id = R.string.doneButton),
-                        onClick = { },
+                        onClick = onDone,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -172,17 +189,19 @@ private fun OnboardingScreen(
 
 @Composable
 private fun VerticalButtonGroup(
-    onClick: () -> Unit,
+    onContinue: () -> Unit,
+    onSkip: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
         PrimaryButton(
             text = stringResource(id = R.string.continueButton),
-            onClick = onClick,
+            onClick = onContinue,
             modifier = Modifier.fillMaxWidth()
         )
         SecondaryButton(
             text = stringResource(id = R.string.skipButton),
+            onClick = onSkip,
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -190,7 +209,8 @@ private fun VerticalButtonGroup(
 
 @Composable
 private fun HorizontalButtonGroup(
-    onClick: () -> Unit,
+    onContinue: () -> Unit,
+    onSkip: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier.fillMaxWidth(),
@@ -198,11 +218,12 @@ private fun HorizontalButtonGroup(
     ) {
         PrimaryButton(
             text = stringResource(id = R.string.continueButton),
-            onClick = onClick,
+            onClick = onContinue,
             modifier = Modifier.weight(0.5f)
         )
         SecondaryButton(
             text = stringResource(id = R.string.skipButton),
+            onClick = onSkip,
             modifier = Modifier.weight(0.5f)
         )
     }
@@ -226,10 +247,11 @@ private fun PrimaryButton(
 @Composable
 private fun SecondaryButton(
     text: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TextButton(
-        onClick = { },
+        onClick = onClick,
         modifier = modifier
     ) {
         Text(

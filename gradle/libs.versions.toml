@@ -1,6 +1,6 @@
 [versions]
-agp = "8.3.2"
-kotlin = "1.9.0"
+agp = "8.5.0"
+kotlin = "2.0.0"
 coreKtx = "1.13.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
@@ -10,8 +10,15 @@ activityCompose = "1.9.0"
 navigationCompose = "2.7.7"
 composeBom = "2023.08.00"
 appcompat = "1.6.1"
+androidxHilt = "1.2.0"
 material = "1.10.0"
 adaptiveAndroid = "1.0.0-beta03"
+hilt = "2.51.1"
+ksp = "2.0.0-1.0.22"
+datastorePreferences = "1.1.1"
+
+mockk = "1.13.11"
+coroutineTest = "1.8.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -31,12 +38,24 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-material = { group = "androidx.compose.material", name = "material" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHilt" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-adaptive-android = { group = "androidx.compose.material3.adaptive", name = "adaptive-android", version.ref = "adaptiveAndroid" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
+
+mockk = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
+coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutineTest" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+
 
