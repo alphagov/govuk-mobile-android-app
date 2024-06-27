@@ -15,6 +15,6 @@ jobs:
   unit-test:
     uses: ./.github/workflows/unit_test.yml
   sonar-scanner:
-    uses: ./.github/workflows/sonar_scanner.yml
+    uses: ./.github/workflows/sonar_scanner_new.yml
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
