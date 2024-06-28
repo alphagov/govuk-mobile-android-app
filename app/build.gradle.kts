@@ -9,6 +9,10 @@ plugins {
 }
 
 sonar {
+    for (file in fileTree("${projectDir}/build/reports/kover").files) {
+        println("Blah - ${file.name}")
+    }
+
     properties {
         property("sonar.projectName", "govuk-mobile-android-app")
         property("sonar.projectKey", "alphagov_govuk-mobile-android-app")
@@ -17,7 +21,7 @@ sonar {
         property("sonar.sourceEncoding", "UTF-8")
         property("sonar.qualitygate.wait", "true")
         property("sonar.androidLint.reportPaths", "${projectDir}/build/reports/lint-results-debug.xml")
-        property("sonar.coverage.jacoco.xmlReportPaths", "${projectDir}/build/reports/kover/reportDebug.xml")
+        property("sonar.jacoco.reportPaths", "${projectDir}/build/reports/kover/reportDebug.xml")
     }
 }
 
