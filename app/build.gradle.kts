@@ -4,8 +4,8 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
-    id("jacoco")
     alias(libs.plugins.sonarQube)
+    alias(libs.plugins.kover)
 }
 
 sonar {
@@ -17,7 +17,7 @@ sonar {
         property("sonar.sourceEncoding", "UTF-8")
         property("sonar.qualitygate.wait", "true")
         property("sonar.androidLint.reportPaths", "${projectDir}/build/reports/lint-results-debug.xml")
-        property("sonar.coverage.jacoco.xmlReportPaths", "${projectDir}/build/test-results/testDebugUnitTest/TEST-*.xml")
+        property("sonar.coverage.jacoco.xmlReportPaths", "${projectDir}/build/reports/kover/reportDebug.xml")
     }
 }
 
@@ -73,6 +73,19 @@ android {
     }
 }
 
+//kover {
+//    reports {
+//        filters {
+//            includes {
+//                classes("src.main.kotlin.uk.govuk.app.*")
+//            }
+//            excludes {
+//                classes("uk.govuk.app.*Activity")
+//            }
+//        }
+//    }
+//}
+
 dependencies {
     implementation(projects.feature.home)
     implementation(projects.feature.settings)
@@ -98,6 +111,10 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.coroutine.test)
+
+    kover(projects.feature.home)
+    kover(projects.feature.settings)
+    kover(projects.feature.onboarding)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

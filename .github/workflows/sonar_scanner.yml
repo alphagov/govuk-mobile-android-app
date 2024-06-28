@@ -40,6 +40,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
 
+      - name: Code coverage
+        run: ./gradlew koverXmlReportDebug
+
       - name: Build and analyze
         run: ./gradlew build sonar --info
         env:
