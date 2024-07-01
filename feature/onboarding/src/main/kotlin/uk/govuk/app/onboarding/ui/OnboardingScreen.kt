@@ -118,16 +118,7 @@ private fun OnboardingScreen(
         )
 
         val coroutineScope = rememberCoroutineScope()
-        val onContinue: () -> Unit = {
-            coroutineScope.launch {
-                pagerState.animateScrollToPage(
-                    pagerState.currentPage + 1,
-                    animationSpec = tween(500)
-                )
-            }
-        }
-
-        val onPagerClick: (Int) -> Unit = { pageIndex ->
+        val changePage: (Int) -> Unit = { pageIndex ->
             coroutineScope.launch {
                 pagerState.animateScrollToPage(
                     pageIndex,
@@ -139,10 +130,10 @@ private fun OnboardingScreen(
         Footer(
             currentPageIndex = pagerState.currentPage,
             pageCount = pagerState.pageCount,
-            onContinue = onContinue,
+            onContinue = { changePage(pagerState.currentPage + 1) },
             onDone = onDone,
             onSkip = onSkip,
-            onPagerClick = onPagerClick
+            onPagerClick = changePage
         )
     }
 }
