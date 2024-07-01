@@ -6,6 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -126,12 +127,22 @@ private fun OnboardingScreen(
             }
         }
 
+        val onPagerClick: (Int) -> Unit = { pageIndex ->
+            coroutineScope.launch {
+                pagerState.animateScrollToPage(
+                    pageIndex,
+                    animationSpec = tween(500)
+                )
+            }
+        }
+
         Footer(
             currentPageIndex = pagerState.currentPage,
             pageCount = pagerState.pageCount,
             onContinue = onContinue,
             onDone = onDone,
-            onSkip = onSkip
+            onSkip = onSkip,
+            onPagerClick = onPagerClick
         )
     }
 }
@@ -184,11 +195,12 @@ private fun Footer(
     onContinue: () -> Unit,
     onDone: () -> Unit,
     onSkip: () -> Unit,
+    onPagerClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
-            .padding(start = 32.dp, top = 16.dp, end = 32.dp, bottom = 32.dp),
+            .padding(start = 32.dp, top = 16.dp, end = 32.dp, bottom = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -212,8 +224,8 @@ private fun Footer(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        PagerIndicator(pageCount, currentPageIndex)
+        Spacer(modifier = Modifier.height(8.dp))
+        PagerIndicator(pageCount, currentPageIndex, onPagerClick)
     }
 }
 
@@ -300,6 +312,7 @@ private fun SecondaryButton(
 private fun PagerIndicator(
     pageCount: Int,
     currentPage: Int,
+    onClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -307,10 +320,17 @@ private fun PagerIndicator(
         horizontalArrangement = Arrangement.Center
     ) {
         for (i in 0 until pageCount) {
-            if (i == currentPage) {
-                FilledCircle(Modifier.padding(horizontal = 8.dp))
-            } else {
-                OutlinedCircle(Modifier.padding(horizontal = 8.dp))
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clickable { onClick(i) },
+                contentAlignment = Alignment.Center
+            ) {
+                if (i == currentPage) {
+                    FilledCircle(Modifier.padding(horizontal = 8.dp))
+                } else {
+                    OutlinedCircle(Modifier.padding(horizontal = 8.dp))
+                }
             }
         }
     }
