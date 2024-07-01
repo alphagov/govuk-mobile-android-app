@@ -37,6 +37,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -311,10 +313,15 @@ private fun PagerIndicator(
         horizontalArrangement = Arrangement.Center
     ) {
         for (i in 0 until pageCount) {
+            val description = stringResource(id = R.string.pageIndicatorContentDescription, i + 1, pageCount)
+
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .clickable { onClick(i) },
+                    .clickable { onClick(i) }
+                    .semantics {
+                        contentDescription = description
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 if (i == currentPage) {

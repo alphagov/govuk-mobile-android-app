@@ -11,4 +11,7 @@
 
     <string name="tailoredToYouScreenTitle">Tailored to you</string>
     <string name="tailoredToYouScreenBody">Choose topics that are relevant to you so you can find what you need faster</string>
+
+    <string name="pageIndicatorContentDescription">Go to page %1d of %2d</string>
+
 </resources>
