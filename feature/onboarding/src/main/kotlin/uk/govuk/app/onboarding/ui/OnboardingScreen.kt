@@ -127,7 +127,6 @@ private fun OnboardingScreen(
                     text = pages[pageIndex].title,
                     modifier = Modifier.focusable(),
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
 
@@ -240,7 +239,11 @@ private fun PrimaryButton(
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
     ) {
-        Text(text = text)
+        Text(
+            text = text,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.bodyMedium,
+        )
     }
 }
 
@@ -256,7 +259,8 @@ private fun SecondaryButton(
     ) {
         Text(
             text = text,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.bodyMedium,
         )
     }
 }
