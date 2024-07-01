@@ -95,94 +95,125 @@ private fun OnboardingScreen(
         pages.count()
     })
 
-    HorizontalPager(
-        state = pagerState,
-        modifier = modifier,
-        verticalAlignment = Alignment.Top
-    ) { pageIndex ->
-        Column(modifier = Modifier
+    Column(
+        modifier = modifier
             .fillMaxWidth()
             .safeDrawingPadding()
-        ) {
-            val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    ) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = modifier
+                .fillMaxWidth()
+                .weight(1f),
+            verticalAlignment = Alignment.Top
+        ) { pageIndex ->
+            Page(pages[pageIndex])
+        }
 
-            Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(start = 32.dp, top = 32.dp, end = 32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                if (windowSizeClass.windowHeightSizeClass != WindowHeightSizeClass.COMPACT) {
-                    Image(
-                        painter = painterResource(id = pages[pageIndex].image),
-                        contentDescription = null
-                    )
+        Divider(
+            modifier = Modifier.fillMaxWidth(),
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.outline,
+        )
 
-                    Spacer(modifier = Modifier.height(32.dp))
-                }
-
-                Text(
-                    text = pages[pageIndex].title,
-                    modifier = Modifier.focusable(),
-                    style = MaterialTheme.typography.titleLarge,
-                    textAlign = TextAlign.Center
+        val coroutineScope = rememberCoroutineScope()
+        val onContinue: () -> Unit = {
+            coroutineScope.launch {
+                pagerState.animateScrollToPage(
+                    pagerState.currentPage + 1,
+                    animationSpec = tween(500)
                 )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = pages[pageIndex].body,
-                    modifier = Modifier.focusable(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center
-                )
-            }
-
-            Divider(
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.outline,
-            )
-
-            Column(
-                modifier = Modifier
-                    .padding(start = 32.dp, top = 16.dp, end = 32.dp, bottom = 32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                val coroutineScope = rememberCoroutineScope()
-                val onContinue: () -> Unit = {
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(
-                            pageIndex + 1,
-                            animationSpec = tween(500)
-                        )
-                    }
-                }
-
-                if (pageIndex < pagerState.pageCount - 1) {
-                    if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
-                        HorizontalButtonGroup(
-                            onContinue = onContinue,
-                            onSkip = onSkip
-                        )
-                    } else {
-                        VerticalButtonGroup(
-                            onContinue = onContinue,
-                            onSkip = onSkip
-                        )
-                    }
-                } else {
-                    PrimaryButton(
-                        text = stringResource(id = R.string.doneButton),
-                        onClick = onDone,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                PagerIndicator(pagerState.pageCount, pageIndex)
             }
         }
+
+        Footer(
+            currentPageIndex = pagerState.currentPage,
+            pageCount = pagerState.pageCount,
+            onContinue = onContinue,
+            onDone = onDone,
+            onSkip = onSkip
+        )
+    }
+}
+
+@Composable
+private fun Page(
+    page: OnboardingPage,
+    modifier: Modifier = Modifier
+) {
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .fillMaxWidth()
+            .padding(start = 32.dp, top = 32.dp, end = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        if (windowSizeClass.windowHeightSizeClass != WindowHeightSizeClass.COMPACT) {
+            Image(
+                painter = painterResource(id = page.image),
+                contentDescription = null
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+        }
+
+        Text(
+            text = page.title,
+            modifier = Modifier.focusable(),
+            style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = page.body,
+            modifier = Modifier.focusable(),
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun Footer(
+    currentPageIndex: Int,
+    pageCount: Int,
+    onContinue: () -> Unit,
+    onDone: () -> Unit,
+    onSkip: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .padding(start = 32.dp, top = 16.dp, end = 32.dp, bottom = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+
+        if (currentPageIndex < pageCount - 1) {
+            if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
+                HorizontalButtonGroup(
+                    onContinue = onContinue,
+                    onSkip = onSkip
+                )
+            } else {
+                VerticalButtonGroup(
+                    onContinue = onContinue,
+                    onSkip = onSkip
+                )
+            }
+        } else {
+            PrimaryButton(
+                text = stringResource(id = R.string.doneButton),
+                onClick = onDone,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        PagerIndicator(pageCount, currentPageIndex)
     }
 }
 
