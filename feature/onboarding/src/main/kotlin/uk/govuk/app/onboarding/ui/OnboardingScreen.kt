@@ -102,7 +102,9 @@ private fun OnboardingScreen(
     ) {
         HorizontalPager(
             state = pagerState,
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier
+                .fillMaxWidth()
+                .weight(1f),
             verticalAlignment = Alignment.Top
         ) { pageIndex ->
             Page(pages[pageIndex])
