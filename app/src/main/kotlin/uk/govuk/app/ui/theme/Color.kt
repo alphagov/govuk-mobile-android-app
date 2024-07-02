@@ -3,7 +3,7 @@ package uk.govuk.app.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val GovUkBlue = Color(0xFF1D70B8)
-val GovUkDarkModeBlue = Color(0xFF5BC0C6)
+val GovUkDarkModeBlue = Color(0xFF259AFF)
 val GovUkText = Color(0xFF0B0C0C)
 val Outline = Color(0xFFA3A3A3)
 val OutlineDarkMode = Color(0xFF3E3E3E)
