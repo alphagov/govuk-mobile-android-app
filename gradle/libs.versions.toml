@@ -16,6 +16,11 @@ adaptiveAndroid = "1.0.0-beta03"
 hilt = "2.51.1"
 ksp = "2.0.0-1.0.22"
 datastorePreferences = "1.1.1"
+googlePlayServices = "4.4.2"
+crashlytics = "3.0.2"
+
+gov-logging = "0.4.4"
+firebaseBom = "33.1.1"
 
 mockk = "1.13.11"
 coroutineTest = "1.8.1"
@@ -45,6 +50,12 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-adaptive-android = { group = "androidx.compose.material3.adaptive", name = "adaptive-android", version.ref = "adaptiveAndroid" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
 
+gov-logging-api = { group = "uk.gov.logging", name = "logging-api", version.ref = "gov-logging"}
+gov-logging-impl = { group = "uk.gov.logging", name = "logging-impl", version.ref = "gov-logging"}
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+
 mockk = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutineTest" }
 
@@ -56,6 +67,9 @@ compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+google-play-services = { id = "com.google.gms.google-services", version.ref = "googlePlayServices" }
+crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
+
 
 
 
