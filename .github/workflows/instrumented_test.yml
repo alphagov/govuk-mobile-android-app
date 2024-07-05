@@ -2,6 +2,13 @@ name: Instrumented Test
 
 on:
   workflow_call:
+    secrets:
+      CI_ACCESS_USERNAME:
+        description: 'A username for pulling dependencies from the github package registry'
+        required: true
+      CI_ACCESS_TOKEN:
+        description: 'A token for pulling dependencies from the github package registry'
+        required: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-instrumented-test
@@ -26,3 +33,6 @@ jobs:
 
       - name: Instrumented Test with Code Coverage
         run: ./gradlew pixel3api33DebugAndroidTest
+        env:
+          CI_ACCESS_USERNAME: ${{ secrets.CI_ACCESS_USERNAME }}
+          CI_ACCESS_TOKEN: ${{ secrets.CI_ACCESS_TOKEN }}

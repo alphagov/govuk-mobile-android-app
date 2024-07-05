@@ -2,6 +2,13 @@ name: Unit Test
 
 on:
   workflow_call:
+    secrets:
+      CI_ACCESS_USERNAME:
+        description: 'A username for pulling dependencies from the github package registry'
+        required: true
+      CI_ACCESS_TOKEN:
+        description: 'A token for pulling dependencies from the github package registry'
+        required: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-unit-test
@@ -26,3 +33,8 @@ jobs:
 
       - name: Unit Test with Code Coverage
         run: ./gradlew test
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI_ACCESS_USERNAME: ${{ secrets.CI_ACCESS_USERNAME }}
+          CI_ACCESS_TOKEN: ${{ secrets.CI_ACCESS_TOKEN }}
