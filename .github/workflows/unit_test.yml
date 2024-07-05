@@ -34,7 +34,5 @@ jobs:
       - name: Unit Test with Code Coverage
         run: ./gradlew test
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CI_ACCESS_USERNAME: ${{ secrets.CI_ACCESS_USERNAME }}
           CI_ACCESS_TOKEN: ${{ secrets.CI_ACCESS_TOKEN }}
