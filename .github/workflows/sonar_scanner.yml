@@ -6,6 +6,12 @@ on:
       SONAR_TOKEN:
         description: 'A token to be used to send sonar scan results'
         required: true
+      CI_ACCESS_USERNAME:
+        description: 'A GitHub user that owns the CI_ACCESS_TOKEN'
+        required: true
+      CI_ACCESS_TOKEN:
+        description: 'A Personal Access Token (PAT) of the CI_ACCESS_USERNAME'
+        required: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-sonar
@@ -45,3 +51,5 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI_ACCESS_USERNAME: ${{ secrets.CI_ACCESS_USERNAME }}
+          CI_ACCESS_TOKEN: ${{ secrets.CI_ACCESS_TOKEN }}
