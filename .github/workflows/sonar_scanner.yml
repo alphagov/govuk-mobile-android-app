@@ -6,6 +6,12 @@ on:
       SONAR_TOKEN:
         description: 'A token to be used to send sonar scan results'
         required: true
+      CI_ACCESS_USERNAME:
+        description: 'A username for pulling dependencies from the github package registry'
+        required: true
+      CI_ACCESS_TOKEN:
+         description: 'A token for pulling dependencies from the github package registry'
+         required: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-sonar
@@ -43,5 +49,5 @@ jobs:
       - name: Build and analyze
         run: ./gradlew build sonar --info
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI_ACCESS_USERNAME: ${{ secrets.CI_ACCESS_USERNAME }}
+          CI_ACCESS_TOKEN: ${{ secrets.CI_ACCESS_TOKEN }}

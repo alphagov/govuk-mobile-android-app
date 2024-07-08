@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "299196369979",
+    "project_id": "govuk-app",
+    "storage_bucket": "govuk-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299196369979:android:c91745f9a66d1c0de3e01e",
+        "android_client_info": {
+          "package_name": "uk.govuk.app.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_eYA8Q8SsjhS0kXa4xBOAZch2rJhJdQo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

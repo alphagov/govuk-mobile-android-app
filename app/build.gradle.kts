@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.ksp)
     id("jacoco")
     id("org.sonarqube") version "4.4.1.3373"
+    alias(libs.plugins.google.play.services)
+    alias(libs.plugins.crashlytics)
 }
 
 sonar {
@@ -27,7 +29,7 @@ android {
 
     defaultConfig {
         applicationId = "uk.govuk.app"
-        minSdk = 24
+        minSdk = 29
         targetSdk = 34
         versionCode = 1
         versionName = "0.0.1"
@@ -40,6 +42,7 @@ android {
 
     buildTypes {
         debug {
+            applicationIdSuffix = ".dev"
             enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
         }
@@ -90,8 +93,23 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
-
     implementation(libs.androidx.datastore.preferences)
+
+    implementation(libs.gov.logging.api) {
+        artifact {
+            classifier = "release"
+            type = "aar"
+        }
+    }
+    implementation(libs.gov.logging.impl) {
+        artifact {
+            classifier = "release"
+            type = "aar"
+        }
+    }
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 
     ksp(libs.hilt.compiler)
 
