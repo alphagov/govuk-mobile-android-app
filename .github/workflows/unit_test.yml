@@ -32,7 +32,7 @@ jobs:
         uses: android-actions/setup-android@00854ea68c109d98c75d956347303bf7c45b0277 #v3.2.1
 
       - name: Unit Test with Code Coverage
-        run: ./gradlew test
+        run: ./gradlew testDebugUnitTest
         env:
           CI_ACCESS_USERNAME: ${{ secrets.CI_ACCESS_USERNAME }}
           CI_ACCESS_TOKEN: ${{ secrets.CI_ACCESS_TOKEN }}
