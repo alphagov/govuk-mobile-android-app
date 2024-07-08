@@ -47,7 +47,7 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
 
       - name: Build and analyze
-        run: ./gradlew assembleDebug sonar --info
+        run: ./gradlew buildDebug sonar --info
         env:
           CI_ACCESS_USERNAME: ${{ secrets.CI_ACCESS_USERNAME }}
           CI_ACCESS_TOKEN: ${{ secrets.CI_ACCESS_TOKEN }}
