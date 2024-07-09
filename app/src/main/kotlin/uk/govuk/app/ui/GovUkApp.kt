@@ -18,10 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -46,19 +48,20 @@ private const val ONBOARDING_COMPLETED_ROUTE = "onboarding_completed"
 
 @Composable
 fun GovUkApp() {
-//    SplashScreen(navController = rememberNavController())
-
-    // If you comment out everything below and enable the line above
-    // you can see that the animation works fine.
     val viewModel: AppLaunchViewModel = hiltViewModel()
     val appLaunchState by viewModel.appLaunchState.collectAsState()
+    var isSplashDone by remember { mutableStateOf(false) }
 
     val navController = rememberNavController()
     NavHost(
         navController = navController,
         startDestination = SPLASH_ROUTE
     ) {
-        composable(SPLASH_ROUTE) { SplashScreen(navController = navController) }
+        composable(SPLASH_ROUTE) {
+            SplashScreen {
+                isSplashDone = true
+            }
+        }
         onboardingGraph {
             viewModel.onboardingCompleted()
             navController.popBackStack()
@@ -67,22 +70,27 @@ fun GovUkApp() {
         composable(ONBOARDING_COMPLETED_ROUTE) { BottomNavScaffold() }
     }
 
-    appLaunchState?.let {
-        when (it) {
-            AppLaunchState.ONBOARDING_REQUIRED -> {
-                navController.popBackStack()
-                navController.navigate(ONBOARDING_GRAPH_ROUTE)
-            }
-            AppLaunchState.ONBOARDING_COMPLETED -> {
-                navController.popBackStack()
-                navController.navigate(ONBOARDING_COMPLETED_ROUTE)
+    if (isSplashDone) {
+        appLaunchState?.let {
+            when (it) {
+                AppLaunchState.ONBOARDING_REQUIRED -> {
+                    navController.popBackStack()
+                    navController.navigate(ONBOARDING_GRAPH_ROUTE)
+                }
+
+                AppLaunchState.ONBOARDING_COMPLETED -> {
+                    navController.popBackStack()
+                    navController.navigate(ONBOARDING_COMPLETED_ROUTE)
+                }
             }
         }
     }
 }
 
 @Composable
-private fun SplashScreen(navController: NavController) {
+private fun SplashScreen(
+    onSplashDone: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -97,19 +105,8 @@ private fun SplashScreen(navController: NavController) {
         val state = animateLottieCompositionAsState(composition = composition)
 
         LaunchedEffect(state.progress) {
-            // Put some debug out to try and see what the state is...
-            println("===> progress: ${state.progress}")
-            println("===> isAtEnd: ${state.isAtEnd}")
-            println("===> isPlaying: ${state.isPlaying}")
-
-            // I need to know when the animation is done playing, to re-route the user...
-            // Problem seems to be that the minute the first frame is rendered, the animation
-            // is blown away. Sleeping or delaying don't work - I guess coz it stops the app.
-
-            // In theory, either of these should work, but don't!
-//            if (state.progress < 1.0f && state.isPlaying) {
-            if (state.progress >= 1f) {
-                navController.navigate(ONBOARDING_GRAPH_ROUTE)
+            if (state.isAtEnd && !state.isPlaying && state.progress == 1f) {
+                onSplashDone()
             }
         }
 
