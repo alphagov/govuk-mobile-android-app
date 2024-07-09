@@ -1,25 +1,38 @@
 package uk.govuk.app.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import uk.govuk.app.R
 import uk.govuk.app.home.ui.navigation.homeGraph
 import uk.govuk.app.launch.AppLaunchState
 import uk.govuk.app.launch.AppLaunchViewModel
@@ -33,6 +46,10 @@ private const val ONBOARDING_COMPLETED_ROUTE = "onboarding_completed"
 
 @Composable
 fun GovUkApp() {
+//    SplashScreen(navController = rememberNavController())
+
+    // If you comment out everything below and enable the line above
+    // you can see that the animation works fine.
     val viewModel: AppLaunchViewModel = hiltViewModel()
     val appLaunchState by viewModel.appLaunchState.collectAsState()
 
@@ -41,7 +58,7 @@ fun GovUkApp() {
         navController = navController,
         startDestination = SPLASH_ROUTE
     ) {
-        composable(SPLASH_ROUTE) { } // Todo - splash screen to go here
+        composable(SPLASH_ROUTE) { SplashScreen(navController = navController) }
         onboardingGraph {
             viewModel.onboardingCompleted()
             navController.popBackStack()
@@ -61,6 +78,46 @@ fun GovUkApp() {
                 navController.navigate(ONBOARDING_COMPLETED_ROUTE)
             }
         }
+    }
+}
+
+@Composable
+private fun SplashScreen(navController: NavController) {
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.primary),
+        verticalArrangement = Arrangement.Center
+    ) {
+        val composition by rememberLottieComposition(
+            LottieCompositionSpec.RawRes(R.raw.splash_screeen)
+        )
+
+        val state = animateLottieCompositionAsState(composition = composition)
+
+        LaunchedEffect(state.progress) {
+            // Put some debug out to try and see what the state is...
+            println("===> progress: ${state.progress}")
+            println("===> isAtEnd: ${state.isAtEnd}")
+            println("===> isPlaying: ${state.isPlaying}")
+
+            // I need to know when the animation is done playing, to re-route the user...
+            // Problem seems to be that the minute the first frame is rendered, the animation
+            // is blown away. Sleeping or delaying don't work - I guess coz it stops the app.
+
+            // In theory, either of these should work, but don't!
+//            if (state.progress < 1.0f && state.isPlaying) {
+            if (state.progress >= 1f) {
+                navController.navigate(ONBOARDING_GRAPH_ROUTE)
+            }
+        }
+
+        LottieAnimation(
+            composition = composition,
+//            iterations = 1,
+            progress = { state.progress }
+        )
     }
 }
 
