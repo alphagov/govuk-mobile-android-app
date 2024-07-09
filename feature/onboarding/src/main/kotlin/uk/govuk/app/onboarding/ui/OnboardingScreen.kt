@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,8 +43,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowHeightSizeClass
 import kotlinx.coroutines.launch
+import uk.govuk.app.onboarding.OnboardingViewModel
 import uk.govuk.app.onboarding.R
 import uk.govuk.app.onboarding.ui.theme.LightGrey
 
@@ -59,6 +62,8 @@ internal fun OnboardingRoute(
     onboardingCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val viewModel: OnboardingViewModel = hiltViewModel()
+
     // Todo - should probably move this to view model
     val pages = listOf(
         OnboardingPage(
@@ -80,8 +85,18 @@ internal fun OnboardingRoute(
 
     OnboardingScreen(
         pages,
-        onDone = onboardingCompleted,
-        onSkip = onboardingCompleted,
+        onPageView = { pageIndex -> viewModel.onPageView(pageIndex) },
+        onContinue = {
+            viewModel.onContinue()
+        },
+        onSkip = {
+            viewModel.onSkip()
+            onboardingCompleted()
+        },
+        onDone = {
+            viewModel.onDone()
+            onboardingCompleted()
+        },
         modifier
     )
 }
@@ -90,13 +105,19 @@ internal fun OnboardingRoute(
 @Composable
 private fun OnboardingScreen(
     pages: List<OnboardingPage>,
-    onDone: () -> Unit,
+    onPageView: (Int) -> Unit,
+    onContinue: () -> Unit,
     onSkip: () -> Unit,
+    onDone: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(pageCount = {
         pages.count()
     })
+
+    LaunchedEffect(pagerState.currentPage) {
+        onPageView(pagerState.currentPage)
+    }
 
     Column(
         modifier = modifier
@@ -132,7 +153,10 @@ private fun OnboardingScreen(
         Footer(
             currentPageIndex = pagerState.currentPage,
             pageCount = pagerState.pageCount,
-            onContinue = { changePage(pagerState.currentPage + 1) },
+            onContinue = {
+                onContinue()
+                changePage(pagerState.currentPage + 1)
+            },
             onDone = onDone,
             onSkip = onSkip,
             onPagerClick = changePage
