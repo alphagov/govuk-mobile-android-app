@@ -1,15 +1,39 @@
 package uk.govuk.app.analytics
 
-import android.util.Log
+import uk.gov.logging.api.analytics.AnalyticsEvent
+import uk.gov.logging.api.analytics.logging.AnalyticsLogger
+import uk.gov.logging.api.analytics.parameters.ButtonParameters
+import uk.gov.logging.api.analytics.parameters.ScreenViewParameters
 import uk.govuk.app.onboarding.analytics.OnboardingAnalytics
+import javax.inject.Inject
 
-class AnalyticsClient: OnboardingAnalytics {
+class AnalyticsClient @Inject constructor(
+    private val analyticsLogger: AnalyticsLogger
+): OnboardingAnalytics {
 
     override fun onboardingScreenView(screenClass: String, alias: String, title: String) {
-        Log.d("Blah", "Onboarding screen view")
+        analyticsLogger.logEvent(
+            true,
+            AnalyticsEvent.screenView(
+                ScreenViewParameters(
+                    clazz = screenClass,
+                    name = alias,
+                    title = title
+                )
+            )
+        )
     }
 
     override fun onboardingButtonClick(screenName: String, cta: String, action: String) {
-        Log.d("Blah", "Onboarding button click")
+        analyticsLogger.logEvent(
+            true,
+            AnalyticsEvent.trackEvent(
+                ButtonParameters(
+                    callToActionText = cta,
+                    name = screenName,
+                    action = action
+                )
+            )
+        )
     }
 }

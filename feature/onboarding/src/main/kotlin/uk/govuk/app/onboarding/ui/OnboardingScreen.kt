@@ -1,6 +1,5 @@
 package uk.govuk.app.onboarding.ui
 
-import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -32,6 +31,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,16 +47,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowHeightSizeClass
 import kotlinx.coroutines.launch
+import uk.govuk.app.onboarding.OnboardingPage
 import uk.govuk.app.onboarding.OnboardingViewModel
 import uk.govuk.app.onboarding.R
 import uk.govuk.app.onboarding.ui.theme.LightGrey
 
-
-private data class OnboardingPage(
-    val title: String,
-    val body: String,
-    @DrawableRes val image: Int
-)
 
 @Composable
 internal fun OnboardingRoute(
@@ -63,38 +59,20 @@ internal fun OnboardingRoute(
     modifier: Modifier = Modifier
 ) {
     val viewModel: OnboardingViewModel = hiltViewModel()
-
-    // Todo - should probably move this to view model
-    val pages = listOf(
-        OnboardingPage(
-            title = stringResource(id = R.string.getThingsDoneScreenTitle),
-            body = stringResource(id = R.string.getThingsDoneScreenBody),
-            image = R.drawable.image_1
-        ),
-        OnboardingPage(
-            title = stringResource(id = R.string.backToPreviousScreenTitle),
-            body = stringResource(id = R.string.backToPreviousScreenBody),
-            image = R.drawable.image_2
-        ),
-        OnboardingPage(
-            title = stringResource(id = R.string.tailoredToYouScreenTitle),
-            body = stringResource(id = R.string.tailoredToYouScreenBody),
-            image = R.drawable.image_3
-        ),
-    )
+    val uiState by viewModel.uiState.collectAsState()
 
     OnboardingScreen(
-        pages,
+        uiState.pages,
         onPageView = { pageIndex -> viewModel.onPageView(pageIndex) },
-        onContinue = {
-            viewModel.onContinue()
+        onContinue = { pageIndex, cta ->
+            viewModel.onContinue(pageIndex, cta)
         },
-        onSkip = {
-            viewModel.onSkip()
+        onSkip = { pageIndex, cta ->
+            viewModel.onSkip(pageIndex, cta)
             onboardingCompleted()
         },
-        onDone = {
-            viewModel.onDone()
+        onDone = { pageIndex, cta ->
+            viewModel.onDone(pageIndex, cta)
             onboardingCompleted()
         },
         modifier
@@ -106,9 +84,9 @@ internal fun OnboardingRoute(
 private fun OnboardingScreen(
     pages: List<OnboardingPage>,
     onPageView: (Int) -> Unit,
-    onContinue: () -> Unit,
-    onSkip: () -> Unit,
-    onDone: () -> Unit,
+    onContinue: (Int, String) -> Unit,
+    onSkip: (Int, String) -> Unit,
+    onDone: (Int, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(pageCount = {
@@ -150,15 +128,20 @@ private fun OnboardingScreen(
             }
         }
 
+        val currentPage = pagerState.currentPage
         Footer(
-            currentPageIndex = pagerState.currentPage,
+            currentPageIndex = currentPage,
             pageCount = pagerState.pageCount,
-            onContinue = {
-                onContinue()
+            onContinue = { cta ->
+                onContinue(pagerState.currentPage, cta)
                 changePage(pagerState.currentPage + 1)
             },
-            onDone = onDone,
-            onSkip = onSkip,
+            onDone = { cta ->
+                onDone(currentPage, cta)
+            },
+            onSkip = { cta ->
+                onSkip(currentPage, cta)
+            },
             onPagerClick = changePage
         )
     }
@@ -188,7 +171,7 @@ private fun Page(
         }
 
         Text(
-            text = page.title,
+            text = stringResource(page.title),
             modifier = Modifier.focusable(),
             style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center
@@ -197,7 +180,7 @@ private fun Page(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = page.body,
+            text = stringResource(page.body),
             modifier = Modifier.focusable(),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center
@@ -209,9 +192,9 @@ private fun Page(
 private fun Footer(
     currentPageIndex: Int,
     pageCount: Int,
-    onContinue: () -> Unit,
-    onDone: () -> Unit,
-    onSkip: () -> Unit,
+    onContinue: (String) -> Unit,
+    onDone: (String) -> Unit,
+    onSkip: (String) -> Unit,
     onPagerClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -235,9 +218,8 @@ private fun Footer(
                 )
             }
         } else {
-            PrimaryButton(
-                text = stringResource(id = R.string.doneButton),
-                onClick = onDone,
+            DoneButton(
+                onClick = { cta -> onDone(cta) },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -248,18 +230,16 @@ private fun Footer(
 
 @Composable
 private fun VerticalButtonGroup(
-    onContinue: () -> Unit,
-    onSkip: () -> Unit,
+    onContinue: (String) -> Unit,
+    onSkip: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
-        PrimaryButton(
-            text = stringResource(id = R.string.continueButton),
+        ContinueButton(
             onClick = onContinue,
             modifier = Modifier.fillMaxWidth()
         )
-        SecondaryButton(
-            text = stringResource(id = R.string.skipButton),
+        SkipButton(
             onClick = onSkip,
             modifier = Modifier.fillMaxWidth()
         )
@@ -268,24 +248,61 @@ private fun VerticalButtonGroup(
 
 @Composable
 private fun HorizontalButtonGroup(
-    onContinue: () -> Unit,
-    onSkip: () -> Unit,
+    onContinue: (String) -> Unit,
+    onSkip: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
-        PrimaryButton(
-            text = stringResource(id = R.string.continueButton),
+        ContinueButton(
             onClick = onContinue,
             modifier = Modifier.weight(0.5f)
         )
-        SecondaryButton(
-            text = stringResource(id = R.string.skipButton),
+        SkipButton(
             onClick = onSkip,
             modifier = Modifier.weight(0.5f)
         )
     }
+}
+
+@Composable
+private fun ContinueButton(
+    onClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val cta = stringResource(id = R.string.continueButton)
+    PrimaryButton(
+        text = cta,
+        onClick = { onClick(cta) },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun SkipButton(
+    onClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val cta = stringResource(id = R.string.skipButton)
+    SecondaryButton(
+        text = cta,
+        onClick = { onClick(cta) },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun DoneButton(
+    onClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val cta = stringResource(id = R.string.doneButton)
+    PrimaryButton(
+        text = cta,
+        onClick = { onClick(cta) },
+        modifier = modifier
+    )
 }
 
 @Composable

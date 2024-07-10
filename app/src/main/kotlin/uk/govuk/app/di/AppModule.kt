@@ -39,11 +39,6 @@ internal class AppModule {
 
     @Provides
     @Singleton
-    fun provideAnalyticsClient(): AnalyticsClient = AnalyticsClient()
-
-
-    @Provides
-    @Singleton
     fun provideOnboardingAnalytics(analyticsClient: AnalyticsClient): OnboardingAnalytics = analyticsClient
 
     @Provides
