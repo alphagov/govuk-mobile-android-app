@@ -1,5 +1,7 @@
 package uk.govuk.app.ui
 
+import android.annotation.SuppressLint
+import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -34,6 +37,10 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import uk.govuk.app.R
 import uk.govuk.app.home.ui.navigation.homeGraph
 import uk.govuk.app.launch.AppLaunchState
@@ -87,6 +94,8 @@ fun GovUkApp() {
     }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 private fun SplashScreen(
     onSplashDone: () -> Unit
@@ -102,11 +111,19 @@ private fun SplashScreen(
             LottieCompositionSpec.RawRes(R.raw.app_splash)
         )
 
-        val state = animateLottieCompositionAsState(composition = composition)
+        var state = animateLottieCompositionAsState(composition = composition)
 
-        LaunchedEffect(state.progress) {
-            if (state.progress == 1f) {
+        if (Settings.Global.getFloat(LocalContext.current.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE) == 0f) {
+            state = animateLottieCompositionAsState(composition = composition, isPlaying = false)
+            GlobalScope.launch {
+                delay(6000) // wait for 6 seconds
                 onSplashDone()
+            }
+        } else {
+            LaunchedEffect(state.progress) {
+                if (state.progress == 1f) {
+                    onSplashDone()
+                }
             }
         }
 
