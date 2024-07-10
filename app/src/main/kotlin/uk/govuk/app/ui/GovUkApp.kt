@@ -99,20 +99,19 @@ private fun SplashScreen(
         verticalArrangement = Arrangement.Center
     ) {
         val composition by rememberLottieComposition(
-            LottieCompositionSpec.RawRes(R.raw.splash_screeen)
+            LottieCompositionSpec.RawRes(R.raw.app_splash)
         )
 
         val state = animateLottieCompositionAsState(composition = composition)
 
         LaunchedEffect(state.progress) {
-            if (state.isAtEnd && !state.isPlaying && state.progress == 1f) {
+            if (state.progress == 1f) {
                 onSplashDone()
             }
         }
 
         LottieAnimation(
             composition = composition,
-//            iterations = 1,
             progress = { state.progress }
         )
     }
