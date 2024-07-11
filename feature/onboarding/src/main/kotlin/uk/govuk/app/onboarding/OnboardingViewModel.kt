@@ -28,6 +28,8 @@ class OnboardingViewModel @Inject constructor(
         private const val CONTINUE_ACTION = "continue"
         private const val SKIP_ACTION = "skip"
         private const val DONE_ACTION = "done"
+        private const val PAGE_INDICATOR_CTA = "dot"
+        private const val PAGE_INDICATOR_ACTION = "dot"
     }
 
     // Todo - this will probably come from JSON file or remote config etc
@@ -87,6 +89,14 @@ class OnboardingViewModel @Inject constructor(
             pageIndex = pageIndex,
             cta = cta,
             action = DONE_ACTION
+        )
+    }
+
+    fun onPagerIndicator(pageIndex: Int) {
+        logButtonClick(
+            pageIndex = pageIndex,
+            cta = PAGE_INDICATOR_CTA,
+            action = PAGE_INDICATOR_ACTION
         )
     }
 

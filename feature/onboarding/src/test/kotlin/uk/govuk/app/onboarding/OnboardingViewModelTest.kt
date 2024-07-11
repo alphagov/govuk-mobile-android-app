@@ -74,4 +74,19 @@ class OnboardingViewModelTest {
         }
     }
 
+    @Test
+    fun `Given a pager indicator event, then log analytics`() {
+        val viewModel = OnboardingViewModel(context, onboardingAnalytics)
+
+        viewModel.onPagerIndicator(0)
+
+        verify {
+            onboardingAnalytics.onboardingButtonClick(
+                screenName = "ONBOARDING_A",
+                cta = "dot",
+                action = "dot"
+            )
+        }
+    }
+
 }

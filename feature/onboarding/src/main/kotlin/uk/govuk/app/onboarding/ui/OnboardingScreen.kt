@@ -75,6 +75,9 @@ internal fun OnboardingRoute(
             viewModel.onDone(pageIndex, cta)
             onboardingCompleted()
         },
+        onPagerIndicator = { pageIndex ->
+            viewModel.onPagerIndicator(pageIndex)
+        },
         modifier
     )
 }
@@ -87,6 +90,7 @@ private fun OnboardingScreen(
     onContinue: (Int, String) -> Unit,
     onSkip: (Int, String) -> Unit,
     onDone: (Int, String) -> Unit,
+    onPagerIndicator: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(pageCount = {
@@ -142,7 +146,10 @@ private fun OnboardingScreen(
             onSkip = { cta ->
                 onSkip(currentPage, cta)
             },
-            onPagerClick = changePage
+            onPagerIndicator = { index ->
+                onPagerIndicator(currentPage)
+                changePage(index)
+            }
         )
     }
 }
@@ -195,7 +202,7 @@ private fun Footer(
     onContinue: (String) -> Unit,
     onDone: (String) -> Unit,
     onSkip: (String) -> Unit,
-    onPagerClick: (Int) -> Unit,
+    onPagerIndicator: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -224,7 +231,7 @@ private fun Footer(
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
-        PagerIndicator(pageCount, currentPageIndex, onPagerClick)
+        PagerIndicator(pageCount, currentPageIndex, onPagerIndicator)
     }
 }
 
