@@ -1,17 +1,30 @@
 package uk.govuk.app.ui
 
+import android.annotation.SuppressLint
+import android.provider.Settings
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -20,6 +33,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import uk.govuk.app.R
 import uk.govuk.app.home.ui.navigation.homeGraph
 import uk.govuk.app.launch.AppLaunchState
 import uk.govuk.app.launch.AppLaunchViewModel
@@ -35,13 +57,18 @@ private const val ONBOARDING_COMPLETED_ROUTE = "onboarding_completed"
 fun GovUkApp() {
     val viewModel: AppLaunchViewModel = hiltViewModel()
     val appLaunchState by viewModel.appLaunchState.collectAsState()
+    var isSplashDone by remember { mutableStateOf(false) }
 
     val navController = rememberNavController()
     NavHost(
         navController = navController,
         startDestination = SPLASH_ROUTE
     ) {
-        composable(SPLASH_ROUTE) { } // Todo - splash screen to go here
+        composable(SPLASH_ROUTE) {
+            SplashScreen {
+                isSplashDone = true
+            }
+        }
         onboardingGraph {
             viewModel.onboardingCompleted()
             navController.popBackStack()
@@ -50,17 +77,60 @@ fun GovUkApp() {
         composable(ONBOARDING_COMPLETED_ROUTE) { BottomNavScaffold() }
     }
 
-    appLaunchState?.let {
-        when (it) {
-            AppLaunchState.ONBOARDING_REQUIRED -> {
-                navController.popBackStack()
-                navController.navigate(ONBOARDING_GRAPH_ROUTE)
-            }
-            AppLaunchState.ONBOARDING_COMPLETED -> {
-                navController.popBackStack()
-                navController.navigate(ONBOARDING_COMPLETED_ROUTE)
+    if (isSplashDone) {
+        appLaunchState?.let {
+            when (it) {
+                AppLaunchState.ONBOARDING_REQUIRED -> {
+                    navController.popBackStack()
+                    navController.navigate(ONBOARDING_GRAPH_ROUTE)
+                }
+
+                AppLaunchState.ONBOARDING_COMPLETED -> {
+                    navController.popBackStack()
+                    navController.navigate(ONBOARDING_COMPLETED_ROUTE)
+                }
             }
         }
+    }
+}
+
+@SuppressLint("CoroutineCreationDuringComposition")
+@OptIn(DelicateCoroutinesApi::class)
+@Composable
+private fun SplashScreen(
+    onSplashDone: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.primary),
+        verticalArrangement = Arrangement.Center
+    ) {
+        val composition by rememberLottieComposition(
+            LottieCompositionSpec.RawRes(R.raw.app_splash)
+        )
+
+        var state = animateLottieCompositionAsState(composition = composition)
+
+        if (Settings.Global.getFloat(LocalContext.current.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE) == 0f) {
+            state = animateLottieCompositionAsState(composition = composition, isPlaying = false)
+            GlobalScope.launch {
+                delay(6000) // wait for 6 seconds
+                onSplashDone()
+            }
+        } else {
+            LaunchedEffect(state.progress) {
+                if (state.progress == 1f) {
+                    onSplashDone()
+                }
+            }
+        }
+
+        LottieAnimation(
+            composition = composition,
+            progress = { state.progress }
+        )
     }
 }
 
