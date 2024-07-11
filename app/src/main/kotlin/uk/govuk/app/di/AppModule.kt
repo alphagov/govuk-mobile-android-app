@@ -18,6 +18,8 @@ import dagger.hilt.components.SingletonComponent
 import uk.gov.logging.api.analytics.logging.AnalyticsLogger
 import uk.gov.logging.api.analytics.logging.MemorisedAnalyticsLogger
 import uk.gov.logging.impl.analytics.FirebaseAnalyticsLogger
+import uk.govuk.app.analytics.AnalyticsClient
+import uk.govuk.app.onboarding.analytics.OnboardingAnalytics
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -35,21 +37,17 @@ internal class AppModule {
         )
     }
 
-    @InstallIn(SingletonComponent::class)
-    @Module
-    object AnalyticsSingletonModule {
-        @Provides
-        @Singleton
-        fun providesAnalyticsLogger(
-            analyticsLogger: FirebaseAnalyticsLogger
-        ): AnalyticsLogger = MemorisedAnalyticsLogger(analyticsLogger)
-    }
+    @Provides
+    @Singleton
+    fun provideOnboardingAnalytics(analyticsClient: AnalyticsClient): OnboardingAnalytics = analyticsClient
 
-    @InstallIn(SingletonComponent::class)
-    @Module
-    class FirebaseSingletonModule {
-        @Provides
-        @Singleton
-        fun providesFirebaseAnalytics(): FirebaseAnalytics = Firebase.analytics
-    }
+    @Provides
+    @Singleton
+    fun provideAnalyticsLogger(
+        analyticsLogger: FirebaseAnalyticsLogger
+    ): AnalyticsLogger = MemorisedAnalyticsLogger(analyticsLogger)
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAnalytics(): FirebaseAnalytics = Firebase.analytics
 }
