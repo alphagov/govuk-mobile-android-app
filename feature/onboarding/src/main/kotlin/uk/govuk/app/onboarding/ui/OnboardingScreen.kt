@@ -164,7 +164,8 @@ private fun Page(
         modifier = modifier
             .verticalScroll(rememberScrollState())
             .fillMaxWidth()
-            .padding(start = 32.dp, top = 32.dp, end = 32.dp),
+            .padding(top = GovUkTheme.spacing.extraLarge)
+            .padding(horizontal = GovUkTheme.spacing.extraLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         if (windowSizeClass.windowHeightSizeClass != WindowHeightSizeClass.COMPACT) {
@@ -173,7 +174,7 @@ private fun Page(
                 contentDescription = null
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(GovUkTheme.spacing.extraLarge))
         }
 
         Text(
@@ -184,7 +185,7 @@ private fun Page(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(GovUkTheme.spacing.medium))
 
         Text(
             text = stringResource(page.body),
@@ -208,7 +209,8 @@ private fun Footer(
 ) {
     Column(
         modifier = modifier
-            .padding(start = 32.dp, top = 16.dp, end = 32.dp, bottom = 8.dp),
+            .padding(top = GovUkTheme.spacing.medium, bottom = GovUkTheme.spacing.small)
+            .padding(horizontal = GovUkTheme.spacing.extraLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -231,7 +233,7 @@ private fun Footer(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(GovUkTheme.spacing.small))
         PagerIndicator(pageCount, currentPageIndex, onPagerIndicator)
     }
 }
@@ -376,9 +378,9 @@ private fun PagerIndicator(
                 contentAlignment = Alignment.Center
             ) {
                 if (i == currentPage) {
-                    FilledCircle(Modifier.padding(horizontal = 8.dp))
+                    FilledCircle()
                 } else {
-                    OutlinedCircle(Modifier.padding(horizontal = 8.dp))
+                    OutlinedCircle()
                 }
             }
         }

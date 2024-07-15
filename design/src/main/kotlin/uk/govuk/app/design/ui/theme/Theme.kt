@@ -3,11 +3,6 @@ package uk.govuk.app.design.ui.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.graphics.Color
-import uk.govuk.app.design.ui.theme.GovUkColourScheme.Strokes
-import uk.govuk.app.design.ui.theme.GovUkColourScheme.Surfaces
-import uk.govuk.app.design.ui.theme.GovUkColourScheme.TextAndIcons
 
 object GovUkTheme {
     val colourScheme: GovUkColourScheme
@@ -16,6 +11,9 @@ object GovUkTheme {
     val typography: GovUkTypography
         @Composable
         get() = LocalTypography.current
+    val spacing: GovUkSpacing
+        @Composable
+        get() = LocalSpacing.current
 }
 
 @Composable
@@ -27,6 +25,7 @@ fun GovUkTheme(
     CompositionLocalProvider(
         LocalColourScheme provides colorScheme,
         LocalTypography provides Typography,
+        LocalSpacing provides Spacing,
         content = content
     )
 }
