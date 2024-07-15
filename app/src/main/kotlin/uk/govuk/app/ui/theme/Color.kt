@@ -23,8 +23,8 @@ data class GovUkColourScheme(
 
     data class Surfaces(
         val background: Color,
-        val buttonPrimary: Color,
-        val splash: Color
+        val backgroundSplash: Color,
+        val buttonPrimary: Color
     )
 
     data class Strokes(
@@ -38,8 +38,8 @@ val LightColorScheme = GovUkColourScheme(
     ),
     surfaces = Surfaces(
         background = Grey50,
-        buttonPrimary = GovUkBlue,
-        splash = GovUkBlue
+        backgroundSplash = GovUkBlue,
+        buttonPrimary = GovUkBlue
     ),
     strokes = Strokes(
         listDivider = Grey300
@@ -52,8 +52,8 @@ val DarkColorScheme = GovUkColourScheme(
     ),
     surfaces = Surfaces(
         background = Color.Black,
+        backgroundSplash = GovUkBlueDarkMode,
         buttonPrimary = GovUkBlueDarkMode,
-        splash = GovUkBlueDarkMode,
     ),
     strokes = Strokes(
         listDivider = Grey500

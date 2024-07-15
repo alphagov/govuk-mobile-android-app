@@ -17,8 +17,8 @@ val LocalColourScheme = staticCompositionLocalOf {
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,
-            buttonPrimary = Color.Unspecified,
-            splash = Color.Unspecified
+            backgroundSplash = Color.Unspecified,
+            buttonPrimary = Color.Unspecified
         ),
         strokes = Strokes(
             listDivider = Color.Unspecified

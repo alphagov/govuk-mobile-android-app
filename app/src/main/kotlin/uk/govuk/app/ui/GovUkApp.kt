@@ -104,7 +104,7 @@ private fun SplashScreen(
         modifier = Modifier
             .fillMaxHeight()
             .fillMaxWidth()
-            .background(GovUkTheme.colourScheme.surfaces.splash),
+            .background(GovUkTheme.colourScheme.surfaces.backgroundSplash),
         verticalArrangement = Arrangement.Center
     ) {
         val composition by rememberLottieComposition(
