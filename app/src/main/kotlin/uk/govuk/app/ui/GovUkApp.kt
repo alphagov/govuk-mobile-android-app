@@ -13,7 +13,6 @@ import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,6 +48,7 @@ import uk.govuk.app.navigation.TopLevelDestination
 import uk.govuk.app.onboarding.ui.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.govuk.app.onboarding.ui.navigation.onboardingGraph
 import uk.govuk.app.settings.ui.navigation.settingsGraph
+import uk.govuk.app.ui.theme.GovUkTheme
 
 private const val SPLASH_ROUTE = "splash"
 private const val ONBOARDING_COMPLETED_ROUTE = "onboarding_completed"
@@ -104,7 +104,7 @@ private fun SplashScreen(
         modifier = Modifier
             .fillMaxHeight()
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primary),
+            .background(GovUkTheme.colourScheme.surfaces.splash),
         verticalArrangement = Arrangement.Center
     ) {
         val composition by rememberLottieComposition(
