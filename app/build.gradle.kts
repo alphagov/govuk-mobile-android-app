@@ -77,6 +77,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.design)
     implementation(projects.feature.home)
     implementation(projects.feature.settings)
     implementation(projects.feature.onboarding)
