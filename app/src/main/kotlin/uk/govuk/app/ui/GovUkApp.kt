@@ -8,12 +8,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,14 +23,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -137,18 +136,20 @@ private fun SplashScreen(
 @Composable
 private fun BottomNavScaffold() {
     val topLevelDestinations = listOf(TopLevelDestination.Home, TopLevelDestination.Settings)
+
+    var selectedIndex by remember {
+        mutableStateOf(0)
+    }
+
     val navController = rememberNavController()
     Scaffold(
         bottomBar = {
-            BottomNavigation {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-                topLevelDestinations.forEach { destination ->
-                    BottomNavigationItem(
-                        icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
-                        label = { Text(stringResource(destination.resourceId)) },
-                        selected = currentDestination?.hierarchy?.any { it.route == destination.route } == true,
+            NavigationBar {
+                topLevelDestinations.forEachIndexed { index, destination ->
+                    NavigationBarItem(
+                        selected = index == selectedIndex,
                         onClick = {
+                            selectedIndex = index
                             navController.navigate(destination.route) {
                                 // Pop up to the start destination of the graph to
                                 // avoid building up a large stack of destinations
@@ -162,7 +163,23 @@ private fun BottomNavScaffold() {
                                 // Restore state when re-selecting a previously selected item
                                 restoreState = true
                             }
-                        }
+                        },
+                        icon = {
+                            Icon(destination.icon, contentDescription = null)
+                        },
+                        label = {
+                            Text(
+                                text = stringResource(destination.resourceId),
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.labelSmall,
+                            )
+                        },
+                        colors = NavigationBarItemDefaults
+                            .colors(
+                                selectedIconColor = Color.White,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                indicatorColor = MaterialTheme.colorScheme.primary
+                            )
                     )
                 }
             }
