@@ -1,4 +1,4 @@
-package uk.govuk.app.ui.theme
+package uk.govuk.app.design.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
@@ -6,9 +6,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import uk.govuk.app.ui.theme.GovUkColourScheme.Strokes
-import uk.govuk.app.ui.theme.GovUkColourScheme.Surfaces
-import uk.govuk.app.ui.theme.GovUkColourScheme.TextAndIcons
+import uk.govuk.app.design.ui.theme.GovUkColourScheme.Strokes
+import uk.govuk.app.design.ui.theme.GovUkColourScheme.Surfaces
+import uk.govuk.app.design.ui.theme.GovUkColourScheme.TextAndIcons
 
 val LocalColourScheme = staticCompositionLocalOf {
     GovUkColourScheme(
@@ -17,8 +17,7 @@ val LocalColourScheme = staticCompositionLocalOf {
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,
-            backgroundSplash = Color.Unspecified,
-            buttonPrimary = Color.Unspecified
+            primary = Color.Unspecified
         ),
         strokes = Strokes(
             listDivider = Color.Unspecified

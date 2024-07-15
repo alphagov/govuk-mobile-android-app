@@ -1,9 +1,9 @@
-package uk.govuk.app.ui.theme
+package uk.govuk.app.design.ui.theme
 
 import androidx.compose.ui.graphics.Color
-import uk.govuk.app.ui.theme.GovUkColourScheme.Strokes
-import uk.govuk.app.ui.theme.GovUkColourScheme.Surfaces
-import uk.govuk.app.ui.theme.GovUkColourScheme.TextAndIcons
+import uk.govuk.app.design.ui.theme.GovUkColourScheme.Strokes
+import uk.govuk.app.design.ui.theme.GovUkColourScheme.Surfaces
+import uk.govuk.app.design.ui.theme.GovUkColourScheme.TextAndIcons
 
 val GovUkBlue = Color(0xFF1D70B8)
 val GovUkBlueDarkMode = Color(0xFF259AFF)
@@ -23,8 +23,7 @@ data class GovUkColourScheme(
 
     data class Surfaces(
         val background: Color,
-        val backgroundSplash: Color,
-        val buttonPrimary: Color
+        val primary: Color
     )
 
     data class Strokes(
@@ -38,8 +37,7 @@ val LightColorScheme = GovUkColourScheme(
     ),
     surfaces = Surfaces(
         background = Grey50,
-        backgroundSplash = GovUkBlue,
-        buttonPrimary = GovUkBlue
+        primary = GovUkBlue
     ),
     strokes = Strokes(
         listDivider = Grey300
@@ -52,8 +50,7 @@ val DarkColorScheme = GovUkColourScheme(
     ),
     surfaces = Surfaces(
         background = Color.Black,
-        backgroundSplash = GovUkBlueDarkMode,
-        buttonPrimary = GovUkBlueDarkMode,
+        primary = GovUkBlueDarkMode
     ),
     strokes = Strokes(
         listDivider = Grey500

@@ -1,11 +1,11 @@
-package uk.govuk.app.ui.theme
+package uk.govuk.app.design.ui.theme
 
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import uk.govuk.app.R
+import uk.govuk.app.design.R
 
 data class GovUkTypography(
     val titleLarge: TextStyle,

@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
+import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.ui.GovUkApp
-import uk.govuk.app.ui.theme.GovUkTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
