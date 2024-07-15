@@ -1,17 +1,58 @@
 package uk.govuk.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import uk.govuk.app.ui.theme.GovUkColourScheme.Strokes
+import uk.govuk.app.ui.theme.GovUkColourScheme.Surfaces
+import uk.govuk.app.ui.theme.GovUkColourScheme.TextAndIcons
 
 val GovUkBlue = Color(0xFF1D70B8)
-val GovUkDarkModeBlue = Color(0xFF259AFF)
-val GovUkText = Color(0xFF0B0C0C)
-val Outline = Color(0xFFA3A3A3)
-val OutlineDarkMode = Color(0xFF3E3E3E)
+val GovUkBlueDarkMode = Color(0xFF259AFF)
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val Grey50 = Color(0xFFFAFAFA)
+val Grey300 = Color(0xFFB2B2B2)
+val Grey500 = Color(0xFF808080)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+data class GovUkColourScheme(
+    val textAndIcons: TextAndIcons,
+    val surfaces: Surfaces,
+    val strokes: Strokes
+) {
+    data class TextAndIcons(
+        val primary: Color
+    )
+
+    data class Surfaces(
+        val background: Color,
+        val buttonPrimary: Color
+    )
+
+    data class Strokes(
+        val listDivider: Color
+    )
+}
+
+val LightColorScheme = GovUkColourScheme(
+    textAndIcons = TextAndIcons(
+        primary = Color.Black
+    ),
+    surfaces = Surfaces(
+        background = Grey50,
+        buttonPrimary = GovUkBlue
+    ),
+    strokes = Strokes(
+        listDivider = Grey300
+    )
+)
+
+val DarkColorScheme = GovUkColourScheme(
+    textAndIcons = TextAndIcons(
+        primary = Color.White
+    ),
+    surfaces = Surfaces(
+        background = Color.Black,
+        buttonPrimary = GovUkBlueDarkMode
+    ),
+    strokes = Strokes(
+        listDivider = Grey500
+    )
+)
