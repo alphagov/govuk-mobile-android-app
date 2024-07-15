@@ -4,12 +4,10 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.compose)
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.ksp)
 }
 
 android {
-    namespace = "uk.govuk.app.onboarding"
+    namespace = "uk.govuk.app.design"
     compileSdk = 34
 
     compileOptions {
@@ -27,25 +25,9 @@ android {
 }
 
 dependencies {
-    implementation(projects.design)
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
 
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.navigation.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.adaptive.android)
-    implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.hilt.android)
-
-    ksp(libs.hilt.compiler)
-
-    testImplementation(libs.junit)
-    testImplementation(libs.mockk)
-
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 }

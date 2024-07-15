@@ -13,7 +13,6 @@ import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +41,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import uk.govuk.app.R
+import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.ui.navigation.homeGraph
 import uk.govuk.app.launch.AppLaunchState
 import uk.govuk.app.launch.AppLaunchViewModel
@@ -104,7 +104,7 @@ private fun SplashScreen(
         modifier = Modifier
             .fillMaxHeight()
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primary),
+            .background(GovUkTheme.colourScheme.surfaces.primary),
         verticalArrangement = Arrangement.Center
     ) {
         val composition by rememberLottieComposition(
