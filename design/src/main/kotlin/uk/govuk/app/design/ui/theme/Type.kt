@@ -1,5 +1,6 @@
 package uk.govuk.app.design.ui.theme
 
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -9,7 +10,8 @@ import uk.govuk.app.design.R
 
 data class GovUkTypography(
     val titleLarge: TextStyle,
-    val bodyRegular: TextStyle
+    val bodyRegular: TextStyle,
+    val bodyBold: TextStyle
 )
 
 val transport = FontFamily(
@@ -31,5 +33,20 @@ val Typography = GovUkTypography(
         fontSize = 17.sp,
         lineHeight = 22.sp,
         letterSpacing = 0.sp
+    ),
+    bodyBold = TextStyle(
+        fontFamily = transport,
+        fontWeight = FontWeight.Bold,
+        fontSize = 17.sp,
+        lineHeight = 22.sp,
+        letterSpacing = 0.sp
     )
 )
+
+val LocalTypography = staticCompositionLocalOf {
+    GovUkTypography(
+        titleLarge = TextStyle.Default,
+        bodyRegular = TextStyle.Default,
+        bodyBold = TextStyle.Default
+    )
+}

@@ -25,7 +25,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -41,12 +40,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowHeightSizeClass
 import kotlinx.coroutines.launch
+import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.onboarding.OnboardingPage
 import uk.govuk.app.onboarding.OnboardingViewModel
 import uk.govuk.app.onboarding.R
@@ -119,7 +118,7 @@ private fun OnboardingScreen(
         Divider(
             modifier = Modifier.fillMaxWidth(),
             thickness = 1.dp,
-            color = MaterialTheme.colorScheme.outline,
+            color = GovUkTheme.colourScheme.strokes.listDivider,
         )
 
         val coroutineScope = rememberCoroutineScope()
@@ -180,7 +179,8 @@ private fun Page(
         Text(
             text = stringResource(page.title),
             modifier = Modifier.focusable(),
-            style = MaterialTheme.typography.titleLarge,
+            color = GovUkTheme.colourScheme.textAndIcons.primary,
+            style = GovUkTheme.typography.titleLarge,
             textAlign = TextAlign.Center
         )
 
@@ -189,7 +189,8 @@ private fun Page(
         Text(
             text = stringResource(page.body),
             modifier = Modifier.focusable(),
-            style = MaterialTheme.typography.bodyMedium,
+            color = GovUkTheme.colourScheme.textAndIcons.primary,
+            style = GovUkTheme.typography.bodyRegular,
             textAlign = TextAlign.Center
         )
     }
@@ -321,12 +322,14 @@ private fun PrimaryButton(
     Button(
         onClick = onClick,
         modifier = modifier,
-        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+        colors = ButtonDefaults.buttonColors(
+            containerColor = GovUkTheme.colourScheme.surfaces.primary,
+            contentColor = GovUkTheme.colourScheme.textAndIcons.buttonPrimary
+        )
     ) {
         Text(
             text = text,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.bodyMedium,
+            style = GovUkTheme.typography.bodyBold,
         )
     }
 }
@@ -343,8 +346,8 @@ private fun SecondaryButton(
     ) {
         Text(
             text = text,
-            color = MaterialTheme.colorScheme.primary,
-            style = MaterialTheme.typography.bodyMedium,
+            color = GovUkTheme.colourScheme.textAndIcons.link,
+            style = GovUkTheme.typography.bodyRegular,
         )
     }
 }
@@ -398,6 +401,6 @@ private fun FilledCircle(modifier: Modifier = Modifier) {
         modifier = modifier
             .size(16.dp)
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primary)
+            .background(GovUkTheme.colourScheme.surfaces.primary)
     )
 }
