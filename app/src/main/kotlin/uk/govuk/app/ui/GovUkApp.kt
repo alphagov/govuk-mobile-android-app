@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -26,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -144,46 +146,52 @@ private fun BottomNavScaffold() {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = {
-            NavigationBar(
-                containerColor = GovUkTheme.colourScheme.surfaces.background
-            ) {
-                topLevelDestinations.forEachIndexed { index, destination ->
-                    NavigationBarItem(
-                        selected = index == selectedIndex,
-                        onClick = {
-                            selectedIndex = index
-                            navController.navigate(destination.route) {
-                                // Pop up to the start destination of the graph to
-                                // avoid building up a large stack of destinations
-                                // on the back stack as users select items
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+            Column {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = GovUkTheme.colourScheme.strokes.container
+                )
+                NavigationBar(
+                    containerColor = GovUkTheme.colourScheme.surfaces.background
+                ) {
+                    topLevelDestinations.forEachIndexed { index, destination ->
+                        NavigationBarItem(
+                            selected = index == selectedIndex,
+                            onClick = {
+                                selectedIndex = index
+                                navController.navigate(destination.route) {
+                                    // Pop up to the start destination of the graph to
+                                    // avoid building up a large stack of destinations
+                                    // on the back stack as users select items
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    // Avoid multiple copies of the same destination when
+                                    // re-selecting the same item
+                                    launchSingleTop = true
+                                    // Restore state when re-selecting a previously selected item
+                                    restoreState = true
                                 }
-                                // Avoid multiple copies of the same destination when
-                                // re-selecting the same item
-                                launchSingleTop = true
-                                // Restore state when re-selecting a previously selected item
-                                restoreState = true
-                            }
-                        },
-                        icon = {
-                            Icon(painterResource(destination.icon), contentDescription = null)
-                        },
-                        label = {
-                            Text(
-                                text = stringResource(destination.resourceId),
-                                style = GovUkTheme.typography.captionBold,
-                            )
-                        },
-                        colors = NavigationBarItemDefaults
-                            .colors(
-                                selectedIconColor = GovUkTheme.colourScheme.textAndIcons.buttonPrimary,
-                                selectedTextColor = GovUkTheme.colourScheme.textAndIcons.link,
-                                indicatorColor = GovUkTheme.colourScheme.surfaces.primary,
-                                unselectedIconColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-                                unselectedTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-                            )
-                    )
+                            },
+                            icon = {
+                                Icon(painterResource(destination.icon), contentDescription = null)
+                            },
+                            label = {
+                                Text(
+                                    text = stringResource(destination.resourceId),
+                                    style = GovUkTheme.typography.captionBold,
+                                )
+                            },
+                            colors = NavigationBarItemDefaults
+                                .colors(
+                                    selectedIconColor = GovUkTheme.colourScheme.textAndIcons.buttonPrimary,
+                                    selectedTextColor = GovUkTheme.colourScheme.textAndIcons.link,
+                                    indicatorColor = GovUkTheme.colourScheme.surfaces.primary,
+                                    unselectedIconColor = GovUkTheme.colourScheme.textAndIcons.secondary,
+                                    unselectedTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
+                                )
+                        )
+                    }
                 }
             }
         }

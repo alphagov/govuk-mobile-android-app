@@ -14,6 +14,10 @@ val Grey300 = Color(0xFFB2B2B2)
 val Grey500 = Color(0xFF808080)
 val Grey700 = Color(0xFF4D4D4D)
 
+val BlackAlpha30 = Color(0x4D000000)
+
+val WhiteAlpha30 = Color(0x4DFFFFFF)
+
 data class GovUkColourScheme(
     val textAndIcons: TextAndIcons,
     val surfaces: Surfaces,
@@ -32,6 +36,7 @@ data class GovUkColourScheme(
     )
 
     data class Strokes(
+        val container: Color,
         val listDivider: Color
     )
 }
@@ -48,6 +53,7 @@ val LightColorScheme = GovUkColourScheme(
         primary = GovUkBlue
     ),
     strokes = Strokes(
+        container = BlackAlpha30,
         listDivider = Grey300
     )
 )
@@ -64,6 +70,7 @@ val DarkColorScheme = GovUkColourScheme(
         primary = GovUkBlueDarkMode
     ),
     strokes = Strokes(
+        container = WhiteAlpha30,
         listDivider = Grey500
     )
 )
@@ -81,6 +88,7 @@ val LocalColourScheme = staticCompositionLocalOf {
             primary = Color.Unspecified
         ),
         strokes = Strokes(
+            container = Color.Unspecified,
             listDivider = Color.Unspecified
         )
     )
