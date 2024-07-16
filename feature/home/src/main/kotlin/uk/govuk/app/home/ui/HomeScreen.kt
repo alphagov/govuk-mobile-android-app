@@ -15,7 +15,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -25,7 +24,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -37,6 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
 internal fun HomeRoute() {
@@ -62,8 +61,8 @@ private fun HomeScreen() {
         topBar = {
             LargeTopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFFAFAFA),
-                    scrolledContainerColor = Color(0xFFFAFAFA),
+                    containerColor = GovUkTheme.colourScheme.surfaces.background,
+                    scrolledContainerColor = GovUkTheme.colourScheme.surfaces.background,
                 ),
                 title = {
                     Box(
@@ -85,29 +84,30 @@ private fun HomeScreen() {
         content = { innerPadding ->
             LazyColumn(
                 contentPadding = innerPadding,
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.background(Color(0xFFFAFAFA))
+                verticalArrangement = Arrangement.spacedBy(GovUkTheme.spacing.medium),
+                modifier = Modifier.background(GovUkTheme.colourScheme.surfaces.background)
             ) {
                 val list = (1..12).map { it.toString() }
                 items(count = list.size) {
                     Card(
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFFFFFFFF),
+                            containerColor = GovUkTheme.colourScheme.surfaces.container,
                         ),
-                        border = BorderStroke(1.dp, Color(0xFFB1B4B6)),
+                        border = BorderStroke(1.dp, GovUkTheme.colourScheme.strokes.listDivider),
                         modifier = Modifier
-                            .padding(16.dp, 12.dp, 16.dp, 0.dp)
+                            .padding(GovUkTheme.spacing.medium)
                             .fillMaxSize()
                             .height(200.dp)
-                            .background(Color(0xFFB1B4B6), shape = RoundedCornerShape(10.dp))
+                            .background(GovUkTheme.colourScheme.strokes.listDivider, shape = RoundedCornerShape(10.dp))
                     ) {
                         Text(
                             text = "Scrollable content",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = GovUkTheme.typography.bodyRegular,
+                            color = GovUkTheme.colourScheme.textAndIcons.primary,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(16.dp)
+                                .padding(GovUkTheme.spacing.medium)
                         )
                     }
                 }
@@ -116,9 +116,10 @@ private fun HomeScreen() {
     )
 }
 
+@Composable
 fun govUkText(fontSize: androidx.compose.ui.unit.TextUnit): AnnotatedString {
-    val textColor = Color(0xFF195AAA)
-    val dotColor = Color(0xFF17C7FF)
+    val textColor = GovUkTheme.colourScheme.surfaces.primary
+    val dotColor = GovUkTheme.colourScheme.textAndIcons.dot
     val fontWeight = FontWeight.Bold
 
     return buildAnnotatedString {
