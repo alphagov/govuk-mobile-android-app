@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -19,14 +18,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -139,13 +138,15 @@ private fun BottomNavScaffold() {
     val topLevelDestinations = listOf(TopLevelDestination.Home, TopLevelDestination.Settings)
 
     var selectedIndex by remember {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
 
     val navController = rememberNavController()
     Scaffold(
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                containerColor = GovUkTheme.colourScheme.surfaces.background
+            ) {
                 topLevelDestinations.forEachIndexed { index, destination ->
                     NavigationBarItem(
                         selected = index == selectedIndex,
@@ -166,20 +167,21 @@ private fun BottomNavScaffold() {
                             }
                         },
                         icon = {
-                            Icon(destination.icon, contentDescription = null)
+                            Icon(painterResource(destination.icon), contentDescription = null)
                         },
                         label = {
                             Text(
                                 text = stringResource(destination.resourceId),
-                                fontWeight = FontWeight.Bold,
-                                style = MaterialTheme.typography.labelSmall,
+                                style = GovUkTheme.typography.captionBold,
                             )
                         },
                         colors = NavigationBarItemDefaults
                             .colors(
-                                selectedIconColor = Color.White,
-                                selectedTextColor = MaterialTheme.colorScheme.primary,
-                                indicatorColor = MaterialTheme.colorScheme.primary
+                                selectedIconColor = GovUkTheme.colourScheme.textAndIcons.buttonPrimary,
+                                selectedTextColor = GovUkTheme.colourScheme.textAndIcons.link,
+                                indicatorColor = GovUkTheme.colourScheme.surfaces.primary,
+                                unselectedIconColor = GovUkTheme.colourScheme.textAndIcons.secondary,
+                                unselectedTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
                             )
                     )
                 }

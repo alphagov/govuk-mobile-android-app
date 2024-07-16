@@ -12,6 +12,7 @@ val GovUkBlueDarkMode = Color(0xFF259AFF)
 val Grey50 = Color(0xFFFAFAFA)
 val Grey300 = Color(0xFFB2B2B2)
 val Grey500 = Color(0xFF808080)
+val Grey700 = Color(0xFF4D4D4D)
 
 data class GovUkColourScheme(
     val textAndIcons: TextAndIcons,
@@ -20,6 +21,7 @@ data class GovUkColourScheme(
 ) {
     data class TextAndIcons(
         val primary: Color,
+        val secondary: Color,
         val link: Color,
         val buttonPrimary: Color,
     )
@@ -37,6 +39,7 @@ data class GovUkColourScheme(
 val LightColorScheme = GovUkColourScheme(
     textAndIcons = TextAndIcons(
         primary = Color.Black,
+        secondary = Grey700,
         link = GovUkBlue,
         buttonPrimary = Color.White
     ),
@@ -52,6 +55,7 @@ val LightColorScheme = GovUkColourScheme(
 val DarkColorScheme = GovUkColourScheme(
     textAndIcons = TextAndIcons(
         primary = Color.White,
+        secondary = Grey300,
         link = GovUkBlueDarkMode,
         buttonPrimary = Color.Black
     ),
@@ -68,6 +72,7 @@ val LocalColourScheme = staticCompositionLocalOf {
     GovUkColourScheme(
         textAndIcons = TextAndIcons(
             primary = Color.Unspecified,
+            secondary = Color.Unspecified,
             link = Color.Unspecified,
             buttonPrimary = Color.Unspecified
         ),
