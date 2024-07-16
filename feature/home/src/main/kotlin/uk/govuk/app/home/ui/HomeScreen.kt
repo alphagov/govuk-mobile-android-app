@@ -49,11 +49,16 @@ private fun HomeScreen() {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val isCollapsed = remember { derivedStateOf { scrollBehavior.state.collapsedFraction > 0.5 } }
 
+    val collapsedHeaderHeight = 80.dp
+    val expandedHeaderHeight = 135.dp
+    val collapsedFontSize = 22.sp
+    val expandedFontSize = 28.sp
+
     val headerHeight by animateDpAsState(
-        targetValue = if (isCollapsed.value) 80.dp else 135.dp
+        targetValue = if (isCollapsed.value) collapsedHeaderHeight else expandedHeaderHeight
     )
 
-    val fontSize = if (isCollapsed.value) 22.sp else 28.sp
+    val fontSize = if (isCollapsed.value) collapsedFontSize else expandedFontSize
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
