@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
@@ -14,6 +15,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -196,12 +198,19 @@ private fun BottomNavScaffold() {
             }
         }
     ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = TopLevelDestination.Home.route, Modifier.padding(innerPadding)
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = GovUkTheme.colourScheme.surfaces.background
         ) {
-            homeGraph()
-            settingsGraph(navController)
+            NavHost(
+                navController = navController,
+                startDestination = TopLevelDestination.Home.route,
+                modifier = Modifier
+                    .padding(innerPadding)
+            ) {
+                homeGraph()
+                settingsGraph(navController)
+            }
         }
     }
 }
