@@ -1,41 +1,38 @@
 package uk.govuk.app.home.ui
 
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.BaselineShift
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import kotlin.math.max
+import kotlin.math.min
 
 @Composable
 internal fun HomeRoute() {
@@ -43,120 +40,121 @@ internal fun HomeRoute() {
     HomeScreen()
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreen() {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-    val isCollapsed = remember { derivedStateOf { scrollBehavior.state.collapsedFraction > 0.5 } }
+    val initialLogoHeight = 28
+    val minLogoHeight = 22
 
-    val collapsedHeaderHeight = 80.dp
-    val expandedHeaderHeight = 135.dp
-    val collapsedFontSize = 22.sp
-    val expandedFontSize = 28.sp
+    val initialPadding = 16
+    val minPadding = 8
 
-    val headerHeight by animateDpAsState(
-        targetValue = if (isCollapsed.value) collapsedHeaderHeight else expandedHeaderHeight
-    )
+    var logoHeight by remember {
+        mutableStateOf(initialLogoHeight)
+    }
 
-    val fontSize = if (isCollapsed.value) collapsedFontSize else expandedFontSize
+    var padding by remember {
+        mutableStateOf(initialPadding)
+    }
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    var dividerAlpha by remember {
+        mutableStateOf(0f)
+    }
 
-        topBar = {
-            LargeTopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = GovUkTheme.colourScheme.surfaces.background,
-                    scrolledContainerColor = GovUkTheme.colourScheme.surfaces.background,
-                ),
-                title = {
-                    Box(
-                        modifier = Modifier.fillMaxSize()
-                            .wrapContentSize()
-                    ) {
-                        Text(
-                            text = govUkText(fontSize),
-                            maxLines = 1,
-                            textAlign = TextAlign.Center,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
-                },
-                modifier = Modifier.height(headerHeight),
-                scrollBehavior = scrollBehavior,
-            )
-        },
-        content = { innerPadding ->
-            LazyColumn(
-                contentPadding = innerPadding,
-                verticalArrangement = Arrangement.spacedBy(GovUkTheme.spacing.medium),
-                modifier = Modifier.background(GovUkTheme.colourScheme.surfaces.background)
-            ) {
-                val list = (1..12).map { it.toString() }
-                items(count = list.size) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = GovUkTheme.colourScheme.surfaces.container,
-                        ),
-                        border = BorderStroke(1.dp, GovUkTheme.colourScheme.strokes.listDivider),
-                        modifier = Modifier
-                            .padding(GovUkTheme.spacing.medium)
-                            .fillMaxSize()
-                            .height(200.dp)
-                            .background(GovUkTheme.colourScheme.strokes.listDivider, shape = RoundedCornerShape(10.dp))
-                    ) {
-                        Text(
-                            text = "Scrollable content",
-                            style = GovUkTheme.typography.bodyRegular,
-                            color = GovUkTheme.colourScheme.textAndIcons.primary,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(GovUkTheme.spacing.medium)
-                        )
-                    }
+    Column {
+        Header(
+            logoHeight = logoHeight.dp,
+            verticalPadding = padding.dp,
+            dividerAlpha = dividerAlpha,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+
+        val listState = rememberLazyListState()
+
+        LaunchedEffect(listState) {
+            snapshotFlow {
+                if (listState.firstVisibleItemIndex > 0) {
+                    -1
+                } else {
+                    listState.firstVisibleItemScrollOffset
+                }
+            }.collect { offset ->
+                if (offset == -1) {
+                    logoHeight = minLogoHeight
+                    padding = minPadding
+                    dividerAlpha = 1f
+                } else {
+                    logoHeight = max(
+                        minLogoHeight,
+                        (initialLogoHeight - (offset / 5f)).toInt()
+                    )
+                    padding = max(
+                        minPadding,
+                        (initialPadding - (offset / 5f)).toInt()
+                    )
+                    dividerAlpha = min(1f, offset / 100f)
                 }
             }
         }
-    )
+
+        LazyColumn(
+            modifier = Modifier.background(GovUkTheme.colourScheme.surfaces.background),
+            state = listState,
+            verticalArrangement = Arrangement.spacedBy(GovUkTheme.spacing.medium)
+        ) {
+            val list = (1..12).map { it.toString() }
+            items(count = list.size) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = GovUkTheme.colourScheme.surfaces.container,
+                    ),
+                    border = BorderStroke(1.dp, GovUkTheme.colourScheme.strokes.listDivider),
+                    modifier = Modifier
+                        .padding(GovUkTheme.spacing.medium)
+                        .fillMaxSize()
+                        .height(200.dp)
+                        .background(
+                            GovUkTheme.colourScheme.strokes.listDivider,
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                ) {
+                    Text(
+                        text = "Scrollable content",
+                        style = GovUkTheme.typography.bodyRegular,
+                        color = GovUkTheme.colourScheme.textAndIcons.primary,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(GovUkTheme.spacing.medium)
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable
-fun govUkText(fontSize: androidx.compose.ui.unit.TextUnit): AnnotatedString {
-    val textColor = GovUkTheme.colourScheme.surfaces.primary
-    val dotColor = GovUkTheme.colourScheme.textAndIcons.dot
-    val fontWeight = FontWeight.Bold
-
-    return buildAnnotatedString {
-        withStyle(
-            style = SpanStyle(
-                fontWeight = fontWeight,
-                fontSize = fontSize,
-                color = textColor,
-                baselineShift = BaselineShift(multiplier = 1f)
-            )
-        ) {
-            append("GOV")
-        }
-        withStyle(
-            style = SpanStyle(
-                fontWeight = fontWeight,
-                fontSize = ((fontSize.value / 2) + fontSize.value).sp,
-                color = dotColor,
-                baselineShift = BaselineShift(multiplier = 1.3f)
-            )
-        ) {
-            append(".")
-        }
-        withStyle(
-            style = SpanStyle(
-                fontWeight = fontWeight,
-                fontSize = fontSize,
-                color = textColor,
-                baselineShift = BaselineShift(multiplier = 1f)
-            )
-        ) {
-            append("UK")
-        }
+private fun Header(
+    logoHeight: Dp,
+    verticalPadding: Dp,
+    dividerAlpha: Float,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Image(
+            painter = painterResource(id = uk.govuk.app.design.R.drawable.logo),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(vertical = verticalPadding)
+                .align(Alignment.CenterHorizontally)
+                .height(logoHeight)
+        )
+        Divider(
+            modifier = Modifier
+                .alpha(dividerAlpha),
+            thickness = 1.dp,
+            // Todo - should be container stroke colour
+            color = GovUkTheme.colourScheme.strokes.listDivider
+        )
     }
 }

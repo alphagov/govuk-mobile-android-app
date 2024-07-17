@@ -8,7 +8,6 @@ import uk.govuk.app.design.ui.theme.GovUkColourScheme.TextAndIcons
 
 val GovUkBlue = Color(0xFF1D70B8)
 val GovUkBlueDarkMode = Color(0xFF259AFF)
-val GovUkDot = Color(0xFF17C7FF)
 
 val Grey50 = Color(0xFFFAFAFA)
 val Grey300 = Color(0xFFB2B2B2)
@@ -23,8 +22,7 @@ data class GovUkColourScheme(
     data class TextAndIcons(
         val primary: Color,
         val link: Color,
-        val buttonPrimary: Color,
-        val dot: Color,
+        val buttonPrimary: Color
     )
 
     data class Surfaces(
@@ -42,8 +40,7 @@ val LightColorScheme = GovUkColourScheme(
     textAndIcons = TextAndIcons(
         primary = Color.Black,
         link = GovUkBlue,
-        buttonPrimary = Color.White,
-        dot = GovUkDot
+        buttonPrimary = Color.White
     ),
     surfaces = Surfaces(
         background = Grey50,
@@ -59,8 +56,7 @@ val DarkColorScheme = GovUkColourScheme(
     textAndIcons = TextAndIcons(
         primary = Color.White,
         link = GovUkBlueDarkMode,
-        buttonPrimary = Color.Black,
-        dot = GovUkDot
+        buttonPrimary = Color.Black
     ),
     surfaces = Surfaces(
         background = Color.Black,
@@ -77,8 +73,7 @@ val LocalColourScheme = staticCompositionLocalOf {
         textAndIcons = TextAndIcons(
             primary = Color.Unspecified,
             link = Color.Unspecified,
-            buttonPrimary = Color.Unspecified,
-            dot = Color.Unspecified
+            buttonPrimary = Color.Unspecified
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,
