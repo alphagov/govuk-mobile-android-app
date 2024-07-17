@@ -2,19 +2,15 @@ package uk.govuk.app.home.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -67,25 +63,19 @@ private fun HomeScreen() {
         }
 
         LazyColumn(
-            modifier = Modifier.background(GovUkTheme.colourScheme.surfaces.background),
-            state = listState,
-            verticalArrangement = Arrangement.spacedBy(GovUkTheme.spacing.medium)
+            state = listState
         ) {
             val list = (1..12).map { it.toString() }
             items(count = list.size) {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = GovUkTheme.colourScheme.surfaces.container,
+                        containerColor = GovUkTheme.colourScheme.surfaces.card,
                     ),
                     border = BorderStroke(1.dp, GovUkTheme.colourScheme.strokes.listDivider),
                     modifier = Modifier
-                        .padding(GovUkTheme.spacing.medium)
-                        .fillMaxSize()
+                        .fillMaxWidth()
                         .height(200.dp)
-                        .background(
-                            GovUkTheme.colourScheme.strokes.listDivider,
-                            shape = RoundedCornerShape(10.dp)
-                        )
+                        .padding(GovUkTheme.spacing.medium)
                 ) {
                     Text(
                         text = "Scrollable content",
@@ -93,7 +83,7 @@ private fun HomeScreen() {
                         color = GovUkTheme.colourScheme.textAndIcons.primary,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxWidth()
                             .padding(GovUkTheme.spacing.medium)
                     )
                 }
@@ -150,11 +140,10 @@ private fun ScalingHeader(
                 .align(Alignment.CenterHorizontally)
                 .height(logoHeight.dp)
         )
-        Divider(
+        HorizontalDivider(
             modifier = Modifier.alpha(dividerAlpha),
             thickness = 1.dp,
-            // Todo - should be container stroke colour
-            color = GovUkTheme.colourScheme.strokes.listDivider
+            color = GovUkTheme.colourScheme.strokes.container
         )
     }
 }
