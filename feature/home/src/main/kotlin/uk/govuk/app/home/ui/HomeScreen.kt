@@ -28,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import kotlin.math.max
@@ -42,29 +41,13 @@ internal fun HomeRoute() {
 
 @Composable
 private fun HomeScreen() {
-    val initialLogoHeight = 28
-    val minLogoHeight = 22
-
-    val initialPadding = 16
-    val minPadding = 8
-
-    var logoHeight by remember {
-        mutableStateOf(initialLogoHeight)
-    }
-
-    var padding by remember {
-        mutableStateOf(initialPadding)
-    }
-
-    var dividerAlpha by remember {
-        mutableStateOf(0f)
+    var scaleFactor by remember {
+        mutableStateOf(0)
     }
 
     Column {
-        Header(
-            logoHeight = logoHeight.dp,
-            verticalPadding = padding.dp,
-            dividerAlpha = dividerAlpha,
+        ScalingHeader(
+            scaleFactor = scaleFactor,
             modifier = Modifier
                 .fillMaxWidth()
         )
@@ -79,21 +62,7 @@ private fun HomeScreen() {
                     listState.firstVisibleItemScrollOffset
                 }
             }.collect { offset ->
-                if (offset == -1) {
-                    logoHeight = minLogoHeight
-                    padding = minPadding
-                    dividerAlpha = 1f
-                } else {
-                    logoHeight = max(
-                        minLogoHeight,
-                        (initialLogoHeight - (offset / 5f)).toInt()
-                    )
-                    padding = max(
-                        minPadding,
-                        (initialPadding - (offset / 5f)).toInt()
-                    )
-                    dividerAlpha = min(1f, offset / 100f)
-                }
+                scaleFactor = offset
             }
         }
 
@@ -134,24 +103,55 @@ private fun HomeScreen() {
 }
 
 @Composable
-private fun Header(
-    logoHeight: Dp,
-    verticalPadding: Dp,
-    dividerAlpha: Float,
+private fun ScalingHeader(
+    scaleFactor: Int,
     modifier: Modifier = Modifier
 ) {
+    val initialLogoHeight = 28
+    val minLogoHeight = 22
+
+    val initialPadding = 16
+    val minPadding = 8
+
+    var logoHeight by remember {
+        mutableStateOf(initialLogoHeight)
+    }
+
+    var padding by remember {
+        mutableStateOf(initialPadding)
+    }
+
+    var dividerAlpha by remember {
+        mutableStateOf(0f)
+    }
+
+    if (scaleFactor == -1) {
+        logoHeight = minLogoHeight
+        padding = minPadding
+        dividerAlpha = 1f
+    } else {
+        logoHeight = max(
+            minLogoHeight,
+            (initialLogoHeight - (scaleFactor / 5f)).toInt()
+        )
+        padding = max(
+            minPadding,
+            (initialPadding - (scaleFactor / 5f)).toInt()
+        )
+        dividerAlpha = min(1f, scaleFactor / 100f)
+    }
+
     Column(modifier = modifier) {
         Image(
             painter = painterResource(id = uk.govuk.app.design.R.drawable.logo),
             contentDescription = null,
             modifier = Modifier
-                .padding(vertical = verticalPadding)
+                .padding(vertical = padding.dp)
                 .align(Alignment.CenterHorizontally)
-                .height(logoHeight)
+                .height(logoHeight.dp)
         )
         Divider(
-            modifier = Modifier
-                .alpha(dividerAlpha),
+            modifier = Modifier.alpha(dividerAlpha),
             thickness = 1.dp,
             // Todo - should be container stroke colour
             color = GovUkTheme.colourScheme.strokes.listDivider
