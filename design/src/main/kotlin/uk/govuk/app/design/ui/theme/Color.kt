@@ -13,6 +13,7 @@ val Grey50 = Color(0xFFFAFAFA)
 val Grey300 = Color(0xFFB2B2B2)
 val Grey500 = Color(0xFF808080)
 val Grey700 = Color(0xFF4D4D4D)
+val Grey800 = Color(0xFF333333)
 
 val BlackAlpha30 = Color(0x4D000000)
 
@@ -27,12 +28,13 @@ data class GovUkColourScheme(
         val primary: Color,
         val secondary: Color,
         val link: Color,
-        val buttonPrimary: Color,
+        val buttonPrimary: Color
     )
 
     data class Surfaces(
         val background: Color,
-        val primary: Color
+        val primary: Color,
+        val card: Color
     )
 
     data class Strokes(
@@ -50,7 +52,8 @@ val LightColorScheme = GovUkColourScheme(
     ),
     surfaces = Surfaces(
         background = Grey50,
-        primary = GovUkBlue
+        primary = GovUkBlue,
+        card = Color.White
     ),
     strokes = Strokes(
         container = BlackAlpha30,
@@ -67,7 +70,8 @@ val DarkColorScheme = GovUkColourScheme(
     ),
     surfaces = Surfaces(
         background = Color.Black,
-        primary = GovUkBlueDarkMode
+        primary = GovUkBlueDarkMode,
+        card = Grey800
     ),
     strokes = Strokes(
         container = WhiteAlpha30,
@@ -85,7 +89,8 @@ val LocalColourScheme = staticCompositionLocalOf {
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,
-            primary = Color.Unspecified
+            primary = Color.Unspecified,
+            card = Color.Unspecified
         ),
         strokes = Strokes(
             container = Color.Unspecified,
