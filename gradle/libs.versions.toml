@@ -21,9 +21,6 @@ firebaseBom = "33.1.2"
 
 mockk = "1.13.11"
 coroutineTest = "1.8.1"
-coreKtx = "1.13.1"
-appcompat = "1.7.0"
-material = "1.12.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -51,9 +48,6 @@ firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashly
 
 mockk = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutineTest" }
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
