@@ -5,12 +5,12 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Test
-import uk.govuk.app.onboarding.analytics.OnboardingAnalytics
+import uk.govuk.app.analytics.OnboardingAnalytics
 
 class OnboardingViewModelTest {
 
     private val context = mockk<Context>(relaxed = true)
-    private val onboardingAnalytics = mockk<OnboardingAnalytics>(relaxed = true)
+    private val onboardingAnalytics = mockk<uk.govuk.app.analytics.OnboardingAnalytics>(relaxed = true)
 
     @Test
     fun `Given a page view, then log analytics`() {

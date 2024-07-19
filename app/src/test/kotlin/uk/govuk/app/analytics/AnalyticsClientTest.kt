@@ -14,7 +14,7 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given an onboarding screen view, then log event`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger)
+        val analyticsClient = uk.govuk.app.analytics.AnalyticsClient(analyticsLogger)
         analyticsClient.onboardingScreenView(
             screenClass = "screenClass",
             alias = "alias",
@@ -37,7 +37,7 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given an onboarding button click, then log event`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger)
+        val analyticsClient = uk.govuk.app.analytics.AnalyticsClient(analyticsLogger)
         analyticsClient.onboardingButtonClick(
             screenName = "screenName",
             cta = "cta",
