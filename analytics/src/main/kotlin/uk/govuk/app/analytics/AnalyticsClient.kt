@@ -10,7 +10,7 @@ class AnalyticsClient @Inject constructor(
     private val analyticsLogger: AnalyticsLogger
 ): Analytics {
 
-    override fun onboardingScreenView(screenClass: String, alias: String, title: String) {
+    override fun screenView(screenClass: String, alias: String, title: String) {
         analyticsLogger.logEvent(
             true,
             AnalyticsEvent.screenView(
@@ -23,7 +23,7 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    override fun onboardingButtonClick(screenName: String, cta: String, action: String) {
+    override fun buttonClick(screenName: String, cta: String, action: String) {
         analyticsLogger.logEvent(
             true,
             AnalyticsEvent.trackEvent(

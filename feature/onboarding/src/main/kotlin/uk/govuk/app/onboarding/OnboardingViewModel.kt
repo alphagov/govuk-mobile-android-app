@@ -61,7 +61,7 @@ class OnboardingViewModel @Inject constructor(
 
     fun onPageView(pageIndex: Int) {
         val page = uiState.value.pages[pageIndex]
-        analytics.onboardingScreenView(
+        analytics.screenView(
             screenClass = SCREEN_CLASS,
             alias = page.analyticsAlias,
             title = context.getString(page.title)
@@ -106,7 +106,7 @@ class OnboardingViewModel @Inject constructor(
         action: String
     ) {
         val page = uiState.value.pages[pageIndex]
-        analytics.onboardingButtonClick(
+        analytics.buttonClick(
             screenName = page.analyticsAlias,
             cta = cta,
             action = action
