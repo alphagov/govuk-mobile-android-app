@@ -38,5 +38,8 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
 
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+
     ksp(libs.hilt.compiler)
 }

@@ -13,9 +13,9 @@ class AnalyticsClientTest {
     private val analyticsLogger = mockk<AnalyticsLogger>(relaxed = true)
 
     @Test
-    fun `Given an onboarding screen view, then log event`() {
-        val analyticsClient = uk.govuk.app.analytics.AnalyticsClient(analyticsLogger)
-        analyticsClient.onboardingScreenView(
+    fun `Given a screen view, then log event`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger)
+        analyticsClient.screenView(
             screenClass = "screenClass",
             alias = "alias",
             title = "title"
@@ -36,9 +36,9 @@ class AnalyticsClientTest {
     }
 
     @Test
-    fun `Given an onboarding button click, then log event`() {
-        val analyticsClient = uk.govuk.app.analytics.AnalyticsClient(analyticsLogger)
-        analyticsClient.onboardingButtonClick(
+    fun `Given a button click, then log event`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger)
+        analyticsClient.buttonClick(
             screenName = "screenName",
             cta = "cta",
             action = "action"
