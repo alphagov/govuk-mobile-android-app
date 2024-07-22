@@ -25,23 +25,35 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.home.HomeViewModel
 import kotlin.math.max
 import kotlin.math.min
 
 @Composable
 internal fun HomeRoute() {
-    // Collect UI state from view model here and pass to screen (if necessary)
-    HomeScreen()
+    val viewModel: HomeViewModel = hiltViewModel()
+
+    HomeScreen(
+        onPageView = { viewModel.onPageView() }
+    )
 }
 
 @Composable
-private fun HomeScreen() {
+private fun HomeScreen(
+    onPageView: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LaunchedEffect(Unit) {
+        onPageView()
+    }
+
     var scaleFactor by remember {
         mutableStateOf(0)
     }
 
-    Column {
+    Column(modifier) {
         ScalingHeader(
             scaleFactor = scaleFactor,
             modifier = Modifier

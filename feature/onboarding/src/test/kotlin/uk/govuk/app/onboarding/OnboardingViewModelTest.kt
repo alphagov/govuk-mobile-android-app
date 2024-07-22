@@ -5,23 +5,23 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Test
-import uk.govuk.app.onboarding.analytics.OnboardingAnalytics
+import uk.govuk.app.analytics.Analytics
 
 class OnboardingViewModelTest {
 
     private val context = mockk<Context>(relaxed = true)
-    private val onboardingAnalytics = mockk<OnboardingAnalytics>(relaxed = true)
+    private val analytics = mockk<Analytics>(relaxed = true)
 
     @Test
     fun `Given a page view, then log analytics`() {
-        val viewModel = OnboardingViewModel(context, onboardingAnalytics)
+        val viewModel = OnboardingViewModel(context, analytics)
 
         every { context.getString(R.string.getThingsDoneScreenTitle) } returns "title"
 
         viewModel.onPageView(0)
 
         verify {
-            onboardingAnalytics.onboardingScreenView(
+            analytics.screenView(
                 screenClass = "OnboardingScreen",
                 alias = "ONBOARDING_A",
                 title = "title"
@@ -31,12 +31,12 @@ class OnboardingViewModelTest {
 
     @Test
     fun `Given a continue event, then log analytics`() {
-        val viewModel = OnboardingViewModel(context, onboardingAnalytics)
+        val viewModel = OnboardingViewModel(context, analytics)
 
         viewModel.onContinue(0, "cta")
 
         verify {
-            onboardingAnalytics.onboardingButtonClick(
+            analytics.buttonClick(
                 screenName = "ONBOARDING_A",
                 cta = "cta",
                 action = "continue"
@@ -46,12 +46,12 @@ class OnboardingViewModelTest {
 
     @Test
     fun `Given a skip event, then log analytics`() {
-        val viewModel = OnboardingViewModel(context, onboardingAnalytics)
+        val viewModel = OnboardingViewModel(context, analytics)
 
         viewModel.onSkip(1, "cta")
 
         verify {
-            onboardingAnalytics.onboardingButtonClick(
+            analytics.buttonClick(
                 screenName = "ONBOARDING_B",
                 cta = "cta",
                 action = "skip"
@@ -61,12 +61,12 @@ class OnboardingViewModelTest {
 
     @Test
     fun `Given a done event, then log analytics`() {
-        val viewModel = OnboardingViewModel(context, onboardingAnalytics)
+        val viewModel = OnboardingViewModel(context, analytics)
 
         viewModel.onDone(2, "cta")
 
         verify {
-            onboardingAnalytics.onboardingButtonClick(
+            analytics.buttonClick(
                 screenName = "ONBOARDING_C",
                 cta = "cta",
                 action = "done"
@@ -76,12 +76,12 @@ class OnboardingViewModelTest {
 
     @Test
     fun `Given a pager indicator event, then log analytics`() {
-        val viewModel = OnboardingViewModel(context, onboardingAnalytics)
+        val viewModel = OnboardingViewModel(context, analytics)
 
         viewModel.onPagerIndicator(0)
 
         verify {
-            onboardingAnalytics.onboardingButtonClick(
+            analytics.buttonClick(
                 screenName = "ONBOARDING_A",
                 cta = "dot",
                 action = "dot"

@@ -4,14 +4,13 @@ import uk.gov.logging.api.analytics.AnalyticsEvent
 import uk.gov.logging.api.analytics.logging.AnalyticsLogger
 import uk.gov.logging.api.analytics.parameters.ButtonParameters
 import uk.gov.logging.api.analytics.parameters.ScreenViewParameters
-import uk.govuk.app.onboarding.analytics.OnboardingAnalytics
 import javax.inject.Inject
 
 class AnalyticsClient @Inject constructor(
     private val analyticsLogger: AnalyticsLogger
-): OnboardingAnalytics {
+): Analytics {
 
-    override fun onboardingScreenView(screenClass: String, alias: String, title: String) {
+    override fun screenView(screenClass: String, alias: String, title: String) {
         analyticsLogger.logEvent(
             true,
             AnalyticsEvent.screenView(
@@ -24,7 +23,7 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    override fun onboardingButtonClick(screenName: String, cta: String, action: String) {
+    override fun buttonClick(screenName: String, cta: String, action: String) {
         analyticsLogger.logEvent(
             true,
             AnalyticsEvent.trackEvent(

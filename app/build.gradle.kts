@@ -89,21 +89,6 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.datastore.preferences)
 
-    implementation(libs.gov.logging.api) {
-        artifact {
-            classifier = "release"
-            type = "aar"
-        }
-    }
-    implementation(libs.gov.logging.impl) {
-        artifact {
-            classifier = "release"
-            type = "aar"
-        }
-    }
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics)
-    implementation(libs.firebase.crashlytics)
     implementation(libs.lottie.compose)
 
     ksp(libs.hilt.compiler)
