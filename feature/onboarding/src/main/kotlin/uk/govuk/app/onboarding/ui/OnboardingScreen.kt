@@ -29,14 +29,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -44,9 +43,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.window.core.layout.WindowHeightSizeClass
 import kotlinx.coroutines.launch
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -94,25 +90,14 @@ private fun OnboardingScreen(
     onSkip: (Int, String) -> Unit,
     onDone: (Int, String) -> Unit,
     onPagerIndicator: (Int) -> Unit,
-    modifier: Modifier = Modifier,
-    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+    modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(pageCount = {
         pages.count()
     })
 
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                onPageView(pagerState.currentPage)
-            }
-        }
-
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
+    LaunchedEffect(pagerState.currentPage) {
+        onPageView(pagerState.currentPage)
     }
 
     Column(
@@ -137,7 +122,6 @@ private fun OnboardingScreen(
 
         val coroutineScope = rememberCoroutineScope()
         val changePage: (Int) -> Unit = { pageIndex ->
-            onPageView(pageIndex)
             coroutineScope.launch {
                 pagerState.animateScrollToPage(
                     pageIndex,
