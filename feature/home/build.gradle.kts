@@ -12,6 +12,10 @@ android {
     namespace = "uk.govuk.app.home"
     compileSdk = 34
 
+    defaultConfig {
+        minSdk = 29
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
