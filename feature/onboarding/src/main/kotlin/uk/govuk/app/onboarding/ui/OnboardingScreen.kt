@@ -180,7 +180,7 @@ private fun Page(
             text = stringResource(page.title),
             modifier = Modifier.focusable(),
             color = GovUkTheme.colourScheme.textAndIcons.primary,
-            style = GovUkTheme.typography.titleLarge,
+            style = GovUkTheme.typography.titleLargeBold,
             textAlign = TextAlign.Center
         )
 
