@@ -19,13 +19,9 @@ subprojects {
             property("sonar.projectKey", "alphagov_govuk-mobile-android-app")
             property("sonar.organization", "alphagov")
             property("sonar.host.url", "https://sonarcloud.io")
-            property("sonar.sources", "src")
             property("sonar.sourceEncoding", "UTF-8")
             property("sonar.qualitygate.wait", "true")
-            property(
-                "sonar.androidLint.reportPaths",
-                "${projectDir}/build/reports/lint-results-debug.xml"
-            )
+            property("sonar.androidLint.reportPaths", "${projectDir}/build/reports/lint-results-debug.xml")
 //        property("sonar.coverage.jacoco.xmlReportPaths", "${projectDir}/build/test-results/testDebugUnitTest/TEST-*.xml")
         }
     }
