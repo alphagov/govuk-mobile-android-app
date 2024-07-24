@@ -6,17 +6,30 @@ import uk.govuk.app.design.ui.theme.GovUkColourScheme.Strokes
 import uk.govuk.app.design.ui.theme.GovUkColourScheme.Surfaces
 import uk.govuk.app.design.ui.theme.GovUkColourScheme.TextAndIcons
 
-val GovUkBlue = Color(0xFF1D70B8)
-val GovUkBlueDarkMode = Color(0xFF259AFF)
+val Blue1 = Color(0xFF1D70B8)
+val Blue2 = Color(0xFF259AFF)
+val Blue3 = Color(0xFF00D1FF)
+val Blue4 = Color(0xFF45F2FD)
+val Blue5 = Color(0xFF003078)
+val Blue6 = Color(0xFF7AC2FF)
 
-val Grey50 = Color(0xFFFAFAFA)
-val Grey300 = Color(0xFFB2B2B2)
-val Grey500 = Color(0xFF808080)
-val Grey700 = Color(0xFF4D4D4D)
+val Yellow = Color(0xFFFFDD00)
+
+val Grey900 = Color(0xFF1A1A1A)
 val Grey800 = Color(0xFF333333)
+val Grey700 = Color(0xFF4D4D4D)
+val Grey600 = Color(0xFF666666)
+val Grey500 = Color(0xFF808080)
+val Grey400 = Color(0xFF999999)
+val Grey300 = Color(0xFFB2B2B2)
+val Grey200 = Color(0xFFCCCCCC)
+val Grey100 = Color(0xFFE5E5E5)
+val Grey50 = Color(0xFFFAFAFA)
 
+val Black = Color(0xFF000000)
 val BlackAlpha30 = Color(0x4D000000)
 
+val White = Color(0xFFFFFFFF)
 val WhiteAlpha30 = Color(0x4DFFFFFF)
 
 data class GovUkColourScheme(
@@ -45,15 +58,15 @@ data class GovUkColourScheme(
 
 val LightColorScheme = GovUkColourScheme(
     textAndIcons = TextAndIcons(
-        primary = Color.Black,
+        primary = Black,
         secondary = Grey700,
-        link = GovUkBlue,
-        buttonPrimary = Color.White
+        link = Blue1,
+        buttonPrimary = White
     ),
     surfaces = Surfaces(
         background = Grey50,
-        primary = GovUkBlue,
-        card = Color.White
+        primary = Blue1,
+        card = White
     ),
     strokes = Strokes(
         container = BlackAlpha30,
@@ -63,14 +76,14 @@ val LightColorScheme = GovUkColourScheme(
 
 val DarkColorScheme = GovUkColourScheme(
     textAndIcons = TextAndIcons(
-        primary = Color.White,
+        primary = White,
         secondary = Grey300,
-        link = GovUkBlueDarkMode,
-        buttonPrimary = Color.Black
+        link = Blue2,
+        buttonPrimary = Black
     ),
     surfaces = Surfaces(
-        background = Color.Black,
-        primary = GovUkBlueDarkMode,
+        background = Black,
+        primary = Blue2,
         card = Grey800
     ),
     strokes = Strokes(
