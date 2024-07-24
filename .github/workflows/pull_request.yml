@@ -20,9 +20,9 @@ jobs:
     secrets:
       CI_ACCESS_USERNAME: ${{ secrets.CI_ACCESS_USERNAME }}
       CI_ACCESS_TOKEN: ${{ secrets.CI_ACCESS_TOKEN }}
-#  sonar-scanner:
-#    uses: ./.github/workflows/sonar_scanner.yml
-#    secrets:
-#      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-#      CI_ACCESS_USERNAME: ${{ secrets.CI_ACCESS_USERNAME }}
-#      CI_ACCESS_TOKEN: ${{ secrets.CI_ACCESS_TOKEN }}
+  sonar-scanner:
+    uses: ./.github/workflows/sonar_scanner.yml
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      CI_ACCESS_USERNAME: ${{ secrets.CI_ACCESS_USERNAME }}
+      CI_ACCESS_TOKEN: ${{ secrets.CI_ACCESS_TOKEN }}
