@@ -28,9 +28,11 @@ val Grey50 = Color(0xFFFAFAFA)
 
 val Black = Color(0xFF000000)
 val BlackAlpha30 = Color(0x4D000000)
+val BlackAlpha75 = Color(0x4B000000)
 
 val White = Color(0xFFFFFFFF)
 val WhiteAlpha30 = Color(0x4DFFFFFF)
+val WhiteAlpha75 = Color(0x4BFFFFFF)
 
 data class GovUkColourScheme(
     val textAndIcons: TextAndIcons,
@@ -41,13 +43,16 @@ data class GovUkColourScheme(
         val primary: Color,
         val secondary: Color,
         val link: Color,
-        val buttonPrimary: Color
+        val buttonPrimary: Color,
+        val trailingIcon: Color
     )
 
     data class Surfaces(
         val background: Color,
         val primary: Color,
-        val card: Color
+        val card: Color,
+        val fixedContainer: Color,
+        val buttonPrimary: Color
     )
 
     data class Strokes(
@@ -61,12 +66,15 @@ val LightColorScheme = GovUkColourScheme(
         primary = Black,
         secondary = Grey700,
         link = Blue1,
-        buttonPrimary = White
-    ),
+        buttonPrimary = White,
+        trailingIcon = Grey300
+),
     surfaces = Surfaces(
         background = Grey50,
         primary = Blue1,
-        card = White
+        card = White,
+        fixedContainer = WhiteAlpha75,
+        buttonPrimary = Blue1
     ),
     strokes = Strokes(
         container = BlackAlpha30,
@@ -79,12 +87,15 @@ val DarkColorScheme = GovUkColourScheme(
         primary = White,
         secondary = Grey300,
         link = Blue2,
-        buttonPrimary = Black
+        buttonPrimary = Black,
+        trailingIcon = Grey500
     ),
     surfaces = Surfaces(
         background = Black,
         primary = Blue2,
-        card = Grey800
+        card = Grey800,
+        fixedContainer = BlackAlpha75,
+        buttonPrimary = Blue2
     ),
     strokes = Strokes(
         container = WhiteAlpha30,
@@ -98,12 +109,15 @@ val LocalColourScheme = staticCompositionLocalOf {
             primary = Color.Unspecified,
             secondary = Color.Unspecified,
             link = Color.Unspecified,
-            buttonPrimary = Color.Unspecified
+            buttonPrimary = Color.Unspecified,
+            trailingIcon = Color.Unspecified
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,
             primary = Color.Unspecified,
-            card = Color.Unspecified
+            card = Color.Unspecified,
+            fixedContainer = Color.Unspecified,
+            buttonPrimary = Color.Unspecified
         ),
         strokes = Strokes(
             container = Color.Unspecified,
