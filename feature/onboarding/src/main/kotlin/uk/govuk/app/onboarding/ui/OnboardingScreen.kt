@@ -324,7 +324,7 @@ private fun PrimaryButton(
         onClick = onClick,
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
-            containerColor = GovUkTheme.colourScheme.surfaces.primary,
+            containerColor = GovUkTheme.colourScheme.surfaces.buttonPrimary,
             contentColor = GovUkTheme.colourScheme.textAndIcons.buttonPrimary
         )
     ) {

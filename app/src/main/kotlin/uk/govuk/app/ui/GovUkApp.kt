@@ -190,7 +190,7 @@ private fun BottomNavScaffold() {
                                 .colors(
                                     selectedIconColor = GovUkTheme.colourScheme.textAndIcons.buttonPrimary,
                                     selectedTextColor = GovUkTheme.colourScheme.textAndIcons.link,
-                                    indicatorColor = GovUkTheme.colourScheme.surfaces.primary,
+                                    indicatorColor = GovUkTheme.colourScheme.surfaces.buttonPrimary,
                                     unselectedIconColor = GovUkTheme.colourScheme.textAndIcons.secondary,
                                     unselectedTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
                                 )
