@@ -4,13 +4,10 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
-//    id("jacoco")
-//    id("org.sonarqube") version "5.0.0.4638"
     alias(libs.plugins.google.play.services)
     alias(libs.plugins.crashlytics)
+    id("org.jetbrains.kotlinx.kover") version "0.8.3"
 }
-
-
 
 android {
     namespace = "uk.govuk.app"
