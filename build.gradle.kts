@@ -18,6 +18,7 @@ subprojects {
         properties {
             property("sonar.sources", "src/main")
             property("sonar.coverage.jacoco.xmlReportPaths", "${projectDir}/build/reports/kover/reportDebug.xml")
+            property("sonar.coverage.exclusions", "**/di/**/*.*,**/ui/**/*.*, **/navigation/**/*.*,**/*Activity.*,**/*Application.*")
         }
     }
 }
