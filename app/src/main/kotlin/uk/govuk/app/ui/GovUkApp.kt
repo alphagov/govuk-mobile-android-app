@@ -50,8 +50,8 @@ import uk.govuk.app.home.ui.navigation.homeGraph
 import uk.govuk.app.launch.AppLaunchState
 import uk.govuk.app.launch.AppLaunchViewModel
 import uk.govuk.app.navigation.TopLevelDestination
-import uk.govuk.app.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
-import uk.govuk.app.onboarding.navigation.onboardingGraph
+import uk.govuk.app.onboarding.ui.navigation.ONBOARDING_GRAPH_ROUTE
+import uk.govuk.app.onboarding.ui.navigation.onboardingGraph
 import uk.govuk.app.settings.ui.navigation.settingsGraph
 
 private const val SPLASH_ROUTE = "splash"

@@ -17,6 +17,7 @@ subprojects {
     sonar {
         properties {
             property("sonar.sources", "src/main")
+            property("sonar.tests", "src/test,src/androidTest")
             property("sonar.coverage.jacoco.xmlReportPaths", "${projectDir}/build/reports/kover/reportDebug.xml")
             property("sonar.coverage.exclusions", "**/di/**/*.*,**/ui/**/*.*, **/navigation/**/*.*,**/*Activity.*,**/*Application.*")
         }
