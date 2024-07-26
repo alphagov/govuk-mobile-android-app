@@ -23,8 +23,6 @@ mockk = "1.13.11"
 coroutineTest = "1.8.1"
 kover = "0.8.3"
 sonarqube = "5.0.0.4638"
-junitJunit = "4.13.2"
-uiTestJunit4Android = "1.6.8"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -52,8 +50,6 @@ firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashly
 
 mockk = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutineTest" }
-junit-junit = { group = "junit", name = "junit", version.ref = "junitJunit" }
-androidx-ui-test-junit4-android = { group = "androidx.compose.ui", name = "ui-test-junit4-android", version.ref = "uiTestJunit4Android" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
