@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.play.services)
     alias(libs.plugins.crashlytics)
-    id("org.jetbrains.kotlinx.kover") version "0.8.3"
+    alias(libs.plugins.kover)
 }
 
 android {

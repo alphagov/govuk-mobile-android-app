@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.google.play.services) apply false
     alias(libs.plugins.crashlytics) apply false
-    id("org.sonarqube") version "5.0.0.4638"
+    alias(libs.plugins.sonarqube)
 }
 
 subprojects {
