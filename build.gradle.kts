@@ -13,14 +13,25 @@ plugins {
 }
 
 subprojects {
-    apply(plugin = "org.sonarqube")
-    sonar {
-        properties {
-            property("sonar.sources", "src/main")
-            property("sonar.tests", "src/test,src/androidTest")
-            property("sonar.coverage.jacoco.xmlReportPaths", "${projectDir}/build/reports/kover/reportDebug.xml")
-            property("sonar.coverage.exclusions", "**/di/**/*.*,**/ui/**/*.*, **/navigation/**/*.*,**/*Activity.*,**/*Application.*")
-            property("sonar.androidLint.reportPaths", "${projectDir}/build/reports/lint-results-debug.xml")
+    if (!projectDir.endsWith("feature")) {
+        apply(plugin = "org.sonarqube")
+        sonar {
+            properties {
+                property("sonar.sources", "src/main")
+                property("sonar.tests", "src/test,src/androidTest")
+                property(
+                    "sonar.coverage.jacoco.xmlReportPaths",
+                    "${projectDir}/build/reports/kover/reportDebug.xml"
+                )
+                property(
+                    "sonar.coverage.exclusions",
+                    "**/di/**/*.*,**/ui/**/*.*, **/navigation/**/*.*,**/*Activity.*,**/*Application.*"
+                )
+                property(
+                    "sonar.androidLint.reportPaths",
+                    "${projectDir}/build/reports/lint-results-debug.xml"
+                )
+            }
         }
     }
 }
