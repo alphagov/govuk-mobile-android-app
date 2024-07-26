@@ -18,7 +18,9 @@ subprojects {
         sonar {
             properties {
                 property("sonar.sources", "src/main")
-                property("sonar.tests", "src/test,src/androidTest")
+                if (!projectDir.endsWith("design")) {
+                    property("sonar.tests", "src/test,src/androidTest")
+                }
                 property(
                     "sonar.coverage.jacoco.xmlReportPaths",
                     "${projectDir}/build/reports/kover/reportDebug.xml"
