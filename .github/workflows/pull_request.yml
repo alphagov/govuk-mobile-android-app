@@ -10,19 +10,37 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
-    uses: ./.github/workflows/lint.yml
-    secrets:
-      CI_ACCESS_USERNAME: ${{ secrets.CI_ACCESS_USERNAME }}
-      CI_ACCESS_TOKEN: ${{ secrets.CI_ACCESS_TOKEN }}
-  unit-test:
-    uses: ./.github/workflows/unit_test.yml
-    secrets:
-      CI_ACCESS_USERNAME: ${{ secrets.CI_ACCESS_USERNAME }}
-      CI_ACCESS_TOKEN: ${{ secrets.CI_ACCESS_TOKEN }}
-#  sonar-scanner:
-#    uses: ./.github/workflows/sonar_scanner.yml
-#    secrets:
-#      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-#      CI_ACCESS_USERNAME: ${{ secrets.CI_ACCESS_USERNAME }}
-#      CI_ACCESS_TOKEN: ${{ secrets.CI_ACCESS_TOKEN }}
+  build-test-analyse:
+    name: Build, test, analyse
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b #v4.1.5
+        with:
+          fetch-depth: '0'
+
+      - name: Setup JDK
+        uses: actions/setup-java@99b8673ff64fbf99d8d325f52d9a5bdedb8483e9 #4.2.1
+        with:
+          java-version: 17
+          distribution: oracle
+
+      - name: Setup Android SDK Tools
+        uses: android-actions/setup-android@00854ea68c109d98c75d956347303bf7c45b0277 #v3.2.1
+
+      - name: Lint
+        run: ./gradlew lint
+        env:
+          CI_ACCESS_USERNAME: ${{ secrets.CI_ACCESS_USERNAME }}
+          CI_ACCESS_TOKEN: ${{ secrets.CI_ACCESS_TOKEN }}
+
+      - name: Unit Test with Code Coverage
+        run: ./gradlew koverXmlReportDebug
+        env:
+          CI_ACCESS_USERNAME: ${{ secrets.CI_ACCESS_USERNAME }}
+          CI_ACCESS_TOKEN: ${{ secrets.CI_ACCESS_TOKEN }}
+
+      - name: Analyze
+        run: ./gradlew sonar --info
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

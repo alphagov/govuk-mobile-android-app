@@ -9,4 +9,33 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.google.play.services) apply false
     alias(libs.plugins.crashlytics) apply false
+    alias(libs.plugins.sonarqube)
 }
+
+subprojects {
+    if (!projectDir.endsWith("feature")) {
+        apply(plugin = "org.sonarqube")
+        sonar {
+            properties {
+                property("sonar.sources", "src/main")
+                if (!projectDir.endsWith("design")) {
+                    property("sonar.tests", "src/test,src/androidTest")
+                }
+                property(
+                    "sonar.coverage.jacoco.xmlReportPaths",
+                    "${projectDir}/build/reports/kover/reportDebug.xml"
+                )
+                property(
+                    "sonar.coverage.exclusions",
+                    "**/di/**/*.*,**/ui/**/*.*, **/navigation/**/*.*,**/*Activity.*,**/*Application.*"
+                )
+                property(
+                    "sonar.androidLint.reportPaths",
+                    "${projectDir}/build/reports/lint-results-debug.xml"
+                )
+            }
+        }
+    }
+}
+
+apply(from = "${project.rootDir}/sonar.gradle")
