@@ -1,6 +1,7 @@
 package uk.govuk.app.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -118,12 +119,14 @@ private fun SplashScreen(
 
         var state = animateLottieCompositionAsState(composition = composition)
 
-        if (Settings.Global.getFloat(LocalContext.current.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE) == 0f) {
+        // Handle cases where animation is disabled...
+        if (areAnimationsDisabled(LocalContext.current)) {
             state = animateLottieCompositionAsState(composition = composition, isPlaying = false)
             GlobalScope.launch {
                 delay(6000) // wait for 6 seconds
                 onSplashDone()
             }
+        // Animations are enabled...
         } else {
             LaunchedEffect(state.progress) {
                 if (state.progress == 1f) {
@@ -215,4 +218,13 @@ private fun BottomNavScaffold() {
             }
         }
     }
+}
+
+private fun areAnimationsDisabled(context: Context): Boolean {
+    val animatorDurationScale = Settings.Global.getFloat(
+        context.contentResolver,
+        Settings.Global.ANIMATOR_DURATION_SCALE,
+        1f
+    )
+    return animatorDurationScale == 0f
 }
