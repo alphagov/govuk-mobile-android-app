@@ -220,7 +220,7 @@ private fun BottomNavScaffold() {
     }
 }
 
-private fun areAnimationsDisabled(context: Context): Boolean {
+fun areAnimationsDisabled(context: Context): Boolean {
     val animatorDurationScale = Settings.Global.getFloat(
         context.contentResolver,
         Settings.Global.ANIMATOR_DURATION_SCALE,
