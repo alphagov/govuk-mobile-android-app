@@ -44,6 +44,13 @@ data class GovUkColourScheme(
         val secondary: Color,
         val link: Color,
         val buttonPrimary: Color,
+        val buttonPrimaryHighlight: Color,
+        val buttonPrimaryDisabled: Color,
+        val buttonPrimaryFocused: Color,
+        val buttonSecondary: Color,
+        val buttonSecondaryHighlight: Color,
+        val buttonSecondaryDisabled: Color,
+        val buttonSecondaryFocused: Color,
         val trailingIcon: Color
     )
 
@@ -52,7 +59,14 @@ data class GovUkColourScheme(
         val primary: Color,
         val card: Color,
         val fixedContainer: Color,
-        val buttonPrimary: Color
+        val buttonPrimary: Color,
+        val buttonPrimaryHighlight: Color,
+        val buttonPrimaryDisabled: Color,
+        val buttonPrimaryFocused: Color,
+        val buttonSecondary: Color,
+        val buttonSecondaryHighlight: Color,
+        val buttonSecondaryDisabled: Color,
+        val buttonSecondaryFocused: Color,
     )
 
     data class Strokes(
@@ -67,14 +81,28 @@ val LightColorScheme = GovUkColourScheme(
         secondary = Grey700,
         link = Blue1,
         buttonPrimary = White,
+        buttonPrimaryHighlight = White,
+        buttonPrimaryDisabled = Grey600,
+        buttonPrimaryFocused = Black,
+        buttonSecondary = Blue1,
+        buttonSecondaryHighlight = Blue5,
+        buttonSecondaryDisabled = Grey700,
+        buttonSecondaryFocused = Black,
         trailingIcon = Grey300
-),
+    ),
     surfaces = Surfaces(
         background = Grey50,
         primary = Blue1,
         card = White,
         fixedContainer = WhiteAlpha75,
-        buttonPrimary = Blue1
+        buttonPrimary = Blue1,
+        buttonPrimaryHighlight = Blue5,
+        buttonPrimaryDisabled = Grey100,
+        buttonPrimaryFocused = Yellow,
+        buttonSecondary = Grey50,
+        buttonSecondaryHighlight = Grey50,
+        buttonSecondaryDisabled = Grey50,
+        buttonSecondaryFocused = Yellow,
     ),
     strokes = Strokes(
         container = BlackAlpha30,
@@ -88,6 +116,13 @@ val DarkColorScheme = GovUkColourScheme(
         secondary = Grey300,
         link = Blue2,
         buttonPrimary = Black,
+        buttonPrimaryHighlight = Black,
+        buttonPrimaryDisabled = Black,
+        buttonPrimaryFocused = Black,
+        buttonSecondary = Blue2,
+        buttonSecondaryHighlight = Blue6,
+        buttonSecondaryDisabled = Grey300,
+        buttonSecondaryFocused = Black,
         trailingIcon = Grey500
     ),
     surfaces = Surfaces(
@@ -95,7 +130,14 @@ val DarkColorScheme = GovUkColourScheme(
         primary = Blue2,
         card = Grey800,
         fixedContainer = BlackAlpha75,
-        buttonPrimary = Blue2
+        buttonPrimary = Blue2,
+        buttonPrimaryHighlight = Blue6,
+        buttonPrimaryDisabled = Grey400,
+        buttonPrimaryFocused = Yellow,
+        buttonSecondary = Black,
+        buttonSecondaryHighlight = Black,
+        buttonSecondaryDisabled = Black,
+        buttonSecondaryFocused = Yellow,
     ),
     strokes = Strokes(
         container = WhiteAlpha30,
@@ -110,6 +152,13 @@ val LocalColourScheme = staticCompositionLocalOf {
             secondary = Color.Unspecified,
             link = Color.Unspecified,
             buttonPrimary = Color.Unspecified,
+            buttonPrimaryHighlight = Color.Unspecified,
+            buttonPrimaryDisabled = Color.Unspecified,
+            buttonPrimaryFocused = Color.Unspecified,
+            buttonSecondary = Color.Unspecified,
+            buttonSecondaryHighlight = Color.Unspecified,
+            buttonSecondaryDisabled = Color.Unspecified,
+            buttonSecondaryFocused = Color.Unspecified,
             trailingIcon = Color.Unspecified
         ),
         surfaces = Surfaces(
@@ -117,7 +166,14 @@ val LocalColourScheme = staticCompositionLocalOf {
             primary = Color.Unspecified,
             card = Color.Unspecified,
             fixedContainer = Color.Unspecified,
-            buttonPrimary = Color.Unspecified
+            buttonPrimary = Color.Unspecified,
+            buttonPrimaryHighlight = Color.Unspecified,
+            buttonPrimaryDisabled = Color.Unspecified,
+            buttonPrimaryFocused = Color.Unspecified,
+            buttonSecondary = Color.Unspecified,
+            buttonSecondaryHighlight = Color.Unspecified,
+            buttonSecondaryDisabled = Color.Unspecified,
+            buttonSecondaryFocused = Color.Unspecified,
         ),
         strokes = Strokes(
             container = Color.Unspecified,

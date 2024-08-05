@@ -22,11 +22,8 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowHeightSizeClass
 import kotlinx.coroutines.launch
+import uk.govuk.app.design.ui.components.PrimaryButton
+import uk.govuk.app.design.ui.components.SecondaryButton
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.onboarding.OnboardingPage
 import uk.govuk.app.onboarding.OnboardingViewModel
@@ -312,45 +311,6 @@ private fun DoneButton(
         onClick = { onClick(cta) },
         modifier = modifier
     )
-}
-
-@Composable
-private fun PrimaryButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = GovUkTheme.colourScheme.surfaces.buttonPrimary,
-            contentColor = GovUkTheme.colourScheme.textAndIcons.buttonPrimary
-        )
-    ) {
-        Text(
-            text = text,
-            style = GovUkTheme.typography.bodyBold,
-        )
-    }
-}
-
-@Composable
-private fun SecondaryButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TextButton(
-        onClick = onClick,
-        modifier = modifier
-    ) {
-        Text(
-            text = text,
-            color = GovUkTheme.colourScheme.textAndIcons.link,
-            style = GovUkTheme.typography.bodyRegular,
-        )
-    }
 }
 
 @Composable
