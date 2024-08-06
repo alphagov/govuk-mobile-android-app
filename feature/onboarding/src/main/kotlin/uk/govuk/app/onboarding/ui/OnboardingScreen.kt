@@ -22,7 +22,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,11 +35,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowHeightSizeClass
 import kotlinx.coroutines.launch
+import uk.govuk.app.design.ui.component.BodyRegularLabel
+import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
 import uk.govuk.app.design.ui.component.PrimaryButton
 import uk.govuk.app.design.ui.component.SecondaryButton
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -170,23 +170,9 @@ private fun Page(
             Spacer(modifier = Modifier.height(GovUkTheme.spacing.extraLarge))
         }
 
-        Text(
-            text = stringResource(page.title),
-            modifier = Modifier.focusable(),
-            color = GovUkTheme.colourScheme.textAndIcons.primary,
-            style = GovUkTheme.typography.titleLargeBold,
-            textAlign = TextAlign.Center
-        )
-
+        LargeTitleBoldLabel(stringResource(page.title), modifier = Modifier.focusable())
         Spacer(modifier = Modifier.height(GovUkTheme.spacing.medium))
-
-        Text(
-            text = stringResource(page.body),
-            modifier = Modifier.focusable(),
-            color = GovUkTheme.colourScheme.textAndIcons.primary,
-            style = GovUkTheme.typography.bodyRegular,
-            textAlign = TextAlign.Center
-        )
+        BodyRegularLabel(stringResource(page.body), modifier = Modifier.focusable())
     }
 }
 

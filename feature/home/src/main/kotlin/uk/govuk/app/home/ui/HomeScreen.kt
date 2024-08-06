@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,9 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.HomeViewModel
 import kotlin.math.max
@@ -90,11 +89,8 @@ private fun HomeScreen(
                         .height(200.dp)
                         .padding(GovUkTheme.spacing.medium)
                 ) {
-                    Text(
-                        text = "Scrollable content",
-                        style = GovUkTheme.typography.bodyRegular,
-                        color = GovUkTheme.colourScheme.textAndIcons.primary,
-                        textAlign = TextAlign.Center,
+                    BodyRegularLabel(
+                        "Scrollable content",
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(GovUkTheme.spacing.medium)
