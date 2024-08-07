@@ -156,6 +156,10 @@ private fun BottomNavScaffold() {
     }
 
     val navController = rememberNavController()
+    navController.addOnDestinationChangedListener { _, destination, _ ->
+        selectedIndex = topLevelDestinations.indexOfFirst { it.route == destination.parent?.route }
+    }
+
     Scaffold(
         bottomBar = {
             Column {
