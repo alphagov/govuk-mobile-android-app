@@ -15,7 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -50,7 +51,7 @@ private fun HomeScreen(
     }
 
     var scaleFactor by remember {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
 
     Column(modifier) {
@@ -116,15 +117,15 @@ private fun ScalingHeader(
     val minPadding = 8
 
     var logoHeight by remember {
-        mutableStateOf(initialLogoHeight)
+        mutableIntStateOf(initialLogoHeight)
     }
 
     var padding by remember {
-        mutableStateOf(initialPadding)
+        mutableIntStateOf(initialPadding)
     }
 
     var dividerAlpha by remember {
-        mutableStateOf(0f)
+        mutableFloatStateOf(0f)
     }
 
     if (scaleFactor == -1) {
