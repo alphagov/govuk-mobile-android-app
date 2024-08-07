@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -99,11 +98,7 @@ private fun OnboardingScreen(
         onPageView(pagerState.currentPage)
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .safeDrawingPadding()
-    ) {
+    Column(modifier.fillMaxWidth()) {
         HorizontalPager(
             state = pagerState,
             modifier = modifier
