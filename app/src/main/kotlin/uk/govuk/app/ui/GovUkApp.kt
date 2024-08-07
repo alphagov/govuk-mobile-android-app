@@ -1,6 +1,5 @@
 package uk.govuk.app.ui
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.provider.Settings
@@ -47,10 +46,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import uk.govuk.app.R
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.ui.navigation.homeGraph
@@ -110,8 +106,6 @@ fun GovUkApp() {
     }
 }
 
-@SuppressLint("CoroutineCreationDuringComposition")
-@OptIn(DelicateCoroutinesApi::class)
 @Composable
 private fun SplashScreen(
     onSplashDone: () -> Unit
@@ -133,7 +127,7 @@ private fun SplashScreen(
         // Handle cases where animation is disabled...
         if (areAnimationsDisabled(LocalContext.current)) {
             state = animateLottieCompositionAsState(composition = composition, isPlaying = false)
-            GlobalScope.launch {
+            LaunchedEffect(true) {
                 delay(6000) // wait for 6 seconds
                 onSplashDone()
             }
