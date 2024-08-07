@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.govuk.app.design.R
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -160,4 +161,80 @@ fun NewTabIcon() {
             .padding(start = GovUkTheme.spacing.small)
             .testTag("openInNewTabIcon")
     )
+}
+
+@Preview
+@Composable
+private fun Primary()
+{
+    GovUkTheme {
+        PrimaryButton(
+            text = "Primary button",
+            onClick = { }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PrimaryExternalLink()
+{
+    GovUkTheme {
+        PrimaryButton(
+            text = "Primary button",
+            onClick = { },
+            externalLink = true
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PrimaryDisabled()
+{
+    GovUkTheme {
+        PrimaryButton(
+            text = "Primary button",
+            onClick = { },
+            enabled = false
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun Secondary()
+{
+    GovUkTheme {
+        SecondaryButton(
+            text = "Secondary button",
+            onClick = { }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SecondaryExternalLink()
+{
+    GovUkTheme {
+        SecondaryButton(
+            text = "Secondary button",
+            onClick = { },
+            externalLink = true
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SecondaryDisabled()
+{
+    GovUkTheme {
+        SecondaryButton(
+            text = "Secondary button",
+            onClick = { },
+            enabled = false
+        )
+    }
 }
