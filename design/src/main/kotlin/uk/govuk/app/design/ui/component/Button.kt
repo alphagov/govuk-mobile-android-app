@@ -1,4 +1,4 @@
-package uk.govuk.app.design.ui.components
+package uk.govuk.app.design.ui.component
 
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
