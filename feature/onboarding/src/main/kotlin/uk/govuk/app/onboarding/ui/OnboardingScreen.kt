@@ -42,8 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowHeightSizeClass
 import kotlinx.coroutines.launch
-import uk.govuk.app.design.ui.components.PrimaryButton
-import uk.govuk.app.design.ui.components.SecondaryButton
+import uk.govuk.app.design.ui.component.PrimaryButton
+import uk.govuk.app.design.ui.component.SecondaryButton
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.onboarding.OnboardingPage
 import uk.govuk.app.onboarding.OnboardingViewModel
