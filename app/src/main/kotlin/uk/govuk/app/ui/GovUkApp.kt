@@ -1,14 +1,13 @@
 package uk.govuk.app.ui
 
-import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.provider.Settings
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -24,14 +23,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -41,10 +44,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import uk.govuk.app.R
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.ui.navigation.homeGraph
@@ -62,7 +62,15 @@ private const val ONBOARDING_COMPLETED_ROUTE = "onboarding_completed"
 fun GovUkApp() {
     val viewModel: AppLaunchViewModel = hiltViewModel()
     val appLaunchState by viewModel.appLaunchState.collectAsState()
-    var isSplashDone by remember { mutableStateOf(false) }
+    var isSplashDone by rememberSaveable { mutableStateOf(false) }
+
+    SetStatusBarColour(
+        if (isSplashDone)
+            GovUkTheme.colourScheme.surfaces.background
+        else
+            GovUkTheme.colourScheme.surfaces.primary,
+        isSplashDone && !isSystemInDarkTheme()
+    )
 
     val navController = rememberNavController()
     NavHost(
@@ -72,6 +80,19 @@ fun GovUkApp() {
         composable(SPLASH_ROUTE) {
             SplashScreen {
                 isSplashDone = true
+                appLaunchState?.let {
+                    when (it) {
+                        AppLaunchState.ONBOARDING_REQUIRED -> {
+                            navController.popBackStack()
+                            navController.navigate(ONBOARDING_GRAPH_ROUTE)
+                        }
+
+                        AppLaunchState.ONBOARDING_COMPLETED -> {
+                            navController.popBackStack()
+                            navController.navigate(ONBOARDING_COMPLETED_ROUTE)
+                        }
+                    }
+                }
             }
         }
         onboardingGraph {
@@ -81,34 +102,15 @@ fun GovUkApp() {
         }
         composable(ONBOARDING_COMPLETED_ROUTE) { BottomNavScaffold() }
     }
-
-    if (isSplashDone) {
-        appLaunchState?.let {
-            when (it) {
-                AppLaunchState.ONBOARDING_REQUIRED -> {
-                    navController.popBackStack()
-                    navController.navigate(ONBOARDING_GRAPH_ROUTE)
-                }
-
-                AppLaunchState.ONBOARDING_COMPLETED -> {
-                    navController.popBackStack()
-                    navController.navigate(ONBOARDING_COMPLETED_ROUTE)
-                }
-            }
-        }
-    }
 }
 
-@SuppressLint("CoroutineCreationDuringComposition")
-@OptIn(DelicateCoroutinesApi::class)
 @Composable
 private fun SplashScreen(
     onSplashDone: () -> Unit
 ) {
     Column(
         modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth()
+            .fillMaxSize()
             .background(GovUkTheme.colourScheme.surfaces.primary),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -122,7 +124,7 @@ private fun SplashScreen(
         // Handle cases where animation is disabled...
         if (areAnimationsDisabled(LocalContext.current)) {
             state = animateLottieCompositionAsState(composition = composition, isPlaying = false)
-            GlobalScope.launch {
+            LaunchedEffect(true) {
                 delay(6000) // wait for 6 seconds
                 onSplashDone()
             }
@@ -146,11 +148,15 @@ private fun SplashScreen(
 private fun BottomNavScaffold() {
     val topLevelDestinations = listOf(TopLevelDestination.Home, TopLevelDestination.Settings)
 
-    var selectedIndex by remember {
+    var selectedIndex by rememberSaveable {
         mutableIntStateOf(0)
     }
 
     val navController = rememberNavController()
+    navController.addOnDestinationChangedListener { _, destination, _ ->
+        selectedIndex = topLevelDestinations.indexOfFirst { it.route == destination.parent?.route }
+    }
+
     Scaffold(
         bottomBar = {
             Column {
@@ -227,4 +233,15 @@ fun areAnimationsDisabled(context: Context): Boolean {
         1f
     )
     return animatorDurationScale == 0f
+}
+
+@Composable
+private fun SetStatusBarColour(
+    colour: Color,
+    isLight: Boolean
+) {
+    val view = LocalView.current
+    val window = (view.context as Activity).window
+    window.statusBarColor = colour.toArgb()
+    WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = isLight
 }
