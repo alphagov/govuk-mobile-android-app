@@ -9,11 +9,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
-fun BaseLabel(
+private fun BaseLabel(
     text: String,
     modifier: Modifier = Modifier,
     style: TextStyle,
-    textAlign: TextAlign = TextAlign.Center,
+    textAlign: TextAlign
 ) {
     Text(
         text = text,
@@ -27,216 +27,252 @@ fun BaseLabel(
 @Composable
 fun LargeTitleBoldLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.titleLargeBold
+        style = GovUkTheme.typography.titleLargeBold,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun LargeTitleRegularLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.titleLargeRegular
+        style = GovUkTheme.typography.titleLargeRegular,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun Title1BoldLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.title1Bold
+        style = GovUkTheme.typography.title1Bold,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun Title1RegularLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.title1Regular
+        style = GovUkTheme.typography.title1Regular,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun Title2BoldLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.title2Bold
+        style = GovUkTheme.typography.title2Bold,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun Title2RegularLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.title2Regular
+        style = GovUkTheme.typography.title2Regular,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun Title3BoldLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.title3Bold
+        style = GovUkTheme.typography.title3Bold,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun Title3RegularLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.title3Regular
+        style = GovUkTheme.typography.title3Regular,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun BodyBoldLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.bodyBold
+        style = GovUkTheme.typography.bodyBold,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun BodyRegularLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.bodyRegular
+        style = GovUkTheme.typography.bodyRegular,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun CalloutBoldLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.calloutBold
+        style = GovUkTheme.typography.calloutBold,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun CalloutRegularLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.calloutRegular
+        style = GovUkTheme.typography.calloutRegular,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun SubheadlineBoldLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.subheadlineBold
+        style = GovUkTheme.typography.subheadlineBold,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun SubheadlineRegularLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.subheadlineRegular
+        style = GovUkTheme.typography.subheadlineRegular,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun FootnoteBoldLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.footnoteBold
+        style = GovUkTheme.typography.footnoteBold,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun FootnoteRegularLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.footnoteRegular
+        style = GovUkTheme.typography.footnoteRegular,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun CaptionBoldLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.captionBold
+        style = GovUkTheme.typography.captionBold,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun CaptionRegularLabel(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
-        style = GovUkTheme.typography.captionRegular
+        style = GovUkTheme.typography.captionRegular,
+        textAlign = textAlign
     )
 }
 

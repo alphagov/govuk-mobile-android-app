@@ -35,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowHeightSizeClass
@@ -170,9 +171,9 @@ private fun Page(
             Spacer(modifier = Modifier.height(GovUkTheme.spacing.extraLarge))
         }
 
-        LargeTitleBoldLabel(stringResource(page.title), modifier = Modifier.focusable())
+        LargeTitleBoldLabel(stringResource(page.title), modifier = Modifier.focusable(), textAlign = TextAlign.Center)
         Spacer(modifier = Modifier.height(GovUkTheme.spacing.medium))
-        BodyRegularLabel(stringResource(page.body), modifier = Modifier.focusable())
+        BodyRegularLabel(stringResource(page.body), modifier = Modifier.focusable(), textAlign = TextAlign.Center)
     }
 }
 

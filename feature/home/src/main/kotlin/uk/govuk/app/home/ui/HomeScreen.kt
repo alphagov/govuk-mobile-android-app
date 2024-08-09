@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
@@ -93,7 +94,8 @@ private fun HomeScreen(
                         "Scrollable content",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(GovUkTheme.spacing.medium)
+                            .padding(GovUkTheme.spacing.medium),
+                        textAlign = TextAlign.Center
                     )
                 }
             }
