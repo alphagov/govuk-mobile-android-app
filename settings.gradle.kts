@@ -1,11 +1,5 @@
 import org.gradle.api.internal.provider.MissingValueException
 
-include(":analytics")
-
-
-include(":design")
-
-
 pluginManagement {
     repositories {
         google {
@@ -48,6 +42,9 @@ rootProject.name = "govuk-mobile-android-app"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":app")
+include(":analytics")
+include(":design")
 include(":feature:home")
 include(":feature:settings")
 include(":feature:onboarding")
+include(":feature:search")

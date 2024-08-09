@@ -67,6 +67,7 @@ dependencies {
     implementation(projects.feature.home)
     implementation(projects.feature.settings)
     implementation(projects.feature.onboarding)
+    implementation(projects.feature.search)
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
