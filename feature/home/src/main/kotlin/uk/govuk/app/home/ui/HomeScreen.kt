@@ -33,17 +33,21 @@ import kotlin.math.max
 import kotlin.math.min
 
 @Composable
-internal fun HomeRoute() {
+internal fun HomeRoute(
+    widget: @Composable () -> Unit
+) {
     val viewModel: HomeViewModel = hiltViewModel()
 
     HomeScreen(
-        onPageView = { viewModel.onPageView() }
+        onPageView = { viewModel.onPageView() },
+        widget
     )
 }
 
 @Composable
 private fun HomeScreen(
     onPageView: () -> Unit,
+    widget: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -74,6 +78,8 @@ private fun HomeScreen(
                 scaleFactor = offset
             }
         }
+
+        widget()
 
         LazyColumn(
             state = listState
