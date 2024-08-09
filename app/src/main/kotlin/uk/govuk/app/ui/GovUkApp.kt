@@ -53,6 +53,8 @@ import uk.govuk.app.launch.AppLaunchViewModel
 import uk.govuk.app.navigation.TopLevelDestination
 import uk.govuk.app.onboarding.ui.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.govuk.app.onboarding.ui.navigation.onboardingGraph
+import uk.govuk.app.search.navigation.navigateToSearch
+import uk.govuk.app.search.navigation.searchGraph
 import uk.govuk.app.search.ui.widget.SearchWidget
 import uk.govuk.app.settings.ui.navigation.settingsGraph
 
@@ -221,9 +223,12 @@ private fun BottomNavScaffold() {
                     .padding(innerPadding)
             ) {
                 homeGraph {
-                    SearchWidget()
+                    SearchWidget {
+                        navController.navigateToSearch()
+                    }
                 }
                 settingsGraph(navController)
+                searchGraph()
             }
         }
     }

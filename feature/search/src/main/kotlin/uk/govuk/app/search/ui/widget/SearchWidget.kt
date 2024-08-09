@@ -5,8 +5,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
 @Composable
-fun SearchWidget() {
-    Button(onClick = { /* Todo - handle click */ }) {
+fun SearchWidget(
+    onClick: () -> Unit
+) {
+    Button(onClick = onClick) {
         Text("Search for some stuff!")
     }
 }
