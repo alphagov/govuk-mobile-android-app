@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -75,9 +76,9 @@ fun GovUkApp() {
         isSplashDone && !isSystemInDarkTheme()
     )
 
-    val navController = rememberNavController()
+    val appNavController = rememberNavController()
     NavHost(
-        navController = navController,
+        navController = appNavController,
         startDestination = SPLASH_ROUTE
     ) {
         composable(SPLASH_ROUTE) {
@@ -86,13 +87,13 @@ fun GovUkApp() {
                 appLaunchState?.let {
                     when (it) {
                         AppLaunchState.ONBOARDING_REQUIRED -> {
-                            navController.popBackStack()
-                            navController.navigate(ONBOARDING_GRAPH_ROUTE)
+                            appNavController.popBackStack()
+                            appNavController.navigate(ONBOARDING_GRAPH_ROUTE)
                         }
 
                         AppLaunchState.ONBOARDING_COMPLETED -> {
-                            navController.popBackStack()
-                            navController.navigate(ONBOARDING_COMPLETED_ROUTE)
+                            appNavController.popBackStack()
+                            appNavController.navigate(ONBOARDING_COMPLETED_ROUTE)
                         }
                     }
                 }
@@ -100,10 +101,11 @@ fun GovUkApp() {
         }
         onboardingGraph {
             viewModel.onboardingCompleted()
-            navController.popBackStack()
-            navController.navigate(ONBOARDING_COMPLETED_ROUTE)
+            appNavController.popBackStack()
+            appNavController.navigate(ONBOARDING_COMPLETED_ROUTE)
         }
-        composable(ONBOARDING_COMPLETED_ROUTE) { BottomNavScaffold() }
+        composable(ONBOARDING_COMPLETED_ROUTE) { BottomNavScaffold(appNavController) }
+        searchGraph()
     }
 }
 
@@ -148,15 +150,17 @@ private fun SplashScreen(
 }
 
 @Composable
-private fun BottomNavScaffold() {
+private fun BottomNavScaffold(
+    appNavController: NavController
+) {
     val topLevelDestinations = listOf(TopLevelDestination.Home, TopLevelDestination.Settings)
 
     var selectedIndex by rememberSaveable {
         mutableIntStateOf(0)
     }
 
-    val navController = rememberNavController()
-    navController.addOnDestinationChangedListener { _, destination, _ ->
+    val tabNavController = rememberNavController()
+    tabNavController.addOnDestinationChangedListener { _, destination, _ ->
         selectedIndex = topLevelDestinations.indexOfFirst { it.route == destination.parent?.route }
     }
 
@@ -175,11 +179,11 @@ private fun BottomNavScaffold() {
                             selected = index == selectedIndex,
                             onClick = {
                                 selectedIndex = index
-                                navController.navigate(destination.route) {
+                                tabNavController.navigate(destination.route) {
                                     // Pop up to the start destination of the graph to
                                     // avoid building up a large stack of destinations
                                     // on the back stack as users select items
-                                    popUpTo(navController.graph.findStartDestination().id) {
+                                    popUpTo(tabNavController.graph.findStartDestination().id) {
                                         saveState = true
                                     }
                                     // Avoid multiple copies of the same destination when
@@ -217,18 +221,17 @@ private fun BottomNavScaffold() {
             color = GovUkTheme.colourScheme.surfaces.background
         ) {
             NavHost(
-                navController = navController,
+                navController = tabNavController,
                 startDestination = TopLevelDestination.Home.route,
                 modifier = Modifier
                     .padding(innerPadding)
             ) {
                 homeGraph {
                     SearchWidget {
-                        navController.navigateToSearch()
+                        appNavController.navigateToSearch()
                     }
                 }
-                settingsGraph(navController)
-                searchGraph()
+                settingsGraph(tabNavController)
             }
         }
     }
