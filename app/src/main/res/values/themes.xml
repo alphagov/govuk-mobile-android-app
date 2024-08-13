@@ -2,8 +2,9 @@
 <resources>
 
     <style name="Theme.Govukmobileandroidapp" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowBackground">@color/primary</item>
-        <item name="android:statusBarColor">@color/primary</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:windowLightStatusBar">@bool/lightStatusBar</item>
     </style>
 
 </resources>
