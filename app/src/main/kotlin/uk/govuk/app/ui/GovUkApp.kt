@@ -12,7 +12,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -24,7 +23,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -41,19 +39,21 @@ import uk.govuk.app.settings.ui.navigation.settingsGraph
 @Composable
 fun GovUkApp() {
     val viewModel: AppLaunchViewModel = hiltViewModel()
-    val navController = rememberNavController()
     val appLaunchState by viewModel.appLaunchState.collectAsState()
 
-    BottomNavScaffold(navController, appLaunchState) {
-        viewModel.onboardingCompleted()
+    appLaunchState?.let { launchState ->
+        BottomNavScaffold(
+            onboardingRequired = launchState == AppLaunchState.ONBOARDING_REQUIRED
+        ) {
+            viewModel.onboardingCompleted()
+        }
     }
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun BottomNavScaffold(
-    navController: NavHostController,
-    appLaunchState: AppLaunchState?,
+    onboardingRequired: Boolean,
     onboardingCompleted: () -> Unit
 ) {
     val topLevelDestinations = listOf(TopLevelDestination.Home, TopLevelDestination.Settings)
@@ -62,6 +62,7 @@ fun BottomNavScaffold(
         mutableIntStateOf(0)
     }
 
+    val navController = rememberNavController()
     navController.addOnDestinationChangedListener { _, destination, _ ->
         selectedIndex = topLevelDestinations.indexOfFirst { it.route == destination.parent?.route }
     }
@@ -130,25 +131,15 @@ fun BottomNavScaffold(
         ) {
             NavHost(
                 navController = navController,
-                startDestination = HOME_GRAPH_ROUTE
+                startDestination = if (onboardingRequired) ONBOARDING_GRAPH_ROUTE else HOME_GRAPH_ROUTE
             ) {
                 onboardingGraph {
                     onboardingCompleted()
                     navController.popBackStack()
+                    navController.navigate(HOME_GRAPH_ROUTE)
                 }
                 homeGraph()
                 settingsGraph(navController)
-            }
-        }
-    }
-
-    // Launch onboarding if required
-    LaunchedEffect(appLaunchState) {
-        appLaunchState?.let { state ->
-            if (state == AppLaunchState.ONBOARDING_REQUIRED) {
-                navController.navigate(ONBOARDING_GRAPH_ROUTE) {
-                    popUpTo(ONBOARDING_GRAPH_ROUTE)
-                }
             }
         }
     }
