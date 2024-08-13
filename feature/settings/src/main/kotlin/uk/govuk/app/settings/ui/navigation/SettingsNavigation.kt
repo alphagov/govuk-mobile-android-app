@@ -27,7 +27,8 @@ fun NavGraphBuilder.settingsGraph(navController: NavController) {
             )
         ) {
             SettingsRoute {
-                navController.navigateToSettingsSubScreen()
+//                navController.navigateToSettingsSubScreen()
+                navController.navigate("SEARCH")
             }
         }
         composable(SETTINGS_SUB_ROUTE,
