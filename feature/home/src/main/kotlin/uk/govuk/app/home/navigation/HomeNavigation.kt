@@ -1,6 +1,7 @@
 package uk.govuk.app.home.navigation
 
 import android.content.Intent
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
@@ -10,7 +11,9 @@ import uk.govuk.app.home.ui.HomeRoute
 const val HOME_GRAPH_ROUTE = "home_graph_route"
 private const val HOME_ROUTE = "home_route"
 
-fun NavGraphBuilder.homeGraph() {
+fun NavGraphBuilder.homeGraph(
+    modifier: Modifier = Modifier
+) {
     navigation(
         route = HOME_GRAPH_ROUTE,
         startDestination = HOME_ROUTE
@@ -23,6 +26,6 @@ fun NavGraphBuilder.homeGraph() {
                     action = Intent.ACTION_VIEW
                 }
             )
-        ) { HomeRoute() }
+        ) { HomeRoute(modifier) }
     }
 }

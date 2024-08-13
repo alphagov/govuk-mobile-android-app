@@ -1,8 +1,8 @@
 package uk.govuk.app.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -50,7 +50,6 @@ fun GovUkApp() {
     }
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun BottomNavScaffold(
     onboardingRequired: Boolean,
@@ -124,7 +123,7 @@ fun BottomNavScaffold(
                 }
             }
         }
-    ) {
+    ) { paddingValues ->
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = GovUkTheme.colourScheme.surfaces.background
@@ -138,8 +137,13 @@ fun BottomNavScaffold(
                     navController.popBackStack()
                     navController.navigate(HOME_GRAPH_ROUTE)
                 }
-                homeGraph()
-                settingsGraph(navController)
+                homeGraph(
+                    modifier = Modifier.padding(paddingValues)
+                )
+                settingsGraph(
+                    navController = navController,
+                    modifier = Modifier.padding(paddingValues)
+                )
             }
         }
     }
