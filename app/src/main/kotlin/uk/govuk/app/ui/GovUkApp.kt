@@ -1,11 +1,8 @@
 package uk.govuk.app.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -22,7 +19,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -30,7 +26,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -48,11 +43,13 @@ fun GovUkApp() {
     val viewModel: AppLaunchViewModel = hiltViewModel()
     val navController = rememberNavController()
     val appLaunchState by viewModel.appLaunchState.collectAsState()
+
     BottomNavScaffold(navController, appLaunchState) {
         viewModel.onboardingCompleted()
     }
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun BottomNavScaffold(
     navController: NavHostController,
@@ -126,11 +123,9 @@ fun BottomNavScaffold(
                 }
             }
         }
-    ) { innerPadding ->
+    ) {
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            modifier = Modifier.fillMaxSize(),
             color = GovUkTheme.colourScheme.surfaces.background
         ) {
             NavHost(
@@ -143,14 +138,6 @@ fun BottomNavScaffold(
                 }
                 homeGraph()
                 settingsGraph(navController)
-                composable("SEARCH") {
-                    Box(modifier = Modifier
-                        .height(1000.dp)
-                        .background(Color.Red)
-                    ) {
-                        Text("Search blah blah blah!!!")
-                    }
-                }
             }
         }
     }

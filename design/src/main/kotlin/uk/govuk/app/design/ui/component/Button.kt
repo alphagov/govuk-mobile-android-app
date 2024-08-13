@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.govuk.app.design.R
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -162,7 +163,6 @@ fun NewTabIcon() {
     )
 }
 
-/*
 @Preview
 @Composable
 private fun Primary()
@@ -238,4 +238,3 @@ private fun SecondaryDisabled()
         )
     }
 }
- */

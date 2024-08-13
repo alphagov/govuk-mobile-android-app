@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
@@ -275,7 +276,6 @@ fun CaptionRegularLabel(
     )
 }
 
-/*
 @Preview(showBackground = true)
 @Composable
 private fun LargeTitleBold() {
@@ -419,4 +419,3 @@ private fun CaptionRegular() {
         CaptionRegularLabel("Caption Regular Label")
     }
 }
- */
