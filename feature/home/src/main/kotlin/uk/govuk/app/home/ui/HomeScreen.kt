@@ -33,11 +33,14 @@ import kotlin.math.max
 import kotlin.math.min
 
 @Composable
-internal fun HomeRoute() {
+internal fun HomeRoute(
+    modifier: Modifier = Modifier
+) {
     val viewModel: HomeViewModel = hiltViewModel()
 
     HomeScreen(
-        onPageView = { viewModel.onPageView() }
+        onPageView = { viewModel.onPageView() },
+        modifier
     )
 }
 

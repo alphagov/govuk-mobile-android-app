@@ -1,6 +1,7 @@
-package uk.govuk.app.settings.ui.navigation
+package uk.govuk.app.settings.navigation
 
 import android.content.Intent
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -13,12 +14,16 @@ const val SETTINGS_GRAPH_ROUTE = "settings_graph_route"
 private const val SETTINGS_ROUTE = "settings_route"
 private const val SETTINGS_SUB_ROUTE = "settings_sub_route"
 
-fun NavGraphBuilder.settingsGraph(navController: NavController) {
+fun NavGraphBuilder.settingsGraph(
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     navigation(
         route = SETTINGS_GRAPH_ROUTE,
         startDestination = SETTINGS_ROUTE
     ) {
-        composable(SETTINGS_ROUTE,
+        composable(
+            SETTINGS_ROUTE,
             deepLinks = listOf(
                 navDeepLink {
                     uriPattern = "/settings"
@@ -26,18 +31,20 @@ fun NavGraphBuilder.settingsGraph(navController: NavController) {
                 }
             )
         ) {
-            SettingsRoute {
-                navController.navigateToSettingsSubScreen()
-            }
+            SettingsRoute(
+                onButtonClick = { navController.navigateToSettingsSubScreen() },
+                modifier = modifier
+            )
         }
-        composable(SETTINGS_SUB_ROUTE,
+        composable(
+            SETTINGS_SUB_ROUTE,
             deepLinks = listOf(
                 navDeepLink {
                     uriPattern = "/subroute"
                     action = Intent.ACTION_VIEW
                 }
             )
-        ) { SettingsSubRoute() }
+        ) { SettingsSubRoute(modifier) }
     }
 }
 

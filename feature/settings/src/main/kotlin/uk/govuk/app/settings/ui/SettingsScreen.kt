@@ -10,12 +10,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.settings.SettingsViewModel
 
 @Composable
-internal fun SettingsRoute(onButtonClick: () -> Unit) {
+internal fun SettingsRoute(
+    onButtonClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val viewModel: SettingsViewModel = hiltViewModel()
 
     SettingsScreen(
         onPageView = { viewModel.onPageView() },
-        onButtonClick = onButtonClick
+        onButtonClick = onButtonClick,
+        modifier = modifier
     )
 }
 

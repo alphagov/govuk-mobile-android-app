@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="primary">#FF259AFF</color>
+    <color name="background">#FF000000</color>
+
+    <bool name="lightStatusBar">false</bool>
 </resources>

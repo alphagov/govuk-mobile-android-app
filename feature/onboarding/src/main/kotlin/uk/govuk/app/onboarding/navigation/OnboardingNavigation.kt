@@ -1,4 +1,4 @@
-package uk.govuk.app.onboarding.ui.navigation
+package uk.govuk.app.onboarding.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable

@@ -5,8 +5,8 @@ import androidx.annotation.StringRes
 import uk.govuk.app.R
 import uk.govuk.app.design.R.drawable.ic_home
 import uk.govuk.app.design.R.drawable.ic_settings
-import uk.govuk.app.home.ui.navigation.HOME_GRAPH_ROUTE
-import uk.govuk.app.settings.ui.navigation.SETTINGS_GRAPH_ROUTE
+import uk.govuk.app.home.navigation.HOME_GRAPH_ROUTE
+import uk.govuk.app.settings.navigation.SETTINGS_GRAPH_ROUTE
 
 
 sealed class TopLevelDestination(
