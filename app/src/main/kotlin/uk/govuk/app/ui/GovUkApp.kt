@@ -155,7 +155,7 @@ private fun homeScreenWidgets(): List<@Composable (Modifier) -> Unit> {
     return listOf { modifier ->
         SearchWidget(
             onClick = {
-                // Todo - open search screen
+                // Open search screen
             },
             modifier = modifier
         )
