@@ -30,7 +30,7 @@ import kotlin.math.min
 
 @Composable
 internal fun HomeRoute(
-    widgets: List<@Composable () -> Unit>,
+    widgets: List<@Composable (Modifier) -> Unit>,
     modifier: Modifier = Modifier
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
@@ -44,7 +44,7 @@ internal fun HomeRoute(
 
 @Composable
 private fun HomeScreen(
-    widgets: List<@Composable () -> Unit>,
+    widgets: List<@Composable (Modifier) -> Unit>,
     onPageView: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -86,7 +86,7 @@ private fun HomeScreen(
             state = listState
         ) {
             items(widgets) { widget ->
-                widget()
+                widget(Modifier.fillMaxWidth())
             }
         }
     }

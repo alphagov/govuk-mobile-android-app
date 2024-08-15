@@ -14,7 +14,7 @@ private const val HOME_ROUTE = "home_route"
 const val HOME_GRAPH_START_DESTINATION = HOME_ROUTE
 
 fun NavGraphBuilder.homeGraph(
-    widgets: List<@Composable () -> Unit>,
+    widgets: List<@Composable (Modifier) -> Unit>,
     modifier: Modifier = Modifier
 ) {
     navigation(

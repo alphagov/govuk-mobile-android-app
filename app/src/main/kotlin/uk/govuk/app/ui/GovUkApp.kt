@@ -139,11 +139,7 @@ fun BottomNavScaffold(
                     navController.navigate(HOME_GRAPH_ROUTE)
                 }
                 homeGraph(
-                    widgets = listOf {
-                        SearchWidget {
-                            // Todo - open search screen
-                        }
-                    },
+                    widgets = homeScreenWidgets(),
                     modifier = Modifier.padding(paddingValues)
                 )
                 settingsGraph(
@@ -152,5 +148,16 @@ fun BottomNavScaffold(
                 )
             }
         }
+    }
+}
+
+private fun homeScreenWidgets(): List<@Composable (Modifier) -> Unit> {
+    return listOf { modifier ->
+        SearchWidget(
+            onClick = {
+                // Todo - open search screen
+            },
+            modifier = modifier
+        )
     }
 }
