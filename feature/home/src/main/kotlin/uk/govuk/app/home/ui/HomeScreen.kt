@@ -1,15 +1,13 @@
 package uk.govuk.app.home.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,10 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.HomeViewModel
 import kotlin.math.max
@@ -34,18 +30,21 @@ import kotlin.math.min
 
 @Composable
 internal fun HomeRoute(
+    widgets: List<@Composable () -> Unit>,
     modifier: Modifier = Modifier
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
 
     HomeScreen(
+        widgets = widgets,
         onPageView = { viewModel.onPageView() },
-        modifier
+        modifier = modifier
     )
 }
 
 @Composable
 private fun HomeScreen(
+    widgets: List<@Composable () -> Unit>,
     onPageView: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -79,28 +78,15 @@ private fun HomeScreen(
         }
 
         LazyColumn(
+            modifier = Modifier
+                .padding(
+                    horizontal = GovUkTheme.spacing.medium,
+                    vertical = GovUkTheme.spacing.large
+                ),
             state = listState
         ) {
-            val list = (1..12).map { it.toString() }
-            items(count = list.size) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = GovUkTheme.colourScheme.surfaces.card,
-                    ),
-                    border = BorderStroke(1.dp, GovUkTheme.colourScheme.strokes.listDivider),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(GovUkTheme.spacing.medium)
-                ) {
-                    BodyRegularLabel(
-                        "Scrollable content",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(GovUkTheme.spacing.medium),
-                        textAlign = TextAlign.Center
-                    )
-                }
+            items(widgets) { widget ->
+                widget()
             }
         }
     }

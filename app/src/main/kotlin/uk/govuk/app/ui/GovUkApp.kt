@@ -34,6 +34,7 @@ import uk.govuk.app.launch.AppLaunchViewModel
 import uk.govuk.app.navigation.TopLevelDestination
 import uk.govuk.app.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.govuk.app.onboarding.navigation.onboardingGraph
+import uk.govuk.app.search.ui.widget.SearchWidget
 import uk.govuk.app.settings.navigation.settingsGraph
 
 @Composable
@@ -138,6 +139,11 @@ fun BottomNavScaffold(
                     navController.navigate(HOME_GRAPH_ROUTE)
                 }
                 homeGraph(
+                    widgets = listOf {
+                        SearchWidget {
+                            // Todo - open search screen
+                        }
+                    },
                     modifier = Modifier.padding(paddingValues)
                 )
                 settingsGraph(

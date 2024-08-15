@@ -1,12 +1,20 @@
 package uk.govuk.app.search.ui.widget
 
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import uk.govuk.app.design.ui.component.BaseCard
+import uk.govuk.app.design.ui.component.BodyRegularLabel
 
 @Composable
-fun SearchWidget() {
-    Button(onClick = { /* Todo - handle click */ }) {
-        Text("Search for some stuff!")
+fun SearchWidget(
+    onClick: () -> Unit
+) {
+    BaseCard(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        // Todo - extract strings
+        BodyRegularLabel("Find government services and information")
     }
 }
