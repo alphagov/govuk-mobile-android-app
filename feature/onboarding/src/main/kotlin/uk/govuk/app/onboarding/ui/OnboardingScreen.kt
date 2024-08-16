@@ -42,6 +42,7 @@ import androidx.window.core.layout.WindowHeightSizeClass
 import kotlinx.coroutines.launch
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
+import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.PrimaryButton
 import uk.govuk.app.design.ui.component.SecondaryButton
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -109,10 +110,7 @@ private fun OnboardingScreen(
             Page(pages[pageIndex])
         }
 
-        HorizontalDivider(
-            thickness = 1.dp,
-            color = GovUkTheme.colourScheme.strokes.listDivider,
-        )
+        ListDivider()
 
         val coroutineScope = rememberCoroutineScope()
         val changePage: (Int) -> Unit = { pageIndex ->
