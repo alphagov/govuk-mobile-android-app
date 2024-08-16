@@ -48,7 +48,6 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.onboarding.OnboardingPage
 import uk.govuk.app.onboarding.OnboardingViewModel
 import uk.govuk.app.onboarding.R
-import uk.govuk.app.onboarding.ui.theme.LightGrey
 
 
 @Composable
@@ -334,7 +333,7 @@ private fun OutlinedCircle(modifier: Modifier = Modifier) {
         modifier = modifier
             .size(16.dp)
             .clip(CircleShape)
-            .border(2.dp, LightGrey, CircleShape)
+            .border(2.dp, GovUkTheme.colourScheme.strokes.pageControlsInactive, CircleShape)
     )
 }
 

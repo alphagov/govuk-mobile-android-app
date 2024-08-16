@@ -3,6 +3,7 @@ package uk.govuk.app.design.ui.component
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -13,13 +14,14 @@ private fun BaseLabel(
     text: String,
     modifier: Modifier = Modifier,
     style: TextStyle,
+    color: Color,
     textAlign: TextAlign
 ) {
     Text(
         text = text,
         modifier = modifier,
         style = style,
-        color = GovUkTheme.colourScheme.textAndIcons.primary,
+        color = color,
         textAlign = textAlign,
     )
 }
@@ -28,12 +30,14 @@ private fun BaseLabel(
 fun LargeTitleBoldLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.titleLargeBold,
+        color = color,
         textAlign = textAlign
     )
 }
@@ -42,12 +46,14 @@ fun LargeTitleBoldLabel(
 fun LargeTitleRegularLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.titleLargeRegular,
+        color = color,
         textAlign = textAlign
     )
 }
@@ -56,12 +62,14 @@ fun LargeTitleRegularLabel(
 fun Title1BoldLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.title1Bold,
+        color = color,
         textAlign = textAlign
     )
 }
@@ -70,12 +78,14 @@ fun Title1BoldLabel(
 fun Title1RegularLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.title1Regular,
+        color = color,
         textAlign = textAlign
     )
 }
@@ -84,12 +94,14 @@ fun Title1RegularLabel(
 fun Title2BoldLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.title2Bold,
+        color = color,
         textAlign = textAlign
     )
 }
@@ -98,12 +110,14 @@ fun Title2BoldLabel(
 fun Title2RegularLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.title2Regular,
+        color = color,
         textAlign = textAlign
     )
 }
@@ -112,12 +126,14 @@ fun Title2RegularLabel(
 fun Title3BoldLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.title3Bold,
+        color = color,
         textAlign = textAlign
     )
 }
@@ -126,12 +142,14 @@ fun Title3BoldLabel(
 fun Title3RegularLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.title3Regular,
+        color = color,
         textAlign = textAlign
     )
 }
@@ -140,12 +158,14 @@ fun Title3RegularLabel(
 fun BodyBoldLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.bodyBold,
+        color = color,
         textAlign = textAlign
     )
 }
@@ -154,12 +174,14 @@ fun BodyBoldLabel(
 fun BodyRegularLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.bodyRegular,
+        color = color,
         textAlign = textAlign
     )
 }
@@ -168,12 +190,14 @@ fun BodyRegularLabel(
 fun CalloutBoldLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.calloutBold,
+        color = color,
         textAlign = textAlign
     )
 }
@@ -182,12 +206,14 @@ fun CalloutBoldLabel(
 fun CalloutRegularLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.calloutRegular,
+        color = color,
         textAlign = textAlign
     )
 }
@@ -196,12 +222,14 @@ fun CalloutRegularLabel(
 fun SubheadlineBoldLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.subheadlineBold,
+        color = color,
         textAlign = textAlign
     )
 }
@@ -210,12 +238,14 @@ fun SubheadlineBoldLabel(
 fun SubheadlineRegularLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.subheadlineRegular,
+        color = color,
         textAlign = textAlign
     )
 }
@@ -224,12 +254,14 @@ fun SubheadlineRegularLabel(
 fun FootnoteBoldLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.footnoteBold,
+        color = color,
         textAlign = textAlign
     )
 }
@@ -238,12 +270,14 @@ fun FootnoteBoldLabel(
 fun FootnoteRegularLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.footnoteRegular,
+        color = color,
         textAlign = textAlign
     )
 }
@@ -252,12 +286,14 @@ fun FootnoteRegularLabel(
 fun CaptionBoldLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.captionBold,
+        color = color,
         textAlign = textAlign
     )
 }
@@ -266,12 +302,14 @@ fun CaptionBoldLabel(
 fun CaptionRegularLabel(
     text: String,
     modifier: Modifier = Modifier,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.captionRegular,
+        color = color,
         textAlign = textAlign
     )
 }

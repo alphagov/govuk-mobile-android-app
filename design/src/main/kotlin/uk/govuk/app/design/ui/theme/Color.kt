@@ -24,6 +24,7 @@ val Grey400 = Color(0xFF999999)
 val Grey300 = Color(0xFFB2B2B2)
 val Grey200 = Color(0xFFCCCCCC)
 val Grey100 = Color(0xFFE5E5E5)
+val Grey60 = Color(0xFFF0F0F0)
 val Grey50 = Color(0xFFFAFAFA)
 
 val Black = Color(0xFF000000)
@@ -67,11 +68,13 @@ data class GovUkColourScheme(
         val buttonSecondaryHighlight: Color,
         val buttonSecondaryDisabled: Color,
         val buttonSecondaryFocused: Color,
+        val searchBox: Color
     )
 
     data class Strokes(
         val container: Color,
-        val listDivider: Color
+        val listDivider: Color,
+        val pageControlsInactive: Color
     )
 }
 
@@ -103,10 +106,12 @@ val LightColorScheme = GovUkColourScheme(
         buttonSecondaryHighlight = Grey50,
         buttonSecondaryDisabled = Grey50,
         buttonSecondaryFocused = Yellow,
+        searchBox = Grey60
     ),
     strokes = Strokes(
         container = BlackAlpha30,
-        listDivider = Grey300
+        listDivider = Grey300,
+        pageControlsInactive = Grey500
     )
 )
 
@@ -138,10 +143,12 @@ val DarkColorScheme = GovUkColourScheme(
         buttonSecondaryHighlight = Black,
         buttonSecondaryDisabled = Black,
         buttonSecondaryFocused = Yellow,
+        searchBox = Grey700
     ),
     strokes = Strokes(
         container = WhiteAlpha30,
-        listDivider = Grey500
+        listDivider = Grey500,
+        pageControlsInactive = Grey300
     )
 )
 
@@ -174,10 +181,12 @@ val LocalColourScheme = staticCompositionLocalOf {
             buttonSecondaryHighlight = Color.Unspecified,
             buttonSecondaryDisabled = Color.Unspecified,
             buttonSecondaryFocused = Color.Unspecified,
+            searchBox = Color.Unspecified
         ),
         strokes = Strokes(
             container = Color.Unspecified,
-            listDivider = Color.Unspecified
+            listDivider = Color.Unspecified,
+            pageControlsInactive = Color.Unspecified
         )
     )
 }
