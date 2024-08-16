@@ -22,7 +22,7 @@ fun SearchWidget(
 
 @Preview
 @Composable
-fun SearchWidgetPreview() {
+private fun SearchWidgetPreview() {
     GovUkTheme {
         SearchWidget(onClick = { })
     }
