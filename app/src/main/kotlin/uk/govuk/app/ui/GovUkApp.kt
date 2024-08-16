@@ -151,7 +151,7 @@ fun BottomNavScaffold(
                     navController = navController,
                     modifier = Modifier.padding(paddingValues)
                 )
-                searchGraph()
+                searchGraph(navController)
             }
         }
     }

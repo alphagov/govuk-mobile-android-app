@@ -3,6 +3,7 @@ package uk.govuk.app.search.navigation
 import android.content.Intent
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
@@ -12,6 +13,7 @@ const val SEARCH_GRAPH_ROUTE = "search_graph_route"
 private const val SEARCH_ROUTE = "search_route"
 
 fun NavGraphBuilder.searchGraph(
+    navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -27,7 +29,10 @@ fun NavGraphBuilder.searchGraph(
                 }
             )
         ) {
-            SearchRoute(modifier)
+            SearchRoute(
+                onBack = { navController.popBackStack() },
+                modifier = modifier
+            )
         }
     }
 }

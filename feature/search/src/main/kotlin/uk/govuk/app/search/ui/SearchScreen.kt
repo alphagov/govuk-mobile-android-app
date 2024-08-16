@@ -27,22 +27,28 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
 internal fun SearchRoute(
+    onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    SearchScreen(modifier)
+    SearchScreen(
+        onBack = onBack,
+        modifier = modifier
+    )
 }
 
 @Composable
 private fun SearchScreen(
+    onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
-       SearchFieldHeader()
+       SearchFieldHeader(onBack)
     }
 }
 
 @Composable
 private fun SearchFieldHeader(
+    onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var searchQuery by rememberSaveable {
@@ -57,7 +63,7 @@ private fun SearchFieldHeader(
             Box(
                 Modifier
                     .size(48.dp)
-                    .clickable { }
+                    .clickable { onBack() }
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
