@@ -14,14 +14,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
@@ -41,15 +47,27 @@ private fun SearchScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val focusRequester = remember { FocusRequester() }
+    val keyboard = LocalSoftwareKeyboardController.current
     Column(modifier) {
-       SearchFieldHeader(onBack)
+       SearchFieldHeader(
+           onBack = onBack,
+           focusRequester = focusRequester
+       )
+    }
+
+    LaunchedEffect(focusRequester) {
+        focusRequester.requestFocus()
+        delay(100)
+        keyboard?.show()
     }
 }
 
 @Composable
 private fun SearchFieldHeader(
     onBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    focusRequester: FocusRequester = FocusRequester()
 ) {
     var searchQuery by rememberSaveable {
         mutableStateOf("")
@@ -75,7 +93,9 @@ private fun SearchFieldHeader(
             SearchField(
                 value = searchQuery,
                 onValueChange = { value -> searchQuery = value },
-                Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(focusRequester)
             )
         }
         // Todo - add list divider to component library???
