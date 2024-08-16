@@ -96,17 +96,19 @@ private fun SearchField(
             BodyRegularLabel("Search")
         },
         trailingIcon = {
-            Box(
-                Modifier
-                    .size(48.dp)
-                    .clickable { onValueChange("") }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Clear,
-                    contentDescription = null,
-                    modifier = Modifier.align(Alignment.Center),
-                    tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
-                )
+            if (value.isNotEmpty()) {
+                Box(
+                    Modifier
+                        .size(48.dp)
+                        .clickable { onValueChange("") }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Clear,
+                        contentDescription = null,
+                        modifier = Modifier.align(Alignment.Center),
+                        tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
+                    )
+                }
             }
         },
         singleLine = true,
