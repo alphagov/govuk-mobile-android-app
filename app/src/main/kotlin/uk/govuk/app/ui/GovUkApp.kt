@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -34,6 +35,8 @@ import uk.govuk.app.launch.AppLaunchViewModel
 import uk.govuk.app.navigation.TopLevelDestination
 import uk.govuk.app.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.govuk.app.onboarding.navigation.onboardingGraph
+import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
+import uk.govuk.app.search.navigation.searchGraph
 import uk.govuk.app.search.ui.widget.SearchWidget
 import uk.govuk.app.settings.navigation.settingsGraph
 
@@ -133,29 +136,32 @@ fun BottomNavScaffold(
                 navController = navController,
                 startDestination = if (onboardingRequired) ONBOARDING_GRAPH_ROUTE else HOME_GRAPH_ROUTE
             ) {
-                onboardingGraph {
-                    onboardingCompleted()
-                    navController.popBackStack()
-                    navController.navigate(HOME_GRAPH_ROUTE)
-                }
+                onboardingGraph(
+                    onboardingCompleted = {
+                        onboardingCompleted()
+                        navController.popBackStack()
+                        navController.navigate(HOME_GRAPH_ROUTE)
+                    }
+                )
                 homeGraph(
-                    widgets = homeScreenWidgets(),
+                    widgets = homeScreenWidgets(navController),
                     modifier = Modifier.padding(paddingValues)
                 )
                 settingsGraph(
                     navController = navController,
                     modifier = Modifier.padding(paddingValues)
                 )
+                searchGraph()
             }
         }
     }
 }
 
-private fun homeScreenWidgets(): List<@Composable (Modifier) -> Unit> {
+private fun homeScreenWidgets(navController: NavHostController): List<@Composable (Modifier) -> Unit> {
     return listOf { modifier ->
         SearchWidget(
             onClick = {
-                // Open search screen
+                navController.navigate(SEARCH_GRAPH_ROUTE)
             },
             modifier = modifier
         )

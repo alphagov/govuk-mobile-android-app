@@ -30,7 +30,10 @@ fun NavGraphBuilder.homeGraph(
                 }
             )
         ) {
-            HomeRoute(widgets, modifier)
+            HomeRoute(
+                widgets = widgets,
+                modifier = modifier
+            )
         }
     }
 }
