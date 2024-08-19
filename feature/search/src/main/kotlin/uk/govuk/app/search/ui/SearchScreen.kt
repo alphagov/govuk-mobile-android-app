@@ -11,8 +11,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.delay
 import uk.govuk.app.design.ui.component.SearchHeader
+import uk.govuk.app.search.R
 
 @Composable
 internal fun SearchRoute(
@@ -42,7 +44,7 @@ private fun SearchScreen(
            onBack = onBack,
            searchQuery = searchQuery,
            onSearchQueryChange = { searchQuery = it },
-           placeholder = "Search", // Todo - extract string
+           placeholder = stringResource(R.string.search_placeholder),
            focusRequester = focusRequester
        )
     }
