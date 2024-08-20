@@ -3,11 +3,7 @@ package uk.govuk.app.search.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -19,10 +15,12 @@ import uk.govuk.app.search.R
 @Composable
 internal fun SearchRoute(
     onBack: () -> Unit,
+    onSearch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     SearchScreen(
         onBack = onBack,
+        onSearch = onSearch,
         modifier = modifier
     )
 }
@@ -30,20 +28,16 @@ internal fun SearchRoute(
 @Composable
 private fun SearchScreen(
     onBack: () -> Unit,
+    onSearch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
 
-    var searchQuery by rememberSaveable {
-        mutableStateOf("")
-    }
-
     Column(modifier) {
        SearchHeader(
            onBack = onBack,
-           searchQuery = searchQuery,
-           onSearchQueryChange = { searchQuery = it },
+           onSearch = onSearch,
            placeholder = stringResource(R.string.search_placeholder),
            focusRequester = focusRequester
        )

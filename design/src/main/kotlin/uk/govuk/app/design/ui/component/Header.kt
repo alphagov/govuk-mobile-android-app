@@ -20,9 +20,8 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 @Composable
 fun SearchHeader(
     onBack: () -> Unit,
-    searchQuery: String,
-    onSearchQueryChange: (String) -> Unit,
     placeholder: String,
+    onSearch: (String) -> Unit,
     modifier: Modifier = Modifier,
     focusRequester: FocusRequester = FocusRequester()
 ) {
@@ -44,9 +43,8 @@ fun SearchHeader(
                 )
             }
             SearchField(
-                searchQuery = searchQuery,
-                onSearchQueryChange = onSearchQueryChange,
                 placeholder = placeholder,
+                onSearch = onSearch,
                 modifier = Modifier
                     .weight(1f)
                     .focusRequester(focusRequester)
