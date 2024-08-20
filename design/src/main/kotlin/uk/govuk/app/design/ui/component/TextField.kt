@@ -3,29 +3,39 @@ package uk.govuk.app.design.ui.component
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
 fun SearchField(
-    searchQuery: String,
-    onSearchQueryChange: (String) -> Unit,
     placeholder: String,
+    onSearch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var searchQuery by rememberSaveable {
+        mutableStateOf("")
+    }
+
     TextField(
         value = searchQuery,
         onValueChange = {
-            onSearchQueryChange(it)
+            searchQuery = it
         },
         modifier = modifier,
         placeholder = {
@@ -36,7 +46,7 @@ fun SearchField(
                 Box(
                     Modifier
                         .size(48.dp)
-                        .clickable { onSearchQueryChange("") }
+                        .clickable { searchQuery = "" }
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Clear,
@@ -47,6 +57,8 @@ fun SearchField(
                 }
             }
         },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = { onSearch(searchQuery) }),
         singleLine = true,
         textStyle = GovUkTheme.typography.bodyRegular,
         colors = TextFieldDefaults.colors()
