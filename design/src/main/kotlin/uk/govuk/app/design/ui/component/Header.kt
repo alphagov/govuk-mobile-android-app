@@ -14,7 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import uk.govuk.app.design.R
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
@@ -37,7 +39,7 @@ fun SearchHeader(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.content_desc_back),
                     modifier = Modifier.align(Alignment.Center),
                     tint = GovUkTheme.colourScheme.textAndIcons.link
                 )

@@ -18,8 +18,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import uk.govuk.app.design.R
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
@@ -50,7 +52,7 @@ fun SearchField(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Clear,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.content_desc_clear),
                         modifier = Modifier.align(Alignment.Center),
                         tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
                     )
