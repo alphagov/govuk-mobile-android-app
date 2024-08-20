@@ -16,6 +16,7 @@ const val SEARCH_GRAPH_ROUTE = "search_graph_route"
 private const val SEARCH_ROUTE = "search_route"
 
 private const val SEARCH_URL = "https://www.gov.uk/search/all?keywords=%s&order=relevance"
+private const val BLANK_SEARCH_URL = "https://www.gov.uk/search?q="
 
 fun NavGraphBuilder.searchGraph(
     navController: NavHostController,
@@ -40,7 +41,12 @@ fun NavGraphBuilder.searchGraph(
                 onBack = { navController.popBackStack() },
                 onSearch = { searchQuery ->
                     val intent = CustomTabsIntent.Builder().build()
-                    intent.launchUrl(context, Uri.parse(String.format(SEARCH_URL, searchQuery)))
+                    val searchUrl = if (searchQuery.isBlank()) {
+                        BLANK_SEARCH_URL
+                    } else {
+                        String.format(SEARCH_URL, searchQuery)
+                    }
+                    intent.launchUrl(context, Uri.parse(searchUrl))
                 },
                 modifier = modifier
             )
