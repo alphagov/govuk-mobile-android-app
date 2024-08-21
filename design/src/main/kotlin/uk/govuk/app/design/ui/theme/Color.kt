@@ -91,7 +91,7 @@ val LightColorScheme = GovUkColourScheme(
         buttonSecondaryHighlight = Blue5,
         buttonSecondaryDisabled = Grey700,
         buttonSecondaryFocused = Black,
-        trailingIcon = Grey300
+        trailingIcon = Black
     ),
     surfaces = Surfaces(
         background = Grey50,
@@ -128,7 +128,7 @@ val DarkColorScheme = GovUkColourScheme(
         buttonSecondaryHighlight = Blue6,
         buttonSecondaryDisabled = Grey300,
         buttonSecondaryFocused = Black,
-        trailingIcon = Grey500
+        trailingIcon = White
     ),
     surfaces = Surfaces(
         background = Black,
