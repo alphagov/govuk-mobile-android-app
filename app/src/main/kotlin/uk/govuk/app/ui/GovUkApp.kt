@@ -35,6 +35,7 @@ import uk.govuk.app.launch.AppLaunchViewModel
 import uk.govuk.app.navigation.TopLevelDestination
 import uk.govuk.app.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.govuk.app.onboarding.navigation.onboardingGraph
+import uk.govuk.app.release_flag.ReleaseFlagsService
 import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
 import uk.govuk.app.search.ui.widget.SearchWidget
@@ -159,11 +160,13 @@ fun BottomNavScaffold(
 
 private fun homeScreenWidgets(navController: NavHostController): List<@Composable (Modifier) -> Unit> {
     return listOf { modifier ->
-        SearchWidget(
-            onClick = {
-                navController.navigate(SEARCH_GRAPH_ROUTE)
-            },
-            modifier = modifier
-        )
+        if (ReleaseFlagsService().isSearchEnabled()) {
+            SearchWidget(
+                onClick = {
+                    navController.navigate(SEARCH_GRAPH_ROUTE)
+                },
+                modifier = modifier
+            )
+        }
     }
 }
