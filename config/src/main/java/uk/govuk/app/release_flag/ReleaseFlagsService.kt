@@ -1,8 +1,8 @@
 package uk.govuk.app.release_flag
 
 class ReleaseFlagsService(
-    var globalFlags: ReleaseFlags = ReleaseFlags(mapOf()),
-    var localFlags: ReleaseFlags = ReleaseFlags(mapOf("search" to true))
+    private var globalFlags: ReleaseFlags = ReleaseFlags(mapOf()),
+    private var localFlags: ReleaseFlags = ReleaseFlags(mapOf("search" to true))
 ) {
     fun isSearchEnabled(): Boolean {
         if (globalFlags.isEmpty()) {
