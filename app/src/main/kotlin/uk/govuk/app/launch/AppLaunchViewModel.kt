@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import uk.govuk.app.release_flag.ReleaseFlagsService
 import javax.inject.Inject
 
 enum class AppLaunchState {
@@ -21,6 +22,9 @@ internal class AppLaunchViewModel @Inject constructor(
     private val _appLaunchState: MutableStateFlow<AppLaunchState?> = MutableStateFlow(null)
     val appLaunchState = _appLaunchState.asStateFlow()
 
+    private val _isSearchEnabled: MutableStateFlow<Boolean?> = MutableStateFlow(null)
+    val isSearchEnabled = _isSearchEnabled.asStateFlow()
+
     init {
         viewModelScope.launch {
             _appLaunchState.value = if (appLaunchRepo.isOnboardingCompleted()) {
@@ -28,6 +32,7 @@ internal class AppLaunchViewModel @Inject constructor(
             } else {
                 AppLaunchState.ONBOARDING_REQUIRED
             }
+            _isSearchEnabled.value = ReleaseFlagsService().isSearchEnabled()
         }
     }
 

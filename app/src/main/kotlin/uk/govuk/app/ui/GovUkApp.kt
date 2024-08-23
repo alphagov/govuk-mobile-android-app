@@ -35,7 +35,6 @@ import uk.govuk.app.launch.AppLaunchViewModel
 import uk.govuk.app.navigation.TopLevelDestination
 import uk.govuk.app.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.govuk.app.onboarding.navigation.onboardingGraph
-import uk.govuk.app.release_flag.ReleaseFlagsService
 import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
 import uk.govuk.app.search.ui.widget.SearchWidget
@@ -48,7 +47,8 @@ fun GovUkApp() {
 
     appLaunchState?.let { launchState ->
         BottomNavScaffold(
-            onboardingRequired = launchState == AppLaunchState.ONBOARDING_REQUIRED
+            onboardingRequired = launchState == AppLaunchState.ONBOARDING_REQUIRED,
+            isSearchEnabled = viewModel.isSearchEnabled.value == true
         ) {
             viewModel.onboardingCompleted()
         }
@@ -58,6 +58,7 @@ fun GovUkApp() {
 @Composable
 fun BottomNavScaffold(
     onboardingRequired: Boolean,
+    isSearchEnabled: Boolean,
     onboardingCompleted: () -> Unit
 ) {
     val topLevelDestinations = listOf(TopLevelDestination.Home, TopLevelDestination.Settings)
@@ -145,7 +146,7 @@ fun BottomNavScaffold(
                     }
                 )
                 homeGraph(
-                    widgets = homeScreenWidgets(navController),
+                    widgets = homeScreenWidgets(navController, isSearchEnabled),
                     modifier = Modifier.padding(paddingValues)
                 )
                 settingsGraph(
@@ -158,9 +159,9 @@ fun BottomNavScaffold(
     }
 }
 
-private fun homeScreenWidgets(navController: NavHostController): List<@Composable (Modifier) -> Unit> {
+private fun homeScreenWidgets(navController: NavHostController, isSearchEnabled: Boolean): List<@Composable (Modifier) -> Unit> {
     return listOf { modifier ->
-        if (ReleaseFlagsService().isSearchEnabled()) {
+        if (isSearchEnabled) {
             SearchWidget(
                 onClick = {
                     navController.navigate(SEARCH_GRAPH_ROUTE)
