@@ -14,6 +14,7 @@ class ReleaseFlagsServiceTest {
     //
     //    | Local | Global | Result |
     //    |-------|--------|--------|
+    //    | unset | unset  | false  |
     //    | false | unset  | false  |
     //    | true  | unset  | true   |
     //    | unset | false  | false  |
@@ -27,6 +28,14 @@ class ReleaseFlagsServiceTest {
     private val unset = mapOf("unset" to true)
     private val flagIsTrue = mapOf(flagName to true)
     private val flagIsFalse = mapOf(flagName to false)
+
+    @Test
+    fun globalIsUnsetAndLocalIsUnset() {
+        val globalFlags = ReleaseFlags(unset)
+        val localFlags = ReleaseFlags(unset)
+
+        assertFalse(ReleaseFlagsService(globalFlags, localFlags).isSearchEnabled())
+    }
 
     @Test
     fun globalIsUnsetAndLocalIsFalse() {
