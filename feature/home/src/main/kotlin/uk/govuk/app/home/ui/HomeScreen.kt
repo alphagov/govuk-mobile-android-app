@@ -134,7 +134,7 @@ private fun ScalingHeader(
     Column(modifier = modifier) {
         Image(
             painter = painterResource(id = uk.govuk.app.design.R.drawable.logo),
-            contentDescription = null,
+            contentDescription = "GOV.UK Logo",
             modifier = Modifier
                 .padding(vertical = padding.dp)
                 .align(Alignment.CenterHorizontally)
