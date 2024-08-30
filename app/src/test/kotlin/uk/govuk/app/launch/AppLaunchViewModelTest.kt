@@ -15,7 +15,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import uk.govuk.app.config.ReleaseFlagsService
+import uk.govuk.app.config.flags.ReleaseFlagsService
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AppLaunchViewModelTest {

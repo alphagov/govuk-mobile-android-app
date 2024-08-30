@@ -8,7 +8,7 @@ import io.mockk.mockk
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import uk.govuk.app.config.ReleaseFlagsService
+import uk.govuk.app.config.flags.ReleaseFlagsService
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.ui.GovUkApp
 

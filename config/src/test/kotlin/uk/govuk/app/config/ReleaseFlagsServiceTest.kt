@@ -1,8 +1,13 @@
 package uk.govuk.app.config
 
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import uk.govuk.app.config.flags.ReleaseFlagsService
+import uk.govuk.app.config.flags.local.LocalFlagRepo
+import uk.govuk.app.config.flags.remote.RemoteFlagRepo
 
 class ReleaseFlagsServiceTest {
     // Scenario - Global vs local feature flag hierarchy:
@@ -14,90 +19,61 @@ class ReleaseFlagsServiceTest {
     //
     //    | Local | Global | Result |
     //    |-------|--------|--------|
-    //    | unset | unset  | false  |
     //    | false | unset  | false  |
     //    | true  | unset  | true   |
-    //    | unset | false  | false  |
-    //    | unset | true   | true   |
     //    | false | false  | false  |
     //    | false | true   | true   |
     //    | true  | false  | false  |
     //    | true  | true   | true   |
 
-    private val flagName = "search"
-    private val unset = mapOf("unset" to true)
-    private val flagIsTrue = mapOf(flagName to true)
-    private val flagIsFalse = mapOf(flagName to false)
-
-    @Test
-    fun globalIsUnsetAndLocalIsUnset() {
-        val globalFlags = ReleaseFlags(unset)
-        val localFlags = ReleaseFlags(unset)
-
-        assertFalse(ReleaseFlagsService(globalFlags, localFlags).isSearchEnabled())
-    }
+    private val localFlagRepo = mockk<LocalFlagRepo>(relaxed = true)
+    private val remoteFlagRepo = mockk<RemoteFlagRepo>(relaxed = true)
 
     @Test
     fun globalIsUnsetAndLocalIsFalse() {
-        val globalFlags = ReleaseFlags(unset)
-        val localFlags = ReleaseFlags(flagIsFalse)
+        every { remoteFlagRepo.isSearchEnabled() } returns null
+        every { localFlagRepo.isSearchEnabled() } returns false
 
-        assertFalse(ReleaseFlagsService(globalFlags, localFlags).isSearchEnabled())
+        assertFalse(ReleaseFlagsService(localFlagRepo, remoteFlagRepo).isSearchEnabled())
     }
 
     @Test
     fun globalIsUnsetAndLocalIsTrue() {
-        val globalFlags = ReleaseFlags(unset)
-        val localFlags = ReleaseFlags(flagIsTrue)
+        every { remoteFlagRepo.isSearchEnabled() } returns null
+        every { localFlagRepo.isSearchEnabled() } returns true
 
-        assertTrue(ReleaseFlagsService(globalFlags, localFlags).isSearchEnabled())
-    }
-
-    @Test
-    fun localIsUnsetAndGlobalIsFalse() {
-        val globalFlags = ReleaseFlags(flagIsFalse)
-        val localFlags = ReleaseFlags(unset)
-
-        assertFalse(ReleaseFlagsService(globalFlags, localFlags).isSearchEnabled())
-    }
-
-    @Test
-    fun localIsUnsetAndGlobalIsTrue() {
-        val globalFlags = ReleaseFlags(flagIsTrue)
-        val localFlags = ReleaseFlags(unset)
-
-        assertTrue(ReleaseFlagsService(globalFlags, localFlags).isSearchEnabled())
+        assertTrue(ReleaseFlagsService(localFlagRepo, remoteFlagRepo).isSearchEnabled())
     }
 
     @Test
     fun localIsFalseAndGlobalIsFalse() {
-        val globalFlags = ReleaseFlags(flagIsFalse)
-        val localFlags = ReleaseFlags(flagIsFalse)
+        every { remoteFlagRepo.isSearchEnabled() } returns false
+        every { localFlagRepo.isSearchEnabled() } returns false
 
-        assertFalse(ReleaseFlagsService(globalFlags, localFlags).isSearchEnabled())
+        assertFalse(ReleaseFlagsService(localFlagRepo, remoteFlagRepo).isSearchEnabled())
     }
 
     @Test
     fun localIsFalseAndGlobalIsTrue() {
-        val globalFlags = ReleaseFlags(flagIsTrue)
-        val localFlags = ReleaseFlags(flagIsFalse)
+        every { remoteFlagRepo.isSearchEnabled() } returns true
+        every { localFlagRepo.isSearchEnabled() } returns false
 
-        assertTrue(ReleaseFlagsService(globalFlags, localFlags).isSearchEnabled())
+        assertTrue(ReleaseFlagsService(localFlagRepo, remoteFlagRepo).isSearchEnabled())
     }
 
     @Test
     fun localIsTrueAndGlobalIsFalse() {
-        val globalFlags = ReleaseFlags(flagIsFalse)
-        val localFlags = ReleaseFlags(flagIsTrue)
+        every { remoteFlagRepo.isSearchEnabled() } returns false
+        every { localFlagRepo.isSearchEnabled() } returns true
 
-        assertFalse(ReleaseFlagsService(globalFlags, localFlags).isSearchEnabled())
+        assertFalse(ReleaseFlagsService(localFlagRepo, remoteFlagRepo).isSearchEnabled())
     }
 
     @Test
     fun localIsTrueAndGlobalIsTrue() {
-        val globalFlags = ReleaseFlags(flagIsTrue)
-        val localFlags = ReleaseFlags(flagIsTrue)
+        every { remoteFlagRepo.isSearchEnabled() } returns true
+        every { localFlagRepo.isSearchEnabled() } returns true
 
-        assertTrue(ReleaseFlagsService(globalFlags, localFlags).isSearchEnabled())
+        assertTrue(ReleaseFlagsService(localFlagRepo, remoteFlagRepo).isSearchEnabled())
     }
 }
