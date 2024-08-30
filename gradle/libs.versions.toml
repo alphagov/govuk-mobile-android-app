@@ -65,7 +65,3 @@ google-play-services = { id = "com.google.gms.google-services", version.ref = "g
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
-
-
-
-

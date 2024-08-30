@@ -57,6 +57,8 @@ android {
 
     packaging {
         resources {
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/LICENSE-notice.md"
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
@@ -68,6 +70,7 @@ dependencies {
     implementation(projects.feature.settings)
     implementation(projects.feature.onboarding)
     implementation(projects.feature.search)
+    implementation(projects.config)
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -88,6 +91,9 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.mockk)
+    androidTestImplementation(libs.androidx.hilt.navigation.compose)
+    androidTestImplementation(libs.hilt.android)
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)

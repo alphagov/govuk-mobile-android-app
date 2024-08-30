@@ -11,15 +11,18 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import uk.govuk.app.config.flags.ReleaseFlagsService
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AppLaunchViewModelTest {
 
     private val dispatcher = UnconfinedTestDispatcher()
     private val onboardingRepo = mockk<AppLaunchRepo>(relaxed = true)
+    private val releaseFlagsService = mockk<ReleaseFlagsService>(relaxed = true)
 
     // Todo - probably want to extract this into a test rule for re-use at some point
     @Before
@@ -33,14 +36,14 @@ class AppLaunchViewModelTest {
     }
 
     @Test
-    fun `Given the user has previously completed onboarding, When init, then return onboarding completed state`() {
+    fun `Given the user has previously completed onboarding, When init, then return onboarding not required state`() {
         coEvery { onboardingRepo.isOnboardingCompleted() } returns true
 
-        val viewModel = AppLaunchViewModel(onboardingRepo)
+        val viewModel = AppLaunchViewModel(onboardingRepo, releaseFlagsService)
 
         runTest {
-            val result = viewModel.appLaunchState.first()
-            assertEquals(AppLaunchState.ONBOARDING_COMPLETED, result)
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.isOnboardingRequired)
         }
     }
 
@@ -48,17 +51,41 @@ class AppLaunchViewModelTest {
     fun `Given the user has not previously completed onboarding, When init, then return onboarding required state`() {
         coEvery { onboardingRepo.isOnboardingCompleted() } returns false
 
-        val viewModel = AppLaunchViewModel(onboardingRepo)
+        val viewModel = AppLaunchViewModel(onboardingRepo, releaseFlagsService)
 
         runTest {
-            val result = viewModel.appLaunchState.first()
-            assertEquals(AppLaunchState.ONBOARDING_REQUIRED, result)
+            val result = viewModel.uiState.first()
+            assertTrue(result!!.isOnboardingRequired)
+        }
+    }
+
+    @Test
+    fun `Given the search feature is enabled, When init, then return search enabled state`() {
+        coEvery { releaseFlagsService.isSearchEnabled() } returns true
+
+        val viewModel = AppLaunchViewModel(onboardingRepo, releaseFlagsService)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertTrue(result!!.isSearchEnabled)
+        }
+    }
+
+    @Test
+    fun `Given the search feature is disabled, When init, then return search disabled state`() {
+        coEvery { releaseFlagsService.isSearchEnabled() } returns false
+
+        val viewModel = AppLaunchViewModel(onboardingRepo, releaseFlagsService)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.isSearchEnabled)
         }
     }
 
     @Test
     fun `When onboarding completed, then call repo onboarding completed`() {
-        val viewModel = AppLaunchViewModel(onboardingRepo)
+        val viewModel = AppLaunchViewModel(onboardingRepo, releaseFlagsService)
 
         runTest {
             viewModel.onboardingCompleted()

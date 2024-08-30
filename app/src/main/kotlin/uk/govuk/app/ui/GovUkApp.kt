@@ -30,7 +30,6 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.navigation.HOME_GRAPH_ROUTE
 import uk.govuk.app.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.govuk.app.home.navigation.homeGraph
-import uk.govuk.app.launch.AppLaunchState
 import uk.govuk.app.launch.AppLaunchViewModel
 import uk.govuk.app.navigation.TopLevelDestination
 import uk.govuk.app.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
@@ -43,11 +42,12 @@ import uk.govuk.app.settings.navigation.settingsGraph
 @Composable
 fun GovUkApp() {
     val viewModel: AppLaunchViewModel = hiltViewModel()
-    val appLaunchState by viewModel.appLaunchState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
-    appLaunchState?.let { launchState ->
+    uiState?.let {
         BottomNavScaffold(
-            onboardingRequired = launchState == AppLaunchState.ONBOARDING_REQUIRED
+            onboardingRequired = it.isOnboardingRequired,
+            isSearchEnabled = it.isSearchEnabled
         ) {
             viewModel.onboardingCompleted()
         }
@@ -57,6 +57,7 @@ fun GovUkApp() {
 @Composable
 fun BottomNavScaffold(
     onboardingRequired: Boolean,
+    isSearchEnabled: Boolean,
     onboardingCompleted: () -> Unit
 ) {
     val topLevelDestinations = listOf(TopLevelDestination.Home, TopLevelDestination.Settings)
@@ -144,7 +145,7 @@ fun BottomNavScaffold(
                     }
                 )
                 homeGraph(
-                    widgets = homeScreenWidgets(navController),
+                    widgets = homeScreenWidgets(navController, isSearchEnabled),
                     modifier = Modifier.padding(paddingValues)
                 )
                 settingsGraph(
@@ -157,13 +158,15 @@ fun BottomNavScaffold(
     }
 }
 
-private fun homeScreenWidgets(navController: NavHostController): List<@Composable (Modifier) -> Unit> {
+private fun homeScreenWidgets(navController: NavHostController, isSearchEnabled: Boolean): List<@Composable (Modifier) -> Unit> {
     return listOf { modifier ->
-        SearchWidget(
-            onClick = {
-                navController.navigate(SEARCH_GRAPH_ROUTE)
-            },
-            modifier = modifier
-        )
+        if (isSearchEnabled) {
+            SearchWidget(
+                onClick = {
+                    navController.navigate(SEARCH_GRAPH_ROUTE)
+                },
+                modifier = modifier
+            )
+        }
     }
 }
