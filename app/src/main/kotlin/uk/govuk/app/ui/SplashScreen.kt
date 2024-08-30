@@ -56,7 +56,7 @@ fun SplashScreen(
             composition = composition,
             progress = { state.progress },
             modifier = Modifier.semantics {
-                contentDescription = "GOV.UK"
+                contentDescription = "GOV dot UK"
             }
         )
     }
