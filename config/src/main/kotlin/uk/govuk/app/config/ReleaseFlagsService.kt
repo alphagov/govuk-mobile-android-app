@@ -1,9 +1,11 @@
-package uk.govuk.app.release_flag
+package uk.govuk.app.config
 
-class ReleaseFlagsService(
-    private var globalFlags: ReleaseFlags = ReleaseFlags(mapOf()),
+import javax.inject.Inject
+
+class ReleaseFlagsService @Inject constructor() {
+    private var globalFlags: ReleaseFlags = ReleaseFlags(mapOf())
     private var localFlags: ReleaseFlags = ReleaseFlags(mapOf("search" to true))
-) {
+
     fun isSearchEnabled(): Boolean {
         if (globalFlags.isEmpty()) {
             globalFlags = getGlobalReleaseFlags()

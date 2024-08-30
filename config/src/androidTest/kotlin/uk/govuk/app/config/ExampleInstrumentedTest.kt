@@ -1,4 +1,4 @@
-package uk.govuk.app.release_flag
+package uk.govuk.app.config
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry

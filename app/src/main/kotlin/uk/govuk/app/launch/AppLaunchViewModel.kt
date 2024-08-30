@@ -6,33 +6,29 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import uk.govuk.app.release_flag.ReleaseFlagsService
+import uk.govuk.app.config.ReleaseFlagsService
 import javax.inject.Inject
 
-enum class AppLaunchState {
-    ONBOARDING_REQUIRED,
-    ONBOARDING_COMPLETED
-}
+data class AppLaunchUiState(
+    val isOnboardingRequired: Boolean,
+    val isSearchEnabled: Boolean
+)
 
 @HiltViewModel
 internal class AppLaunchViewModel @Inject constructor(
-    private val appLaunchRepo: AppLaunchRepo
+    private val appLaunchRepo: AppLaunchRepo,
+    private val releaseFlagsService: ReleaseFlagsService
 ): ViewModel() {
 
-    private val _appLaunchState: MutableStateFlow<AppLaunchState?> = MutableStateFlow(null)
-    val appLaunchState = _appLaunchState.asStateFlow()
-
-    private val _isSearchEnabled: MutableStateFlow<Boolean?> = MutableStateFlow(null)
-    val isSearchEnabled = _isSearchEnabled.asStateFlow()
+    private val _uiState: MutableStateFlow<AppLaunchUiState?> = MutableStateFlow(null)
+    val uiState = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            _appLaunchState.value = if (appLaunchRepo.isOnboardingCompleted()) {
-                AppLaunchState.ONBOARDING_COMPLETED
-            } else {
-                AppLaunchState.ONBOARDING_REQUIRED
-            }
-            _isSearchEnabled.value = ReleaseFlagsService().isSearchEnabled()
+            _uiState.value = AppLaunchUiState(
+                isOnboardingRequired = !appLaunchRepo.isOnboardingCompleted(),
+                isSearchEnabled = releaseFlagsService.isSearchEnabled()
+            )
         }
     }
 

@@ -1,4 +1,4 @@
-package uk.govuk.app.release_flag
+package uk.govuk.app.config
 
 data class ReleaseFlags(val flags: Map<String, Boolean>) {
     fun isEmpty() = flags.isEmpty()

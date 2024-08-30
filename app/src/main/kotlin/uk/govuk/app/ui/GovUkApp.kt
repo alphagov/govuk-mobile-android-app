@@ -30,7 +30,6 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.navigation.HOME_GRAPH_ROUTE
 import uk.govuk.app.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.govuk.app.home.navigation.homeGraph
-import uk.govuk.app.launch.AppLaunchState
 import uk.govuk.app.launch.AppLaunchViewModel
 import uk.govuk.app.navigation.TopLevelDestination
 import uk.govuk.app.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
@@ -43,12 +42,12 @@ import uk.govuk.app.settings.navigation.settingsGraph
 @Composable
 fun GovUkApp() {
     val viewModel: AppLaunchViewModel = hiltViewModel()
-    val appLaunchState by viewModel.appLaunchState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
-    appLaunchState?.let { launchState ->
+    uiState?.let {
         BottomNavScaffold(
-            onboardingRequired = launchState == AppLaunchState.ONBOARDING_REQUIRED,
-            isSearchEnabled = viewModel.isSearchEnabled.value == true
+            onboardingRequired = it.isOnboardingRequired,
+            isSearchEnabled = it.isSearchEnabled
         ) {
             viewModel.onboardingCompleted()
         }

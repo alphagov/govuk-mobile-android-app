@@ -1,4 +1,4 @@
-package uk.govuk.app.release_flag
+package uk.govuk.app.config
 
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
