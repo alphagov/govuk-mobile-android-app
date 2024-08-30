@@ -21,10 +21,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.HomeViewModel
+import uk.govuk.app.home.R
 import kotlin.math.max
 import kotlin.math.min
 
@@ -134,7 +136,7 @@ private fun ScalingHeader(
     Column(modifier = modifier) {
         Image(
             painter = painterResource(id = uk.govuk.app.design.R.drawable.logo),
-            contentDescription = null,
+            contentDescription = stringResource(id = R.string.logoAltText),
             modifier = Modifier
                 .padding(vertical = padding.dp)
                 .align(Alignment.CenterHorizontally)
