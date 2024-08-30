@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.airbnb.lottie.compose.LottieAnimation
@@ -52,11 +53,13 @@ fun SplashScreen(
             }
         }
 
+        val altText: String = stringResource(id = R.string.splash_screen_animation_alt_text)
+
         LottieAnimation(
             composition = composition,
             progress = { state.progress },
             modifier = Modifier.semantics {
-                contentDescription = "GOV dot UK"
+                contentDescription = altText
             }
         )
     }
