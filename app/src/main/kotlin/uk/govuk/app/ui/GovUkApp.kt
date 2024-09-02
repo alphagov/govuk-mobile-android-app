@@ -26,11 +26,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import uk.govuk.app.AppViewModel
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.navigation.HOME_GRAPH_ROUTE
 import uk.govuk.app.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.govuk.app.home.navigation.homeGraph
-import uk.govuk.app.launch.AppLaunchViewModel
 import uk.govuk.app.navigation.TopLevelDestination
 import uk.govuk.app.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.govuk.app.onboarding.navigation.onboardingGraph
@@ -41,16 +41,16 @@ import uk.govuk.app.settings.navigation.settingsGraph
 
 @Composable
 fun GovUkApp() {
-    val viewModel: AppLaunchViewModel = hiltViewModel()
+    val viewModel: AppViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     uiState?.let {
         BottomNavScaffold(
             onboardingRequired = it.isOnboardingRequired,
-            isSearchEnabled = it.isSearchEnabled
-        ) {
-            viewModel.onboardingCompleted()
-        }
+            isSearchEnabled = it.isSearchEnabled,
+            onboardingCompleted = { viewModel.onboardingCompleted() },
+            onWidgetClick = { screenName, cta -> viewModel.onWidgetClick(screenName, cta) }
+        )
     }
 }
 
@@ -58,7 +58,8 @@ fun GovUkApp() {
 fun BottomNavScaffold(
     onboardingRequired: Boolean,
     isSearchEnabled: Boolean,
-    onboardingCompleted: () -> Unit
+    onboardingCompleted: () -> Unit,
+    onWidgetClick: (String, String) -> Unit
 ) {
     val topLevelDestinations = listOf(TopLevelDestination.Home, TopLevelDestination.Settings)
 
@@ -145,7 +146,11 @@ fun BottomNavScaffold(
                     }
                 )
                 homeGraph(
-                    widgets = homeScreenWidgets(navController, isSearchEnabled),
+                    widgets = homeScreenWidgets(
+                        navController,
+                        isSearchEnabled,
+                        onWidgetClick
+                    ),
                     modifier = Modifier.padding(paddingValues)
                 )
                 settingsGraph(
@@ -158,11 +163,18 @@ fun BottomNavScaffold(
     }
 }
 
-private fun homeScreenWidgets(navController: NavHostController, isSearchEnabled: Boolean): List<@Composable (Modifier) -> Unit> {
+private fun homeScreenWidgets(
+    navController: NavHostController,
+    isSearchEnabled: Boolean,
+    onClick: (String, String) -> Unit
+): List<@Composable (Modifier) -> Unit> {
+    val screenName = "Homepage"
+
     return listOf { modifier ->
         if (isSearchEnabled) {
             SearchWidget(
-                onClick = {
+                onClick = { cta ->
+                    onClick(screenName, cta)
                     navController.navigate(SEARCH_GRAPH_ROUTE)
                 },
                 modifier = modifier

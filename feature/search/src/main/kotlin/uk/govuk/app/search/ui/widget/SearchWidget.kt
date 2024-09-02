@@ -10,7 +10,7 @@ import uk.govuk.app.search.R
 
 @Composable
 fun SearchWidget(
-    onClick: () -> Unit,
+    onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     SearchCard(
