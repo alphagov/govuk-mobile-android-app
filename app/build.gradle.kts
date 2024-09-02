@@ -65,12 +65,13 @@ android {
 }
 
 dependencies {
+    implementation(projects.analytics)
+    implementation(projects.config)
     implementation(projects.design)
     implementation(projects.feature.home)
     implementation(projects.feature.settings)
     implementation(projects.feature.onboarding)
     implementation(projects.feature.search)
-    implementation(projects.config)
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))

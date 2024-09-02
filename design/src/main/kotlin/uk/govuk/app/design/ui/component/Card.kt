@@ -28,7 +28,7 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 @Composable
 fun SearchCard(
     title: String,
-    onClick: () -> Unit,
+    onClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -48,12 +48,14 @@ fun SearchCard(
 
             Spacer(Modifier.height(GovUkTheme.spacing.medium))
 
+            val searchBarText = stringResource(R.string.search_bar_text)
+
             Row(
                 modifier = Modifier
                     .clip(RoundedCornerShape(28.dp))
                     .background(GovUkTheme.colourScheme.surfaces.searchBox)
                     .clickable {
-                        onClick()
+                        onClick(searchBarText)
                     }
                     .padding(GovUkTheme.spacing.medium),
                 verticalAlignment = Alignment.CenterVertically
@@ -67,7 +69,7 @@ fun SearchCard(
                 Spacer(Modifier.width(GovUkTheme.spacing.medium))
 
                 BodyRegularLabel(
-                    text = stringResource(R.string.search_bar_text),
+                    text = searchBarText,
                     modifier = Modifier.fillMaxWidth(),
                     color = GovUkTheme.colourScheme.textAndIcons.secondary
                 )

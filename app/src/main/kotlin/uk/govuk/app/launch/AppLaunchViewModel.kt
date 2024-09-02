@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.config.flags.ReleaseFlagsService
 import javax.inject.Inject
 
@@ -17,7 +18,8 @@ data class AppLaunchUiState(
 @HiltViewModel
 internal class AppLaunchViewModel @Inject constructor(
     private val appLaunchRepo: AppLaunchRepo,
-    private val releaseFlagsService: ReleaseFlagsService
+    private val releaseFlagsService: ReleaseFlagsService,
+    private val analytics: Analytics
 ): ViewModel() {
 
     private val _uiState: MutableStateFlow<AppLaunchUiState?> = MutableStateFlow(null)
@@ -36,5 +38,15 @@ internal class AppLaunchViewModel @Inject constructor(
         viewModelScope.launch {
             appLaunchRepo.onboardingCompleted()
         }
+    }
+
+    internal fun onWidgetClick(
+        screenName: String,
+        cta: String
+    ) {
+        analytics.widgetClick(
+            screenName = screenName,
+            cta = cta
+        )
     }
 }

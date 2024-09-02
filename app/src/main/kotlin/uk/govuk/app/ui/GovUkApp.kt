@@ -47,10 +47,10 @@ fun GovUkApp() {
     uiState?.let {
         BottomNavScaffold(
             onboardingRequired = it.isOnboardingRequired,
-            isSearchEnabled = it.isSearchEnabled
-        ) {
-            viewModel.onboardingCompleted()
-        }
+            isSearchEnabled = it.isSearchEnabled,
+            onboardingCompleted = { viewModel.onboardingCompleted() },
+            onWidgetClick = { screenName, cta -> viewModel.onWidgetClick(screenName, cta) }
+        )
     }
 }
 
@@ -58,7 +58,8 @@ fun GovUkApp() {
 fun BottomNavScaffold(
     onboardingRequired: Boolean,
     isSearchEnabled: Boolean,
-    onboardingCompleted: () -> Unit
+    onboardingCompleted: () -> Unit,
+    onWidgetClick: (String, String) -> Unit
 ) {
     val topLevelDestinations = listOf(TopLevelDestination.Home, TopLevelDestination.Settings)
 
@@ -145,7 +146,11 @@ fun BottomNavScaffold(
                     }
                 )
                 homeGraph(
-                    widgets = homeScreenWidgets(navController, isSearchEnabled),
+                    widgets = homeScreenWidgets(
+                        navController,
+                        isSearchEnabled,
+                        onWidgetClick
+                    ),
                     modifier = Modifier.padding(paddingValues)
                 )
                 settingsGraph(
@@ -158,11 +163,18 @@ fun BottomNavScaffold(
     }
 }
 
-private fun homeScreenWidgets(navController: NavHostController, isSearchEnabled: Boolean): List<@Composable (Modifier) -> Unit> {
+private fun homeScreenWidgets(
+    navController: NavHostController,
+    isSearchEnabled: Boolean,
+    onClick: (String, String) -> Unit
+): List<@Composable (Modifier) -> Unit> {
+    val screenName = "Homepage"
+
     return listOf { modifier ->
         if (isSearchEnabled) {
             SearchWidget(
-                onClick = {
+                onClick = { cta ->
+                    onClick(screenName, cta)
                     navController.navigate(SEARCH_GRAPH_ROUTE)
                 },
                 modifier = modifier
