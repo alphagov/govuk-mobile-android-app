@@ -11,6 +11,10 @@ class AnalyticsClient @Inject constructor(
     private val analyticsLogger: AnalyticsLogger
 ): Analytics {
 
+    companion object {
+        private const val WIDGET_ACTION = "Widget"
+    }
+
     override fun screenView(screenClass: String, alias: String, title: String) {
         analyticsLogger.logEvent(
             true,
@@ -34,6 +38,14 @@ class AnalyticsClient @Inject constructor(
                     action = action
                 )
             )
+        )
+    }
+
+    override fun widgetClick(screenName: String, cta: String) {
+        buttonClick(
+            screenName = screenName,
+            cta = cta,
+            action = WIDGET_ACTION
         )
     }
 
