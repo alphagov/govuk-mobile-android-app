@@ -25,7 +25,10 @@ internal fun SearchRoute(
     SearchScreen(
         onPageView = { viewModel.onPageView() },
         onBack = onBack,
-        onSearch = onSearch,
+        onSearch = { searchTerm ->
+            viewModel.onSearch(searchTerm)
+            onSearch(searchTerm)
+        },
         modifier = modifier
     )
 }

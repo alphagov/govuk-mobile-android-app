@@ -23,4 +23,15 @@ class SearchViewModelTest {
             )
         }
     }
+
+    @Test
+    fun `Given a search, then log analytics`() {
+        val viewModel = SearchViewModel(analytics)
+
+        viewModel.onSearch("search term")
+
+        verify {
+            analytics.search("search term")
+        }
+    }
 }

@@ -23,4 +23,9 @@ class SearchViewModel @Inject constructor(
             title = TITLE
         )
     }
+
+    fun onSearch(searchTerm: String) {
+        analytics.search(searchTerm)
+    }
+
 }

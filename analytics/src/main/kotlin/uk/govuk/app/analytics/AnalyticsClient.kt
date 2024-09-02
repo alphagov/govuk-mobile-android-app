@@ -4,6 +4,7 @@ import uk.gov.logging.api.analytics.AnalyticsEvent
 import uk.gov.logging.api.analytics.logging.AnalyticsLogger
 import uk.gov.logging.api.analytics.parameters.ButtonParameters
 import uk.gov.logging.api.analytics.parameters.ScreenViewParameters
+import uk.govuk.app.analytics.search.SearchParameters
 import javax.inject.Inject
 
 class AnalyticsClient @Inject constructor(
@@ -32,6 +33,15 @@ class AnalyticsClient @Inject constructor(
                     name = screenName,
                     action = action
                 )
+            )
+        )
+    }
+
+    override fun search(searchTerm: String) {
+        analyticsLogger.logEvent(
+            true,
+            AnalyticsEvent.trackEvent(
+                SearchParameters(searchTerm)
             )
         )
     }
