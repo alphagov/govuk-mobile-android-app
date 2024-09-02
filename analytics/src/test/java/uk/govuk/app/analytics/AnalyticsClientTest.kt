@@ -73,4 +73,26 @@ class AnalyticsClientTest {
             )
         }
     }
+
+    @Test
+    fun `Given a widget click, then log event`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger)
+        analyticsClient.widgetClick(
+            screenName = "screenName",
+            cta = "cta",
+        )
+
+        verify {
+            analyticsLogger.logEvent(
+                true,
+                AnalyticsEvent.trackEvent(
+                    ButtonParameters(
+                        callToActionText = "cta",
+                        name = "screenName",
+                        action = "Widget"
+                    )
+                )
+            )
+        }
+    }
 }

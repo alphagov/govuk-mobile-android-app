@@ -1,4 +1,4 @@
-package uk.govuk.app.launch
+package uk.govuk.app
 
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -8,15 +8,15 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class AppLaunchRepoTest {
+class AppRepoTest {
 
-    private val appLaunchDataStore = mockk<AppLaunchDataStore>(relaxed = true)
+    private val appDataStore = mockk<AppDataStore>(relaxed = true)
 
     @Test
     fun `Given the user has not previously completed onboarding, When is onboarding completed, then return false`() {
-        val repo = AppLaunchRepo(appLaunchDataStore)
+        val repo = AppRepo(appDataStore)
 
-        coEvery { appLaunchDataStore.isOnboardingCompleted() } returns false
+        coEvery { appDataStore.isOnboardingCompleted() } returns false
 
         runTest {
 
@@ -26,9 +26,9 @@ class AppLaunchRepoTest {
 
     @Test
     fun `Given the user has previously completed onboarding, When is onboarding completed, then return true`() {
-        val repo = AppLaunchRepo(appLaunchDataStore)
+        val repo = AppRepo(appDataStore)
 
-        coEvery { appLaunchDataStore.isOnboardingCompleted() } returns true
+        coEvery { appDataStore.isOnboardingCompleted() } returns true
 
         runTest {
             assertTrue(repo.isOnboardingCompleted())
@@ -37,12 +37,12 @@ class AppLaunchRepoTest {
 
     @Test
     fun `Given the user has completed onboarding, When onboarding completed, then update data store`() {
-        val repo = AppLaunchRepo(appLaunchDataStore)
+        val repo = AppRepo(appDataStore)
 
         runTest {
             repo.onboardingCompleted()
 
-            coVerify { appLaunchDataStore.onboardingCompleted() }
+            coVerify { appDataStore.onboardingCompleted() }
         }
     }
 }

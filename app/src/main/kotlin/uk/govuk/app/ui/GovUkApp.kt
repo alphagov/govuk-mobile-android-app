@@ -26,11 +26,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import uk.govuk.app.AppViewModel
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.navigation.HOME_GRAPH_ROUTE
 import uk.govuk.app.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.govuk.app.home.navigation.homeGraph
-import uk.govuk.app.launch.AppLaunchViewModel
 import uk.govuk.app.navigation.TopLevelDestination
 import uk.govuk.app.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.govuk.app.onboarding.navigation.onboardingGraph
@@ -41,7 +41,7 @@ import uk.govuk.app.settings.navigation.settingsGraph
 
 @Composable
 fun GovUkApp() {
-    val viewModel: AppLaunchViewModel = hiltViewModel()
+    val viewModel: AppViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     uiState?.let {

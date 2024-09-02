@@ -1,4 +1,4 @@
-package uk.govuk.app.launch
+package uk.govuk.app
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -12,14 +12,14 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class AppLaunchDataStoreTest {
+class AppDataStoreTest {
 
     private val dataStore = mockk<DataStore<Preferences>>()
     private val preferences = mockk<Preferences>()
 
     @Test
     fun `Given the data store is empty, When is onboarding completed, then return false`() {
-        val datastore = AppLaunchDataStore(dataStore)
+        val datastore = AppDataStore(dataStore)
 
         every { dataStore.data } returns emptyFlow()
 
@@ -30,10 +30,10 @@ class AppLaunchDataStoreTest {
 
     @Test
     fun `Given the onboarding completed flag is false in the data store, When is onboarding completed, then return false`() {
-        val datastore = AppLaunchDataStore(dataStore)
+        val datastore = AppDataStore(dataStore)
 
         every { dataStore.data } returns flowOf(preferences)
-        every { preferences[booleanPreferencesKey(AppLaunchDataStore.ONBOARDING_COMPLETE_KEY)] } returns false
+        every { preferences[booleanPreferencesKey(AppDataStore.ONBOARDING_COMPLETE_KEY)] } returns false
 
         runTest {
             assertFalse(datastore.isOnboardingCompleted())
@@ -42,10 +42,10 @@ class AppLaunchDataStoreTest {
 
     @Test
     fun `Given the onboarding completed flag is true in the data store, When is onboarding completed, then return true`() {
-        val datastore = AppLaunchDataStore(dataStore)
+        val datastore = AppDataStore(dataStore)
 
         every { dataStore.data } returns flowOf(preferences)
-        every { preferences[booleanPreferencesKey(AppLaunchDataStore.ONBOARDING_COMPLETE_KEY)] } returns true
+        every { preferences[booleanPreferencesKey(AppDataStore.ONBOARDING_COMPLETE_KEY)] } returns true
 
         runTest {
             assertTrue(datastore.isOnboardingCompleted())

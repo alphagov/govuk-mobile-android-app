@@ -1,4 +1,4 @@
-package uk.govuk.app.launch
+package uk.govuk.app
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,25 +10,25 @@ import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.config.flags.ReleaseFlagsService
 import javax.inject.Inject
 
-data class AppLaunchUiState(
+data class AppUiState(
     val isOnboardingRequired: Boolean,
     val isSearchEnabled: Boolean
 )
 
 @HiltViewModel
-internal class AppLaunchViewModel @Inject constructor(
-    private val appLaunchRepo: AppLaunchRepo,
+internal class AppViewModel @Inject constructor(
+    private val appRepo: AppRepo,
     private val releaseFlagsService: ReleaseFlagsService,
     private val analytics: Analytics
 ): ViewModel() {
 
-    private val _uiState: MutableStateFlow<AppLaunchUiState?> = MutableStateFlow(null)
+    private val _uiState: MutableStateFlow<AppUiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            _uiState.value = AppLaunchUiState(
-                isOnboardingRequired = !appLaunchRepo.isOnboardingCompleted(),
+            _uiState.value = AppUiState(
+                isOnboardingRequired = !appRepo.isOnboardingCompleted(),
                 isSearchEnabled = releaseFlagsService.isSearchEnabled()
             )
         }
@@ -36,7 +36,7 @@ internal class AppLaunchViewModel @Inject constructor(
 
     internal fun onboardingCompleted() {
         viewModelScope.launch {
-            appLaunchRepo.onboardingCompleted()
+            appRepo.onboardingCompleted()
         }
     }
 
