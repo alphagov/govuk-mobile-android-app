@@ -61,12 +61,8 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    override fun widgetClick(screenName: String, cta: String) {
-        /*buttonClick(
-            screenName = screenName,
-            cta = cta,
-            action = WIDGET_ACTION
-        )*/
+    override fun widgetClick(text: String) {
+        navigation(text = text, type = "Widget")
     }
 
     override fun search(searchTerm: String) {

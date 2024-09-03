@@ -50,7 +50,7 @@ fun GovUkApp() {
             isSearchEnabled = it.isSearchEnabled,
             onboardingCompleted = { viewModel.onboardingCompleted() },
             onTabClick = { tabText -> viewModel.onTabClick(tabText) },
-            onWidgetClick = { screenName, cta -> viewModel.onWidgetClick(screenName, cta) }
+            onWidgetClick = { text -> viewModel.onWidgetClick(text) }
         )
     }
 }
@@ -61,7 +61,7 @@ fun BottomNavScaffold(
     isSearchEnabled: Boolean,
     onboardingCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
-    onWidgetClick: (String, String) -> Unit
+    onWidgetClick: (String) -> Unit
 ) {
     val topLevelDestinations = listOf(TopLevelDestination.Home, TopLevelDestination.Settings)
 
@@ -171,15 +171,13 @@ fun BottomNavScaffold(
 private fun homeScreenWidgets(
     navController: NavHostController,
     isSearchEnabled: Boolean,
-    onClick: (String, String) -> Unit
+    onClick: (String) -> Unit
 ): List<@Composable (Modifier) -> Unit> {
-    val screenName = "Homepage"
-
     return listOf { modifier ->
         if (isSearchEnabled) {
             SearchWidget(
-                onClick = { cta ->
-                    onClick(screenName, cta)
+                onClick = { text ->
+                    onClick(text)
                     navController.navigate(SEARCH_GRAPH_ROUTE)
                 },
                 modifier = modifier

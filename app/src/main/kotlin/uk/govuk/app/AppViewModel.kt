@@ -40,14 +40,8 @@ internal class AppViewModel @Inject constructor(
         }
     }
 
-    internal fun onWidgetClick(
-        screenName: String,
-        cta: String
-    ) {
-        analytics.widgetClick(
-            screenName = screenName,
-            cta = cta
-        )
+    internal fun onWidgetClick(text: String) {
+        analytics.widgetClick(text)
     }
 
     internal fun onTabClick(text: String) {

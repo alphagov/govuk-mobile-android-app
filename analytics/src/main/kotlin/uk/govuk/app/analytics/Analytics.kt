@@ -6,7 +6,7 @@ interface Analytics {
     fun pageIndicatorClick()
     fun buttonClick(text: String)
     fun tabClick(text: String)
-    fun widgetClick(screenName: String, cta: String)
+    fun widgetClick(text: String)
     fun search(searchTerm: String)
 
 }

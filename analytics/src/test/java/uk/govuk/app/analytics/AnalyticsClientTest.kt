@@ -6,7 +6,6 @@ import io.mockk.verify
 import org.junit.Test
 import uk.gov.logging.api.analytics.AnalyticsEvent
 import uk.gov.logging.api.analytics.logging.AnalyticsLogger
-import uk.gov.logging.api.analytics.parameters.ButtonParameters
 import java.util.Locale
 
 class AnalyticsClientTest {
@@ -41,9 +40,7 @@ class AnalyticsClientTest {
     @Test
     fun `Given a button click, then log event`() {
         val analyticsClient = AnalyticsClient(analyticsLogger)
-        analyticsClient.buttonClick(
-            text = "text",
-        )
+        analyticsClient.buttonClick("text")
 
         verify {
             analyticsLogger.logEvent(
@@ -80,21 +77,41 @@ class AnalyticsClientTest {
     }
 
     @Test
-    fun `Given a widget click, then log event`() {
+    fun `Given a tab click, then log event`() {
         val analyticsClient = AnalyticsClient(analyticsLogger)
-        analyticsClient.widgetClick(
-            screenName = "screenName",
-            cta = "cta",
-        )
+        analyticsClient.tabClick("text")
 
         verify {
             analyticsLogger.logEvent(
                 true,
-                AnalyticsEvent.trackEvent(
-                    ButtonParameters(
-                        callToActionText = "cta",
-                        name = "screenName",
-                        action = "Widget"
+                AnalyticsEvent(
+                    eventType = "Navigation",
+                    parameters = mapOf(
+                        "type" to "Tab",
+                        "external" to false,
+                        "language" to Locale.getDefault().language,
+                        "text" to "text"
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a widget click, then log event`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger)
+        analyticsClient.widgetClick("text")
+
+        verify {
+            analyticsLogger.logEvent(
+                true,
+                AnalyticsEvent(
+                    eventType = "Navigation",
+                    parameters = mapOf(
+                        "type" to "Widget",
+                        "external" to false,
+                        "language" to Locale.getDefault().language,
+                        "text" to "text"
                     )
                 )
             )

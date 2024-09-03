@@ -114,16 +114,10 @@ class AppViewModelTest {
         val viewModel = AppViewModel(onboardingRepo, releaseFlagsService, analytics)
 
         runTest {
-            viewModel.onWidgetClick(
-                screenName = "screenName",
-                cta = "cta"
-            )
+            viewModel.onWidgetClick("text")
 
             coVerify {
-                analytics.widgetClick(
-                    screenName = "screenName",
-                    cta = "cta"
-                )
+                analytics.widgetClick("text")
             }
         }
     }
