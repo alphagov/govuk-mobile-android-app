@@ -30,47 +30,13 @@ class OnboardingViewModelTest {
     }
 
     @Test
-    fun `Given a continue event, then log analytics`() {
+    fun `Given a button click, then log analytics`() {
         val viewModel = OnboardingViewModel(context, analytics)
 
-        viewModel.onContinue(0, "cta")
+        viewModel.onButtonClick("text")
 
         verify {
-            analytics.buttonClick(
-                screenName = "Onboarding_A",
-                cta = "cta",
-                action = "continue"
-            )
-        }
-    }
-
-    @Test
-    fun `Given a skip event, then log analytics`() {
-        val viewModel = OnboardingViewModel(context, analytics)
-
-        viewModel.onSkip(1, "cta")
-
-        verify {
-            analytics.buttonClick(
-                screenName = "Onboarding_B",
-                cta = "cta",
-                action = "skip"
-            )
-        }
-    }
-
-    @Test
-    fun `Given a done event, then log analytics`() {
-        val viewModel = OnboardingViewModel(context, analytics)
-
-        viewModel.onDone(2, "cta")
-
-        verify {
-            analytics.buttonClick(
-                screenName = "Onboarding_C",
-                cta = "cta",
-                action = "done"
-            )
+            analytics.buttonClick("text")
         }
     }
 
@@ -78,14 +44,10 @@ class OnboardingViewModelTest {
     fun `Given a pager indicator event, then log analytics`() {
         val viewModel = OnboardingViewModel(context, analytics)
 
-        viewModel.onPagerIndicator(0)
+        viewModel.onPagerIndicatorClick()
 
         verify {
-            analytics.buttonClick(
-                screenName = "Onboarding_A",
-                cta = "dot",
-                action = "dot"
-            )
+            analytics.pageIndicatorClick()
         }
     }
 

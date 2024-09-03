@@ -3,7 +3,6 @@ package uk.govuk.app.analytics
 import com.google.firebase.analytics.FirebaseAnalytics
 import uk.gov.logging.api.analytics.AnalyticsEvent
 import uk.gov.logging.api.analytics.logging.AnalyticsLogger
-import uk.gov.logging.api.analytics.parameters.ButtonParameters
 import uk.govuk.app.analytics.search.SearchParameters
 import java.util.Locale
 import javax.inject.Inject
@@ -31,25 +30,44 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    override fun buttonClick(screenName: String, cta: String, action: String) {
+    override fun pageIndicatorClick() {
+        navigation(type = "Dot")
+    }
+
+    override fun buttonClick(text: String) {
+        navigation(text = text, type = "Button")
+    }
+
+    override fun tabClick(text: String) {
+        navigation(text = text, type = "Tab")
+    }
+
+    private fun navigation(text: String? = null, type: String) {
+        val parameters = mutableMapOf(
+            "type" to type,
+            "external" to false, // Todo - in the future will need to pass this in if navigate outside of the app
+            "language" to Locale.getDefault().language
+        )
+
+        text?.let {
+            parameters["text"] = it
+        }
+
         analyticsLogger.logEvent(
             true,
-            AnalyticsEvent.trackEvent(
-                ButtonParameters(
-                    callToActionText = cta,
-                    name = screenName,
-                    action = action
-                )
+            AnalyticsEvent(
+                eventType = "Navigation",
+                parameters = parameters
             )
         )
     }
 
     override fun widgetClick(screenName: String, cta: String) {
-        buttonClick(
+        /*buttonClick(
             screenName = screenName,
             cta = cta,
             action = WIDGET_ACTION
-        )
+        )*/
     }
 
     override fun search(searchTerm: String) {

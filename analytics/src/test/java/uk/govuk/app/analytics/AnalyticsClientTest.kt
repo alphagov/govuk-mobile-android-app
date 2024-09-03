@@ -43,19 +43,19 @@ class AnalyticsClientTest {
     fun `Given a button click, then log event`() {
         val analyticsClient = AnalyticsClient(analyticsLogger)
         analyticsClient.buttonClick(
-            screenName = "screenName",
-            cta = "cta",
-            action = "action"
+            text = "text",
         )
 
         verify {
             analyticsLogger.logEvent(
                 true,
-                AnalyticsEvent.trackEvent(
-                    ButtonParameters(
-                        callToActionText = "cta",
-                        name = "screenName",
-                        action = "action"
+                AnalyticsEvent(
+                    eventType = "Navigation",
+                    parameters = mapOf(
+                        "type" to "Button",
+                        "external" to false,
+                        "language" to Locale.getDefault().language,
+                        "text" to "text"
                     )
                 )
             )

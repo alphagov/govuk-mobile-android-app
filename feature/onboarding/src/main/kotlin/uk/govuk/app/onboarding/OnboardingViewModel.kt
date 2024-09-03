@@ -25,11 +25,6 @@ class OnboardingViewModel @Inject constructor(
         private const val ONBOARDING_SCREEN_3_NAME = "Onboarding_C"
 
         private const val SCREEN_CLASS = "OnboardingScreen"
-        private const val CONTINUE_ACTION = "continue"
-        private const val SKIP_ACTION = "skip"
-        private const val DONE_ACTION = "done"
-        private const val PAGE_INDICATOR_CTA = "dot"
-        private const val PAGE_INDICATOR_ACTION = "dot"
     }
 
     // Todo - this will probably come from JSON file or remote config etc
@@ -68,49 +63,12 @@ class OnboardingViewModel @Inject constructor(
         )
     }
 
-    fun onContinue(pageIndex: Int, cta: String) {
-        logButtonClick(
-            pageIndex = pageIndex,
-            cta = cta,
-            action = CONTINUE_ACTION
-        )
+    fun onButtonClick(text: String) {
+        analytics.buttonClick(text)
     }
 
-    fun onSkip(pageIndex: Int, cta: String) {
-        logButtonClick(
-            pageIndex = pageIndex,
-            cta = cta,
-            action = SKIP_ACTION
-        )
-    }
-
-    fun onDone(pageIndex: Int, cta: String) {
-        logButtonClick(
-            pageIndex = pageIndex,
-            cta = cta,
-            action = DONE_ACTION
-        )
-    }
-
-    fun onPagerIndicator(pageIndex: Int) {
-        logButtonClick(
-            pageIndex = pageIndex,
-            cta = PAGE_INDICATOR_CTA,
-            action = PAGE_INDICATOR_ACTION
-        )
-    }
-
-    private fun logButtonClick(
-        pageIndex: Int,
-        cta: String,
-        action: String
-    ) {
-        val page = uiState.value.pages[pageIndex]
-        analytics.buttonClick(
-            screenName = page.screenName,
-            cta = cta,
-            action = action
-        )
+    fun onPagerIndicatorClick() {
+        analytics.pageIndicatorClick()
     }
 
 }
