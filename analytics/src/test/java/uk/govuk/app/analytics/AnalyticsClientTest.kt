@@ -38,6 +38,26 @@ class AnalyticsClientTest {
     }
 
     @Test
+    fun `Given a page indicator click, then log event`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger)
+        analyticsClient.pageIndicatorClick()
+
+        verify {
+            analyticsLogger.logEvent(
+                true,
+                AnalyticsEvent(
+                    eventType = "Navigation",
+                    parameters = mapOf(
+                        "type" to "Dot",
+                        "external" to false,
+                        "language" to Locale.getDefault().language,
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
     fun `Given a button click, then log event`() {
         val analyticsClient = AnalyticsClient(analyticsLogger)
         analyticsClient.buttonClick("text")
@@ -117,4 +137,5 @@ class AnalyticsClientTest {
             )
         }
     }
+    
 }
