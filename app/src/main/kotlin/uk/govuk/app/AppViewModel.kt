@@ -49,4 +49,8 @@ internal class AppViewModel @Inject constructor(
             cta = cta
         )
     }
+
+    internal fun onTabClick(text: String) {
+        analytics.tabClick(text)
+    }
 }

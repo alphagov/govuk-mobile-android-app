@@ -97,7 +97,20 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `When widget is clicked, then call log analytics`() {
+    fun `When tab is clicked, then log analytics`() {
+        val viewModel = AppViewModel(onboardingRepo, releaseFlagsService, analytics)
+
+        runTest {
+            viewModel.onTabClick("text")
+
+            coVerify {
+                analytics.tabClick("text")
+            }
+        }
+    }
+
+    @Test
+    fun `When widget is clicked, then log analytics`() {
         val viewModel = AppViewModel(onboardingRepo, releaseFlagsService, analytics)
 
         runTest {

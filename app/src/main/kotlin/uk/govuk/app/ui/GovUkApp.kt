@@ -49,6 +49,7 @@ fun GovUkApp() {
             onboardingRequired = it.isOnboardingRequired,
             isSearchEnabled = it.isSearchEnabled,
             onboardingCompleted = { viewModel.onboardingCompleted() },
+            onTabClick = { tabText -> viewModel.onTabClick(tabText) },
             onWidgetClick = { screenName, cta -> viewModel.onWidgetClick(screenName, cta) }
         )
     }
@@ -59,6 +60,7 @@ fun BottomNavScaffold(
     onboardingRequired: Boolean,
     isSearchEnabled: Boolean,
     onboardingCompleted: () -> Unit,
+    onTabClick: (String) -> Unit,
     onWidgetClick: (String, String) -> Unit
 ) {
     val topLevelDestinations = listOf(TopLevelDestination.Home, TopLevelDestination.Settings)
@@ -88,10 +90,13 @@ fun BottomNavScaffold(
                         containerColor = GovUkTheme.colourScheme.surfaces.background
                     ) {
                         topLevelDestinations.forEachIndexed { index, destination ->
+                            val tabText = stringResource(destination.resourceId)
+
                             NavigationBarItem(
                                 selected = index == selectedIndex,
                                 onClick = {
                                     selectedIndex = index
+                                    onTabClick(tabText)
                                     navController.navigate(destination.route) {
                                         // Pop up to the start destination of the graph to
                                         // avoid building up a large stack of destinations
@@ -111,7 +116,7 @@ fun BottomNavScaffold(
                                 },
                                 label = {
                                     Text(
-                                        text = stringResource(destination.resourceId),
+                                        text = tabText,
                                         style = GovUkTheme.typography.captionBold,
                                     )
                                 },
