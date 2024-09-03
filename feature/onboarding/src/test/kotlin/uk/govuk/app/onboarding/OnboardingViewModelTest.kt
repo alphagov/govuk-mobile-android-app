@@ -23,7 +23,7 @@ class OnboardingViewModelTest {
         verify {
             analytics.screenView(
                 screenClass = "OnboardingScreen",
-                alias = "ONBOARDING_A",
+                screenName = "Onboarding_A",
                 title = "title"
             )
         }
@@ -37,7 +37,7 @@ class OnboardingViewModelTest {
 
         verify {
             analytics.buttonClick(
-                screenName = "ONBOARDING_A",
+                screenName = "Onboarding_A",
                 cta = "cta",
                 action = "continue"
             )
@@ -52,7 +52,7 @@ class OnboardingViewModelTest {
 
         verify {
             analytics.buttonClick(
-                screenName = "ONBOARDING_B",
+                screenName = "Onboarding_B",
                 cta = "cta",
                 action = "skip"
             )
@@ -67,7 +67,7 @@ class OnboardingViewModelTest {
 
         verify {
             analytics.buttonClick(
-                screenName = "ONBOARDING_C",
+                screenName = "Onboarding_C",
                 cta = "cta",
                 action = "done"
             )
@@ -82,7 +82,7 @@ class OnboardingViewModelTest {
 
         verify {
             analytics.buttonClick(
-                screenName = "ONBOARDING_A",
+                screenName = "Onboarding_A",
                 cta = "dot",
                 action = "dot"
             )

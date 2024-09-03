@@ -18,7 +18,7 @@ class HomeViewModelTest {
         verify {
             analytics.screenView(
                 screenClass = "HomeScreen",
-                alias = "HOMEPAGE",
+                screenName = "Homepage",
                 title = "Homepage"
             )
         }

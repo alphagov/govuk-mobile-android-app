@@ -18,7 +18,7 @@ class SearchViewModelTest {
         verify {
             analytics.screenView(
                 screenClass = "SearchScreen",
-                alias = "SEARCH",
+                screenName = "Search",
                 title = "Search"
             )
         }

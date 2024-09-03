@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
 data class OnboardingPage(
-    val analyticsAlias: String,
+    val screenName: String,
     @StringRes val title: Int,
     @StringRes val body: Int,
     @DrawableRes val image: Int

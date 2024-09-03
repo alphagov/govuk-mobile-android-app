@@ -12,14 +12,14 @@ class SearchViewModel @Inject constructor(
 
     companion object {
         private const val SCREEN_CLASS = "SearchScreen"
-        private const val SCREEN_ALIAS = "SEARCH"
+        private const val SCREEN_NAME = "Search"
         private const val TITLE = "Search"
     }
 
     fun onPageView() {
         analytics.screenView(
             screenClass = SCREEN_CLASS,
-            alias = SCREEN_ALIAS,
+            screenName = SCREEN_NAME,
             title = TITLE
         )
     }

@@ -12,14 +12,14 @@ class SettingsViewModel @Inject constructor(
 
     companion object {
         private const val SCREEN_CLASS = "SettingsScreen"
-        private const val SCREEN_ALIAS = "SETTINGS"
+        private const val SCREEN_NAME = "Settings"
         private const val TITLE = "Settings"
     }
 
     fun onPageView() {
         analytics.screenView(
             screenClass = SCREEN_CLASS,
-            alias = SCREEN_ALIAS,
+            screenName = SCREEN_NAME,
             title = TITLE
         )
     }

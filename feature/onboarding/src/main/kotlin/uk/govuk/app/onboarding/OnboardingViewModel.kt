@@ -20,9 +20,9 @@ class OnboardingViewModel @Inject constructor(
 ): ViewModel() {
 
     companion object {
-        private const val ONBOARDING_SCREEN_1_ALIAS = "ONBOARDING_A"
-        private const val ONBOARDING_SCREEN_2_ALIAS = "ONBOARDING_B"
-        private const val ONBOARDING_SCREEN_3_ALIAS = "ONBOARDING_C"
+        private const val ONBOARDING_SCREEN_1_NAME = "Onboarding_A"
+        private const val ONBOARDING_SCREEN_2_NAME = "Onboarding_B"
+        private const val ONBOARDING_SCREEN_3_NAME = "Onboarding_C"
 
         private const val SCREEN_CLASS = "OnboardingScreen"
         private const val CONTINUE_ACTION = "continue"
@@ -37,19 +37,19 @@ class OnboardingViewModel @Inject constructor(
         OnboardingUiState(
             listOf(
                 OnboardingPage(
-                    analyticsAlias = ONBOARDING_SCREEN_1_ALIAS,
+                    screenName = ONBOARDING_SCREEN_1_NAME,
                     title = R.string.getThingsDoneScreenTitle,
                     body = R.string.getThingsDoneScreenBody,
                     image = R.drawable.image_1
                 ),
                 OnboardingPage(
-                    analyticsAlias = ONBOARDING_SCREEN_2_ALIAS,
+                    screenName = ONBOARDING_SCREEN_2_NAME,
                     title = R.string.backToPreviousScreenTitle,
                     body = R.string.backToPreviousScreenBody,
                     image = R.drawable.image_2
                 ),
                 OnboardingPage(
-                    analyticsAlias = ONBOARDING_SCREEN_3_ALIAS,
+                    screenName = ONBOARDING_SCREEN_3_NAME,
                     title = R.string.tailoredToYouScreenTitle,
                     body = R.string.tailoredToYouScreenBody,
                     image = R.drawable.image_3
@@ -63,7 +63,7 @@ class OnboardingViewModel @Inject constructor(
         val page = uiState.value.pages[pageIndex]
         analytics.screenView(
             screenClass = SCREEN_CLASS,
-            alias = page.analyticsAlias,
+            screenName = page.screenName,
             title = context.getString(page.title)
         )
     }
@@ -107,7 +107,7 @@ class OnboardingViewModel @Inject constructor(
     ) {
         val page = uiState.value.pages[pageIndex]
         analytics.buttonClick(
-            screenName = page.analyticsAlias,
+            screenName = page.screenName,
             cta = cta,
             action = action
         )
