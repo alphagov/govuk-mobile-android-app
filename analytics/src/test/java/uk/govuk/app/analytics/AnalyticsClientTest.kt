@@ -7,7 +7,6 @@ import org.junit.Test
 import uk.gov.logging.api.analytics.AnalyticsEvent
 import uk.gov.logging.api.analytics.logging.AnalyticsLogger
 import uk.gov.logging.api.analytics.parameters.ButtonParameters
-import uk.govuk.app.analytics.search.SearchParameters
 import java.util.Locale
 
 class AnalyticsClientTest {
@@ -70,8 +69,11 @@ class AnalyticsClientTest {
         verify {
             analyticsLogger.logEvent(
                 true,
-                AnalyticsEvent.trackEvent(
-                    SearchParameters("search term")
+                AnalyticsEvent(
+                    eventType = "Search",
+                    parameters = mapOf(
+                        "text" to "search term"
+                    )
                 )
             )
         }
