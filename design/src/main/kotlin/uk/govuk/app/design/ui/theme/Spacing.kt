@@ -11,14 +11,14 @@ data class GovUkSpacing(
     val extraLarge: Dp
 )
 
-val Spacing = GovUkSpacing(
+internal val Spacing = GovUkSpacing(
     small = 8.dp,
     medium = 16.dp,
     large = 24.dp,
     extraLarge = 32.dp
 )
 
-val LocalSpacing = staticCompositionLocalOf {
+internal val LocalSpacing = staticCompositionLocalOf {
     GovUkSpacing(
         small = Dp.Unspecified,
         medium = Dp.Unspecified,

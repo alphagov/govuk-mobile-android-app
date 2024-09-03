@@ -10,7 +10,7 @@ import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.config.flags.ReleaseFlagsService
 import javax.inject.Inject
 
-data class AppUiState(
+internal data class AppUiState(
     val isOnboardingRequired: Boolean,
     val isSearchEnabled: Boolean
 )
@@ -34,17 +34,17 @@ internal class AppViewModel @Inject constructor(
         }
     }
 
-    internal fun onboardingCompleted() {
+    fun onboardingCompleted() {
         viewModelScope.launch {
             appRepo.onboardingCompleted()
         }
     }
 
-    internal fun onWidgetClick(text: String) {
+    fun onWidgetClick(text: String) {
         analytics.widgetClick(text)
     }
 
-    internal fun onTabClick(text: String) {
+    fun onTabClick(text: String) {
         analytics.tabClick(text)
     }
 }

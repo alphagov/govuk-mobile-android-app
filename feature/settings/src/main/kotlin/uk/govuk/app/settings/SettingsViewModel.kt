@@ -6,7 +6,7 @@ import uk.govuk.app.analytics.Analytics
 import javax.inject.Inject
 
 @HiltViewModel
-class SettingsViewModel @Inject constructor(
+internal class SettingsViewModel @Inject constructor(
     private val analytics: Analytics
 ): ViewModel() {
 

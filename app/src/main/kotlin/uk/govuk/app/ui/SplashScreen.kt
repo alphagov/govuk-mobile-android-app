@@ -22,7 +22,7 @@ import kotlinx.coroutines.delay
 import uk.govuk.app.R
 
 @Composable
-fun SplashScreen(
+internal fun SplashScreen(
     onSplashDone: () -> Unit
 ) {
     Column(

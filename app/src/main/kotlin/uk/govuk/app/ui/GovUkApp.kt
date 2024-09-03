@@ -40,7 +40,7 @@ import uk.govuk.app.search.ui.widget.SearchWidget
 import uk.govuk.app.settings.navigation.settingsGraph
 
 @Composable
-fun GovUkApp() {
+internal fun GovUkApp() {
     val viewModel: AppViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
@@ -56,7 +56,7 @@ fun GovUkApp() {
 }
 
 @Composable
-fun BottomNavScaffold(
+private fun BottomNavScaffold(
     onboardingRequired: Boolean,
     isSearchEnabled: Boolean,
     onboardingCompleted: () -> Unit,

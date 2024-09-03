@@ -100,7 +100,7 @@ fun SecondaryButton(
 }
 
 @Composable
-fun BaseButton(
+private fun BaseButton(
     text: String,
     onClick: () -> Unit,
     colours: GovUkButtonColours,
@@ -153,7 +153,7 @@ fun BaseButton(
 }
 
 @Composable
-fun NewTabIcon() {
+private fun NewTabIcon() {
     Icon(
         painter = painterResource(id = R.drawable.baseline_open_in_new_24),
         contentDescription = "Opens link in a new tab",

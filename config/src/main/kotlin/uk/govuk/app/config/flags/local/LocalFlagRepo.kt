@@ -4,6 +4,6 @@ import javax.inject.Inject
 
 class LocalFlagRepo @Inject constructor() {
 
-    fun isSearchEnabled() = true
+    internal fun isSearchEnabled() = true
 
 }

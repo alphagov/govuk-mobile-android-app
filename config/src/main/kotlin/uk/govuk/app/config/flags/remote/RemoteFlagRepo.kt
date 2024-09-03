@@ -4,6 +4,6 @@ import javax.inject.Inject
 
 class RemoteFlagRepo @Inject constructor() {
 
-    fun isSearchEnabled(): Boolean? = null
+    internal fun isSearchEnabled(): Boolean? = null
 
 }

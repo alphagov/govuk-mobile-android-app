@@ -10,10 +10,6 @@ class AnalyticsClient @Inject constructor(
     private val analyticsLogger: AnalyticsLogger
 ): Analytics {
 
-    companion object {
-        private const val WIDGET_ACTION = "Widget"
-    }
-
     override fun screenView(screenClass: String, screenName: String, title: String) {
         analyticsLogger.logEvent(
             true,
@@ -41,6 +37,22 @@ class AnalyticsClient @Inject constructor(
         navigation(text = text, type = "Tab")
     }
 
+    override fun widgetClick(text: String) {
+        navigation(text = text, type = "Widget")
+    }
+
+    override fun search(searchTerm: String) {
+        analyticsLogger.logEvent(
+            true,
+            AnalyticsEvent(
+                eventType = "Search",
+                parameters = mapOf(
+                    "text" to searchTerm
+                )
+            )
+        )
+    }
+
     private fun navigation(text: String? = null, type: String) {
         val parameters = mutableMapOf(
             "type" to type,
@@ -57,22 +69,6 @@ class AnalyticsClient @Inject constructor(
             AnalyticsEvent(
                 eventType = "Navigation",
                 parameters = parameters
-            )
-        )
-    }
-
-    override fun widgetClick(text: String) {
-        navigation(text = text, type = "Widget")
-    }
-
-    override fun search(searchTerm: String) {
-        analyticsLogger.logEvent(
-            true,
-            AnalyticsEvent(
-                eventType = "Search",
-                parameters = mapOf(
-                    "text" to searchTerm
-                )
             )
         )
     }

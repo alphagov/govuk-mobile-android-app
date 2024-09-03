@@ -9,12 +9,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import uk.govuk.app.analytics.Analytics
 import javax.inject.Inject
 
-data class OnboardingUiState(
+internal data class OnboardingUiState(
     val pages: List<OnboardingPage>
 )
 
 @HiltViewModel
-class OnboardingViewModel @Inject constructor(
+internal class OnboardingViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val analytics: Analytics
 ): ViewModel() {
