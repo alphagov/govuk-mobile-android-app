@@ -39,6 +39,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
+    implementation(project(":design"))
 
     ksp(libs.hilt.compiler)
 

@@ -1,12 +1,11 @@
 package uk.govuk.app.settings.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import uk.govuk.app.design.ui.component.BaseHeader
 import uk.govuk.app.settings.SettingsViewModel
 
 @Composable
@@ -34,9 +33,9 @@ private fun SettingsScreen(
     }
 
     Column(modifier) {
-        Text("Settings Screen")
-        Button(onClick = onButtonClick) {
-            Text("Click me!")
-        }
+        BaseHeader("Settings", modifier)
+//        Button(onClick = onButtonClick) {
+//            Text("Click me!")
+//        }
     }
 }
