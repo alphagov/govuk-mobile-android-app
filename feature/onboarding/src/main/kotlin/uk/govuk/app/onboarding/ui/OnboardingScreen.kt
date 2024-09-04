@@ -60,19 +60,19 @@ internal fun OnboardingRoute(
     OnboardingScreen(
         uiState.pages,
         onPageView = { pageIndex -> viewModel.onPageView(pageIndex) },
-        onContinue = { pageIndex, cta ->
-            viewModel.onContinue(pageIndex, cta)
+        onContinue = { text ->
+            viewModel.onButtonClick(text)
         },
-        onSkip = { pageIndex, cta ->
-            viewModel.onSkip(pageIndex, cta)
+        onSkip = { text ->
+            viewModel.onButtonClick(text)
             onboardingCompleted()
         },
-        onDone = { pageIndex, cta ->
-            viewModel.onDone(pageIndex, cta)
+        onDone = { text ->
+            viewModel.onButtonClick(text)
             onboardingCompleted()
         },
-        onPagerIndicator = { pageIndex ->
-            viewModel.onPagerIndicator(pageIndex)
+        onPagerIndicator = {
+            viewModel.onPagerIndicatorClick()
         },
         modifier
     )
@@ -83,10 +83,10 @@ internal fun OnboardingRoute(
 private fun OnboardingScreen(
     pages: List<OnboardingPage>,
     onPageView: (Int) -> Unit,
-    onContinue: (Int, String) -> Unit,
-    onSkip: (Int, String) -> Unit,
-    onDone: (Int, String) -> Unit,
-    onPagerIndicator: (Int) -> Unit,
+    onContinue: (String) -> Unit,
+    onSkip: (String) -> Unit,
+    onDone: (String) -> Unit,
+    onPagerIndicator: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(pageCount = {
@@ -123,18 +123,18 @@ private fun OnboardingScreen(
         Footer(
             currentPageIndex = currentPage,
             pageCount = pagerState.pageCount,
-            onContinue = { cta ->
-                onContinue(pagerState.currentPage, cta)
+            onContinue = { text ->
+                onContinue(text)
                 changePage(pagerState.currentPage + 1)
             },
-            onDone = { cta ->
-                onDone(currentPage, cta)
+            onDone = { text ->
+                onDone(text)
             },
-            onSkip = { cta ->
-                onSkip(currentPage, cta)
+            onSkip = { text ->
+                onSkip(text)
             },
             onPagerIndicator = { index ->
-                onPagerIndicator(currentPage)
+                onPagerIndicator()
                 changePage(index)
             }
         )
@@ -203,7 +203,7 @@ private fun Footer(
             }
         } else {
             DoneButton(
-                onClick = { cta -> onDone(cta) },
+                onClick = { text -> onDone(text) },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -255,10 +255,10 @@ private fun ContinueButton(
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val cta = stringResource(id = R.string.continueButton)
+    val text = stringResource(id = R.string.continueButton)
     PrimaryButton(
-        text = cta,
-        onClick = { onClick(cta) },
+        text = text,
+        onClick = { onClick(text) },
         modifier = modifier
     )
 }
@@ -268,10 +268,10 @@ private fun SkipButton(
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val cta = stringResource(id = R.string.skipButton)
+    val text = stringResource(id = R.string.skipButton)
     SecondaryButton(
-        text = cta,
-        onClick = { onClick(cta) },
+        text = text,
+        onClick = { onClick(text) },
         modifier = modifier
     )
 }
@@ -281,10 +281,10 @@ private fun DoneButton(
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val cta = stringResource(id = R.string.doneButton)
+    val text = stringResource(id = R.string.doneButton)
     PrimaryButton(
-        text = cta,
-        onClick = { onClick(cta) },
+        text = text,
+        onClick = { onClick(text) },
         modifier = modifier
     )
 }

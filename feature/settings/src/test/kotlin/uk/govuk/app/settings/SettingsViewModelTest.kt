@@ -18,7 +18,7 @@ class SettingsViewModelTest {
         verify {
             analytics.screenView(
                 screenClass = "SettingsScreen",
-                alias = "SETTINGS",
+                screenName = "Settings",
                 title = "Settings"
             )
         }

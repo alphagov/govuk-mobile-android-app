@@ -29,12 +29,12 @@ data class GovUkTypography(
     val captionRegular: TextStyle
 )
 
-val transport = FontFamily(
+private val transport = FontFamily(
     Font(R.font.transport_bold, FontWeight.Bold),
     Font(R.font.transport_light, FontWeight.Light),
 )
 
-val Typography = GovUkTypography(
+internal val Typography = GovUkTypography(
     titleLargeBold = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Bold,
@@ -163,7 +163,7 @@ val Typography = GovUkTypography(
     )
 )
 
-val LocalTypography = staticCompositionLocalOf {
+internal val LocalTypography = staticCompositionLocalOf {
     GovUkTypography(
         titleLargeBold = TextStyle.Default,
         titleLargeRegular = TextStyle.Default,

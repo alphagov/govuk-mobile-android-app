@@ -6,34 +6,34 @@ import uk.govuk.app.design.ui.theme.GovUkColourScheme.Strokes
 import uk.govuk.app.design.ui.theme.GovUkColourScheme.Surfaces
 import uk.govuk.app.design.ui.theme.GovUkColourScheme.TextAndIcons
 
-val Blue1 = Color(0xFF1D70B8)
-val Blue2 = Color(0xFF259AFF)
-val Blue3 = Color(0xFF00D1FF)
-val Blue4 = Color(0xFF45F2FD)
-val Blue5 = Color(0xFF003078)
-val Blue6 = Color(0xFF7AC2FF)
+private val Blue1 = Color(0xFF1D70B8)
+private val Blue2 = Color(0xFF259AFF)
+private val Blue3 = Color(0xFF00D1FF)
+private val Blue4 = Color(0xFF45F2FD)
+private val Blue5 = Color(0xFF003078)
+private val Blue6 = Color(0xFF7AC2FF)
 
-val Yellow = Color(0xFFFFDD00)
+private val Yellow = Color(0xFFFFDD00)
 
-val Grey900 = Color(0xFF1A1A1A)
-val Grey800 = Color(0xFF333333)
-val Grey700 = Color(0xFF4D4D4D)
-val Grey600 = Color(0xFF666666)
-val Grey500 = Color(0xFF808080)
-val Grey400 = Color(0xFF999999)
-val Grey300 = Color(0xFFB2B2B2)
-val Grey200 = Color(0xFFCCCCCC)
-val Grey100 = Color(0xFFE5E5E5)
-val Grey60 = Color(0xFFF0F0F0)
-val Grey50 = Color(0xFFFAFAFA)
+private val Grey900 = Color(0xFF1A1A1A)
+private val Grey800 = Color(0xFF333333)
+private val Grey700 = Color(0xFF4D4D4D)
+private val Grey600 = Color(0xFF666666)
+private val Grey500 = Color(0xFF808080)
+private val Grey400 = Color(0xFF999999)
+private val Grey300 = Color(0xFFB2B2B2)
+private val Grey200 = Color(0xFFCCCCCC)
+private val Grey100 = Color(0xFFE5E5E5)
+private val Grey60 = Color(0xFFF0F0F0)
+private val Grey50 = Color(0xFFFAFAFA)
 
-val Black = Color(0xFF000000)
-val BlackAlpha30 = Color(0x4D000000)
-val BlackAlpha75 = Color(0x4B000000)
+private val Black = Color(0xFF000000)
+private val BlackAlpha30 = Color(0x4D000000)
+private val BlackAlpha75 = Color(0x4B000000)
 
-val White = Color(0xFFFFFFFF)
-val WhiteAlpha30 = Color(0x4DFFFFFF)
-val WhiteAlpha75 = Color(0x4BFFFFFF)
+private val White = Color(0xFFFFFFFF)
+private val WhiteAlpha30 = Color(0x4DFFFFFF)
+private val WhiteAlpha75 = Color(0x4BFFFFFF)
 
 data class GovUkColourScheme(
     val textAndIcons: TextAndIcons,
@@ -78,7 +78,7 @@ data class GovUkColourScheme(
     )
 }
 
-val LightColorScheme = GovUkColourScheme(
+internal val LightColorScheme = GovUkColourScheme(
     textAndIcons = TextAndIcons(
         primary = Black,
         secondary = Grey700,
@@ -115,7 +115,7 @@ val LightColorScheme = GovUkColourScheme(
     )
 )
 
-val DarkColorScheme = GovUkColourScheme(
+internal val DarkColorScheme = GovUkColourScheme(
     textAndIcons = TextAndIcons(
         primary = White,
         secondary = Grey300,
@@ -152,7 +152,7 @@ val DarkColorScheme = GovUkColourScheme(
     )
 )
 
-val LocalColourScheme = staticCompositionLocalOf {
+internal val LocalColourScheme = staticCompositionLocalOf {
     GovUkColourScheme(
         textAndIcons = TextAndIcons(
             primary = Color.Unspecified,
