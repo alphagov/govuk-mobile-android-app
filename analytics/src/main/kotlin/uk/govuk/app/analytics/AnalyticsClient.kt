@@ -11,15 +11,15 @@ class AnalyticsClient @Inject constructor(
 ): Analytics {
 
     override fun screenView(screenClass: String, screenName: String, title: String) {
-        analyticsLogger.logEvent(
-            true,
+        log(
             AnalyticsEvent(
                 eventType = FirebaseAnalytics.Event.SCREEN_VIEW,
-                parameters = mapOf(
-                    FirebaseAnalytics.Param.SCREEN_CLASS to screenClass,
-                    FirebaseAnalytics.Param.SCREEN_NAME to screenName,
-                    "screen_title" to title,
-                    "language" to Locale.getDefault().language
+                parameters = parametersWithLanguage(
+                    mapOf(
+                        FirebaseAnalytics.Param.SCREEN_CLASS to screenClass,
+                        FirebaseAnalytics.Param.SCREEN_NAME to screenName,
+                        "screen_title" to title,
+                    )
                 )
             )
         )
@@ -42,8 +42,7 @@ class AnalyticsClient @Inject constructor(
     }
 
     override fun search(searchTerm: String) {
-        analyticsLogger.logEvent(
-            true,
+        log(
             AnalyticsEvent(
                 eventType = "Search",
                 parameters = mapOf(
@@ -57,19 +56,25 @@ class AnalyticsClient @Inject constructor(
         val parameters = mutableMapOf(
             "type" to type,
             "external" to false, // Todo - in the future will need to pass this in if navigate outside of the app
-            "language" to Locale.getDefault().language
         )
 
         text?.let {
             parameters["text"] = it
         }
 
-        analyticsLogger.logEvent(
-            true,
+        log(
             AnalyticsEvent(
                 eventType = "Navigation",
-                parameters = parameters
+                parameters = parametersWithLanguage(parameters)
             )
         )
+    }
+
+    private fun parametersWithLanguage(parameters: Map<String, Any>): Map<String, Any> {
+        return parameters + Pair("language", Locale.getDefault().language)
+    }
+
+    private fun log(event: AnalyticsEvent) {
+        analyticsLogger.logEvent(true, event)
     }
 }
