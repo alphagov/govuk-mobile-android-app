@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="screen_title">Settings</string>
+  <string name="about_title">About the app</string>
+  <string name="help_setting">Help and feedback</string>
+  <string name="version_setting">App version number</string>
+  <string name="privacy_title">Privacy and legal</string>
+  <string name="share_setting">Share app usage statistics</string>
+</resources>

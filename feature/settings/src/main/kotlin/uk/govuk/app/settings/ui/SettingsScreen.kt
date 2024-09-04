@@ -19,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.BaseHeader
@@ -54,7 +55,7 @@ private fun SettingsScreen(
     }
 
     Column {
-        BaseHeader("Settings")
+        BaseHeader(stringResource(R.string.screen_title))
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
@@ -70,7 +71,7 @@ private fun AboutTheApp(
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    SettingsHeader("About the app")
+    SettingsHeader(stringResource(R.string.about_title))
 
     OutlinedCard(
         colors = CardDefaults.cardColors(
@@ -84,7 +85,7 @@ private fun AboutTheApp(
             verticalAlignment = Alignment.CenterVertically
         ) {
             BodyRegularLabel(
-                text = "Help and feedback",
+                text = stringResource(R.string.help_setting),
                 modifier = Modifier.weight(1f),
                 color = GovUkTheme.colourScheme.textAndIcons.link,
             )
@@ -111,7 +112,7 @@ private fun AboutTheApp(
             verticalAlignment = Alignment.CenterVertically
         ) {
             BodyRegularLabel(
-                text = "App version number",
+                text = stringResource(R.string.version_setting),
                 modifier = Modifier.weight(1f)
             )
 
@@ -124,7 +125,7 @@ private fun AboutTheApp(
 private fun PrivacyAndLegal(
     modifier: Modifier = Modifier
 ) {
-    SettingsHeader("Privacy and legal")
+    SettingsHeader(stringResource(R.string.privacy_title))
 
     OutlinedCard(
         colors = CardDefaults.cardColors(
@@ -138,7 +139,7 @@ private fun PrivacyAndLegal(
             verticalAlignment = Alignment.CenterVertically
         ) {
             BodyRegularLabel(
-                text = "Share app usage statistics",
+                text = stringResource(R.string.share_setting),
                 modifier = Modifier.weight(1f),
             )
 
