@@ -86,3 +86,26 @@ private fun BaseHeaderPreview() {
         BaseHeader("Heading text")
     }
 }
+
+@Composable
+fun SettingsHeader(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Title3BoldLabel(
+        text = text,
+        modifier = Modifier.padding(
+            top = GovUkTheme.spacing.medium,
+            start = GovUkTheme.spacing.extraLarge,
+            end = GovUkTheme.spacing.medium
+        )
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SettingsHeaderPreview() {
+    GovUkTheme {
+        SettingsHeader("Settings text")
+    }
+}
