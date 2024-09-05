@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.BaseHeader
 import uk.govuk.app.design.ui.component.BodyRegularLabel
+import uk.govuk.app.design.ui.component.CaptionRegularLabel
 import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.SettingsHeader
 import uk.govuk.app.design.ui.component.ToggleSwitch
@@ -146,5 +147,34 @@ private fun PrivacyAndLegal(
 
             ToggleSwitch(onCheckedChange = {})
         }
+    }
+
+    Row(
+        Modifier.padding(
+            top = 1.dp,
+            start = GovUkTheme.spacing.extraLarge,
+            end = GovUkTheme.spacing.extraLarge,
+            bottom = 1.dp
+        ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CaptionRegularLabel(
+            text = stringResource(R.string.privacy_description)
+        )
+    }
+
+    Row(
+        Modifier.padding(
+            top = 1.dp,
+            start = GovUkTheme.spacing.extraLarge,
+            end = GovUkTheme.spacing.extraLarge,
+            bottom = GovUkTheme.spacing.medium
+        ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CaptionRegularLabel(
+            text = stringResource(R.string.privacy_read_more),
+            color = GovUkTheme.colourScheme.textAndIcons.link,
+        )
     }
 }

@@ -5,5 +5,12 @@
   <string name="help_setting">Help and feedback</string>
   <string name="version_setting">App version number</string>
   <string name="privacy_title">Privacy and legal</string>
+  <string name="privacy_description">
+    You can share statistics with the GOV.UK app team about
+    how you use the app so they can make improvements to it.
+    These statistics are anonymous and don’t contain any of
+    your personal information.
+  </string>
+  <string name="privacy_read_more">Read more about this in the privacy policy.</string>
   <string name="share_setting">Share app usage statistics</string>
 </resources>
