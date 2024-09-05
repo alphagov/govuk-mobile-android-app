@@ -12,8 +12,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -26,6 +24,7 @@ import uk.govuk.app.design.ui.component.BaseHeader
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.SettingsHeader
+import uk.govuk.app.design.ui.component.ToggleSwitch
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.settings.R
 import uk.govuk.app.settings.SettingsViewModel
@@ -73,6 +72,8 @@ private fun AboutTheApp(
 ) {
     SettingsHeader(stringResource(R.string.about_title))
 
+    // We might want to make this a component when
+    // we understand the various use cases better
     OutlinedCard(
         colors = CardDefaults.cardColors(
             containerColor = GovUkTheme.colourScheme.surfaces.card
@@ -143,17 +144,7 @@ private fun PrivacyAndLegal(
                 modifier = Modifier.weight(1f),
             )
 
-            Switch(
-                checked = true,
-                onCheckedChange = {},
-
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = GovUkTheme.colourScheme.textAndIcons.buttonPrimaryHighlight,
-                    checkedTrackColor = GovUkTheme.colourScheme.surfaces.primary,
-                    uncheckedThumbColor = GovUkTheme.colourScheme.textAndIcons.buttonPrimaryDisabled,
-                    uncheckedTrackColor = GovUkTheme.colourScheme.surfaces.buttonPrimaryDisabled,
-                )
-            )
+            ToggleSwitch(onCheckedChange = {})
         }
     }
 }
