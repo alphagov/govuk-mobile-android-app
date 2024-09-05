@@ -31,7 +31,8 @@ fun ToggleSwitch(
             uncheckedThumbColor = GovUkTheme.colourScheme.surfaces.toggleHandle,
             uncheckedTrackColor = GovUkTheme.colourScheme.surfaces.toggleDisabled,
             uncheckedBorderColor = GovUkTheme.colourScheme.surfaces.toggleBorder,
-        )
+        ),
+        modifier = modifier
     )
 }
 

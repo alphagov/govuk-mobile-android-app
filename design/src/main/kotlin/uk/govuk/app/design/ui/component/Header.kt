@@ -61,7 +61,7 @@ fun SearchHeader(
 }
 
 @Composable
-fun BaseHeader(
+fun Header(
     text: String,
     modifier: Modifier = Modifier,
 ) {
@@ -74,38 +74,15 @@ fun BaseHeader(
         Title2BoldLabel(
             text = text,
             textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f)
+            modifier = modifier.weight(1f)
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun BaseHeaderPreview() {
+private fun HeaderPreview() {
     GovUkTheme {
-        BaseHeader("Heading text")
-    }
-}
-
-@Composable
-fun SettingsHeader(
-    text: String,
-    modifier: Modifier = Modifier,
-) {
-    Title3BoldLabel(
-        text = text,
-        modifier = Modifier.padding(
-            top = GovUkTheme.spacing.medium,
-            start = GovUkTheme.spacing.extraLarge,
-            end = GovUkTheme.spacing.medium
-        )
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SettingsHeaderPreview() {
-    GovUkTheme {
-        SettingsHeader("Settings text")
+        Header("Heading text")
     }
 }

@@ -1,5 +1,6 @@
 package uk.govuk.app.design.ui.component
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -314,6 +315,21 @@ fun CaptionRegularLabel(
     )
 }
 
+@Composable
+fun ListHeadingLabel(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Title3BoldLabel(
+        text = text,
+        modifier = modifier.padding(
+            top = GovUkTheme.spacing.medium,
+            start = GovUkTheme.spacing.extraLarge,
+            end = GovUkTheme.spacing.medium
+        )
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun LargeTitleBold() {
@@ -455,5 +471,13 @@ private fun CaptionBold() {
 private fun CaptionRegular() {
     GovUkTheme {
         CaptionRegularLabel("Caption Regular Label")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ListHeadingLabelPreview() {
+    GovUkTheme {
+        ListHeadingLabel("Settings text")
     }
 }
