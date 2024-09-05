@@ -1,5 +1,3 @@
-// Todo - extract to common file reusable across all feature modules
-
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -11,10 +9,10 @@ plugins {
 
 android {
     namespace = "uk.govuk.app.home"
-    compileSdk = 34
+    compileSdk = Version.COMPILE_SDK
 
     defaultConfig {
-        minSdk = 29
+        minSdk = Version.MIN_SDK
     }
 
     compileOptions {
