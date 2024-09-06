@@ -149,7 +149,12 @@ private fun PrivacyAndLegal(
                 .padding(GovUkTheme.spacing.medium)
         ) {
             Row(
-                Modifier.padding(GovUkTheme.spacing.medium),
+                modifier.padding(
+                    top = GovUkTheme.spacing.small,
+                    bottom = GovUkTheme.spacing.small,
+                    start = GovUkTheme.spacing.medium,
+                    end = GovUkTheme.spacing.medium
+                ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 BodyRegularLabel(
@@ -157,7 +162,10 @@ private fun PrivacyAndLegal(
                     modifier = Modifier.weight(1f),
                 )
 
-                ToggleSwitch(onCheckedChange = {})
+                ToggleSwitch(
+                    onCheckedChange = {},
+                    modifier = modifier
+                )
             }
         }
 
