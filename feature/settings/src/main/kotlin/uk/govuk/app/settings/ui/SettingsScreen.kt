@@ -18,6 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
@@ -32,12 +34,14 @@ import uk.govuk.app.settings.SettingsViewModel
 
 @Composable
 internal fun SettingsRoute(
+    appVersion: String,
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: SettingsViewModel = hiltViewModel()
 
     SettingsScreen(
+        appVersion = appVersion,
         onPageView = { viewModel.onPageView() },
         onButtonClick = onButtonClick,
         modifier = modifier
@@ -46,6 +50,7 @@ internal fun SettingsRoute(
 
 @Composable
 private fun SettingsScreen(
+    appVersion: String,
     onPageView: () -> Unit,
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -61,8 +66,8 @@ private fun SettingsScreen(
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
-            AboutTheApp(onButtonClick)
-            PrivacyAndLegal()
+            AboutTheApp(appVersion,onButtonClick)
+            PrivacyAndLegal(onButtonClick)
             Spacer(Modifier.height(100.dp))
         }
     }
@@ -70,6 +75,7 @@ private fun SettingsScreen(
 
 @Composable
 private fun AboutTheApp(
+    appVersion: String,
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -88,7 +94,8 @@ private fun AboutTheApp(
                 .padding(GovUkTheme.spacing.medium)
         ) {
             Row(
-                Modifier.padding(GovUkTheme.spacing.medium),
+                Modifier.padding(GovUkTheme.spacing.medium)
+                    .clickable(onClick = onButtonClick),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 BodyRegularLabel(
@@ -101,9 +108,8 @@ private fun AboutTheApp(
                     painter = painterResource(
                         uk.govuk.app.design.R.drawable.baseline_open_in_new_24
                     ),
-                    contentDescription = "",
-                    tint = GovUkTheme.colourScheme.textAndIcons.link,
-                    modifier = Modifier.clickable(onClick = onButtonClick)
+                    contentDescription = stringResource(R.string.link_opens_in),
+                    tint = GovUkTheme.colourScheme.textAndIcons.link
                 )
             }
 
@@ -126,7 +132,7 @@ private fun AboutTheApp(
                     modifier = Modifier.weight(1f)
                 )
 
-                BodyRegularLabel(text = "1.0")
+                BodyRegularLabel(text = appVersion)
             }
         }
     }
@@ -134,6 +140,7 @@ private fun AboutTheApp(
 
 @Composable
 private fun PrivacyAndLegal(
+    onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -149,7 +156,12 @@ private fun PrivacyAndLegal(
                 .padding(GovUkTheme.spacing.medium)
         ) {
             Row(
-                Modifier.padding(GovUkTheme.spacing.medium),
+                modifier.padding(
+                    top = GovUkTheme.spacing.small,
+                    bottom = GovUkTheme.spacing.small,
+                    start = GovUkTheme.spacing.medium,
+                    end = GovUkTheme.spacing.medium
+                ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 BodyRegularLabel(
@@ -157,7 +169,10 @@ private fun PrivacyAndLegal(
                     modifier = Modifier.weight(1f),
                 )
 
-                ToggleSwitch(onCheckedChange = {})
+                ToggleSwitch(
+                    onCheckedChange = {},
+                    modifier = modifier
+                )
             }
         }
 
@@ -175,13 +190,17 @@ private fun PrivacyAndLegal(
             )
         }
 
+        val altText: String = stringResource(id = R.string.link_opens_in)
+
         Row(
             Modifier.padding(
-                top = 1.dp,
-                start = GovUkTheme.spacing.extraLarge,
-                end = GovUkTheme.spacing.extraLarge,
-                bottom = GovUkTheme.spacing.medium
-            ),
+                    top = 1.dp,
+                    start = GovUkTheme.spacing.extraLarge,
+                    end = GovUkTheme.spacing.extraLarge,
+                    bottom = GovUkTheme.spacing.medium
+                )
+                .clickable(onClick = onButtonClick)
+                .semantics { contentDescription = altText },
             verticalAlignment = Alignment.CenterVertically
         ) {
             CaptionRegularLabel(

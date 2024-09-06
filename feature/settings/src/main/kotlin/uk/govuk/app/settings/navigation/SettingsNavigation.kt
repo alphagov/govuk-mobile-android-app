@@ -15,6 +15,7 @@ private const val SETTINGS_ROUTE = "settings_route"
 private const val SETTINGS_SUB_ROUTE = "settings_sub_route"
 
 fun NavGraphBuilder.settingsGraph(
+    appVersion: String,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
@@ -32,6 +33,7 @@ fun NavGraphBuilder.settingsGraph(
             )
         ) {
             SettingsRoute(
+                appVersion = appVersion,
                 onButtonClick = { navController.navigateToSettingsSubScreen() },
                 modifier = modifier
             )

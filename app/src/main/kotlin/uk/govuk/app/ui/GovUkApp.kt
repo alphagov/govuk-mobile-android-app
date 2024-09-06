@@ -27,6 +27,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import uk.govuk.app.AppViewModel
+import uk.govuk.app.BuildConfig
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.navigation.HOME_GRAPH_ROUTE
 import uk.govuk.app.home.navigation.HOME_GRAPH_START_DESTINATION
@@ -159,6 +160,7 @@ private fun BottomNavScaffold(
                     modifier = Modifier.padding(paddingValues)
                 )
                 settingsGraph(
+                    appVersion = BuildConfig.VERSION_NAME,
                     navController = navController,
                     modifier = Modifier.padding(paddingValues)
                 )
