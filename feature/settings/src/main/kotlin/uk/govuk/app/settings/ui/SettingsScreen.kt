@@ -34,12 +34,14 @@ import uk.govuk.app.settings.SettingsViewModel
 
 @Composable
 internal fun SettingsRoute(
+    appVersion: String,
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: SettingsViewModel = hiltViewModel()
 
     SettingsScreen(
+        appVersion = appVersion,
         onPageView = { viewModel.onPageView() },
         onButtonClick = onButtonClick,
         modifier = modifier
@@ -48,6 +50,7 @@ internal fun SettingsRoute(
 
 @Composable
 private fun SettingsScreen(
+    appVersion: String,
     onPageView: () -> Unit,
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -63,7 +66,7 @@ private fun SettingsScreen(
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
-            AboutTheApp(onButtonClick)
+            AboutTheApp(appVersion,onButtonClick)
             PrivacyAndLegal(onButtonClick)
             Spacer(Modifier.height(100.dp))
         }
@@ -72,6 +75,7 @@ private fun SettingsScreen(
 
 @Composable
 private fun AboutTheApp(
+    appVersion: String,
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -128,7 +132,7 @@ private fun AboutTheApp(
                     modifier = Modifier.weight(1f)
                 )
 
-                BodyRegularLabel(text = "1.0")
+                BodyRegularLabel(text = appVersion)
             }
         }
     }
