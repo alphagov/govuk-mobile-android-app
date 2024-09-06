@@ -11,12 +11,12 @@ plugins {
 
 android {
     namespace = "uk.govuk.app"
-    compileSdk = 34
+    compileSdk = Version.COMPILE_SDK
 
     defaultConfig {
         applicationId = "uk.govuk.app"
-        minSdk = 29
-        targetSdk = 34
+        minSdk = Version.MIN_SDK
+        targetSdk = Version.TARGET_SDK
         versionCode = 1
         versionName = "0.0.1"
 

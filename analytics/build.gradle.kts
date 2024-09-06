@@ -8,10 +8,10 @@ plugins {
 
 android {
     namespace = "uk.govuk.app.analytics"
-    compileSdk = 34
+    compileSdk = Version.COMPILE_SDK
 
     defaultConfig {
-        minSdk = 29
+        minSdk = Version.MIN_SDK
     }
 
     compileOptions {
