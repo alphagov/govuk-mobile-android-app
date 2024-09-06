@@ -62,7 +62,7 @@ private fun SettingsScreen(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
             AboutTheApp(onButtonClick)
-            PrivacyAndLegal()
+            PrivacyAndLegal(onButtonClick)
             Spacer(Modifier.height(100.dp))
         }
     }
@@ -134,6 +134,7 @@ private fun AboutTheApp(
 
 @Composable
 private fun PrivacyAndLegal(
+    onButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -185,11 +186,12 @@ private fun PrivacyAndLegal(
 
         Row(
             Modifier.padding(
-                top = 1.dp,
-                start = GovUkTheme.spacing.extraLarge,
-                end = GovUkTheme.spacing.extraLarge,
-                bottom = GovUkTheme.spacing.medium
-            ),
+                    top = 1.dp,
+                    start = GovUkTheme.spacing.extraLarge,
+                    end = GovUkTheme.spacing.extraLarge,
+                    bottom = GovUkTheme.spacing.medium
+                )
+                .clickable(onClick = onButtonClick),
             verticalAlignment = Alignment.CenterVertically
         ) {
             CaptionRegularLabel(
