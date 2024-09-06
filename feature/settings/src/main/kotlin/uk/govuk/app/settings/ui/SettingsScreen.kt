@@ -18,6 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
@@ -102,7 +104,7 @@ private fun AboutTheApp(
                     painter = painterResource(
                         uk.govuk.app.design.R.drawable.baseline_open_in_new_24
                     ),
-                    contentDescription = "",
+                    contentDescription = stringResource(R.string.link_opens_in),
                     tint = GovUkTheme.colourScheme.textAndIcons.link
                 )
             }
@@ -184,6 +186,8 @@ private fun PrivacyAndLegal(
             )
         }
 
+        val altText: String = stringResource(id = R.string.link_opens_in)
+
         Row(
             Modifier.padding(
                     top = 1.dp,
@@ -191,7 +195,8 @@ private fun PrivacyAndLegal(
                     end = GovUkTheme.spacing.extraLarge,
                     bottom = GovUkTheme.spacing.medium
                 )
-                .clickable(onClick = onButtonClick),
+                .clickable(onClick = onButtonClick)
+                .semantics { contentDescription = altText },
             verticalAlignment = Alignment.CenterVertically
         ) {
             CaptionRegularLabel(
