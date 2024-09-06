@@ -88,7 +88,8 @@ private fun AboutTheApp(
                 .padding(GovUkTheme.spacing.medium)
         ) {
             Row(
-                Modifier.padding(GovUkTheme.spacing.medium),
+                Modifier.padding(GovUkTheme.spacing.medium)
+                    .clickable(onClick = onButtonClick),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 BodyRegularLabel(
@@ -102,8 +103,7 @@ private fun AboutTheApp(
                         uk.govuk.app.design.R.drawable.baseline_open_in_new_24
                     ),
                     contentDescription = "",
-                    tint = GovUkTheme.colourScheme.textAndIcons.link,
-                    modifier = Modifier.clickable(onClick = onButtonClick)
+                    tint = GovUkTheme.colourScheme.textAndIcons.link
                 )
             }
 
