@@ -14,12 +14,15 @@ android {
     namespace = "uk.govuk.app"
     compileSdk = Version.COMPILE_SDK
 
+    // Todo - replace with Google Play auto increment mechanism for play store builds
+    val buildNumber = System.getenv("GITHUB_RUN_NUMBER")?.toInt() ?: 1
+
     defaultConfig {
         applicationId = "uk.govuk.app"
         minSdk = Version.MIN_SDK
         targetSdk = Version.TARGET_SDK
-        versionCode = 1
-        versionName = "0.0.1"
+        versionCode = buildNumber
+        versionName = "0.0.$buildNumber"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
