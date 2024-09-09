@@ -28,15 +28,26 @@ android {
     }
 
     buildTypes {
-        debug {
+        create("alpha") {
             applicationIdSuffix = ".dev"
-            enableUnitTestCoverage = true
-            enableAndroidTestCoverage = true
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            matchingFallbacks += listOf("debug")
+            signingConfig = signingConfigs.getByName("debug")
 
             firebaseAppDistribution {
                 artifactType = "APK"
                 groups = "android-alpha-testers"
             }
+        }
+
+        debug {
+            applicationIdSuffix = ".dev"
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
         }
 
         release {
