@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.play.services)
     alias(libs.plugins.crashlytics)
+    alias(libs.plugins.firebaseAppDistribution)
     alias(libs.plugins.kover)
 }
 
@@ -31,6 +32,11 @@ android {
             applicationIdSuffix = ".dev"
             enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
+
+            firebaseAppDistribution {
+                artifactType = "APK"
+                groups = "android-alpha-testers"
+            }
         }
 
         release {
