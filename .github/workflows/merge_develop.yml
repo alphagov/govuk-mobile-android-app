@@ -2,7 +2,7 @@ name: Merge into develop
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ develop, GOVUKAPP-666_distribute_builds ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
