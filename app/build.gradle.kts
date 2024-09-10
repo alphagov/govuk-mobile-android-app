@@ -43,6 +43,7 @@ android {
 
             firebaseAppDistribution {
                 artifactType = "APK"
+                releaseNotesFile = "${project.rootDir}/releasenotes.txt"
                 groups = "android-alpha-testers"
             }
         }

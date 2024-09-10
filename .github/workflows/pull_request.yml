@@ -44,7 +44,10 @@ jobs:
         run: ./gradlew sonar --info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          
+
+      - name: Generate release notes
+        run: git log --format=%B -n 1 > releasenotes.txt
+
       - name: Build APK and distribute to firebase
         run: ./gradlew assembleAlpha appDistributionAlpha
         env:
