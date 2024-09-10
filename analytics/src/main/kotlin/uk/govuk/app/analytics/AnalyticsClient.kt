@@ -7,7 +7,8 @@ import java.util.Locale
 import javax.inject.Inject
 
 class AnalyticsClient @Inject constructor(
-    private val analyticsLogger: AnalyticsLogger
+    private val analyticsLogger: AnalyticsLogger,
+    private val analyticsRepo: AnalyticsRepo
 ): Analytics {
 
     override fun screenView(screenClass: String, screenName: String, title: String) {
@@ -78,11 +79,17 @@ class AnalyticsClient @Inject constructor(
         analyticsLogger.logEvent(true, event)
     }
 
-    override fun enable() {
+    override suspend fun isAnalyticsEnabled(): Boolean {
+        return analyticsRepo.isAnalyticsEnabled()
+    }
+
+    override suspend fun enable() {
+        analyticsRepo.analyticsEnabled()
         analyticsLogger.setEnabled(true)
     }
 
-    override fun disable() {
+    override suspend fun disable() {
+        analyticsRepo.analyticsDisabled()
         analyticsLogger.setEnabled(false)
     }
 }

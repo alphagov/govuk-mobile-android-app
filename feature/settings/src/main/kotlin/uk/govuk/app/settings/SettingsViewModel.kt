@@ -29,9 +29,8 @@ internal class SettingsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            // Todo - fetch from data store
             _uiState.value = SettingsUiState(
-                isAnalyticsEnabled = true,
+                isAnalyticsEnabled = analytics.isAnalyticsEnabled(),
             )
         }
     }
@@ -45,14 +44,15 @@ internal class SettingsViewModel @Inject constructor(
     }
 
     fun onAnalyticsConsentChanged(enabled: Boolean) {
-        // Todo - persist
-        if (enabled) {
-            analytics.enable()
-        } else {
-            analytics.disable()
+        viewModelScope.launch {
+            if (enabled) {
+                analytics.enable()
+            } else {
+                analytics.disable()
+            }
+            _uiState.value = SettingsUiState(
+                isAnalyticsEnabled = enabled
+            )
         }
-        _uiState.value = SettingsUiState(
-            isAnalyticsEnabled = enabled
-        )
     }
 }
