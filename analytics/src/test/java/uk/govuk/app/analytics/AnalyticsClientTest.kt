@@ -137,5 +137,25 @@ class AnalyticsClientTest {
             )
         }
     }
+
+    @Test
+    fun `Given analytics are enabled, then enable`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger)
+        analyticsClient.enable()
+
+        verify {
+            analyticsLogger.setEnabled(true)
+        }
+    }
+
+    @Test
+    fun `Given analytics are disabled, then disable`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger)
+        analyticsClient.disable()
+
+        verify {
+            analyticsLogger.setEnabled(false)
+        }
+    }
     
 }

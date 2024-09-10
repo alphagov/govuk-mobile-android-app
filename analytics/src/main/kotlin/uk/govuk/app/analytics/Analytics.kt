@@ -8,5 +8,6 @@ interface Analytics {
     fun tabClick(text: String)
     fun widgetClick(text: String)
     fun search(searchTerm: String)
-
+    fun enable()
+    fun disable()
 }

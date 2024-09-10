@@ -77,4 +77,12 @@ class AnalyticsClient @Inject constructor(
     private fun log(event: AnalyticsEvent) {
         analyticsLogger.logEvent(true, event)
     }
+
+    override fun enable() {
+        analyticsLogger.setEnabled(true)
+    }
+
+    override fun disable() {
+        analyticsLogger.setEnabled(false)
+    }
 }

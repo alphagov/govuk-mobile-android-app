@@ -14,6 +14,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -39,13 +41,18 @@ internal fun SettingsRoute(
     modifier: Modifier = Modifier
 ) {
     val viewModel: SettingsViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
 
-    SettingsScreen(
-        appVersion = appVersion,
-        onPageView = { viewModel.onPageView() },
-        onButtonClick = onButtonClick,
-        modifier = modifier
-    )
+    uiState?.let {
+        SettingsScreen(
+            appVersion = appVersion,
+            onPageView = { viewModel.onPageView() },
+            onButtonClick = onButtonClick,
+            isAnalyticsEnabled = it.isAnalyticsEnabled,
+            onAnalyticsConsentChange = { enabled -> viewModel.onAnalyticsConsentChanged(enabled) },
+            modifier = modifier
+        )
+    }
 }
 
 @Composable
@@ -53,6 +60,8 @@ private fun SettingsScreen(
     appVersion: String,
     onPageView: () -> Unit,
     onButtonClick: () -> Unit,
+    isAnalyticsEnabled: Boolean,
+    onAnalyticsConsentChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -67,7 +76,11 @@ private fun SettingsScreen(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
             AboutTheApp(appVersion,onButtonClick)
-            PrivacyAndLegal(onButtonClick)
+            PrivacyAndLegal(
+                onButtonClick = onButtonClick,
+                isAnalyticsEnabled = isAnalyticsEnabled,
+                onAnalyticsConsentChange = onAnalyticsConsentChange
+            )
             Spacer(Modifier.height(100.dp))
         }
     }
@@ -141,6 +154,8 @@ private fun AboutTheApp(
 @Composable
 private fun PrivacyAndLegal(
     onButtonClick: () -> Unit,
+    isAnalyticsEnabled: Boolean,
+    onAnalyticsConsentChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -170,7 +185,8 @@ private fun PrivacyAndLegal(
                 )
 
                 ToggleSwitch(
-                    onCheckedChange = {},
+                    checked = isAnalyticsEnabled,
+                    onCheckedChange = onAnalyticsConsentChange,
                     modifier = modifier
                 )
             }
