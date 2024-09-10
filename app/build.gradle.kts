@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.play.services)
     alias(libs.plugins.crashlytics)
+    alias(libs.plugins.firebaseAppDistribution)
     alias(libs.plugins.kover)
 }
 
@@ -13,12 +14,15 @@ android {
     namespace = "uk.govuk.app"
     compileSdk = Version.COMPILE_SDK
 
+    // Todo - replace with Google Play auto increment mechanism for play store builds
+    val buildNumber = System.getenv("GITHUB_RUN_NUMBER")?.toInt() ?: 1
+
     defaultConfig {
         applicationId = "uk.govuk.app"
         minSdk = Version.MIN_SDK
         targetSdk = Version.TARGET_SDK
-        versionCode = 1
-        versionName = "0.0.1"
+        versionCode = buildNumber
+        versionName = "0.0.$buildNumber"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -27,6 +31,23 @@ android {
     }
 
     buildTypes {
+        create("alpha") {
+            applicationIdSuffix = ".dev"
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            matchingFallbacks += listOf("debug")
+            signingConfig = signingConfigs.getByName("debug")
+
+            firebaseAppDistribution {
+                artifactType = "APK"
+                releaseNotesFile = "${project.rootDir}/releasenotes.txt"
+                groups = "android-alpha-testers"
+            }
+        }
+
         debug {
             applicationIdSuffix = ".dev"
             enableUnitTestCoverage = true
