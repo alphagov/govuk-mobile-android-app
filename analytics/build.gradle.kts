@@ -41,11 +41,13 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
+    implementation(libs.androidx.datastore.preferences)
 
     ksp(libs.hilt.compiler)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
+    testImplementation(libs.coroutine.test)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
