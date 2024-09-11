@@ -1,10 +1,13 @@
 package uk.govuk.app.analytics
 
 import com.google.firebase.analytics.FirebaseAnalytics
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import uk.gov.logging.api.analytics.AnalyticsEvent
 import uk.gov.logging.api.analytics.logging.AnalyticsLogger
@@ -138,6 +141,28 @@ class AnalyticsClientTest {
                     )
                 )
             )
+        }
+    }
+
+    @Test
+    fun `Given analytics are enabled, then return true`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
+
+        coEvery { analyticsRepo.isAnalyticsEnabled() } returns true
+
+        runTest {
+            assertTrue(analyticsClient.isAnalyticsEnabled())
+        }
+    }
+
+    @Test
+    fun `Given analytics are disabled, then return false`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
+
+        coEvery { analyticsRepo.isAnalyticsEnabled() } returns false
+
+        runTest {
+            assertFalse(analyticsClient.isAnalyticsEnabled())
         }
     }
 
