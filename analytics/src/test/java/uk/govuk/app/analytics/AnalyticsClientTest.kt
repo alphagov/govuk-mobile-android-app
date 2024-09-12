@@ -15,6 +15,10 @@ import java.util.Locale
 
 class AnalyticsClientTest {
 
+    companion object {
+        private const val REDACTION_TEXT = "[REDACTED]"
+    }
+
     private val analyticsLogger = mockk<AnalyticsLogger>(relaxed = true)
     private val analyticsRepo = mockk<AnalyticsRepo>(relaxed = true)
 
@@ -96,6 +100,60 @@ class AnalyticsClientTest {
                     eventType = "Search",
                     parameters = mapOf(
                         "text" to "search term"
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a search with postcode, then redact and log event`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
+        analyticsClient.search("search term A1 1AA")
+
+        verify {
+            analyticsLogger.logEvent(
+                true,
+                AnalyticsEvent(
+                    eventType = "Search",
+                    parameters = mapOf(
+                        "text" to "search term $REDACTION_TEXT"
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a search with email address, then redact and log event`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
+        analyticsClient.search("search term test@email.com")
+
+        verify {
+            analyticsLogger.logEvent(
+                true,
+                AnalyticsEvent(
+                    eventType = "Search",
+                    parameters = mapOf(
+                        "text" to "search term $REDACTION_TEXT"
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a search with NI number, then redact and log event`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
+        analyticsClient.search("search term AA 00 00 00 A")
+
+        verify {
+            analyticsLogger.logEvent(
+                true,
+                AnalyticsEvent(
+                    eventType = "Search",
+                    parameters = mapOf(
+                        "text" to "search term $REDACTION_TEXT"
                     )
                 )
             )
