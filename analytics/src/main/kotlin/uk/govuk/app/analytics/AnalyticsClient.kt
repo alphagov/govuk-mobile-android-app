@@ -3,6 +3,7 @@ package uk.govuk.app.analytics
 import com.google.firebase.analytics.FirebaseAnalytics
 import uk.gov.logging.api.analytics.AnalyticsEvent
 import uk.gov.logging.api.analytics.logging.AnalyticsLogger
+import uk.govuk.app.analytics.extension.redactPii
 import java.util.Locale
 import javax.inject.Inject
 
@@ -47,7 +48,7 @@ class AnalyticsClient @Inject constructor(
             AnalyticsEvent(
                 eventType = "Search",
                 parameters = mapOf(
-                    "text" to searchTerm
+                    "text" to searchTerm.redactPii()
                 )
             )
         )
