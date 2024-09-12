@@ -37,7 +37,8 @@ import uk.govuk.app.settings.SettingsViewModel
 @Composable
 internal fun SettingsRoute(
     appVersion: String,
-    onButtonClick: () -> Unit,
+    onHelpClick: () -> Unit,
+    onPrivacyPolicyClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: SettingsViewModel = hiltViewModel()
@@ -46,10 +47,11 @@ internal fun SettingsRoute(
     uiState?.let {
         SettingsScreen(
             appVersion = appVersion,
-            onPageView = { viewModel.onPageView() },
-            onButtonClick = onButtonClick,
             isAnalyticsEnabled = it.isAnalyticsEnabled,
+            onPageView = { viewModel.onPageView() },
+            onHelpClick = onHelpClick,
             onAnalyticsConsentChange = { enabled -> viewModel.onAnalyticsConsentChanged(enabled) },
+            onPrivacyPolicyClick = onPrivacyPolicyClick,
             modifier = modifier
         )
     }
@@ -58,10 +60,11 @@ internal fun SettingsRoute(
 @Composable
 private fun SettingsScreen(
     appVersion: String,
-    onPageView: () -> Unit,
-    onButtonClick: () -> Unit,
     isAnalyticsEnabled: Boolean,
+    onPageView: () -> Unit,
+    onHelpClick: () -> Unit,
     onAnalyticsConsentChange: (Boolean) -> Unit,
+    onPrivacyPolicyClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -75,11 +78,14 @@ private fun SettingsScreen(
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
-            AboutTheApp(appVersion,onButtonClick)
+            AboutTheApp(
+                appVersion = appVersion,
+                onHelpClick = onHelpClick
+            )
             PrivacyAndLegal(
-                onButtonClick = onButtonClick,
                 isAnalyticsEnabled = isAnalyticsEnabled,
-                onAnalyticsConsentChange = onAnalyticsConsentChange
+                onAnalyticsConsentChange = onAnalyticsConsentChange,
+                onPrivacyPolicyClick = onPrivacyPolicyClick
             )
             Spacer(Modifier.height(100.dp))
         }
@@ -89,7 +95,7 @@ private fun SettingsScreen(
 @Composable
 private fun AboutTheApp(
     appVersion: String,
-    onButtonClick: () -> Unit,
+    onHelpClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -107,8 +113,9 @@ private fun AboutTheApp(
                 .padding(GovUkTheme.spacing.medium)
         ) {
             Row(
-                Modifier.padding(GovUkTheme.spacing.medium)
-                    .clickable(onClick = onButtonClick),
+                Modifier
+                    .clickable(onClick = onHelpClick)
+                    .padding(GovUkTheme.spacing.medium),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 BodyRegularLabel(
@@ -153,9 +160,9 @@ private fun AboutTheApp(
 
 @Composable
 private fun PrivacyAndLegal(
-    onButtonClick: () -> Unit,
     isAnalyticsEnabled: Boolean,
     onAnalyticsConsentChange: (Boolean) -> Unit,
+    onPrivacyPolicyClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -215,7 +222,7 @@ private fun PrivacyAndLegal(
                     end = GovUkTheme.spacing.extraLarge,
                     bottom = GovUkTheme.spacing.medium
                 )
-                .clickable(onClick = onButtonClick)
+                .clickable(onClick = onPrivacyPolicyClick)
                 .semantics { contentDescription = altText },
             verticalAlignment = Alignment.CenterVertically
         ) {
