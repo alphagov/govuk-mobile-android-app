@@ -2,7 +2,6 @@ package uk.govuk.app.search.navigation
 
 import android.content.Intent
 import android.net.Uri
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
@@ -40,13 +39,14 @@ fun NavGraphBuilder.searchGraph(
             SearchRoute(
                 onBack = { navController.popBackStack() },
                 onSearch = { searchQuery ->
-                    val intent = CustomTabsIntent.Builder().build()
                     val searchUrl = if (searchQuery.isBlank()) {
                         BLANK_SEARCH_URL
                     } else {
                         String.format(SEARCH_URL, searchQuery)
                     }
-                    intent.launchUrl(context, Uri.parse(searchUrl))
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse(searchUrl)
+                    context.startActivity(intent)
                 },
                 modifier = modifier
             )

@@ -1,7 +1,9 @@
 package uk.govuk.app.settings.navigation
 
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -16,6 +18,7 @@ private const val SETTINGS_SUB_ROUTE = "settings_sub_route"
 
 fun NavGraphBuilder.settingsGraph(
     appVersion: String,
+    privacyPolicyUrl: String,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
@@ -32,9 +35,16 @@ fun NavGraphBuilder.settingsGraph(
                 }
             )
         ) {
+            val context = LocalContext.current
+
             SettingsRoute(
                 appVersion = appVersion,
-                onButtonClick = { navController.navigateToSettingsSubScreen() },
+                onHelpClick = { navController.navigateToSettingsSubScreen() },
+                onPrivacyPolicyClick = {
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse(privacyPolicyUrl)
+                    context.startActivity(intent)
+                },
                 modifier = modifier
             )
         }
