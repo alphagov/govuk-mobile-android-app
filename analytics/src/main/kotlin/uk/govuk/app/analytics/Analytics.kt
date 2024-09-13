@@ -3,7 +3,6 @@ package uk.govuk.app.analytics
 interface Analytics {
 
     fun screenView(screenClass: String, screenName: String, title: String)
-    suspend fun init()
     suspend fun isAnalyticsConsentRequired(): Boolean
     suspend fun isAnalyticsEnabled(): Boolean
     suspend fun enable()

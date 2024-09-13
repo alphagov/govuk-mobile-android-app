@@ -12,10 +12,6 @@ class AnalyticsClient @Inject constructor(
     private val analyticsRepo: AnalyticsRepo
 ): Analytics {
 
-    override suspend fun init() {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun isAnalyticsConsentRequired(): Boolean {
         return analyticsRepo.getAnalyticsEnabledState() == AnalyticsEnabledState.NOT_SET
     }

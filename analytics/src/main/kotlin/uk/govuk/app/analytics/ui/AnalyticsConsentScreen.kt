@@ -23,7 +23,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowHeightSizeClass
+import uk.govuk.app.analytics.AnalyticsViewModel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.HorizontalButtonGroup
 import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
@@ -37,9 +39,18 @@ internal fun AnalyticsConsentRoute(
     analyticsConsentCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val viewModel: AnalyticsViewModel = hiltViewModel()
+
     AnalyticsConsentScreen(
         onPrivacyPolicyClick = onPrivacyPolicyClick,
-        analyticsConsentCompleted = analyticsConsentCompleted,
+        onConsentGranted = {
+            viewModel.onConsentGranted()
+            analyticsConsentCompleted()
+        },
+        onConsentDenied = {
+            viewModel.onConsentDenied()
+            analyticsConsentCompleted()
+        },
         modifier = modifier
     )
 }
@@ -47,7 +58,8 @@ internal fun AnalyticsConsentRoute(
 @Composable
 private fun AnalyticsConsentScreen(
     onPrivacyPolicyClick: () -> Unit,
-    analyticsConsentCompleted: () -> Unit,
+    onConsentGranted: () -> Unit,
+    onConsentDenied: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -83,16 +95,16 @@ private fun AnalyticsConsentScreen(
         if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
             HorizontalButtonGroup(
                 primaryText = enableButtonText,
-                onPrimary = analyticsConsentCompleted,
+                onPrimary = onConsentGranted,
                 secondaryText = disableButtonText,
-                onSecondary = analyticsConsentCompleted
+                onSecondary = onConsentDenied
             )
         } else {
             VerticalButtonGroup(
                 primaryText = enableButtonText,
-                onPrimary = analyticsConsentCompleted,
+                onPrimary = onConsentGranted,
                 secondaryText = disableButtonText,
-                onSecondary = analyticsConsentCompleted
+                onSecondary = onConsentDenied
             )
         }
     }
@@ -165,7 +177,8 @@ private fun AnalyticsConsentPreview() {
     GovUkTheme {
         AnalyticsConsentScreen(
             onPrivacyPolicyClick = { },
-            analyticsConsentCompleted = { }
+            onConsentGranted = { },
+            onConsentDenied = { }
         )
     }
 }
