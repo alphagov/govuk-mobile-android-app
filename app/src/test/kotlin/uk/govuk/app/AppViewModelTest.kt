@@ -16,9 +16,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.analytics.Analytics
-import uk.govuk.app.analytics.AnalyticsEnabledState.DISABLED
-import uk.govuk.app.analytics.AnalyticsEnabledState.ENABLED
-import uk.govuk.app.analytics.AnalyticsEnabledState.NOT_SET
 import uk.govuk.app.config.flags.ReleaseFlagsService
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -41,8 +38,8 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given the analytics enabled state is not set, When init, then should display analytics consent`() {
-        coEvery { analytics.getAnalyticsEnabledState() } returns NOT_SET
+    fun `Given analytics consent is required, When init, then should display analytics consent`() {
+        coEvery { analytics.isAnalyticsConsentRequired() } returns true
 
         val viewModel = AppViewModel(appRepo, releaseFlagsService, analytics)
 
@@ -54,19 +51,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the analytics enabled state is enabled, When init, then should not display analytics consent`() {
-        coEvery { analytics.getAnalyticsEnabledState() } returns ENABLED
-
-        val viewModel = AppViewModel(appRepo, releaseFlagsService, analytics)
-
-        runTest {
-            val result = viewModel.uiState.first()
-            assertFalse(result!!.shouldDisplayAnalyticsConsent)
-        }
-    }
-
-    @Test
-    fun `Given the analytics enabled state is disabled, When init, then should not display analytics consent`() {
-        coEvery { analytics.getAnalyticsEnabledState() } returns DISABLED
+        coEvery { analytics.isAnalyticsConsentRequired() } returns false
 
         val viewModel = AppViewModel(appRepo, releaseFlagsService, analytics)
 

@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
-import uk.govuk.app.analytics.AnalyticsEnabledState
 import javax.inject.Inject
 
 internal data class SettingsUiState(
@@ -31,7 +30,7 @@ internal class SettingsViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _uiState.value = SettingsUiState(
-                isAnalyticsEnabled = analytics.getAnalyticsEnabledState() == AnalyticsEnabledState.ENABLED,
+                isAnalyticsEnabled = analytics.isAnalyticsEnabled(),
             )
         }
     }

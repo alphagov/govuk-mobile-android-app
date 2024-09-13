@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
-import uk.govuk.app.analytics.AnalyticsEnabledState
 import uk.govuk.app.config.flags.ReleaseFlagsService
 import javax.inject.Inject
 
@@ -30,8 +29,7 @@ internal class AppViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _uiState.value = AppUiState(
-                shouldDisplayAnalyticsConsent = analytics.getAnalyticsEnabledState()
-                        == AnalyticsEnabledState.NOT_SET,
+                shouldDisplayAnalyticsConsent = analytics.isAnalyticsConsentRequired(),
                 shouldDisplayOnboarding = !appRepo.isOnboardingCompleted(),
                 isSearchEnabled = releaseFlagsService.isSearchEnabled()
             )

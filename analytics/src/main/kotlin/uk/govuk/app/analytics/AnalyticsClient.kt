@@ -12,6 +12,28 @@ class AnalyticsClient @Inject constructor(
     private val analyticsRepo: AnalyticsRepo
 ): Analytics {
 
+    override suspend fun init() {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun isAnalyticsConsentRequired(): Boolean {
+        return analyticsRepo.getAnalyticsEnabledState() == AnalyticsEnabledState.NOT_SET
+    }
+
+    override suspend fun isAnalyticsEnabled(): Boolean {
+        return analyticsRepo.getAnalyticsEnabledState() == AnalyticsEnabledState.ENABLED
+    }
+
+    override suspend fun enable() {
+        analyticsRepo.analyticsEnabled()
+        analyticsLogger.setEnabled(true)
+    }
+
+    override suspend fun disable() {
+        analyticsRepo.analyticsDisabled()
+        analyticsLogger.setEnabled(false)
+    }
+
     override fun screenView(screenClass: String, screenName: String, title: String) {
         log(
             AnalyticsEvent(
@@ -78,19 +100,5 @@ class AnalyticsClient @Inject constructor(
 
     private fun log(event: AnalyticsEvent) {
         analyticsLogger.logEvent(true, event)
-    }
-
-    override suspend fun getAnalyticsEnabledState(): AnalyticsEnabledState {
-        return analyticsRepo.getAnalyticsEnabledState()
-    }
-
-    override suspend fun enable() {
-        analyticsRepo.analyticsEnabled()
-        analyticsLogger.setEnabled(true)
-    }
-
-    override suspend fun disable() {
-        analyticsRepo.analyticsDisabled()
-        analyticsLogger.setEnabled(false)
     }
 }
