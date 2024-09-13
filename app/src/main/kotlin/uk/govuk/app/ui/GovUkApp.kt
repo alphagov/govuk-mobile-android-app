@@ -158,7 +158,18 @@ private fun BottomNavScaffold(
                 navController = navController,
                 startDestination = startDestination
             ) {
-                analyticsGraph()
+                analyticsGraph(
+                    privacyPolicyUrl = PRIVACY_POLICY_URL,
+                    analyticsConsentCompleted = {
+                        if (shouldDisplayOnboarding) {
+                            navController.popBackStack()
+                            navController.navigate(ONBOARDING_GRAPH_ROUTE)
+                        } else {
+                            navController.popBackStack()
+                            navController.navigate(HOME_GRAPH_ROUTE)
+                        }
+                    }
+                )
                 onboardingGraph(
                     onboardingCompleted = {
                         onboardingCompleted()

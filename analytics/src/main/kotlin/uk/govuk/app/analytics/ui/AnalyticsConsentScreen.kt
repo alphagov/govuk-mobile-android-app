@@ -1,6 +1,7 @@
 package uk.govuk.app.analytics.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +11,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
@@ -24,28 +27,40 @@ import androidx.window.core.layout.WindowHeightSizeClass
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.HorizontalButtonGroup
 import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
+import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.VerticalButtonGroup
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
 internal fun AnalyticsConsentRoute(
+    onPrivacyPolicyClick: () -> Unit,
+    analyticsConsentCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    AnalyticsConsentScreen(modifier)
+    AnalyticsConsentScreen(
+        onPrivacyPolicyClick = onPrivacyPolicyClick,
+        analyticsConsentCompleted = analyticsConsentCompleted,
+        modifier = modifier
+    )
 }
 
 @Composable
 private fun AnalyticsConsentScreen(
+    onPrivacyPolicyClick: () -> Unit,
+    analyticsConsentCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Todo - scroll
     Column(
         modifier
             .fillMaxWidth()
             .padding(top = GovUkTheme.spacing.large)
-            .padding(horizontal = GovUkTheme.spacing.medium)
     ) {
-        Column(Modifier.weight(1f)) {
+        Column(
+            Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = GovUkTheme.spacing.medium)
+        ) {
             LargeTitleBoldLabel("Share statistics about how you use the GOV.UK app")
             Spacer(Modifier.height(GovUkTheme.spacing.medium))
             BodyRegularLabel("You can help us improve this app by agreeing to share statistics about:")
@@ -56,8 +71,11 @@ private fun AnalyticsConsentScreen(
             Spacer(Modifier.height(GovUkTheme.spacing.medium))
             BodyRegularLabel("You can stop sharing these statistics at any time by changing your app settings.")
             Spacer(Modifier.height(GovUkTheme.spacing.medium))
-            PrivacyPolicyLink()
+            PrivacyPolicyLink(onPrivacyPolicyClick)
+            Spacer(Modifier.height(GovUkTheme.spacing.medium))
         }
+
+        ListDivider()
 
         val enableButtonText = "Allow statistics sharing"
         val disableButtonText = "Don't allow statistics sharing"
@@ -65,16 +83,16 @@ private fun AnalyticsConsentScreen(
         if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
             HorizontalButtonGroup(
                 primaryText = enableButtonText,
-                onPrimary = { }, // Todo
+                onPrimary = analyticsConsentCompleted,
                 secondaryText = disableButtonText,
-                onSecondary = {  } // Todo
+                onSecondary = analyticsConsentCompleted
             )
         } else {
             VerticalButtonGroup(
                 primaryText = enableButtonText,
-                onPrimary = {  }, // Todo
+                onPrimary = analyticsConsentCompleted,
                 secondaryText = disableButtonText,
-                onSecondary = {  } // Todo
+                onSecondary = analyticsConsentCompleted
             )
         }
     }
@@ -117,10 +135,14 @@ private fun BulletItem(
 
 @Composable
 private fun PrivacyPolicyLink(
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Todo - handle click
-    Row(modifier) {
+    Row(
+        modifier
+            .clickable { onClick() }
+    ) {
+        // Todo - icon not wrapping with text
         BodyRegularLabel(
             text = "Read more about this in the privacy policy",
             color = GovUkTheme.colourScheme.textAndIcons.link,
@@ -141,6 +163,9 @@ private fun PrivacyPolicyLink(
 @Composable
 private fun AnalyticsConsentPreview() {
     GovUkTheme {
-        AnalyticsConsentScreen()
+        AnalyticsConsentScreen(
+            onPrivacyPolicyClick = { },
+            analyticsConsentCompleted = { }
+        )
     }
 }
