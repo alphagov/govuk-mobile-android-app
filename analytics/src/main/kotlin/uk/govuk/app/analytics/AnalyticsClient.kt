@@ -80,8 +80,8 @@ class AnalyticsClient @Inject constructor(
         analyticsLogger.logEvent(true, event)
     }
 
-    override suspend fun isAnalyticsEnabled(): Boolean {
-        return analyticsRepo.isAnalyticsEnabled()
+    override suspend fun getAnalyticsEnabledState(): AnalyticsEnabledState {
+        return analyticsRepo.getAnalyticsEnabledState()
     }
 
     override suspend fun enable() {

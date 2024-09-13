@@ -17,6 +17,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsEnabledState.DISABLED
+import uk.govuk.app.analytics.AnalyticsEnabledState.ENABLED
+import uk.govuk.app.analytics.AnalyticsEnabledState.NOT_SET
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SettingsViewModelTest {
@@ -36,7 +39,7 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given analytics are enabled, When init, then return analytics enabled`() {
-        coEvery { analytics.isAnalyticsEnabled() } returns true
+        coEvery { analytics.getAnalyticsEnabledState() } returns ENABLED
 
         val viewModel = SettingsViewModel(analytics)
 
@@ -48,7 +51,19 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given analytics are disabled, When init, then return analytics disabled`() {
-        coEvery { analytics.isAnalyticsEnabled() } returns false
+        coEvery { analytics.getAnalyticsEnabledState() } returns DISABLED
+
+        val viewModel = SettingsViewModel(analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.isAnalyticsEnabled)
+        }
+    }
+
+    @Test
+    fun `Given analytics are not set, When init, then return analytics disabled`() {
+        coEvery { analytics.getAnalyticsEnabledState() } returns NOT_SET
 
         val viewModel = SettingsViewModel(analytics)
 
