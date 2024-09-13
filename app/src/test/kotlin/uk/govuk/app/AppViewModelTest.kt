@@ -16,13 +16,16 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsEnabledState.DISABLED
+import uk.govuk.app.analytics.AnalyticsEnabledState.ENABLED
+import uk.govuk.app.analytics.AnalyticsEnabledState.NOT_SET
 import uk.govuk.app.config.flags.ReleaseFlagsService
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AppViewModelTest {
 
     private val dispatcher = UnconfinedTestDispatcher()
-    private val onboardingRepo = mockk<AppRepo>(relaxed = true)
+    private val appRepo = mockk<AppRepo>(relaxed = true)
     private val releaseFlagsService = mockk<ReleaseFlagsService>(relaxed = true)
     private val analytics = mockk<Analytics>(relaxed = true)
 
@@ -38,34 +41,70 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given the user has previously completed onboarding, When init, then return onboarding not required state`() {
-        coEvery { onboardingRepo.isOnboardingCompleted() } returns true
+    fun `Given the analytics enabled state is not set, When init, then should display analytics consent`() {
+        coEvery { analytics.getAnalyticsEnabledState() } returns NOT_SET
 
-        val viewModel = AppViewModel(onboardingRepo, releaseFlagsService, analytics)
+        val viewModel = AppViewModel(appRepo, releaseFlagsService, analytics)
 
         runTest {
             val result = viewModel.uiState.first()
-            assertFalse(result!!.isOnboardingRequired)
+            assertTrue(result!!.shouldDisplayAnalyticsConsent)
         }
     }
 
     @Test
-    fun `Given the user has not previously completed onboarding, When init, then return onboarding required state`() {
-        coEvery { onboardingRepo.isOnboardingCompleted() } returns false
+    fun `Given the analytics enabled state is enabled, When init, then should not display analytics consent`() {
+        coEvery { analytics.getAnalyticsEnabledState() } returns ENABLED
 
-        val viewModel = AppViewModel(onboardingRepo, releaseFlagsService, analytics)
+        val viewModel = AppViewModel(appRepo, releaseFlagsService, analytics)
 
         runTest {
             val result = viewModel.uiState.first()
-            assertTrue(result!!.isOnboardingRequired)
+            assertFalse(result!!.shouldDisplayAnalyticsConsent)
         }
     }
 
     @Test
-    fun `Given the search feature is enabled, When init, then return search enabled state`() {
+    fun `Given the analytics enabled state is disabled, When init, then should not display analytics consent`() {
+        coEvery { analytics.getAnalyticsEnabledState() } returns DISABLED
+
+        val viewModel = AppViewModel(appRepo, releaseFlagsService, analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.shouldDisplayAnalyticsConsent)
+        }
+    }
+
+    @Test
+    fun `Given the user has previously completed onboarding, When init, then should not display onboarding`() {
+        coEvery { appRepo.isOnboardingCompleted() } returns true
+
+        val viewModel = AppViewModel(appRepo, releaseFlagsService, analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.shouldDisplayOnboarding)
+        }
+    }
+
+    @Test
+    fun `Given the user has not previously completed onboarding, When init, then should display onboarding`() {
+        coEvery { appRepo.isOnboardingCompleted() } returns false
+
+        val viewModel = AppViewModel(appRepo, releaseFlagsService, analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertTrue(result!!.shouldDisplayOnboarding)
+        }
+    }
+
+    @Test
+    fun `Given the search feature is enabled, When init, then emit search enabled state`() {
         coEvery { releaseFlagsService.isSearchEnabled() } returns true
 
-        val viewModel = AppViewModel(onboardingRepo, releaseFlagsService, analytics)
+        val viewModel = AppViewModel(appRepo, releaseFlagsService, analytics)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -74,10 +113,10 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given the search feature is disabled, When init, then return search disabled state`() {
+    fun `Given the search feature is disabled, When init, then emit search disabled state`() {
         coEvery { releaseFlagsService.isSearchEnabled() } returns false
 
-        val viewModel = AppViewModel(onboardingRepo, releaseFlagsService, analytics)
+        val viewModel = AppViewModel(appRepo, releaseFlagsService, analytics)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -87,18 +126,18 @@ class AppViewModelTest {
 
     @Test
     fun `When onboarding completed, then call repo onboarding completed`() {
-        val viewModel = AppViewModel(onboardingRepo, releaseFlagsService, analytics)
+        val viewModel = AppViewModel(appRepo, releaseFlagsService, analytics)
 
         runTest {
             viewModel.onboardingCompleted()
 
-            coVerify { onboardingRepo.onboardingCompleted() }
+            coVerify { appRepo.onboardingCompleted() }
         }
     }
 
     @Test
     fun `When tab is clicked, then log analytics`() {
-        val viewModel = AppViewModel(onboardingRepo, releaseFlagsService, analytics)
+        val viewModel = AppViewModel(appRepo, releaseFlagsService, analytics)
 
         runTest {
             viewModel.onTabClick("text")
@@ -111,7 +150,7 @@ class AppViewModelTest {
 
     @Test
     fun `When widget is clicked, then log analytics`() {
-        val viewModel = AppViewModel(onboardingRepo, releaseFlagsService, analytics)
+        val viewModel = AppViewModel(appRepo, releaseFlagsService, analytics)
 
         runTest {
             viewModel.onWidgetClick("text")

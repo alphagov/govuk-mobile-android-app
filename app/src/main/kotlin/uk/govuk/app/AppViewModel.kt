@@ -7,11 +7,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsEnabledState
 import uk.govuk.app.config.flags.ReleaseFlagsService
 import javax.inject.Inject
 
 internal data class AppUiState(
-    val isOnboardingRequired: Boolean,
+    val shouldDisplayAnalyticsConsent: Boolean,
+    val shouldDisplayOnboarding: Boolean,
     val isSearchEnabled: Boolean
 )
 
@@ -28,7 +30,9 @@ internal class AppViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _uiState.value = AppUiState(
-                isOnboardingRequired = !appRepo.isOnboardingCompleted(),
+                shouldDisplayAnalyticsConsent = analytics.getAnalyticsEnabledState()
+                        == AnalyticsEnabledState.NOT_SET,
+                shouldDisplayOnboarding = !appRepo.isOnboardingCompleted(),
                 isSearchEnabled = releaseFlagsService.isSearchEnabled()
             )
         }

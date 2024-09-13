@@ -31,7 +31,7 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 internal fun AnalyticsConsentRoute(
     modifier: Modifier = Modifier
 ) {
-
+    AnalyticsConsentScreen(modifier)
 }
 
 @Composable
