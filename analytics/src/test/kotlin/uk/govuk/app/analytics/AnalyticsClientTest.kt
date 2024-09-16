@@ -18,10 +18,6 @@ import java.util.Locale
 
 class AnalyticsClientTest {
 
-    companion object {
-        private const val REDACTION_TEXT = "[REDACTED]"
-    }
-
     private val analyticsLogger = mockk<AnalyticsLogger>(relaxed = true)
     private val analyticsRepo = mockk<AnalyticsRepo>(relaxed = true)
 
@@ -120,7 +116,7 @@ class AnalyticsClientTest {
                 AnalyticsEvent(
                     eventType = "Search",
                     parameters = mapOf(
-                        "text" to "search term $REDACTION_TEXT"
+                        "text" to "search term [postcode]"
                     )
                 )
             )
@@ -138,7 +134,7 @@ class AnalyticsClientTest {
                 AnalyticsEvent(
                     eventType = "Search",
                     parameters = mapOf(
-                        "text" to "search term $REDACTION_TEXT"
+                        "text" to "search term [email]"
                     )
                 )
             )
@@ -156,7 +152,7 @@ class AnalyticsClientTest {
                 AnalyticsEvent(
                     eventType = "Search",
                     parameters = mapOf(
-                        "text" to "search term $REDACTION_TEXT"
+                        "text" to "search term [NI number]"
                     )
                 )
             )
