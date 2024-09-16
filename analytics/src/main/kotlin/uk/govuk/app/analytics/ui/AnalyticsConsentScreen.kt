@@ -21,11 +21,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowHeightSizeClass
 import uk.govuk.app.analytics.AnalyticsViewModel
+import uk.govuk.app.analytics.R
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.HorizontalButtonGroup
 import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
@@ -73,15 +75,15 @@ private fun AnalyticsConsentScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = GovUkTheme.spacing.medium)
         ) {
-            LargeTitleBoldLabel("Share statistics about how you use the GOV.UK app")
+            LargeTitleBoldLabel(stringResource(R.string.analytics_consent_title))
             Spacer(Modifier.height(GovUkTheme.spacing.medium))
-            BodyRegularLabel("You can help us improve this app by agreeing to share statistics about:")
+            BodyRegularLabel(stringResource(R.string.analytics_consent_bullet_title))
             Spacer(Modifier.height(GovUkTheme.spacing.medium))
             BulletList()
             Spacer(Modifier.height(GovUkTheme.spacing.medium))
-            BodyRegularLabel("These statistics are anonymous.")
+            BodyRegularLabel(stringResource(R.string.analytics_consent_anonymous))
             Spacer(Modifier.height(GovUkTheme.spacing.medium))
-            BodyRegularLabel("You can stop sharing these statistics at any time by changing your app settings.")
+            BodyRegularLabel(stringResource(R.string.analytics_consent_stop))
             Spacer(Modifier.height(GovUkTheme.spacing.medium))
             PrivacyPolicyLink(onPrivacyPolicyClick)
             Spacer(Modifier.height(GovUkTheme.spacing.medium))
@@ -89,8 +91,8 @@ private fun AnalyticsConsentScreen(
 
         ListDivider()
 
-        val enableButtonText = "Allow statistics sharing"
-        val disableButtonText = "Don't allow statistics sharing"
+        val enableButtonText = stringResource(R.string.analytics_consent_button_enable)
+        val disableButtonText = stringResource(R.string.analytics_consent_button_disable)
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
         if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
             HorizontalButtonGroup(
@@ -115,13 +117,13 @@ private fun BulletList(
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
-        BulletItem("the pages you visit within the app")
+        BulletItem(stringResource(R.string.analytics_consent_bullet_1))
         Spacer(Modifier.height(GovUkTheme.spacing.small))
-        BulletItem("how long you spend on each page")
+        BulletItem(stringResource(R.string.analytics_consent_bullet_2))
         Spacer(Modifier.height(GovUkTheme.spacing.small))
-        BulletItem("what you tap on while you're on each page")
+        BulletItem(stringResource(R.string.analytics_consent_bullet_3))
         Spacer(Modifier.height(GovUkTheme.spacing.small))
-        BulletItem("errors that happen")
+        BulletItem(stringResource(R.string.analytics_consent_bullet_4))
     }
 }
 
@@ -156,7 +158,7 @@ private fun PrivacyPolicyLink(
     ) {
         // Todo - icon not wrapping with text
         BodyRegularLabel(
-            text = "Read more about this in the privacy policy",
+            text = stringResource(R.string.analytics_consent_privacy_policy),
             color = GovUkTheme.colourScheme.textAndIcons.link,
         )
         Spacer(Modifier.width(GovUkTheme.spacing.small
