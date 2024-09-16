@@ -213,8 +213,6 @@ private fun PrivacyAndLegal(
             )
         }
 
-        val altText: String = stringResource(id = R.string.link_opens_in)
-
         Row(
             Modifier.padding(
                     top = 1.dp,
@@ -222,12 +220,17 @@ private fun PrivacyAndLegal(
                     end = GovUkTheme.spacing.extraLarge,
                     bottom = GovUkTheme.spacing.medium
                 )
-                .clickable(onClick = onPrivacyPolicyClick)
-                .semantics { contentDescription = altText },
+                .clickable(onClick = onPrivacyPolicyClick),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val altText = "${stringResource(R.string.privacy_read_more)} " +
+                    stringResource(id = R.string.link_opens_in)
+
             CaptionRegularLabel(
                 text = stringResource(R.string.privacy_read_more),
+                modifier = Modifier.semantics {
+                    contentDescription = altText
+                },
                 color = GovUkTheme.colourScheme.textAndIcons.link,
             )
         }

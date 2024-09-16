@@ -67,13 +67,13 @@ private fun AnalyticsConsentScreen(
     Column(
         modifier
             .fillMaxWidth()
-            .padding(top = GovUkTheme.spacing.large)
     ) {
         Column(
             Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = GovUkTheme.spacing.medium)
+                .padding(top = GovUkTheme.spacing.medium)
         ) {
             LargeTitleBoldLabel(stringResource(R.string.analytics_consent_title))
             Spacer(Modifier.height(GovUkTheme.spacing.medium))
@@ -167,7 +167,7 @@ private fun PrivacyPolicyLink(
             painter = painterResource(
                 uk.govuk.app.design.R.drawable.baseline_open_in_new_24
             ),
-            contentDescription = null,
+            contentDescription = stringResource(R.string.analytics_consent_link_opens_in),
             tint = GovUkTheme.colourScheme.textAndIcons.link
         )
     }

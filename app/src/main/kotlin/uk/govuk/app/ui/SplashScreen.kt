@@ -53,7 +53,7 @@ internal fun SplashScreen(
             }
         }
 
-        val altText: String = stringResource(id = R.string.splash_screen_animation_alt_text)
+        val altText: String = stringResource(id = uk.govuk.app.design.R.string.gov_uk_alt_text)
 
         LottieAnimation(
             composition = composition,
