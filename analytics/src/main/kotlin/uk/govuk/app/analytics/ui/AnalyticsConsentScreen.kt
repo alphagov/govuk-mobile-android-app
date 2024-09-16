@@ -156,9 +156,9 @@ private fun PrivacyPolicyLink(
         modifier
             .clickable { onClick() }
     ) {
-        // Todo - icon not wrapping with text
         BodyRegularLabel(
             text = stringResource(R.string.analytics_consent_privacy_policy),
+            modifier = Modifier.weight(1f),
             color = GovUkTheme.colourScheme.textAndIcons.link,
         )
         Spacer(Modifier.width(GovUkTheme.spacing.small
