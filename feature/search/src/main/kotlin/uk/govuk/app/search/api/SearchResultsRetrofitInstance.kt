@@ -4,11 +4,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object SearchResultsRetrofitInstance {
-    private const val BASE_URL = "https://www.gov.uk"
-
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(SearchConfig.GOV_UK_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

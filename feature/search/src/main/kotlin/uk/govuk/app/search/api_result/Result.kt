@@ -7,13 +7,13 @@ data class Result(
     val document_type: String,
     val elasticsearch_type: String,
     val es_score: Double,
-    val expanded_organisations: List<Organisation>,
+    val expanded_organisations: List<Organisation> = emptyList(),
     val format: String,
     val index: String,
     val link: String,
-    val organisation_content_ids: List<String>,
-    val organisations: List<Organisation>,
-    val policy_areas: List<PolicyArea>,
+    val organisation_content_ids: List<String> = emptyList(),
+    val organisations: List<Organisation> = emptyList(),
+    val policy_areas: List<PolicyArea> = emptyList(),
     val public_timestamp: String,
     val title: String
 )
