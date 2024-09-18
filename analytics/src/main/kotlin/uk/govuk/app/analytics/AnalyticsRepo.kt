@@ -5,7 +5,7 @@ import javax.inject.Inject
 class AnalyticsRepo @Inject constructor(
     private val dataStore: AnalyticsDataStore
 ) {
-    internal suspend fun isAnalyticsEnabled() = dataStore.isAnalyticsEnabled()
+    internal suspend fun getAnalyticsEnabledState() = dataStore.getAnalyticsEnabledState()
 
     internal suspend fun analyticsEnabled() = dataStore.analyticsEnabled()
 

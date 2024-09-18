@@ -5,9 +5,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import uk.govuk.app.design.R
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
@@ -18,9 +22,16 @@ private fun BaseLabel(
     color: Color,
     textAlign: TextAlign
 ) {
+    val altText = text.replace(
+        stringResource(R.string.gov_uk),
+        stringResource(R.string.gov_uk_alt_text)
+    )
     Text(
         text = text,
-        modifier = modifier,
+        modifier = modifier
+            .semantics {
+                contentDescription = altText
+            },
         style = style,
         color = color,
         textAlign = textAlign,

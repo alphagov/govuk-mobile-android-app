@@ -11,13 +11,12 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import uk.gov.logging.api.analytics.AnalyticsEvent
 import uk.gov.logging.api.analytics.logging.AnalyticsLogger
+import uk.govuk.app.analytics.AnalyticsEnabledState.DISABLED
+import uk.govuk.app.analytics.AnalyticsEnabledState.ENABLED
+import uk.govuk.app.analytics.AnalyticsEnabledState.NOT_SET
 import java.util.Locale
 
 class AnalyticsClientTest {
-
-    companion object {
-        private const val REDACTION_TEXT = "[REDACTED]"
-    }
 
     private val analyticsLogger = mockk<AnalyticsLogger>(relaxed = true)
     private val analyticsRepo = mockk<AnalyticsRepo>(relaxed = true)
@@ -117,7 +116,7 @@ class AnalyticsClientTest {
                 AnalyticsEvent(
                     eventType = "Search",
                     parameters = mapOf(
-                        "text" to "search term $REDACTION_TEXT"
+                        "text" to "search term [postcode]"
                     )
                 )
             )
@@ -135,7 +134,7 @@ class AnalyticsClientTest {
                 AnalyticsEvent(
                     eventType = "Search",
                     parameters = mapOf(
-                        "text" to "search term $REDACTION_TEXT"
+                        "text" to "search term [email]"
                     )
                 )
             )
@@ -153,7 +152,7 @@ class AnalyticsClientTest {
                 AnalyticsEvent(
                     eventType = "Search",
                     parameters = mapOf(
-                        "text" to "search term $REDACTION_TEXT"
+                        "text" to "search term [NI number]"
                     )
                 )
             )
@@ -203,21 +202,43 @@ class AnalyticsClientTest {
     }
 
     @Test
-    fun `Given analytics are enabled, then return true`() {
+    fun `Given analytics are not set, when is analytics consent required, then return true`() {
         val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
 
-        coEvery { analyticsRepo.isAnalyticsEnabled() } returns true
+        coEvery { analyticsRepo.getAnalyticsEnabledState() } returns NOT_SET
 
         runTest {
-            assertTrue(analyticsClient.isAnalyticsEnabled())
+            assertTrue(analyticsClient.isAnalyticsConsentRequired())
         }
     }
 
     @Test
-    fun `Given analytics are disabled, then return false`() {
+    fun `Given analytics are enabled, when is analytics consent required, then return false`() {
         val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
 
-        coEvery { analyticsRepo.isAnalyticsEnabled() } returns false
+        coEvery { analyticsRepo.getAnalyticsEnabledState() } returns ENABLED
+
+        runTest {
+            assertFalse(analyticsClient.isAnalyticsConsentRequired())
+        }
+    }
+
+    @Test
+    fun `Given analytics are disabled, when is analytics consent required, then return false`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
+
+        coEvery { analyticsRepo.getAnalyticsEnabledState() } returns DISABLED
+
+        runTest {
+            assertFalse(analyticsClient.isAnalyticsConsentRequired())
+        }
+    }
+
+    @Test
+    fun `Given analytics are not set, when is analytics enabled, then return false`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
+
+        coEvery { analyticsRepo.getAnalyticsEnabledState() } returns NOT_SET
 
         runTest {
             assertFalse(analyticsClient.isAnalyticsEnabled())
@@ -225,7 +246,29 @@ class AnalyticsClientTest {
     }
 
     @Test
-    fun `Given analytics are enabled, then enable`() {
+    fun `Given analytics are enabled, when is analytics enabled, then return true`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
+
+        coEvery { analyticsRepo.getAnalyticsEnabledState() } returns ENABLED
+
+        runTest {
+            assertTrue(analyticsClient.isAnalyticsEnabled())
+        }
+    }
+
+    @Test
+    fun `Given analytics are disabled, when is analytics enabled, then return false`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
+
+        coEvery { analyticsRepo.getAnalyticsEnabledState() } returns DISABLED
+
+        runTest {
+            assertFalse(analyticsClient.isAnalyticsEnabled())
+        }
+    }
+
+    @Test
+    fun `Given analytics have been enabled, then enable`() {
         val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
 
         runTest {
@@ -239,7 +282,7 @@ class AnalyticsClientTest {
     }
 
     @Test
-    fun `Given analytics are disabled, then disable`() {
+    fun `Given analytics have been disabled, then disable`() {
         val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
 
         runTest {

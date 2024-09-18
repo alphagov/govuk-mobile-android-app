@@ -4,33 +4,46 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertEquals
 import org.junit.Test
+import uk.govuk.app.analytics.AnalyticsEnabledState.DISABLED
+import uk.govuk.app.analytics.AnalyticsEnabledState.ENABLED
+import uk.govuk.app.analytics.AnalyticsEnabledState.NOT_SET
 
 class AnalyticsRepoTest {
 
     private val dataStore = mockk<AnalyticsDataStore>(relaxed = true)
 
     @Test
-    fun `Given analytics are enabled, then return true`() {
+    fun `Given analytics are not set, then return not set`() {
         val repo = AnalyticsRepo(dataStore)
 
-        coEvery { dataStore.isAnalyticsEnabled() } returns true
+        coEvery { dataStore.getAnalyticsEnabledState() } returns NOT_SET
 
         runTest {
-            assertTrue(repo.isAnalyticsEnabled())
+            assertEquals(NOT_SET, repo.getAnalyticsEnabledState())
         }
     }
 
     @Test
-    fun `Given analytics are disabled, then return false`() {
+    fun `Given analytics are enabled, then return enabled`() {
         val repo = AnalyticsRepo(dataStore)
 
-        coEvery { dataStore.isAnalyticsEnabled() } returns false
+        coEvery { dataStore.getAnalyticsEnabledState() } returns ENABLED
 
         runTest {
-            assertFalse(repo.isAnalyticsEnabled())
+            assertEquals(ENABLED, repo.getAnalyticsEnabledState())
+        }
+    }
+
+    @Test
+    fun `Given analytics are disabled, then return disabled`() {
+        val repo = AnalyticsRepo(dataStore)
+
+        coEvery { dataStore.getAnalyticsEnabledState() } returns DISABLED
+
+        runTest {
+            assertEquals(DISABLED, repo.getAnalyticsEnabledState())
         }
     }
 

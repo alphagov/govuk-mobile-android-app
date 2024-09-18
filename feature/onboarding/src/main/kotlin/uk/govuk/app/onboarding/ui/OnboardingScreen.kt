@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
@@ -39,10 +37,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowHeightSizeClass
 import kotlinx.coroutines.launch
 import uk.govuk.app.design.ui.component.BodyRegularLabel
+import uk.govuk.app.design.ui.component.ExtraLargeVerticalSpacer
+import uk.govuk.app.design.ui.component.HorizontalButtonGroup
 import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
 import uk.govuk.app.design.ui.component.ListDivider
+import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.PrimaryButton
-import uk.govuk.app.design.ui.component.SecondaryButton
+import uk.govuk.app.design.ui.component.SmallVerticalSpacer
+import uk.govuk.app.design.ui.component.VerticalButtonGroup
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.onboarding.OnboardingPage
 import uk.govuk.app.onboarding.OnboardingViewModel
@@ -162,11 +164,11 @@ private fun Page(
                 contentDescription = null
             )
 
-            Spacer(modifier = Modifier.height(GovUkTheme.spacing.extraLarge))
+            ExtraLargeVerticalSpacer()
         }
 
         LargeTitleBoldLabel(stringResource(page.title), modifier = Modifier.focusable(), textAlign = TextAlign.Center)
-        Spacer(modifier = Modifier.height(GovUkTheme.spacing.medium))
+        MediumVerticalSpacer()
         BodyRegularLabel(stringResource(page.body), modifier = Modifier.focusable(), textAlign = TextAlign.Center)
     }
 }
@@ -189,16 +191,23 @@ private fun Footer(
     ) {
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
+        val continueButtonText = stringResource(R.string.continueButton)
+        val skipButtonText = stringResource(R.string.skipButton)
+
         if (currentPageIndex < pageCount - 1) {
             if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
                 HorizontalButtonGroup(
-                    onContinue = onContinue,
-                    onSkip = onSkip
+                    primaryText = continueButtonText,
+                    onPrimary = { onContinue(continueButtonText) },
+                    secondaryText = skipButtonText,
+                    onSecondary = { onSkip(skipButtonText) }
                 )
             } else {
                 VerticalButtonGroup(
-                    onContinue = onContinue,
-                    onSkip = onSkip
+                    primaryText = continueButtonText,
+                    onPrimary = { onContinue(continueButtonText) },
+                    secondaryText = skipButtonText,
+                    onSecondary = { onSkip(skipButtonText) }
                 )
             }
         } else {
@@ -207,73 +216,9 @@ private fun Footer(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        Spacer(modifier = Modifier.height(GovUkTheme.spacing.small))
+        SmallVerticalSpacer()
         PagerIndicator(pageCount, currentPageIndex, onPagerIndicator)
     }
-}
-
-@Composable
-private fun VerticalButtonGroup(
-    onContinue: (String) -> Unit,
-    onSkip: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier) {
-        ContinueButton(
-            onClick = onContinue,
-            modifier = Modifier.fillMaxWidth()
-        )
-        SkipButton(
-            onClick = onSkip,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-private fun HorizontalButtonGroup(
-    onContinue: (String) -> Unit,
-    onSkip: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceAround
-    ) {
-        ContinueButton(
-            onClick = onContinue,
-            modifier = Modifier.weight(0.5f)
-        )
-        SkipButton(
-            onClick = onSkip,
-            modifier = Modifier.weight(0.5f)
-        )
-    }
-}
-
-@Composable
-private fun ContinueButton(
-    onClick: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val text = stringResource(id = R.string.continueButton)
-    PrimaryButton(
-        text = text,
-        onClick = { onClick(text) },
-        modifier = modifier
-    )
-}
-
-@Composable
-private fun SkipButton(
-    onClick: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val text = stringResource(id = R.string.skipButton)
-    SecondaryButton(
-        text = text,
-        onClick = { onClick(text) },
-        modifier = modifier
-    )
 }
 
 @Composable

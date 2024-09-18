@@ -29,6 +29,8 @@ import androidx.navigation.compose.rememberNavController
 import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
 import uk.govuk.app.PRIVACY_POLICY_URL
+import uk.govuk.app.analytics.navigation.ANALYTICS_GRAPH_ROUTE
+import uk.govuk.app.analytics.navigation.analyticsGraph
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.navigation.HOME_GRAPH_ROUTE
 import uk.govuk.app.home.navigation.HOME_GRAPH_START_DESTINATION
@@ -48,7 +50,8 @@ internal fun GovUkApp() {
 
     uiState?.let {
         BottomNavScaffold(
-            onboardingRequired = it.isOnboardingRequired,
+            shouldDisplayAnalyticsConsent = it.shouldDisplayAnalyticsConsent,
+            shouldDisplayOnboarding = it.shouldDisplayOnboarding,
             isSearchEnabled = it.isSearchEnabled,
             onboardingCompleted = { viewModel.onboardingCompleted() },
             onTabClick = { tabText -> viewModel.onTabClick(tabText) },
@@ -59,7 +62,8 @@ internal fun GovUkApp() {
 
 @Composable
 private fun BottomNavScaffold(
-    onboardingRequired: Boolean,
+    shouldDisplayAnalyticsConsent: Boolean,
+    shouldDisplayOnboarding: Boolean,
     isSearchEnabled: Boolean,
     onboardingCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
@@ -141,10 +145,31 @@ private fun BottomNavScaffold(
             modifier = Modifier.fillMaxSize(),
             color = GovUkTheme.colourScheme.surfaces.background
         ) {
+            val startDestination =
+                if (shouldDisplayAnalyticsConsent) {
+                    ANALYTICS_GRAPH_ROUTE
+                } else if (shouldDisplayOnboarding) {
+                    ONBOARDING_GRAPH_ROUTE
+                } else {
+                    HOME_GRAPH_ROUTE
+                }
+
             NavHost(
                 navController = navController,
-                startDestination = if (onboardingRequired) ONBOARDING_GRAPH_ROUTE else HOME_GRAPH_ROUTE
+                startDestination = startDestination
             ) {
+                analyticsGraph(
+                    privacyPolicyUrl = PRIVACY_POLICY_URL,
+                    analyticsConsentCompleted = {
+                        if (shouldDisplayOnboarding) {
+                            navController.popBackStack()
+                            navController.navigate(ONBOARDING_GRAPH_ROUTE)
+                        } else {
+                            navController.popBackStack()
+                            navController.navigate(HOME_GRAPH_ROUTE)
+                        }
+                    }
+                )
                 onboardingGraph(
                     onboardingCompleted = {
                         onboardingCompleted()

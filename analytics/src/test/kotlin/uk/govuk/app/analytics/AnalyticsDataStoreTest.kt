@@ -8,9 +8,11 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertEquals
 import org.junit.Test
+import uk.govuk.app.analytics.AnalyticsEnabledState.DISABLED
+import uk.govuk.app.analytics.AnalyticsEnabledState.ENABLED
+import uk.govuk.app.analytics.AnalyticsEnabledState.NOT_SET
 
 class AnalyticsDataStoreTest {
 
@@ -18,37 +20,49 @@ class AnalyticsDataStoreTest {
     private val preferences = mockk<Preferences>()
 
     @Test
-    fun `Given the data store is empty, When is analytics enabled, then return true`() {
+    fun `Given the data store is empty, then return not set`() {
         val datastore = AnalyticsDataStore(dataStore)
 
         every { dataStore.data } returns emptyFlow()
 
         runTest {
-            assertTrue(datastore.isAnalyticsEnabled())
+            assertEquals(NOT_SET, datastore.getAnalyticsEnabledState())
         }
     }
 
     @Test
-    fun `Given analytics are enabled, then return true`() {
+    fun `Given analytics enabled preference is null, then return not set`() {
+        val datastore = AnalyticsDataStore(dataStore)
+
+        every { dataStore.data } returns flowOf(preferences)
+        every { preferences[booleanPreferencesKey(AnalyticsDataStore.ANALYTICS_ENABLED_KEY)] } returns null
+
+        runTest {
+            assertEquals(NOT_SET, datastore.getAnalyticsEnabledState())
+        }
+    }
+
+    @Test
+    fun `Given analytics are enabled, then return enabled`() {
         val datastore = AnalyticsDataStore(dataStore)
 
         every { dataStore.data } returns flowOf(preferences)
         every { preferences[booleanPreferencesKey(AnalyticsDataStore.ANALYTICS_ENABLED_KEY)] } returns true
 
         runTest {
-            assertTrue(datastore.isAnalyticsEnabled())
+            assertEquals(ENABLED, datastore.getAnalyticsEnabledState())
         }
     }
 
     @Test
-    fun `Given analytics are disabled, then return false`() {
+    fun `Given analytics are disabled, then return disabled`() {
         val datastore = AnalyticsDataStore(dataStore)
 
         every { dataStore.data } returns flowOf(preferences)
         every { preferences[booleanPreferencesKey(AnalyticsDataStore.ANALYTICS_ENABLED_KEY)] } returns false
 
         runTest {
-            assertFalse(datastore.isAnalyticsEnabled())
+            assertEquals(DISABLED, datastore.getAnalyticsEnabledState())
         }
     }
 }

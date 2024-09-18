@@ -11,7 +11,8 @@ import uk.govuk.app.config.flags.ReleaseFlagsService
 import javax.inject.Inject
 
 internal data class AppUiState(
-    val isOnboardingRequired: Boolean,
+    val shouldDisplayAnalyticsConsent: Boolean,
+    val shouldDisplayOnboarding: Boolean,
     val isSearchEnabled: Boolean
 )
 
@@ -28,7 +29,8 @@ internal class AppViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _uiState.value = AppUiState(
-                isOnboardingRequired = !appRepo.isOnboardingCompleted(),
+                shouldDisplayAnalyticsConsent = analytics.isAnalyticsConsentRequired(),
+                shouldDisplayOnboarding = !appRepo.isOnboardingCompleted(),
                 isSearchEnabled = releaseFlagsService.isSearchEnabled()
             )
         }
