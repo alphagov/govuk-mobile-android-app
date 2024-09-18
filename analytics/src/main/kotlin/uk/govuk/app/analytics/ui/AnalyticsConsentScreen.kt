@@ -5,12 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -32,6 +29,10 @@ import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.HorizontalButtonGroup
 import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
 import uk.govuk.app.design.ui.component.ListDivider
+import uk.govuk.app.design.ui.component.MediumHorizontalSpacer
+import uk.govuk.app.design.ui.component.MediumVerticalSpacer
+import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
+import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.VerticalButtonGroup
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
@@ -76,17 +77,17 @@ private fun AnalyticsConsentScreen(
                 .padding(top = GovUkTheme.spacing.medium)
         ) {
             LargeTitleBoldLabel(stringResource(R.string.analytics_consent_title))
-            Spacer(Modifier.height(GovUkTheme.spacing.medium))
+            MediumVerticalSpacer()
             BodyRegularLabel(stringResource(R.string.analytics_consent_bullet_title))
-            Spacer(Modifier.height(GovUkTheme.spacing.medium))
+            MediumVerticalSpacer()
             BulletList()
-            Spacer(Modifier.height(GovUkTheme.spacing.medium))
+            MediumVerticalSpacer()
             BodyRegularLabel(stringResource(R.string.analytics_consent_anonymous))
-            Spacer(Modifier.height(GovUkTheme.spacing.medium))
+            MediumVerticalSpacer()
             BodyRegularLabel(stringResource(R.string.analytics_consent_stop))
-            Spacer(Modifier.height(GovUkTheme.spacing.medium))
+            MediumVerticalSpacer()
             PrivacyPolicyLink(onPrivacyPolicyClick)
-            Spacer(Modifier.height(GovUkTheme.spacing.medium))
+            MediumVerticalSpacer()
         }
 
         ListDivider()
@@ -118,11 +119,11 @@ private fun BulletList(
 ) {
     Column(modifier) {
         BulletItem(stringResource(R.string.analytics_consent_bullet_1))
-        Spacer(Modifier.height(GovUkTheme.spacing.small))
+        SmallVerticalSpacer()
         BulletItem(stringResource(R.string.analytics_consent_bullet_2))
-        Spacer(Modifier.height(GovUkTheme.spacing.small))
+        SmallVerticalSpacer()
         BulletItem(stringResource(R.string.analytics_consent_bullet_3))
-        Spacer(Modifier.height(GovUkTheme.spacing.small))
+        SmallVerticalSpacer()
         BulletItem(stringResource(R.string.analytics_consent_bullet_4))
     }
 }
@@ -142,7 +143,7 @@ private fun BulletItem(
                 .clip(CircleShape)
                 .background(GovUkTheme.colourScheme.textAndIcons.primary)
         )
-        Spacer(Modifier.width(GovUkTheme.spacing.medium))
+        MediumHorizontalSpacer()
         BodyRegularLabel(text)
     }
 }
@@ -161,8 +162,7 @@ private fun PrivacyPolicyLink(
             modifier = Modifier.weight(1f),
             color = GovUkTheme.colourScheme.textAndIcons.link,
         )
-        Spacer(Modifier.width(GovUkTheme.spacing.small
-        ))
+        SmallHorizontalSpacer()
         Icon(
             painter = painterResource(
                 uk.govuk.app.design.R.drawable.baseline_open_in_new_24
