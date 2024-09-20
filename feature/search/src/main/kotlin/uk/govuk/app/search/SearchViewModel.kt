@@ -67,4 +67,12 @@ internal class SearchViewModel @Inject constructor(
         this.searchTerm = searchTerm
         fetchSearchResults(searchTerm)
     }
+
+    fun onSearchResultClicked(link: String) {
+        analytics.screenView(
+            screenClass = SCREEN_CLASS,
+            screenName = "SearchResult",
+            title = link
+        )
+    }
 }

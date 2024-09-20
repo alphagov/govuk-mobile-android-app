@@ -151,12 +151,8 @@ fun ShowResults(searchResults: List<Result>, altText: String, resultsCount: Int)
                         .fillMaxWidth()
                         .clickable(
                             onClick = {
+                                viewModel.onSearchResultClicked(searchResult.link)
                                 context.startActivity(intent)
-                                viewModel.analytics.screenView(
-                                    screenClass = "SearchResultsScreen",
-                                    screenName = "SearchResult",
-                                    title = "SearchResult"
-                                )
                             }
                         )
                         .semantics { contentDescription = altText },

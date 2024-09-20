@@ -46,4 +46,25 @@ class SearchViewModelTest {
             }
         }
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `Given a search, and a search result is clicked, then log analytics`() {
+        val viewModel = SearchViewModel(analytics)
+        val dispatcher = UnconfinedTestDispatcher()
+
+        Dispatchers.setMain(dispatcher)
+
+        viewModel.onSearchResultClicked("result link")
+
+        runTest {
+            coVerify {
+                analytics.screenView(
+                    screenClass = "SearchScreen",
+                    screenName = "SearchResult",
+                    title = "result link"
+                )
+            }
+        }
+    }
 }
