@@ -124,6 +124,8 @@ private fun SearchScreen(
 
 @Composable
 fun ShowResults(searchResults: List<Result>, altText: String, resultsCount: Int) {
+    val viewModel: SearchViewModel = hiltViewModel()
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -147,7 +149,16 @@ fun ShowResults(searchResults: List<Result>, altText: String, resultsCount: Int)
                             0.dp
                         )
                         .fillMaxWidth()
-                        .clickable(onClick = { context.startActivity(intent) })
+                        .clickable(
+                            onClick = {
+                                context.startActivity(intent)
+                                viewModel.analytics.screenView(
+                                    screenClass = "SearchResultsScreen",
+                                    screenName = "SearchResult",
+                                    title = "SearchResult"
+                                )
+                            }
+                        )
                         .semantics { contentDescription = altText },
                 ) {
                     Row(

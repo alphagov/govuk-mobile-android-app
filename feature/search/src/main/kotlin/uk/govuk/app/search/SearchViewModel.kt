@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class SearchViewModel @Inject constructor(
-    private val analytics: Analytics
+    val analytics: Analytics
 ): ViewModel() {
     private val repository = SearchResultsRepository()
     private val _results = MutableLiveData<List<Result>>()
