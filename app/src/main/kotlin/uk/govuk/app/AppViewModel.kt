@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.config.ConfigRepo
 import uk.govuk.app.config.flags.ReleaseFlagsService
 import javax.inject.Inject
 
@@ -19,7 +20,8 @@ internal data class AppUiState(
 @HiltViewModel
 internal class AppViewModel @Inject constructor(
     private val appRepo: AppRepo,
-    private val releaseFlagsService: ReleaseFlagsService,
+    configRepo: ConfigRepo,
+    releaseFlagsService: ReleaseFlagsService,
     private val analytics: Analytics
 ): ViewModel() {
 
@@ -28,6 +30,8 @@ internal class AppViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            val config = configRepo.getConfig()
+
             _uiState.value = AppUiState(
                 shouldDisplayAnalyticsConsent = analytics.isAnalyticsConsentRequired(),
                 shouldDisplayOnboarding = !appRepo.isOnboardingCompleted(),
