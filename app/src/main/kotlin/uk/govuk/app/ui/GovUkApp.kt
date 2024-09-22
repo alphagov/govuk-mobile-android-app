@@ -55,19 +55,12 @@ internal fun GovUkApp() {
     val viewModel: AppViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     var isSplashDone by rememberSaveable { mutableStateOf(false) }
-    val statusBarColour =
-        if (isSplashDone) {
-            GovUkTheme.colourScheme.surfaces.background
-        } else {
-            GovUkTheme.colourScheme.surfaces.primary
-        }
-
-    SetStatusBarColour(
-        colour = statusBarColour,
-        isLight = isSplashDone && !isSystemInDarkTheme()
-    )
 
     if (isSplashDone && uiState != null) {
+        SetStatusBarColour(
+            colour = GovUkTheme.colourScheme.surfaces.background,
+            isLight = !isSystemInDarkTheme()
+        )
         uiState?.let {
             BottomNavScaffold(
                 shouldDisplayAnalyticsConsent = it.shouldDisplayAnalyticsConsent,
@@ -79,6 +72,10 @@ internal fun GovUkApp() {
             )
         }
     } else {
+        SetStatusBarColour(
+            colour = GovUkTheme.colourScheme.surfaces.primary,
+            isLight = false
+        )
         SplashScreen { isSplashDone = true }
     }
 }
