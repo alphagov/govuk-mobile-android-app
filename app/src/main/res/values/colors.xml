@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#FF1D70B8</color>
     <color name="background">#FFFAFAFA</color>
 
     <bool name="lightStatusBar">true</bool>

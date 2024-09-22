@@ -2,6 +2,7 @@ package uk.govuk.app.ui
 
 import android.content.Context
 import android.provider.Settings
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.delay
 import uk.govuk.app.R
+import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
 internal fun SplashScreen(
@@ -27,7 +29,8 @@ internal fun SplashScreen(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(GovUkTheme.colourScheme.surfaces.primary),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

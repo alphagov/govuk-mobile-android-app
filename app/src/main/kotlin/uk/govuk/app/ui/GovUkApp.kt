@@ -1,5 +1,7 @@
 package uk.govuk.app.ui
 
+import android.app.Activity
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,12 +17,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -47,16 +54,32 @@ import uk.govuk.app.settings.navigation.settingsGraph
 internal fun GovUkApp() {
     val viewModel: AppViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
+    var isSplashDone by rememberSaveable { mutableStateOf(false) }
+    val statusBarColour =
+        if (isSplashDone) {
+            GovUkTheme.colourScheme.surfaces.background
+        } else {
+            GovUkTheme.colourScheme.surfaces.primary
+        }
 
-    uiState?.let {
-        BottomNavScaffold(
-            shouldDisplayAnalyticsConsent = it.shouldDisplayAnalyticsConsent,
-            shouldDisplayOnboarding = it.shouldDisplayOnboarding,
-            isSearchEnabled = it.isSearchEnabled,
-            onboardingCompleted = { viewModel.onboardingCompleted() },
-            onTabClick = { tabText -> viewModel.onTabClick(tabText) },
-            onWidgetClick = { text -> viewModel.onWidgetClick(text) }
-        )
+    SetStatusBarColour(
+        colour = statusBarColour,
+        isLight = isSplashDone && !isSystemInDarkTheme()
+    )
+
+    if (isSplashDone && uiState != null) {
+        uiState?.let {
+            BottomNavScaffold(
+                shouldDisplayAnalyticsConsent = it.shouldDisplayAnalyticsConsent,
+                shouldDisplayOnboarding = it.shouldDisplayOnboarding,
+                isSearchEnabled = it.isSearchEnabled,
+                onboardingCompleted = { viewModel.onboardingCompleted() },
+                onTabClick = { tabText -> viewModel.onTabClick(tabText) },
+                onWidgetClick = { text -> viewModel.onWidgetClick(text) }
+            )
+        }
+    } else {
+        SplashScreen { isSplashDone = true }
     }
 }
 
@@ -213,4 +236,15 @@ private fun homeScreenWidgets(
             )
         }
     }
+}
+
+@Composable
+private fun SetStatusBarColour(
+    colour: Color,
+    isLight: Boolean
+) {
+    val view = LocalView.current
+    val window = (view.context as Activity).window
+    window.statusBarColor = colour.toArgb()
+    WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = isLight
 }
