@@ -7,7 +7,7 @@ import javax.inject.Singleton
 class DebugFlags @Inject constructor() {
 
     // Flags can be set to true, false or null (unset i.e. defer to remote flag)
-    internal fun isOnboardingEnabled(): Boolean? = true
-    internal fun isSearchEnabled(): Boolean? = true
+    internal val isOnboardingEnabled: Boolean? = true
+    internal val isSearchEnabled: Boolean? = true
 
 }

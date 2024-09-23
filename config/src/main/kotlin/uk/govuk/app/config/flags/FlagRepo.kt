@@ -13,14 +13,14 @@ class FlagRepo @Inject constructor(
 
     fun isOnboardingEnabled(): Boolean {
         return isEnabled(
-            debugFlag = debugFlags.isOnboardingEnabled(),
+            debugFlag = debugFlags.isOnboardingEnabled,
             remoteFlag = configRepo.getConfig().releaseFlags.onboarding
         )
     }
 
     fun isSearchEnabled(): Boolean {
         return isEnabled(
-            debugFlag = debugFlags.isSearchEnabled(),
+            debugFlag = debugFlags.isSearchEnabled,
             remoteFlag = configRepo.getConfig().releaseFlags.search
         )
     }
