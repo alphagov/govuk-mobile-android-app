@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.config.ConfigRepo
-import uk.govuk.app.config.flags.ReleaseFlagsService
+import uk.govuk.app.config.flags.FlagRepo
 import javax.inject.Inject
 
 internal data class AppUiState(
@@ -21,7 +21,7 @@ internal data class AppUiState(
 internal class AppViewModel @Inject constructor(
     private val appRepo: AppRepo,
     configRepo: ConfigRepo,
-    releaseFlagsService: ReleaseFlagsService,
+    flagRepo: FlagRepo,
     private val analytics: Analytics
 ): ViewModel() {
 
@@ -30,12 +30,15 @@ internal class AppViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val config = configRepo.getConfig()
+            val isConfigInitSuccess = configRepo.initConfig()
+            if (!isConfigInitSuccess) {
+                // Todo - handle config failure - specific message for network connectivity issue???
+            }
 
             _uiState.value = AppUiState(
                 shouldDisplayAnalyticsConsent = analytics.isAnalyticsConsentRequired(),
                 shouldDisplayOnboarding = !appRepo.isOnboardingCompleted(),
-                isSearchEnabled = releaseFlagsService.isSearchEnabled()
+                isSearchEnabled = flagRepo.isSearchEnabled()
             )
         }
     }

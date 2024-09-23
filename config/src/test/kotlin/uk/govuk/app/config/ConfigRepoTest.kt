@@ -3,8 +3,8 @@ package uk.govuk.app.config
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import retrofit2.Response
 import uk.govuk.app.config.data.remote.ConfigApi
@@ -20,7 +20,7 @@ class ConfigRepoTest {
     private val config = mockk<Config>(relaxed = true)
 
     @Test
-    fun `Given a successful config response with a body, then return config`() {
+    fun `Given a successful config response with a body, then return true`() {
         coEvery { configApi.getConfig() } returns response
         coEvery { response.isSuccessful } returns true
         coEvery { response.body() } returns configResponse
@@ -29,7 +29,7 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi)
 
         runTest {
-            assertEquals(config, repo.getConfig())
+            assertTrue(repo.initConfig())
         }
     }
 
@@ -42,7 +42,7 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi)
 
         runTest {
-            assertNull(repo.getConfig())
+            assertFalse(repo.initConfig())
         }
     }
 
@@ -54,7 +54,7 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi)
 
         runTest {
-            assertNull(repo.getConfig())
+            assertFalse(repo.initConfig())
         }
     }
 
@@ -65,7 +65,7 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi)
 
         runTest {
-            assertNull(repo.getConfig())
+            assertFalse(repo.initConfig())
         }
     }
 
