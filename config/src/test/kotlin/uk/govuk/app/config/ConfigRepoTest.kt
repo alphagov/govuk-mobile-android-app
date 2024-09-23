@@ -31,7 +31,7 @@ class ConfigRepoTest {
 
         runTest {
             repo.initConfig()
-            assertEquals(config, repo.getConfig())
+            assertEquals(config, repo.config)
         }
     }
 
@@ -45,7 +45,7 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi)
 
         runTest {
-            repo.getConfig()
+            repo.config
         }
     }
 

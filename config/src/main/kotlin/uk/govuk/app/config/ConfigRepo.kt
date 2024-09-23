@@ -9,22 +9,22 @@ import javax.inject.Singleton
 class ConfigRepo @Inject constructor(
     private val configApi: ConfigApi
 ) {
-    private lateinit var config: Config
-
-    fun getConfig(): Config {
-        if (::config.isInitialized) {
-            return config
-        } else {
-            throw IllegalStateException("You must init config successfully before use!!!")
+    private lateinit var _config: Config
+    val config: Config
+        get() {
+            if (::_config.isInitialized) {
+                return _config
+            } else {
+                error("You must init config successfully before use!!!")
+            }
         }
-    }
 
     suspend fun initConfig(): Boolean {
         return try {
             val response = configApi.getConfig()
             if (response.isSuccessful) {
                 response.body()?.let {
-                    config = it.config
+                    _config = it.config
                     true
                 } ?: false
             } else {
