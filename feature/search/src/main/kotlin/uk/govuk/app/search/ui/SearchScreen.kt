@@ -74,7 +74,6 @@ private fun SearchScreen(
 ) {
     val searchResults by viewModel.searchResults.observeAsState(emptyList())
     val resultStatus by viewModel.resultStatus.observeAsState()
-    val resultsCount by viewModel.resultsCount.observeAsState(0)
 
     LaunchedEffect(Unit) {
         onPageView()
@@ -103,7 +102,7 @@ private fun SearchScreen(
 
         when (resultStatus) {
             ResultStatus.SUCCESS ->
-                ShowResults(searchResults, altText, resultsCount)
+                ShowResults(searchResults, altText)
             ResultStatus.NO_RESULTS_FOUND ->
                 NoResultsFound(searchTerm = viewModel.searchTerm)
             ResultStatus.DEVICE_OFFLINE ->
@@ -123,7 +122,7 @@ private fun SearchScreen(
 }
 
 @Composable
-fun ShowResults(searchResults: List<Result>, altText: String, resultsCount: Int) {
+fun ShowResults(searchResults: List<Result>, altText: String) {
     val viewModel: SearchViewModel = hiltViewModel()
 
     Column(
@@ -194,12 +193,6 @@ fun ShowResults(searchResults: List<Result>, altText: String, resultsCount: Int)
                     )
                 }
             }
-
-            if (resultsCount > SearchConfig.RESULTS_COUNT) {
-                item {
-                    LoadMoreResults(altText)
-                }
-            }
         }
     }
 }
@@ -219,29 +212,6 @@ fun NoResultsFound(searchTerm: String) {
         BodyRegularLabel(
             text = "${stringResource(R.string.search_no_results)} '${searchTerm}'",
             modifier = Modifier.align(Alignment.CenterVertically),
-        )
-    }
-}
-
-@Composable
-fun LoadMoreResults(altText: String) {
-    Row(
-        Modifier.padding(
-                GovUkTheme.spacing.medium,
-                GovUkTheme.spacing.large,
-                GovUkTheme.spacing.medium,
-                GovUkTheme.spacing.extraLarge
-            )
-            .fillMaxWidth()
-            .clickable(onClick = { /* to come in a later ticket */ })
-            .semantics { contentDescription = altText },
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        BodyRegularLabel(
-            text = stringResource(R.string.search_load_more),
-            modifier = Modifier.align(Alignment.CenterVertically),
-            color = GovUkTheme.colourScheme.textAndIcons.link,
         )
     }
 }

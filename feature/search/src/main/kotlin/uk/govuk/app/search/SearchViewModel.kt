@@ -19,18 +19,15 @@ internal class SearchViewModel @Inject constructor(
     private val repository = SearchResultsRepository()
     private val _results = MutableLiveData<List<Result>>()
     private val _resultStatus = MutableLiveData<ResultStatus>()
-    private val _resultsCount = MutableLiveData<Int>()
 
     val searchResults: LiveData<List<Result>> = _results
     val resultStatus: LiveData<ResultStatus> = _resultStatus
-    val resultsCount: LiveData<Int> = _resultsCount
     var searchTerm: String = ""
 
     fun fetchSearchResults(searchTerm: String) {
         viewModelScope.launch {
             try {
                 val response = repository.getSearchResults(searchTerm)
-                _resultsCount.value = response.total
 
                 if (response.total == 0) {
                     _resultStatus.value = ResultStatus.NO_RESULTS_FOUND
