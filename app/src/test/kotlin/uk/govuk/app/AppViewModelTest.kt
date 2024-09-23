@@ -2,6 +2,7 @@ package uk.govuk.app
 
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -64,8 +65,9 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given the user has previously completed onboarding, When init, then should not display onboarding`() {
+    fun `Given the user has previously completed onboarding and onboarding is enabled, When init, then should not display onboarding`() {
         coEvery { appRepo.isOnboardingCompleted() } returns true
+        every { flagRepo.isOnboardingEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
 
@@ -76,14 +78,41 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given the user has not previously completed onboarding, When init, then should display onboarding`() {
+    fun `Given the user has not previously completed onboarding and onboarding is enabled, When init, then should display onboarding`() {
         coEvery { appRepo.isOnboardingCompleted() } returns false
+        every { flagRepo.isOnboardingEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
 
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result!!.shouldDisplayOnboarding)
+        }
+    }
+
+    @Test
+    fun `Given the user has previously completed onboarding and onboarding is disabled, When init, then should not display onboarding`() {
+        coEvery { appRepo.isOnboardingCompleted() } returns true
+        every { flagRepo.isOnboardingEnabled() } returns false
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.shouldDisplayOnboarding)
+        }
+    }
+
+    @Test
+    fun `Given the user has not previously completed onboarding and onboarding is disabled, When init, then should not display onboarding`() {
+        coEvery { appRepo.isOnboardingCompleted() } returns false
+        every { flagRepo.isOnboardingEnabled() } returns false
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.shouldDisplayOnboarding)
         }
     }
 

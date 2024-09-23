@@ -37,7 +37,7 @@ internal class AppViewModel @Inject constructor(
 
             _uiState.value = AppUiState(
                 shouldDisplayAnalyticsConsent = analytics.isAnalyticsConsentRequired(),
-                shouldDisplayOnboarding = !appRepo.isOnboardingCompleted(),
+                shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
                 isSearchEnabled = flagRepo.isSearchEnabled()
             )
         }
