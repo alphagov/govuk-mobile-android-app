@@ -28,7 +28,7 @@ subprojects {
                 )
                 property(
                     "sonar.coverage.exclusions",
-                    "**/di/**/*.*,**/ui/**/*.*, **/navigation/**/*.*,**/*Activity.*,**/*Application.*"
+                    "**/di/**/*.*,**/ui/**/*.*, **/navigation/**/*.*,**/*Activity.*,**/*Application.*,**/model/**/*.*"
                 )
                 property(
                     "sonar.androidLint.reportPaths",

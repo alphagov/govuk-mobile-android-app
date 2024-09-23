@@ -22,6 +22,7 @@ firebaseBom = "33.1.2"
 mockk = "1.13.11"
 coroutineTest = "1.8.1"
 kover = "0.8.3"
+retrofit = "2.11.0"
 sonarqube = "5.0.0.4638"
 firebaseAppDistribution = "5.0.0"
 
@@ -51,6 +52,8 @@ firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashly
 
 mockk = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutineTest" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
