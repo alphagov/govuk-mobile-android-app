@@ -126,7 +126,8 @@ fun ShowResults(searchResults: List<Result>, altText: String) {
     val viewModel: SearchViewModel = hiltViewModel()
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
+                .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LazyColumn {
