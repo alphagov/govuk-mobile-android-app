@@ -3,7 +3,9 @@ package uk.govuk.app.config.flags
 import uk.govuk.app.config.ConfigRepo
 import uk.govuk.config.BuildConfig
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class FlagRepo @Inject constructor(
     private val debugFlags: DebugFlags,
     private val configRepo: ConfigRepo

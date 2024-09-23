@@ -6,7 +6,9 @@ import uk.gov.logging.api.analytics.logging.AnalyticsLogger
 import uk.govuk.app.analytics.extension.redactPii
 import java.util.Locale
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AnalyticsClient @Inject constructor(
     private val analyticsLogger: AnalyticsLogger,
     private val analyticsRepo: AnalyticsRepo

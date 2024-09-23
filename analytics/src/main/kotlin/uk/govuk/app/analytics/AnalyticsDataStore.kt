@@ -9,11 +9,13 @@ import uk.govuk.app.analytics.AnalyticsEnabledState.DISABLED
 import uk.govuk.app.analytics.AnalyticsEnabledState.ENABLED
 import uk.govuk.app.analytics.AnalyticsEnabledState.NOT_SET
 import javax.inject.Inject
+import javax.inject.Singleton
 
 enum class AnalyticsEnabledState {
     NOT_SET, ENABLED, DISABLED
 }
 
+@Singleton
 class AnalyticsDataStore @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {

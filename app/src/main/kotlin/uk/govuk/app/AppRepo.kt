@@ -1,7 +1,9 @@
 package uk.govuk.app
 
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 internal class AppRepo @Inject constructor(
     private val appDataStore: AppDataStore
 ) {
