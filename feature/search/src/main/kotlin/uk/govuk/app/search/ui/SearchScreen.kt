@@ -132,11 +132,13 @@ fun ShowResults(searchResults: List<Result>, altText: String) {
     ) {
         LazyColumn {
             items(searchResults) { searchResult ->
-                val url = searchResult.link
-                val urlToOpen = if (url.startsWith("http")) url else "${SearchConfig.GOV_UK_URL}$url"
+                val title = removeNewlines(searchResult.title)
+                val description = removeNewlines(searchResult.description)
+                val url = pathOrFullUrl(searchResult.link)
+
                 val context = LocalContext.current
                 val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse(urlToOpen)
+                intent.data = Uri.parse(url)
 
                 OutlinedCard(
                     colors = CardDefaults.cardColors(
@@ -151,7 +153,7 @@ fun ShowResults(searchResults: List<Result>, altText: String) {
                         .fillMaxWidth()
                         .clickable(
                             onClick = {
-                                viewModel.onSearchResultClicked(searchResult.link)
+                                viewModel.onSearchResultClicked(title)
                                 context.startActivity(intent)
                             }
                         )
@@ -167,7 +169,7 @@ fun ShowResults(searchResults: List<Result>, altText: String) {
                         verticalAlignment = Alignment.Top
                     ) {
                         BodyRegularLabel(
-                            text = searchResult.title.replace("\n", ""),
+                            text = title,
                             modifier = Modifier.weight(1f),
                             color = GovUkTheme.colourScheme.textAndIcons.link,
                         )
@@ -184,7 +186,7 @@ fun ShowResults(searchResults: List<Result>, altText: String) {
                     }
 
                     BodyRegularLabel(
-                        text = searchResult.description.replace("\n", ""),
+                        text = description,
                         modifier = Modifier.padding(
                             GovUkTheme.spacing.medium,
                             0.dp,
@@ -196,6 +198,14 @@ fun ShowResults(searchResults: List<Result>, altText: String) {
             }
         }
     }
+}
+
+private fun pathOrFullUrl(path: String): String {
+    return if (path.startsWith("http")) path else "${SearchConfig.GOV_UK_URL}$path"
+}
+
+private fun removeNewlines(string: String): String {
+    return string.replace("\n", "")
 }
 
 @Composable

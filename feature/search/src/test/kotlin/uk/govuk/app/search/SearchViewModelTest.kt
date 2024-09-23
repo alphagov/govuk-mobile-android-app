@@ -55,15 +55,11 @@ class SearchViewModelTest {
 
         Dispatchers.setMain(dispatcher)
 
-        viewModel.onSearchResultClicked("result link")
+        viewModel.onSearchResultClicked("search result title")
 
         runTest {
             coVerify {
-                analytics.screenView(
-                    screenClass = "SearchScreen",
-                    screenName = "SearchResult",
-                    title = "result link"
-                )
+                analytics.searchResultClick("search result title")
             }
         }
     }

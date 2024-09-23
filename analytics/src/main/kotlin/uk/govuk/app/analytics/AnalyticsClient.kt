@@ -74,6 +74,10 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
+    override fun searchResultClick(text: String) {
+        navigation(text = text, type = "SearchResult")
+    }
+
     private fun navigation(text: String? = null, type: String) {
         val parameters = mutableMapOf(
             "type" to type,
