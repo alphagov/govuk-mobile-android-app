@@ -9,12 +9,14 @@ import javax.inject.Singleton
 class ConfigRepo @Inject constructor(
     private val configApi: ConfigApi
 ) {
-
-    // Todo - make it a nullable val and throw exception if null???
     private lateinit var config: Config
 
     fun getConfig(): Config {
-        return config
+        if (::config.isInitialized) {
+            return config
+        } else {
+            throw IllegalStateException("You must init config successfully before use!!!")
+        }
     }
 
     suspend fun initConfig(): Boolean {
