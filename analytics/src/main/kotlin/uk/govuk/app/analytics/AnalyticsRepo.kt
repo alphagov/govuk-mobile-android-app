@@ -1,7 +1,9 @@
 package uk.govuk.app.analytics
 
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AnalyticsRepo @Inject constructor(
     private val dataStore: AnalyticsDataStore
 ) {
