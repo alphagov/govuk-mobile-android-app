@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class SearchViewModel @Inject constructor(
-    val analytics: Analytics
+    private val analytics: Analytics
 ): ViewModel() {
     private val repository = SearchResultsRepository()
     private val _results = MutableLiveData<List<Result>>()
@@ -24,7 +24,7 @@ internal class SearchViewModel @Inject constructor(
     val resultStatus: LiveData<ResultStatus> = _resultStatus
     var searchTerm: String = ""
 
-    fun fetchSearchResults(searchTerm: String) {
+    private fun fetchSearchResults(searchTerm: String) {
         viewModelScope.launch {
             try {
                 val response = repository.getSearchResults(searchTerm)
@@ -60,12 +60,12 @@ internal class SearchViewModel @Inject constructor(
     }
 
     fun onSearch(searchTerm: String) {
-        analytics.search(searchTerm)
         this.searchTerm = searchTerm
         fetchSearchResults(searchTerm)
+        analytics.search(searchTerm)
     }
 
-    fun onSearchResultClicked(title: String) {
-        analytics.searchResultClick(title)
+    fun onSearchResultClicked(title: String, url: String) {
+        analytics.searchResultClick(text = title, url = url)
     }
 }

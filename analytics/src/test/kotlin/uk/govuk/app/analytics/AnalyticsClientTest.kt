@@ -160,6 +160,28 @@ class AnalyticsClientTest {
     }
 
     @Test
+    fun `Given a search result click, then log event`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
+        analyticsClient.searchResultClick("search result title", "search result link")
+
+        verify {
+            analyticsLogger.logEvent(
+                true,
+                AnalyticsEvent(
+                    eventType = "Navigation",
+                    parameters = mapOf(
+                        "type" to "SearchResult",
+                        "external" to true,
+                        "language" to Locale.getDefault().language,
+                        "text" to "search result title",
+                        "url" to "search result link"
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
     fun `Given a tab click, then log event`() {
         val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.tabClick("text")
@@ -294,5 +316,5 @@ class AnalyticsClientTest {
             }
         }
     }
-    
+
 }

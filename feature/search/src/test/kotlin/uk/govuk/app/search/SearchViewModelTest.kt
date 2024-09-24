@@ -55,11 +55,11 @@ class SearchViewModelTest {
 
         Dispatchers.setMain(dispatcher)
 
-        viewModel.onSearchResultClicked("search result title")
+        viewModel.onSearchResultClicked("search result title", "search result link")
 
         runTest {
             coVerify {
-                analytics.searchResultClick("search result title")
+                analytics.searchResultClick("search result title", "search result link")
             }
         }
     }

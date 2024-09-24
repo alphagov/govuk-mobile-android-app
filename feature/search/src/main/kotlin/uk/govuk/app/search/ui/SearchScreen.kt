@@ -153,7 +153,7 @@ fun ShowResults(searchResults: List<Result>, altText: String) {
                         .fillMaxWidth()
                         .clickable(
                             onClick = {
-                                viewModel.onSearchResultClicked(title)
+                                viewModel.onSearchResultClicked(title, url)
                                 context.startActivity(intent)
                             }
                         )

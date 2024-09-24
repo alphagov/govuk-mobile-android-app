@@ -74,18 +74,23 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    override fun searchResultClick(text: String) {
-        navigation(text = text, type = "SearchResult")
+    override fun searchResultClick(text: String, url: String) {
+        // external as these links will be opened in the device browser
+        navigation(text = text, type = "SearchResult", url = url, external = true)
     }
 
-    private fun navigation(text: String? = null, type: String) {
+    private fun navigation(text: String? = null, type: String, url: String? = null, external: Boolean = false) {
         val parameters = mutableMapOf(
             "type" to type,
-            "external" to false, // Todo - in the future will need to pass this in if navigate outside of the app
+            "external" to external,
         )
 
         text?.let {
             parameters["text"] = it
+        }
+
+        url?.let {
+            parameters["url"] = it
         }
 
         log(
