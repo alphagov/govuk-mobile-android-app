@@ -1,6 +1,8 @@
 package uk.govuk.app.config.data.remote.model
 
+import com.google.gson.annotations.SerializedName
+
 data class ReleaseFlags(
-    val onboarding: Boolean,
-    val search: Boolean
+    @SerializedName("onboarding") val onboarding: Boolean,
+    @SerializedName("search") val search: Boolean
 )
