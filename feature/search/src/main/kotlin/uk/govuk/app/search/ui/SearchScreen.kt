@@ -40,9 +40,10 @@ import uk.govuk.app.design.ui.component.SearchHeader
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.search.R
 import uk.govuk.app.search.SearchViewModel
-import uk.govuk.app.search.api.SearchConfig
+import uk.govuk.app.search.domain.SearchConfig
+import uk.govuk.app.search.domain.StringUtils
 import uk.govuk.app.search.api_result.Result
-import uk.govuk.app.search.api_result.ResultStatus
+import uk.govuk.app.search.domain.ResultStatus
 
 @Composable
 internal fun SearchRoute(
@@ -101,15 +102,15 @@ private fun SearchScreen(
         Spacer(modifier = Modifier.height(58.dp))
 
         when (resultStatus) {
-            ResultStatus.SUCCESS ->
+            ResultStatus.Success ->
                 ShowResults(searchResults, altText)
-            ResultStatus.NO_RESULTS_FOUND ->
+            ResultStatus.Empty ->
                 NoResultsFound(searchTerm = viewModel.searchTerm)
-            ResultStatus.DEVICE_OFFLINE ->
+            ResultStatus.DeviceOffline ->
                 DeviceIsOffline()
-            ResultStatus.SERVICE_NOT_RESPONDING ->
+            ResultStatus.ServiceNotResponding ->
                 ServiceNotResponding(altText)
-            null ->
+            else ->
                 ShowNothing()
         }
     }
@@ -132,9 +133,9 @@ fun ShowResults(searchResults: List<Result>, altText: String) {
     ) {
         LazyColumn {
             items(searchResults) { searchResult ->
-                val title = removeNewlines(searchResult.title)
-                val description = removeNewlines(searchResult.description)
-                val url = pathOrFullUrl(searchResult.link)
+                val title = StringUtils.collapseWhitespace(searchResult.title)
+                val description = StringUtils.collapseWhitespace(searchResult.description)
+                val url = StringUtils.buildFullUrl(searchResult.link)
 
                 val context = LocalContext.current
                 val intent = Intent(Intent.ACTION_VIEW)
@@ -200,14 +201,6 @@ fun ShowResults(searchResults: List<Result>, altText: String) {
     }
 }
 
-private fun pathOrFullUrl(path: String): String {
-    return if (path.startsWith("http")) path else "${SearchConfig.GOV_UK_URL}$path"
-}
-
-private fun removeNewlines(string: String): String {
-    return string.replace("\n", "")
-}
-
 @Composable
 fun NoResultsFound(searchTerm: String) {
     Row(
@@ -266,7 +259,7 @@ fun DeviceIsOffline() {
 fun ServiceNotResponding(altText: String) {
     val context = LocalContext.current
     val intent = Intent(Intent.ACTION_VIEW)
-    intent.data = Uri.parse(SearchConfig.GOV_UK_URL)
+    intent.data = Uri.parse(SearchConfig.BASE_URL)
 
     Row(
         Modifier.padding(

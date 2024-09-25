@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.search.api.SearchResultsRepository
 import uk.govuk.app.search.api_result.Result
-import uk.govuk.app.search.api_result.ResultStatus
+import uk.govuk.app.search.domain.ResultStatus
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,22 +26,9 @@ internal class SearchViewModel @Inject constructor(
 
     private fun fetchSearchResults(searchTerm: String) {
         viewModelScope.launch {
-            try {
-                val response = repository.getSearchResults(searchTerm)
-
-                if (response.total == 0) {
-                    _resultStatus.value = ResultStatus.NO_RESULTS_FOUND
-                } else {
-                    _resultStatus.value = ResultStatus.SUCCESS
-                    _results.value = response.results
-                }
-            } catch (deviceOfflineException: java.net.UnknownHostException) {
-                _resultStatus.value = ResultStatus.DEVICE_OFFLINE
-            } catch (serviceNotRespondingException: retrofit2.HttpException) {
-                _resultStatus.value = ResultStatus.SERVICE_NOT_RESPONDING
-            } catch (e: Exception) {
-                println("Error: ${e.message}")
-            }
+            val (status, results) = repository.getSearchResults(searchTerm)
+            _resultStatus.value = status
+            _results.value = results.results
         }
     }
 
