@@ -1,10 +1,12 @@
 package uk.govuk.app.config.data.remote.model
 
+import com.google.gson.annotations.SerializedName
+
 data class Config(
-    val available: Boolean,
-    val minimumVersion: String,
-    val recommendedVersion: String,
-    val releaseFlags: ReleaseFlags,
-    val version: String,
-    val lastUpdated: String, // Todo - handle date format
+    @SerializedName("available") val available: Boolean,
+    @SerializedName("minimumVersion") val minimumVersion: String,
+    @SerializedName("recommendedVersion") val recommendedVersion: String,
+    @SerializedName("releaseFlags") val releaseFlags: ReleaseFlags,
+    @SerializedName("version") val version: String,
+    @SerializedName("lastUpdated") val lastUpdated: String, // Todo - handle date format
 )
