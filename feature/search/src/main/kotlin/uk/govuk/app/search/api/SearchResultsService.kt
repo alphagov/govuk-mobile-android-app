@@ -4,7 +4,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import uk.govuk.app.search.api_result.Results
 
-interface SearchResultsService {
+fun interface SearchResultsService {
     @GET("/api/search.json")
     suspend fun getSearchResults(
         @Query("q") searchTerm: String,
