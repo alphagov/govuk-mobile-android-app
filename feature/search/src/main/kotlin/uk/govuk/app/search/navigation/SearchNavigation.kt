@@ -23,7 +23,6 @@ fun NavGraphBuilder.searchGraph(
         ) {
             SearchRoute(
                 onBack = { navController.popBackStack() },
-                onSearch = { },
                 modifier = modifier
             )
         }

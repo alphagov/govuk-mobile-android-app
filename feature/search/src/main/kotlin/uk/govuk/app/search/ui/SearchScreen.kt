@@ -40,15 +40,14 @@ import uk.govuk.app.design.ui.component.SearchHeader
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.search.R
 import uk.govuk.app.search.SearchViewModel
-import uk.govuk.app.search.domain.SearchConfig
-import uk.govuk.app.search.domain.StringUtils
 import uk.govuk.app.search.api_result.Result
 import uk.govuk.app.search.domain.ResultStatus
+import uk.govuk.app.search.domain.SearchConfig
+import uk.govuk.app.search.domain.StringUtils
 
 @Composable
 internal fun SearchRoute(
     onBack: () -> Unit,
-    onSearch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: SearchViewModel = hiltViewModel()
@@ -59,7 +58,6 @@ internal fun SearchRoute(
         onBack = onBack,
         onSearch = { searchTerm ->
             viewModel.onSearch(searchTerm)
-            onSearch(searchTerm)
         },
         modifier = modifier
     )
