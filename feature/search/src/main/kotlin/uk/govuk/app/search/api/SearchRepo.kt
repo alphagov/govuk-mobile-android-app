@@ -12,7 +12,7 @@ class SearchRepo @Inject constructor(
     private val searchApi: SearchApi
 ) {
 
-    suspend fun initSearch(
+    suspend fun performSearch(
         searchTerm: String, count: Int = SearchConfig.DEFAULT_RESULTS_PER_PAGE
     ): SearchResult {
         var resultStatus: ResultStatus

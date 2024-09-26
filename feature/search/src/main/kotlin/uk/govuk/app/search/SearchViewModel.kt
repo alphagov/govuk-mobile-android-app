@@ -28,7 +28,7 @@ internal class SearchViewModel @Inject constructor(
 
     private fun fetchSearchResults(searchTerm: String) {
         viewModelScope.launch {
-            val (status, results) = repository.initSearch(searchTerm)
+            val (status, results) = repository.performSearch(searchTerm)
             _resultStatus.value = status
             _results.value = results.results
         }

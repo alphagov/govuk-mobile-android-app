@@ -38,7 +38,7 @@ class SearchRepoTest {
         val expected = SearchResult(ResultStatus.Success, resultWithOneResult)
 
         runTest {
-            val actual = repo.initSearch(searchTerm, 10)
+            val actual = repo.performSearch(searchTerm, 10)
             assertEquals(expected, actual)
         }
     }
@@ -52,7 +52,7 @@ class SearchRepoTest {
         val expected = SearchResult(ResultStatus.Empty, resultWithNoSearchResponse)
 
         runTest {
-            val actual = repo.initSearch(searchTerm, 10)
+            val actual = repo.performSearch(searchTerm, 10)
             assertEquals(expected, actual)
         }
     }
@@ -66,7 +66,7 @@ class SearchRepoTest {
         val expected = SearchResult(ResultStatus.DeviceOffline, resultWithNoSearchResponse)
 
         runTest {
-            val actual = repo.initSearch(searchTerm, 10)
+            val actual = repo.performSearch(searchTerm, 10)
             assertEquals(expected, actual)
         }
     }
@@ -83,7 +83,7 @@ class SearchRepoTest {
         val expected = SearchResult(ResultStatus.ServiceNotResponding, resultWithNoSearchResponse)
 
         runTest {
-            val actual = repo.initSearch(searchTerm, 10)
+            val actual = repo.performSearch(searchTerm, 10)
             assertEquals(expected, actual)
         }
     }
@@ -98,7 +98,7 @@ class SearchRepoTest {
         val expected = SearchResult(ResultStatus.Error(message), resultWithNoSearchResponse)
 
         runTest {
-            val actual = repo.initSearch(searchTerm, 10)
+            val actual = repo.performSearch(searchTerm, 10)
             assertEquals(expected, actual)
         }
     }
@@ -112,7 +112,7 @@ class SearchRepoTest {
         val expected = SearchResult(ResultStatus.Error("Unknown error"), resultWithNoSearchResponse)
 
         runTest {
-            val actual = repo.initSearch(searchTerm, 10)
+            val actual = repo.performSearch(searchTerm, 10)
             assertEquals(expected, actual)
         }
     }
