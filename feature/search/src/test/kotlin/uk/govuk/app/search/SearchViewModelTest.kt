@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.Test
 import uk.govuk.app.analytics.Analytics
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SearchViewModelTest {
 
     private val analytics = mockk<Analytics>(relaxed = true)
@@ -30,7 +31,6 @@ class SearchViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `Given a search, then log analytics`() {
         val viewModel = SearchViewModel(analytics)
@@ -47,7 +47,6 @@ class SearchViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `Given a search, and a search result is clicked, then log analytics`() {
         val viewModel = SearchViewModel(analytics)
