@@ -17,7 +17,7 @@ import javax.inject.Inject
 internal class SearchViewModel @Inject constructor(
     private val analytics: Analytics
 ): ViewModel() {
-    private val service = SearchModule().providesSearchResultsService()
+    private val service = SearchModule().providesSearchApi()
     private val repository = SearchRepo(service)
     private val _results = MutableLiveData<List<Result>>()
     private val _resultStatus = MutableLiveData<ResultStatus>()

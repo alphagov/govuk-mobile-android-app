@@ -15,7 +15,7 @@ class SearchModule {
 
     @Provides
     @Singleton
-    fun providesSearchResultsService(): SearchApi {
+    fun providesSearchApi(): SearchApi {
         return Retrofit.Builder()
             .baseUrl(SearchConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
