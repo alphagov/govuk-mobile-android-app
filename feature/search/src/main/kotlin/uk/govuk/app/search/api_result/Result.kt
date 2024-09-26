@@ -1,7 +1,9 @@
 package uk.govuk.app.search.api_result
 
+import com.google.gson.annotations.SerializedName
+
 data class Result(
-    val title: String = "",
-    val description: String = "",
-    val link: String = ""
+    @SerializedName("title") val title: String,
+    @SerializedName("description") val description: String,
+    @SerializedName("link") val link: String
 )

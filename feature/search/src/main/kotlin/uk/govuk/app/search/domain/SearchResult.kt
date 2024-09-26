@@ -1,8 +1,8 @@
 package uk.govuk.app.search.domain
 
-import uk.govuk.app.search.api_result.Results
+import uk.govuk.app.search.api_result.SearchResponse
 
 data class SearchResult(
-    val status: ResultStatus, val
-    results: Results
+    val status: ResultStatus,
+    val response: SearchResponse
 )

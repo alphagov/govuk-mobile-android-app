@@ -1,23 +1,27 @@
 package uk.govuk.app.search.api
 
-import uk.govuk.app.search.api_result.Results
+import uk.govuk.app.search.api_result.SearchResponse
 import uk.govuk.app.search.domain.ResultStatus
 import uk.govuk.app.search.domain.SearchConfig
 import uk.govuk.app.search.domain.SearchResult
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class SearchResultsRepository {
-    private val searchResultsService = SearchResultsRetrofitInstance.searchResultsService
+@Singleton
+class SearchRepo @Inject constructor(
+    private val searchApi: SearchApi
+) {
 
-    suspend fun getSearchResults(
+    suspend fun initSearch(
         searchTerm: String, count: Int = SearchConfig.DEFAULT_RESULTS_PER_PAGE
     ): SearchResult {
         var resultStatus: ResultStatus
-        var results = Results()
+        var response = SearchResponse(total = 0, results = emptyList())
 
         try {
-            results = searchResultsService.getSearchResults(searchTerm, count)
+            response = searchApi.getSearchResults(searchTerm, count)
 
-            resultStatus = if (results.total == 0) {
+            resultStatus = if (response.total == 0) {
                 ResultStatus.Empty
             } else {
                 ResultStatus.Success
@@ -30,6 +34,6 @@ class SearchResultsRepository {
             resultStatus = ResultStatus.Error(e.message ?: "Unknown error")
         }
 
-        return SearchResult(resultStatus, results)
+        return SearchResult(resultStatus, response)
     }
 }
