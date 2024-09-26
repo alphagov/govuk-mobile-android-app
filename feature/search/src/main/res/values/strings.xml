@@ -9,5 +9,4 @@
     <string name="search_service_problem">There\'s a problem</string>
     <string name="search_not_working">Search is not working. Try again later, or search on the GOV.UK website.</string>
     <string name="search_on_website">Go to the GOV.UK website</string>
-    <string name="search_response_unknown_error">An unknown error occurred</string>
 </resources>
