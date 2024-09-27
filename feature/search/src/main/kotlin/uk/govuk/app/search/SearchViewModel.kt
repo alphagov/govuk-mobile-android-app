@@ -1,10 +1,10 @@
 package uk.govuk.app.search
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.search.api.SearchRepo
@@ -12,23 +12,30 @@ import uk.govuk.app.search.api_result.Result
 import uk.govuk.app.search.domain.ResultStatus
 import javax.inject.Inject
 
+internal data class SearchUiState(
+    val searchTerm: String,
+    val searchResults: List<Result>,
+    val resultStatus: ResultStatus,
+)
+
 @HiltViewModel
 internal class SearchViewModel @Inject constructor(
     private val analytics: Analytics,
     private val repository: SearchRepo
 ): ViewModel() {
-    private val _results = MutableLiveData<List<Result>>()
-    private val _resultStatus = MutableLiveData<ResultStatus>()
 
-    val searchResults: LiveData<List<Result>> = _results
-    val resultStatus: LiveData<ResultStatus> = _resultStatus
-    var searchTerm: String = ""
+    private val _uiState: MutableStateFlow<SearchUiState?> = MutableStateFlow(null)
+    val uiState = _uiState.asStateFlow()
 
     private fun fetchSearchResults(searchTerm: String) {
         viewModelScope.launch {
-            val (status, results) = repository.performSearch(searchTerm)
-            _resultStatus.value = status
-            _results.value = results.results
+            val searchResult = repository.performSearch(searchTerm)
+
+            _uiState.value = SearchUiState(
+                searchTerm = searchTerm,
+                searchResults = searchResult.response.results,
+                resultStatus = searchResult.status
+            )
         }
     }
 
@@ -47,7 +54,6 @@ internal class SearchViewModel @Inject constructor(
     }
 
     fun onSearch(searchTerm: String) {
-        this.searchTerm = searchTerm
         fetchSearchResults(searchTerm)
         analytics.search(searchTerm)
     }

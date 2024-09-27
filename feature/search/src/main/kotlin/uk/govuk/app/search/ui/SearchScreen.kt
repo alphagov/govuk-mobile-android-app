@@ -18,8 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,8 +71,7 @@ private fun SearchScreen(
     onSearch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val searchResults by viewModel.searchResults.observeAsState(emptyList())
-    val resultStatus by viewModel.resultStatus.observeAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         onPageView()
@@ -99,11 +98,11 @@ private fun SearchScreen(
     ) {
         Spacer(modifier = Modifier.height(58.dp))
 
-        when (resultStatus) {
+        when (uiState?.resultStatus) {
             ResultStatus.Success ->
-                ShowResults(searchResults, altText)
+                ShowResults(uiState!!.searchResults, altText)
             ResultStatus.Empty ->
-                NoResultsFound(searchTerm = viewModel.searchTerm)
+                NoResultsFound(searchTerm = uiState!!.searchTerm)
             ResultStatus.DeviceOffline ->
                 DeviceIsOffline()
             ResultStatus.ServiceNotResponding ->
