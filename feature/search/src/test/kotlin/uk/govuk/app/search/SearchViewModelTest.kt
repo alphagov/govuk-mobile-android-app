@@ -10,16 +10,20 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.Test
 import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.search.api.SearchModule
+import uk.govuk.app.search.api.SearchRepo
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchViewModelTest {
 
     private val analytics = mockk<Analytics>(relaxed = true)
+    private val service = SearchModule().providesSearchApi()
+    private val repository = SearchRepo(service)
+    private val viewModel = SearchViewModel(analytics, repository)
+    private val dispatcher = UnconfinedTestDispatcher()
 
     @Test
     fun `Given a page view, then log analytics`() {
-        val viewModel = SearchViewModel(analytics)
-
         viewModel.onPageView()
 
         verify {
@@ -33,9 +37,6 @@ class SearchViewModelTest {
 
     @Test
     fun `Given a search, then log analytics`() {
-        val viewModel = SearchViewModel(analytics)
-        val dispatcher = UnconfinedTestDispatcher()
-
         Dispatchers.setMain(dispatcher)
 
         viewModel.onSearch("search term")
@@ -49,9 +50,6 @@ class SearchViewModelTest {
 
     @Test
     fun `Given a search, and a search result is clicked, then log analytics`() {
-        val viewModel = SearchViewModel(analytics)
-        val dispatcher = UnconfinedTestDispatcher()
-
         Dispatchers.setMain(dispatcher)
 
         viewModel.onSearchResultClicked("search result title", "search result link")

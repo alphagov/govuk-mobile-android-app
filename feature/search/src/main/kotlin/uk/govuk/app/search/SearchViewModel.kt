@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
-import uk.govuk.app.search.api.SearchModule
 import uk.govuk.app.search.api.SearchRepo
 import uk.govuk.app.search.api_result.Result
 import uk.govuk.app.search.domain.ResultStatus
@@ -15,10 +14,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class SearchViewModel @Inject constructor(
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val repository: SearchRepo
 ): ViewModel() {
-    private val service = SearchModule().providesSearchApi()
-    private val repository = SearchRepo(service)
     private val _results = MutableLiveData<List<Result>>()
     private val _resultStatus = MutableLiveData<ResultStatus>()
 
