@@ -91,9 +91,10 @@ dependencies {
     implementation(projects.config)
     implementation(projects.design)
     implementation(projects.feature.home)
-    implementation(projects.feature.settings)
     implementation(projects.feature.onboarding)
+    implementation(projects.feature.settings)
     implementation(projects.feature.search)
+    implementation(projects.feature.topics)
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
