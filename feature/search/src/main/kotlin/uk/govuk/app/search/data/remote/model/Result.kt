@@ -1,4 +1,4 @@
-package uk.govuk.app.search.api_result
+package uk.govuk.app.search.data.remote.model
 
 import com.google.gson.annotations.SerializedName
 

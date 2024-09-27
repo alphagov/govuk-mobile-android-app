@@ -1,8 +1,8 @@
-package uk.govuk.app.search.api
+package uk.govuk.app.search.data.remote
 
 import retrofit2.http.GET
 import retrofit2.http.Query
-import uk.govuk.app.search.api_result.SearchResponse
+import uk.govuk.app.search.data.remote.model.SearchResponse
 
 interface SearchApi {
     @GET("/api/search.json")

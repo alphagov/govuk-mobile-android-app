@@ -18,10 +18,9 @@ import org.junit.Test
 import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
 import uk.govuk.app.analytics.Analytics
-import uk.govuk.app.search.api.SearchModule
-import uk.govuk.app.search.api.SearchRepo
-import uk.govuk.app.search.api_result.Result
-import uk.govuk.app.search.api_result.SearchResponse
+import uk.govuk.app.search.di.SearchModule
+import uk.govuk.app.search.data.remote.model.Result
+import uk.govuk.app.search.data.remote.model.SearchResponse
 import uk.govuk.app.search.domain.ResultStatus
 import uk.govuk.app.search.domain.SearchResult
 
