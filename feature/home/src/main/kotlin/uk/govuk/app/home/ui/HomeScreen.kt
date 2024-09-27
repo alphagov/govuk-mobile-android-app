@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.HomeViewModel
 import uk.govuk.app.home.R
@@ -81,13 +82,14 @@ private fun HomeScreen(
 
         LazyColumn(
             modifier = Modifier
+                .padding(horizontal = GovUkTheme.spacing.medium)
                 .padding(
-                    horizontal = GovUkTheme.spacing.medium,
-                    vertical = GovUkTheme.spacing.large
+                    bottom = GovUkTheme.spacing.large
                 ),
             state = listState
         ) {
             items(widgets) { widget ->
+                LargeVerticalSpacer()
                 widget(Modifier.fillMaxWidth())
             }
         }

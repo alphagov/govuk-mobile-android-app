@@ -49,6 +49,7 @@ import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
 import uk.govuk.app.search.ui.widget.SearchWidget
 import uk.govuk.app.settings.navigation.settingsGraph
+import uk.govuk.app.topics.ui.widget.TopicsWidget
 
 @Composable
 internal fun GovUkApp() {
@@ -222,17 +223,22 @@ private fun homeScreenWidgets(
     isSearchEnabled: Boolean,
     onClick: (String) -> Unit
 ): List<@Composable (Modifier) -> Unit> {
-    return listOf { modifier ->
-        if (isSearchEnabled) {
-            SearchWidget(
-                onClick = { text ->
-                    onClick(text)
-                    navController.navigate(SEARCH_GRAPH_ROUTE)
-                },
-                modifier = modifier
-            )
+    return listOf(
+        { modifier ->
+            if (isSearchEnabled) {
+                SearchWidget(
+                    onClick = { text ->
+                        onClick(text)
+                        navController.navigate(SEARCH_GRAPH_ROUTE)
+                    },
+                    modifier = modifier
+                )
+            }
+        },
+        { modifier ->
+            TopicsWidget(modifier)
         }
-    }
+    )
 }
 
 @Composable
