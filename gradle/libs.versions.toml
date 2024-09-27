@@ -16,15 +16,17 @@ datastorePreferences = "1.1.1"
 googlePlayServices = "4.4.2"
 crashlytics = "3.0.2"
 
+retrofit = "2.11.0"
+
 gov-logging = "0.4.4"
 firebaseBom = "33.1.2"
 
 mockk = "1.13.11"
 coroutineTest = "1.8.1"
 kover = "0.8.3"
-retrofit = "2.11.0"
 sonarqube = "5.0.0.4638"
 firebaseAppDistribution = "5.0.0"
+runtimeLivedata = "1.7.1"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -54,6 +56,7 @@ mockk = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutineTest" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
