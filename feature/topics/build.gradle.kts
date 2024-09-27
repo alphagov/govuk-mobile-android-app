@@ -13,6 +13,7 @@ android {
 
     defaultConfig {
         minSdk = Version.MIN_SDK
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     compileOptions {
@@ -33,6 +34,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
 
     ksp(libs.hilt.compiler)
 

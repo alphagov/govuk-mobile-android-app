@@ -13,13 +13,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.Title3BoldLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.topics.TopicsViewModel
 
 @Composable
 fun TopicsWidget(
     modifier: Modifier = Modifier
 ) {
+    val viewModel: TopicsViewModel = hiltViewModel()
+
     Column(modifier = modifier) {
         Title3BoldLabel("Topics")
 
