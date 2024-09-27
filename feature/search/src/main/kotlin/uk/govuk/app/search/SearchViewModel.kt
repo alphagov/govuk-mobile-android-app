@@ -7,8 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
-import uk.govuk.app.search.api.SearchRepo
-import uk.govuk.app.search.api_result.Result
+import uk.govuk.app.search.data.remote.model.Result
 import uk.govuk.app.search.domain.ResultStatus
 import javax.inject.Inject
 
