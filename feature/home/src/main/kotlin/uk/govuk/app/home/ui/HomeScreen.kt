@@ -82,17 +82,14 @@ private fun HomeScreen(
         //  this in the future.
         Column (
             modifier = Modifier
-                .weight(1f)
                 .padding(horizontal = GovUkTheme.spacing.medium)
-                .padding(
-                    bottom = GovUkTheme.spacing.large
-                )
                 .verticalScroll(scrollState)
         ) {
             for (widget in widgets) {
                 LargeVerticalSpacer()
                 widget(Modifier.fillMaxWidth())
             }
+            LargeVerticalSpacer()
         }
     }
 }
