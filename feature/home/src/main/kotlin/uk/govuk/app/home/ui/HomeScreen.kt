@@ -5,9 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,6 +58,16 @@ private fun HomeScreen(
         mutableIntStateOf(0)
     }
 
+    val scrollState = rememberScrollState()
+
+    LaunchedEffect(scrollState) {
+        snapshotFlow {
+            scrollState.value
+        }.collect { offset ->
+            scaleFactor = offset
+        }
+    }
+
     Column(modifier) {
         ScalingHeader(
             scaleFactor = scaleFactor,
@@ -66,29 +75,21 @@ private fun HomeScreen(
                 .fillMaxWidth()
         )
 
-        val listState = rememberLazyListState()
-
-        LaunchedEffect(listState) {
-            snapshotFlow {
-                if (listState.firstVisibleItemIndex > 0) {
-                    -1
-                } else {
-                    listState.firstVisibleItemScrollOffset
-                }
-            }.collect { offset ->
-                scaleFactor = offset
-            }
-        }
-
-        LazyColumn(
+        // Todo - ideally this would be a lazy column to gain from performance optimizations, however
+        //  nested lazy columns are not allowed without a non-trivial workaround (some widgets will
+        //  themselves contain a lazy column/grid). The performance impact should be negligible with
+        //  the amount of items currently displayed on the home screen but we may have to re-visit
+        //  this in the future.
+        Column (
             modifier = Modifier
+                .weight(1f)
                 .padding(horizontal = GovUkTheme.spacing.medium)
                 .padding(
                     bottom = GovUkTheme.spacing.large
-                ),
-            state = listState
+                )
+                .verticalScroll(scrollState)
         ) {
-            items(widgets) { widget ->
+            for (widget in widgets) {
                 LargeVerticalSpacer()
                 widget(Modifier.fillMaxWidth())
             }

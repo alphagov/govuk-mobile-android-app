@@ -27,7 +27,7 @@ internal class TopicsViewModel @Inject constructor(
             val topics = topicsRepo.getTopics()
             // Todo - loading and error states etc
             topics?.let {
-                _uiState.value = TopicsUiState(it)
+                _uiState.value = TopicsUiState(it + it + it + it + it + it + it + it + it)
             }
         }
     }
