@@ -28,8 +28,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -79,9 +77,6 @@ private fun SearchScreen(
 
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
-    val altText: String = stringResource(
-        id = uk.govuk.app.design.R.string.opens_in_web_browser
-    )
 
     Column(modifier) {
        SearchHeader(
@@ -100,13 +95,13 @@ private fun SearchScreen(
 
         when (uiState?.resultStatus) {
             ResultStatus.Success ->
-                ShowResults(uiState!!.searchResults, altText)
+                ShowResults(uiState!!.searchResults)
             ResultStatus.Empty ->
                 NoResultsFound(searchTerm = uiState!!.searchTerm)
             ResultStatus.DeviceOffline ->
                 DeviceIsOffline()
             ResultStatus.ServiceNotResponding ->
-                ServiceNotResponding(altText)
+                ServiceNotResponding()
             else ->
                 ShowNothing()
         }
@@ -120,7 +115,7 @@ private fun SearchScreen(
 }
 
 @Composable
-fun ShowResults(searchResults: List<Result>, altText: String) {
+fun ShowResults(searchResults: List<Result>) {
     val viewModel: SearchViewModel = hiltViewModel()
 
     Column(
@@ -154,8 +149,7 @@ fun ShowResults(searchResults: List<Result>, altText: String) {
                                 viewModel.onSearchResultClicked(title, url)
                                 context.startActivity(intent)
                             }
-                        )
-                        .semantics { contentDescription = altText },
+                        ),
                 ) {
                     Row(
                         Modifier.padding(
@@ -253,7 +247,7 @@ fun DeviceIsOffline() {
 }
 
 @Composable
-fun ServiceNotResponding(altText: String) {
+fun ServiceNotResponding() {
     val context = LocalContext.current
     val intent = Intent(Intent.ACTION_VIEW)
     intent.data = Uri.parse(SearchConfig.BASE_URL)
@@ -293,8 +287,7 @@ fun ServiceNotResponding(altText: String) {
 
     Row(
         Modifier.padding(GovUkTheme.spacing.medium)
-            .clickable(onClick =  { context.startActivity(intent) })
-            .semantics { contentDescription = altText },
+            .clickable(onClick =  { context.startActivity(intent) }),
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.Center
     ) {
