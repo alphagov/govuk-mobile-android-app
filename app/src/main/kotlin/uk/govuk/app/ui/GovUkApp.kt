@@ -49,6 +49,8 @@ import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
 import uk.govuk.app.search.ui.widget.SearchWidget
 import uk.govuk.app.settings.navigation.settingsGraph
+import uk.govuk.app.topics.navigation.TOPICS_GRAPH_ROUTE
+import uk.govuk.app.topics.navigation.topicsGraph
 import uk.govuk.app.topics.ui.widget.TopicsWidget
 
 @Composable
@@ -213,6 +215,7 @@ private fun BottomNavScaffold(
                     modifier = Modifier.padding(paddingValues)
                 )
                 searchGraph(navController)
+                topicsGraph(Modifier.padding(paddingValues))
             }
         }
     }
@@ -237,7 +240,10 @@ private fun homeScreenWidgets(
         },
         { modifier ->
             TopicsWidget(
-                onClick = onClick, // Todo - launch topics page
+                onClick = { title ->
+                    onClick(title)
+                    navController.navigate(TOPICS_GRAPH_ROUTE)
+                },
                 modifier = modifier
             )
         }
