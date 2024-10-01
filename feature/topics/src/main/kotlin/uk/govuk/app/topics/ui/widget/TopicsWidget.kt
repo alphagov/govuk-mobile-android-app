@@ -23,6 +23,7 @@ import uk.govuk.app.topics.data.remote.model.TopicItem
 
 @Composable
 fun TopicsWidget(
+    onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: TopicsViewModel = hiltViewModel()
@@ -34,7 +35,10 @@ fun TopicsWidget(
         SmallVerticalSpacer()
 
         uiState?.topics?.let{ topics ->
-            TopicsGrid(topics)
+            TopicsGrid(
+                topics = topics,
+                onClick = onClick
+            )
         }
     }
 }
@@ -42,6 +46,7 @@ fun TopicsWidget(
 @Composable
 private fun TopicsGrid(
     topics: List<TopicItem>,
+    onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Todo - ideally this would be a lazy column to gain from performance optimizations, however
@@ -72,6 +77,7 @@ private fun TopicsGrid(
                         if (topicIndex < topicsCount) {
                             TopicCard(
                                 title = topics[topicIndex].title,
+                                onClick = onClick,
                                 modifier = Modifier
                                     .fillMaxHeight()
                                     .weight(1f)
@@ -117,7 +123,8 @@ private fun TopicsGridPreview() {
                     "",
                     "Child Benefit"
                 ),
-            )
+            ),
+            onClick = { }
         )
     }
 }

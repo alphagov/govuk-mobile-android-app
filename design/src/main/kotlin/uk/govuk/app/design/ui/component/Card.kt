@@ -90,6 +90,7 @@ fun SearchCard(
 @Composable
 fun TopicCard(
     title: String,
+    onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     OutlinedCard(
@@ -104,6 +105,7 @@ fun TopicCard(
     ) {
         Column(
             Modifier
+                .clickable { onClick(title) }
                 .padding(GovUkTheme.spacing.medium)
         ){
             Icon(
@@ -158,6 +160,7 @@ private fun TopicCardPreview() {
     GovUkTheme {
         TopicCard(
             title = "Title",
+            onClick = { },
             modifier = Modifier.height(100.dp)
         )
     }

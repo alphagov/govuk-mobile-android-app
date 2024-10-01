@@ -236,7 +236,10 @@ private fun homeScreenWidgets(
             }
         },
         { modifier ->
-            TopicsWidget(modifier)
+            TopicsWidget(
+                onClick = onClick, // Todo - launch topics page
+                modifier = modifier
+            )
         }
     )
 }
