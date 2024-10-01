@@ -12,14 +12,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import uk.govuk.app.design.R
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.Title3BoldLabel
 import uk.govuk.app.design.ui.component.TopicCard
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.topics.TopicUi
 import uk.govuk.app.topics.TopicsViewModel
-import uk.govuk.app.topics.data.remote.model.TopicItem
 
 @Composable
 fun TopicsWidget(
@@ -45,17 +46,16 @@ fun TopicsWidget(
 
 @Composable
 private fun TopicsGrid(
-    topics: List<TopicItem>,
+    topics: List<TopicUi>,
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Todo - ideally this would be a lazy column to gain from performance optimizations, however
-    //  nested lazy columns are not allowed without a non-trivial workaround (some widgets will
-    //  themselves contain a lazy column/grid). The performance impact should be negligible with
-    //  the amount of items currently displayed on the home screen but we may have to re-visit
-    //  this in the future.
+    // Todo - ideally this would be a lazy grid to gain from performance optimizations, however
+    //  nested lazy components are not allowed without a non-trivial workaround. The performance
+    //  impact should be negligible with the amount of items currently being displayed but we may
+    //  have to re-visit this in the future.
     Column(modifier) {
-        // Todo - handle empty topics???
+        // Todo - handle empty topics
         if (topics.isNotEmpty()){
             val topicsCount = topics.size
             val columnCount = 2
@@ -75,8 +75,10 @@ private fun TopicsGrid(
 
                         val topicIndex = (rowIndex * columnCount) + columnIndex
                         if (topicIndex < topicsCount) {
+                            val topic = topics[topicIndex]
                             TopicCard(
-                                title = topics[topicIndex].title,
+                                icon = topic.icon,
+                                title = topic.title,
                                 onClick = onClick,
                                 modifier = Modifier
                                     .fillMaxHeight()
@@ -103,24 +105,29 @@ private fun TopicsGridPreview() {
     GovUkTheme {
         TopicsGrid(
             topics = listOf(
-                TopicItem(
+                TopicUi(
                     "",
+                    R.drawable.ic_topic_default,
                     "A really really really really really really long topic title"
                 ),
-                TopicItem(
+                TopicUi(
                     "",
+                    R.drawable.ic_topic_benefits,
                     "Benefits"
                 ),
-                TopicItem(
+                TopicUi(
                     "",
+                    R.drawable.ic_topic_transport,
                     "Driving"
                 ),
-                TopicItem(
+                TopicUi(
                     "",
+                    R.drawable.ic_topic_money,
                     "Tax"
                 ),
-                TopicItem(
+                TopicUi(
                     "",
+                    R.drawable.ic_topic_parenting,
                     "Child Benefit"
                 ),
             ),

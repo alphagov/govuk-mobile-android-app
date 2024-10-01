@@ -5,8 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -58,11 +59,15 @@ private fun HomeScreen(
         mutableIntStateOf(0)
     }
 
-    val scrollState = rememberScrollState()
+    val listState = rememberLazyListState()
 
-    LaunchedEffect(scrollState) {
+    LaunchedEffect(listState) {
         snapshotFlow {
-            scrollState.value
+            if (listState.firstVisibleItemIndex > 0) {
+                -1
+            } else {
+                listState.firstVisibleItemScrollOffset
+            }
         }.collect { offset ->
             scaleFactor = offset
         }
@@ -75,21 +80,18 @@ private fun HomeScreen(
                 .fillMaxWidth()
         )
 
-        // Todo - ideally this would be a lazy column to gain from performance optimizations, however
-        //  nested lazy columns are not allowed without a non-trivial workaround (some widgets will
-        //  themselves contain a lazy column/grid). The performance impact should be negligible with
-        //  the amount of items currently displayed on the home screen but we may have to re-visit
-        //  this in the future.
-        Column (
+        LazyColumn (
             modifier = Modifier
-                .padding(horizontal = GovUkTheme.spacing.medium)
-                .verticalScroll(scrollState)
+                .padding(horizontal = GovUkTheme.spacing.medium),
+            state = listState
         ) {
-            for (widget in widgets) {
+            items(widgets) { widget ->
                 LargeVerticalSpacer()
                 widget(Modifier.fillMaxWidth())
             }
-            LargeVerticalSpacer()
+            item{
+                LargeVerticalSpacer()
+            }
         }
     }
 }

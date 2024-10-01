@@ -19,13 +19,7 @@ fun NavGraphBuilder.topicsGraph(
         startDestination = TOPIC_ROUTE
     ) {
         composable(
-            "$TOPIC_ROUTE/{$TOPIC_TITLE_ARG}",
-            /* Todo - deepLinks = listOf(
-                navDeepLink {
-                    uriPattern = "/search"
-                    action = Intent.ACTION_VIEW
-                }
-            )*/
+            "$TOPIC_ROUTE/{$TOPIC_TITLE_ARG}"
         ) { backStackEntry ->
             val title = backStackEntry.arguments?.getString(TOPIC_TITLE_ARG)
             TopicRoute(

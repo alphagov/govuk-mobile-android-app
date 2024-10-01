@@ -1,17 +1,23 @@
 package uk.govuk.app.topics
 
+import androidx.annotation.DrawableRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import uk.govuk.app.topics.data.remote.model.TopicItem
+import uk.govuk.app.topics.extension.toTopicUi
 import javax.inject.Inject
 
 internal data class TopicsUiState(
-    // Todo - should probably have loading and error states
-    val topics: List<TopicItem>
+    val topics: List<TopicUi>
+)
+
+internal data class TopicUi(
+    val ref: String,
+    @DrawableRes val icon: Int,
+    val title: String
 )
 
 @HiltViewModel
@@ -27,7 +33,7 @@ internal class TopicsViewModel @Inject constructor(
             val topics = topicsRepo.getTopics()
             // Todo - loading and error states etc
             topics?.let {
-                _uiState.value = TopicsUiState(it)
+                _uiState.value = TopicsUiState(it.map { topicItem -> topicItem.toTopicUi() })
             }
         }
     }

@@ -1,5 +1,6 @@
 package uk.govuk.app.design.ui.component
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
@@ -89,6 +89,7 @@ fun SearchCard(
 
 @Composable
 fun TopicCard(
+    @DrawableRes icon: Int,
     title: String,
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -109,7 +110,7 @@ fun TopicCard(
                 .padding(GovUkTheme.spacing.medium)
         ){
             Icon(
-                imageVector = Icons.Filled.Star,
+                painterResource(icon),
                 contentDescription = null,
                 modifier = Modifier.size(25.dp),
                 tint = GovUkTheme.colourScheme.surfaces.icon
@@ -159,6 +160,7 @@ private fun SearchCardPreview() {
 private fun TopicCardPreview() {
     GovUkTheme {
         TopicCard(
+            icon = R.drawable.ic_topic_default,
             title = "Title",
             onClick = { },
             modifier = Modifier.height(100.dp)
