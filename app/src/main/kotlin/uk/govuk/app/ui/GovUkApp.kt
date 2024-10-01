@@ -49,7 +49,7 @@ import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
 import uk.govuk.app.search.ui.widget.SearchWidget
 import uk.govuk.app.settings.navigation.settingsGraph
-import uk.govuk.app.topics.navigation.TOPICS_GRAPH_ROUTE
+import uk.govuk.app.topics.navigation.navigateToTopic
 import uk.govuk.app.topics.navigation.topicsGraph
 import uk.govuk.app.topics.ui.widget.TopicsWidget
 
@@ -242,7 +242,7 @@ private fun homeScreenWidgets(
             TopicsWidget(
                 onClick = { title ->
                     onClick(title)
-                    navController.navigate(TOPICS_GRAPH_ROUTE)
+                    navController.navigateToTopic(title)
                 },
                 modifier = modifier
             )
