@@ -15,16 +15,21 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
@@ -129,16 +134,24 @@ private fun TopicsCard(
             MediumVerticalSpacer()
             Spacer(Modifier.weight(1f))
             Row {
-                Text(
+                var baseline by remember { mutableFloatStateOf(0f) }
+                fun updateBaseline(textLayoutResult: TextLayoutResult) {
+                    baseline = textLayoutResult.size.height - textLayoutResult.lastBaseline
+                }
+                val baselinePadding = with(LocalDensity.current) { baseline.toDp() }
+
+                BodyBoldLabel(
                     text = topic.title,
-                    style = GovUkTheme.typography.bodyBold,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onTextLayout = ::updateBaseline
                 )
                 SmallHorizontalSpacer()
                 Icon(
                     painterResource(uk.govuk.app.design.R.drawable.ic_chevron),
                     contentDescription = null,
-                    modifier = Modifier.align(Alignment.Bottom),
+                    modifier = Modifier
+                        .align(Alignment.Bottom)
+                        .padding(bottom = baselinePadding),
                     tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
                 )
             }
