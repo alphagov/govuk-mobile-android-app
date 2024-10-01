@@ -2,7 +2,7 @@
 <resources>
     <string name="search_bar_text">Search</string>
     <string name="content_desc_back">Back</string>
-    <string name="content_desc_clear">Clear</string>
+    <string name="content_desc_clear">Clear search</string>
     <string name="gov_uk">GOV.UK</string>
     <string name="gov_uk_alt_text">GOV dot UK</string>
     <string name="opens_in_web_browser">Opens in web browser</string>
