@@ -54,7 +54,7 @@ fun SearchField(
                         imageVector = Icons.Filled.Clear,
                         contentDescription = stringResource(R.string.content_desc_clear),
                         modifier = Modifier.align(Alignment.Center),
-                        tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
+                        tint = GovUkTheme.colourScheme.textAndIcons.primary
                     )
                 }
             }
