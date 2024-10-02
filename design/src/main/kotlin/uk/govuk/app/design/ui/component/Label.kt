@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,8 +21,9 @@ private fun BaseLabel(
     modifier: Modifier = Modifier,
     style: TextStyle,
     color: Color,
-    textAlign: TextAlign
-) {
+    textAlign: TextAlign,
+    onTextLayout: ((TextLayoutResult) -> Unit)? = null,
+    ) {
     val altText = text.replace(
         stringResource(R.string.gov_uk),
         stringResource(R.string.gov_uk_alt_text)
@@ -35,6 +37,7 @@ private fun BaseLabel(
         style = style,
         color = color,
         textAlign = textAlign,
+        onTextLayout = onTextLayout
     )
 }
 
@@ -171,14 +174,16 @@ fun BodyBoldLabel(
     text: String,
     modifier: Modifier = Modifier,
     color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
-    textAlign: TextAlign = TextAlign.Start
+    textAlign: TextAlign = TextAlign.Start,
+    onTextLayout: ((TextLayoutResult) -> Unit)? = null,
 ) {
     BaseLabel(
         text = text,
         modifier = modifier,
         style = GovUkTheme.typography.bodyBold,
         color = color,
-        textAlign = textAlign
+        textAlign = textAlign,
+        onTextLayout = onTextLayout
     )
 }
 

@@ -49,6 +49,9 @@ import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
 import uk.govuk.app.search.ui.widget.SearchWidget
 import uk.govuk.app.settings.navigation.settingsGraph
+import uk.govuk.app.topics.navigation.navigateToTopic
+import uk.govuk.app.topics.navigation.topicsGraph
+import uk.govuk.app.topics.ui.widget.TopicsWidget
 
 @Composable
 internal fun GovUkApp() {
@@ -212,6 +215,7 @@ private fun BottomNavScaffold(
                     modifier = Modifier.padding(paddingValues)
                 )
                 searchGraph(navController)
+                topicsGraph(Modifier.padding(paddingValues))
             }
         }
     }
@@ -222,17 +226,28 @@ private fun homeScreenWidgets(
     isSearchEnabled: Boolean,
     onClick: (String) -> Unit
 ): List<@Composable (Modifier) -> Unit> {
-    return listOf { modifier ->
-        if (isSearchEnabled) {
-            SearchWidget(
-                onClick = { text ->
-                    onClick(text)
-                    navController.navigate(SEARCH_GRAPH_ROUTE)
+    return listOf(
+        { modifier ->
+            if (isSearchEnabled) {
+                SearchWidget(
+                    onClick = { text ->
+                        onClick(text)
+                        navController.navigate(SEARCH_GRAPH_ROUTE)
+                    },
+                    modifier = modifier
+                )
+            }
+        },
+        { modifier ->
+            TopicsWidget(
+                onClick = { title ->
+                    onClick(title)
+                    navController.navigateToTopic(title)
                 },
                 modifier = modifier
             )
         }
-    }
+    )
 }
 
 @Composable

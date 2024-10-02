@@ -72,7 +72,8 @@ data class GovUkColourScheme(
         val toggleEnabled: Color,
         val toggleDisabled: Color,
         val toggleHandle: Color,
-        val toggleBorder: Color
+        val toggleBorder: Color,
+        val icon: Color
     )
 
     data class Strokes(
@@ -95,7 +96,7 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonSecondaryHighlight = Blue5,
         buttonSecondaryDisabled = Grey700,
         buttonSecondaryFocused = Black,
-        trailingIcon = Black
+        trailingIcon = Grey300
     ),
     surfaces = Surfaces(
         background = Grey50,
@@ -114,7 +115,8 @@ internal val LightColorScheme = GovUkColourScheme(
         toggleEnabled = Blue1,
         toggleDisabled = Grey300,
         toggleHandle = White,
-        toggleBorder = White
+        toggleBorder = White,
+        icon = Blue1
     ),
     strokes = Strokes(
         container = BlackAlpha30,
@@ -136,7 +138,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonSecondaryHighlight = Blue6,
         buttonSecondaryDisabled = Grey300,
         buttonSecondaryFocused = Black,
-        trailingIcon = White
+        trailingIcon = Grey500
     ),
     surfaces = Surfaces(
         background = Black,
@@ -155,7 +157,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         toggleEnabled = Blue2,
         toggleDisabled = Grey600,
         toggleHandle = White,
-        toggleBorder = Grey800
+        toggleBorder = Grey800,
+        icon = Blue2
     ),
     strokes = Strokes(
         container = WhiteAlpha30,
@@ -197,7 +200,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             toggleEnabled = Color.Unspecified,
             toggleDisabled = Color.Unspecified,
             toggleHandle = Color.Unspecified,
-            toggleBorder = Color.Unspecified
+            toggleBorder = Color.Unspecified,
+            icon = Color.Unspecified
         ),
         strokes = Strokes(
             container = Color.Unspecified,

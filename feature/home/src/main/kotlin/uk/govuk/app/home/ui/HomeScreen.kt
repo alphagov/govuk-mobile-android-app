@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.HomeViewModel
 import uk.govuk.app.home.R
@@ -58,6 +59,20 @@ private fun HomeScreen(
         mutableIntStateOf(0)
     }
 
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            if (listState.firstVisibleItemIndex > 0) {
+                -1
+            } else {
+                listState.firstVisibleItemScrollOffset
+            }
+        }.collect { offset ->
+            scaleFactor = offset
+        }
+    }
+
     Column(modifier) {
         ScalingHeader(
             scaleFactor = scaleFactor,
@@ -65,30 +80,17 @@ private fun HomeScreen(
                 .fillMaxWidth()
         )
 
-        val listState = rememberLazyListState()
-
-        LaunchedEffect(listState) {
-            snapshotFlow {
-                if (listState.firstVisibleItemIndex > 0) {
-                    -1
-                } else {
-                    listState.firstVisibleItemScrollOffset
-                }
-            }.collect { offset ->
-                scaleFactor = offset
-            }
-        }
-
-        LazyColumn(
+        LazyColumn (
             modifier = Modifier
-                .padding(
-                    horizontal = GovUkTheme.spacing.medium,
-                    vertical = GovUkTheme.spacing.large
-                ),
+                .padding(horizontal = GovUkTheme.spacing.medium),
             state = listState
         ) {
             items(widgets) { widget ->
+                LargeVerticalSpacer()
                 widget(Modifier.fillMaxWidth())
+            }
+            item{
+                LargeVerticalSpacer()
             }
         }
     }

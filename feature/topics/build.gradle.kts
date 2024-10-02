@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "uk.govuk.app.search"
+    namespace = "uk.govuk.app.topics"
     compileSdk = Version.COMPILE_SDK
 
     defaultConfig {
@@ -24,22 +24,17 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
     implementation(projects.design)
     implementation(projects.analytics)
 
-    implementation(libs.androidx.navigation.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material3)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.adaptive.android)
     implementation(libs.hilt.android)
-
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
 

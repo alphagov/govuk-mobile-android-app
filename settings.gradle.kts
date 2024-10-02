@@ -1,5 +1,8 @@
 import org.gradle.api.internal.provider.MissingValueException
 
+include(":feature:topics")
+
+
 pluginManagement {
     repositories {
         google {

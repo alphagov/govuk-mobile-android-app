@@ -64,7 +64,7 @@ class ConfigRepoTest {
     }
 
     @Test
-    fun `Given a successful config response with an empty body, then return null`() {
+    fun `Given a successful config response with an empty body, then return false`() {
         coEvery { configApi.getConfig() } returns response
         coEvery { response.isSuccessful } returns true
         coEvery { response.body() } returns null
@@ -77,7 +77,7 @@ class ConfigRepoTest {
     }
 
     @Test
-    fun `Given an unsuccessful config response, then return null`() {
+    fun `Given an unsuccessful config response, then return false`() {
         coEvery { configApi.getConfig() } returns response
         coEvery { response.isSuccessful } returns false
 
@@ -89,7 +89,7 @@ class ConfigRepoTest {
     }
 
     @Test
-    fun `Given an exception is thrown fetching the config response, then return null`() {
+    fun `Given an exception is thrown fetching the config response, then return false`() {
         coEvery { configApi.getConfig() } throws IOException()
 
         val repo = ConfigRepo(configApi)
