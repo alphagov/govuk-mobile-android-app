@@ -5,6 +5,6 @@ import retrofit2.http.GET
 import uk.govuk.app.config.data.remote.model.ConfigResponse
 
 interface ConfigApi {
-    @GET("appinfo/android")
+    @GET("config/appinfo/android")
     suspend fun getConfig(): Response<ConfigResponse>
 }
