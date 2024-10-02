@@ -1,5 +1,6 @@
 package uk.govuk.app.config
 
+import okhttp3.Headers
 import uk.govuk.app.config.data.remote.ConfigApi
 import uk.govuk.app.config.data.remote.model.Config
 import javax.inject.Inject
@@ -23,6 +24,10 @@ class ConfigRepo @Inject constructor(
         return try {
             val response = configApi.getConfig()
             if (response.isSuccessful) {
+                val headers: Headers = response.headers()
+                val signature = headers.get("x-amz-meta-govuk-sig")
+                println("signature: $signature")
+                // Todo - validate signature
                 response.body()?.let {
                     _config = it.config
                     true
