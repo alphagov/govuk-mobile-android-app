@@ -32,10 +32,9 @@ internal class TopicsViewModel @Inject constructor(
         viewModelScope.launch {
             val topics = topicsRepo.getTopics()
             // Todo - loading and error states etc
-            topics?.let {
-                _uiState.value = TopicsUiState(it.map { topicItem -> topicItem.toTopicUi() })
+            _uiState.value = topics?.let {
+                TopicsUiState(it.map { topicItem -> topicItem.toTopicUi() })
             }
         }
     }
-
 }
