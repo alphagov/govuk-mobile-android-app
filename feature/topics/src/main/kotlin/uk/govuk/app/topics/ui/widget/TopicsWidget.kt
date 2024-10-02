@@ -38,10 +38,13 @@ fun TopicsWidget(
         SmallVerticalSpacer()
 
         uiState?.topics?.let{ topics ->
-            TopicsGrid(
-                topics = topics,
-                onClick = onClick
-            )
+            // Todo - handle empty topics
+            if (topics.isNotEmpty()) {
+                TopicsGrid(
+                    topics = topics,
+                    onClick = onClick
+                )
+            }
         }
     }
 }
@@ -59,48 +62,72 @@ private fun TopicsGrid(
     //  impact should be negligible with the amount of items currently being displayed but we may
     //  have to re-visit this in the future.
     Column(modifier) {
-        // Todo - handle empty topics
-        if (topics.isNotEmpty()){
-            val topicsCount = topics.size
-            val columnCount = if (windowWidthSizeClass == WindowWidthSizeClass.COMPACT) 2 else 4
-            var rowCount = topicsCount / columnCount
-            if (topicsCount.mod(columnCount) > 0) {
-                rowCount += 1
+        val columnCount = getColumnCount(windowWidthSizeClass)
+        val rowCount = getRowCount(
+            topicsCount = topics.size,
+            columnCount = columnCount
+        )
+
+        for (rowIndex in 0 until rowCount) {
+            TopicsRow(
+                topics = topics,
+                columnCount = columnCount,
+                rowIndex = rowIndex,
+                onClick = onClick
+            )
+            MediumVerticalSpacer()
+        }
+    }
+}
+
+@Composable
+private fun TopicsRow(
+    topics: List<TopicUi>,
+    columnCount: Int,
+    rowIndex: Int,
+    onClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier.height(intrinsicSize = IntrinsicSize.Max)
+    ) {
+        for (columnIndex in 0 until columnCount) {
+            if (columnIndex > 0) {
+                SmallHorizontalSpacer()
             }
 
-            for (rowIndex in 0 until rowCount) {
-                Row(
-                    Modifier.height(intrinsicSize = IntrinsicSize.Max)
-                ) {
-                    for (columnIndex in 0 until columnCount) {
-                        if (columnIndex > 0) {
-                            SmallHorizontalSpacer()
-                        }
+            val topicIndex = (rowIndex * columnCount) + columnIndex
+            if (topicIndex < topics.size) {
+                val topic = topics[topicIndex]
+                TopicCard(
+                    icon = topic.icon,
+                    title = topic.title,
+                    onClick = onClick,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                )
+            } else {
+                Box(Modifier.weight(1f)) {  }
+            }
 
-                        val topicIndex = (rowIndex * columnCount) + columnIndex
-                        if (topicIndex < topicsCount) {
-                            val topic = topics[topicIndex]
-                            TopicCard(
-                                icon = topic.icon,
-                                title = topic.title,
-                                onClick = onClick,
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .weight(1f)
-                            )
-                        } else {
-                            Box(Modifier.weight(1f)) {  }
-                        }
-
-                        if (columnIndex < columnCount - 1) {
-                            SmallHorizontalSpacer()
-                        }
-                    }
-                }
-                MediumVerticalSpacer()
+            if (columnIndex < columnCount - 1) {
+                SmallHorizontalSpacer()
             }
         }
     }
+}
+
+private fun getColumnCount(windowWidthSizeClass: WindowWidthSizeClass): Int {
+    return if (windowWidthSizeClass == WindowWidthSizeClass.COMPACT) 2 else 4
+}
+
+private fun getRowCount(topicsCount: Int, columnCount: Int): Int {
+    var rowCount = topicsCount / columnCount
+    if (topicsCount.mod(columnCount) > 0) {
+        rowCount += 1
+    }
+    return rowCount
 }
 
 @Preview(showBackground = true)
