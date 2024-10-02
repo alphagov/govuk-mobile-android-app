@@ -6,12 +6,14 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.window.core.layout.WindowWidthSizeClass
 import uk.govuk.app.design.R
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
@@ -50,6 +52,8 @@ private fun TopicsGrid(
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val windowWidthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
+
     // Todo - ideally this would be a lazy grid to gain from performance optimizations, however
     //  nested lazy components are not allowed without a non-trivial workaround. The performance
     //  impact should be negligible with the amount of items currently being displayed but we may
@@ -58,7 +62,7 @@ private fun TopicsGrid(
         // Todo - handle empty topics
         if (topics.isNotEmpty()){
             val topicsCount = topics.size
-            val columnCount = 2
+            val columnCount = if (windowWidthSizeClass == WindowWidthSizeClass.COMPACT) 2 else 4
             var rowCount = topicsCount / columnCount
             if (topicsCount.mod(columnCount) > 0) {
                 rowCount += 1
