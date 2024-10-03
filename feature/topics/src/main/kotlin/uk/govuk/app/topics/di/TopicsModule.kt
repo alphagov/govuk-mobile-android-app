@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import uk.govuk.app.topics.BuildConfig
 import uk.govuk.app.topics.data.remote.TopicsApi
 import javax.inject.Singleton
 
@@ -17,7 +18,7 @@ class TopicsModule {
     @Singleton
     fun providesTopicsApi(): TopicsApi {
         return Retrofit.Builder()
-            .baseUrl("https://app.integration.publishing.service.gov.uk/static/topics/") // Todo - extract base url into build config
+            .baseUrl(BuildConfig.TOPICS_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(TopicsApi::class.java)
