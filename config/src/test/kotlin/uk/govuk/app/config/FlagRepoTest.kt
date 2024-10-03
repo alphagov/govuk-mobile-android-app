@@ -194,4 +194,24 @@ class FlagRepoTest {
 
         assertFalse(flagRepo.isSearchEnabled())
     }
+
+    @Test
+    fun `Given topics is enabled, When is topics enabled, then return true`() {
+        mockkStatic(::isEnabled)
+        every { isEnabled(any(), any(), any()) } returns true
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertTrue(flagRepo.isTopicsEnabled())
+    }
+
+    @Test
+    fun `Given topics is disabled, When is topics enabled, then return false`() {
+        mockkStatic(::isEnabled)
+        every { isEnabled(any(), any(), any()) } returns false
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertFalse(flagRepo.isTopicsEnabled())
+    }
 }

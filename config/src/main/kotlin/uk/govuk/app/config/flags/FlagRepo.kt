@@ -24,6 +24,13 @@ class FlagRepo @Inject constructor(
             remoteFlag = configRepo.config.releaseFlags.search
         )
     }
+
+    fun isTopicsEnabled(): Boolean {
+        return isEnabled(
+            debugFlag = debugFlags.isTopicsEnabled,
+            remoteFlag = configRepo.config.releaseFlags.topics
+        )
+    }
 }
 
 internal fun isEnabled(

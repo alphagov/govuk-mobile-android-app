@@ -69,6 +69,7 @@ internal fun GovUkApp() {
                 shouldDisplayAnalyticsConsent = it.shouldDisplayAnalyticsConsent,
                 shouldDisplayOnboarding = it.shouldDisplayOnboarding,
                 isSearchEnabled = it.isSearchEnabled,
+                isTopicsEnabled = it.isTopicsEnabled,
                 onboardingCompleted = { viewModel.onboardingCompleted() },
                 onTabClick = { tabText -> viewModel.onTabClick(tabText) },
                 onWidgetClick = { text -> viewModel.onWidgetClick(text) }
@@ -88,6 +89,7 @@ private fun BottomNavScaffold(
     shouldDisplayAnalyticsConsent: Boolean,
     shouldDisplayOnboarding: Boolean,
     isSearchEnabled: Boolean,
+    isTopicsEnabled: Boolean,
     onboardingCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
     onWidgetClick: (String) -> Unit
@@ -202,9 +204,10 @@ private fun BottomNavScaffold(
                 )
                 homeGraph(
                     widgets = homeScreenWidgets(
-                        navController,
-                        isSearchEnabled,
-                        onWidgetClick
+                        navController = navController,
+                        isSearchEnabled = isSearchEnabled,
+                        isTopicsEnabled = isTopicsEnabled,
+                        onClick = onWidgetClick
                     ),
                     modifier = Modifier.padding(paddingValues)
                 )
@@ -224,6 +227,7 @@ private fun BottomNavScaffold(
 private fun homeScreenWidgets(
     navController: NavHostController,
     isSearchEnabled: Boolean,
+    isTopicsEnabled: Boolean,
     onClick: (String) -> Unit
 ): List<@Composable (Modifier) -> Unit> {
     return listOf(
@@ -239,13 +243,15 @@ private fun homeScreenWidgets(
             }
         },
         { modifier ->
-            TopicsWidget(
-                onClick = { title ->
-                    onClick(title)
-                    navController.navigateToTopic(title)
-                },
-                modifier = modifier
-            )
+            if (isTopicsEnabled) {
+                TopicsWidget(
+                    onClick = { title ->
+                        onClick(title)
+                        navController.navigateToTopic(title)
+                    },
+                    modifier = modifier
+                )
+            }
         }
     )
 }
