@@ -13,6 +13,14 @@ android {
     defaultConfig {
         minSdk = Version.MIN_SDK
         consumerProguardFiles("consumer-rules.pro")
+
+        buildConfigField("String", "CONFIG_BASE_URL", "\"https://app.integration.publishing.service.gov.uk/config/\"")
+    }
+
+    buildTypes {
+        release {
+            buildConfigField("String", "CONFIG_BASE_URL", "\"https://app.publishing.service.gov.uk/config/\"")
+        }
     }
 
     compileOptions {

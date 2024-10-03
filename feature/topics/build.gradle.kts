@@ -14,6 +14,14 @@ android {
     defaultConfig {
         minSdk = Version.MIN_SDK
         consumerProguardFiles("consumer-rules.pro")
+
+        buildConfigField("String", "TOPICS_BASE_URL", "\"https://app.integration.publishing.service.gov.uk/static/topics/\"")
+    }
+
+    buildTypes {
+        release {
+            buildConfigField("String", "TOPICS_BASE_URL", "\"https://app.publishing.service.gov.uk/static/topics/\"")
+        }
     }
 
     compileOptions {
@@ -23,6 +31,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 }
 
