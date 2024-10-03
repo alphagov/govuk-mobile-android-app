@@ -17,7 +17,7 @@ class ConfigModule {
     @Singleton
     fun providesConfigApi(): ConfigApi {
         return Retrofit.Builder()
-            .baseUrl("https://app.integration.publishing.service.gov.uk/") // Todo - extract base url into build config
+            .baseUrl("https://app.integration.publishing.service.gov.uk/config/") // Todo - extract base url into build config
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ConfigApi::class.java)

@@ -4,5 +4,6 @@ import com.google.gson.annotations.SerializedName
 
 data class ReleaseFlags(
     @SerializedName("onboarding") val onboarding: Boolean,
-    @SerializedName("search") val search: Boolean
+    @SerializedName("search") val search: Boolean,
+    @SerializedName("topics") val topics: Boolean
 )

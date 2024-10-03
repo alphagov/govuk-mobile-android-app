@@ -29,7 +29,6 @@ class AppViewModelTest {
     private val flagRepo = mockk<FlagRepo>(relaxed = true)
     private val analytics = mockk<Analytics>(relaxed = true)
 
-    // Todo - probably want to extract this into a test rule for re-use at some point
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
@@ -137,6 +136,30 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertFalse(result!!.isSearchEnabled)
+        }
+    }
+
+    @Test
+    fun `Given the topics feature is enabled, When init, then emit topics enabled state`() {
+        coEvery { flagRepo.isTopicsEnabled() } returns true
+
+        val viewModel = AppViewModel(appRepo, configRepo,  flagRepo, analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertTrue(result!!.isTopicsEnabled)
+        }
+    }
+
+    @Test
+    fun `Given the topics feature is disabled, When init, then emit topics disabled state`() {
+        coEvery { flagRepo.isTopicsEnabled() } returns false
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.isTopicsEnabled)
         }
     }
 

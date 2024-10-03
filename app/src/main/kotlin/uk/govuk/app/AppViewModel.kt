@@ -14,7 +14,8 @@ import javax.inject.Inject
 internal data class AppUiState(
     val shouldDisplayAnalyticsConsent: Boolean,
     val shouldDisplayOnboarding: Boolean,
-    val isSearchEnabled: Boolean
+    val isSearchEnabled: Boolean,
+    val isTopicsEnabled: Boolean
 )
 
 @HiltViewModel
@@ -38,7 +39,8 @@ internal class AppViewModel @Inject constructor(
             _uiState.value = AppUiState(
                 shouldDisplayAnalyticsConsent = analytics.isAnalyticsConsentRequired(),
                 shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
-                isSearchEnabled = flagRepo.isSearchEnabled()
+                isSearchEnabled = flagRepo.isSearchEnabled(),
+                isTopicsEnabled = flagRepo.isTopicsEnabled()
             )
         }
     }
