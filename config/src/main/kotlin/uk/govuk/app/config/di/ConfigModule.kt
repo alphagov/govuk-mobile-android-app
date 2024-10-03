@@ -7,6 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import uk.govuk.app.config.data.remote.ConfigApi
+import uk.govuk.config.BuildConfig
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -17,7 +18,7 @@ class ConfigModule {
     @Singleton
     fun providesConfigApi(): ConfigApi {
         return Retrofit.Builder()
-            .baseUrl("https://app.integration.publishing.service.gov.uk/config/") // Todo - extract base url into build config
+            .baseUrl(BuildConfig.CONFIG_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ConfigApi::class.java)

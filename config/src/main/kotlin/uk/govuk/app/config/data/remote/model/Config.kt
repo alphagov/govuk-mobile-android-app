@@ -8,5 +8,4 @@ data class Config(
     @SerializedName("recommendedVersion") val recommendedVersion: String,
     @SerializedName("releaseFlags") val releaseFlags: ReleaseFlags,
     @SerializedName("version") val version: String,
-    @SerializedName("lastUpdated") val lastUpdated: String, // Todo - handle date format
 )
