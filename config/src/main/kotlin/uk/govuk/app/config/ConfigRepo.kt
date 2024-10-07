@@ -1,8 +1,9 @@
 package uk.govuk.app.config
 
-import okhttp3.Headers
+import com.google.gson.Gson
 import uk.govuk.app.config.data.remote.ConfigApi
 import uk.govuk.app.config.data.remote.model.Config
+import uk.govuk.app.config.data.remote.model.ConfigResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,19 +25,24 @@ class ConfigRepo @Inject constructor(
         return try {
             val response = configApi.getConfig()
             if (response.isSuccessful) {
-                val headers: Headers = response.headers()
-                val signature = headers.get("x-amz-meta-govuk-sig")
-                println("signature: $signature")
-                // Todo - validate signature
                 response.body()?.let {
-                    _config = it.config
+                    val signature = response.headers()["x-amz-meta-govuk-sig"] ?: ""
+                    val valid = SignatureValidator().isValidSignature(signature, it)
+                    if (!valid) {
+                        return false
+                    }
+
+                    val gson = Gson()
+                    val configResponse = gson.fromJson(it, ConfigResponse::class.java)
+
+                    _config = configResponse.config
                     true
                 } ?: false
             } else {
                 false
             }
         } catch (e: Exception) {
-            false
+            return false
         }
     }
 }

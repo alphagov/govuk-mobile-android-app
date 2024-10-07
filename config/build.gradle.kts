@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
+    implementation(libs.retrofit.scalars)
 
     ksp(libs.hilt.compiler)
 
