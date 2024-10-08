@@ -57,6 +57,9 @@ internal fun SearchRoute(
         onSearch = { searchTerm ->
             viewModel.onSearch(searchTerm)
         },
+        onClear = {
+            viewModel.onClear()
+        },
         modifier = modifier
     )
 }
@@ -67,6 +70,7 @@ private fun SearchScreen(
     onPageView: () -> Unit,
     onBack: () -> Unit,
     onSearch: (String) -> Unit,
+    onClear: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -82,6 +86,7 @@ private fun SearchScreen(
        SearchHeader(
            onBack = onBack,
            onSearch = onSearch,
+           onClear = onClear,
            placeholder = stringResource(R.string.search_placeholder),
            focusRequester = focusRequester
        )

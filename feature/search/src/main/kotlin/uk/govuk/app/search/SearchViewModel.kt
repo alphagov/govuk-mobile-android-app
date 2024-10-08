@@ -60,4 +60,8 @@ internal class SearchViewModel @Inject constructor(
     fun onSearchResultClicked(title: String, url: String) {
         analytics.searchResultClick(text = title, url = url)
     }
+
+    fun onClear() {
+        _uiState.value = null
+    }
 }

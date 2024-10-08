@@ -28,6 +28,7 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 fun SearchField(
     placeholder: String,
     onSearch: (String) -> Unit,
+    onClear: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var searchQuery by rememberSaveable {
@@ -48,7 +49,10 @@ fun SearchField(
                 Box(
                     Modifier
                         .size(48.dp)
-                        .clickable { searchQuery = "" }
+                        .clickable {
+                            searchQuery = ""
+                            onClear()
+                        }
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Clear,
