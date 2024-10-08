@@ -1,4 +1,4 @@
-package uk.govuk.app.analytics
+package uk.govuk.app.analytics.data.local
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import uk.govuk.app.analytics.AnalyticsEnabledState.DISABLED
-import uk.govuk.app.analytics.AnalyticsEnabledState.ENABLED
-import uk.govuk.app.analytics.AnalyticsEnabledState.NOT_SET
+import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.DISABLED
+import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.ENABLED
+import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.NOT_SET
 
 class AnalyticsDataStoreTest {
 

@@ -3,6 +3,8 @@ package uk.govuk.app.analytics
 import com.google.firebase.analytics.FirebaseAnalytics
 import uk.gov.logging.api.analytics.AnalyticsEvent
 import uk.gov.logging.api.analytics.logging.AnalyticsLogger
+import uk.govuk.app.analytics.data.AnalyticsRepo
+import uk.govuk.app.analytics.data.local.AnalyticsEnabledState
 import uk.govuk.app.analytics.extension.redactPii
 import java.util.Locale
 import javax.inject.Inject

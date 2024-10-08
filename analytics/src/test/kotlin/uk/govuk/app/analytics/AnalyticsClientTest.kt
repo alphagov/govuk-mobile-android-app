@@ -11,9 +11,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import uk.gov.logging.api.analytics.AnalyticsEvent
 import uk.gov.logging.api.analytics.logging.AnalyticsLogger
-import uk.govuk.app.analytics.AnalyticsEnabledState.DISABLED
-import uk.govuk.app.analytics.AnalyticsEnabledState.ENABLED
-import uk.govuk.app.analytics.AnalyticsEnabledState.NOT_SET
+import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.DISABLED
+import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.ENABLED
+import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.NOT_SET
+import uk.govuk.app.analytics.data.AnalyticsRepo
 import java.util.Locale
 
 class AnalyticsClientTest {

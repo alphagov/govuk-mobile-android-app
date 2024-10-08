@@ -1,4 +1,4 @@
-package uk.govuk.app.config
+package uk.govuk.app.config.data.flags
 
 import io.mockk.every
 import io.mockk.mockk
@@ -8,9 +8,7 @@ import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import uk.govuk.app.config.flags.DebugFlags
-import uk.govuk.app.config.flags.FlagRepo
-import uk.govuk.app.config.flags.isEnabled
+import uk.govuk.app.config.data.ConfigRepo
 
 class FlagRepoTest {
 

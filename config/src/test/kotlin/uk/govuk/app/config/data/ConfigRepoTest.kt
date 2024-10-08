@@ -1,4 +1,4 @@
-package uk.govuk.app.config
+package uk.govuk.app.config.data
 
 import io.mockk.coEvery
 import io.mockk.mockk

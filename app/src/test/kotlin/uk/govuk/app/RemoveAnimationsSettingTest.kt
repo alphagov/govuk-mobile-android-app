@@ -1,4 +1,4 @@
-package uk.govuk.app.launch
+package uk.govuk.app
 
 import android.content.ContentResolver
 import android.content.Context

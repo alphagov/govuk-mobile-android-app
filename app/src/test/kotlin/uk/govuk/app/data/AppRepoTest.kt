@@ -1,4 +1,4 @@
-package uk.govuk.app
+package uk.govuk.app.data
 
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import uk.govuk.app.data.local.AppDataStore
 
 class AppRepoTest {
 

@@ -1,4 +1,4 @@
-package uk.govuk.app.config
+package uk.govuk.app.config.data
 
 import uk.govuk.app.config.data.remote.ConfigApi
 import uk.govuk.app.config.data.remote.model.Config

@@ -1,6 +1,6 @@
-package uk.govuk.app.config.flags
+package uk.govuk.app.config.data.flags
 
-import uk.govuk.app.config.ConfigRepo
+import uk.govuk.app.config.data.ConfigRepo
 import uk.govuk.config.BuildConfig
 import javax.inject.Inject
 import javax.inject.Singleton

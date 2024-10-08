@@ -1,5 +1,6 @@
-package uk.govuk.app.analytics
+package uk.govuk.app.analytics.data
 
+import uk.govuk.app.analytics.data.local.AnalyticsDataStore
 import javax.inject.Inject
 import javax.inject.Singleton
 

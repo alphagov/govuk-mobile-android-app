@@ -1,7 +1,7 @@
-package uk.govuk.app.search
+package uk.govuk.app.search.data
 
-import uk.govuk.app.search.data.remote.model.SearchResponse
 import uk.govuk.app.search.data.remote.SearchApi
+import uk.govuk.app.search.data.remote.model.SearchResponse
 import uk.govuk.app.search.domain.ResultStatus
 import uk.govuk.app.search.domain.SearchConfig
 import uk.govuk.app.search.domain.SearchResult

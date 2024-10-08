@@ -1,4 +1,4 @@
-package uk.govuk.app.search.api
+package uk.govuk.app.search.data
 
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -6,10 +6,9 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import retrofit2.HttpException
-import uk.govuk.app.search.SearchRepo
+import uk.govuk.app.search.data.remote.SearchApi
 import uk.govuk.app.search.data.remote.model.Result
 import uk.govuk.app.search.data.remote.model.SearchResponse
-import uk.govuk.app.search.data.remote.SearchApi
 import uk.govuk.app.search.domain.ResultStatus
 import uk.govuk.app.search.domain.SearchConfig
 import uk.govuk.app.search.domain.SearchResult

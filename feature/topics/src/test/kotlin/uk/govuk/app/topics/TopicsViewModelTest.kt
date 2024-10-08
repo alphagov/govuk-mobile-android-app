@@ -15,6 +15,7 @@ import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.design.R
+import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.data.remote.model.TopicItem
 
 @OptIn(ExperimentalCoroutinesApi::class)

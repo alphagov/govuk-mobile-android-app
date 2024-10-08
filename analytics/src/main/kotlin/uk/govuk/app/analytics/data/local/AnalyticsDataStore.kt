@@ -1,13 +1,13 @@
-package uk.govuk.app.analytics
+package uk.govuk.app.analytics.data.local
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.firstOrNull
-import uk.govuk.app.analytics.AnalyticsEnabledState.DISABLED
-import uk.govuk.app.analytics.AnalyticsEnabledState.ENABLED
-import uk.govuk.app.analytics.AnalyticsEnabledState.NOT_SET
+import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.DISABLED
+import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.ENABLED
+import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.NOT_SET
 import javax.inject.Inject
 import javax.inject.Singleton
 

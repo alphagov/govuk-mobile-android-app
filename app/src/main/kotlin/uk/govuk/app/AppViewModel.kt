@@ -7,8 +7,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
-import uk.govuk.app.config.ConfigRepo
-import uk.govuk.app.config.flags.FlagRepo
+import uk.govuk.app.config.data.ConfigRepo
+import uk.govuk.app.config.data.flags.FlagRepo
+import uk.govuk.app.data.AppRepo
 import javax.inject.Inject
 
 internal data class AppUiState(
