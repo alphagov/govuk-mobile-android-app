@@ -1,5 +1,6 @@
 package uk.govuk.app.config
 
+import uk.govuk.config.BuildConfig
 import java.security.KeyFactory
 import java.security.PublicKey
 import java.security.Signature
@@ -7,8 +8,7 @@ import java.security.spec.X509EncodedKeySpec
 import java.util.Base64
 
 class SignatureValidator {
-    private val key =
-        "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEI9ifhn/iLdu3PwCKMhzqICSNUTivwF78Z9ybmhyIDF1Nvv+BavPyvz1XICfgEQ8g6IvHapaALXHcTszv5tFFfg=="
+    private val key = BuildConfig.CONFIG_PUBLIC_KEY
 
     fun isValidSignature(
         signature: String = "",
