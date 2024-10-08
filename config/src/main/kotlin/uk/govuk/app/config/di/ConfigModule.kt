@@ -1,5 +1,6 @@
 package uk.govuk.app.config.di
 
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,4 +26,8 @@ class ConfigModule {
             .build()
             .create(ConfigApi::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun providesGson() = Gson()
 }

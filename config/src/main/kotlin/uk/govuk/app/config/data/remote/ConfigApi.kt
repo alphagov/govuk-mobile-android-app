@@ -4,6 +4,6 @@ import retrofit2.Response
 import retrofit2.http.GET
 
 interface ConfigApi {
-    @GET("config/appinfo/android")
+    @GET("appinfo/android")
     suspend fun getConfig(): Response<String>
 }

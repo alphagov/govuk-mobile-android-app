@@ -6,8 +6,11 @@ import java.security.PublicKey
 import java.security.Signature
 import java.security.spec.X509EncodedKeySpec
 import java.util.Base64
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class SignatureValidator {
+@Singleton
+class SignatureValidator @Inject constructor() {
     private val key = BuildConfig.CONFIG_PUBLIC_KEY
 
     fun isValidSignature(
