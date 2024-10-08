@@ -14,8 +14,8 @@ class SignatureValidator @Inject constructor() {
     private val key = BuildConfig.CONFIG_PUBLIC_KEY
 
     fun isValidSignature(
-        signature: String = "",
-        message: String = ""
+        signature: String,
+        message: String
     ): Boolean {
         if (signature.isEmpty() || message.isEmpty()) {
             return false
