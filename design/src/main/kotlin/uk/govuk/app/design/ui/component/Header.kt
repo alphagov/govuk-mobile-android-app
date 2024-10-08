@@ -28,6 +28,7 @@ fun SearchHeader(
     onBack: () -> Unit,
     placeholder: String,
     onSearch: (String) -> Unit,
+    onClear: () -> Unit,
     modifier: Modifier = Modifier,
     focusRequester: FocusRequester = FocusRequester()
 ) {
@@ -51,6 +52,7 @@ fun SearchHeader(
             SearchField(
                 placeholder = placeholder,
                 onSearch = onSearch,
+                onClear = onClear,
                 modifier = Modifier
                     .weight(1f)
                     .focusRequester(focusRequester)
