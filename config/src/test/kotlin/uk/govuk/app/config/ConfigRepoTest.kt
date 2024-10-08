@@ -99,4 +99,17 @@ class ConfigRepoTest {
             assertFalse(repo.initConfig())
         }
     }
+
+    @Test
+    fun `Given an invalid signature, when config is requested, then return false`() {
+        coEvery { configApi.getConfig() } returns Response.success(configResponse.toString())
+        coEvery { signatureValidator.isValidSignature(any(), any()) } returns false
+        coEvery { gson.fromJson(any<String>(), ConfigResponse::class.java) } returns ConfigResponse(config, "signature")
+
+        val repo = ConfigRepo(configApi, gson, signatureValidator)
+
+        runTest {
+            assertFalse(repo.initConfig())
+        }
+    }
 }
