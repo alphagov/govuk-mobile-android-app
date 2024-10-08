@@ -43,7 +43,7 @@ class ConfigRepo @Inject constructor(
                 false
             }
         } catch (e: Exception) {
-            return false
+            false
         }
     }
 }
