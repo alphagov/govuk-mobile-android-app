@@ -9,7 +9,9 @@ import javax.inject.Singleton
 
 @Singleton
 class ConfigRepo @Inject constructor(
-    private val configApi: ConfigApi
+    private val configApi: ConfigApi,
+    private val gson: Gson,
+    private val signatureValidator: SignatureValidator
 ) {
     private lateinit var _config: Config
     val config: Config
@@ -27,12 +29,11 @@ class ConfigRepo @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.let {
                     val signature = response.headers()["x-amz-meta-govuk-sig"] ?: ""
-                    val valid = SignatureValidator().isValidSignature(signature, it)
+                    val valid = signatureValidator.isValidSignature(signature, it)
                     if (!valid) {
                         return false
                     }
 
-                    val gson = Gson()
                     val configResponse = gson.fromJson(it, ConfigResponse::class.java)
 
                     _config = configResponse.config
