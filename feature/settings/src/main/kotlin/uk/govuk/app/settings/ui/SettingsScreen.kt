@@ -26,9 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.CaptionRegularLabel
-import uk.govuk.app.design.ui.component.Header
 import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.ListHeadingLabel
+import uk.govuk.app.design.ui.component.TabHeader
 import uk.govuk.app.design.ui.component.ToggleSwitch
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.settings.R
@@ -74,7 +74,7 @@ private fun SettingsScreen(
     Column(
         modifier = modifier
     ) {
-        Header(stringResource(R.string.screen_title))
+        TabHeader(stringResource(R.string.screen_title))
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
@@ -178,7 +178,7 @@ private fun PrivacyAndLegal(
                 .padding(GovUkTheme.spacing.medium)
         ) {
             Row(
-                modifier.padding(
+                Modifier.padding(
                     top = GovUkTheme.spacing.small,
                     bottom = GovUkTheme.spacing.small,
                     start = GovUkTheme.spacing.medium,
@@ -194,7 +194,6 @@ private fun PrivacyAndLegal(
                 ToggleSwitch(
                     checked = isAnalyticsEnabled,
                     onCheckedChange = onAnalyticsConsentChange,
-                    modifier = modifier
                 )
             }
         }

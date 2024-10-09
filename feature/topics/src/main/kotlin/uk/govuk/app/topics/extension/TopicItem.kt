@@ -2,7 +2,7 @@ package uk.govuk.app.topics.extension
 
 import uk.govuk.app.design.R
 import uk.govuk.app.topics.TopicUi
-import uk.govuk.app.topics.data.remote.model.TopicItem
+import uk.govuk.app.topics.domain.model.TopicItem
 
 internal fun TopicItem.toTopicUi(): TopicUi {
     val icon = when (ref) {
@@ -23,6 +23,7 @@ internal fun TopicItem.toTopicUi(): TopicUi {
     return TopicUi(
         ref = ref,
         icon = icon,
-        title = title
+        title = title,
+        isSelected = isSelected
     )
 }

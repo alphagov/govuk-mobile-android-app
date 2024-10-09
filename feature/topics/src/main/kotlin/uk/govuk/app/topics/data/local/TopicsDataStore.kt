@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class TopicsDataStore @Inject constructor(
+internal class TopicsDataStore @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
 

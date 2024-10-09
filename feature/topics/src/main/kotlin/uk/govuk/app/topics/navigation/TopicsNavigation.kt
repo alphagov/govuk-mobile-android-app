@@ -5,13 +5,16 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import uk.govuk.app.topics.ui.EditTopicsRoute
 import uk.govuk.app.topics.ui.TopicRoute
 
 const val TOPICS_GRAPH_ROUTE = "topics_graph_route"
 private const val TOPIC_ROUTE = "topic_route"
 private const val TOPIC_TITLE_ARG = "title"
+private const val TOPICS_EDIT_ROUTE = "topics_edit_route"
 
 fun NavGraphBuilder.topicsGraph(
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -27,9 +30,18 @@ fun NavGraphBuilder.topicsGraph(
                 modifier = modifier
             )
         }
+        composable(TOPICS_EDIT_ROUTE) {
+            EditTopicsRoute(
+                onBack = { navController.popBackStack() }
+            )
+        }
     }
 }
 
 fun NavController.navigateToTopic(title: String) {
     navigate("$TOPIC_ROUTE/$title")
+}
+
+fun NavController.navigateToTopicsEdit() {
+    navigate(TOPICS_EDIT_ROUTE)
 }

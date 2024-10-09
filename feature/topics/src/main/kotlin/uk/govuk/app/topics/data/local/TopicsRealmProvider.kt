@@ -17,7 +17,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class TopicsRealmProvider @Inject constructor(
+internal class TopicsRealmProvider @Inject constructor(
     private val dataStore: TopicsDataStore
 ) {
 

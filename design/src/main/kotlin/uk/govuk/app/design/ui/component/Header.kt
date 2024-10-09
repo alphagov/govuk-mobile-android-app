@@ -1,16 +1,15 @@
 package uk.govuk.app.design.ui.component
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,15 +35,12 @@ fun SearchHeader(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                Modifier
-                    .size(48.dp)
-                    .clickable { onBack() }
+            TextButton(
+                onClick = onBack
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.content_desc_back),
-                    modifier = Modifier.align(Alignment.Center),
                     tint = GovUkTheme.colourScheme.textAndIcons.link
                 )
             }
@@ -61,14 +57,15 @@ fun SearchHeader(
 }
 
 @Composable
-fun Header(
+fun TabHeader(
     text: String,
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth()
-            .padding(GovUkTheme.spacing.medium)
-            .height(64.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(64.dp)
+            .padding(horizontal = GovUkTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Title2BoldLabel(
@@ -79,10 +76,64 @@ fun Header(
     }
 }
 
+@Composable
+fun ChildPageHeader(
+    text: String,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(64.dp),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        TextButton(
+            onClick = onBack
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.content_desc_back),
+                tint = GovUkTheme.colourScheme.textAndIcons.link
+            )
+        }
+        Title2BoldLabel(
+            text = text,
+            textAlign = TextAlign.Center,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 70.dp)
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
-private fun HeaderPreview() {
+private fun SearchHeaderPreview() {
     GovUkTheme {
-        Header("Heading text")
+        SearchHeader(
+            onBack = { },
+            placeholder = "Search",
+            onSearch = { }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TabHeaderPreview() {
+    GovUkTheme {
+        TabHeader("Tab label")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ChildPageHeaderPreview() {
+    GovUkTheme {
+        ChildPageHeader(
+            text = "Child page title",
+            onBack = { }
+        )
     }
 }

@@ -18,7 +18,8 @@ internal data class TopicsUiState(
 internal data class TopicUi(
     val ref: String,
     @DrawableRes val icon: Int,
-    val title: String
+    val title: String,
+    val isSelected: Boolean
 )
 
 @HiltViewModel
@@ -31,10 +32,24 @@ internal class TopicsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val topics = topicsRepo.getTopics()
-            // Todo - loading and error states etc
-            _uiState.value = topics?.let {
-                TopicsUiState(it.map { topicItem -> topicItem.toTopicUi() })
+            topicsRepo.getTopics().collect { topics ->
+                _uiState.value = TopicsUiState(topics.map { topicItem -> topicItem.toTopicUi() })
+            }
+        }
+    }
+
+    fun onEdit() {
+        viewModelScope.launch {
+            topicsRepo.selectInitialTopics()
+        }
+    }
+
+    fun onTopicSelectedChanged(ref: String, isSelected: Boolean) {
+        viewModelScope.launch {
+            if (isSelected) {
+                topicsRepo.selectTopic(ref)
+            } else {
+                topicsRepo.deselectTopic(ref)
             }
         }
     }

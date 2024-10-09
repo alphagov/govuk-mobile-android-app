@@ -1,32 +1,58 @@
 package uk.govuk.app.topics.data.local
 
-import android.util.Log
+import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import uk.govuk.app.topics.data.local.model.LocalTopicItem
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class TopicsLocalDataSource @Inject constructor(
+internal class TopicsLocalDataSource @Inject constructor(
     private val realmProvider: TopicsRealmProvider
 ) {
+    private lateinit var realm: Realm
 
-    suspend fun getTopics() {
-        val realm = realmProvider.open()
-
-        val topic = LocalTopicItem().apply {
-            ref = "ref"
-            title = "title"
+    private suspend fun openRealm(): Realm {
+        if (!::realm.isInitialized) {
+            realm = realmProvider.open()
         }
-
-        realm.write {
-            copyToRealm(topic)
-        }
-
-        val topics = realm.query<LocalTopicItem>().find()
-        for (localTopic in topics) {
-            Log.d("Topics", "${localTopic.ref} ${localTopic.title}")
-        }
+        return realm
     }
 
+    suspend fun getTopics(): Flow<List<LocalTopicItem>> {
+        return openRealm().query<LocalTopicItem>().asFlow().map { it.list }
+    }
+
+    suspend fun selectAll(refs: List<String>) {
+        insertOrUpdate(
+            refs.map { ref -> Pair(ref, true) }
+        )
+    }
+
+    suspend fun select(ref: String) {
+        insertOrUpdate(listOf(Pair(ref, true)))
+    }
+
+    suspend fun deselect(ref: String) {
+        insertOrUpdate(listOf(Pair(ref, false)))
+    }
+
+    private suspend fun insertOrUpdate(topics: List<Pair<String, Boolean>>) {
+        openRealm().write {
+            for ((ref, isSelected) in topics) {
+                val localTopic = query<LocalTopicItem>("ref = $0", ref).first().find()
+
+                localTopic?.apply {
+                    this.isSelected = isSelected
+                } ?: copyToRealm(
+                    LocalTopicItem().apply {
+                        this.ref = ref
+                        this.isSelected = isSelected
+                    }
+                )
+            }
+        }
+    }
 }
