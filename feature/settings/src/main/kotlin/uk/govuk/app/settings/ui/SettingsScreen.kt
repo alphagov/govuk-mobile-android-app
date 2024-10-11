@@ -1,5 +1,6 @@
 package uk.govuk.app.settings.ui
 
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,12 +19,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.CaptionRegularLabel
 import uk.govuk.app.design.ui.component.ListDivider
@@ -87,6 +90,7 @@ private fun SettingsScreen(
                 onAnalyticsConsentChange = onAnalyticsConsentChange,
                 onPrivacyPolicyClick = onPrivacyPolicyClick
             )
+            OpenSourceLicenses()
             Spacer(Modifier.height(100.dp))
         }
     }
@@ -109,7 +113,8 @@ private fun AboutTheApp(
             colors = CardDefaults.cardColors(
                 containerColor = GovUkTheme.colourScheme.surfaces.card
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(GovUkTheme.spacing.medium)
         ) {
             Row(
@@ -143,7 +148,8 @@ private fun AboutTheApp(
             )
 
             Row(
-                Modifier.fillMaxWidth()
+                Modifier
+                    .fillMaxWidth()
                     .padding(GovUkTheme.spacing.medium),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -174,7 +180,8 @@ private fun PrivacyAndLegal(
             colors = CardDefaults.cardColors(
                 containerColor = GovUkTheme.colourScheme.surfaces.card
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(GovUkTheme.spacing.medium)
         ) {
             Row(
@@ -213,7 +220,8 @@ private fun PrivacyAndLegal(
         }
 
         Row(
-            Modifier.padding(
+            Modifier
+                .padding(
                     top = 1.dp,
                     start = GovUkTheme.spacing.extraLarge,
                     end = GovUkTheme.spacing.extraLarge,
@@ -223,7 +231,7 @@ private fun PrivacyAndLegal(
             verticalAlignment = Alignment.CenterVertically
         ) {
             val altText = "${stringResource(R.string.privacy_read_more)} " +
-                    stringResource(id = R.string.link_opens_in)
+                stringResource(id = R.string.link_opens_in)
 
             CaptionRegularLabel(
                 text = stringResource(R.string.privacy_read_more),
@@ -232,6 +240,46 @@ private fun PrivacyAndLegal(
                 },
                 color = GovUkTheme.colourScheme.textAndIcons.link,
             )
+        }
+    }
+}
+
+@Composable
+private fun OpenSourceLicenses(
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+
+    Column(
+        modifier = modifier
+    ) {
+        OutlinedCard(
+            colors = CardDefaults.cardColors(
+                containerColor = GovUkTheme.colourScheme.surfaces.card
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(GovUkTheme.spacing.medium)
+        ) {
+            Row(
+                Modifier
+                    .clickable(onClick = {
+                        context.startActivity(
+                            Intent(
+                                context,
+                                OssLicensesMenuActivity::class.java
+                            )
+                        )
+                    })
+                    .padding(GovUkTheme.spacing.medium),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                BodyRegularLabel(
+                    text = stringResource(R.string.oss_licenses_title),
+                    modifier = Modifier.weight(1f),
+                    color = GovUkTheme.colourScheme.textAndIcons.link,
+                )
+            }
         }
     }
 }

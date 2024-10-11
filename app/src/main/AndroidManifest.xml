@@ -29,6 +29,13 @@
             </intent-filter>
         </activity>
 
+        <activity
+          android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+          android:theme="@style/Theme.AppCompat" />
+        <activity
+          android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
+          android:theme="@style/Theme.AppCompat" />
+
         <meta-data android:name="google_analytics_automatic_screen_reporting_enabled" android:value="false" />
         <meta-data android:name="firebase_analytics_collection_enabled" android:value="false" />
         <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="false" />
