@@ -16,6 +16,8 @@ datastorePreferences = "1.1.1"
 googlePlayServices = "4.4.2"
 crashlytics = "3.0.2"
 
+ossLicensesPlugin = "0.10.6"
+playServicesOssLicenses = "17.1.0"
 retrofit = "2.11.0"
 
 gov-logging = "0.4.4"
@@ -55,6 +57,8 @@ firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashly
 
 mockk = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutineTest" }
+oss-licenses-plugin = { module = "com.google.android.gms:oss-licenses-plugin", version.ref = "ossLicensesPlugin" }
+play-services-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version.ref = "playServicesOssLicenses" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
 retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
