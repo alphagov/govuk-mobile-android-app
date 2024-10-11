@@ -30,6 +30,7 @@ coroutineTest = "1.8.1"
 firebaseAppDistribution = "5.0.0"
 kover = "0.8.3"
 sonarqube = "5.0.0.4638"
+playServicesMeasurementApi = "22.0.2"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -63,6 +64,7 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 retrofit-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
 retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 realm-base = { group = "io.realm.kotlin", name = "library-base", version.ref = "realm"}
+play-services-measurement-api = { group = "com.google.android.gms", name = "play-services-measurement-api", version.ref = "playServicesMeasurementApi" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
