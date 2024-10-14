@@ -26,34 +26,41 @@ internal class TopicsRealmProvider @Inject constructor(
         private const val REALM_NAME = "topics"
     }
 
+    private lateinit var realm: Realm
+
     suspend fun open(): Realm {
-        val encryptedRealmKey = dataStore.getRealmTopicsKey()
-        val realmIv = dataStore.getRealmTopicsIv()
+        if (!::realm.isInitialized) {
+            val encryptedRealmKey = dataStore.getRealmTopicsKey()
+            val realmIv = dataStore.getRealmTopicsIv()
 
-        val keyStore = KeyStore.getInstance("AndroidKeyStore")
-        keyStore.load(null)
+            val keyStore = KeyStore.getInstance("AndroidKeyStore")
+            keyStore.load(null)
 
-        val realmKey =
-            if (encryptedRealmKey != null && realmIv != null &&
-                keyStore.containsAlias(KEYSTORE_KEY_ALIAS)) {
-                val keystoreKey = getKeystoreKey(keyStore)
-                decryptRealmKey(
-                    encryptedKeyString = encryptedRealmKey,
-                    ivString = realmIv,
-                    keystoreKey = keystoreKey
-                ).encoded
-            } else {
-                val keystoreKey = createKeystoreKey()
-                val realmEncryptionKey = createRealmEncryptionKey()
-                encryptAndSaveRealmKey(realmEncryptionKey, keystoreKey)
-                realmEncryptionKey
-            }
+            val realmKey =
+                if (encryptedRealmKey != null && realmIv != null &&
+                    keyStore.containsAlias(KEYSTORE_KEY_ALIAS)
+                ) {
+                    val keystoreKey = getKeystoreKey(keyStore)
+                    decryptRealmKey(
+                        encryptedKeyString = encryptedRealmKey,
+                        ivString = realmIv,
+                        keystoreKey = keystoreKey
+                    ).encoded
+                } else {
+                    val keystoreKey = createKeystoreKey()
+                    val realmEncryptionKey = createRealmEncryptionKey()
+                    encryptAndSaveRealmKey(realmEncryptionKey, keystoreKey)
+                    realmEncryptionKey
+                }
 
-        val config = RealmConfiguration.Builder(schema = setOf(LocalTopicItem::class))
-            .name(REALM_NAME)
-            .encryptionKey(realmKey)
-            .build()
-        return Realm.open(config)
+            val config = RealmConfiguration.Builder(schema = setOf(LocalTopicItem::class))
+                .name(REALM_NAME)
+                .encryptionKey(realmKey)
+                .build()
+            realm = Realm.open(config)
+        }
+
+        return realm
     }
 
     private fun getKeystoreKey(keyStore: KeyStore): SecretKey {
