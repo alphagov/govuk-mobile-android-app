@@ -3,4 +3,4 @@
   @com.google.gson.annotations.SerializedName <fields>;
 }
 
--keep class uk.govuk.app.topics.data.remote.model.TopicItem
+-keep class uk.govuk.app.topics.data.remote.model.RemoteTopicItem
