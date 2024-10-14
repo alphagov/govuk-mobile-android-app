@@ -17,8 +17,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.analytics.Analytics
-import uk.govuk.app.config.ConfigRepo
-import uk.govuk.app.config.flags.FlagRepo
+import uk.govuk.app.config.data.ConfigRepo
+import uk.govuk.app.config.data.flags.FlagRepo
+import uk.govuk.app.data.AppRepo
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AppViewModelTest {

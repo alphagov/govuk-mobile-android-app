@@ -21,11 +21,13 @@ retrofit = "2.11.0"
 gov-logging = "0.4.4"
 firebaseBom = "33.1.2"
 
+realm = "2.0.0"
+
 mockk = "1.13.11"
 coroutineTest = "1.8.1"
+firebaseAppDistribution = "5.0.0"
 kover = "0.8.3"
 sonarqube = "5.0.0.4638"
-firebaseAppDistribution = "5.0.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -56,6 +58,7 @@ coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", ver
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
 retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+realm-base = { group = "io.realm.kotlin", name = "library-base", version.ref = "realm"}
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -66,6 +69,7 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 google-play-services = { id = "com.google.gms.google-services", version.ref = "googlePlayServices" }
+realm = { id = "io.realm.kotlin", version.ref = "realm" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
 firebaseAppDistribution = { id = "com.google.firebase.appdistribution", version.ref = "firebaseAppDistribution" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }

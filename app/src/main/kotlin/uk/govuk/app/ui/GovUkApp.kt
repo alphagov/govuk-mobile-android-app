@@ -50,6 +50,7 @@ import uk.govuk.app.search.navigation.searchGraph
 import uk.govuk.app.search.ui.widget.SearchWidget
 import uk.govuk.app.settings.navigation.settingsGraph
 import uk.govuk.app.topics.navigation.navigateToTopic
+import uk.govuk.app.topics.navigation.navigateToTopicsEdit
 import uk.govuk.app.topics.navigation.topicsGraph
 import uk.govuk.app.topics.ui.widget.TopicsWidget
 
@@ -218,7 +219,10 @@ private fun BottomNavScaffold(
                     modifier = Modifier.padding(paddingValues)
                 )
                 searchGraph(navController)
-                topicsGraph(Modifier.padding(paddingValues))
+                topicsGraph(
+                    navController = navController,
+                    modifier = Modifier.padding(paddingValues)
+                )
             }
         }
     }
@@ -245,9 +249,13 @@ private fun homeScreenWidgets(
         { modifier ->
             if (isTopicsEnabled) {
                 TopicsWidget(
-                    onClick = { title ->
+                    onTopicClick = { title ->
                         onClick(title)
                         navController.navigateToTopic(title)
+                    },
+                    onEditClick = {
+                        // Todo - analytics???
+                        navController.navigateToTopicsEdit()
                     },
                     modifier = modifier
                 )

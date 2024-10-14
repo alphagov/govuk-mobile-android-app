@@ -4,20 +4,24 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import uk.govuk.app.design.R
+import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
-import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.Title3BoldLabel
 import uk.govuk.app.design.ui.component.TopicCard
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -26,26 +30,59 @@ import uk.govuk.app.topics.TopicsViewModel
 
 @Composable
 fun TopicsWidget(
-    onClick: (String) -> Unit,
+    onTopicClick: (String) -> Unit,
+    onEditClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: TopicsViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
+    val topics = uiState?.topics
 
+    // Todo - handle empty topics
+    if (!topics.isNullOrEmpty()) {
+        TopicsWidgetContent(
+            topics = topics.filter { it.isSelected },
+            onTopicClick = onTopicClick,
+            onEditClick = {
+                onEditClick()
+                viewModel.onEdit()
+            },
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+private fun TopicsWidgetContent(
+    topics: List<TopicUi>,
+    onTopicClick: (String) -> Unit,
+    onEditClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(modifier = modifier) {
-        Title3BoldLabel("Topics")
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Title3BoldLabel("Topics") // Todo - extract string
 
-        SmallVerticalSpacer()
+            Spacer(Modifier.weight(1f))
 
-        uiState?.topics?.let{ topics ->
-            // Todo - handle empty topics
-            if (topics.isNotEmpty()) {
-                TopicsGrid(
-                    topics = topics,
-                    onClick = onClick
+            TextButton(
+                onClick = onEditClick
+            ) {
+                BodyBoldLabel(
+                    text = "Edit", // Todo - extract string
+                    color = GovUkTheme.colourScheme.textAndIcons.link
                 )
             }
         }
+
+        TopicsGrid(
+            topics = topics,
+            onClick = onTopicClick
+        )
     }
 }
 
@@ -132,37 +169,43 @@ private fun getRowCount(topicsCount: Int, columnCount: Int): Int {
 
 @Preview(showBackground = true)
 @Composable
-private fun TopicsGridPreview() {
+private fun TopicsWidgetPreview() {
     GovUkTheme {
-        TopicsGrid(
+        TopicsWidgetContent(
             topics = listOf(
                 TopicUi(
                     "",
                     R.drawable.ic_topic_default,
-                    "A really really really really really really long topic title"
+                    "A really really really really really really long topic title",
+                    isSelected = true
                 ),
                 TopicUi(
                     "",
                     R.drawable.ic_topic_benefits,
-                    "Benefits"
+                    "Benefits",
+                    isSelected = true
                 ),
                 TopicUi(
                     "",
                     R.drawable.ic_topic_transport,
-                    "Driving"
+                    "Driving",
+                    isSelected = true
                 ),
                 TopicUi(
                     "",
                     R.drawable.ic_topic_money,
-                    "Tax"
+                    "Tax",
+                    isSelected = true
                 ),
                 TopicUi(
                     "",
                     R.drawable.ic_topic_parenting,
-                    "Child Benefit"
+                    "Child Benefit",
+                    isSelected = true
                 ),
             ),
-            onClick = { }
+            onTopicClick = { },
+            onEditClick = { }
         )
     }
 }
