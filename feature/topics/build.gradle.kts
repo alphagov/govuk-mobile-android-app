@@ -39,6 +39,15 @@ android {
     }
 }
 
+sonar {
+    properties {
+        property(
+            "sonar.coverage.exclusions",
+            "**/TopicsEncryptionHelper.*,**/TopicsRealmProvider.*,"
+        )
+    }
+}
+
 dependencies {
     implementation(projects.design)
     implementation(projects.analytics)
