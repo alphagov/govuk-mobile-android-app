@@ -253,8 +253,8 @@ private fun homeScreenWidgets(
                         onClick(title)
                         navController.navigateToTopic(title)
                     },
-                    onEditClick = {
-                        // Todo - analytics???
+                    onEditClick = { text ->
+                        onClick(text)
                         navController.navigateToTopicsEdit()
                     },
                     modifier = modifier
