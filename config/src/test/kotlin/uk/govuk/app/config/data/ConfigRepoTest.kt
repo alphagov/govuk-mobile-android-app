@@ -9,6 +9,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import retrofit2.Response
+import uk.govuk.app.config.SignatureValidator
 import uk.govuk.app.config.data.remote.ConfigApi
 import uk.govuk.app.config.data.remote.model.Config
 import uk.govuk.app.config.data.remote.model.ConfigResponse
