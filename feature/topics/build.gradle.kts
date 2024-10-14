@@ -43,7 +43,7 @@ sonar {
     properties {
         property(
             "sonar.coverage.exclusions",
-            "**/TopicsEncryptionHelper.*,**/TopicsRealmProvider.*,"
+            properties["sonar.coverage.exclusions"].toString() + ",**/TopicsEncryptionHelper.*,**/TopicsRealmProvider.*"
         )
     }
 }
