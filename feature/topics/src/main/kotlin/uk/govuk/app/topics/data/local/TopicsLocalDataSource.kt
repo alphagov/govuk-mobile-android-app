@@ -2,6 +2,8 @@ package uk.govuk.app.topics.data.local
 
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import uk.govuk.app.topics.data.local.model.LocalTopicItem
 import javax.inject.Inject
@@ -11,8 +13,9 @@ import javax.inject.Singleton
 internal class TopicsLocalDataSource @Inject constructor(
     private val realmProvider: TopicsRealmProvider
 ) {
-    suspend fun getTopics(): Flow<List<LocalTopicItem>> {
-        return realmProvider.open().query<LocalTopicItem>().asFlow().map { it.list }
+
+    val topics: Flow<List<LocalTopicItem>> = flow {
+        emitAll(realmProvider.open().query<LocalTopicItem>().asFlow().map { it.list })
     }
 
     suspend fun selectAll(refs: List<String>) {

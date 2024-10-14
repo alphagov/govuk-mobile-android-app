@@ -1,7 +1,7 @@
 package uk.govuk.app.topics
 
-import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -45,7 +45,7 @@ class TopicsViewModelTest {
             )
         )
 
-        coEvery { topicsRepo.getTopics() } returns flowOf(topics)
+        every { topicsRepo.topics } returns flowOf(topics)
 
         val expected = listOf(
             TopicUi(

@@ -59,7 +59,7 @@ class TopicsLocalDataSourceTest {
 
             val localDataSource = TopicsLocalDataSource(realmProvider)
 
-            val topics = localDataSource.getTopics().first()
+            val topics = localDataSource.topics.first()
 
             assertEquals(2, topics.size)
             assertEquals("ref1", topics[0].ref)

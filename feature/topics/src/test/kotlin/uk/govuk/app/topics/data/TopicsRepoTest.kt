@@ -2,6 +2,7 @@ package uk.govuk.app.topics.data
 
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -23,7 +24,7 @@ class TopicsRepoTest{
 
     @Test
     fun `Given the local data source is empty, when get topics, then emit selected topic items`() {
-        coEvery { localDataSource.getTopics() } returns flowOf(emptyList())
+        every { localDataSource.topics } returns flowOf(emptyList())
         coEvery { topicsApi.getTopics() } returns response
         coEvery { response.isSuccessful } returns true
         coEvery { response.body() } returns listOf(
@@ -34,7 +35,7 @@ class TopicsRepoTest{
         val repo = TopicsRepo(topicsApi, localDataSource)
 
         runTest {
-            val topics = repo.getTopics()
+            val topics = repo.topics
 
             val expected = listOf(
                 TopicItem("ref1", "title", true),
@@ -47,7 +48,7 @@ class TopicsRepoTest{
 
     @Test
     fun `Given the local data source is not empty, when get topics, then emit topic items`() {
-        coEvery { localDataSource.getTopics() } returns flowOf(
+        every { localDataSource.topics } returns flowOf(
             listOf(
                 LocalTopicItem().apply {
                     ref = "ref1"
@@ -70,7 +71,7 @@ class TopicsRepoTest{
         val repo = TopicsRepo(topicsApi, localDataSource)
 
         runTest {
-            val topics = repo.getTopics()
+            val topics = repo.topics
 
             val expected = listOf(
                 TopicItem("ref1", "title", true),
@@ -84,7 +85,7 @@ class TopicsRepoTest{
 
     @Test
     fun `Given the local data source is empty, when select initial topics, then select all in the local data source`() {
-        coEvery { localDataSource.getTopics() } returns flowOf(emptyList())
+        every { localDataSource.topics } returns flowOf(emptyList())
         coEvery { topicsApi.getTopics() } returns response
         coEvery { response.isSuccessful } returns true
         coEvery { response.body() } returns listOf(
@@ -105,7 +106,7 @@ class TopicsRepoTest{
 
     @Test
     fun `Given the local data source is not empty, when select initial topics, then don't call local data source`() {
-        coEvery { localDataSource.getTopics() } returns flowOf(listOf(LocalTopicItem()))
+        coEvery { localDataSource.topics } returns flowOf(listOf(LocalTopicItem()))
 
         val repo = TopicsRepo(topicsApi, localDataSource)
 

@@ -1,6 +1,5 @@
 package uk.govuk.app.topics.data
 
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -30,22 +29,20 @@ internal class TopicsRepo @Inject constructor(
         }
     }
 
-    suspend fun getTopics(): Flow<List<TopicItem>> {
-        return remoteTopics.combine(localDataSource.getTopics()) { remoteTopics, localTopics ->
-            return@combine remoteTopics.map { remoteTopic ->
-                TopicItem(
-                    ref = remoteTopic.ref,
-                    title = remoteTopic.title,
-                    isSelected = localTopics.isEmpty() || localTopics.any { localTopic ->
-                                remoteTopic.ref == localTopic.ref && localTopic.isSelected
-                            }
-                )
-            }
+    val topics = remoteTopics.combine(localDataSource.topics) { remoteTopics, localTopics ->
+        return@combine remoteTopics.map { remoteTopic ->
+            TopicItem(
+                ref = remoteTopic.ref,
+                title = remoteTopic.title,
+                isSelected = localTopics.isEmpty() || localTopics.any { localTopic ->
+                    remoteTopic.ref == localTopic.ref && localTopic.isSelected
+                }
+            )
         }
     }
 
     suspend fun selectInitialTopics() {
-        val isLocalEmpty = localDataSource.getTopics().first().isEmpty()
+        val isLocalEmpty = localDataSource.topics.first().isEmpty()
         if (isLocalEmpty) {
             localDataSource.selectAll(remoteTopics.first().map { it.ref })
         }

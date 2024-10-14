@@ -32,7 +32,7 @@ internal class TopicsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            topicsRepo.getTopics().collect { topics ->
+            topicsRepo.topics.collect { topics ->
                 _uiState.value = TopicsUiState(topics.map { topicItem -> topicItem.toTopicUi() })
             }
         }
