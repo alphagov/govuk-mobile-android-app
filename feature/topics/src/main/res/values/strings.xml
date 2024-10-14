@@ -1,3 +1,7 @@
 <resources>
 
+    <string name="topicsWidgetTitle">Topics</string>
+    <string name="editButton">Edit</string>
+    <string name="editTitle">Edit your topics</string>
+    <string name="editMessage">Topics you select will be shown on the app home page so you can find them more easily</string>
 </resources>

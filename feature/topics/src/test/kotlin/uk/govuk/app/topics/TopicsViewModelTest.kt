@@ -3,6 +3,7 @@ package uk.govuk.app.topics
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -15,6 +16,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.design.R
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.domain.model.TopicItem
@@ -24,6 +26,7 @@ class TopicsViewModelTest {
 
     private val dispatcher = UnconfinedTestDispatcher()
     private val topicsRepo = mockk<TopicsRepo>(relaxed = true)
+    private val analytics = mockk<Analytics>(relaxed = true)
 
     @Before
     fun setup() {
@@ -56,7 +59,7 @@ class TopicsViewModelTest {
             )
         )
 
-        val viewModel = TopicsViewModel(topicsRepo)
+        val viewModel = TopicsViewModel(topicsRepo, analytics)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -66,7 +69,7 @@ class TopicsViewModelTest {
 
     @Test
     fun `Given a user wants to edit their topics, When on edit, then select initial topics in repo`() {
-        val viewModel = TopicsViewModel(topicsRepo)
+        val viewModel = TopicsViewModel(topicsRepo, analytics)
 
         viewModel.onEdit()
 
@@ -77,7 +80,7 @@ class TopicsViewModelTest {
 
     @Test
     fun `Given a user has selected a topic, When the topic is selected, then select topic in repo`() {
-        val viewModel = TopicsViewModel(topicsRepo)
+        val viewModel = TopicsViewModel(topicsRepo, analytics)
 
         viewModel.onTopicSelectedChanged("ref", true)
 
@@ -88,12 +91,27 @@ class TopicsViewModelTest {
 
     @Test
     fun `Given a user has deselected a topic, When the topic is deselected, then deselect topic in repo`() {
-        val viewModel = TopicsViewModel(topicsRepo)
+        val viewModel = TopicsViewModel(topicsRepo, analytics)
 
         viewModel.onTopicSelectedChanged("ref", false)
 
         coVerify {
             topicsRepo.deselectTopic("ref")
+        }
+    }
+
+    @Test
+    fun `Given a page view, then log analytics`() {
+        val viewModel = TopicsViewModel(topicsRepo, analytics)
+
+        viewModel.onPageView("title")
+
+        verify {
+            analytics.screenView(
+                screenClass = "EditTopicsScreen",
+                screenName = "Topic Selection",
+                title = "title"
+            )
         }
     }
 }

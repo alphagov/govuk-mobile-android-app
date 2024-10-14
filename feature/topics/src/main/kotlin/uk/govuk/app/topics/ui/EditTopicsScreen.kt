@@ -9,10 +9,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
@@ -21,6 +23,7 @@ import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.ToggleSwitch
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.topics.R
 import uk.govuk.app.topics.TopicUi
 import uk.govuk.app.topics.TopicsViewModel
 
@@ -34,6 +37,7 @@ internal fun EditTopicsRoute(
 
     EditTopicsScreen(
         topics = uiState?.topics,
+        onPageView = { title -> viewModel.onPageView(title) },
         onBack = onBack,
         onTopicSelectedChanged = { ref, selected ->
             viewModel.onTopicSelectedChanged(ref, selected)
@@ -45,14 +49,21 @@ internal fun EditTopicsRoute(
 @Composable
 private fun EditTopicsScreen(
     topics: List<TopicUi>?,
+    onPageView: (String) -> Unit,
     onBack: () -> Unit,
     onTopicSelectedChanged: (String, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val title = stringResource(R.string.editTitle)
+
+    LaunchedEffect(Unit) {
+        onPageView(title)
+    }
+
     Column(modifier) {
         ChildPageHeader(
-            text = "Edit your topics", // Todo - extract string
-            onBack = onBack,
+            text = title,
+            onBack = onBack
         )
         Column(
             Modifier
@@ -63,8 +74,7 @@ private fun EditTopicsScreen(
                     bottom = GovUkTheme.spacing.extraLarge
                 )
         ) {
-            // Todo - extract strings
-            BodyRegularLabel("Topics you select will be shown on the app home page so you can find them more easily")
+            BodyRegularLabel(stringResource(R.string.editMessage))
 
             MediumVerticalSpacer()
 

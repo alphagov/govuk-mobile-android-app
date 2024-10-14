@@ -15,23 +15,24 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
-import uk.govuk.app.design.R
 import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
 import uk.govuk.app.design.ui.component.Title3BoldLabel
 import uk.govuk.app.design.ui.component.TopicCard
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.topics.R
 import uk.govuk.app.topics.TopicUi
 import uk.govuk.app.topics.TopicsViewModel
 
 @Composable
 fun TopicsWidget(
     onTopicClick: (String) -> Unit,
-    onEditClick: () -> Unit,
+    onEditClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: TopicsViewModel = hiltViewModel()
@@ -43,8 +44,8 @@ fun TopicsWidget(
         TopicsWidgetContent(
             topics = topics.filter { it.isSelected },
             onTopicClick = onTopicClick,
-            onEditClick = {
-                onEditClick()
+            onEditClick = { text ->
+                onEditClick(text)
                 viewModel.onEdit()
             },
             modifier = modifier
@@ -56,7 +57,7 @@ fun TopicsWidget(
 private fun TopicsWidgetContent(
     topics: List<TopicUi>,
     onTopicClick: (String) -> Unit,
-    onEditClick: () -> Unit,
+    onEditClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -65,15 +66,17 @@ private fun TopicsWidgetContent(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Title3BoldLabel("Topics") // Todo - extract string
+            Title3BoldLabel(stringResource(R.string.topicsWidgetTitle))
 
             Spacer(Modifier.weight(1f))
 
+            val editButtonText = stringResource(R.string.editButton)
+
             TextButton(
-                onClick = onEditClick
+                onClick = { onEditClick(editButtonText) }
             ) {
                 BodyBoldLabel(
-                    text = "Edit", // Todo - extract string
+                    text = editButtonText,
                     color = GovUkTheme.colourScheme.textAndIcons.link
                 )
             }
@@ -175,31 +178,31 @@ private fun TopicsWidgetPreview() {
             topics = listOf(
                 TopicUi(
                     "",
-                    R.drawable.ic_topic_default,
+                    uk.govuk.app.design.R.drawable.ic_topic_default,
                     "A really really really really really really long topic title",
                     isSelected = true
                 ),
                 TopicUi(
                     "",
-                    R.drawable.ic_topic_benefits,
+                    uk.govuk.app.design.R.drawable.ic_topic_benefits,
                     "Benefits",
                     isSelected = true
                 ),
                 TopicUi(
                     "",
-                    R.drawable.ic_topic_transport,
+                    uk.govuk.app.design.R.drawable.ic_topic_transport,
                     "Driving",
                     isSelected = true
                 ),
                 TopicUi(
                     "",
-                    R.drawable.ic_topic_money,
+                    uk.govuk.app.design.R.drawable.ic_topic_money,
                     "Tax",
                     isSelected = true
                 ),
                 TopicUi(
                     "",
-                    R.drawable.ic_topic_parenting,
+                    uk.govuk.app.design.R.drawable.ic_topic_parenting,
                     "Child Benefit",
                     isSelected = true
                 ),
