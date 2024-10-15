@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.androidApplication)
+    id("com.google.android.gms.oss-licenses-plugin")
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.compose)
     alias(libs.plugins.hilt)
@@ -104,6 +105,7 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.lottie.compose)
+    implementation(libs.play.services.oss.licenses)
 
     ksp(libs.hilt.compiler)
 

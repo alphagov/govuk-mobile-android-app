@@ -43,6 +43,16 @@ internal class SettingsViewModel @Inject constructor(
         )
     }
 
+    fun onLicenseView() {
+        val eventText = "OpenSourceLicenses"
+
+        analytics.screenView(
+            screenClass = eventText,
+            screenName = eventText,
+            title = eventText
+        )
+    }
+
     fun onAnalyticsConsentChanged(enabled: Boolean) {
         viewModelScope.launch {
             if (enabled) {

@@ -16,6 +16,7 @@ datastorePreferences = "1.1.1"
 googlePlayServices = "4.4.2"
 crashlytics = "3.0.2"
 
+ossLicenses = "0.10.6"
 retrofit = "2.11.0"
 
 gov-logging = "0.4.4"
@@ -28,6 +29,8 @@ coroutineTest = "1.8.1"
 firebaseAppDistribution = "5.0.0"
 kover = "0.8.3"
 sonarqube = "5.0.0.4638"
+playServicesMeasurementApi = "22.0.2"
+playServicesOssLicenses = "17.1.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -59,6 +62,9 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 retrofit-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
 retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 realm-base = { group = "io.realm.kotlin", name = "library-base", version.ref = "realm"}
+play-services-measurement-api = { group = "com.google.android.gms", name = "play-services-measurement-api", version.ref = "playServicesMeasurementApi" }
+play-services-oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-licenses", version.ref = "playServicesOssLicenses" }
+oss-licenses = { group = "com.google.android.gms", name = "oss-licenses-plugin", version.ref = "ossLicenses" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -14,6 +14,12 @@ plugins {
     alias(libs.plugins.sonarqube)
 }
 
+buildscript {
+    dependencies {
+        classpath(libs.oss.licenses)
+    }
+}
+
 subprojects {
     if (!projectDir.endsWith("feature")) {
         apply(plugin = "org.sonarqube")

@@ -38,6 +38,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
+    implementation(libs.play.services.oss.licenses)
+    implementation(libs.play.services.measurement.api)
 
     ksp(libs.hilt.compiler)
 

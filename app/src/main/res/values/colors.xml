@@ -3,4 +3,11 @@
     <color name="background">#FFFAFAFA</color>
 
     <bool name="lightStatusBar">true</bool>
+
+    <color name="colorPrimary">#FFFAFAFA</color>
+    <color name="colorPrimaryDark">#FFFAFAFA</color>
+    <color name="colorAccent">#FF1D70B8</color>
+    <color name="textColorPrimary">#FF000000</color>
+    <color name="titleTextColor">#FF000000</color>
+    <color name="tint">#FF1D70B8</color>
 </resources>

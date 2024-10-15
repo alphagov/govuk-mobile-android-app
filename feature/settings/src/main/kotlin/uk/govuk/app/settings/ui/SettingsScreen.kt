@@ -39,6 +39,7 @@ internal fun SettingsRoute(
     appVersion: String,
     onHelpClick: () -> Unit,
     onPrivacyPolicyClick: () -> Unit,
+    onOpenSourceLicenseClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: SettingsViewModel = hiltViewModel()
@@ -49,9 +50,11 @@ internal fun SettingsRoute(
             appVersion = appVersion,
             isAnalyticsEnabled = it.isAnalyticsEnabled,
             onPageView = { viewModel.onPageView() },
+            onLicenseView = { viewModel.onLicenseView() },
             onHelpClick = onHelpClick,
             onAnalyticsConsentChange = { enabled -> viewModel.onAnalyticsConsentChanged(enabled) },
             onPrivacyPolicyClick = onPrivacyPolicyClick,
+            onOpenSourceLicenseClick = onOpenSourceLicenseClick,
             modifier = modifier
         )
     }
@@ -62,9 +65,11 @@ private fun SettingsScreen(
     appVersion: String,
     isAnalyticsEnabled: Boolean,
     onPageView: () -> Unit,
+    onLicenseView: () -> Unit,
     onHelpClick: () -> Unit,
     onAnalyticsConsentChange: (Boolean) -> Unit,
     onPrivacyPolicyClick: () -> Unit,
+    onOpenSourceLicenseClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -87,6 +92,7 @@ private fun SettingsScreen(
                 onAnalyticsConsentChange = onAnalyticsConsentChange,
                 onPrivacyPolicyClick = onPrivacyPolicyClick
             )
+            OpenSourceLicenses(onLicenseView, onOpenSourceLicenseClick)
             Spacer(Modifier.height(100.dp))
         }
     }
@@ -109,7 +115,8 @@ private fun AboutTheApp(
             colors = CardDefaults.cardColors(
                 containerColor = GovUkTheme.colourScheme.surfaces.card
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(GovUkTheme.spacing.medium)
         ) {
             Row(
@@ -143,7 +150,8 @@ private fun AboutTheApp(
             )
 
             Row(
-                Modifier.fillMaxWidth()
+                Modifier
+                    .fillMaxWidth()
                     .padding(GovUkTheme.spacing.medium),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -174,7 +182,8 @@ private fun PrivacyAndLegal(
             colors = CardDefaults.cardColors(
                 containerColor = GovUkTheme.colourScheme.surfaces.card
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(GovUkTheme.spacing.medium)
         ) {
             Row(
@@ -213,7 +222,8 @@ private fun PrivacyAndLegal(
         }
 
         Row(
-            Modifier.padding(
+            Modifier
+                .padding(
                     top = 1.dp,
                     start = GovUkTheme.spacing.extraLarge,
                     end = GovUkTheme.spacing.extraLarge,
@@ -223,7 +233,7 @@ private fun PrivacyAndLegal(
             verticalAlignment = Alignment.CenterVertically
         ) {
             val altText = "${stringResource(R.string.privacy_read_more)} " +
-                    stringResource(id = R.string.link_opens_in)
+                stringResource(id = R.string.link_opens_in)
 
             CaptionRegularLabel(
                 text = stringResource(R.string.privacy_read_more),
@@ -232,6 +242,44 @@ private fun PrivacyAndLegal(
                 },
                 color = GovUkTheme.colourScheme.textAndIcons.link,
             )
+        }
+    }
+}
+
+@Composable
+private fun OpenSourceLicenses(
+    onLicenseView: () -> Unit,
+    onOpenSourceLicenseClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        OutlinedCard(
+            colors = CardDefaults.cardColors(
+                containerColor = GovUkTheme.colourScheme.surfaces.card
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(GovUkTheme.spacing.medium)
+        ) {
+            Row(
+                Modifier
+                    .clickable(
+                        onClick = {
+                            onLicenseView()
+                            onOpenSourceLicenseClick()
+                        }
+                    )
+                    .padding(GovUkTheme.spacing.medium),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                BodyRegularLabel(
+                    text = stringResource(R.string.oss_licenses_title),
+                    modifier = Modifier.weight(1f),
+                    color = GovUkTheme.colourScheme.textAndIcons.link,
+                )
+            }
         }
     }
 }
