@@ -1,6 +1,5 @@
 package uk.govuk.app.settings.ui
 
-import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,14 +18,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.CaptionRegularLabel
 import uk.govuk.app.design.ui.component.ListDivider
@@ -42,6 +39,7 @@ internal fun SettingsRoute(
     appVersion: String,
     onHelpClick: () -> Unit,
     onPrivacyPolicyClick: () -> Unit,
+    onOpenSourceLicenseClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: SettingsViewModel = hiltViewModel()
@@ -56,6 +54,7 @@ internal fun SettingsRoute(
             onHelpClick = onHelpClick,
             onAnalyticsConsentChange = { enabled -> viewModel.onAnalyticsConsentChanged(enabled) },
             onPrivacyPolicyClick = onPrivacyPolicyClick,
+            onOpenSourceLicenseClick = onOpenSourceLicenseClick,
             modifier = modifier
         )
     }
@@ -70,6 +69,7 @@ private fun SettingsScreen(
     onHelpClick: () -> Unit,
     onAnalyticsConsentChange: (Boolean) -> Unit,
     onPrivacyPolicyClick: () -> Unit,
+    onOpenSourceLicenseClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -92,7 +92,7 @@ private fun SettingsScreen(
                 onAnalyticsConsentChange = onAnalyticsConsentChange,
                 onPrivacyPolicyClick = onPrivacyPolicyClick
             )
-            OpenSourceLicenses(onLicenseView)
+            OpenSourceLicenses(onLicenseView, onOpenSourceLicenseClick)
             Spacer(Modifier.height(100.dp))
         }
     }
@@ -249,10 +249,9 @@ private fun PrivacyAndLegal(
 @Composable
 private fun OpenSourceLicenses(
     onLicenseView: () -> Unit,
+    onOpenSourceLicenseClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-
     Column(
         modifier = modifier
     ) {
@@ -266,15 +265,12 @@ private fun OpenSourceLicenses(
         ) {
             Row(
                 Modifier
-                    .clickable(onClick = {
-                        onLicenseView()
-                        context.startActivity(
-                            Intent(
-                                context,
-                                OssLicensesMenuActivity::class.java
-                            )
-                        )
-                    })
+                    .clickable(
+                        onClick = {
+                            onLicenseView()
+                            onOpenSourceLicenseClick()
+                        }
+                    )
                     .padding(GovUkTheme.spacing.medium),
                 verticalAlignment = Alignment.CenterVertically
             ) {

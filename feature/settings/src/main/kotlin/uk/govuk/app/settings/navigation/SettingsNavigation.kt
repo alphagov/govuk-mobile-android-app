@@ -9,6 +9,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import uk.govuk.app.settings.ui.SettingsRoute
 import uk.govuk.app.settings.ui.SettingsSubRoute
 
@@ -43,6 +44,10 @@ fun NavGraphBuilder.settingsGraph(
                 onPrivacyPolicyClick = {
                     val intent = Intent(Intent.ACTION_VIEW)
                     intent.data = Uri.parse(privacyPolicyUrl)
+                    context.startActivity(intent)
+                },
+                onOpenSourceLicenseClick = {
+                    val intent = Intent(context, OssLicensesMenuActivity::class.java)
                     context.startActivity(intent)
                 },
                 modifier = modifier
