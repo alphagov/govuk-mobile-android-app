@@ -52,6 +52,7 @@ internal fun SettingsRoute(
             appVersion = appVersion,
             isAnalyticsEnabled = it.isAnalyticsEnabled,
             onPageView = { viewModel.onPageView() },
+            onLicenseView = { viewModel.onLicenseView() },
             onHelpClick = onHelpClick,
             onAnalyticsConsentChange = { enabled -> viewModel.onAnalyticsConsentChanged(enabled) },
             onPrivacyPolicyClick = onPrivacyPolicyClick,
@@ -65,6 +66,7 @@ private fun SettingsScreen(
     appVersion: String,
     isAnalyticsEnabled: Boolean,
     onPageView: () -> Unit,
+    onLicenseView: () -> Unit,
     onHelpClick: () -> Unit,
     onAnalyticsConsentChange: (Boolean) -> Unit,
     onPrivacyPolicyClick: () -> Unit,
@@ -90,7 +92,7 @@ private fun SettingsScreen(
                 onAnalyticsConsentChange = onAnalyticsConsentChange,
                 onPrivacyPolicyClick = onPrivacyPolicyClick
             )
-            OpenSourceLicenses()
+            OpenSourceLicenses(onLicenseView)
             Spacer(Modifier.height(100.dp))
         }
     }
@@ -246,6 +248,7 @@ private fun PrivacyAndLegal(
 
 @Composable
 private fun OpenSourceLicenses(
+    onLicenseView: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -264,6 +267,7 @@ private fun OpenSourceLicenses(
             Row(
                 Modifier
                     .clickable(onClick = {
+                        onLicenseView()
                         context.startActivity(
                             Intent(
                                 context,

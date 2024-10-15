@@ -104,4 +104,20 @@ class SettingsViewModelTest {
             }
         }
     }
+
+    @Test
+    fun `Given a license page view, then log analytics`() {
+        val viewModel = SettingsViewModel(analytics)
+        val eventText = "OpenSourceLicenses"
+
+        viewModel.onLicenseView()
+
+        verify {
+            analytics.screenView(
+                screenClass = eventText,
+                screenName = eventText,
+                title = eventText
+            )
+        }
+    }
 }
