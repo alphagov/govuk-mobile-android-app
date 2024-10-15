@@ -15,11 +15,8 @@ plugins {
 }
 
 buildscript {
-    repositories {
-        google()
-    }
     dependencies {
-        classpath(libs.oss.licenses.plugin)
+        classpath(libs.oss.licenses)
     }
 }
 
