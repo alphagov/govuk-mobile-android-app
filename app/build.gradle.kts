@@ -96,6 +96,7 @@ dependencies {
     implementation(projects.feature.settings)
     implementation(projects.feature.search)
     implementation(projects.feature.topics)
+    implementation(projects.feature.visited)
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
