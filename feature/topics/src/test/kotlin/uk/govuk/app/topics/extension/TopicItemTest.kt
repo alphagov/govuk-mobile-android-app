@@ -3,8 +3,8 @@ package uk.govuk.app.topics.extension
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import uk.govuk.app.design.R
-import uk.govuk.app.topics.TopicUi
 import uk.govuk.app.topics.domain.model.TopicItem
+import uk.govuk.app.topics.ui.model.TopicUi
 
 class TopicItemTest{
 

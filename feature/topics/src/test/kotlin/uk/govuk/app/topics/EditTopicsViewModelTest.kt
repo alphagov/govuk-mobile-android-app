@@ -20,9 +20,10 @@ import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.design.R
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.domain.model.TopicItem
+import uk.govuk.app.topics.ui.model.TopicUi
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class TopicsViewModelTest {
+class EditTopicsViewModelTest {
 
     private val dispatcher = UnconfinedTestDispatcher()
     private val topicsRepo = mockk<TopicsRepo>(relaxed = true)
@@ -39,7 +40,7 @@ class TopicsViewModelTest {
     }
 
     @Test
-    fun `Given topics are emitted, When init, then emit ui state`() {
+    fun `Given topics are emitted, When init, then select initial topics in repo and emit ui state`() {
         val topics = listOf(
             TopicItem(
                 ref = "benefits",
@@ -59,28 +60,19 @@ class TopicsViewModelTest {
             )
         )
 
-        val viewModel = TopicsViewModel(topicsRepo, analytics)
+        val viewModel = EditTopicsViewModel(topicsRepo, analytics)
 
         runTest {
             val result = viewModel.uiState.first()
             assertEquals(expected, result!!.topics)
-        }
-    }
 
-    @Test
-    fun `Given a user wants to edit their topics, When on edit, then select initial topics in repo`() {
-        val viewModel = TopicsViewModel(topicsRepo, analytics)
-
-        viewModel.onEdit()
-
-        coVerify {
-            topicsRepo.selectInitialTopics()
+            coVerify { topicsRepo.selectInitialTopics() }
         }
     }
 
     @Test
     fun `Given a user has selected a topic, When the topic is selected, then select topic in repo and send analytics`() {
-        val viewModel = TopicsViewModel(topicsRepo, analytics)
+        val viewModel = EditTopicsViewModel(topicsRepo, analytics)
 
         viewModel.onTopicSelectedChanged("ref", "title", true)
 
@@ -96,7 +88,7 @@ class TopicsViewModelTest {
 
     @Test
     fun `Given a user has deselected a topic, When the topic is deselected, then deselect topic in repo and send analytics`() {
-        val viewModel = TopicsViewModel(topicsRepo, analytics)
+        val viewModel = EditTopicsViewModel(topicsRepo, analytics)
 
         viewModel.onTopicSelectedChanged("ref", "title", false)
 
@@ -112,7 +104,7 @@ class TopicsViewModelTest {
 
     @Test
     fun `Given a page view, then log analytics`() {
-        val viewModel = TopicsViewModel(topicsRepo, analytics)
+        val viewModel = EditTopicsViewModel(topicsRepo, analytics)
 
         viewModel.onPageView("title")
 

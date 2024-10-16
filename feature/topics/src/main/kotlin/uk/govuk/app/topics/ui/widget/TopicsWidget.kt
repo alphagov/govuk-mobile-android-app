@@ -26,8 +26,8 @@ import uk.govuk.app.design.ui.component.Title3BoldLabel
 import uk.govuk.app.design.ui.component.TopicCard
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.R
-import uk.govuk.app.topics.TopicUi
-import uk.govuk.app.topics.TopicsViewModel
+import uk.govuk.app.topics.TopicsWidgetViewModel
+import uk.govuk.app.topics.ui.model.TopicUi
 
 @Composable
 fun TopicsWidget(
@@ -35,18 +35,17 @@ fun TopicsWidget(
     onEditClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: TopicsViewModel = hiltViewModel()
+    val viewModel: TopicsWidgetViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val topics = uiState?.topics
 
     // Todo - handle empty topics
     if (!topics.isNullOrEmpty()) {
         TopicsWidgetContent(
-            topics = topics.filter { it.isSelected },
+            topics = topics,
             onTopicClick = onTopicClick,
             onEditClick = { text ->
                 onEditClick(text)
-                viewModel.onEdit()
             },
             modifier = modifier
         )
