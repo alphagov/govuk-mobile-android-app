@@ -81,6 +81,22 @@ class AnalyticsClient @Inject constructor(
         navigation(text = text, type = "SearchResult", url = url, external = true)
     }
 
+    override fun toggleFunction(text: String, section: String, action: String) {
+        val parameters = mutableMapOf(
+            "text" to text,
+            "type" to "Toggle",
+            "section" to section,
+            "action" to action
+        )
+
+        log(
+            AnalyticsEvent(
+                eventType = "Function",
+                parameters = parametersWithLanguage(parameters)
+            )
+        )
+    }
+
     private fun navigation(text: String? = null, type: String, url: String? = null, external: Boolean = false) {
         val parameters = mutableMapOf(
             "type" to type,

@@ -39,8 +39,12 @@ internal fun EditTopicsRoute(
         topics = uiState?.topics,
         onPageView = { title -> viewModel.onPageView(title) },
         onBack = onBack,
-        onTopicSelectedChanged = { ref, selected ->
-            viewModel.onTopicSelectedChanged(ref, selected)
+        onTopicSelectedChanged = { ref, title, isSelected ->
+            viewModel.onTopicSelectedChanged(
+                ref = ref,
+                title = title,
+                isSelected = isSelected
+            )
         },
         modifier = modifier
     )
@@ -51,7 +55,7 @@ private fun EditTopicsScreen(
     topics: List<TopicUi>?,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
-    onTopicSelectedChanged: (String, Boolean) -> Unit,
+    onTopicSelectedChanged: (String, String, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val title = stringResource(R.string.editTitle)
@@ -105,7 +109,11 @@ private fun EditTopicsScreen(
                                 ToggleSwitch(
                                     checked = topic.isSelected,
                                     onCheckedChange = { checked ->
-                                        onTopicSelectedChanged(topic.ref, checked)
+                                        onTopicSelectedChanged(
+                                            topic.ref,
+                                            topic.title,
+                                            checked
+                                        )
                                     }
                                 )
                             }

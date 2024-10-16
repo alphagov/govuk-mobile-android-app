@@ -79,24 +79,34 @@ class TopicsViewModelTest {
     }
 
     @Test
-    fun `Given a user has selected a topic, When the topic is selected, then select topic in repo`() {
+    fun `Given a user has selected a topic, When the topic is selected, then select topic in repo and send analytics`() {
         val viewModel = TopicsViewModel(topicsRepo, analytics)
 
-        viewModel.onTopicSelectedChanged("ref", true)
+        viewModel.onTopicSelectedChanged("ref", "title", true)
 
         coVerify {
             topicsRepo.selectTopic("ref")
+            analytics.toggleFunction(
+                text = "title",
+                section = "Topics",
+                action = "Add"
+            )
         }
     }
 
     @Test
-    fun `Given a user has deselected a topic, When the topic is deselected, then deselect topic in repo`() {
+    fun `Given a user has deselected a topic, When the topic is deselected, then deselect topic in repo and send analytics`() {
         val viewModel = TopicsViewModel(topicsRepo, analytics)
 
-        viewModel.onTopicSelectedChanged("ref", false)
+        viewModel.onTopicSelectedChanged("ref", "title", false)
 
         coVerify {
             topicsRepo.deselectTopic("ref")
+            analytics.toggleFunction(
+                text = "title",
+                section = "Topics",
+                action = "Remove"
+            )
         }
     }
 

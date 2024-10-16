@@ -11,10 +11,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import uk.gov.logging.api.analytics.AnalyticsEvent
 import uk.gov.logging.api.analytics.logging.AnalyticsLogger
+import uk.govuk.app.analytics.data.AnalyticsRepo
 import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.DISABLED
 import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.ENABLED
 import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.NOT_SET
-import uk.govuk.app.analytics.data.AnalyticsRepo
 import java.util.Locale
 
 class AnalyticsClientTest {
@@ -218,6 +218,32 @@ class AnalyticsClientTest {
                         "external" to false,
                         "language" to Locale.getDefault().language,
                         "text" to "text"
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a toggle function, then log event`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
+        analyticsClient.toggleFunction(
+            text = "text",
+            section = "section",
+            action = "action"
+        )
+
+        verify {
+            analyticsLogger.logEvent(
+                true,
+                AnalyticsEvent(
+                    eventType = "Function",
+                    parameters = mapOf(
+                        "type" to "Toggle",
+                        "language" to Locale.getDefault().language,
+                        "text" to "text",
+                        "section" to "section",
+                        "action" to "action"
                     )
                 )
             )
