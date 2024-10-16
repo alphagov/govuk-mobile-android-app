@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import uk.govuk.app.design.ui.component.BodyBoldLabel
+import uk.govuk.app.design.ui.component.CompactButton
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
 import uk.govuk.app.design.ui.component.Title3BoldLabel
@@ -37,12 +38,12 @@ fun TopicsWidget(
 ) {
     val viewModel: TopicsWidgetViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
-    val topics = uiState?.topics
 
     // Todo - handle empty topics
-    if (!topics.isNullOrEmpty()) {
+    uiState?.let {
         TopicsWidgetContent(
-            topics = topics,
+            topics = it.topics,
+            displayShowAll = it.displayShowAll,
             onTopicClick = onTopicClick,
             onEditClick = { text ->
                 onEditClick(text)
@@ -55,6 +56,7 @@ fun TopicsWidget(
 @Composable
 private fun TopicsWidgetContent(
     topics: List<TopicUi>,
+    displayShowAll: Boolean,
     onTopicClick: (String) -> Unit,
     onEditClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -85,6 +87,14 @@ private fun TopicsWidgetContent(
             topics = topics,
             onClick = onTopicClick
         )
+
+        if (displayShowAll) {
+            CompactButton(
+                text = stringResource(R.string.seeAllTopicsButton),
+                onClick = { },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+        }
     }
 }
 
@@ -206,6 +216,7 @@ private fun TopicsWidgetPreview() {
                     isSelected = true
                 ),
             ),
+            displayShowAll = true,
             onTopicClick = { },
             onEditClick = { }
         )

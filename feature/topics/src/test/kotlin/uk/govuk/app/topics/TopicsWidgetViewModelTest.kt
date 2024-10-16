@@ -36,6 +36,38 @@ class TopicsWidgetViewModelTest {
     }
 
     @Test
+    fun `Given topics are emitted, When init, then emit ui state`() {
+        val topics = listOf(
+            TopicItem(
+                ref = "benefits",
+                title = "Benefits",
+                isSelected = true
+            )
+        )
+
+        every { topicsRepo.topics } returns flowOf(topics)
+
+        val expected =
+            TopicsWidgetUiState(
+                topics = listOf(
+                    TopicUi(
+                        ref = "benefits",
+                        icon = R.drawable.ic_topic_benefits,
+                        title = "Benefits",
+                        isSelected = true
+                    )
+                ),
+                displayShowAll = false
+            )
+
+        val viewModel = TopicsWidgetViewModel(topicsRepo)
+
+        runTest {
+            assertEquals(expected, viewModel.uiState.first())
+        }
+    }
+
+    @Test
     fun `Given topics are emitted, When init, then filter selected topics and emit ui state`() {
         val topics = listOf(
             TopicItem(
@@ -52,20 +84,23 @@ class TopicsWidgetViewModelTest {
 
         every { topicsRepo.topics } returns flowOf(topics)
 
-        val expected = listOf(
-            TopicUi(
-                ref = "benefits",
-                icon = R.drawable.ic_topic_benefits,
-                title = "Benefits",
-                isSelected = true
+        val expected =
+            TopicsWidgetUiState(
+                topics = listOf(
+                    TopicUi(
+                        ref = "benefits",
+                        icon = R.drawable.ic_topic_benefits,
+                        title = "Benefits",
+                        isSelected = true
+                    )
+                ),
+                displayShowAll = true
             )
-        )
 
         val viewModel = TopicsWidgetViewModel(topicsRepo)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertEquals(expected, result!!.topics)
+            assertEquals(expected, viewModel.uiState.first())
         }
     }
 }
