@@ -1,5 +1,6 @@
 package uk.govuk.app.topics.navigation
 
+import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -12,6 +13,7 @@ const val TOPICS_GRAPH_ROUTE = "topics_graph_route"
 private const val TOPIC_ROUTE = "topic_route"
 private const val TOPIC_TITLE_ARG = "title"
 private const val TOPICS_EDIT_ROUTE = "topics_edit_route"
+const val TOPICS_ALL_ROUTE = "topics_all_route"
 
 fun NavGraphBuilder.topicsGraph(
     navController: NavController,
@@ -35,6 +37,9 @@ fun NavGraphBuilder.topicsGraph(
                 onBack = { navController.popBackStack() }
             )
         }
+        composable(TOPICS_ALL_ROUTE) {
+            Text("All Topics!!!")
+        }
     }
 }
 
@@ -44,4 +49,8 @@ fun NavController.navigateToTopic(title: String) {
 
 fun NavController.navigateToTopicsEdit() {
     navigate(TOPICS_EDIT_ROUTE)
+}
+
+fun NavController.navigateToTopicsAll() {
+    navigate(TOPICS_ALL_ROUTE)
 }

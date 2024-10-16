@@ -34,6 +34,7 @@ import uk.govuk.app.topics.ui.model.TopicUi
 fun TopicsWidget(
     onTopicClick: (String) -> Unit,
     onEditClick: (String) -> Unit,
+    onAllClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: TopicsWidgetViewModel = hiltViewModel()
@@ -45,9 +46,8 @@ fun TopicsWidget(
             topics = it.topics,
             displayShowAll = it.displayShowAll,
             onTopicClick = onTopicClick,
-            onEditClick = { text ->
-                onEditClick(text)
-            },
+            onEditClick = onEditClick,
+            onAllClick = onAllClick,
             modifier = modifier
         )
     }
@@ -59,6 +59,7 @@ private fun TopicsWidgetContent(
     displayShowAll: Boolean,
     onTopicClick: (String) -> Unit,
     onEditClick: (String) -> Unit,
+    onAllClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -89,9 +90,10 @@ private fun TopicsWidgetContent(
         )
 
         if (displayShowAll) {
+            val seeAllButtonText = stringResource(R.string.seeAllTopicsButton)
             CompactButton(
-                text = stringResource(R.string.seeAllTopicsButton),
-                onClick = { },
+                text = seeAllButtonText,
+                onClick = { onAllClick(seeAllButtonText) },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
         }
@@ -218,7 +220,8 @@ private fun TopicsWidgetPreview() {
             ),
             displayShowAll = true,
             onTopicClick = { },
-            onEditClick = { }
+            onEditClick = { },
+            onAllClick = { }
         )
     }
 }
