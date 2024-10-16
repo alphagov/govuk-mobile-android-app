@@ -32,6 +32,9 @@ internal class TopicsViewModel @Inject constructor(
     companion object {
         private const val SCREEN_CLASS = "EditTopicsScreen"
         private const val SCREEN_NAME = "Topic Selection"
+        private const val TOGGLE_FUNCTION_SECTION = "Topics"
+        private const val TOGGLE_FUNCTION_ACTION_SELECTED = "Add"
+        private const val TOGGLE_FUNCTION_ACTION_DESELECTED = "Remove"
     }
 
     private val _uiState: MutableStateFlow<TopicsUiState?> = MutableStateFlow(null)
@@ -59,13 +62,28 @@ internal class TopicsViewModel @Inject constructor(
         )
     }
 
-    fun onTopicSelectedChanged(ref: String, isSelected: Boolean) {
+    fun onTopicSelectedChanged(ref: String, title: String, isSelected: Boolean) {
         viewModelScope.launch {
             if (isSelected) {
                 topicsRepo.selectTopic(ref)
             } else {
                 topicsRepo.deselectTopic(ref)
             }
+            logTopicToggleFunction(title, isSelected)
         }
+    }
+
+    private fun logTopicToggleFunction(text: String, isSelected: Boolean) {
+        val action = if (isSelected) {
+            TOGGLE_FUNCTION_ACTION_SELECTED
+        } else {
+            TOGGLE_FUNCTION_ACTION_DESELECTED
+        }
+
+        analytics.toggleFunction(
+            text = text,
+            section = TOGGLE_FUNCTION_SECTION,
+            action = action
+        )
     }
 }
