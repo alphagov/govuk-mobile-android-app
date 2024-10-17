@@ -4,4 +4,6 @@
     <string name="editButton">Edit</string>
     <string name="editTitle">Edit your topics</string>
     <string name="editMessage">Topics you select will be shown on the app home page so you can find them more easily</string>
+    <string name="allTopicsButton">See all topics</string>
+    <string name="allTopicsTitle">All topics</string>
 </resources>

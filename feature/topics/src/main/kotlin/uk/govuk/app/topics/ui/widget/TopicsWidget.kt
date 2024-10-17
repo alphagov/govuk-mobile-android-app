@@ -20,34 +20,34 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import uk.govuk.app.design.ui.component.BodyBoldLabel
+import uk.govuk.app.design.ui.component.CompactButton
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
 import uk.govuk.app.design.ui.component.Title3BoldLabel
-import uk.govuk.app.design.ui.component.TopicCard
+import uk.govuk.app.design.ui.component.TopicVerticalCard
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.R
-import uk.govuk.app.topics.TopicUi
-import uk.govuk.app.topics.TopicsViewModel
+import uk.govuk.app.topics.TopicsWidgetViewModel
+import uk.govuk.app.topics.ui.model.TopicUi
 
 @Composable
 fun TopicsWidget(
     onTopicClick: (String) -> Unit,
     onEditClick: (String) -> Unit,
+    onAllClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: TopicsViewModel = hiltViewModel()
+    val viewModel: TopicsWidgetViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
-    val topics = uiState?.topics
 
     // Todo - handle empty topics
-    if (!topics.isNullOrEmpty()) {
+    uiState?.let {
         TopicsWidgetContent(
-            topics = topics.filter { it.isSelected },
+            topics = it.topics,
+            displayShowAll = it.displayShowAll,
             onTopicClick = onTopicClick,
-            onEditClick = { text ->
-                onEditClick(text)
-                viewModel.onEdit()
-            },
+            onEditClick = onEditClick,
+            onAllClick = onAllClick,
             modifier = modifier
         )
     }
@@ -56,8 +56,10 @@ fun TopicsWidget(
 @Composable
 private fun TopicsWidgetContent(
     topics: List<TopicUi>,
+    displayShowAll: Boolean,
     onTopicClick: (String) -> Unit,
     onEditClick: (String) -> Unit,
+    onAllClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -86,6 +88,15 @@ private fun TopicsWidgetContent(
             topics = topics,
             onClick = onTopicClick
         )
+
+        if (displayShowAll) {
+            val seeAllButtonText = stringResource(R.string.allTopicsButton)
+            CompactButton(
+                text = seeAllButtonText,
+                onClick = { onAllClick(seeAllButtonText) },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+        }
     }
 }
 
@@ -139,7 +150,7 @@ private fun TopicsRow(
             val topicIndex = (rowIndex * columnCount) + columnIndex
             if (topicIndex < topics.size) {
                 val topic = topics[topicIndex]
-                TopicCard(
+                TopicVerticalCard(
                     icon = topic.icon,
                     title = topic.title,
                     onClick = onClick,
@@ -207,8 +218,10 @@ private fun TopicsWidgetPreview() {
                     isSelected = true
                 ),
             ),
+            displayShowAll = true,
             onTopicClick = { },
-            onEditClick = { }
+            onEditClick = { },
+            onAllClick = { }
         )
     }
 }

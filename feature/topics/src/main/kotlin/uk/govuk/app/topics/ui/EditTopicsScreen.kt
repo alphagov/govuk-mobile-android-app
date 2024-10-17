@@ -23,20 +23,20 @@ import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.ToggleSwitch
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.topics.EditTopicsViewModel
 import uk.govuk.app.topics.R
-import uk.govuk.app.topics.TopicUi
-import uk.govuk.app.topics.TopicsViewModel
+import uk.govuk.app.topics.ui.model.TopicUi
 
 @Composable
 internal fun EditTopicsRoute(
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: TopicsViewModel = hiltViewModel()
-    val uiState by viewModel.uiState.collectAsState()
+    val viewModel: EditTopicsViewModel = hiltViewModel()
+    val topics by viewModel.topics.collectAsState()
 
     EditTopicsScreen(
-        topics = uiState?.topics,
+        topics = topics,
         onPageView = { title -> viewModel.onPageView(title) },
         onBack = onBack,
         onTopicSelectedChanged = { ref, title, isSelected ->

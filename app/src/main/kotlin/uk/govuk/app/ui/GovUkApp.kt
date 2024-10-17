@@ -50,6 +50,7 @@ import uk.govuk.app.search.navigation.searchGraph
 import uk.govuk.app.search.ui.widget.SearchWidget
 import uk.govuk.app.settings.navigation.settingsGraph
 import uk.govuk.app.topics.navigation.navigateToTopic
+import uk.govuk.app.topics.navigation.navigateToTopicsAll
 import uk.govuk.app.topics.navigation.navigateToTopicsEdit
 import uk.govuk.app.topics.navigation.topicsGraph
 import uk.govuk.app.topics.ui.widget.TopicsWidget
@@ -103,17 +104,25 @@ private fun BottomNavScaffold(
     }
 
     val navController = rememberNavController()
-    navController.addOnDestinationChangedListener { _, destination, _ ->
-        selectedIndex = topLevelDestinations.indexOfFirst { it.route == destination.parent?.route }
-    }
-
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentNavRoute = currentBackStackEntry?.destination?.parent?.route
+    val currentDestinationRoute = currentBackStackEntry?.destination?.route
+    val currentDestinationParentRoute = currentBackStackEntry?.destination?.parent?.route
+    navController.addOnDestinationChangedListener { _, destination, _ ->
+        selectedIndex = topLevelDestinations.indexOfFirst {
+            it.route == currentDestinationParentRoute
+                    || it.associatedRoutes.contains(destination.route)
+        }
+    }
 
     Scaffold(
         bottomBar = {
-            // Display bottom nav is current destination is a tab destination
-            if (topLevelDestinations.any { it.route == currentNavRoute }) {
+            // Display bottom nav if current destination's parent is a tab destination or
+            // the current destination is associated with a tab destination
+            if (topLevelDestinations.any {
+                    it.route == currentDestinationParentRoute
+                            || it.associatedRoutes.contains(currentDestinationRoute)
+                }
+            ) {
                 Column {
                     HorizontalDivider(
                         thickness = 1.dp,
@@ -123,7 +132,7 @@ private fun BottomNavScaffold(
                         containerColor = GovUkTheme.colourScheme.surfaces.background
                     ) {
                         topLevelDestinations.forEachIndexed { index, destination ->
-                            val tabText = stringResource(destination.resourceId)
+                            val tabText = stringResource(destination.stringResId)
 
                             NavigationBarItem(
                                 selected = index == selectedIndex,
@@ -260,6 +269,10 @@ private fun homeScreenWidgets(
                     onEditClick = { text ->
                         onClick(text)
                         navController.navigateToTopicsEdit()
+                    },
+                    onAllClick = { text ->
+                        onClick(text)
+                        navController.navigateToTopicsAll()
                     },
                     modifier = modifier
                 )

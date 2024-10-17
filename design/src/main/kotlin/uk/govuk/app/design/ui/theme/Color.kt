@@ -10,12 +10,14 @@ private val Blue1 = Color(0xFF1D70B8)
 private val Blue2 = Color(0xFF259AFF)
 private val Blue3 = Color(0xFF00D1FF)
 private val Blue4 = Color(0xFF45F2FD)
-private val Blue5 = Color(0xFF003078)
+private val Blue5 = Color(0xFF193E61)
 private val Blue6 = Color(0xFF7AC2FF)
+private val Blue7 = Color(0xFFE4EEFA)
 
 private val Yellow = Color(0xFFFFDD00)
 
 private val Grey900 = Color(0xFF1A1A1A)
+private val Grey850 = Color(0xFF262626)
 private val Grey800 = Color(0xFF333333)
 private val Grey700 = Color(0xFF4D4D4D)
 private val Grey600 = Color(0xFF666666)
@@ -52,6 +54,10 @@ data class GovUkColourScheme(
         val buttonSecondaryHighlight: Color,
         val buttonSecondaryDisabled: Color,
         val buttonSecondaryFocused: Color,
+        val buttonCompact: Color,
+        val buttonCompactHighlight: Color,
+        val buttonCompactDisabled: Color,
+        val buttonCompactFocused: Color,
         val trailingIcon: Color
     )
 
@@ -68,6 +74,10 @@ data class GovUkColourScheme(
         val buttonSecondaryHighlight: Color,
         val buttonSecondaryDisabled: Color,
         val buttonSecondaryFocused: Color,
+        val buttonCompact: Color,
+        val buttonCompactHighlight: Color,
+        val buttonCompactDisabled: Color,
+        val buttonCompactFocused: Color,
         val searchBox: Color,
         val toggleEnabled: Color,
         val toggleDisabled: Color,
@@ -79,6 +89,7 @@ data class GovUkColourScheme(
     data class Strokes(
         val container: Color,
         val listDivider: Color,
+        val buttonCompactBorder: Color,
         val pageControlsInactive: Color
     )
 }
@@ -96,6 +107,10 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonSecondaryHighlight = Blue5,
         buttonSecondaryDisabled = Grey700,
         buttonSecondaryFocused = Black,
+        buttonCompact = Blue1,
+        buttonCompactHighlight = Blue5,
+        buttonCompactDisabled = Grey600,
+        buttonCompactFocused = Black,
         trailingIcon = Grey300
     ),
     surfaces = Surfaces(
@@ -111,6 +126,10 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonSecondaryHighlight = Grey50,
         buttonSecondaryDisabled = Grey50,
         buttonSecondaryFocused = Yellow,
+        buttonCompact = White,
+        buttonCompactHighlight = Blue7,
+        buttonCompactDisabled = Grey100,
+        buttonCompactFocused = Yellow,
         searchBox = Grey60,
         toggleEnabled = Blue1,
         toggleDisabled = Grey300,
@@ -121,6 +140,7 @@ internal val LightColorScheme = GovUkColourScheme(
     strokes = Strokes(
         container = BlackAlpha30,
         listDivider = Grey300,
+        buttonCompactBorder = Grey300,
         pageControlsInactive = Grey500
     )
 )
@@ -138,6 +158,10 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonSecondaryHighlight = Blue6,
         buttonSecondaryDisabled = Grey300,
         buttonSecondaryFocused = Black,
+        buttonCompact = Blue2,
+        buttonCompactHighlight = Blue6,
+        buttonCompactDisabled = Black,
+        buttonCompactFocused = Black,
         trailingIcon = Grey500
     ),
     surfaces = Surfaces(
@@ -153,6 +177,10 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonSecondaryHighlight = Black,
         buttonSecondaryDisabled = Black,
         buttonSecondaryFocused = Yellow,
+        buttonCompact = Grey850,
+        buttonCompactHighlight = Blue5,
+        buttonCompactDisabled = Grey400,
+        buttonCompactFocused = Yellow,
         searchBox = Grey700,
         toggleEnabled = Blue2,
         toggleDisabled = Grey600,
@@ -163,6 +191,7 @@ internal val DarkColorScheme = GovUkColourScheme(
     strokes = Strokes(
         container = WhiteAlpha30,
         listDivider = Grey500,
+        buttonCompactBorder = Grey500,
         pageControlsInactive = Grey300
     )
 )
@@ -181,6 +210,10 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             buttonSecondaryHighlight = Color.Unspecified,
             buttonSecondaryDisabled = Color.Unspecified,
             buttonSecondaryFocused = Color.Unspecified,
+            buttonCompact = Color.Unspecified,
+            buttonCompactHighlight = Color.Unspecified,
+            buttonCompactDisabled = Color.Unspecified,
+            buttonCompactFocused = Color.Unspecified,
             trailingIcon = Color.Unspecified
         ),
         surfaces = Surfaces(
@@ -196,6 +229,10 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             buttonSecondaryHighlight = Color.Unspecified,
             buttonSecondaryDisabled = Color.Unspecified,
             buttonSecondaryFocused = Color.Unspecified,
+            buttonCompact = Color.Unspecified,
+            buttonCompactHighlight = Color.Unspecified,
+            buttonCompactDisabled = Color.Unspecified,
+            buttonCompactFocused = Color.Unspecified,
             searchBox = Color.Unspecified,
             toggleEnabled = Color.Unspecified,
             toggleDisabled = Color.Unspecified,
@@ -206,6 +243,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
         strokes = Strokes(
             container = Color.Unspecified,
             listDivider = Color.Unspecified,
+            buttonCompactBorder = Color.Unspecified,
             pageControlsInactive = Color.Unspecified
         )
     )
