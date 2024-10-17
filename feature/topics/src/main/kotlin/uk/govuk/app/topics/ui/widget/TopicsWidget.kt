@@ -24,7 +24,7 @@ import uk.govuk.app.design.ui.component.CompactButton
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
 import uk.govuk.app.design.ui.component.Title3BoldLabel
-import uk.govuk.app.design.ui.component.TopicCard
+import uk.govuk.app.design.ui.component.TopicVerticalCard
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.R
 import uk.govuk.app.topics.TopicsWidgetViewModel
@@ -90,7 +90,7 @@ private fun TopicsWidgetContent(
         )
 
         if (displayShowAll) {
-            val seeAllButtonText = stringResource(R.string.seeAllTopicsButton)
+            val seeAllButtonText = stringResource(R.string.allTopicsButton)
             CompactButton(
                 text = seeAllButtonText,
                 onClick = { onAllClick(seeAllButtonText) },
@@ -150,7 +150,7 @@ private fun TopicsRow(
             val topicIndex = (rowIndex * columnCount) + columnIndex
             if (topicIndex < topics.size) {
                 val topic = topics[topicIndex]
-                TopicCard(
+                TopicVerticalCard(
                     icon = topic.icon,
                     title = topic.title,
                     onClick = onClick,

@@ -1,11 +1,11 @@
 package uk.govuk.app.topics.navigation
 
-import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import uk.govuk.app.topics.ui.AllTopicsRoute
 import uk.govuk.app.topics.ui.EditTopicsRoute
 import uk.govuk.app.topics.ui.TopicRoute
 
@@ -38,7 +38,10 @@ fun NavGraphBuilder.topicsGraph(
             )
         }
         composable(TOPICS_ALL_ROUTE) {
-            Text("All Topics!!!")
+            AllTopicsRoute(
+                onBack = { navController.popBackStack() },
+                modifier = modifier
+            )
         }
     }
 }

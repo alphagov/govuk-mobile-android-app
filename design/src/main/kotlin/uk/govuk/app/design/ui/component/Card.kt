@@ -88,7 +88,7 @@ fun SearchCard(
 }
 
 @Composable
-fun TopicCard(
+fun TopicVerticalCard(
     @DrawableRes icon: Int,
     title: String,
     onClick: (String) -> Unit,
@@ -112,7 +112,7 @@ fun TopicCard(
             Icon(
                 painterResource(icon),
                 contentDescription = null,
-                modifier = Modifier.size(25.dp),
+                modifier = Modifier.size(40.dp),
                 tint = GovUkTheme.colourScheme.surfaces.icon
             )
             MediumVerticalSpacer()
@@ -143,6 +143,54 @@ fun TopicCard(
     }
 }
 
+@Composable
+fun TopicHorizontalCard(
+    @DrawableRes icon: Int,
+    title: String,
+    onClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedCard(
+        modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = GovUkTheme.colourScheme.surfaces.card
+        ),
+        border = BorderStroke(
+            width = 1.dp,
+            color = GovUkTheme.colourScheme.strokes.listDivider
+        )
+    ) {
+        Row(
+            Modifier
+                .clickable { onClick(title) }
+                .padding(GovUkTheme.spacing.medium),
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Icon(
+                painterResource(icon),
+                contentDescription = null,
+                modifier = Modifier.size(40.dp),
+                tint = GovUkTheme.colourScheme.surfaces.icon
+            )
+
+            MediumHorizontalSpacer()
+
+            BodyBoldLabel(
+                text = title,
+                modifier = Modifier.weight(1f),
+            )
+
+            MediumHorizontalSpacer()
+
+            Icon(
+                painterResource(R.drawable.ic_chevron),
+                contentDescription = null,
+                tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
+            )
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun SearchCardPreview() {
@@ -157,13 +205,25 @@ private fun SearchCardPreview() {
 
 @Preview
 @Composable
-private fun TopicCardPreview() {
+private fun TopicVerticalCardPreview() {
     GovUkTheme {
-        TopicCard(
+        TopicVerticalCard(
             icon = R.drawable.ic_topic_default,
             title = "Title",
             onClick = { },
-            modifier = Modifier.height(100.dp)
+            modifier = Modifier.height(120.dp)
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun TopicHorizontalCardPreview() {
+    GovUkTheme {
+        TopicHorizontalCard(
+            icon = R.drawable.ic_topic_default,
+            title = "Title",
+            onClick = { }
         )
     }
 }

@@ -23,7 +23,7 @@ import uk.govuk.app.topics.domain.model.TopicItem
 import uk.govuk.app.topics.ui.model.TopicUi
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class EditTopicsViewModelTest {
+class AllTopicsViewModelTest {
 
     private val dispatcher = UnconfinedTestDispatcher()
     private val topicsRepo = mockk<TopicsRepo>(relaxed = true)
@@ -60,7 +60,7 @@ class EditTopicsViewModelTest {
             )
         )
 
-        val viewModel = EditTopicsViewModel(topicsRepo, analytics)
+        val viewModel = AllTopicsViewModel(topicsRepo, analytics)
 
         runTest {
             val result = viewModel.topics.first()
@@ -71,49 +71,18 @@ class EditTopicsViewModelTest {
     }
 
     @Test
-    fun `Given a user has selected a topic, When the topic is selected, then select topic in repo and send analytics`() {
-        val viewModel = EditTopicsViewModel(topicsRepo, analytics)
-
-        viewModel.onTopicSelectedChanged("ref", "title", true)
-
-        coVerify {
-            topicsRepo.selectTopic("ref")
-            analytics.toggleFunction(
-                text = "title",
-                section = "Topics",
-                action = "Add"
-            )
-        }
-    }
-
-    @Test
-    fun `Given a user has deselected a topic, When the topic is deselected, then deselect topic in repo and send analytics`() {
-        val viewModel = EditTopicsViewModel(topicsRepo, analytics)
-
-        viewModel.onTopicSelectedChanged("ref", "title", false)
-
-        coVerify {
-            topicsRepo.deselectTopic("ref")
-            analytics.toggleFunction(
-                text = "title",
-                section = "Topics",
-                action = "Remove"
-            )
-        }
-    }
-
-    @Test
     fun `Given a page view, then log analytics`() {
-        val viewModel = EditTopicsViewModel(topicsRepo, analytics)
+        val viewModel = AllTopicsViewModel(topicsRepo, analytics)
 
         viewModel.onPageView("title")
 
         verify {
             analytics.screenView(
-                screenClass = "EditTopicsScreen",
-                screenName = "Topic Selection",
+                screenClass = "AllTopicsScreen",
+                screenName = "All Topics",
                 title = "title"
             )
         }
     }
+
 }

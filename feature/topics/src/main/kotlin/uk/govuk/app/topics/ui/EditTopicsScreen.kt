@@ -33,10 +33,10 @@ internal fun EditTopicsRoute(
     modifier: Modifier = Modifier
 ) {
     val viewModel: EditTopicsViewModel = hiltViewModel()
-    val uiState by viewModel.uiState.collectAsState()
+    val topics by viewModel.topics.collectAsState()
 
     EditTopicsScreen(
-        topics = uiState?.topics,
+        topics = topics,
         onPageView = { title -> viewModel.onPageView(title) },
         onBack = onBack,
         onTopicSelectedChanged = { ref, title, isSelected ->
