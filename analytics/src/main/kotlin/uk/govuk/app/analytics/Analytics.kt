@@ -13,5 +13,6 @@ interface Analytics {
     fun widgetClick(text: String)
     fun search(searchTerm: String)
     fun searchResultClick(text: String, url: String)
+    fun visitedItemClick(text: String, url: String)
     fun toggleFunction(text: String, section: String, action: String)
 }

@@ -81,6 +81,11 @@ class AnalyticsClient @Inject constructor(
         navigation(text = text, type = "SearchResult", url = url, external = true)
     }
 
+    override fun visitedItemClick(text: String, url: String) {
+        // external as these links will be opened in the device browser
+        navigation(text = text, type = "VisitedItem", url = url, external = true)
+    }
+
     override fun toggleFunction(text: String, section: String, action: String) {
         val parameters = mutableMapOf(
             "text" to text,
