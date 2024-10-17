@@ -24,10 +24,12 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
 fun VisitedWidget(
+    onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         OutlinedCard(
+            onClick = { onClick("Visited") },
             colors = CardDefaults.cardColors(
                 containerColor = GovUkTheme.colourScheme.surfaces.card
             ),
@@ -37,7 +39,7 @@ fun VisitedWidget(
             )
         ) {
             Row(
-                Modifier
+                modifier = Modifier
                     .padding(GovUkTheme.spacing.large)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -67,6 +69,7 @@ fun VisitedWidget(
 private fun VisitedWidgetPreview() {
     GovUkTheme {
         VisitedWidget(
+            onClick = { },
             Modifier
                 .fillMaxWidth()
                 .background(GovUkTheme.colourScheme.surfaces.background)
