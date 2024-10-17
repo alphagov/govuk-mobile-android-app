@@ -109,7 +109,7 @@ private fun BottomNavScaffold(
     navController.addOnDestinationChangedListener { _, destination, _ ->
         selectedIndex = topLevelDestinations.indexOfFirst {
             it.route == currentDestinationParentRoute
-                    || it.associatedRoutes.contains(currentDestinationRoute)
+                    || it.associatedRoutes.contains(destination.route)
         }
     }
 
