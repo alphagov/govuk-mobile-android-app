@@ -85,4 +85,15 @@ class AllTopicsViewModelTest {
         }
     }
 
+    @Test
+    fun `Given a click, then log analytics`() {
+        val viewModel = AllTopicsViewModel(topicsRepo, analytics)
+
+        viewModel.onClick("title")
+
+        verify {
+            analytics.buttonClick("title")
+        }
+    }
+
 }

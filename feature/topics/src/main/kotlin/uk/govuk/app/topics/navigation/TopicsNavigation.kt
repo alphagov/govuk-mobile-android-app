@@ -40,6 +40,7 @@ fun NavGraphBuilder.topicsGraph(
         composable(TOPICS_ALL_ROUTE) {
             AllTopicsRoute(
                 onBack = { navController.popBackStack() },
+                onClick = { title -> navController.navigateToTopic(title) },
                 modifier = modifier
             )
         }

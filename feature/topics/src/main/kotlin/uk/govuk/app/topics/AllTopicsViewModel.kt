@@ -42,4 +42,8 @@ internal class AllTopicsViewModel @Inject constructor(
             title = title
         )
     }
+
+    fun onClick(title: String) {
+        analytics.buttonClick(title)
+    }
 }

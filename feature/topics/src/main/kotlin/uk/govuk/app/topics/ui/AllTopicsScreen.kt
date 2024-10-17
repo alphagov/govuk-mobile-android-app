@@ -22,6 +22,7 @@ import uk.govuk.app.topics.ui.model.TopicUi
 @Composable
 internal fun AllTopicsRoute(
     onBack: () -> Unit,
+    onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: AllTopicsViewModel = hiltViewModel()
@@ -31,6 +32,10 @@ internal fun AllTopicsRoute(
         topics = topics,
         onPageView = { title -> viewModel.onPageView(title) },
         onBack = onBack,
+        onClick = { title ->
+            onClick(title)
+            viewModel.onClick(title)
+        },
         modifier = modifier
     )
 }
@@ -40,6 +45,7 @@ private fun AllTopicsScreen(
     topics: List<TopicUi>?,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
+    onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val title = stringResource(R.string.allTopicsTitle)
@@ -62,7 +68,7 @@ private fun AllTopicsScreen(
                         TopicHorizontalCard(
                             icon = topic.icon,
                             title = topic.title,
-                            onClick = { }
+                            onClick = { onClick(topic.title) }
                         )
                         MediumVerticalSpacer()
                     }
