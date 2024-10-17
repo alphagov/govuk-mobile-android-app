@@ -266,7 +266,8 @@ private fun homeScreenWidgets(
                         onClick(text)
                         navController.navigateToTopicsEdit()
                     },
-                    onAllClick = {
+                    onAllClick = { text ->
+                        onClick(text)
                         navController.navigateToTopicsAll()
                     },
                     modifier = modifier
