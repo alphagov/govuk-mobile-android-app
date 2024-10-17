@@ -1,8 +1,5 @@
 import org.gradle.api.internal.provider.MissingValueException
 
-include(":feature:topics")
-
-
 pluginManagement {
     repositories {
         google {
@@ -52,3 +49,5 @@ include(":feature:home")
 include(":feature:onboarding")
 include(":feature:search")
 include(":feature:settings")
+include(":feature:topics")
+include(":feature:visited")

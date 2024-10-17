@@ -53,6 +53,7 @@ import uk.govuk.app.topics.navigation.navigateToTopic
 import uk.govuk.app.topics.navigation.navigateToTopicsEdit
 import uk.govuk.app.topics.navigation.topicsGraph
 import uk.govuk.app.topics.ui.widget.TopicsWidget
+import uk.govuk.app.visited.ui.widget.VisitedWidget
 
 @Composable
 internal fun GovUkApp() {
@@ -245,6 +246,9 @@ private fun homeScreenWidgets(
                     modifier = modifier
                 )
             }
+        },
+        { modifier ->
+            VisitedWidget(modifier)
         },
         { modifier ->
             if (isTopicsEnabled) {
