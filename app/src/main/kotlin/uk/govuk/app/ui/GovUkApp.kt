@@ -54,6 +54,8 @@ import uk.govuk.app.topics.navigation.navigateToTopicsAll
 import uk.govuk.app.topics.navigation.navigateToTopicsEdit
 import uk.govuk.app.topics.navigation.topicsGraph
 import uk.govuk.app.topics.ui.widget.TopicsWidget
+import uk.govuk.app.visited.navigation.VISITED_GRAPH_ROUTE
+import uk.govuk.app.visited.navigation.visitedGraph
 import uk.govuk.app.visited.ui.widget.VisitedWidget
 
 @Composable
@@ -233,6 +235,7 @@ private fun BottomNavScaffold(
                     navController = navController,
                     modifier = Modifier.padding(paddingValues)
                 )
+                visitedGraph(navController)
             }
         }
     }
@@ -257,7 +260,13 @@ private fun homeScreenWidgets(
             }
         },
         { modifier ->
-            VisitedWidget(modifier)
+            VisitedWidget(
+                onClick = { text ->
+                    onClick(text)
+                    navController.navigate(VISITED_GRAPH_ROUTE)
+                },
+                modifier = modifier
+            )
         },
         { modifier ->
             if (isTopicsEnabled) {
