@@ -183,6 +183,28 @@ class AnalyticsClientTest {
     }
 
     @Test
+    fun `Given a visited item click, then log event`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
+        analyticsClient.visitedItemClick("visited item title", "visited item link")
+
+        verify {
+            analyticsLogger.logEvent(
+                true,
+                AnalyticsEvent(
+                    eventType = "Navigation",
+                    parameters = mapOf(
+                        "type" to "VisitedItem",
+                        "external" to true,
+                        "language" to Locale.getDefault().language,
+                        "text" to "visited item title",
+                        "url" to "visited item link"
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
     fun `Given a tab click, then log event`() {
         val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.tabClick("text")

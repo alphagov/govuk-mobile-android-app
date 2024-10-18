@@ -33,23 +33,14 @@ internal class VisitedViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<VisitedUiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
 
-    init {
+    private fun loadVisitedItems() {
         viewModelScope.launch {
-            _uiState.value =
-                VisitedUiState(
-                    listOf(
-                        VisitedUi("GOV.UK", "https://www.gov.uk", "24 July 2024"),
-                        VisitedUi("Amazon UK", "https://www.amazon.co.uk", "24 July 2024"),
-                        VisitedUi("BBC", "https://www.bbc.co.uk", "10 July 2024"),
-                        VisitedUi("Slack", "https://slack.com", "2 October 2023"),
-                        VisitedUi("Trello", "https://trello.com", "1 October 2023"),
-                        VisitedUi("Google", "https://google.com", "1 October 2023")
-                    )
-                )
+            _uiState.value = VisitedUiState(visited = emptyList())
         }
     }
 
     fun onPageView() {
+        loadVisitedItems()
         analytics.screenView(
             screenClass = SCREEN_CLASS,
             screenName = SCREEN_NAME,
