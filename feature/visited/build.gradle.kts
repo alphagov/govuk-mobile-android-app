@@ -13,6 +13,7 @@ android {
 
     defaultConfig {
         minSdk = Version.MIN_SDK
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     compileOptions {
@@ -29,6 +30,7 @@ dependencies {
     implementation(projects.design)
     implementation(projects.analytics)
 
+    implementation(libs.androidx.navigation.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material3)
     implementation(libs.androidx.hilt.navigation.compose)
@@ -38,6 +40,7 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
+    testImplementation(libs.coroutine.test)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
