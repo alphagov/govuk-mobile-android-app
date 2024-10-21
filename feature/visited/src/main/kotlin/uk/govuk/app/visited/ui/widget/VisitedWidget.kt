@@ -28,8 +28,10 @@ fun VisitedWidget(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
+        val widgetTitle = stringResource(uk.govuk.app.visited.R.string.visited_items_title)
+
         OutlinedCard(
-            onClick = { onClick("Visited") },
+            onClick = { onClick(widgetTitle) },
             colors = CardDefaults.cardColors(
                 containerColor = GovUkTheme.colourScheme.surfaces.card
             ),
@@ -51,7 +53,7 @@ fun VisitedWidget(
                         .padding(end = GovUkTheme.spacing.small)
                 )
                 BodyBoldLabel(
-                    stringResource(uk.govuk.app.visited.R.string.visited_items_title),
+                    widgetTitle,
                     modifier = Modifier.weight(1f)
                 )
                 Icon(
