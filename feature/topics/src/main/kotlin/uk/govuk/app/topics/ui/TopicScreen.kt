@@ -6,22 +6,22 @@ import uk.govuk.app.design.ui.component.Title1BoldLabel
 
 @Composable
 internal fun TopicRoute(
-    title: String,
+    ref: String?,
     modifier: Modifier = Modifier
 ) {
     TopicScreen(
-        title = title,
+        ref = ref,
         modifier = modifier
     )
 }
 
 @Composable
 private fun TopicScreen(
-    title: String,
+    ref: String?,
     modifier: Modifier = Modifier
 ) {
     Title1BoldLabel(
-        text = title,
+        text = ref ?: "",
         modifier = modifier
     )
 }

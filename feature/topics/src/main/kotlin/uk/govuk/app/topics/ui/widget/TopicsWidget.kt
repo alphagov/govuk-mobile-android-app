@@ -32,7 +32,7 @@ import uk.govuk.app.topics.ui.model.TopicUi
 
 @Composable
 fun TopicsWidget(
-    onTopicClick: (String) -> Unit,
+    onTopicClick: (String, String) -> Unit,
     onEditClick: (String) -> Unit,
     onAllClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -57,7 +57,7 @@ fun TopicsWidget(
 private fun TopicsWidgetContent(
     topics: List<TopicUi>,
     displayShowAll: Boolean,
-    onTopicClick: (String) -> Unit,
+    onTopicClick: (String, String) -> Unit,
     onEditClick: (String) -> Unit,
     onAllClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -103,7 +103,7 @@ private fun TopicsWidgetContent(
 @Composable
 private fun TopicsGrid(
     topics: List<TopicUi>,
-    onClick: (String) -> Unit,
+    onClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val windowWidthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
@@ -136,7 +136,7 @@ private fun TopicsRow(
     topics: List<TopicUi>,
     columnCount: Int,
     rowIndex: Int,
-    onClick: (String) -> Unit,
+    onClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -153,7 +153,7 @@ private fun TopicsRow(
                 TopicVerticalCard(
                     icon = topic.icon,
                     title = topic.title,
-                    onClick = onClick,
+                    onClick = { onClick(topic.ref, topic.title) },
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f)
@@ -219,7 +219,7 @@ private fun TopicsWidgetPreview() {
                 ),
             ),
             displayShowAll = true,
-            onTopicClick = { },
+            onTopicClick = { _, _ -> },
             onEditClick = { },
             onAllClick = { }
         )

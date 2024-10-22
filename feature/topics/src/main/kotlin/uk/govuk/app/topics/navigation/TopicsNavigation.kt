@@ -11,7 +11,7 @@ import uk.govuk.app.topics.ui.TopicRoute
 
 const val TOPICS_GRAPH_ROUTE = "topics_graph_route"
 const val TOPIC_ROUTE = "topic_route"
-private const val TOPIC_TITLE_ARG = "title"
+private const val TOPIC_REF_ARG = "ref"
 private const val TOPICS_EDIT_ROUTE = "topics_edit_route"
 const val TOPICS_ALL_ROUTE = "topics_all_route"
 
@@ -24,11 +24,11 @@ fun NavGraphBuilder.topicsGraph(
         startDestination = TOPIC_ROUTE
     ) {
         composable(
-            "$TOPIC_ROUTE/{$TOPIC_TITLE_ARG}"
+            "$TOPIC_ROUTE/{$TOPIC_REF_ARG}"
         ) { backStackEntry ->
-            val title = backStackEntry.arguments?.getString(TOPIC_TITLE_ARG)
+            val ref = backStackEntry.arguments?.getString(TOPIC_REF_ARG)
             TopicRoute(
-                title = title ?: "",
+                ref = ref,
                 modifier = modifier
             )
         }
@@ -47,8 +47,8 @@ fun NavGraphBuilder.topicsGraph(
     }
 }
 
-fun NavController.navigateToTopic(title: String) {
-    navigate("$TOPIC_ROUTE/$title")
+fun NavController.navigateToTopic(ref: String) {
+    navigate("$TOPIC_ROUTE/$ref")
 }
 
 fun NavController.navigateToTopicsEdit() {

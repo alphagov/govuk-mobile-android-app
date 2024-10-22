@@ -268,9 +268,9 @@ private fun homeScreenWidgets(
         { modifier ->
             if (isTopicsEnabled) {
                 TopicsWidget(
-                    onTopicClick = { title ->
+                    onTopicClick = { ref, title ->
                         onClick(title)
-                        navController.navigateToTopic(title)
+                        navController.navigateToTopic(ref)
                     },
                     onEditClick = { text ->
                         onClick(text)
