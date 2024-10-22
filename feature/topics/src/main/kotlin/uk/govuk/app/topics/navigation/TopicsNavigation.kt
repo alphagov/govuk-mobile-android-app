@@ -3,7 +3,9 @@ package uk.govuk.app.topics.navigation
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import uk.govuk.app.topics.ui.AllTopicsRoute
 import uk.govuk.app.topics.ui.EditTopicsRoute
@@ -11,7 +13,7 @@ import uk.govuk.app.topics.ui.TopicRoute
 
 const val TOPICS_GRAPH_ROUTE = "topics_graph_route"
 const val TOPIC_ROUTE = "topic_route"
-private const val TOPIC_REF_ARG = "ref"
+internal const val TOPIC_REF_ARG = "ref"
 private const val TOPICS_EDIT_ROUTE = "topics_edit_route"
 const val TOPICS_ALL_ROUTE = "topics_all_route"
 
@@ -24,11 +26,10 @@ fun NavGraphBuilder.topicsGraph(
         startDestination = TOPIC_ROUTE
     ) {
         composable(
-            "$TOPIC_ROUTE/{$TOPIC_REF_ARG}"
+            "$TOPIC_ROUTE/{$TOPIC_REF_ARG}",
+            arguments = listOf(navArgument(TOPIC_REF_ARG) { type = NavType.StringType })
         ) { backStackEntry ->
-            val ref = backStackEntry.arguments?.getString(TOPIC_REF_ARG)
             TopicRoute(
-                ref = ref,
                 modifier = modifier
             )
         }
