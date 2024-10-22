@@ -91,7 +91,7 @@ fun SearchCard(
 fun TopicVerticalCard(
     @DrawableRes icon: Int,
     title: String,
-    onClick: (String) -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     OutlinedCard(
@@ -106,7 +106,7 @@ fun TopicVerticalCard(
     ) {
         Column(
             Modifier
-                .clickable { onClick(title) }
+                .clickable { onClick() }
                 .padding(GovUkTheme.spacing.medium)
         ){
             Icon(

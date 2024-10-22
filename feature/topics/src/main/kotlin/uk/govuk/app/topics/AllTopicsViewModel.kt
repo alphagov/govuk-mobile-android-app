@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.topics.data.TopicsRepo
-import uk.govuk.app.topics.extension.toTopicUi
-import uk.govuk.app.topics.ui.model.TopicUi
+import uk.govuk.app.topics.extension.toTopicItemUi
+import uk.govuk.app.topics.ui.model.TopicItemUi
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,14 +23,14 @@ internal class AllTopicsViewModel @Inject constructor(
         private const val SCREEN_NAME = "All Topics"
     }
 
-    private val _topics: MutableStateFlow<List<TopicUi>?> = MutableStateFlow(null)
+    private val _topics: MutableStateFlow<List<TopicItemUi>?> = MutableStateFlow(null)
     val topics = _topics.asStateFlow()
 
     init {
         viewModelScope.launch {
             topicsRepo.selectInitialTopics()
             topicsRepo.topics.collect { topics ->
-                _topics.value = topics.map { topicItem -> topicItem.toTopicUi() }
+                _topics.value = topics.map { topicItem -> topicItem.toTopicItemUi() }
             }
         }
     }

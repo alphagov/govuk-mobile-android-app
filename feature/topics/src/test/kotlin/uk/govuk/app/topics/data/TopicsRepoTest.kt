@@ -8,26 +8,31 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 import retrofit2.Response
 import uk.govuk.app.topics.data.local.TopicsLocalDataSource
 import uk.govuk.app.topics.data.local.model.LocalTopicItem
 import uk.govuk.app.topics.data.remote.TopicsApi
+import uk.govuk.app.topics.data.remote.model.RemoteTopic
 import uk.govuk.app.topics.data.remote.model.RemoteTopicItem
 import uk.govuk.app.topics.domain.model.TopicItem
+import java.io.IOException
 
 class TopicsRepoTest{
 
     private val topicsApi = mockk<TopicsApi>(relaxed = true)
     private val localDataSource = mockk<TopicsLocalDataSource>(relaxed = true)
-    private val response = mockk<Response<List<RemoteTopicItem>>>(relaxed = true)
+    private val topicsResponse = mockk<Response<List<RemoteTopicItem>>>(relaxed = true)
+    private val topicResponse = mockk<Response<RemoteTopic>>(relaxed = true)
+    private val topic = mockk<RemoteTopic>(relaxed = true)
 
     @Test
     fun `Given the local data source is empty, when get topics, then emit selected topic items`() {
         every { localDataSource.topics } returns flowOf(emptyList())
-        coEvery { topicsApi.getTopics() } returns response
-        coEvery { response.isSuccessful } returns true
-        coEvery { response.body() } returns listOf(
+        coEvery { topicsApi.getTopics() } returns topicsResponse
+        coEvery { topicsResponse.isSuccessful } returns true
+        coEvery { topicsResponse.body() } returns listOf(
             RemoteTopicItem("ref1", "title"),
             RemoteTopicItem("ref2", "title")
         )
@@ -60,9 +65,9 @@ class TopicsRepoTest{
                 }
             )
         )
-        coEvery { topicsApi.getTopics() } returns response
-        coEvery { response.isSuccessful } returns true
-        coEvery { response.body() } returns listOf(
+        coEvery { topicsApi.getTopics() } returns topicsResponse
+        coEvery { topicsResponse.isSuccessful } returns true
+        coEvery { topicsResponse.body() } returns listOf(
             RemoteTopicItem("ref1", "title"),
             RemoteTopicItem("ref2", "title"),
             RemoteTopicItem("ref3", "title")
@@ -86,9 +91,9 @@ class TopicsRepoTest{
     @Test
     fun `Given the local data source is empty, when select initial topics, then select all in the local data source`() {
         every { localDataSource.topics } returns flowOf(emptyList())
-        coEvery { topicsApi.getTopics() } returns response
-        coEvery { response.isSuccessful } returns true
-        coEvery { response.body() } returns listOf(
+        coEvery { topicsApi.getTopics() } returns topicsResponse
+        coEvery { topicsResponse.isSuccessful } returns true
+        coEvery { topicsResponse.body() } returns listOf(
             RemoteTopicItem("ref1", "title"),
             RemoteTopicItem("ref2", "title")
         )
@@ -145,54 +150,53 @@ class TopicsRepoTest{
         }
     }
 
-    /*
     @Test
-    fun `Given a successful topics response with a body, then return topics`() {
-        coEvery { topicsApi.getTopics() } returns response
-        coEvery { response.isSuccessful } returns true
-        coEvery { response.body() } returns topics
+    fun `Given a successful topic response with a body, then return topic`() {
+        coEvery { topicsApi.getTopic("ref") } returns topicResponse
+        coEvery { topicResponse.isSuccessful } returns true
+        coEvery { topicResponse.body() } returns topic
 
         val repo = TopicsRepo(topicsApi, localDataSource)
 
         runTest {
-            assertEquals(repo.getTopics(), topics)
+            val blah = repo.getTopic("ref")
+            assertEquals(blah, topic)
         }
     }
 
     @Test
-    fun `Given a successful topics response with an empty body, then return null`() {
-        coEvery { topicsApi.getTopics() } returns response
-        coEvery { response.isSuccessful } returns true
-        coEvery { response.body() } returns null
+    fun `Given a successful topic response with an empty body, then return null`() {
+        coEvery { topicsApi.getTopic("ref") } returns topicResponse
+        coEvery { topicResponse.isSuccessful } returns true
+        coEvery { topicResponse.body() } returns null
 
         val repo = TopicsRepo(topicsApi, localDataSource)
 
         runTest {
-            assertNull(repo.getTopics())
+            assertNull(repo.getTopic("ref"))
         }
     }
 
     @Test
     fun `Given an unsuccessful config response, then return null`() {
-        coEvery { topicsApi.getTopics() } returns response
-        coEvery { response.isSuccessful } returns false
+        coEvery { topicsApi.getTopic("ref") } returns topicResponse
+        coEvery { topicResponse.isSuccessful } returns false
 
         val repo = TopicsRepo(topicsApi, localDataSource)
 
         runTest {
-            assertNull(repo.getTopics())
+            assertNull(repo.getTopic("ref"))
         }
     }
 
     @Test
     fun `Given an exception is thrown fetching the topics response, then return null`() {
-        coEvery { topicsApi.getTopics() } throws IOException()
+        coEvery { topicsApi.getTopic("ref") } throws IOException()
 
         val repo = TopicsRepo(topicsApi, localDataSource)
 
         runTest {
-            assertNull(repo.getTopics())
+            assertNull(repo.getTopic("ref"))
         }
     }
-     */
 }

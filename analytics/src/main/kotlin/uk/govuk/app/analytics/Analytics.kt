@@ -8,7 +8,12 @@ interface Analytics {
     suspend fun enable()
     suspend fun disable()
     fun pageIndicatorClick()
-    fun buttonClick(text: String)
+    fun buttonClick(
+        text: String,
+        url: String? = null,
+        external: Boolean = false,
+        section: String? = null
+    )
     fun tabClick(text: String)
     fun widgetClick(text: String)
     fun search(searchTerm: String)

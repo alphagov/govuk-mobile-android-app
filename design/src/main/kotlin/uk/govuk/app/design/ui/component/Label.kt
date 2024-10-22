@@ -339,8 +339,7 @@ fun ListHeadingLabel(
     Title3BoldLabel(
         text = text,
         modifier = modifier.padding(
-            top = GovUkTheme.spacing.medium,
-            start = GovUkTheme.spacing.extraLarge,
+            start = GovUkTheme.spacing.medium,
             end = GovUkTheme.spacing.medium
         )
     )

@@ -2,9 +2,9 @@ package uk.govuk.app.topics.extension
 
 import uk.govuk.app.design.R
 import uk.govuk.app.topics.domain.model.TopicItem
-import uk.govuk.app.topics.ui.model.TopicUi
+import uk.govuk.app.topics.ui.model.TopicItemUi
 
-internal fun TopicItem.toTopicUi(): TopicUi {
+internal fun TopicItem.toTopicItemUi(): TopicItemUi {
     val icon = when (ref) {
         "benefits" -> R.drawable.ic_topic_benefits
         "business" -> R.drawable.ic_topic_business
@@ -20,7 +20,7 @@ internal fun TopicItem.toTopicUi(): TopicUi {
         else -> R.drawable.ic_topic_default
     }
 
-    return TopicUi(
+    return TopicItemUi(
         ref = ref,
         icon = icon,
         title = title,

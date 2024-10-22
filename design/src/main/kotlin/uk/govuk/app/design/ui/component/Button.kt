@@ -25,6 +25,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -198,15 +199,15 @@ private fun BaseButton(
         interactionSource = interactionSource
     ) {
         Text(text = text, style = textStyle)
-        if (externalLink) NewTabIcon()
+        if (externalLink) ExternalLinkIcon()
     }
 }
 
 @Composable
-private fun NewTabIcon() {
+private fun ExternalLinkIcon() {
     Icon(
-        painter = painterResource(id = R.drawable.baseline_open_in_new_24),
-        contentDescription = "Opens link in a new tab",
+        painter = painterResource(id = R.drawable.ic_external_link),
+        contentDescription = stringResource(R.string.opens_in_web_browser),
         modifier = Modifier
             .padding(start = GovUkTheme.spacing.small)
             .testTag("openInNewTabIcon")

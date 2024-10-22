@@ -4,13 +4,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Rect
@@ -19,20 +22,126 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import uk.govuk.app.design.R
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
-fun CardListItem(
-    index: Int,
-    lastIndex: Int,
-    onClick: (() -> Unit)? = null,
-    content: @Composable () -> Unit
+fun InternalLinkListItem(
+    title: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    isFirst: Boolean = true,
+    isLast: Boolean = true
 ) {
-    val borderWidth = 1.dp
-    val cornerRadius: Dp = 12.dp
+    CardListItem(
+        modifier = modifier,
+        onClick = onClick,
+        isFirst = isFirst,
+        isLast = isLast
+    ) {
+        Row(
+            modifier = Modifier.padding(all = GovUkTheme.spacing.medium),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BodyRegularLabel(
+                text = title,
+                modifier = Modifier.weight(1f)
+            )
+
+            MediumHorizontalSpacer()
+
+            Icon(
+                painter = painterResource(R.drawable.ic_chevron),
+                contentDescription = null,
+                tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
+            )
+        }
+    }
+}
+
+@Composable
+fun ExternalLinkListItem(
+    title: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    isFirst: Boolean = true,
+    isLast: Boolean = true
+) {
+    CardListItem(
+        modifier = modifier,
+        onClick = onClick,
+        isFirst = isFirst,
+        isLast = isLast
+    ) {
+        Row(
+            modifier = Modifier.padding(all = GovUkTheme.spacing.medium),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BodyRegularLabel(
+                text = title,
+                modifier = Modifier.weight(1f),
+                color = GovUkTheme.colourScheme.textAndIcons.link,
+            )
+
+            MediumHorizontalSpacer()
+
+            Icon(
+                painter = painterResource(R.drawable.ic_external_link),
+                contentDescription = stringResource(R.string.opens_in_web_browser),
+                tint = GovUkTheme.colourScheme.textAndIcons.link
+            )
+        }
+    }
+}
+
+@Composable
+fun ToggleListItem(
+    title: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    isFirst: Boolean = true,
+    isLast: Boolean = true
+) {
+    CardListItem(
+        modifier = modifier,
+        isFirst = isFirst,
+        isLast = isLast
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = GovUkTheme.spacing.medium)
+                .padding(vertical = GovUkTheme.spacing.small),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BodyRegularLabel(
+                text = title,
+                modifier = Modifier.weight(1f)
+            )
+
+            MediumHorizontalSpacer()
+
+            ToggleSwitch(
+                checked = checked,
+                onCheckedChange = onCheckedChange
+            )
+        }
+    }
+}
+
+@Composable
+fun CardListItem(
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+    isFirst: Boolean = true,
+    isLast: Boolean = true,
+    content: @Composable () -> Unit,
+) {
     val borderColor = GovUkTheme.colourScheme.strokes.listDivider
     val backgroundColor = GovUkTheme.colourScheme.surfaces.card
     val backgroundColorHighlight = GovUkTheme.colourScheme.surfaces.cardHighlight
@@ -48,7 +157,7 @@ fun CardListItem(
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .clickable(
                 interactionSource = interactionSource,
                 indication = null
@@ -59,57 +168,167 @@ fun CardListItem(
                 }
             }
             .drawBehind {
-                when (index) {
-                    0 -> {
-                        firstCell(
-                            borderWidth = borderWidth.toPx(),
-                            cornerRadius = cornerRadius.toPx(),
-                            borderColor = borderColor,
-                            backgroundColor = backgroundColor,
-                            backgroundColorHighlight = backgroundColorHighlight,
-                            isClicked = isClicked
-                        )
-                    }
-                    lastIndex -> {
-                        lastCell(
-                            borderWidth = borderWidth.toPx(),
-                            cornerRadius = cornerRadius.toPx(),
-                            borderColor = borderColor,
-                            backgroundColor = backgroundColor,
-                            backgroundColorHighlight = backgroundColorHighlight,
-                            isClicked = isClicked
-                        )
-                    }
-                    else -> {
-                        intermediateCell(
-                            borderWidth = borderWidth.toPx(),
-                            borderColor = borderColor,
-                            backgroundColor = backgroundColor,
-                            backgroundColorHighlight = backgroundColorHighlight,
-                            isClicked = isClicked
-                        )
-                    }
-                }
+                drawCell(
+                    isFirst = isFirst,
+                    isLast = isLast,
+                    borderColor = borderColor,
+                    backgroundColor = backgroundColor,
+                    backgroundColorHighlight = backgroundColorHighlight,
+                    isClicked = isClicked
+                )
             }
-            .padding(
-                start = GovUkTheme.spacing.medium,
-                top = GovUkTheme.spacing.small,
-                end = GovUkTheme.spacing.medium
-            ),
     ) {
         Column {
             content()
 
-            if (index < lastIndex) {
-                ListDivider(
-                    Modifier.padding(
-                        top = GovUkTheme.spacing.small,
-                        bottom = 1.dp,
-                    )
-                )
+            if (!isLast) {
+                ListDivider(Modifier.padding(horizontal = GovUkTheme.spacing.medium))
             }
         }
     }
+}
+
+private fun DrawScope.drawCell(
+    isFirst: Boolean,
+    isLast: Boolean,
+    borderColor: Color,
+    backgroundColor: Color,
+    backgroundColorHighlight: Color,
+    isClicked: Boolean
+) {
+    val borderWidth = 1.dp
+    val cornerRadius: Dp = 12.dp
+
+    when {
+        isFirst && isLast ->
+            singleCell(
+                borderWidth = borderWidth.toPx(),
+                cornerRadius = cornerRadius.toPx(),
+                borderColor = borderColor,
+                backgroundColor = backgroundColor,
+                backgroundColorHighlight = backgroundColorHighlight,
+                isClicked = isClicked
+            )
+        isFirst ->
+            firstCell(
+                borderWidth = borderWidth.toPx(),
+                cornerRadius = cornerRadius.toPx(),
+                borderColor = borderColor,
+                backgroundColor = backgroundColor,
+                backgroundColorHighlight = backgroundColorHighlight,
+                isClicked = isClicked
+            )
+        isLast ->
+            lastCell(
+                borderWidth = borderWidth.toPx(),
+                cornerRadius = cornerRadius.toPx(),
+                borderColor = borderColor,
+                backgroundColor = backgroundColor,
+                backgroundColorHighlight = backgroundColorHighlight,
+                isClicked = isClicked
+            )
+        else ->
+            intermediateCell(
+                borderWidth = borderWidth.toPx(),
+                borderColor = borderColor,
+                backgroundColor = backgroundColor,
+                backgroundColorHighlight = backgroundColorHighlight,
+                isClicked = isClicked
+            )
+    }
+}
+
+private fun DrawScope.singleCell(
+    borderWidth: Float,
+    cornerRadius: Float,
+    borderColor: Color,
+    backgroundColor: Color,
+    backgroundColorHighlight: Color,
+    isClicked: Boolean
+) {
+    // Path for top, bottom and side borders with rounded corners
+    val path = Path().apply {
+        // Start at bottom left
+        moveTo(0f, size.height - cornerRadius)
+
+        // Line to top left
+        lineTo(0f, 0f + cornerRadius)
+
+        // Top left corner
+        arcTo(
+            rect = Rect(
+                0f,
+                0f,
+                cornerRadius * 2,
+                cornerRadius * 2
+            ),
+            startAngleDegrees = 180f,
+            sweepAngleDegrees = 90f,
+            forceMoveTo = false
+        )
+
+        // Line to top right
+        lineTo(size.width - cornerRadius, 0f)
+
+        // Top right corner
+        arcTo(
+            rect = Rect(
+                size.width - cornerRadius * 2,
+                0f,
+                size.width,
+                cornerRadius * 2
+            ),
+            startAngleDegrees = -90f,
+            sweepAngleDegrees = 90f,
+            forceMoveTo = false
+        )
+
+        // Line to bottom right
+        lineTo(size.width, size.height - cornerRadius)
+
+        // Bottom right corner
+        arcTo(
+            rect = Rect(
+                size.width - 2 * cornerRadius,
+                size.height - 2 * cornerRadius,
+                size.width,
+                size.height
+            ),
+            startAngleDegrees = 0f,
+            sweepAngleDegrees = 90f,
+            forceMoveTo = false
+        )
+
+        // Line to bottom left
+        lineTo(cornerRadius, size.height)
+
+        // Bottom left corner
+        arcTo(
+            rect = Rect(
+                0f,
+                size.height - 2 * cornerRadius,
+                2 * cornerRadius,
+                size.height
+            ),
+            startAngleDegrees = 90f,
+            sweepAngleDegrees = 90f,
+            forceMoveTo = false
+        )
+    }
+
+    // Draw background colour
+    drawPath(
+        path = path,
+        color = if (isClicked) backgroundColorHighlight else backgroundColor,
+        style = Fill
+    )
+
+    // Draw the path as a border
+    drawPath(
+        path = path,
+        color = borderColor,
+        style = Stroke(width = borderWidth)
+    )
 }
 
 private fun DrawScope.firstCell(
@@ -228,7 +447,7 @@ private fun DrawScope.lastCell(
         // Line to bottom right
         lineTo(size.width, size.height - cornerRadius)
 
-        // Bottom-right corner (arc for rounding)
+        // Bottom right corner
         arcTo(
             rect = Rect(
                 size.width - 2 * cornerRadius,
@@ -244,7 +463,7 @@ private fun DrawScope.lastCell(
         // Line to bottom left
         lineTo(cornerRadius, size.height)
 
-        // Bottom-left corner (arc for rounding)
+        // Bottom left corner
         arcTo(
             rect = Rect(
                 0f,

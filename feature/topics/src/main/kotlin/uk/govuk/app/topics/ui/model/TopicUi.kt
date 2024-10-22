@@ -1,10 +1,20 @@
 package uk.govuk.app.topics.ui.model
 
-import androidx.annotation.DrawableRes
-
 internal data class TopicUi(
-    val ref: String,
-    @DrawableRes val icon: Int,
     val title: String,
-    val isSelected: Boolean
-)
+    val description: String?,
+    val subtopics: List<Subtopic>,
+    val popularPages: List<TopicContent>,
+    val stepBySteps: List<TopicContent>,
+    val displayStepByStepSeeAll: Boolean
+) {
+    data class Subtopic(
+        val ref: String,
+        val title: String
+    )
+
+    data class TopicContent(
+        val url: String,
+        val title: String
+    )
+}

@@ -17,7 +17,7 @@ import uk.govuk.app.design.ui.component.TopicHorizontalCard
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.AllTopicsViewModel
 import uk.govuk.app.topics.R
-import uk.govuk.app.topics.ui.model.TopicUi
+import uk.govuk.app.topics.ui.model.TopicItemUi
 
 @Composable
 internal fun AllTopicsRoute(
@@ -42,7 +42,7 @@ internal fun AllTopicsRoute(
 
 @Composable
 private fun AllTopicsScreen(
-    topics: List<TopicUi>?,
+    topics: List<TopicItemUi>?,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
     onClick: (String) -> Unit,
