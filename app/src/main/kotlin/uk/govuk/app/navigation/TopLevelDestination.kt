@@ -8,6 +8,7 @@ import uk.govuk.app.design.R.drawable.ic_settings
 import uk.govuk.app.home.navigation.HOME_GRAPH_ROUTE
 import uk.govuk.app.settings.navigation.SETTINGS_GRAPH_ROUTE
 import uk.govuk.app.topics.navigation.TOPICS_ALL_ROUTE
+import uk.govuk.app.topics.navigation.TOPIC_ROUTE
 
 
 internal sealed class TopLevelDestination(
@@ -20,7 +21,7 @@ internal sealed class TopLevelDestination(
         route =  HOME_GRAPH_ROUTE,
         stringResId = R.string.home,
         icon = ic_home,
-        associatedRoutes = listOf(TOPICS_ALL_ROUTE)
+        associatedRoutes = listOf(TOPICS_ALL_ROUTE, TOPIC_ROUTE)
         )
 
     internal data object Settings : TopLevelDestination(

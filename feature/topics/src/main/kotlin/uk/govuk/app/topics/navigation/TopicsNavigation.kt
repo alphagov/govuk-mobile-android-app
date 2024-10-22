@@ -10,7 +10,7 @@ import uk.govuk.app.topics.ui.EditTopicsRoute
 import uk.govuk.app.topics.ui.TopicRoute
 
 const val TOPICS_GRAPH_ROUTE = "topics_graph_route"
-private const val TOPIC_ROUTE = "topic_route"
+const val TOPIC_ROUTE = "topic_route"
 private const val TOPIC_TITLE_ARG = "title"
 private const val TOPICS_EDIT_ROUTE = "topics_edit_route"
 const val TOPICS_ALL_ROUTE = "topics_all_route"
