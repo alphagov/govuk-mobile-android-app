@@ -4,3 +4,4 @@
 }
 
 -keep class uk.govuk.app.topics.data.remote.model.RemoteTopicItem
+-keep class uk.govuk.app.topics.data.remote.model.RemoteTopic
