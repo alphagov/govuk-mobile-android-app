@@ -1,7 +1,6 @@
 package uk.govuk.app.topics.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -9,16 +8,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
-import uk.govuk.app.design.ui.component.CardListItem
 import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.ExtraLargeVerticalSpacer
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
-import uk.govuk.app.design.ui.component.ToggleSwitch
+import uk.govuk.app.design.ui.component.ToggleListItem
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.EditTopicsViewModel
 import uk.govuk.app.topics.R
@@ -81,31 +78,19 @@ private fun EditTopicsScreen(
 
             if (!topics.isNullOrEmpty()) {
                 itemsIndexed(topics) { index, topic ->
-                    CardListItem(
+                    ToggleListItem(
+                        title = topic.title,
+                        checked = topic.isSelected,
+                        onCheckedChange = { checked ->
+                            onTopicSelectedChanged(
+                                topic.ref,
+                                topic.title,
+                                checked
+                            )
+                        },
                         index = index,
                         lastIndex = topics.lastIndex
-                    ) {
-                        // Todo - extract into design module
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            BodyRegularLabel(
-                                text = topic.title,
-                                modifier = Modifier.weight(1f)
-                            )
-
-                            ToggleSwitch(
-                                checked = topic.isSelected,
-                                onCheckedChange = { checked ->
-                                    onTopicSelectedChanged(
-                                        topic.ref,
-                                        topic.title,
-                                        checked
-                                    )
-                                }
-                            )
-                        }
-                    }
+                    )
                 }
 
                 item {

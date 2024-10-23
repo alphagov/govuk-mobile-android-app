@@ -30,7 +30,7 @@ import uk.govuk.app.design.ui.component.ListHeadingLabel
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.TabHeader
-import uk.govuk.app.design.ui.component.ToggleSwitch
+import uk.govuk.app.design.ui.component.ToggleListItem
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.settings.R
 import uk.govuk.app.settings.SettingsViewModel
@@ -187,32 +187,11 @@ private fun PrivacyAndLegal(
 
         SmallVerticalSpacer()
 
-        OutlinedCard(
-            colors = CardDefaults.cardColors(
-                containerColor = GovUkTheme.colourScheme.surfaces.card
-            ),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                Modifier.padding(
-                    top = GovUkTheme.spacing.small,
-                    bottom = GovUkTheme.spacing.small,
-                    start = GovUkTheme.spacing.medium,
-                    end = GovUkTheme.spacing.medium
-                ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BodyRegularLabel(
-                    text = stringResource(R.string.share_setting),
-                    modifier = Modifier.weight(1f),
-                )
-
-                ToggleSwitch(
-                    checked = isAnalyticsEnabled,
-                    onCheckedChange = onAnalyticsConsentChange,
-                )
-            }
-        }
+        ToggleListItem(
+            title = stringResource(R.string.share_setting),
+            checked = isAnalyticsEnabled,
+            onCheckedChange = onAnalyticsConsentChange
+        )
 
         CaptionRegularLabel(
             text = stringResource(R.string.privacy_description),
