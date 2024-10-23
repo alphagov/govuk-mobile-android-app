@@ -27,10 +27,12 @@ import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.ExtraLargeVerticalSpacer
+import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.SubheadlineRegularLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.visited.R
 import uk.govuk.app.visited.VisitedViewModel
+import uk.govuk.app.visited.data.capitaliseMonth
 import uk.govuk.app.visited.ui.model.VisitedUi
 
 @Composable
@@ -112,73 +114,84 @@ private fun NoVisitedItems(
 
 @Composable
 private fun ShowVisitedItems(
-    items: List<VisitedUi>?,
+    items: Map<String, List<VisitedUi>>?,
     viewModel: VisitedViewModel,
     modifier: Modifier = Modifier
 ) {
     val lastVisitedText = stringResource(R.string.visited_items_last_visited)
 
-    items?.forEach { item ->
-        val title = item.title
-        val lastVisited = item.lastVisited
-        val url = item.url
-        val context = LocalContext.current
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse(url)
-
-        OutlinedCard(
-            colors = CardDefaults.cardColors(
-                containerColor = GovUkTheme.colourScheme.surfaces.card
-            ),
-            modifier = modifier.padding(
-                GovUkTheme.spacing.medium,
-                GovUkTheme.spacing.medium,
-                GovUkTheme.spacing.medium,
-                0.dp
+    items?.forEach { (sectionTitle, visitedItems) ->
+        if (visitedItems.isNotEmpty()) {
+            BodyBoldLabel(
+                capitaliseMonth(sectionTitle),
+                modifier = Modifier.padding(start = GovUkTheme.spacing.large)
             )
-                .fillMaxWidth()
-                .clickable(
-                    onClick = {
-                        viewModel.onVisitedItemClicked(title, url)
-                        context.startActivity(intent)
+
+            visitedItems?.forEach { item ->
+                val title = item.title
+                val lastVisited = item.lastVisited
+                val url = item.url
+                val context = LocalContext.current
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = Uri.parse(url)
+
+                OutlinedCard(
+                    colors = CardDefaults.cardColors(
+                        containerColor = GovUkTheme.colourScheme.surfaces.card
+                    ),
+                    modifier = modifier.padding(
+                        GovUkTheme.spacing.medium,
+                        GovUkTheme.spacing.medium,
+                        GovUkTheme.spacing.medium,
+                        0.dp
+                    )
+                        .fillMaxWidth()
+                        .clickable(
+                            onClick = {
+                                viewModel.onVisitedItemClicked(title, url)
+                                context.startActivity(intent)
+                            }
+                        ),
+                ) {
+                    Row(
+                        modifier.padding(
+                            GovUkTheme.spacing.medium,
+                            GovUkTheme.spacing.medium,
+                            GovUkTheme.spacing.medium,
+                            GovUkTheme.spacing.small
+                        ),
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        BodyRegularLabel(
+                            text = title,
+                            modifier = Modifier.weight(1f),
+                            color = GovUkTheme.colourScheme.textAndIcons.link,
+                        )
+
+                        Icon(
+                            painter = painterResource(
+                                uk.govuk.app.design.R.drawable.baseline_open_in_new_24
+                            ),
+                            contentDescription = stringResource(
+                                uk.govuk.app.design.R.string.opens_in_web_browser
+                            ),
+                            tint = GovUkTheme.colourScheme.textAndIcons.link
+                        )
                     }
-                ),
-        ) {
-            Row(
-                modifier.padding(
-                    GovUkTheme.spacing.medium,
-                    GovUkTheme.spacing.medium,
-                    GovUkTheme.spacing.medium,
-                    GovUkTheme.spacing.small
-                ),
-                verticalAlignment = Alignment.Top
-            ) {
-                BodyRegularLabel(
-                    text = title,
-                    modifier = Modifier.weight(1f),
-                    color = GovUkTheme.colourScheme.textAndIcons.link,
-                )
 
-                Icon(
-                    painter = painterResource(
-                        uk.govuk.app.design.R.drawable.baseline_open_in_new_24
-                    ),
-                    contentDescription = stringResource(
-                        uk.govuk.app.design.R.string.opens_in_web_browser
-                    ),
-                    tint = GovUkTheme.colourScheme.textAndIcons.link
-                )
+                    SubheadlineRegularLabel(
+                        text = "$lastVisitedText $lastVisited",
+                        modifier = modifier.padding(
+                            GovUkTheme.spacing.medium,
+                            0.dp,
+                            GovUkTheme.spacing.medium,
+                            GovUkTheme.spacing.medium
+                        )
+                    )
+                }
+
+                LargeVerticalSpacer()
             }
-
-            SubheadlineRegularLabel(
-                text = "$lastVisitedText $lastVisited",
-                modifier = modifier.padding(
-                    GovUkTheme.spacing.medium,
-                    0.dp,
-                    GovUkTheme.spacing.medium,
-                    GovUkTheme.spacing.medium
-                )
-            )
         }
     }
 }
