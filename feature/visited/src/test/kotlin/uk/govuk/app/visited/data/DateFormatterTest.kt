@@ -1,9 +1,7 @@
-package uk.govuk.app.visited
+package uk.govuk.app.visited.data
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import uk.govuk.app.visited.data.capitaliseMonth
-import uk.govuk.app.visited.data.localDateFormatter
 import java.time.LocalDate
 
 class DateFormatterTest {
@@ -30,6 +28,16 @@ class DateFormatterTest {
     @Test
     fun `Given a lower month, then you get back a capitalised month`() {
         val month = "october"
+
+        val actual = capitaliseMonth(month)
+        val expected = "October"
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `Given a capitalised month, then you get back a capitalised month`() {
+        val month = "October"
 
         val actual = capitaliseMonth(month)
         val expected = "October"
