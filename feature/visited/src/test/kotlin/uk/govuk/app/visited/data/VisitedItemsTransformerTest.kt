@@ -1,8 +1,7 @@
-package uk.govuk.app.visited
+package uk.govuk.app.visited.data
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import uk.govuk.app.visited.data.VisitedItemsTransformer
 import uk.govuk.app.visited.data.model.VisitedItem
 import java.time.LocalDate
 

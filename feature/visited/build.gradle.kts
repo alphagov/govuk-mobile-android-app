@@ -27,6 +27,15 @@ android {
     }
 }
 
+sonar {
+    properties {
+        property(
+            "sonar.coverage.exclusions",
+            properties["sonar.coverage.exclusions"].toString() + ",**/VisitedEncryptionHelper.*,**/VisitedRealmProvider.*"
+        )
+    }
+}
+
 dependencies {
     implementation(projects.design)
     implementation(projects.analytics)
