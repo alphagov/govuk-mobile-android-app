@@ -9,8 +9,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.topics.data.TopicsRepo
-import uk.govuk.app.topics.data.remote.model.RemoteTopic
+import uk.govuk.app.topics.extension.toTopicUi
 import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
+import uk.govuk.app.topics.ui.model.TopicUi
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,13 +21,13 @@ internal class TopicViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
-    private val _topic: MutableStateFlow<RemoteTopic?> = MutableStateFlow(null)
+    private val _topic: MutableStateFlow<TopicUi?> = MutableStateFlow(null)
     val topic = _topic.asStateFlow()
 
     init {
         savedStateHandle.get<String>(TOPIC_REF_ARG)?.let { ref ->
             viewModelScope.launch {
-                _topic.value = topicsRepo.fetchTopic(ref) // Todo - map to ui model
+                _topic.value = topicsRepo.fetchTopic(ref)?.toTopicUi()
             }
         }
     }

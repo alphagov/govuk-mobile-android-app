@@ -100,13 +100,10 @@ fun CardListItem(
         Column {
             content()
 
+            SmallVerticalSpacer()
+
             if (index < lastIndex) {
-                ListDivider(
-                    Modifier.padding(
-                        top = GovUkTheme.spacing.small,
-                        bottom = 1.dp,
-                    )
-                )
+                ListDivider()
             }
         }
     }

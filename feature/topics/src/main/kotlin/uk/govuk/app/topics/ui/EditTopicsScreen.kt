@@ -85,6 +85,7 @@ private fun EditTopicsScreen(
                         index = index,
                         lastIndex = topics.lastIndex
                     ) {
+                        // Todo - extract into design module
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {

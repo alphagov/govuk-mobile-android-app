@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.topics.data.TopicsRepo
-import uk.govuk.app.topics.extension.toTopicUi
+import uk.govuk.app.topics.extension.toTopicItemUi
 import uk.govuk.app.topics.ui.model.TopicItemUi
 import javax.inject.Inject
 
@@ -29,7 +29,7 @@ internal class TopicsWidgetViewModel @Inject constructor(
             topicsRepo.topics.collect { topics ->
                 val filteredTopics = topics
                     .filter { it.isSelected }
-                    .map{ topicItem -> topicItem.toTopicUi() }
+                    .map{ topicItem -> topicItem.toTopicItemUi() }
 
                 _uiState.value = TopicsWidgetUiState(
                     topics = filteredTopics,

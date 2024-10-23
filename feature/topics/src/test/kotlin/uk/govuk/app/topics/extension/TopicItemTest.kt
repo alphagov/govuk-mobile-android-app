@@ -33,7 +33,7 @@ class TopicItemTest{
                 isSelected = topicItem.second.isSelected
             )
 
-            assertEquals(topicItem.second.toTopicUi(), expected)
+            assertEquals(topicItem.second.toTopicItemUi(), expected)
         }
     }
 }

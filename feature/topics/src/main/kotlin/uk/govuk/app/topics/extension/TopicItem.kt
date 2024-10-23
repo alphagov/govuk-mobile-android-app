@@ -4,7 +4,7 @@ import uk.govuk.app.design.R
 import uk.govuk.app.topics.domain.model.TopicItem
 import uk.govuk.app.topics.ui.model.TopicItemUi
 
-internal fun TopicItem.toTopicUi(): TopicItemUi {
+internal fun TopicItem.toTopicItemUi(): TopicItemUi {
     val icon = when (ref) {
         "benefits" -> R.drawable.ic_topic_benefits
         "business" -> R.drawable.ic_topic_business
