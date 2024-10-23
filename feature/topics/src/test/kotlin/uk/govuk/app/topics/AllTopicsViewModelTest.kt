@@ -20,7 +20,7 @@ import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.design.R
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.domain.model.TopicItem
-import uk.govuk.app.topics.ui.model.TopicUi
+import uk.govuk.app.topics.ui.model.TopicItemUi
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AllTopicsViewModelTest {
@@ -52,7 +52,7 @@ class AllTopicsViewModelTest {
         every { topicsRepo.topics } returns flowOf(topics)
 
         val expected = listOf(
-            TopicUi(
+            TopicItemUi(
                 ref = "benefits",
                 icon = R.drawable.ic_topic_benefits,
                 title = "Benefits",

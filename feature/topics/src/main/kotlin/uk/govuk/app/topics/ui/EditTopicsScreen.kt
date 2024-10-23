@@ -22,7 +22,7 @@ import uk.govuk.app.design.ui.component.ToggleSwitch
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.EditTopicsViewModel
 import uk.govuk.app.topics.R
-import uk.govuk.app.topics.ui.model.TopicUi
+import uk.govuk.app.topics.ui.model.TopicItemUi
 
 @Composable
 internal fun EditTopicsRoute(
@@ -49,7 +49,7 @@ internal fun EditTopicsRoute(
 
 @Composable
 private fun EditTopicsScreen(
-    topics: List<TopicUi>?,
+    topics: List<TopicItemUi>?,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
     onTopicSelectedChanged: (String, String, Boolean) -> Unit,

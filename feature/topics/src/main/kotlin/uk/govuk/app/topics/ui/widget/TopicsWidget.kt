@@ -28,7 +28,7 @@ import uk.govuk.app.design.ui.component.TopicVerticalCard
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.R
 import uk.govuk.app.topics.TopicsWidgetViewModel
-import uk.govuk.app.topics.ui.model.TopicUi
+import uk.govuk.app.topics.ui.model.TopicItemUi
 
 @Composable
 fun TopicsWidget(
@@ -55,7 +55,7 @@ fun TopicsWidget(
 
 @Composable
 private fun TopicsWidgetContent(
-    topics: List<TopicUi>,
+    topics: List<TopicItemUi>,
     displayShowAll: Boolean,
     onTopicClick: (String, String) -> Unit,
     onEditClick: (String) -> Unit,
@@ -102,7 +102,7 @@ private fun TopicsWidgetContent(
 
 @Composable
 private fun TopicsGrid(
-    topics: List<TopicUi>,
+    topics: List<TopicItemUi>,
     onClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -133,7 +133,7 @@ private fun TopicsGrid(
 
 @Composable
 private fun TopicsRow(
-    topics: List<TopicUi>,
+    topics: List<TopicItemUi>,
     columnCount: Int,
     rowIndex: Int,
     onClick: (String, String) -> Unit,
@@ -187,31 +187,31 @@ private fun TopicsWidgetPreview() {
     GovUkTheme {
         TopicsWidgetContent(
             topics = listOf(
-                TopicUi(
+                TopicItemUi(
                     "",
                     uk.govuk.app.design.R.drawable.ic_topic_default,
                     "A really really really really really really long topic title",
                     isSelected = true
                 ),
-                TopicUi(
+                TopicItemUi(
                     "",
                     uk.govuk.app.design.R.drawable.ic_topic_benefits,
                     "Benefits",
                     isSelected = true
                 ),
-                TopicUi(
+                TopicItemUi(
                     "",
                     uk.govuk.app.design.R.drawable.ic_topic_transport,
                     "Driving",
                     isSelected = true
                 ),
-                TopicUi(
+                TopicItemUi(
                     "",
                     uk.govuk.app.design.R.drawable.ic_topic_money,
                     "Tax",
                     isSelected = true
                 ),
-                TopicUi(
+                TopicItemUi(
                     "",
                     uk.govuk.app.design.R.drawable.ic_topic_parenting,
                     "Child Benefit",

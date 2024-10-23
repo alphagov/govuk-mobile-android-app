@@ -8,11 +8,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.extension.toTopicUi
-import uk.govuk.app.topics.ui.model.TopicUi
+import uk.govuk.app.topics.ui.model.TopicItemUi
 import javax.inject.Inject
 
 internal data class TopicsWidgetUiState(
-    val topics: List<TopicUi>,
+    val topics: List<TopicItemUi>,
     val displayShowAll: Boolean
 )
 

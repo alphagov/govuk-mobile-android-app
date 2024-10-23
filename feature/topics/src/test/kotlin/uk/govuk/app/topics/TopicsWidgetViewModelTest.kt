@@ -17,7 +17,7 @@ import org.junit.Test
 import uk.govuk.app.design.R
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.domain.model.TopicItem
-import uk.govuk.app.topics.ui.model.TopicUi
+import uk.govuk.app.topics.ui.model.TopicItemUi
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TopicsWidgetViewModelTest {
@@ -50,7 +50,7 @@ class TopicsWidgetViewModelTest {
         val expected =
             TopicsWidgetUiState(
                 topics = listOf(
-                    TopicUi(
+                    TopicItemUi(
                         ref = "benefits",
                         icon = R.drawable.ic_topic_benefits,
                         title = "Benefits",
@@ -87,7 +87,7 @@ class TopicsWidgetViewModelTest {
         val expected =
             TopicsWidgetUiState(
                 topics = listOf(
-                    TopicUi(
+                    TopicItemUi(
                         ref = "benefits",
                         icon = R.drawable.ic_topic_benefits,
                         title = "Benefits",

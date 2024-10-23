@@ -4,7 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import uk.govuk.app.design.R
 import uk.govuk.app.topics.domain.model.TopicItem
-import uk.govuk.app.topics.ui.model.TopicUi
+import uk.govuk.app.topics.ui.model.TopicItemUi
 
 class TopicItemTest{
 
@@ -26,7 +26,7 @@ class TopicItemTest{
         )
 
         for (topicItem in topicItems) {
-            val expected = TopicUi(
+            val expected = TopicItemUi(
                 ref = topicItem.second.ref,
                 icon = topicItem.first,
                 title = topicItem.second.title,
