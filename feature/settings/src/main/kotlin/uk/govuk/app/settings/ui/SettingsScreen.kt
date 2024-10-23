@@ -140,7 +140,7 @@ private fun AboutTheApp(
 
                 Icon(
                     painter = painterResource(
-                        uk.govuk.app.design.R.drawable.baseline_open_in_new_24
+                        uk.govuk.app.design.R.drawable.ic_external_link
                     ),
                     contentDescription = stringResource(R.string.link_opens_in),
                     tint = GovUkTheme.colourScheme.textAndIcons.link

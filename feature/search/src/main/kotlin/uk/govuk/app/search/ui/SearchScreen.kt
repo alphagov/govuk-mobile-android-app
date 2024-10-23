@@ -173,7 +173,7 @@ fun ShowResults(searchResults: List<Result>) {
 
                         Icon(
                             painter = painterResource(
-                                uk.govuk.app.design.R.drawable.baseline_open_in_new_24
+                                uk.govuk.app.design.R.drawable.ic_external_link
                             ),
                             contentDescription = stringResource(
                                 uk.govuk.app.design.R.string.opens_in_web_browser
@@ -304,7 +304,7 @@ fun ServiceNotResponding() {
 
         Icon(
             painter = painterResource(
-                uk.govuk.app.design.R.drawable.baseline_open_in_new_24
+                uk.govuk.app.design.R.drawable.ic_external_link
             ),
             contentDescription = stringResource(
                 uk.govuk.app.design.R.string.opens_in_web_browser

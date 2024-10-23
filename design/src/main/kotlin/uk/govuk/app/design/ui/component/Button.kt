@@ -198,14 +198,14 @@ private fun BaseButton(
         interactionSource = interactionSource
     ) {
         Text(text = text, style = textStyle)
-        if (externalLink) NewTabIcon()
+        if (externalLink) ExternalLinkIcon()
     }
 }
 
 @Composable
-private fun NewTabIcon() {
+private fun ExternalLinkIcon() {
     Icon(
-        painter = painterResource(id = R.drawable.baseline_open_in_new_24),
+        painter = painterResource(id = R.drawable.ic_external_link),
         contentDescription = "Opens link in a new tab",
         modifier = Modifier
             .padding(start = GovUkTheme.spacing.small)
