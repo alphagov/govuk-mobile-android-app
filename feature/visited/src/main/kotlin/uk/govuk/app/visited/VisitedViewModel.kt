@@ -7,12 +7,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.visited.data.VisitedItemsTransformer
 import uk.govuk.app.visited.data.VisitedRepo
 import uk.govuk.app.visited.ui.model.VisitedUi
+import java.time.LocalDate
 import javax.inject.Inject
 
+
 internal data class VisitedUiState(
-    val visited: List<VisitedUi>
+    val visited: Map<String, List<VisitedUi>>
 )
 
 @HiltViewModel
@@ -33,14 +36,8 @@ internal class VisitedViewModel @Inject constructor(
     private fun loadVisitedItems() {
         viewModelScope.launch {
             visitedRepo.visitedItems.collect { visitedItems ->
-                // TODO: we need to filter by date here
-                val allVisitedItems = visitedItems.map { visitedItem ->
-                    VisitedUi(
-                        title = visitedItem.title,
-                        url = visitedItem.url,
-                        lastVisited = visitedItem.lastVisited // TODO: should be a date and converted to string here
-                    )
-                }
+                val transformer = VisitedItemsTransformer(visitedItems, LocalDate.now())
+                val allVisitedItems = transformer.transform()
 
                 _uiState.value = VisitedUiState(visited = allVisitedItems)
             }

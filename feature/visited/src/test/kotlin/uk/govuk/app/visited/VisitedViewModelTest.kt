@@ -18,8 +18,10 @@ import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.visited.data.VisitedRepo
+import uk.govuk.app.visited.data.localDateFormatter
 import uk.govuk.app.visited.data.model.VisitedItem
 import uk.govuk.app.visited.ui.model.VisitedUi
+import java.time.LocalDate
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class VisitedViewModelTest {
@@ -64,31 +66,35 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given there are visited items, then the status in the view model is correct`() {
+        val today = LocalDate.now()
+
         val visitedItems = listOf(
             VisitedItem().apply {
                 title = "GOV.UK"
                 url = "https://www.gov.uk"
-                lastVisited = "24 July 2024"
+                lastVisited = today.toEpochDay()
             },
             VisitedItem().apply {
                 title = "Google"
                 url = "https://www.google.com"
-                lastVisited = "24 July 2024"
+                lastVisited = today.toEpochDay()
             }
         )
 
         val expected =
             VisitedUiState(
-                visited = listOf(
-                    VisitedUi(
-                        title = "GOV.UK",
-                        url = "https://www.gov.uk",
-                        lastVisited = "24 July 2024"
-                    ),
-                    VisitedUi(
-                        title = "Google",
-                        url = "https://www.google.com",
-                        lastVisited = "24 July 2024"
+                visited = mapOf(
+                    "Today" to listOf(
+                        VisitedUi(
+                            title = "GOV.UK",
+                            url = "https://www.gov.uk",
+                            lastVisited = localDateFormatter(today.toEpochDay())
+                        ),
+                        VisitedUi(
+                            title = "Google",
+                            url = "https://www.google.com",
+                            lastVisited = localDateFormatter(today.toEpochDay())
+                        )
                     )
                 )
             )
@@ -107,7 +113,7 @@ class VisitedViewModelTest {
     @Test
     fun `Given there are no visited items, then the status in the view model are correct`() {
         val visitedItems = emptyList<VisitedItem>()
-        val expected = VisitedUiState(visited = emptyList())
+        val expected = VisitedUiState(visited = emptyMap())
         val viewModel = VisitedViewModel(visitedRepo, analytics)
 
         every { visitedRepo.visitedItems } returns flowOf(visitedItems)

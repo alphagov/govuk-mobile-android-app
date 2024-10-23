@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import uk.govuk.app.visited.data.model.VisitedItem
-import java.util.Date
+import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,28 +22,46 @@ internal class VisitedLocalDataSource @Inject constructor(
             delete(results)
         }
 
-        val entries = mapOf(
-            "GOV.UK" to "https://www.gov.uk",
-            "Amazon" to "https://www.amazon.co.uk",
-            "Google" to "https://www.google.com"
+        var today = LocalDate.now()
+
+        val entries = listOf(
+            VisitedItem().apply {
+                title = "GOV.UK"
+                url = "https://www.gov.uk"
+                lastVisited = today.toEpochDay()
+            },
+            VisitedItem().apply {
+                title = "Amazon"
+                url = "https://www.amazon.co.uk"
+                lastVisited = today.minusDays(4).toEpochDay()
+            },
+            VisitedItem().apply {
+                title = "Google"
+                url = "https://www.google.com"
+                lastVisited = today.minusMonths(2).toEpochDay()
+            },
+            VisitedItem().apply {
+                title = "Trello"
+                url = "https://www.trello.com"
+                lastVisited = today.minusYears(1).toEpochDay()
+            }
         )
 
         for (entry in entries) {
-            println("${entry.key} : ${entry.value}")
-
-            val item = VisitedItem().apply {
-                title = entry.key
-                url = entry.value
-            }
-            createVisitedItem(item)
+            createVisitedItem(entry)
         }
 
-        emitAll(realmProvider.open().query<VisitedItem>().asFlow().map { it.list })
+        emitAll(
+            realmProvider.open().query<VisitedItem>().asFlow().map {
+                it.list.sortedByDescending { it.lastVisited }
+            }
+        )
     }
 
     private suspend fun createVisitedItem(visitedItem: VisitedItem) {
         realmProvider.open().write {
-            visitedItem.lastVisited = Date().toString()
+//            TODO: when the above fake entries are removed, uncomment this
+//            visitedItem.lastVisited = LocalDate.now().toEpochDay()
             copyToRealm(visitedItem)
         }
     }
