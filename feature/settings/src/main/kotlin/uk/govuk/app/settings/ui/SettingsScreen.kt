@@ -3,9 +3,7 @@ package uk.govuk.app.settings.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -26,8 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.CaptionRegularLabel
+import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.ListHeadingLabel
+import uk.govuk.app.design.ui.component.MediumVerticalSpacer
+import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.TabHeader
 import uk.govuk.app.design.ui.component.ToggleSwitch
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -80,20 +81,25 @@ private fun SettingsScreen(
         modifier = modifier
     ) {
         TabHeader(stringResource(R.string.screen_title))
+        SmallVerticalSpacer()
         Column(
-            modifier = Modifier.verticalScroll(rememberScrollState())
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = GovUkTheme.spacing.medium)
+                .padding(bottom = GovUkTheme.spacing.extraLarge)
         ) {
             AboutTheApp(
                 appVersion = appVersion,
                 onHelpClick = onHelpClick
             )
+            LargeVerticalSpacer()
             PrivacyAndLegal(
                 isAnalyticsEnabled = isAnalyticsEnabled,
                 onAnalyticsConsentChange = onAnalyticsConsentChange,
                 onPrivacyPolicyClick = onPrivacyPolicyClick
             )
+            MediumVerticalSpacer()
             OpenSourceLicenses(onLicenseView, onOpenSourceLicenseClick)
-            Spacer(Modifier.height(100.dp))
         }
     }
 }
@@ -109,6 +115,8 @@ private fun AboutTheApp(
     ) {
         ListHeadingLabel(stringResource(R.string.about_title))
 
+        SmallVerticalSpacer()
+
         // We might want to make this a component when
         // we understand the various use cases better
         OutlinedCard(
@@ -117,7 +125,6 @@ private fun AboutTheApp(
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(GovUkTheme.spacing.medium)
         ) {
             Row(
                 Modifier
@@ -178,13 +185,13 @@ private fun PrivacyAndLegal(
     ) {
         ListHeadingLabel(stringResource(R.string.privacy_title))
 
+        SmallVerticalSpacer()
+
         OutlinedCard(
             colors = CardDefaults.cardColors(
                 containerColor = GovUkTheme.colourScheme.surfaces.card
             ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(GovUkTheme.spacing.medium)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Row(
                 Modifier.padding(
@@ -207,42 +214,26 @@ private fun PrivacyAndLegal(
             }
         }
 
-        Row(
-            Modifier.padding(
-                top = 1.dp,
-                start = GovUkTheme.spacing.extraLarge,
-                end = GovUkTheme.spacing.extraLarge,
-                bottom = 1.dp
-            ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            CaptionRegularLabel(
-                text = stringResource(R.string.privacy_description)
-            )
-        }
+        CaptionRegularLabel(
+            text = stringResource(R.string.privacy_description),
+            modifier = Modifier
+                .padding(top = GovUkTheme.spacing.medium)
+                .padding(horizontal = GovUkTheme.spacing.medium)
+        )
 
-        Row(
-            Modifier
-                .padding(
-                    top = 1.dp,
-                    start = GovUkTheme.spacing.extraLarge,
-                    end = GovUkTheme.spacing.extraLarge,
-                    bottom = GovUkTheme.spacing.medium
-                )
-                .clickable(onClick = onPrivacyPolicyClick),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            val altText = "${stringResource(R.string.privacy_read_more)} " +
+        val altText = "${stringResource(R.string.privacy_read_more)} " +
                 stringResource(id = R.string.link_opens_in)
 
-            CaptionRegularLabel(
-                text = stringResource(R.string.privacy_read_more),
-                modifier = Modifier.semantics {
+        CaptionRegularLabel(
+            text = stringResource(R.string.privacy_read_more),
+            modifier = Modifier
+                .semantics {
                     contentDescription = altText
-                },
-                color = GovUkTheme.colourScheme.textAndIcons.link,
-            )
-        }
+                }
+                .padding(horizontal = GovUkTheme.spacing.medium)
+                .clickable(onClick = onPrivacyPolicyClick),
+            color = GovUkTheme.colourScheme.textAndIcons.link,
+        )
     }
 }
 
@@ -259,9 +250,7 @@ private fun OpenSourceLicenses(
             colors = CardDefaults.cardColors(
                 containerColor = GovUkTheme.colourScheme.surfaces.card
             ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(GovUkTheme.spacing.medium)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Row(
                 Modifier

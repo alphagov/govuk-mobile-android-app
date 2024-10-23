@@ -1,5 +1,16 @@
 package uk.govuk.app.topics.data.remote.model
 
+import com.google.gson.annotations.SerializedName
+
 internal data class RemoteTopic(
-    val title: String
-)
+    @SerializedName("title") val title: String,
+    @SerializedName("subtopics") val subtopics: List<RemoteTopicItem>,
+    @SerializedName("content") val content: List<RemoteTopicContent>
+) {
+    data class RemoteTopicContent(
+        @SerializedName("url") val url: String,
+        @SerializedName("title") val title: String,
+        @SerializedName("isStepByStep") val isStepByStep: Boolean,
+        @SerializedName("popular") val isPopular: Boolean,
+    )
+}

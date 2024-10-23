@@ -28,8 +28,9 @@ fun NavGraphBuilder.topicsGraph(
         composable(
             "$TOPIC_ROUTE/{$TOPIC_REF_ARG}",
             arguments = listOf(navArgument(TOPIC_REF_ARG) { type = NavType.StringType })
-        ) { backStackEntry ->
+        ) {
             TopicRoute(
+                onBack = { navController.popBackStack() },
                 modifier = modifier
             )
         }
