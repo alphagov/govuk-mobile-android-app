@@ -31,8 +31,6 @@ fun CardListItem(
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
-    val borderWidth = 1.dp
-    val cornerRadius: Dp = 12.dp
     val borderColor = GovUkTheme.colourScheme.strokes.listDivider
     val backgroundColor = GovUkTheme.colourScheme.surfaces.card
     val backgroundColorHighlight = GovUkTheme.colourScheme.surfaces.cardHighlight
@@ -59,37 +57,14 @@ fun CardListItem(
                 }
             }
             .drawBehind {
-                when (index) {
-                    0 -> {
-                        firstCell(
-                            borderWidth = borderWidth.toPx(),
-                            cornerRadius = cornerRadius.toPx(),
-                            borderColor = borderColor,
-                            backgroundColor = backgroundColor,
-                            backgroundColorHighlight = backgroundColorHighlight,
-                            isClicked = isClicked
-                        )
-                    }
-                    lastIndex -> {
-                        lastCell(
-                            borderWidth = borderWidth.toPx(),
-                            cornerRadius = cornerRadius.toPx(),
-                            borderColor = borderColor,
-                            backgroundColor = backgroundColor,
-                            backgroundColorHighlight = backgroundColorHighlight,
-                            isClicked = isClicked
-                        )
-                    }
-                    else -> {
-                        intermediateCell(
-                            borderWidth = borderWidth.toPx(),
-                            borderColor = borderColor,
-                            backgroundColor = backgroundColor,
-                            backgroundColorHighlight = backgroundColorHighlight,
-                            isClicked = isClicked
-                        )
-                    }
-                }
+                drawCell(
+                    index = index,
+                    lastIndex = lastIndex,
+                    borderColor = borderColor,
+                    backgroundColor = backgroundColor,
+                    backgroundColorHighlight = backgroundColorHighlight,
+                    isClicked = isClicked
+                )
             }
             .padding(
                 start = GovUkTheme.spacing.medium,
@@ -107,6 +82,156 @@ fun CardListItem(
             }
         }
     }
+}
+
+private fun DrawScope.drawCell(
+    index: Int,
+    lastIndex: Int,
+    borderColor: Color,
+    backgroundColor: Color,
+    backgroundColorHighlight: Color,
+    isClicked: Boolean
+) {
+    val borderWidth = 1.dp
+    val cornerRadius: Dp = 12.dp
+
+    if (index == 0 && lastIndex == 0) {
+        singleCell(
+            borderWidth = borderWidth.toPx(),
+            cornerRadius = cornerRadius.toPx(),
+            borderColor = borderColor,
+            backgroundColor = backgroundColor,
+            backgroundColorHighlight = backgroundColorHighlight,
+            isClicked = isClicked
+        )
+    } else {
+        when (index) {
+            0 -> {
+                firstCell(
+                    borderWidth = borderWidth.toPx(),
+                    cornerRadius = cornerRadius.toPx(),
+                    borderColor = borderColor,
+                    backgroundColor = backgroundColor,
+                    backgroundColorHighlight = backgroundColorHighlight,
+                    isClicked = isClicked
+                )
+            }
+
+            lastIndex -> {
+                lastCell(
+                    borderWidth = borderWidth.toPx(),
+                    cornerRadius = cornerRadius.toPx(),
+                    borderColor = borderColor,
+                    backgroundColor = backgroundColor,
+                    backgroundColorHighlight = backgroundColorHighlight,
+                    isClicked = isClicked
+                )
+            }
+
+            else -> {
+                intermediateCell(
+                    borderWidth = borderWidth.toPx(),
+                    borderColor = borderColor,
+                    backgroundColor = backgroundColor,
+                    backgroundColorHighlight = backgroundColorHighlight,
+                    isClicked = isClicked
+                )
+            }
+        }
+    }
+}
+
+private fun DrawScope.singleCell(
+    borderWidth: Float,
+    cornerRadius: Float,
+    borderColor: Color,
+    backgroundColor: Color,
+    backgroundColorHighlight: Color,
+    isClicked: Boolean
+) {
+    // Path for top, bottom and side borders with rounded corners
+    val path = Path().apply {
+        // Start at bottom left
+        moveTo(0f, size.height - cornerRadius)
+
+        // Line to top left
+        lineTo(0f, 0f + cornerRadius)
+
+        // Top left corner
+        arcTo(
+            rect = Rect(
+                0f,
+                0f,
+                cornerRadius * 2,
+                cornerRadius * 2
+            ),
+            startAngleDegrees = 180f,
+            sweepAngleDegrees = 90f,
+            forceMoveTo = false
+        )
+
+        // Line to top right
+        lineTo(size.width - cornerRadius, 0f)
+
+        // Top right corner
+        arcTo(
+            rect = Rect(
+                size.width - cornerRadius * 2,
+                0f,
+                size.width,
+                cornerRadius * 2
+            ),
+            startAngleDegrees = -90f,
+            sweepAngleDegrees = 90f,
+            forceMoveTo = false
+        )
+
+        // Line to bottom right
+        lineTo(size.width, size.height - cornerRadius)
+
+        // Bottom right corner
+        arcTo(
+            rect = Rect(
+                size.width - 2 * cornerRadius,
+                size.height - 2 * cornerRadius,
+                size.width,
+                size.height
+            ),
+            startAngleDegrees = 0f,
+            sweepAngleDegrees = 90f,
+            forceMoveTo = false
+        )
+
+        // Line to bottom left
+        lineTo(cornerRadius, size.height)
+
+        // Bottom left corner
+        arcTo(
+            rect = Rect(
+                0f,
+                size.height - 2 * cornerRadius,
+                2 * cornerRadius,
+                size.height
+            ),
+            startAngleDegrees = 90f,
+            sweepAngleDegrees = 90f,
+            forceMoveTo = false
+        )
+    }
+
+    // Draw background colour
+    drawPath(
+        path = path,
+        color = if (isClicked) backgroundColorHighlight else backgroundColor,
+        style = Fill
+    )
+
+    // Draw the path as a border
+    drawPath(
+        path = path,
+        color = borderColor,
+        style = Stroke(width = borderWidth)
+    )
 }
 
 private fun DrawScope.firstCell(
@@ -225,7 +350,7 @@ private fun DrawScope.lastCell(
         // Line to bottom right
         lineTo(size.width, size.height - cornerRadius)
 
-        // Bottom-right corner (arc for rounding)
+        // Bottom right corner
         arcTo(
             rect = Rect(
                 size.width - 2 * cornerRadius,
@@ -241,7 +366,7 @@ private fun DrawScope.lastCell(
         // Line to bottom left
         lineTo(cornerRadius, size.height)
 
-        // Bottom-left corner (arc for rounding)
+        // Bottom left corner
         arcTo(
             rect = Rect(
                 0f,
