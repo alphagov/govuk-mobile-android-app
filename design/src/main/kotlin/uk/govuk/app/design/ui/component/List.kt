@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,10 +22,46 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import uk.govuk.app.design.R
 import uk.govuk.app.design.ui.theme.GovUkTheme
+
+@Composable
+fun ExternalLinkListItem(
+    title: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    index: Int = 0,
+    lastIndex: Int = 0
+) {
+    CardListItem(
+        index = index,
+        lastIndex = lastIndex,
+        modifier = modifier,
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier.padding(all = GovUkTheme.spacing.medium),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BodyRegularLabel(
+                text = title,
+                modifier = Modifier.weight(1f),
+                color = GovUkTheme.colourScheme.textAndIcons.link,
+            )
+
+            Icon(
+                painter = painterResource(R.drawable.ic_external_link),
+//                contentDescription = stringResource(R.string.link_opens_in),
+                contentDescription = null, // Todo - fix!!!
+                tint = GovUkTheme.colourScheme.textAndIcons.link
+            )
+        }
+    }
+}
 
 @Composable
 fun ToggleListItem(
@@ -37,10 +74,13 @@ fun ToggleListItem(
 ) {
     CardListItem(
         index = index,
-        lastIndex = lastIndex
+        lastIndex = lastIndex,
+        modifier = modifier,
     ) {
         Row(
-            modifier = modifier,
+            modifier = Modifier
+                .padding(horizontal = GovUkTheme.spacing.medium)
+                .padding(vertical = GovUkTheme.spacing.small),
             verticalAlignment = Alignment.CenterVertically
         ) {
             BodyRegularLabel(
@@ -60,6 +100,7 @@ fun ToggleListItem(
 fun CardListItem(
     index: Int,
     lastIndex: Int,
+    modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
@@ -78,7 +119,7 @@ fun CardListItem(
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .clickable(
                 interactionSource = interactionSource,
                 indication = null
@@ -98,19 +139,12 @@ fun CardListItem(
                     isClicked = isClicked
                 )
             }
-            .padding(
-                start = GovUkTheme.spacing.medium,
-                top = GovUkTheme.spacing.small,
-                end = GovUkTheme.spacing.medium
-            ),
     ) {
         Column {
             content()
 
-            SmallVerticalSpacer()
-
             if (index < lastIndex) {
-                ListDivider()
+                ListDivider(Modifier.padding(horizontal = GovUkTheme.spacing.medium))
             }
         }
     }

@@ -126,6 +126,7 @@ private fun AboutTheApp(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
+            // Todo - migrate to external link list item
             Row(
                 Modifier
                     .clickable(onClick = onHelpClick)

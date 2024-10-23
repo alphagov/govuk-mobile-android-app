@@ -1,6 +1,9 @@
 package uk.govuk.app.topics.navigation
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -29,8 +32,15 @@ fun NavGraphBuilder.topicsGraph(
             "$TOPIC_ROUTE/{$TOPIC_REF_ARG}",
             arguments = listOf(navArgument(TOPIC_REF_ARG) { type = NavType.StringType })
         ) {
+            val context = LocalContext.current
+
             TopicRoute(
                 onBack = { navController.popBackStack() },
+                onExternalLink = { url ->
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse(url)
+                    context.startActivity(intent)
+                },
                 modifier = modifier
             )
         }

@@ -17,6 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.CardListItem
 import uk.govuk.app.design.ui.component.ChildPageHeader
+import uk.govuk.app.design.ui.component.ExternalLinkListItem
 import uk.govuk.app.design.ui.component.ListHeadingLabel
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
@@ -27,6 +28,7 @@ import uk.govuk.app.topics.ui.model.TopicUi
 @Composable
 internal fun TopicRoute(
     onBack: () -> Unit,
+    onExternalLink: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: TopicViewModel = hiltViewModel()
@@ -35,6 +37,7 @@ internal fun TopicRoute(
     TopicScreen(
         topic = topic,
         onBack = onBack,
+        onExternalLink = onExternalLink,
         modifier = modifier
     )
 }
@@ -43,6 +46,7 @@ internal fun TopicRoute(
 private fun TopicScreen(
     topic: TopicUi?,
     onBack: () -> Unit,
+    onExternalLink: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier.fillMaxSize()) {
@@ -53,7 +57,10 @@ private fun TopicScreen(
             )
 
             LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
-                popularPages(topic.popularPages)
+                popularPages(
+                    popularPages = topic.popularPages,
+                    onClick = onExternalLink
+                )
 
                 item {
                     MediumVerticalSpacer()
@@ -61,7 +68,8 @@ private fun TopicScreen(
 
                 stepBySteps(
                     stepBySteps = topic.stepBySteps,
-                    displayStepByStepSeeAll = topic.displayStepByStepSeeAll
+                    displayStepByStepSeeAll = topic.displayStepByStepSeeAll,
+                    onClick = onExternalLink
                 )
 
                 item {
@@ -74,7 +82,10 @@ private fun TopicScreen(
     }
 }
 
-private fun LazyListScope.popularPages(popularPages: List<TopicUi.TopicContent>) {
+private fun LazyListScope.popularPages(
+    popularPages: List<TopicUi.TopicContent>,
+    onClick: (String) -> Unit
+) {
     if (popularPages.isNotEmpty()) {
         item {
             ListHeadingLabel("Popular pages in this topic") // Todo - extract string
@@ -85,24 +96,20 @@ private fun LazyListScope.popularPages(popularPages: List<TopicUi.TopicContent>)
         }
 
         itemsIndexed(popularPages) { index, content ->
-            CardListItem(index, popularPages.lastIndex) {
-                // Todo - extract into design module
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    BodyRegularLabel(
-                        text = content.title,
-                    )
-                }
-            }
+            ExternalLinkListItem(
+                title = content.title,
+                onClick = { onClick(content.url) },
+                index = index,
+                lastIndex = popularPages.lastIndex
+            )
         }
     }
 }
 
 private fun LazyListScope.stepBySteps(
     stepBySteps: List<TopicUi.TopicContent>,
-    displayStepByStepSeeAll: Boolean
+    displayStepByStepSeeAll: Boolean,
+    onClick: (String) -> Unit
 ) {
     if (stepBySteps.isNotEmpty()) {
         item {
@@ -114,17 +121,12 @@ private fun LazyListScope.stepBySteps(
         }
 
         itemsIndexed(stepBySteps) { index, content ->
-            CardListItem(index, stepBySteps.lastIndex) {
-                // Todo - extract into design module
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    BodyRegularLabel(
-                        text = content.title,
-                    )
-                }
-            }
+            ExternalLinkListItem(
+                title = content.title,
+                onClick = { onClick(content.url) },
+                index = index,
+                lastIndex = stepBySteps.lastIndex
+            )
         }
 
         // Todo - see all button
