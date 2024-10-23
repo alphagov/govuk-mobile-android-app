@@ -1,9 +1,7 @@
 package uk.govuk.app.topics.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -11,13 +9,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import uk.govuk.app.design.ui.component.BodyRegularLabel
-import uk.govuk.app.design.ui.component.CardListItem
 import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.ExternalLinkListItem
+import uk.govuk.app.design.ui.component.ExtraLargeVerticalSpacer
+import uk.govuk.app.design.ui.component.InternalLinkListItem
 import uk.govuk.app.design.ui.component.ListHeadingLabel
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
@@ -77,6 +74,10 @@ private fun TopicScreen(
                 }
 
                 subtopics(topic.subtopics)
+
+                item {
+                    ExtraLargeVerticalSpacer()
+                }
             }
         }
     }
@@ -143,18 +144,13 @@ private fun LazyListScope.subtopics(subtopics: List<TopicUi.Subtopic>) {
             SmallVerticalSpacer()
         }
 
-        itemsIndexed(subtopics) { index, content ->
-            CardListItem(index, subtopics.lastIndex) {
-                // Todo - extract into design module
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    BodyRegularLabel(
-                        text = content.title,
-                    )
-                }
-            }
+        itemsIndexed(subtopics) { index, subtopic ->
+            InternalLinkListItem(
+                title = subtopic.title,
+                onClick = { }, // Todo - handle click
+                index = index,
+                lastIndex = subtopics.lastIndex
+            )
         }
     }
 }

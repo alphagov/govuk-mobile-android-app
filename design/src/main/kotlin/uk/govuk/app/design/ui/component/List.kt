@@ -30,6 +30,38 @@ import uk.govuk.app.design.R
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
+fun InternalLinkListItem(
+    title: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    index: Int = 0,
+    lastIndex: Int = 0
+) {
+    CardListItem(
+        index = index,
+        lastIndex = lastIndex,
+        modifier = modifier,
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier.padding(all = GovUkTheme.spacing.medium),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BodyRegularLabel(
+                text = title,
+                modifier = Modifier.weight(1f)
+            )
+
+            Icon(
+                painter = painterResource(R.drawable.ic_chevron),
+                contentDescription = null,
+                tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
+            )
+        }
+    }
+}
+
+@Composable
 fun ExternalLinkListItem(
     title: String,
     onClick: () -> Unit,
