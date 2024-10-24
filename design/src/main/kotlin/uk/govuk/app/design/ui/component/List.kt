@@ -35,14 +35,14 @@ fun InternalLinkListItem(
     title: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    index: Int = 0,
-    lastIndex: Int = 0
+    isFirst: Boolean = true,
+    isLast: Boolean = true
 ) {
     CardListItem(
-        index = index,
-        lastIndex = lastIndex,
         modifier = modifier,
-        onClick = onClick
+        onClick = onClick,
+        isFirst = isFirst,
+        isLast = isLast
     ) {
         Row(
             modifier = Modifier.padding(all = GovUkTheme.spacing.medium),
@@ -52,6 +52,8 @@ fun InternalLinkListItem(
                 text = title,
                 modifier = Modifier.weight(1f)
             )
+
+            MediumHorizontalSpacer()
 
             Icon(
                 painter = painterResource(R.drawable.ic_chevron),
@@ -67,14 +69,14 @@ fun ExternalLinkListItem(
     title: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    index: Int = 0,
-    lastIndex: Int = 0
+    isFirst: Boolean = true,
+    isLast: Boolean = true
 ) {
     CardListItem(
-        index = index,
-        lastIndex = lastIndex,
         modifier = modifier,
-        onClick = onClick
+        onClick = onClick,
+        isFirst = isFirst,
+        isLast = isLast
     ) {
         Row(
             modifier = Modifier.padding(all = GovUkTheme.spacing.medium),
@@ -85,6 +87,8 @@ fun ExternalLinkListItem(
                 modifier = Modifier.weight(1f),
                 color = GovUkTheme.colourScheme.textAndIcons.link,
             )
+
+            MediumHorizontalSpacer()
 
             Icon(
                 painter = painterResource(R.drawable.ic_external_link),
@@ -101,13 +105,13 @@ fun ToggleListItem(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    index: Int = 0,
-    lastIndex: Int = 0
+    isFirst: Boolean = true,
+    isLast: Boolean = true
 ) {
     CardListItem(
-        index = index,
-        lastIndex = lastIndex,
         modifier = modifier,
+        isFirst = isFirst,
+        isLast = isLast
     ) {
         Row(
             modifier = Modifier
@@ -120,6 +124,8 @@ fun ToggleListItem(
                 modifier = Modifier.weight(1f)
             )
 
+            MediumHorizontalSpacer()
+
             ToggleSwitch(
                 checked = checked,
                 onCheckedChange = onCheckedChange
@@ -130,11 +136,11 @@ fun ToggleListItem(
 
 @Composable
 fun CardListItem(
-    index: Int,
-    lastIndex: Int,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
-    content: @Composable () -> Unit
+    isFirst: Boolean = true,
+    isLast: Boolean = true,
+    content: @Composable () -> Unit,
 ) {
     val borderColor = GovUkTheme.colourScheme.strokes.listDivider
     val backgroundColor = GovUkTheme.colourScheme.surfaces.card
@@ -163,8 +169,8 @@ fun CardListItem(
             }
             .drawBehind {
                 drawCell(
-                    index = index,
-                    lastIndex = lastIndex,
+                    isFirst = isFirst,
+                    isLast = isLast,
                     borderColor = borderColor,
                     backgroundColor = backgroundColor,
                     backgroundColorHighlight = backgroundColorHighlight,
@@ -175,7 +181,7 @@ fun CardListItem(
         Column {
             content()
 
-            if (index < lastIndex) {
+            if (!isLast) {
                 ListDivider(Modifier.padding(horizontal = GovUkTheme.spacing.medium))
             }
         }
@@ -183,8 +189,8 @@ fun CardListItem(
 }
 
 private fun DrawScope.drawCell(
-    index: Int,
-    lastIndex: Int,
+    isFirst: Boolean,
+    isLast: Boolean,
     borderColor: Color,
     backgroundColor: Color,
     backgroundColorHighlight: Color,
@@ -193,7 +199,7 @@ private fun DrawScope.drawCell(
     val borderWidth = 1.dp
     val cornerRadius: Dp = 12.dp
 
-    if (index == 0 && lastIndex == 0) {
+    if (isFirst && isLast) {
         singleCell(
             borderWidth = borderWidth.toPx(),
             cornerRadius = cornerRadius.toPx(),
@@ -202,40 +208,32 @@ private fun DrawScope.drawCell(
             backgroundColorHighlight = backgroundColorHighlight,
             isClicked = isClicked
         )
+    } else if (isFirst) {
+        firstCell(
+            borderWidth = borderWidth.toPx(),
+            cornerRadius = cornerRadius.toPx(),
+            borderColor = borderColor,
+            backgroundColor = backgroundColor,
+            backgroundColorHighlight = backgroundColorHighlight,
+            isClicked = isClicked
+        )
+    } else if (isLast) {
+        lastCell(
+            borderWidth = borderWidth.toPx(),
+            cornerRadius = cornerRadius.toPx(),
+            borderColor = borderColor,
+            backgroundColor = backgroundColor,
+            backgroundColorHighlight = backgroundColorHighlight,
+            isClicked = isClicked
+        )
     } else {
-        when (index) {
-            0 -> {
-                firstCell(
-                    borderWidth = borderWidth.toPx(),
-                    cornerRadius = cornerRadius.toPx(),
-                    borderColor = borderColor,
-                    backgroundColor = backgroundColor,
-                    backgroundColorHighlight = backgroundColorHighlight,
-                    isClicked = isClicked
-                )
-            }
-
-            lastIndex -> {
-                lastCell(
-                    borderWidth = borderWidth.toPx(),
-                    cornerRadius = cornerRadius.toPx(),
-                    borderColor = borderColor,
-                    backgroundColor = backgroundColor,
-                    backgroundColorHighlight = backgroundColorHighlight,
-                    isClicked = isClicked
-                )
-            }
-
-            else -> {
-                intermediateCell(
-                    borderWidth = borderWidth.toPx(),
-                    borderColor = borderColor,
-                    backgroundColor = backgroundColor,
-                    backgroundColorHighlight = backgroundColorHighlight,
-                    isClicked = isClicked
-                )
-            }
-        }
+        intermediateCell(
+            borderWidth = borderWidth.toPx(),
+            borderColor = borderColor,
+            backgroundColor = backgroundColor,
+            backgroundColorHighlight = backgroundColorHighlight,
+            isClicked = isClicked
+        )
     }
 }
 

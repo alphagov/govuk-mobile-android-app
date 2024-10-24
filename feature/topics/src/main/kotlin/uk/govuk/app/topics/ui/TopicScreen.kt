@@ -99,8 +99,8 @@ private fun LazyListScope.popularPages(
             ExternalLinkListItem(
                 title = content.title,
                 onClick = { onClick(content.url) },
-                index = index,
-                lastIndex = popularPages.lastIndex
+                isFirst = index == 0,
+                isLast = index == popularPages.lastIndex
             )
         }
 
@@ -132,8 +132,8 @@ private fun LazyListScope.stepBySteps(
             ExternalLinkListItem(
                 title = content.title,
                 onClick = { onClick(content.url) },
-                index = index,
-                lastIndex = lastIndex
+                isFirst = index == 0,
+                isLast = index == lastIndex
             )
         }
 
@@ -142,8 +142,8 @@ private fun LazyListScope.stepBySteps(
                 InternalLinkListItem(
                     title = stringResource(R.string.seeAllButton),
                     onClick = onSeeAll,
-                    index = lastIndex,
-                    lastIndex = lastIndex
+                    isFirst = lastIndex == 0,
+                    isLast = true
                 )
             }
         }
@@ -171,8 +171,8 @@ private fun LazyListScope.subtopics(
             InternalLinkListItem(
                 title = subtopic.title,
                 onClick = { onClick(subtopic.ref) },
-                index = index,
-                lastIndex = subtopics.lastIndex
+                isFirst = index == 0,
+                isLast = index == subtopics.lastIndex
             )
         }
 

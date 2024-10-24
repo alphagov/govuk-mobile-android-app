@@ -88,8 +88,8 @@ private fun EditTopicsScreen(
                                 checked
                             )
                         },
-                        index = index,
-                        lastIndex = topics.lastIndex
+                        isFirst = index == 0,
+                        isLast = index == topics.lastIndex
                     )
                 }
 
