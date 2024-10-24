@@ -6,4 +6,8 @@
     <string name="editMessage">Topics you select will be shown on the app home page so you can find them more easily</string>
     <string name="allTopicsButton">See all topics</string>
     <string name="allTopicsTitle">All topics</string>
+    <string name="stepByStepGuidesTitle">Step by step guides</string>
+    <string name="popularPagesTitle">Popular pages in this topic</string>
+    <string name="seeAllButton">See all</string>
+    <string name="browseTitle">Browse</string>
 </resources>

@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -12,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import uk.govuk.app.design.ui.component.ChildPageHeader
+import uk.govuk.app.topics.R
 import uk.govuk.app.topics.ui.AllTopicsRoute
 import uk.govuk.app.topics.ui.EditTopicsRoute
 import uk.govuk.app.topics.ui.TopicRoute
@@ -64,7 +66,7 @@ fun NavGraphBuilder.topicsGraph(
         composable(TOPICS_ALL_STEP_BY_STEPS_ROUTE) {
             Column {
                 ChildPageHeader(
-                    text = "Step by step guides", // Todo - extract string
+                    text = stringResource(R.string.stepByStepGuidesTitle),
                     onBack = { navController.popBackStack() }
                 )
             }

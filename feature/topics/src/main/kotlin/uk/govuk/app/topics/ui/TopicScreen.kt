@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.ExternalLinkListItem
@@ -19,6 +20,7 @@ import uk.govuk.app.design.ui.component.ListHeadingLabel
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.topics.R
 import uk.govuk.app.topics.TopicViewModel
 import uk.govuk.app.topics.ui.model.TopicUi
 
@@ -99,7 +101,7 @@ private fun LazyListScope.popularPages(
 ) {
     if (popularPages.isNotEmpty()) {
         item {
-            ListHeadingLabel("Popular pages in this topic") // Todo - extract string
+            ListHeadingLabel(stringResource(R.string.popularPagesTitle))
         }
 
         item {
@@ -125,7 +127,7 @@ private fun LazyListScope.stepBySteps(
 ) {
     if (stepBySteps.isNotEmpty()) {
         item {
-            ListHeadingLabel("Step by step guides") // Todo - extract string
+            ListHeadingLabel(stringResource(R.string.stepByStepGuidesTitle))
         }
 
         item {
@@ -147,7 +149,7 @@ private fun LazyListScope.stepBySteps(
         if (displaySeeAll) {
             item {
                 InternalLinkListItem(
-                    title = "See all", // Todo - extract string
+                    title = stringResource(R.string.seeAllButton),
                     onClick = onSeeAll,
                     index = lastIndex,
                     lastIndex = lastIndex
@@ -163,7 +165,7 @@ private fun LazyListScope.subtopics(
 ) {
     if (subtopics.isNotEmpty()) {
         item {
-            ListHeadingLabel("Browse") // Todo - extract string
+            ListHeadingLabel(stringResource(R.string.browseTitle))
         }
 
         item {
