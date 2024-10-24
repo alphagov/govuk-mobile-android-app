@@ -6,7 +6,7 @@ import uk.govuk.app.topics.ui.model.TopicUi.Subtopic
 import uk.govuk.app.topics.ui.model.TopicUi.TopicContent
 import kotlin.math.min
 
-internal fun RemoteTopic.toTopicUi(): TopicUi {
+internal fun RemoteTopic.toTopicUi(maxStepBySteps: Int): TopicUi {
     val stepBySteps = content.filter { it.isStepByStep }
 
     return TopicUi(
@@ -26,13 +26,13 @@ internal fun RemoteTopic.toTopicUi(): TopicUi {
                 )
             },
         stepBySteps = stepBySteps
-            .subList(0, min(stepBySteps.size, 3))
+            .subList(0, min(stepBySteps.size, maxStepBySteps))
             .map {
                 TopicContent(
                     url = it.url,
                     title = it.title
                 )
             },
-        displayStepByStepSeeAll = stepBySteps.size > 3 // Todo - extract constant
+        displayStepByStepSeeAll = stepBySteps.size > maxStepBySteps
     )
 }

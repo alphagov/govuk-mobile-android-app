@@ -21,13 +21,17 @@ internal class TopicViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
+    companion object {
+        private const val MAX_STEP_BY_STEPS = 3
+    }
+
     private val _topic: MutableStateFlow<TopicUi?> = MutableStateFlow(null)
     val topic = _topic.asStateFlow()
 
     init {
         savedStateHandle.get<String>(TOPIC_REF_ARG)?.let { ref ->
             viewModelScope.launch {
-                _topic.value = topicsRepo.fetchTopic(ref)?.toTopicUi()
+                _topic.value = topicsRepo.fetchTopic(ref)?.toTopicUi(MAX_STEP_BY_STEPS)
             }
         }
     }

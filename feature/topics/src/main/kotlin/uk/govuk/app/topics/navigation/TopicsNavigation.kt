@@ -2,6 +2,7 @@ package uk.govuk.app.topics.navigation
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
@@ -10,6 +11,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.topics.ui.AllTopicsRoute
 import uk.govuk.app.topics.ui.EditTopicsRoute
 import uk.govuk.app.topics.ui.TopicRoute
@@ -19,6 +21,7 @@ const val TOPIC_ROUTE = "topic_route"
 internal const val TOPIC_REF_ARG = "ref"
 private const val TOPICS_EDIT_ROUTE = "topics_edit_route"
 const val TOPICS_ALL_ROUTE = "topics_all_route"
+const val TOPICS_ALL_STEP_BY_STEPS_ROUTE = "topics_all_step_by_steps_route"
 
 fun NavGraphBuilder.topicsGraph(
     navController: NavController,
@@ -41,6 +44,7 @@ fun NavGraphBuilder.topicsGraph(
                     intent.data = Uri.parse(url)
                     context.startActivity(intent)
                 },
+                onStepByStepSeeAll = { navController.navigate(TOPICS_ALL_STEP_BY_STEPS_ROUTE) },
                 modifier = modifier
             )
         }
@@ -55,6 +59,14 @@ fun NavGraphBuilder.topicsGraph(
                 onClick = { title -> navController.navigateToTopic(title) },
                 modifier = modifier
             )
+        }
+        composable(TOPICS_ALL_STEP_BY_STEPS_ROUTE) {
+            Column {
+                ChildPageHeader(
+                    text = "Step by step guides", // Todo - extract string
+                    onBack = { navController.popBackStack() }
+                )
+            }
         }
     }
 }

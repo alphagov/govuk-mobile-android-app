@@ -26,6 +26,7 @@ import uk.govuk.app.topics.ui.model.TopicUi
 internal fun TopicRoute(
     onBack: () -> Unit,
     onExternalLink: (String) -> Unit,
+    onStepByStepSeeAll: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: TopicViewModel = hiltViewModel()
@@ -35,6 +36,7 @@ internal fun TopicRoute(
         topic = topic,
         onBack = onBack,
         onExternalLink = onExternalLink,
+        onStepByStepSeeAll = onStepByStepSeeAll,
         modifier = modifier
     )
 }
@@ -44,6 +46,7 @@ private fun TopicScreen(
     topic: TopicUi?,
     onBack: () -> Unit,
     onExternalLink: (String) -> Unit,
+    onStepByStepSeeAll: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier.fillMaxSize()) {
@@ -65,8 +68,9 @@ private fun TopicScreen(
 
                 stepBySteps(
                     stepBySteps = topic.stepBySteps,
-                    displayStepByStepSeeAll = topic.displayStepByStepSeeAll,
-                    onClick = onExternalLink
+                    displaySeeAll = topic.displayStepByStepSeeAll,
+                    onClick = onExternalLink,
+                    onSeeAll = onStepByStepSeeAll
                 )
 
                 item {
@@ -109,8 +113,9 @@ private fun LazyListScope.popularPages(
 
 private fun LazyListScope.stepBySteps(
     stepBySteps: List<TopicUi.TopicContent>,
-    displayStepByStepSeeAll: Boolean,
-    onClick: (String) -> Unit
+    displaySeeAll: Boolean,
+    onClick: (String) -> Unit,
+    onSeeAll: () -> Unit
 ) {
     if (stepBySteps.isNotEmpty()) {
         item {
@@ -121,16 +126,28 @@ private fun LazyListScope.stepBySteps(
             SmallVerticalSpacer()
         }
 
+        var lastIndex = stepBySteps.lastIndex
+        if (displaySeeAll) lastIndex += 1
+
         itemsIndexed(stepBySteps) { index, content ->
             ExternalLinkListItem(
                 title = content.title,
                 onClick = { onClick(content.url) },
                 index = index,
-                lastIndex = stepBySteps.lastIndex
+                lastIndex = lastIndex
             )
         }
 
-        // Todo - see all button
+        if (displaySeeAll) {
+            item {
+                InternalLinkListItem(
+                    title = "See all", // Todo - extract string
+                    onClick = onSeeAll,
+                    index = lastIndex,
+                    lastIndex = lastIndex
+                )
+            }
+        }
     }
 }
 
