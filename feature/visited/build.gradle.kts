@@ -33,6 +33,10 @@ sonar {
             "sonar.coverage.exclusions",
             properties["sonar.coverage.exclusions"].toString() + ",**/VisitedEncryptionHelper.*,**/VisitedRealmProvider.*"
         )
+        property(
+            "sonar.cpd.exclusions",
+            properties["sonar.cpd.exclusions"].toString() + ",**/VisitedEncryptionHelper.*,**/VisitedRealmProvider.*"
+        )
     }
 }
 
