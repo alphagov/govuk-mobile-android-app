@@ -45,6 +45,7 @@ fun NavGraphBuilder.topicsGraph(
                     context.startActivity(intent)
                 },
                 onStepByStepSeeAll = { navController.navigate(TOPICS_ALL_STEP_BY_STEPS_ROUTE) },
+                onSubtopic = { ref -> navController.navigateToTopic(ref) },
                 modifier = modifier
             )
         }

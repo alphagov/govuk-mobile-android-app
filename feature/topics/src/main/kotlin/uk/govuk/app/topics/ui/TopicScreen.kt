@@ -27,6 +27,7 @@ internal fun TopicRoute(
     onBack: () -> Unit,
     onExternalLink: (String) -> Unit,
     onStepByStepSeeAll: () -> Unit,
+    onSubtopic: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: TopicViewModel = hiltViewModel()
@@ -37,6 +38,7 @@ internal fun TopicRoute(
         onBack = onBack,
         onExternalLink = onExternalLink,
         onStepByStepSeeAll = onStepByStepSeeAll,
+        onSubtopic = onSubtopic,
         modifier = modifier
     )
 }
@@ -47,6 +49,7 @@ private fun TopicScreen(
     onBack: () -> Unit,
     onExternalLink: (String) -> Unit,
     onStepByStepSeeAll: () -> Unit,
+    onSubtopic: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier.fillMaxSize()) {
@@ -77,7 +80,10 @@ private fun TopicScreen(
                     MediumVerticalSpacer()
                 }
 
-                subtopics(topic.subtopics)
+                subtopics(
+                    subtopics = topic.subtopics,
+                    onClick = onSubtopic
+                )
 
                 item {
                     ExtraLargeVerticalSpacer()
@@ -151,7 +157,10 @@ private fun LazyListScope.stepBySteps(
     }
 }
 
-private fun LazyListScope.subtopics(subtopics: List<TopicUi.Subtopic>) {
+private fun LazyListScope.subtopics(
+    subtopics: List<TopicUi.Subtopic>,
+    onClick: (String) -> Unit
+) {
     if (subtopics.isNotEmpty()) {
         item {
             ListHeadingLabel("Browse") // Todo - extract string
@@ -164,7 +173,7 @@ private fun LazyListScope.subtopics(subtopics: List<TopicUi.Subtopic>) {
         itemsIndexed(subtopics) { index, subtopic ->
             InternalLinkListItem(
                 title = subtopic.title,
-                onClick = { }, // Todo - handle click
+                onClick = { onClick(subtopic.ref) },
                 index = index,
                 lastIndex = subtopics.lastIndex
             )
