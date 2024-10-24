@@ -12,11 +12,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.ExternalLinkListItem
 import uk.govuk.app.design.ui.component.InternalLinkListItem
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeadingLabel
+import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.R
@@ -61,6 +63,16 @@ private fun TopicScreen(
             )
 
             LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
+                if (topic.description != null) {
+                    item {
+                        BodyRegularLabel(topic.description)
+                    }
+
+                    item {
+                        MediumVerticalSpacer()
+                    }
+                }
+
                 popularPages(
                     popularPages = topic.popularPages,
                     onClick = onExternalLink

@@ -11,6 +11,7 @@ internal fun RemoteTopic.toTopicUi(maxStepBySteps: Int): TopicUi {
 
     return TopicUi(
         title = title,
+        description = description,
         subtopics = subtopics.map {
             Subtopic(
                 ref = it.ref,
