@@ -14,10 +14,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.ExternalLinkListItem
-import uk.govuk.app.design.ui.component.ExtraLargeVerticalSpacer
 import uk.govuk.app.design.ui.component.InternalLinkListItem
+import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeadingLabel
-import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.R
@@ -67,10 +66,6 @@ private fun TopicScreen(
                     onClick = onExternalLink
                 )
 
-                item {
-                    MediumVerticalSpacer()
-                }
-
                 stepBySteps(
                     stepBySteps = topic.stepBySteps,
                     displaySeeAll = topic.displayStepByStepSeeAll,
@@ -78,18 +73,10 @@ private fun TopicScreen(
                     onSeeAll = onStepByStepSeeAll
                 )
 
-                item {
-                    MediumVerticalSpacer()
-                }
-
                 subtopics(
                     subtopics = topic.subtopics,
                     onClick = onSubtopic
                 )
-
-                item {
-                    ExtraLargeVerticalSpacer()
-                }
             }
         }
     }
@@ -115,6 +102,10 @@ private fun LazyListScope.popularPages(
                 index = index,
                 lastIndex = popularPages.lastIndex
             )
+        }
+
+        item {
+            LargeVerticalSpacer()
         }
     }
 }
@@ -156,6 +147,10 @@ private fun LazyListScope.stepBySteps(
                 )
             }
         }
+
+        item {
+            LargeVerticalSpacer()
+        }
     }
 }
 
@@ -179,6 +174,10 @@ private fun LazyListScope.subtopics(
                 index = index,
                 lastIndex = subtopics.lastIndex
             )
+        }
+
+        item {
+            LargeVerticalSpacer()
         }
     }
 }
