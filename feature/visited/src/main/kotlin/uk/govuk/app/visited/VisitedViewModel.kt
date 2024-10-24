@@ -7,20 +7,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.visited.data.VisitedItemsTransformer
+import uk.govuk.app.visited.data.VisitedRepo
+import uk.govuk.app.visited.ui.model.VisitedUi
+import java.time.LocalDate
 import javax.inject.Inject
 
-internal data class VisitedUiState(
-    val visited: List<VisitedUi>
-)
 
-internal data class VisitedUi(
-    val title: String,
-    val url: String,
-    val lastVisited: String,
+internal data class VisitedUiState(
+    val visited: Map<String, List<VisitedUi>>
 )
 
 @HiltViewModel
 internal class VisitedViewModel @Inject constructor(
+    private val visitedRepo: VisitedRepo,
     private val analytics: Analytics
 ): ViewModel() {
 
@@ -35,7 +35,12 @@ internal class VisitedViewModel @Inject constructor(
 
     private fun loadVisitedItems() {
         viewModelScope.launch {
-            _uiState.value = VisitedUiState(visited = emptyList())
+            visitedRepo.visitedItems.collect { visitedItems ->
+                val transformer = VisitedItemsTransformer(visitedItems, LocalDate.now())
+                val allVisitedItems = transformer.transform()
+
+                _uiState.value = VisitedUiState(visited = allVisitedItems)
+            }
         }
     }
 
