@@ -1,6 +1,7 @@
 package uk.govuk.app.visited
 
 import uk.govuk.app.visited.data.store.VisitedLocalDataSource
+import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,6 +14,6 @@ internal class VisitedClient @Inject constructor(
     }
 
     private suspend fun upsertVisitedItem(title: String, url: String) {
-        visitedLocalDataSource.insertOrUpdate(title, url)
+        visitedLocalDataSource.insertOrUpdate(title, url, LocalDate.now())
     }
 }

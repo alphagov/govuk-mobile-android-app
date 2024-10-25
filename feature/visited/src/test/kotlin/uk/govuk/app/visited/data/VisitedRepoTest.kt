@@ -27,7 +27,7 @@ class VisitedRepoTest {
 
     @Test
     fun `Given the local data source is not empty, when get visited items, then emit visited items`() {
-        var lastVisitedMillis = LocalDate.now().toEpochDay()
+        val lastVisitedMillis = LocalDate.now().toEpochDay()
 
         every { localDataSource.visitedItems } returns flowOf(
             listOf(

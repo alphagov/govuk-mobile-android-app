@@ -66,6 +66,17 @@ class VisitedViewModelTest {
     }
 
     @Test
+    fun `Given the user re-views a visited item, then run the insert or update function`() {
+        runTest {
+            viewModel.onVisitableItemClicked("visited item title", "visited item title")
+
+            coVerify {
+                visited.visitableItemClick("visited item title", "visited item title")
+            }
+        }
+    }
+
+    @Test
     fun `Given there are visited items, then the status in the view model is correct`() {
         val today = LocalDate.now()
 

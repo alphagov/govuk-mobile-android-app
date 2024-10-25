@@ -23,17 +23,23 @@ internal class VisitedLocalDataSource @Inject constructor(
         )
     }
 
-    suspend fun insertOrUpdate(title: String, url: String) {
+    suspend fun insertOrUpdate(title: String, url: String, lastVisited: LocalDate = LocalDate.now()) {
+        println("Date: $lastVisited")
+
         realmProvider.open().write {
             val visitedItem = query<VisitedItem>("title = $0 AND url = $1", title, url).first().find()
 
+            if (visitedItem != null) {
+                println("VisitedItem: ${visitedItem.lastVisited}")
+            }
+
             visitedItem?.apply {
-                this.lastVisited = LocalDate.now().toEpochDay()
+                this.lastVisited = lastVisited.toEpochDay()
             } ?: copyToRealm(
                 VisitedItem().apply {
                     this.title = title
                     this.url = url
-                    this.lastVisited = LocalDate.now().toEpochDay()
+                    this.lastVisited = lastVisited.toEpochDay()
                 }
             )
         }

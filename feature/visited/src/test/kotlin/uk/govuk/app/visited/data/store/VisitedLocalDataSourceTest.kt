@@ -74,41 +74,73 @@ class VisitedLocalDataSourceTest {
         }
     }
 
-    /*
-     * TODO: this test doesn't work because we are auto-setting the lastVisited date to today.
-     * Find a way of testing this correctly - some way of moving backwards and forwards in time.
-        @Test
-        fun `Given an existing historical visited item, when re-visited, then update the lastVisited date`() {
-            val today = LocalDate.now()
-            val fiveDaysAgo = today.minusDays(5)
+    @Test
+    fun `Given no historical visited items, when visited, then create the visited item`() {
+        val today = LocalDate.now()
 
-            val visitedItem = VisitedItem().apply {
-                title = "title1"
-                url = "url1"
-                lastVisited = fiveDaysAgo.toEpochDay()
-            }
+        runTest {
+            val localDataSource = VisitedLocalDataSource(realmProvider)
 
-            runTest {
-                realm.write {
-                    copyToRealm(visitedItem)
+            localDataSource.insertOrUpdate("title1", "url1")
+
+            val visitedItems = localDataSource.visitedItems.first()
+
+            assertEquals(today.toEpochDay(), visitedItems[0].lastVisited)
+        }
+    }
+
+    @Test
+    fun `Given two historical visited items, when one is re-visited, then update the correct lastVisited date`() {
+        val today = LocalDate.now()
+        val fiveDaysAgo = today.minusDays(5)
+
+        runTest {
+            val localDataSource = VisitedLocalDataSource(realmProvider)
+
+            localDataSource.insertOrUpdate("title1", "url1", fiveDaysAgo)
+            localDataSource.insertOrUpdate("title2", "url2", fiveDaysAgo)
+
+            var visitedItems = localDataSource.visitedItems.first()
+
+            assertEquals(fiveDaysAgo.toEpochDay(), visitedItems[0].lastVisited)
+            assertEquals(fiveDaysAgo.toEpochDay(), visitedItems[1].lastVisited)
+
+            localDataSource.insertOrUpdate("title2", "url2", today)
+
+            // Re-read the visited items from the local data source
+            visitedItems = localDataSource.visitedItems.first()
+
+            // Don't rely on the ordering, check for the correct title
+            visitedItems.forEach { visitedItem ->
+                if (visitedItem.title == "title2") {
+                    assertEquals(today.toEpochDay(), visitedItem.lastVisited)
+                } else {
+                    assertEquals(fiveDaysAgo.toEpochDay(), visitedItem.lastVisited)
                 }
-
-                val localDataSource = VisitedLocalDataSource(realmProvider)
-
-                val visitedItems = localDataSource.visitedItems.first()
-
-                assertEquals(1, visitedItems.size)
-                assertEquals("title1", visitedItems[0].title)
-                assertEquals("url1", visitedItems[0].url)
-                assertEquals(fiveDaysAgo.toEpochDay(), visitedItems[0].lastVisited)
-
-                localDataSource.insertOrUpdate("title1", "url1")
-
-                assertEquals(1, visitedItems.size)
-                assertEquals("title1", visitedItems[0].title)
-                assertEquals("url1", visitedItems[0].url)
-                assertEquals(today.toEpochDay(), visitedItems[0].lastVisited)
             }
         }
-     */
+    }
+
+    @Test
+    fun `Given a historical visited item, when re-visited, then update the lastVisited date`() {
+        val today = LocalDate.now()
+        val fiveDaysAgo = today.minusDays(5)
+
+        runTest {
+            val localDataSource = VisitedLocalDataSource(realmProvider)
+
+            localDataSource.insertOrUpdate("title1", "url1", fiveDaysAgo)
+
+            var visitedItems = localDataSource.visitedItems.first()
+
+            assertEquals(fiveDaysAgo.toEpochDay(), visitedItems[0].lastVisited)
+
+            localDataSource.insertOrUpdate("title1", "url1", today)
+
+            // Re-read the visited items from the local data source
+            visitedItems = localDataSource.visitedItems.first()
+
+            assertEquals(today.toEpochDay(), visitedItems[0].lastVisited)
+        }
+    }
 }
