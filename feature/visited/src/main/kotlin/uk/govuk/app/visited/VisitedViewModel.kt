@@ -21,6 +21,7 @@ internal data class VisitedUiState(
 @HiltViewModel
 internal class VisitedViewModel @Inject constructor(
     private val visitedRepo: VisitedRepo,
+    private val visited: Visited,
     private val analytics: Analytics
 ): ViewModel() {
 
@@ -55,5 +56,9 @@ internal class VisitedViewModel @Inject constructor(
 
     fun onVisitedItemClicked(title: String, url: String) {
         analytics.visitedItemClick(text = title, url = url)
+    }
+
+    suspend fun onVisitableItemClicked(title: String, url: String) {
+        visited.visitableItemClick(title = title, url = url)
     }
 }

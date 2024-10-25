@@ -13,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.launch
 import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ChildPageHeader
@@ -118,6 +120,7 @@ private fun ShowVisitedItems(
     modifier: Modifier = Modifier
 ) {
     val lastVisitedText = stringResource(R.string.visited_items_last_visited)
+    val scope = rememberCoroutineScope()
 
     items?.forEach { (sectionTitle, visitedItems) ->
         if (visitedItems.isNotEmpty()) {
@@ -126,7 +129,7 @@ private fun ShowVisitedItems(
                 modifier = Modifier.padding(start = GovUkTheme.spacing.large)
             )
 
-            visitedItems?.forEach { item ->
+            visitedItems.forEach { item ->
                 val title = item.title
                 val lastVisited = item.lastVisited
                 val url = item.url
@@ -138,6 +141,9 @@ private fun ShowVisitedItems(
                     modifier.padding(GovUkTheme.spacing.medium)
                         .clickable(
                             onClick = {
+                                scope.launch {
+                                    viewModel.onVisitableItemClicked(title = title, url = url)
+                                }
                                 viewModel.onVisitedItemClicked(title, url)
                                 context.startActivity(intent)
                             }

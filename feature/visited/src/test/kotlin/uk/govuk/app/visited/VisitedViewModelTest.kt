@@ -28,7 +28,8 @@ class VisitedViewModelTest {
     private val dispatcher = UnconfinedTestDispatcher()
     private val visitedRepo = mockk<VisitedRepo>(relaxed = true)
     private val analytics = mockk<Analytics>(relaxed = true)
-    private val viewModel = VisitedViewModel(visitedRepo, analytics)
+    private val visited = mockk<Visited>(relaxed = true)
+    private val viewModel = VisitedViewModel(visitedRepo, visited, analytics)
 
     @Before
     fun setup() {
@@ -99,7 +100,7 @@ class VisitedViewModelTest {
                 )
             )
 
-        val viewModel = VisitedViewModel(visitedRepo, analytics)
+        val viewModel = VisitedViewModel(visitedRepo, visited, analytics)
 
         every { visitedRepo.visitedItems } returns flowOf(visitedItems)
 
@@ -114,7 +115,7 @@ class VisitedViewModelTest {
     fun `Given there are no visited items, then the status in the view model are correct`() {
         val visitedItems = emptyList<VisitedItem>()
         val expected = VisitedUiState(visited = emptyMap())
-        val viewModel = VisitedViewModel(visitedRepo, analytics)
+        val viewModel = VisitedViewModel(visitedRepo, visited, analytics)
 
         every { visitedRepo.visitedItems } returns flowOf(visitedItems)
 
