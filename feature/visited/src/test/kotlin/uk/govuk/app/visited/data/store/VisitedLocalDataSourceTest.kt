@@ -73,4 +73,42 @@ class VisitedLocalDataSourceTest {
             assertEquals(lastVisitedMillis, visitedItems[1].lastVisited)
         }
     }
+
+    /*
+     * TODO: this test doesn't work because we are auto-setting the lastVisited date to today.
+     * Find a way of testing this correctly - some way of moving backwards and forwards in time.
+        @Test
+        fun `Given an existing historical visited item, when re-visited, then update the lastVisited date`() {
+            val today = LocalDate.now()
+            val fiveDaysAgo = today.minusDays(5)
+
+            val visitedItem = VisitedItem().apply {
+                title = "title1"
+                url = "url1"
+                lastVisited = fiveDaysAgo.toEpochDay()
+            }
+
+            runTest {
+                realm.write {
+                    copyToRealm(visitedItem)
+                }
+
+                val localDataSource = VisitedLocalDataSource(realmProvider)
+
+                val visitedItems = localDataSource.visitedItems.first()
+
+                assertEquals(1, visitedItems.size)
+                assertEquals("title1", visitedItems[0].title)
+                assertEquals("url1", visitedItems[0].url)
+                assertEquals(fiveDaysAgo.toEpochDay(), visitedItems[0].lastVisited)
+
+                localDataSource.insertOrUpdate("title1", "url1")
+
+                assertEquals(1, visitedItems.size)
+                assertEquals("title1", visitedItems[0].title)
+                assertEquals("url1", visitedItems[0].url)
+                assertEquals(today.toEpochDay(), visitedItems[0].lastVisited)
+            }
+        }
+     */
 }
