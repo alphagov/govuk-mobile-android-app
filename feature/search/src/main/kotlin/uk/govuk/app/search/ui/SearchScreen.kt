@@ -21,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.SearchHeader
@@ -122,6 +124,7 @@ private fun SearchScreen(
 @Composable
 fun ShowResults(searchResults: List<Result>) {
     val viewModel: SearchViewModel = hiltViewModel()
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
@@ -151,6 +154,9 @@ fun ShowResults(searchResults: List<Result>) {
                         .fillMaxWidth()
                         .clickable(
                             onClick = {
+                                scope.launch {
+                                    viewModel.onVisitableItemClicked(title = title, url = url)
+                                }
                                 viewModel.onSearchResultClicked(title, url)
                                 context.startActivity(intent)
                             }
