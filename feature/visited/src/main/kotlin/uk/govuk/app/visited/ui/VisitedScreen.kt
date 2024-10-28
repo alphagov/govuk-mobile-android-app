@@ -13,7 +13,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -22,7 +23,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.launch
 import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ChildPageHeader
@@ -32,6 +32,7 @@ import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.SubheadlineRegularLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.visited.R
+import uk.govuk.app.visited.VisitedUiState
 import uk.govuk.app.visited.VisitedViewModel
 import uk.govuk.app.visited.data.capitaliseMonth
 import uk.govuk.app.visited.ui.model.VisitedUi
@@ -42,11 +43,15 @@ internal fun VisitedRoute(
     modifier: Modifier = Modifier
 ) {
     val viewModel: VisitedViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
 
     VisitedScreen(
-        viewModel = viewModel,
+        uiState = uiState,
         onPageView = { viewModel.onPageView() },
         onBack = onBack,
+        onClick = { title, url ->
+            viewModel.onVisitedItemClicked(title, url)
+        },
         modifier = modifier
     )
 }
@@ -54,9 +59,10 @@ internal fun VisitedRoute(
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 private fun VisitedScreen(
-    viewModel: VisitedViewModel,
+    uiState: VisitedUiState?,
     onPageView: () -> Unit,
     onBack: () -> Unit,
+    onClick: (title: String, url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -78,13 +84,12 @@ private fun VisitedScreen(
                     bottom = GovUkTheme.spacing.extraLarge
                 )
         ) {
-            val visitedItems = viewModel.uiState.value?.visited
-
+            val visitedItems = uiState?.visited
             if (visitedItems != null) {
                 if (visitedItems.isEmpty()) {
                     NoVisitedItems(modifier)
                 } else {
-                    ShowVisitedItems(visitedItems, viewModel, modifier)
+                    ShowVisitedItems(visitedItems, onClick, modifier)
                 }
             }
         }
@@ -116,11 +121,10 @@ private fun NoVisitedItems(
 @Composable
 private fun ShowVisitedItems(
     items: Map<String, List<VisitedUi>>?,
-    viewModel: VisitedViewModel,
+    onClick: (title: String, url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val lastVisitedText = stringResource(R.string.visited_items_last_visited)
-    val scope = rememberCoroutineScope()
 
     items?.forEach { (sectionTitle, visitedItems) ->
         if (visitedItems.isNotEmpty()) {
@@ -141,10 +145,7 @@ private fun ShowVisitedItems(
                     modifier.padding(GovUkTheme.spacing.medium)
                         .clickable(
                             onClick = {
-                                scope.launch {
-                                    viewModel.onVisitableItemClicked(title = title, url = url)
-                                }
-                                viewModel.onVisitedItemClicked(title, url)
+                                onClick(title, url)
                                 context.startActivity(intent)
                             }
                         ),

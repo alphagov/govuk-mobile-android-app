@@ -34,7 +34,7 @@ internal class VisitedViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<VisitedUiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
 
-    private fun loadVisitedItems() {
+    init {
         viewModelScope.launch {
             visitedRepo.visitedItems.collect { visitedItems ->
                 val transformer = VisitedItemsTransformer(visitedItems, LocalDate.now())
@@ -46,7 +46,6 @@ internal class VisitedViewModel @Inject constructor(
     }
 
     fun onPageView() {
-        loadVisitedItems()
         analytics.screenView(
             screenClass = SCREEN_CLASS,
             screenName = SCREEN_NAME,
@@ -55,10 +54,9 @@ internal class VisitedViewModel @Inject constructor(
     }
 
     fun onVisitedItemClicked(title: String, url: String) {
+        viewModelScope.launch {
+            visited.visitableItemClick(title = title, url = url)
+        }
         analytics.visitedItemClick(text = title, url = url)
-    }
-
-    suspend fun onVisitableItemClicked(title: String, url: String) {
-        visited.visitableItemClick(title = title, url = url)
     }
 }
