@@ -5,13 +5,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import uk.govuk.app.topics.data.local.TopicsLocalDataSource
 import uk.govuk.app.topics.data.remote.TopicsApi
+import uk.govuk.app.topics.data.remote.model.RemoteTopic
 import uk.govuk.app.topics.domain.model.TopicItem
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 internal class TopicsRepo @Inject constructor(
-    topicsApi: TopicsApi,
+    private val topicsApi: TopicsApi,
     private val localDataSource: TopicsLocalDataSource,
 ) {
     private val remoteTopics = flow {
@@ -54,5 +55,22 @@ internal class TopicsRepo @Inject constructor(
 
     suspend fun deselectTopic(ref: String) {
         localDataSource.deselect(ref)
+    }
+
+    suspend fun getTopic(ref: String): RemoteTopic? {
+        try {
+            val response = topicsApi.getTopic(ref)
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    return it
+                } // Todo - handle failure
+            } else {
+                // Todo - handle failure
+            }
+        } catch (e: Exception) {
+            // Todo - handle failure
+        }
+
+        return null
     }
 }

@@ -28,11 +28,11 @@ import uk.govuk.app.design.ui.component.TopicVerticalCard
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.R
 import uk.govuk.app.topics.TopicsWidgetViewModel
-import uk.govuk.app.topics.ui.model.TopicUi
+import uk.govuk.app.topics.ui.model.TopicItemUi
 
 @Composable
 fun TopicsWidget(
-    onTopicClick: (String) -> Unit,
+    onTopicClick: (String, String) -> Unit,
     onEditClick: (String) -> Unit,
     onAllClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -55,9 +55,9 @@ fun TopicsWidget(
 
 @Composable
 private fun TopicsWidgetContent(
-    topics: List<TopicUi>,
+    topics: List<TopicItemUi>,
     displayShowAll: Boolean,
-    onTopicClick: (String) -> Unit,
+    onTopicClick: (String, String) -> Unit,
     onEditClick: (String) -> Unit,
     onAllClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -102,8 +102,8 @@ private fun TopicsWidgetContent(
 
 @Composable
 private fun TopicsGrid(
-    topics: List<TopicUi>,
-    onClick: (String) -> Unit,
+    topics: List<TopicItemUi>,
+    onClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val windowWidthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
@@ -133,10 +133,10 @@ private fun TopicsGrid(
 
 @Composable
 private fun TopicsRow(
-    topics: List<TopicUi>,
+    topics: List<TopicItemUi>,
     columnCount: Int,
     rowIndex: Int,
-    onClick: (String) -> Unit,
+    onClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -153,7 +153,7 @@ private fun TopicsRow(
                 TopicVerticalCard(
                     icon = topic.icon,
                     title = topic.title,
-                    onClick = onClick,
+                    onClick = { onClick(topic.ref, topic.title) },
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f)
@@ -187,31 +187,31 @@ private fun TopicsWidgetPreview() {
     GovUkTheme {
         TopicsWidgetContent(
             topics = listOf(
-                TopicUi(
+                TopicItemUi(
                     "",
                     uk.govuk.app.design.R.drawable.ic_topic_default,
                     "A really really really really really really long topic title",
                     isSelected = true
                 ),
-                TopicUi(
+                TopicItemUi(
                     "",
                     uk.govuk.app.design.R.drawable.ic_topic_benefits,
                     "Benefits",
                     isSelected = true
                 ),
-                TopicUi(
+                TopicItemUi(
                     "",
                     uk.govuk.app.design.R.drawable.ic_topic_transport,
                     "Driving",
                     isSelected = true
                 ),
-                TopicUi(
+                TopicItemUi(
                     "",
                     uk.govuk.app.design.R.drawable.ic_topic_money,
                     "Tax",
                     isSelected = true
                 ),
-                TopicUi(
+                TopicItemUi(
                     "",
                     uk.govuk.app.design.R.drawable.ic_topic_parenting,
                     "Child Benefit",
@@ -219,7 +219,7 @@ private fun TopicsWidgetPreview() {
                 ),
             ),
             displayShowAll = true,
-            onTopicClick = { },
+            onTopicClick = { _, _ -> },
             onEditClick = { },
             onAllClick = { }
         )

@@ -1,0 +1,143 @@
+package uk.govuk.app.topics
+
+import androidx.lifecycle.SavedStateHandle
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.Test
+import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.topics.data.TopicsRepo
+import uk.govuk.app.topics.data.remote.model.RemoteTopic
+import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
+import uk.govuk.app.topics.ui.model.TopicUi
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class TopicViewModelTest {
+
+    companion object {
+        private const val REF = "ref"
+    }
+
+    private val dispatcher = UnconfinedTestDispatcher()
+    private val topicsRepo = mockk<TopicsRepo>(relaxed = true)
+    private val analytics = mockk<Analytics>(relaxed = true)
+    private val savedStateHandle = mockk<SavedStateHandle>(relaxed = true)
+
+    @Before
+    fun setup() {
+        Dispatchers.setMain(dispatcher)
+        every { savedStateHandle.get<String>(TOPIC_REF_ARG) } returns REF
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `Given a topic is returned, When init, then emit topic`() {
+        val topic = RemoteTopic(
+            title = "title",
+            description = "description",
+            subtopics = emptyList(),
+            content = emptyList()
+        )
+
+        coEvery { topicsRepo.getTopic(REF) } returns topic
+
+        val expected = TopicUi(
+            title = "title",
+            description = "description",
+            subtopics = emptyList(),
+            popularPages = emptyList(),
+            stepBySteps = emptyList(),
+            displayStepByStepSeeAll = false
+        )
+
+        val viewModel = TopicViewModel(topicsRepo, analytics, savedStateHandle)
+
+        runTest {
+            val result = viewModel.topic.first()
+            assertEquals(expected, result)
+        }
+    }
+
+    @Test
+    fun `Given a page view, then log analytics`() {
+        val viewModel = TopicViewModel(topicsRepo, analytics, savedStateHandle)
+
+        viewModel.onPageView("title")
+
+        verify {
+            analytics.screenView(
+                screenClass = "TopicScreen",
+                screenName = "title",
+                title = "title"
+            )
+        }
+    }
+
+    @Test
+    fun `Given a content click, then log analytics`() {
+        val viewModel = TopicViewModel(topicsRepo, analytics, savedStateHandle)
+
+        viewModel.onContentClick(
+            section = "section",
+            text = "text",
+            url = "url"
+        )
+
+        verify {
+            analytics.buttonClick(
+                text = "text",
+                url = "url",
+                external = true,
+                section = "section"
+            )
+        }
+    }
+
+    @Test
+    fun `Given a see all click, then log analytics`() {
+        val viewModel = TopicViewModel(topicsRepo, analytics, savedStateHandle)
+
+        viewModel.onSeeAllClick(
+            section = "section",
+            text = "text",
+        )
+
+        verify {
+            analytics.buttonClick(
+                text = "text",
+                external = false,
+                section = "section"
+            )
+        }
+    }
+
+    @Test
+    fun `Given a subtopic click, then log analytics`() {
+        val viewModel = TopicViewModel(topicsRepo, analytics, savedStateHandle)
+
+        viewModel.onSubtopicClick("text")
+
+        verify {
+            analytics.buttonClick(
+                text = "text",
+                external = false,
+                section = "Sub topics"
+            )
+        }
+    }
+}

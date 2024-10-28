@@ -3,33 +3,31 @@ package uk.govuk.app.settings.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.CaptionRegularLabel
-import uk.govuk.app.design.ui.component.ListDivider
+import uk.govuk.app.design.ui.component.CardListItem
+import uk.govuk.app.design.ui.component.ExternalLinkListItem
+import uk.govuk.app.design.ui.component.InternalLinkListItem
+import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeadingLabel
+import uk.govuk.app.design.ui.component.MediumVerticalSpacer
+import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.TabHeader
-import uk.govuk.app.design.ui.component.ToggleSwitch
+import uk.govuk.app.design.ui.component.ToggleListItem
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.settings.R
 import uk.govuk.app.settings.SettingsViewModel
@@ -50,11 +48,13 @@ internal fun SettingsRoute(
             appVersion = appVersion,
             isAnalyticsEnabled = it.isAnalyticsEnabled,
             onPageView = { viewModel.onPageView() },
-            onLicenseView = { viewModel.onLicenseView() },
+            onLicenseClick = {
+                viewModel.onLicenseView()
+                onOpenSourceLicenseClick()
+            },
             onHelpClick = onHelpClick,
             onAnalyticsConsentChange = { enabled -> viewModel.onAnalyticsConsentChanged(enabled) },
             onPrivacyPolicyClick = onPrivacyPolicyClick,
-            onOpenSourceLicenseClick = onOpenSourceLicenseClick,
             modifier = modifier
         )
     }
@@ -65,11 +65,10 @@ private fun SettingsScreen(
     appVersion: String,
     isAnalyticsEnabled: Boolean,
     onPageView: () -> Unit,
-    onLicenseView: () -> Unit,
+    onLicenseClick: () -> Unit,
     onHelpClick: () -> Unit,
     onAnalyticsConsentChange: (Boolean) -> Unit,
     onPrivacyPolicyClick: () -> Unit,
-    onOpenSourceLicenseClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -80,20 +79,25 @@ private fun SettingsScreen(
         modifier = modifier
     ) {
         TabHeader(stringResource(R.string.screen_title))
+        SmallVerticalSpacer()
         Column(
-            modifier = Modifier.verticalScroll(rememberScrollState())
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = GovUkTheme.spacing.medium)
+                .padding(bottom = GovUkTheme.spacing.extraLarge)
         ) {
             AboutTheApp(
                 appVersion = appVersion,
                 onHelpClick = onHelpClick
             )
+            LargeVerticalSpacer()
             PrivacyAndLegal(
                 isAnalyticsEnabled = isAnalyticsEnabled,
                 onAnalyticsConsentChange = onAnalyticsConsentChange,
                 onPrivacyPolicyClick = onPrivacyPolicyClick
             )
-            OpenSourceLicenses(onLicenseView, onOpenSourceLicenseClick)
-            Spacer(Modifier.height(100.dp))
+            MediumVerticalSpacer()
+            OpenSourceLicenses(onLicenseClick)
         }
     }
 }
@@ -109,46 +113,19 @@ private fun AboutTheApp(
     ) {
         ListHeadingLabel(stringResource(R.string.about_title))
 
-        // We might want to make this a component when
-        // we understand the various use cases better
-        OutlinedCard(
-            colors = CardDefaults.cardColors(
-                containerColor = GovUkTheme.colourScheme.surfaces.card
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(GovUkTheme.spacing.medium)
+        SmallVerticalSpacer()
+
+        ExternalLinkListItem(
+            title = stringResource(R.string.help_setting),
+            onClick = onHelpClick,
+            isFirst = true,
+            isLast = false
+        )
+
+        CardListItem(
+            isFirst = false,
+            isLast = true
         ) {
-            Row(
-                Modifier
-                    .clickable(onClick = onHelpClick)
-                    .padding(GovUkTheme.spacing.medium),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BodyRegularLabel(
-                    text = stringResource(R.string.help_setting),
-                    modifier = Modifier.weight(1f),
-                    color = GovUkTheme.colourScheme.textAndIcons.link,
-                )
-
-                Icon(
-                    painter = painterResource(
-                        uk.govuk.app.design.R.drawable.baseline_open_in_new_24
-                    ),
-                    contentDescription = stringResource(R.string.link_opens_in),
-                    tint = GovUkTheme.colourScheme.textAndIcons.link
-                )
-            }
-
-            ListDivider(
-                Modifier.padding(
-                    top = 1.dp,
-                    bottom = 1.dp,
-                    start = GovUkTheme.spacing.medium,
-                    end = GovUkTheme.spacing.medium
-                )
-            )
-
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -178,108 +155,46 @@ private fun PrivacyAndLegal(
     ) {
         ListHeadingLabel(stringResource(R.string.privacy_title))
 
-        OutlinedCard(
-            colors = CardDefaults.cardColors(
-                containerColor = GovUkTheme.colourScheme.surfaces.card
-            ),
+        SmallVerticalSpacer()
+
+        ToggleListItem(
+            title = stringResource(R.string.share_setting),
+            checked = isAnalyticsEnabled,
+            onCheckedChange = onAnalyticsConsentChange
+        )
+
+        SmallVerticalSpacer()
+
+        CaptionRegularLabel(
+            text = stringResource(R.string.privacy_description),
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(GovUkTheme.spacing.medium)
-        ) {
-            Row(
-                Modifier.padding(
-                    top = GovUkTheme.spacing.small,
-                    bottom = GovUkTheme.spacing.small,
-                    start = GovUkTheme.spacing.medium,
-                    end = GovUkTheme.spacing.medium
-                ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BodyRegularLabel(
-                    text = stringResource(R.string.share_setting),
-                    modifier = Modifier.weight(1f),
-                )
+                .padding(horizontal = GovUkTheme.spacing.medium)
+        )
 
-                ToggleSwitch(
-                    checked = isAnalyticsEnabled,
-                    onCheckedChange = onAnalyticsConsentChange,
-                )
-            }
-        }
-
-        Row(
-            Modifier.padding(
-                top = 1.dp,
-                start = GovUkTheme.spacing.extraLarge,
-                end = GovUkTheme.spacing.extraLarge,
-                bottom = 1.dp
-            ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            CaptionRegularLabel(
-                text = stringResource(R.string.privacy_description)
-            )
-        }
-
-        Row(
-            Modifier
-                .padding(
-                    top = 1.dp,
-                    start = GovUkTheme.spacing.extraLarge,
-                    end = GovUkTheme.spacing.extraLarge,
-                    bottom = GovUkTheme.spacing.medium
-                )
-                .clickable(onClick = onPrivacyPolicyClick),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            val altText = "${stringResource(R.string.privacy_read_more)} " +
+        val altText = "${stringResource(R.string.privacy_read_more)} " +
                 stringResource(id = R.string.link_opens_in)
 
-            CaptionRegularLabel(
-                text = stringResource(R.string.privacy_read_more),
-                modifier = Modifier.semantics {
+        CaptionRegularLabel(
+            text = stringResource(R.string.privacy_read_more),
+            modifier = Modifier
+                .semantics {
                     contentDescription = altText
-                },
-                color = GovUkTheme.colourScheme.textAndIcons.link,
-            )
-        }
+                }
+                .padding(horizontal = GovUkTheme.spacing.medium)
+                .clickable(onClick = onPrivacyPolicyClick),
+            color = GovUkTheme.colourScheme.textAndIcons.link,
+        )
     }
 }
 
 @Composable
 private fun OpenSourceLicenses(
-    onLicenseView: () -> Unit,
-    onOpenSourceLicenseClick: () -> Unit,
+    onLicenseClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    InternalLinkListItem(
+        title = stringResource(R.string.oss_licenses_title),
+        onClick = onLicenseClick,
         modifier = modifier
-    ) {
-        OutlinedCard(
-            colors = CardDefaults.cardColors(
-                containerColor = GovUkTheme.colourScheme.surfaces.card
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(GovUkTheme.spacing.medium)
-        ) {
-            Row(
-                Modifier
-                    .clickable(
-                        onClick = {
-                            onLicenseView()
-                            onOpenSourceLicenseClick()
-                        }
-                    )
-                    .padding(GovUkTheme.spacing.medium),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BodyRegularLabel(
-                    text = stringResource(R.string.oss_licenses_title),
-                    modifier = Modifier.weight(1f),
-                    color = GovUkTheme.colourScheme.textAndIcons.link,
-                )
-            }
-        }
-    }
+    )
 }

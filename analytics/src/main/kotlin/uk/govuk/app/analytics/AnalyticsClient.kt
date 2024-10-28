@@ -53,8 +53,19 @@ class AnalyticsClient @Inject constructor(
         navigation(type = "Dot")
     }
 
-    override fun buttonClick(text: String) {
-        navigation(text = text, type = "Button")
+    override fun buttonClick(
+        text: String,
+        url: String?,
+        external: Boolean,
+        section: String?
+    ) {
+        navigation(
+            text = text,
+            type = "Button",
+            url = url,
+            external = external,
+            section = section
+        )
     }
 
     override fun tabClick(text: String) {
@@ -102,7 +113,13 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    private fun navigation(text: String? = null, type: String, url: String? = null, external: Boolean = false) {
+    private fun navigation(
+        text: String? = null,
+        type: String,
+        url: String? = null,
+        external: Boolean = false,
+        section: String? = null
+    ) {
         val parameters = mutableMapOf(
             "type" to type,
             "external" to external,
@@ -114,6 +131,10 @@ class AnalyticsClient @Inject constructor(
 
         url?.let {
             parameters["url"] = it
+        }
+
+        section?.let {
+            parameters["section"] = it
         }
 
         log(

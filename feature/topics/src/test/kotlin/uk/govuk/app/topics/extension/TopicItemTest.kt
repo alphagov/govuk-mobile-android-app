@@ -4,12 +4,12 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import uk.govuk.app.design.R
 import uk.govuk.app.topics.domain.model.TopicItem
-import uk.govuk.app.topics.ui.model.TopicUi
+import uk.govuk.app.topics.ui.model.TopicItemUi
 
 class TopicItemTest{
 
     @Test
-    fun `Given topic items, When mapping to topic ui, then return a topic ui with correct icon`() {
+    fun `Given topic items, When mapping to topic item ui, then return a topic item ui with correct icon`() {
         val topicItems = listOf(
             Pair(R.drawable.ic_topic_benefits, TopicItem("benefits", "Title", true)),
             Pair(R.drawable.ic_topic_business, TopicItem("business", "Title", false)),
@@ -26,14 +26,14 @@ class TopicItemTest{
         )
 
         for (topicItem in topicItems) {
-            val expected = TopicUi(
+            val expected = TopicItemUi(
                 ref = topicItem.second.ref,
                 icon = topicItem.first,
                 title = topicItem.second.title,
                 isSelected = topicItem.second.isSelected
             )
 
-            assertEquals(topicItem.second.toTopicUi(), expected)
+            assertEquals(topicItem.second.toTopicItemUi(), expected)
         }
     }
 }

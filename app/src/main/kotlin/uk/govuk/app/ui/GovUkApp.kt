@@ -31,7 +31,6 @@ import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
@@ -106,25 +105,23 @@ private fun BottomNavScaffold(
     }
 
     val navController = rememberNavController()
-    val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestinationRoute = currentBackStackEntry?.destination?.route
-    val currentDestinationParentRoute = currentBackStackEntry?.destination?.parent?.route
     navController.addOnDestinationChangedListener { _, destination, _ ->
-        selectedIndex = topLevelDestinations.indexOfFirst {
-            it.route == currentDestinationParentRoute
-                    || it.associatedRoutes.contains(destination.route)
-        }
+        selectedIndex =
+            topLevelDestinations.indexOfFirst { topLevelDestination ->
+                topLevelDestination.route == destination.parent?.route ||
+                        topLevelDestination.associatedRoutes.any {
+                            destination.route?.startsWith(it) ?: false
+                        }
+            }
     }
+
+    // Display the nav bar if the current destination has a tab index (is a top level destination
+    // or associated route)
+    val displayBottomNavBar = selectedIndex != -1
 
     Scaffold(
         bottomBar = {
-            // Display bottom nav if current destination's parent is a tab destination or
-            // the current destination is associated with a tab destination
-            if (topLevelDestinations.any {
-                    it.route == currentDestinationParentRoute
-                            || it.associatedRoutes.contains(currentDestinationRoute)
-                }
-            ) {
+            if (displayBottomNavBar) {
                 Column {
                     HorizontalDivider(
                         thickness = 1.dp,
@@ -271,9 +268,9 @@ private fun homeScreenWidgets(
         { modifier ->
             if (isTopicsEnabled) {
                 TopicsWidget(
-                    onTopicClick = { title ->
+                    onTopicClick = { ref, title ->
                         onClick(title)
-                        navController.navigateToTopic(title)
+                        navController.navigateToTopic(ref)
                     },
                     onEditClick = { text ->
                         onClick(text)

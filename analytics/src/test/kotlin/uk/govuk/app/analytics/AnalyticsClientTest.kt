@@ -89,6 +89,34 @@ class AnalyticsClientTest {
     }
 
     @Test
+    fun `Given a button click with optional parameters, then log event`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
+        analyticsClient.buttonClick(
+            text = "text",
+            url = "url",
+            external = true,
+            section = "section"
+        )
+
+        verify {
+            analyticsLogger.logEvent(
+                true,
+                AnalyticsEvent(
+                    eventType = "Navigation",
+                    parameters = mapOf(
+                        "type" to "Button",
+                        "external" to true,
+                        "url" to "url",
+                        "section" to "section",
+                        "language" to Locale.getDefault().language,
+                        "text" to "text"
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
     fun `Given a search, then log event`() {
         val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.search("search term")
