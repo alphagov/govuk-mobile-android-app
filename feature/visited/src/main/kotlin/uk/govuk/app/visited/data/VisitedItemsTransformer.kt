@@ -21,7 +21,7 @@ class VisitedItemsTransformer(
     }
 
     fun transform(): Map<String, List<VisitedUi>> {
-        var groupedVisitedItems = emptyMap<String, List<VisitedUi>>()
+        val groupedVisitedItems = mutableMapOf<String, List<VisitedUi>>()
 
         if (todaysItems.isNotEmpty()) {
             groupedVisitedItems += mapOf("Today" to toVisitedUi(todaysItems))
