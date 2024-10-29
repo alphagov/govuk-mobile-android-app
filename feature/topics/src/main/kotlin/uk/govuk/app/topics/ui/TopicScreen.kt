@@ -85,6 +85,10 @@ private fun TopicScreen(
                 onBack = onBack
             )
 
+            val popularPagesTitle = stringResource(R.string.popularPagesTitle)
+            val stepByStepsTitle = stringResource(R.string.stepByStepGuidesTitle)
+            val servicesTitle = stringResource(R.string.servicesTitle)
+
             LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
                 if (topic.description != null) {
                     item {
@@ -96,16 +100,24 @@ private fun TopicScreen(
                     }
                 }
 
-                popularPages(
-                    popularPages = topic.popularPages,
+                contentItems(
+                    contentItems = topic.popularPages,
+                    section = popularPagesTitle,
                     onClick = onExternalLink
                 )
 
-                stepBySteps(
-                    stepBySteps = topic.stepBySteps,
-                    displaySeeAll = topic.displayStepByStepSeeAll,
+                contentItems(
+                    contentItems = topic.stepBySteps,
+                    section = stepByStepsTitle,
                     onClick = onExternalLink,
+                    displaySeeAll = topic.displayStepByStepSeeAll,
                     onSeeAll = onStepByStepSeeAll
+                )
+
+                contentItems(
+                    contentItems = topic.services,
+                    section = servicesTitle,
+                    onClick = onExternalLink
                 )
 
                 subtopics(
@@ -117,15 +129,15 @@ private fun TopicScreen(
     }
 }
 
-private fun LazyListScope.popularPages(
-    popularPages: List<TopicUi.TopicContent>,
+private fun LazyListScope.contentItems(
+    contentItems: List<TopicUi.TopicContent>,
+    section: String,
     onClick: (section: String, text:String, url:String) -> Unit,
+    displaySeeAll: Boolean = false,
+    onSeeAll: (section: String, text:String) -> Unit = { _, _ -> }
 ) {
-    lateinit var section: String
-
-    if (popularPages.isNotEmpty()) {
+    if (contentItems.isNotEmpty()) {
         item {
-            section = stringResource(R.string.popularPagesTitle)
             ListHeadingLabel(section)
         }
 
@@ -133,43 +145,10 @@ private fun LazyListScope.popularPages(
             SmallVerticalSpacer()
         }
 
-        itemsIndexed(popularPages) { index, content ->
-            ExternalLinkListItem(
-                title = content.title,
-                onClick = { onClick(section, content.title, content.url) },
-                isFirst = index == 0,
-                isLast = index == popularPages.lastIndex
-            )
-        }
-
-        item {
-            LargeVerticalSpacer()
-        }
-    }
-}
-
-private fun LazyListScope.stepBySteps(
-    stepBySteps: List<TopicUi.TopicContent>,
-    displaySeeAll: Boolean,
-    onClick: (section: String, text:String, url:String) -> Unit,
-    onSeeAll: (section: String, text:String) -> Unit
-) {
-    if (stepBySteps.isNotEmpty()) {
-        lateinit var section: String
-
-        item {
-            section = stringResource(R.string.stepByStepGuidesTitle)
-            ListHeadingLabel(section)
-        }
-
-        item {
-            SmallVerticalSpacer()
-        }
-
-        var lastIndex = stepBySteps.lastIndex
+        var lastIndex = contentItems.lastIndex
         if (displaySeeAll) lastIndex += 1
 
-        itemsIndexed(stepBySteps) { index, content ->
+        itemsIndexed(contentItems) { index, content ->
             ExternalLinkListItem(
                 title = content.title,
                 onClick = { onClick(section, content.title, content.url) },

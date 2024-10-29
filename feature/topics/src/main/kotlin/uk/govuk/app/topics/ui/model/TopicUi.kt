@@ -6,6 +6,7 @@ internal data class TopicUi(
     val subtopics: List<Subtopic>,
     val popularPages: List<TopicContent>,
     val stepBySteps: List<TopicContent>,
+    val services: List<TopicContent>,
     val displayStepByStepSeeAll: Boolean
 ) {
     data class Subtopic(

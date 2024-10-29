@@ -62,6 +62,7 @@ class TopicViewModelTest {
             subtopics = emptyList(),
             popularPages = emptyList(),
             stepBySteps = emptyList(),
+            services = emptyList(),
             displayStepByStepSeeAll = false
         )
 

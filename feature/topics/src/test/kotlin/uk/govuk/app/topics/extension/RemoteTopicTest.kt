@@ -5,6 +5,7 @@ import org.junit.Test
 import uk.govuk.app.topics.data.remote.model.RemoteTopic
 import uk.govuk.app.topics.data.remote.model.RemoteTopicItem
 import uk.govuk.app.topics.ui.model.TopicUi
+import uk.govuk.app.topics.ui.model.TopicUi.TopicContent
 
 class RemoteTopicTest {
 
@@ -51,15 +52,21 @@ class RemoteTopicTest {
                 )
             ),
             popularPages = listOf(
-                TopicUi.TopicContent(
+                TopicContent(
                     url = "url-2",
                     title = "title-2"
                 )
             ),
             stepBySteps = listOf(
-                TopicUi.TopicContent(
+                TopicContent(
                     url = "url-1",
                     title = "title-1"
+                )
+            ),
+            services = listOf(
+                TopicContent(
+                    url = "url-3",
+                    title = "title-3"
                 )
             ),
             displayStepByStepSeeAll = false
@@ -111,17 +118,18 @@ class RemoteTopicTest {
                 )
             ),
             popularPages = listOf(
-                TopicUi.TopicContent(
+                TopicContent(
                     url = "url-2",
                     title = "title-2"
                 )
             ),
             stepBySteps = listOf(
-                TopicUi.TopicContent(
+                TopicContent(
                     url = "url-1",
                     title = "title-1"
                 )
             ),
+            services = emptyList(),
             displayStepByStepSeeAll = true
         )
 
