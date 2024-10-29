@@ -20,6 +20,7 @@ import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.data.remote.model.RemoteTopic
 import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
+import uk.govuk.app.topics.navigation.TOPIC_SUBTOPIC_ARG
 import uk.govuk.app.topics.ui.model.TopicUi
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -38,6 +39,7 @@ class TopicViewModelTest {
     fun setup() {
         Dispatchers.setMain(dispatcher)
         every { savedStateHandle.get<String>(TOPIC_REF_ARG) } returns REF
+        every { savedStateHandle.get<Boolean>(TOPIC_SUBTOPIC_ARG) } returns false
     }
 
     @After
@@ -59,11 +61,12 @@ class TopicViewModelTest {
         val expected = TopicUi(
             title = "title",
             description = "description",
-            subtopics = emptyList(),
             popularPages = emptyList(),
             stepBySteps = emptyList(),
+            displayStepByStepSeeAll = false,
             services = emptyList(),
-            displayStepByStepSeeAll = false
+            subtopics = emptyList(),
+            subtopicsTitle = R.string.browseTitle
         )
 
         val viewModel = TopicViewModel(topicsRepo, analytics, savedStateHandle)

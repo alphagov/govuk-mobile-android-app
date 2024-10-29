@@ -21,6 +21,7 @@ import uk.govuk.app.topics.ui.TopicRoute
 const val TOPICS_GRAPH_ROUTE = "topics_graph_route"
 const val TOPIC_ROUTE = "topic_route"
 internal const val TOPIC_REF_ARG = "ref"
+internal const val TOPIC_SUBTOPIC_ARG = "isSubtopic"
 private const val TOPICS_EDIT_ROUTE = "topics_edit_route"
 const val TOPICS_ALL_ROUTE = "topics_all_route"
 const val TOPICS_ALL_STEP_BY_STEPS_ROUTE = "topics_all_step_by_steps_route"
@@ -34,8 +35,11 @@ fun NavGraphBuilder.topicsGraph(
         startDestination = TOPIC_ROUTE
     ) {
         composable(
-            "$TOPIC_ROUTE/{$TOPIC_REF_ARG}",
-            arguments = listOf(navArgument(TOPIC_REF_ARG) { type = NavType.StringType })
+            "$TOPIC_ROUTE/{$TOPIC_REF_ARG}?$TOPIC_SUBTOPIC_ARG={$TOPIC_SUBTOPIC_ARG}",
+            arguments = listOf(
+                navArgument(TOPIC_REF_ARG) { type = NavType.StringType },
+                navArgument(TOPIC_SUBTOPIC_ARG) { type = NavType.BoolType },
+            )
         ) {
             val context = LocalContext.current
 
@@ -47,7 +51,7 @@ fun NavGraphBuilder.topicsGraph(
                     context.startActivity(intent)
                 },
                 onStepByStepSeeAll = { navController.navigate(TOPICS_ALL_STEP_BY_STEPS_ROUTE) },
-                onSubtopic = { ref -> navController.navigateToTopic(ref) },
+                onSubtopic = { ref -> navController.navigateToTopic(ref, true) },
                 modifier = modifier
             )
         }
@@ -74,8 +78,8 @@ fun NavGraphBuilder.topicsGraph(
     }
 }
 
-fun NavController.navigateToTopic(ref: String) {
-    navigate("$TOPIC_ROUTE/$ref")
+fun NavController.navigateToTopic(ref: String, isSubtopic: Boolean = false) {
+    navigate("$TOPIC_ROUTE/$ref?$TOPIC_SUBTOPIC_ARG=$isSubtopic")
 }
 
 fun NavController.navigateToTopicsEdit() {

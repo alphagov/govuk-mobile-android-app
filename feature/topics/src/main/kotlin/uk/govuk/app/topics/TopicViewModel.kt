@@ -11,6 +11,7 @@ import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.extension.toTopicUi
 import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
+import uk.govuk.app.topics.navigation.TOPIC_SUBTOPIC_ARG
 import uk.govuk.app.topics.ui.model.TopicUi
 import javax.inject.Inject
 
@@ -32,8 +33,10 @@ internal class TopicViewModel @Inject constructor(
 
     init {
         savedStateHandle.get<String>(TOPIC_REF_ARG)?.let { ref ->
+            val isSubtopic = savedStateHandle.get<Boolean>(TOPIC_SUBTOPIC_ARG) ?: false
+
             viewModelScope.launch {
-                _topic.value = topicsRepo.getTopic(ref)?.toTopicUi(MAX_STEP_BY_STEPS)
+                _topic.value = topicsRepo.getTopic(ref)?.toTopicUi(MAX_STEP_BY_STEPS, isSubtopic)
             }
         }
     }

@@ -1,5 +1,6 @@
 package uk.govuk.app.topics.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -122,6 +123,7 @@ private fun TopicScreen(
 
                 subtopics(
                     subtopics = topic.subtopics,
+                    title = topic.subtopicsTitle,
                     onClick = onSubtopic
                 )
             }
@@ -177,12 +179,13 @@ private fun LazyListScope.contentItems(
 
 private fun LazyListScope.subtopics(
     subtopics: List<TopicUi.Subtopic>,
+    @StringRes title: Int,
     onClick: (text:String, ref: String) -> Unit,
 ) {
     if (subtopics.isNotEmpty()) {
 
         item {
-            ListHeadingLabel(stringResource(R.string.browseTitle))
+            ListHeadingLabel(stringResource(title))
         }
 
         item {
