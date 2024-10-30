@@ -1,5 +1,6 @@
 package uk.govuk.app.visited.data
 
+import uk.govuk.app.visited.SectionTitles
 import uk.govuk.app.visited.data.model.VisitedItem
 import uk.govuk.app.visited.ui.model.VisitedUi
 import java.time.LocalDate
@@ -24,11 +25,11 @@ class VisitedItemsTransformer(
         val groupedVisitedItems = mutableMapOf<String, List<VisitedUi>>()
 
         if (todaysItems.isNotEmpty()) {
-            groupedVisitedItems += mapOf("Today" to toVisitedUi(todaysItems))
+            groupedVisitedItems += mapOf(SectionTitles().today to toVisitedUi(todaysItems))
         }
 
         if (thisMonthsItems.isNotEmpty()) {
-            groupedVisitedItems += mapOf("This Month" to toVisitedUi(thisMonthsItems))
+            groupedVisitedItems += mapOf(SectionTitles().thisMonth to toVisitedUi(thisMonthsItems))
         }
 
         groupedPreviousMonthsItems.forEach { (key, value) ->
