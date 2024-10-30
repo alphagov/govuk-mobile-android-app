@@ -1,10 +1,14 @@
 package uk.govuk.app.topics.extension
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
+import uk.govuk.app.topics.R
 import uk.govuk.app.topics.data.remote.model.RemoteTopic
+import uk.govuk.app.topics.data.remote.model.RemoteTopic.RemoteTopicContent
 import uk.govuk.app.topics.data.remote.model.RemoteTopicItem
 import uk.govuk.app.topics.ui.model.TopicUi
+import uk.govuk.app.topics.ui.model.TopicUi.TopicContent
 
 class RemoteTopicTest {
 
@@ -20,19 +24,19 @@ class RemoteTopicTest {
                 )
             ),
             content = listOf(
-                RemoteTopic.RemoteTopicContent(
+                RemoteTopicContent(
                     url = "url-1",
                     title = "title-1",
                     isStepByStep = true,
                     isPopular = false
                 ),
-                RemoteTopic.RemoteTopicContent(
+                RemoteTopicContent(
                     url = "url-2",
                     title = "title-2",
                     isStepByStep = false,
                     isPopular = true
                 ),
-                RemoteTopic.RemoteTopicContent(
+                RemoteTopicContent(
                     url = "url-3",
                     title = "title-3",
                     isStepByStep = false,
@@ -41,31 +45,41 @@ class RemoteTopicTest {
             )
         )
 
-        val expected = TopicUi(
-            title = "title",
-            description = "description",
-            subtopics = listOf(
-                TopicUi.Subtopic(
-                    ref = "ref",
-                    title = "title"
-                )
-            ),
-            popularPages = listOf(
-                TopicUi.TopicContent(
-                    url = "url-2",
-                    title = "title-2"
-                )
-            ),
-            stepBySteps = listOf(
-                TopicUi.TopicContent(
-                    url = "url-1",
-                    title = "title-1"
-                )
-            ),
-            displayStepByStepSeeAll = false
+        val popularPages = listOf(
+            TopicContent(
+                url = "url-2",
+                title = "title-2"
+            )
         )
 
-        assertEquals(expected, remoteTopic.toTopicUi(1))
+        val stepBySteps = listOf(
+            TopicContent(
+                url = "url-1",
+                title = "title-1"
+            )
+        )
+
+        val services = listOf(
+            TopicContent(
+                url = "url-3",
+                title = "title-3"
+            )
+        )
+
+        val subtopics = listOf(
+            TopicUi.Subtopic(
+                ref = "ref",
+                title = "title"
+            )
+        )
+
+        val topicUi = remoteTopic.toTopicUi(1, false)
+        assertEquals("title", topicUi.title)
+        assertEquals("description", topicUi.description)
+        assertEquals(popularPages, topicUi.popularPages)
+        assertEquals(stepBySteps, topicUi.stepBySteps)
+        assertEquals(services, topicUi.services)
+        assertEquals(subtopics, topicUi.subtopics)
     }
 
     @Test
@@ -80,19 +94,19 @@ class RemoteTopicTest {
                 )
             ),
             content = listOf(
-                RemoteTopic.RemoteTopicContent(
+                RemoteTopicContent(
                     url = "url-1",
                     title = "title-1",
                     isStepByStep = true,
                     isPopular = false
                 ),
-                RemoteTopic.RemoteTopicContent(
+                RemoteTopicContent(
                     url = "url-2",
                     title = "title-2",
                     isStepByStep = false,
                     isPopular = true
                 ),
-                RemoteTopic.RemoteTopicContent(
+                RemoteTopicContent(
                     url = "url-3",
                     title = "title-3",
                     isStepByStep = true,
@@ -101,30 +115,61 @@ class RemoteTopicTest {
             )
         )
 
-        val expected = TopicUi(
-            title = "title",
-            description = "description",
-            subtopics = listOf(
-                TopicUi.Subtopic(
-                    ref = "ref",
-                    title = "title"
-                )
-            ),
-            popularPages = listOf(
-                TopicUi.TopicContent(
-                    url = "url-2",
-                    title = "title-2"
-                )
-            ),
-            stepBySteps = listOf(
-                TopicUi.TopicContent(
-                    url = "url-1",
-                    title = "title-1"
-                )
-            ),
-            displayStepByStepSeeAll = true
+        val stepBySteps = listOf(
+            TopicContent(
+                url = "url-1",
+                title = "title-1"
+            )
         )
 
-        assertEquals(expected, remoteTopic.toTopicUi(1))
+        val topicUi = remoteTopic.toTopicUi(1, false)
+        assertEquals(stepBySteps, topicUi.stepBySteps)
+        assertTrue(topicUi.displayStepByStepSeeAll)
+    }
+
+    @Test
+    fun `Given a remote topic, When mapping to topic ui, then return with subtopic title of browse`() {
+        val remoteTopic = RemoteTopic(
+            title = "title",
+            description = "description",
+            subtopics = emptyList(),
+            content = emptyList()
+        )
+
+        val topicUi = remoteTopic.toTopicUi(1, false)
+        assertEquals(R.string.browseTitle, topicUi.subtopicsTitle)
+    }
+
+    @Test
+    fun `Given a remote subtopic with empty content, When mapping to topic ui, then return with subtopic title of browse`() {
+        val remoteTopic = RemoteTopic(
+            title = "title",
+            description = "description",
+            subtopics = emptyList(),
+            content = emptyList()
+        )
+
+        val topicUi = remoteTopic.toTopicUi(1, true)
+        assertEquals(R.string.browseTitle, topicUi.subtopicsTitle)
+    }
+
+    @Test
+    fun `Given a remote subtopic with content, When mapping to topic ui, then return with subtopic title of related`() {
+        val remoteTopic = RemoteTopic(
+            title = "title",
+            description = "description",
+            subtopics = emptyList(),
+            content = listOf(
+                RemoteTopicContent(
+                    url = "url",
+                    title = "title",
+                    isStepByStep = false,
+                    isPopular = false
+                )
+            )
+        )
+
+        val topicUi = remoteTopic.toTopicUi(1, true)
+        assertEquals(R.string.relatedTitle, topicUi.subtopicsTitle)
     }
 }

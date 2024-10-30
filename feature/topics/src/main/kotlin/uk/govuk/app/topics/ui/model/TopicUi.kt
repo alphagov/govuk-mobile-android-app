@@ -1,12 +1,16 @@
 package uk.govuk.app.topics.ui.model
 
+import androidx.annotation.StringRes
+
 internal data class TopicUi(
     val title: String,
     val description: String?,
-    val subtopics: List<Subtopic>,
     val popularPages: List<TopicContent>,
     val stepBySteps: List<TopicContent>,
-    val displayStepByStepSeeAll: Boolean
+    val displayStepByStepSeeAll: Boolean,
+    val services: List<TopicContent>,
+    val subtopics: List<Subtopic>,
+    @StringRes val subtopicsTitle: Int,
 ) {
     data class Subtopic(
         val ref: String,
