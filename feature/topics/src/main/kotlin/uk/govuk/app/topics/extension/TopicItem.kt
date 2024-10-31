@@ -16,7 +16,7 @@ internal fun TopicItem.toTopicItemUi(): TopicItemUi {
         "parenting-guardianship" -> R.drawable.ic_topic_parenting
         "retirement" -> R.drawable.ic_topic_retirement
         "studying-training" -> R.drawable.ic_topic_studying
-        "travel" -> R.drawable.ic_topic_travel
+        "travel-abroad" -> R.drawable.ic_topic_travel
         else -> R.drawable.ic_topic_default
     }
 

@@ -21,7 +21,7 @@ class TopicItemTest{
             Pair(R.drawable.ic_topic_parenting, TopicItem("parenting-guardianship", "Title", false)),
             Pair(R.drawable.ic_topic_retirement, TopicItem("retirement", "Title", true)),
             Pair(R.drawable.ic_topic_studying, TopicItem("studying-training", "Title", false)),
-            Pair(R.drawable.ic_topic_travel, TopicItem("travel", "Title", true)),
+            Pair(R.drawable.ic_topic_travel, TopicItem("travel-abroad", "Title", true)),
             Pair(R.drawable.ic_topic_default, TopicItem("unknown", "Title", false)),
         )
 
