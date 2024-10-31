@@ -22,6 +22,7 @@ import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeadingLabel
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
+import uk.govuk.app.design.ui.component.Title1BoldLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.R
 import uk.govuk.app.topics.TopicViewModel
@@ -82,8 +83,13 @@ private fun TopicScreen(
             }
 
             ChildPageHeader(
-                text = topic.title,
+                text = "",
                 onBack = onBack
+            )
+
+            Title1BoldLabel(
+                text = topic.title,
+                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
             )
 
             val popularPagesTitle = stringResource(R.string.popularPagesTitle)
@@ -91,13 +97,13 @@ private fun TopicScreen(
             val servicesTitle = stringResource(R.string.servicesTitle)
 
             LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
-                if (topic.description != null) {
-                    item {
-                        BodyRegularLabel(topic.description)
-                    }
-
-                    item {
+                item{
+                    Column {
                         MediumVerticalSpacer()
+                        if (topic.description != null) {
+                            BodyRegularLabel(topic.description)
+                            MediumVerticalSpacer()
+                        }
                     }
                 }
 
