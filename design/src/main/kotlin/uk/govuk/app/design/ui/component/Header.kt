@@ -99,13 +99,15 @@ fun ChildPageHeader(
                 tint = GovUkTheme.colourScheme.textAndIcons.link
             )
         }
-        Title2BoldLabel(
-            text = text,
-            textAlign = TextAlign.Center,
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 70.dp)
-        )
+        if (text.isNotEmpty()) {
+            Title2BoldLabel(
+                text = text,
+                textAlign = TextAlign.Center,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 70.dp)
+            )
+        }
     }
 }
 
