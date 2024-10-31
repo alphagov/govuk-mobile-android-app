@@ -172,4 +172,42 @@ class RemoteTopicTest {
         val topicUi = remoteTopic.toTopicUi(1, true)
         assertEquals(R.string.relatedTitle, topicUi.subtopicsTitle)
     }
+
+    @Test
+    fun `Given a remote topic, When mapping to all step by steps, then return step by steps`() {
+        val remoteTopic = RemoteTopic(
+            title = "title",
+            description = "description",
+            subtopics = emptyList(),
+            content = listOf(
+                RemoteTopicContent(
+                    url = "url-1",
+                    title = "title-1",
+                    isStepByStep = true,
+                    isPopular = false
+                ),
+                RemoteTopicContent(
+                    url = "url-2",
+                    title = "title-2",
+                    isStepByStep = false,
+                    isPopular = true
+                ),
+                RemoteTopicContent(
+                    url = "url-3",
+                    title = "title-3",
+                    isStepByStep = false,
+                    isPopular = false
+                )
+            )
+        )
+
+        val stepBySteps = listOf(
+            TopicContent(
+                url = "url-1",
+                title = "title-1"
+            )
+        )
+
+        assertEquals(stepBySteps, remoteTopic.toAllStepBySteps())
+    }
 }

@@ -159,8 +159,7 @@ class TopicsRepoTest{
         val repo = TopicsRepo(topicsApi, localDataSource)
 
         runTest {
-            val blah = repo.getTopic("ref")
-            assertEquals(blah, topic)
+            assertEquals(topic, repo.getTopic("ref"))
         }
     }
 
