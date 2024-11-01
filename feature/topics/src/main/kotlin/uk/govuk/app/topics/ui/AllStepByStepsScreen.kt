@@ -16,7 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.ExternalLinkListItem
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
-import uk.govuk.app.design.ui.component.SmallVerticalSpacer
+import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.AllStepByStepsViewModel
 import uk.govuk.app.topics.R
@@ -70,7 +70,7 @@ private fun AllStepByStepsScreen(
         if (stepBySteps != null) {
             LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
                 item {
-                    SmallVerticalSpacer()
+                    MediumVerticalSpacer()
                 }
 
                 stepBySteps(

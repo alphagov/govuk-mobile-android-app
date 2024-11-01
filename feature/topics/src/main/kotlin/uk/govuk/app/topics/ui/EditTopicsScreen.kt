@@ -66,14 +66,13 @@ private fun EditTopicsScreen(
         LazyColumn(
             Modifier
                 .padding(horizontal = GovUkTheme.spacing.medium)
-                .padding(top = GovUkTheme.spacing.small)
         ) {
             item {
-                BodyRegularLabel(stringResource(R.string.editMessage))
-            }
-
-            item {
-                MediumVerticalSpacer()
+                Column{
+                    MediumVerticalSpacer()
+                    BodyRegularLabel(stringResource(R.string.editMessage))
+                    MediumVerticalSpacer()
+                }
             }
 
             if (!topics.isNullOrEmpty()) {

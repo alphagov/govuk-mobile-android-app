@@ -60,9 +60,12 @@ private fun AllTopicsScreen(
             onBack = onBack
         )
 
-
         if (!topics.isNullOrEmpty()) {
             LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
+                item {
+                    MediumVerticalSpacer()
+                }
+
                 items(topics) { topic ->
                     Column {
                         TopicHorizontalCard(
