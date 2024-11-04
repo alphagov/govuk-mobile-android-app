@@ -5,75 +5,44 @@ import uk.govuk.app.visited.domain.model.VisitedItemUi
 import uk.govuk.app.visited.ui.model.VisitedUi
 import java.time.LocalDate
 
-class VisitedItemsTransformer(
-    private val visitedItems: List<VisitedItemUi>,
-    private val todaysDate: LocalDate
-) {
-    val todaysItems: List<VisitedItemUi>
-    val thisMonthsItems: List<VisitedItemUi>
-    val previousMonthsItems: List<VisitedItemUi>
-    val groupedPreviousMonthsItems: Map<String, List<VisitedItemUi>>
+fun transformVisitedItems(visitedItems: List<VisitedItemUi>, todaysDate: LocalDate): Map<String, List<VisitedUi>> {
+    fun VisitedItemUi.toLocalDate() = LocalDate.ofEpochDay(this.lastVisited)
 
-    init {
-        todaysItems = todaysItems()
-        thisMonthsItems = thisMonthsItems()
-        previousMonthsItems = previousMonthsItems()
-        groupedPreviousMonthsItems = groupPreviousMonthsItems()
+    val todaysItems = visitedItems.filter { it.toLocalDate().isEqual(todaysDate) }
+    val thisMonthsItems = visitedItems.filter {
+        it.toLocalDate().month == todaysDate.month &&
+            it.toLocalDate().year == todaysDate.year &&
+            it.toLocalDate().dayOfMonth != todaysDate.dayOfMonth
+    }
+    val previousMonthsItems = visitedItems.filter {
+        it.toLocalDate().month != todaysDate.month ||
+            it.toLocalDate().year != todaysDate.year
     }
 
-    fun transform(): Map<String, List<VisitedUi>> {
-        val groupedVisitedItems = mutableMapOf<String, List<VisitedUi>>()
+    fun VisitedItemUi.previousMonthKey() = "${toLocalDate().month.name} ${toLocalDate().year}"
+    val groupedPreviousMonthsItems = previousMonthsItems.groupBy { it.previousMonthKey() }
 
-        if (todaysItems.isNotEmpty()) {
-            groupedVisitedItems += mapOf(SectionTitles().today to toVisitedUi(todaysItems))
-        }
-
-        if (thisMonthsItems.isNotEmpty()) {
-            groupedVisitedItems += mapOf(SectionTitles().thisMonth to toVisitedUi(thisMonthsItems))
-        }
-
-        groupedPreviousMonthsItems.forEach { (key, value) ->
-            groupedVisitedItems += mapOf(key to toVisitedUi(value))
-        }
-
-        return groupedVisitedItems
+    fun toVisitedUi(items: List<VisitedItemUi>): List<VisitedUi> = items.map {
+        VisitedUi(
+            title = it.title,
+            url = it.url,
+            lastVisited = localDateFormatter(it.lastVisited)
+        )
     }
 
-    private fun todaysItems(): List<VisitedItemUi> {
-        return visitedItems.filter {
-            LocalDate.ofEpochDay(it.lastVisited).isEqual(todaysDate)
-        }
+    val groupedVisitedItems = mutableMapOf<String, List<VisitedUi>>()
+
+    if (todaysItems.isNotEmpty()) {
+        groupedVisitedItems[SectionTitles().today] = toVisitedUi(todaysItems)
     }
 
-    private fun thisMonthsItems(): List<VisitedItemUi> {
-        return visitedItems.filter {
-            LocalDate.ofEpochDay(it.lastVisited).month == todaysDate.month
-                && LocalDate.ofEpochDay(it.lastVisited).year == todaysDate.year
-                && LocalDate.ofEpochDay(it.lastVisited).dayOfMonth != todaysDate.dayOfMonth
-        }
+    if (thisMonthsItems.isNotEmpty()) {
+        groupedVisitedItems[SectionTitles().thisMonth] = toVisitedUi(thisMonthsItems)
     }
 
-    private fun previousMonthsItems(): List<VisitedItemUi> {
-        return visitedItems.filter {
-            LocalDate.ofEpochDay(it.lastVisited).month != todaysDate.month
-                || LocalDate.ofEpochDay(it.lastVisited).year != todaysDate.year
-        }
+    groupedPreviousMonthsItems.forEach { (key, value) ->
+        groupedVisitedItems[key] = toVisitedUi(value)
     }
 
-    private fun groupPreviousMonthsItems(): Map<String, List<VisitedItemUi>> {
-        fun VisitedItemUi.key() =
-            "${LocalDate.ofEpochDay(this.lastVisited).month.name} ${LocalDate.ofEpochDay(this.lastVisited).year}"
-
-        return previousMonthsItems().groupBy { it.key() }
-    }
-
-    private fun toVisitedUi(visitedItems: List<VisitedItemUi>): List<VisitedUi> {
-        return visitedItems.map { visitedItem ->
-            VisitedUi(
-                title = visitedItem.title,
-                url = visitedItem.url,
-                lastVisited = localDateFormatter(visitedItem.lastVisited)
-            )
-        }
-    }
+    return groupedVisitedItems
 }
