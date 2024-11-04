@@ -1,7 +1,6 @@
 package uk.govuk.app.visited.data
 
 import uk.govuk.app.visited.SectionTitles
-import uk.govuk.app.visited.data.model.VisitedItem
 import uk.govuk.app.visited.domain.model.VisitedItemUi
 import uk.govuk.app.visited.ui.model.VisitedUi
 import java.time.LocalDate

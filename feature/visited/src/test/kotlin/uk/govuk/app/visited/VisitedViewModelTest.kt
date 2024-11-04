@@ -105,8 +105,6 @@ class VisitedViewModelTest {
 
         coEvery { visitedRepo.visitedItems } returns flowOf(visitedItems)
 
-        println(visitedRepo.visitedItems)
-
         val viewModel = VisitedViewModel(visitedRepo, visited, analytics)
 
         runTest {
