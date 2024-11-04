@@ -62,6 +62,11 @@ internal fun SearchRoute(
         onClear = {
             viewModel.onClear()
         },
+        onClick = { title, url ->
+            viewModel.viewModelScope.launch {
+                viewModel.onSearchResultClicked(title, url)
+            }
+        },
         modifier = modifier
     )
 }
@@ -73,6 +78,7 @@ private fun SearchScreen(
     onBack: () -> Unit,
     onSearch: (String) -> Unit,
     onClear: () -> Unit,
+    onClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -102,7 +108,7 @@ private fun SearchScreen(
 
         when (uiState?.resultStatus) {
             ResultStatus.Success ->
-                ShowResults(uiState!!.searchResults)
+                ShowResults(uiState!!.searchResults, onClick)
             ResultStatus.Empty ->
                 NoResultsFound(searchTerm = uiState!!.searchTerm)
             ResultStatus.DeviceOffline ->
@@ -122,9 +128,7 @@ private fun SearchScreen(
 }
 
 @Composable
-fun ShowResults(searchResults: List<Result>) {
-    val viewModel: SearchViewModel = hiltViewModel()
-
+fun ShowResults(searchResults: List<Result>, onClick: (String, String) -> Unit) {
     Column(
         modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
                 .fillMaxSize(),
@@ -153,9 +157,7 @@ fun ShowResults(searchResults: List<Result>) {
                         .fillMaxWidth()
                         .clickable(
                             onClick = {
-                                viewModel.viewModelScope.launch {
-                                    viewModel.onSearchResultClicked(title, url)
-                                }
+                                onClick(title, url)
                                 context.startActivity(intent)
                             }
                         ),
