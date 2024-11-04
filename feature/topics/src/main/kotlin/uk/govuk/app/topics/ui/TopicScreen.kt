@@ -22,7 +22,6 @@ import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeadingLabel
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
-import uk.govuk.app.design.ui.component.Title1BoldLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.R
 import uk.govuk.app.topics.TopicViewModel
@@ -83,13 +82,8 @@ private fun TopicScreen(
             }
 
             ChildPageHeader(
-                text = "",
-                onBack = onBack
-            )
-
-            Title1BoldLabel(
                 text = topic.title,
-                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+                onBack = onBack
             )
 
             val popularPagesTitle = stringResource(R.string.popularPagesTitle)

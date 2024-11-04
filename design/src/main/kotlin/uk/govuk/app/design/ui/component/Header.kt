@@ -84,30 +84,27 @@ fun ChildPageHeader(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(64.dp),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        TextButton(
-            onClick = onBack
+    Column(modifier) {
+        Box(
+            modifier = Modifier.height(64.dp),
+            contentAlignment = Alignment.CenterStart
         ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(R.string.content_desc_back),
-                tint = GovUkTheme.colourScheme.textAndIcons.link
-            )
+            TextButton(
+                onClick = onBack,
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.content_desc_back),
+                    tint = GovUkTheme.colourScheme.textAndIcons.link
+                )
+            }
         }
-        if (text.isNotEmpty()) {
-            Title2BoldLabel(
-                text = text,
-                textAlign = TextAlign.Center,
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 70.dp)
-            )
-        }
+        LargeTitleBoldLabel(
+            text = text,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = GovUkTheme.spacing.medium)
+        )
     }
 }
 
