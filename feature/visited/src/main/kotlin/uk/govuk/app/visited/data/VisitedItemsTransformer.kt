@@ -2,17 +2,18 @@ package uk.govuk.app.visited.data
 
 import uk.govuk.app.visited.SectionTitles
 import uk.govuk.app.visited.data.model.VisitedItem
+import uk.govuk.app.visited.domain.model.VisitedItemUi
 import uk.govuk.app.visited.ui.model.VisitedUi
 import java.time.LocalDate
 
 class VisitedItemsTransformer(
-    private val visitedItems: List<VisitedItem>,
+    private val visitedItems: List<VisitedItemUi>,
     private val todaysDate: LocalDate
 ) {
-    val todaysItems: List<VisitedItem>
-    val thisMonthsItems: List<VisitedItem>
-    val previousMonthsItems: List<VisitedItem>
-    val groupedPreviousMonthsItems: Map<String, List<VisitedItem>>
+    val todaysItems: List<VisitedItemUi>
+    val thisMonthsItems: List<VisitedItemUi>
+    val previousMonthsItems: List<VisitedItemUi>
+    val groupedPreviousMonthsItems: Map<String, List<VisitedItemUi>>
 
     init {
         todaysItems = todaysItems()
@@ -39,13 +40,13 @@ class VisitedItemsTransformer(
         return groupedVisitedItems
     }
 
-    private fun todaysItems(): List<VisitedItem> {
+    private fun todaysItems(): List<VisitedItemUi> {
         return visitedItems.filter {
             LocalDate.ofEpochDay(it.lastVisited).isEqual(todaysDate)
         }
     }
 
-    private fun thisMonthsItems(): List<VisitedItem> {
+    private fun thisMonthsItems(): List<VisitedItemUi> {
         return visitedItems.filter {
             LocalDate.ofEpochDay(it.lastVisited).month == todaysDate.month
                 && LocalDate.ofEpochDay(it.lastVisited).year == todaysDate.year
@@ -53,21 +54,21 @@ class VisitedItemsTransformer(
         }
     }
 
-    private fun previousMonthsItems(): List<VisitedItem> {
+    private fun previousMonthsItems(): List<VisitedItemUi> {
         return visitedItems.filter {
             LocalDate.ofEpochDay(it.lastVisited).month != todaysDate.month
                 || LocalDate.ofEpochDay(it.lastVisited).year != todaysDate.year
         }
     }
 
-    private fun groupPreviousMonthsItems(): Map<String, List<VisitedItem>> {
-        fun VisitedItem.key() =
+    private fun groupPreviousMonthsItems(): Map<String, List<VisitedItemUi>> {
+        fun VisitedItemUi.key() =
             "${LocalDate.ofEpochDay(this.lastVisited).month.name} ${LocalDate.ofEpochDay(this.lastVisited).year}"
 
         return previousMonthsItems().groupBy { it.key() }
     }
 
-    private fun toVisitedUi(visitedItems: List<VisitedItem>): List<VisitedUi> {
+    private fun toVisitedUi(visitedItems: List<VisitedItemUi>): List<VisitedUi> {
         return visitedItems.map { visitedItem ->
             VisitedUi(
                 title = visitedItem.title,

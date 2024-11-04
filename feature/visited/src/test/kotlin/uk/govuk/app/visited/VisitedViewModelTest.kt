@@ -19,7 +19,7 @@ import org.junit.Test
 import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.visited.data.VisitedRepo
 import uk.govuk.app.visited.data.localDateFormatter
-import uk.govuk.app.visited.data.model.VisitedItem
+import uk.govuk.app.visited.domain.model.VisitedItemUi
 import uk.govuk.app.visited.ui.model.VisitedUi
 import java.time.LocalDate
 
@@ -73,16 +73,16 @@ class VisitedViewModelTest {
         val today = LocalDate.now()
 
         val visitedItems = listOf(
-            VisitedItem().apply {
-                title = "GOV.UK"
-                url = "https://www.gov.uk"
+            VisitedItemUi(
+                title = "GOV.UK",
+                url = "https://www.gov.uk",
                 lastVisited = today.toEpochDay()
-            },
-            VisitedItem().apply {
-                title = "Google"
-                url = "https://www.google.com"
+            ),
+            VisitedItemUi(
+                title = "Google",
+                url = "https://www.google.com",
                 lastVisited = today.toEpochDay()
-            }
+            )
         )
 
         val expected =
@@ -105,6 +105,8 @@ class VisitedViewModelTest {
 
         coEvery { visitedRepo.visitedItems } returns flowOf(visitedItems)
 
+        println(visitedRepo.visitedItems)
+
         val viewModel = VisitedViewModel(visitedRepo, visited, analytics)
 
         runTest {
@@ -114,7 +116,7 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given there are no visited items, then the status in the view model are correct`() {
-        val visitedItems = emptyList<VisitedItem>()
+        val visitedItems = emptyList<VisitedItemUi>()
         val expected = VisitedUiState(visited = emptyMap())
 
         coEvery { visitedRepo.visitedItems } returns flowOf(visitedItems)

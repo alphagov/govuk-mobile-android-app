@@ -2,7 +2,7 @@ package uk.govuk.app.visited.data
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import uk.govuk.app.visited.data.model.VisitedItem
+import uk.govuk.app.visited.domain.model.VisitedItemUi
 import java.time.LocalDate
 
 class VisitedItemsTransformerTest {
@@ -12,24 +12,24 @@ class VisitedItemsTransformerTest {
         val yesterday = today.minusDays(1)
 
         val visitedItems = listOf(
-            VisitedItem().apply {
-                title = "GOV.UK"
-                url = "https://www.gov.uk"
+            VisitedItemUi(
+                title = "GOV.UK",
+                url = "https://www.gov.uk",
                 lastVisited = today.toEpochDay()
-            },
-            VisitedItem().apply {
-                title = "Google"
-                url = "https://www.google.com"
+            ),
+            VisitedItemUi(
+                title = "Google",
+                url = "https://www.google.com",
                 lastVisited = yesterday.toEpochDay()
-            }
+            )
         )
 
         val expected = listOf(
-            VisitedItem().apply {
-                title = "GOV.UK"
-                url = "https://www.gov.uk"
+            VisitedItemUi(
+                title = "GOV.UK",
+                url = "https://www.gov.uk",
                 lastVisited = today.toEpochDay()
-            }
+            )
         )
 
         val actual = VisitedItemsTransformer(visitedItems, today).todaysItems
@@ -45,24 +45,24 @@ class VisitedItemsTransformerTest {
         val yesterday = today.minusDays(1)
 
         val visitedItems = listOf(
-            VisitedItem().apply {
-                title = "GOV.UK"
-                url = "https://www.gov.uk"
+            VisitedItemUi(
+                title = "GOV.UK",
+                url = "https://www.gov.uk",
                 lastVisited = today.toEpochDay()
-            },
-            VisitedItem().apply {
-                title = "Google"
-                url = "https://www.google.com"
+            ),
+            VisitedItemUi(
+                title = "Google",
+                url = "https://www.google.com",
                 lastVisited = yesterday.toEpochDay()
-            }
+            )
         )
 
         val expected = listOf(
-            VisitedItem().apply {
-                title = "Google"
-                url = "https://www.google.com"
+            VisitedItemUi(
+                title = "Google",
+                url = "https://www.google.com",
                 lastVisited = yesterday.toEpochDay()
-            }
+            )
         )
 
         val actual = VisitedItemsTransformer(visitedItems, today).thisMonthsItems
@@ -78,16 +78,16 @@ class VisitedItemsTransformerTest {
         val lastMonth = today.minusDays(2)
 
         val visitedItems = listOf(
-            VisitedItem().apply {
-                title = "GOV.UK"
-                url = "https://www.gov.uk"
+            VisitedItemUi(
+                title = "GOV.UK",
+                url = "https://www.gov.uk",
                 lastVisited = today.toEpochDay()
-            },
-            VisitedItem().apply {
-                title = "Google"
-                url = "https://www.google.com"
+            ),
+            VisitedItemUi(
+                title = "Google",
+                url = "https://www.google.com",
                 lastVisited = lastMonth.toEpochDay()
-            }
+            )
         )
 
         val actual = VisitedItemsTransformer(visitedItems, today).thisMonthsItems
@@ -101,24 +101,24 @@ class VisitedItemsTransformerTest {
         val lastMonth = today.minusDays(2)
 
         val visitedItems = listOf(
-            VisitedItem().apply {
-                title = "GOV.UK"
-                url = "https://www.gov.uk"
+            VisitedItemUi(
+                title = "GOV.UK",
+                url = "https://www.gov.uk",
                 lastVisited = today.toEpochDay()
-            },
-            VisitedItem().apply {
-                title = "Google"
-                url = "https://www.google.com"
+            ),
+            VisitedItemUi(
+                title = "Google",
+                url = "https://www.google.com",
                 lastVisited = lastMonth.toEpochDay()
-            }
+            )
         )
 
         val expected = listOf(
-            VisitedItem().apply {
-                title = "Google"
-                url = "https://www.google.com"
+            VisitedItemUi(
+                title = "Google",
+                url = "https://www.google.com",
                 lastVisited = lastMonth.toEpochDay()
-            }
+            )
         )
 
         val actual = VisitedItemsTransformer(visitedItems, today).previousMonthsItems
@@ -134,24 +134,24 @@ class VisitedItemsTransformerTest {
         val lastMonth = today.minusDays(2)
 
         val visitedItems = listOf(
-            VisitedItem().apply {
-                title = "GOV.UK"
-                url = "https://www.gov.uk"
+            VisitedItemUi(
+                title = "GOV.UK",
+                url = "https://www.gov.uk",
                 lastVisited = today.toEpochDay()
-            },
-            VisitedItem().apply {
-                title = "Google"
-                url = "https://www.google.com"
+            ),
+            VisitedItemUi(
+                title = "Google",
+                url = "https://www.google.com",
                 lastVisited = lastMonth.toEpochDay()
-            }
+            )
         )
 
         val expected = mapOf(
-            "${today.minusMonths(1).month.name} ${today.year}" to listOf(VisitedItem().apply {
-                    title = "Google"
-                    url = "https://www.google.com"
+            "${today.minusMonths(1).month.name} ${today.year}" to listOf(VisitedItemUi(
+                    title = "Google",
+                    url = "https://www.google.com",
                     lastVisited = lastMonth.toEpochDay()
-                }
+                )
             )
         )
 
