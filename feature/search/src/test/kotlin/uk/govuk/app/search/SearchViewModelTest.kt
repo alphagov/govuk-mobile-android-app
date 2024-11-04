@@ -68,9 +68,9 @@ class SearchViewModelTest {
         fun `Given a search, and a search result is clicked, then log analytics`() {
             Dispatchers.setMain(dispatcher)
 
-            viewModel.onSearchResultClicked("search result title", "search result link")
-
             runTest {
+                viewModel.onSearchResultClicked("search result title", "search result link")
+
                 coVerify {
                     analytics.searchResultClick("search result title", "search result link")
                 }

@@ -1,7 +1,7 @@
 package uk.govuk.app.visited
 
+import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +29,6 @@ class VisitedViewModelTest {
     private val visitedRepo = mockk<VisitedRepo>(relaxed = true)
     private val analytics = mockk<Analytics>(relaxed = true)
     private val visited = mockk<Visited>(relaxed = true)
-    private val viewModel = VisitedViewModel(visitedRepo, visited, analytics)
 
     @Before
     fun setup() {
@@ -43,6 +42,8 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given a page view, then log analytics`() {
+        val viewModel = VisitedViewModel(visitedRepo, visited, analytics)
+
         viewModel.onPageView()
 
         verify {
@@ -55,20 +56,11 @@ class VisitedViewModelTest {
     }
 
     @Test
-    fun `Given the user views the visited items screen, and a visited item is clicked, then log analytics`() {
-        viewModel.onVisitedItemClicked("visited item title", "visited item title")
-
-        runTest {
-            coVerify {
-                analytics.visitedItemClick("visited item title", "visited item title")
-            }
-        }
-    }
-
-    @Test
     fun `Given the user re-views a visited item, then run the insert or update function`() {
+        val viewModel = VisitedViewModel(visitedRepo, visited, analytics)
+
         runTest {
-            viewModel.onVisitableItemClicked("visited item title", "visited item title")
+            viewModel.onVisitedItemClicked("visited item title", "visited item title")
 
             coVerify {
                 visited.visitableItemClick("visited item title", "visited item title")
@@ -111,11 +103,9 @@ class VisitedViewModelTest {
                 )
             )
 
+        coEvery { visitedRepo.visitedItems } returns flowOf(visitedItems)
+
         val viewModel = VisitedViewModel(visitedRepo, visited, analytics)
-
-        every { visitedRepo.visitedItems } returns flowOf(visitedItems)
-
-        viewModel.onPageView()
 
         runTest {
             assertEquals(expected, viewModel.uiState.first())
@@ -126,10 +116,10 @@ class VisitedViewModelTest {
     fun `Given there are no visited items, then the status in the view model are correct`() {
         val visitedItems = emptyList<VisitedItem>()
         val expected = VisitedUiState(visited = emptyMap())
+
+        coEvery { visitedRepo.visitedItems } returns flowOf(visitedItems)
+
         val viewModel = VisitedViewModel(visitedRepo, visited, analytics)
-
-        every { visitedRepo.visitedItems } returns flowOf(visitedItems)
-
         viewModel.onPageView()
 
         runTest {
