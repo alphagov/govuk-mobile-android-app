@@ -25,6 +25,13 @@ class FlagRepo @Inject constructor(
         )
     }
 
+    fun isRecentActivityEnabled(): Boolean {
+        return isEnabled(
+            debugFlag = debugFlags.isRecentActivityEnabled,
+            remoteFlag = configRepo.config.releaseFlags.recentActivity
+        )
+    }
+
     fun isTopicsEnabled(): Boolean {
         return isEnabled(
             debugFlag = debugFlags.isTopicsEnabled,
