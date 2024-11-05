@@ -60,9 +60,11 @@ internal class SearchViewModel @Inject constructor(
         analytics.search(searchTerm)
     }
 
-    suspend fun onSearchResultClicked(title: String, url: String) {
+    fun onSearchResultClicked(title: String, url: String) {
         analytics.searchResultClick(text = title, url = url)
-        visited.visitableItemClick(title = title, url = url)
+        viewModelScope.launch {
+            visited.visitableItemClick(title = title, url = url)
+        }
     }
 
     fun onClear() {

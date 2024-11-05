@@ -31,9 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.SearchHeader
@@ -63,9 +61,7 @@ internal fun SearchRoute(
             viewModel.onClear()
         },
         onClick = { title, url ->
-            viewModel.viewModelScope.launch {
-                viewModel.onSearchResultClicked(title, url)
-            }
+            viewModel.onSearchResultClicked(title, url)
         },
         modifier = modifier
     )
