@@ -13,10 +13,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
-import uk.govuk.app.design.ui.component.TopicHorizontalCard
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.AllTopicsViewModel
 import uk.govuk.app.topics.R
+import uk.govuk.app.topics.ui.component.TopicHorizontalCard
 import uk.govuk.app.topics.ui.model.TopicItemUi
 
 @Composable

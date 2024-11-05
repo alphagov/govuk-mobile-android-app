@@ -1,4 +1,4 @@
-package uk.govuk.app.design.ui.component
+package uk.govuk.app.topics.ui.component
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
@@ -25,6 +25,10 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.govuk.app.design.R
+import uk.govuk.app.design.ui.component.BodyBoldLabel
+import uk.govuk.app.design.ui.component.MediumHorizontalSpacer
+import uk.govuk.app.design.ui.component.MediumVerticalSpacer
+import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
