@@ -24,10 +24,10 @@ import uk.govuk.app.design.ui.component.CompactButton
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
 import uk.govuk.app.design.ui.component.Title3BoldLabel
-import uk.govuk.app.design.ui.component.TopicVerticalCard
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.R
 import uk.govuk.app.topics.TopicsWidgetViewModel
+import uk.govuk.app.topics.ui.component.TopicVerticalCard
 import uk.govuk.app.topics.ui.model.TopicItemUi
 
 @Composable

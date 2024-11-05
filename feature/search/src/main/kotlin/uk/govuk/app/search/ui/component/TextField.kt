@@ -1,4 +1,4 @@
-package uk.govuk.app.design.ui.component
+package uk.govuk.app.search.ui.component
 
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import uk.govuk.app.design.R
+import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable

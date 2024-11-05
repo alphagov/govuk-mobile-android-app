@@ -34,7 +34,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
 import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
-import uk.govuk.app.design.ui.component.SearchHeader
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.search.R
 import uk.govuk.app.search.SearchViewModel
@@ -42,6 +41,7 @@ import uk.govuk.app.search.data.remote.model.Result
 import uk.govuk.app.search.domain.ResultStatus
 import uk.govuk.app.search.domain.SearchConfig
 import uk.govuk.app.search.domain.StringUtils
+import uk.govuk.app.search.ui.component.SearchHeader
 
 @Composable
 internal fun SearchRoute(
