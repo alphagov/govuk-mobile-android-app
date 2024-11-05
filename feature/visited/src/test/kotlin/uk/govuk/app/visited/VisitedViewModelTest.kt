@@ -88,7 +88,7 @@ class VisitedViewModelTest {
         val expected =
             VisitedUiState(
                 visited = mapOf(
-                    "Today" to listOf(
+                    SectionTitles().today to listOf(
                         VisitedUi(
                             title = "GOV.UK",
                             url = "https://www.gov.uk",
