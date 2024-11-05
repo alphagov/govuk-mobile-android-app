@@ -120,7 +120,7 @@ private fun NoVisitedItems(
 
 @Composable
 private fun ShowVisitedItems(
-    items: Map<String, List<VisitedUi>>?,
+    items: Map<String, List<VisitedUi>>,
     onClick: (title: String, url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
