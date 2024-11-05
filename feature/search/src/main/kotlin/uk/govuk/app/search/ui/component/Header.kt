@@ -16,7 +16,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import uk.govuk.app.design.R
 import uk.govuk.app.design.ui.component.ListDivider
-import uk.govuk.app.design.ui.component.SearchField
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
