@@ -106,18 +106,20 @@ private fun SearchScreen(
     ) {
         Spacer(modifier = Modifier.height(58.dp))
 
-        when (uiState?.resultStatus) {
-            ResultStatus.Success ->
-                ShowResults(uiState!!.searchResults, onClick)
-            ResultStatus.Empty ->
-                NoResultsFound(searchTerm = uiState!!.searchTerm)
-            ResultStatus.DeviceOffline ->
-                DeviceIsOffline()
-            ResultStatus.ServiceNotResponding ->
-                ServiceNotResponding()
-            else ->
-                ShowNothing()
-        }
+        uiState?.let {
+            when (it.resultStatus) {
+                ResultStatus.Success ->
+                    ShowResults(it.searchResults, onClick)
+                ResultStatus.Empty ->
+                    NoResultsFound(searchTerm = it.searchTerm)
+                ResultStatus.DeviceOffline ->
+                    DeviceIsOffline()
+                ResultStatus.ServiceNotResponding ->
+                    ServiceNotResponding()
+                else ->
+                    ShowNothing()
+            }
+        } ?: ShowNothing()
     }
 
     LaunchedEffect(focusRequester) {
