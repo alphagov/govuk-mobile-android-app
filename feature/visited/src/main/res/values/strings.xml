@@ -3,4 +3,6 @@
 
   <string name="visited_items_no_pages_title">No pages</string>
   <string name="visited_items_no_pages_description">You haven\'t used the app to visit any GOV.UK pages yet</string>
+
+  <string name="visited_items_last_visited">Last visited on</string>
 </resources>

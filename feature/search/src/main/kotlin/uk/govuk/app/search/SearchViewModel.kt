@@ -10,6 +10,7 @@ import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.search.data.SearchRepo
 import uk.govuk.app.search.data.remote.model.Result
 import uk.govuk.app.search.domain.ResultStatus
+import uk.govuk.app.visited.Visited
 import javax.inject.Inject
 
 internal data class SearchUiState(
@@ -21,6 +22,7 @@ internal data class SearchUiState(
 @HiltViewModel
 internal class SearchViewModel @Inject constructor(
     private val analytics: Analytics,
+    private val visited: Visited,
     private val repository: SearchRepo
 ): ViewModel() {
 
@@ -60,6 +62,9 @@ internal class SearchViewModel @Inject constructor(
 
     fun onSearchResultClicked(title: String, url: String) {
         analytics.searchResultClick(text = title, url = url)
+        viewModelScope.launch {
+            visited.visitableItemClick(title = title, url = url)
+        }
     }
 
     fun onClear() {
