@@ -42,7 +42,12 @@ fun VisitedWidget(
         ) {
             Row(
                 modifier = Modifier
-                    .padding(GovUkTheme.spacing.large)
+                    .padding(
+                        start = GovUkTheme.spacing.medium,
+                        end = GovUkTheme.spacing.medium,
+                        top = GovUkTheme.spacing.large,
+                        bottom = GovUkTheme.spacing.large
+                    )
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
