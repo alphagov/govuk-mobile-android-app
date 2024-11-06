@@ -24,6 +24,7 @@ internal fun TopicItem.toTopicItemUi(): TopicItemUi {
         ref = ref,
         icon = icon,
         title = title,
+        description = description,
         isSelected = isSelected
     )
 }

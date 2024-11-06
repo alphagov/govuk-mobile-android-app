@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -26,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.govuk.app.design.ui.component.BodyBoldLabel
@@ -40,6 +42,9 @@ import uk.govuk.app.topics.R
 
 @Composable
 fun TopicSelectionCard(
+    @DrawableRes icon: Int,
+    title: String,
+    description: String,
     isSelected: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -60,17 +65,25 @@ fun TopicSelectionCard(
     ) {
         Column(
             modifier = Modifier
-                .padding(GovUkTheme.spacing.medium),
+                .padding(GovUkTheme.spacing.medium)
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
-                painterResource(R.drawable.ic_topic_benefits),
+                painterResource(icon),
                 contentDescription = null,
                 modifier = Modifier.size(40.dp),
                 tint = GovUkTheme.colourScheme.surfaces.icon
             )
-            Title3BoldLabel("Benefits")
-            SubheadlineRegularLabel("Claiming benefits, managing your benefits")
+            Title3BoldLabel(
+                text = title,
+                textAlign = TextAlign.Center
+            )
+            SubheadlineRegularLabel(
+                text = description,
+                textAlign = TextAlign.Center
+            )
+            MediumVerticalSpacer()
             Spacer(Modifier.weight(1f))
             if (isSelected) {
                 SelectedButton()
@@ -232,6 +245,9 @@ fun TopicHorizontalCard(
 private fun TopicSelectionCardUnselectedPreview() {
     GovUkTheme {
         TopicSelectionCard(
+            icon = R.drawable.ic_topic_benefits,
+            title = "Benefits",
+            description = "Claiming benefits, managing your benefits",
             isSelected = false,
             modifier = Modifier.height(200.dp)
         )
@@ -243,6 +259,9 @@ private fun TopicSelectionCardUnselectedPreview() {
 private fun TopicSelectionCardSelectedPreview() {
     GovUkTheme {
         TopicSelectionCard(
+            icon = R.drawable.ic_topic_benefits,
+            title = "Benefits",
+            description = "Claiming benefits, managing your benefits",
             isSelected = true,
             modifier = Modifier.height(200.dp)
         )

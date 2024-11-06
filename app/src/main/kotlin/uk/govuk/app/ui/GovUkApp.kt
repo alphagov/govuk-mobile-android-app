@@ -49,6 +49,7 @@ import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
 import uk.govuk.app.search.ui.widget.SearchWidget
 import uk.govuk.app.settings.navigation.settingsGraph
+import uk.govuk.app.topics.navigation.TOPICS_GRAPH_ROUTE
 import uk.govuk.app.topics.navigation.navigateToTopic
 import uk.govuk.app.topics.navigation.navigateToTopicsAll
 import uk.govuk.app.topics.navigation.navigateToTopicsEdit
@@ -222,7 +223,8 @@ private fun GovUkNavHost(
         } else if (shouldDisplayOnboarding) {
             ONBOARDING_GRAPH_ROUTE
         } else {
-            HOME_GRAPH_ROUTE
+//            HOME_GRAPH_ROUTE
+            TOPICS_GRAPH_ROUTE // Todo - revert!!!
         }
 
     NavHost(

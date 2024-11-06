@@ -35,6 +35,7 @@ internal class TopicsRepo @Inject constructor(
             TopicItem(
                 ref = remoteTopic.ref,
                 title = remoteTopic.title,
+                description = remoteTopic.description,
                 isSelected = localTopics.isEmpty() || localTopics.any { localTopic ->
                     remoteTopic.ref == localTopic.ref && localTopic.isSelected
                 }

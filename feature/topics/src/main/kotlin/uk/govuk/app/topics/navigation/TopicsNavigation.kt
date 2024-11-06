@@ -15,8 +15,10 @@ import uk.govuk.app.topics.ui.AllStepByStepRoute
 import uk.govuk.app.topics.ui.AllTopicsRoute
 import uk.govuk.app.topics.ui.EditTopicsRoute
 import uk.govuk.app.topics.ui.TopicRoute
+import uk.govuk.app.topics.ui.TopicSelectionRoute
 
 const val TOPICS_GRAPH_ROUTE = "topics_graph_route"
+private const val TOPIC_SELECTION_ROUTE = "topic_selection_route"
 const val TOPIC_ROUTE = "topic_route"
 internal const val TOPIC_REF_ARG = "ref"
 internal const val TOPIC_SUBTOPIC_ARG = "isSubtopic"
@@ -30,8 +32,16 @@ fun NavGraphBuilder.topicsGraph(
 ) {
     navigation(
         route = TOPICS_GRAPH_ROUTE,
-        startDestination = TOPIC_ROUTE
+        startDestination = TOPIC_SELECTION_ROUTE
     ) {
+        composable(TOPIC_SELECTION_ROUTE) {
+            TopicSelectionRoute(
+                onBack = { },
+                onDone = { },
+                onSkip = { }
+            )
+        }
+
         composable(
             "$TOPIC_ROUTE/{$TOPIC_REF_ARG}?$TOPIC_SUBTOPIC_ARG={$TOPIC_SUBTOPIC_ARG}",
             arguments = listOf(

@@ -191,30 +191,35 @@ private fun TopicsWidgetPreview() {
                     "",
                     R.drawable.ic_topic_default,
                     "A really really really really really really long topic title",
+                    "",
                     isSelected = true
                 ),
                 TopicItemUi(
                     "",
                     R.drawable.ic_topic_benefits,
                     "Benefits",
+                    "",
                     isSelected = true
                 ),
                 TopicItemUi(
                     "",
                     R.drawable.ic_topic_transport,
                     "Driving",
+                    "",
                     isSelected = true
                 ),
                 TopicItemUi(
                     "",
                     R.drawable.ic_topic_money,
                     "Tax",
+                    "",
                     isSelected = true
                 ),
                 TopicItemUi(
                     "",
                     R.drawable.ic_topic_parenting,
                     "Child Benefit",
+                    "",
                     isSelected = true
                 ),
             ),
