@@ -16,6 +16,7 @@ internal data class AppUiState(
     val shouldDisplayAnalyticsConsent: Boolean,
     val shouldDisplayOnboarding: Boolean,
     val isSearchEnabled: Boolean,
+    val isRecentActivityEnabled: Boolean,
     val isTopicsEnabled: Boolean
 )
 
@@ -41,6 +42,7 @@ internal class AppViewModel @Inject constructor(
                 shouldDisplayAnalyticsConsent = analytics.isAnalyticsConsentRequired(),
                 shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
                 isSearchEnabled = flagRepo.isSearchEnabled(),
+                isRecentActivityEnabled = flagRepo.isRecentActivityEnabled(),
                 isTopicsEnabled = flagRepo.isTopicsEnabled()
             )
         }

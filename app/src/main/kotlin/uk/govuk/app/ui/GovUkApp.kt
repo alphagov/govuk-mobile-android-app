@@ -73,6 +73,7 @@ internal fun GovUkApp() {
                 shouldDisplayAnalyticsConsent = it.shouldDisplayAnalyticsConsent,
                 shouldDisplayOnboarding = it.shouldDisplayOnboarding,
                 isSearchEnabled = it.isSearchEnabled,
+                isRecentActivityEnabled = it.isRecentActivityEnabled,
                 isTopicsEnabled = it.isTopicsEnabled,
                 onboardingCompleted = { viewModel.onboardingCompleted() },
                 onTabClick = { tabText -> viewModel.onTabClick(tabText) },
@@ -93,6 +94,7 @@ private fun BottomNavScaffold(
     shouldDisplayAnalyticsConsent: Boolean,
     shouldDisplayOnboarding: Boolean,
     isSearchEnabled: Boolean,
+    isRecentActivityEnabled: Boolean,
     isTopicsEnabled: Boolean,
     onboardingCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
@@ -216,6 +218,7 @@ private fun BottomNavScaffold(
                     widgets = homeScreenWidgets(
                         navController = navController,
                         isSearchEnabled = isSearchEnabled,
+                        isRecentActivityEnabled = isRecentActivityEnabled,
                         isTopicsEnabled = isTopicsEnabled,
                         onClick = onWidgetClick
                     ),
@@ -241,22 +244,25 @@ private fun BottomNavScaffold(
 private fun homeScreenWidgets(
     navController: NavHostController,
     isSearchEnabled: Boolean,
+    isRecentActivityEnabled: Boolean,
     isTopicsEnabled: Boolean,
     onClick: (String) -> Unit
 ): List<@Composable (Modifier) -> Unit> {
-    return listOf(
-        { modifier ->
-            if (isSearchEnabled) {
-                SearchWidget(
-                    onClick = { text ->
-                        onClick(text)
-                        navController.navigate(SEARCH_GRAPH_ROUTE)
-                    },
-                    modifier = modifier
-                )
-            }
-        },
-        { modifier ->
+    val widgets = mutableListOf<@Composable (Modifier) -> Unit>()
+    if (isSearchEnabled) {
+        widgets.add { modifier ->
+            SearchWidget(
+                onClick = { text ->
+                    onClick(text)
+                    navController.navigate(SEARCH_GRAPH_ROUTE)
+                },
+                modifier = modifier
+            )
+        }
+    }
+
+    if (isRecentActivityEnabled) {
+        widgets.add { modifier ->
             VisitedWidget(
                 onClick = { text ->
                     onClick(text)
@@ -264,27 +270,29 @@ private fun homeScreenWidgets(
                 },
                 modifier = modifier
             )
-        },
-        { modifier ->
-            if (isTopicsEnabled) {
-                TopicsWidget(
-                    onTopicClick = { ref, title ->
-                        onClick(title)
-                        navController.navigateToTopic(ref)
-                    },
-                    onEditClick = { text ->
-                        onClick(text)
-                        navController.navigateToTopicsEdit()
-                    },
-                    onAllClick = { text ->
-                        onClick(text)
-                        navController.navigateToTopicsAll()
-                    },
-                    modifier = modifier
-                )
-            }
         }
-    )
+    }
+
+    if (isTopicsEnabled) {
+        widgets.add { modifier ->
+            TopicsWidget(
+                onTopicClick = { ref, title ->
+                    onClick(title)
+                    navController.navigateToTopic(ref)
+                },
+                onEditClick = { text ->
+                    onClick(text)
+                    navController.navigateToTopicsEdit()
+                },
+                onAllClick = { text ->
+                    onClick(text)
+                    navController.navigateToTopicsAll()
+                },
+                modifier = modifier
+            )
+        }
+    }
+    return widgets
 }
 
 @Composable
