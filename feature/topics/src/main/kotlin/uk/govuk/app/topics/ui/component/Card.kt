@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
@@ -24,12 +26,62 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import uk.govuk.app.design.R
 import uk.govuk.app.design.ui.component.BodyBoldLabel
+import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.MediumHorizontalSpacer
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
+import uk.govuk.app.design.ui.component.SubheadlineRegularLabel
+import uk.govuk.app.design.ui.component.Title3BoldLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.topics.R
+
+@Composable
+fun TopicSelectionCard(
+    isSelected: Boolean,
+    modifier: Modifier = Modifier
+) {
+    // Todo - should probably introduce a default card in the design module
+    OutlinedCard(
+        modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = GovUkTheme.colourScheme.surfaces.card
+        ),
+        border = BorderStroke(
+            width = 1.dp,
+            color = GovUkTheme.colourScheme.strokes.listDivider
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(GovUkTheme.spacing.medium),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                painterResource(R.drawable.ic_topic_benefits),
+                contentDescription = null,
+                modifier = Modifier.size(40.dp),
+                tint = GovUkTheme.colourScheme.surfaces.icon
+            )
+            Title3BoldLabel("Benefits")
+            SubheadlineRegularLabel("Claiming benefits, mananging your benefits")
+            Spacer(Modifier.weight(1f))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = null,
+                    tint = GovUkTheme.colourScheme.textAndIcons.link
+                )
+                BodyRegularLabel(
+                    text = "Select",
+                    color = GovUkTheme.colourScheme.textAndIcons.link
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun TopicVerticalCard(
@@ -75,7 +127,7 @@ fun TopicVerticalCard(
                 )
                 SmallHorizontalSpacer()
                 Icon(
-                    painterResource(R.drawable.ic_chevron),
+                    painterResource(uk.govuk.app.design.R.drawable.ic_chevron),
                     contentDescription = null,
                     modifier = Modifier
                         .align(Alignment.Bottom)
@@ -127,11 +179,22 @@ fun TopicHorizontalCard(
             MediumHorizontalSpacer()
 
             Icon(
-                painterResource(R.drawable.ic_chevron),
+                painterResource(uk.govuk.app.design.R.drawable.ic_chevron),
                 contentDescription = null,
                 tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun TopicSelectionCardPreview() {
+    GovUkTheme {
+        TopicSelectionCard(
+            isSelected = false,
+            modifier = Modifier.height(200.dp)
+        )
     }
 }
 

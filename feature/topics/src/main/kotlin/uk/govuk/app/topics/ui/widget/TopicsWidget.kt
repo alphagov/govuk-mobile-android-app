@@ -189,31 +189,31 @@ private fun TopicsWidgetPreview() {
             topics = listOf(
                 TopicItemUi(
                     "",
-                    uk.govuk.app.design.R.drawable.ic_topic_default,
+                    R.drawable.ic_topic_default,
                     "A really really really really really really long topic title",
                     isSelected = true
                 ),
                 TopicItemUi(
                     "",
-                    uk.govuk.app.design.R.drawable.ic_topic_benefits,
+                    R.drawable.ic_topic_benefits,
                     "Benefits",
                     isSelected = true
                 ),
                 TopicItemUi(
                     "",
-                    uk.govuk.app.design.R.drawable.ic_topic_transport,
+                    R.drawable.ic_topic_transport,
                     "Driving",
                     isSelected = true
                 ),
                 TopicItemUi(
                     "",
-                    uk.govuk.app.design.R.drawable.ic_topic_money,
+                    R.drawable.ic_topic_money,
                     "Tax",
                     isSelected = true
                 ),
                 TopicItemUi(
                     "",
-                    uk.govuk.app.design.R.drawable.ic_topic_parenting,
+                    R.drawable.ic_topic_parenting,
                     "Child Benefit",
                     isSelected = true
                 ),

@@ -1,6 +1,6 @@
 package uk.govuk.app.topics.extension
 
-import uk.govuk.app.design.R
+import uk.govuk.app.topics.R
 import uk.govuk.app.topics.domain.model.TopicItem
 import uk.govuk.app.topics.ui.model.TopicItemUi
 
