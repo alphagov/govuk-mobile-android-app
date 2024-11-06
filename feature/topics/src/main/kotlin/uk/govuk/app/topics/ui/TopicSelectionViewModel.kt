@@ -26,13 +26,16 @@ internal class TopicSelectionViewModel @Inject constructor(
     private val _topics: MutableStateFlow<List<TopicItemUi>?> = MutableStateFlow(null)
     val topics = _topics.asStateFlow()
 
+    private val selectedTopicRefs = mutableListOf<String>()
+
     init {
         viewModelScope.launch {
 
             topicsRepo.topics.collect { topics ->
                 _topics.value = topics.map { topicItem ->
-                    // Todo - items are selected by default
-                    topicItem.toTopicItemUi()
+                    topicItem.toTopicItemUi().copy(
+                        isSelected = selectedTopicRefs.contains(topicItem.ref)
+                    )
                 }
             }
         }
@@ -48,12 +51,14 @@ internal class TopicSelectionViewModel @Inject constructor(
 
     fun onClick(ref: String, title: String) {
 //        analytics.buttonClick(title)
+        if (selectedTopicRefs.contains(ref)) {
+            selectedTopicRefs.remove(ref)
+        } else {
+            selectedTopicRefs.add(ref)
+        }
+
         _topics.value = _topics.value?.map { topic ->
-            if (topic.ref == ref) {
-                topic.copy(isSelected = !topic.isSelected)
-            } else {
-                topic
-            }
+            topic.copy(isSelected = selectedTopicRefs.contains(topic.ref))
         }
     }
 }
