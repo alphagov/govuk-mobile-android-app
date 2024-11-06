@@ -8,16 +8,21 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.window.core.layout.WindowWidthSizeClass
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ChildPageHeader
+import uk.govuk.app.design.ui.component.HorizontalButtonGroup
+import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
+import uk.govuk.app.design.ui.component.VerticalButtonGroup
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.ui.component.TopicSelectionCard
 import uk.govuk.app.topics.ui.model.TopicItemUi
@@ -56,6 +61,9 @@ private fun TopicSelectionScreen(
     onSkip: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val windowWidthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
+    val columnCount = getColumnCount(windowWidthSizeClass)
+
     val title = "Select relevant topics"
 
     LaunchedEffect(Unit) {
@@ -68,23 +76,46 @@ private fun TopicSelectionScreen(
             onBack = onBack
         )
 
-        if (!topics.isNullOrEmpty()) {
-            TopicsGrid(
-                topics = topics,
-                onClick = onClick
+        TopicsGrid(
+            topics = topics ?: emptyList(),
+            columnCount = columnCount,
+            onClick = onClick,
+            modifier = Modifier.weight(1f)
+        )
+
+        ListDivider()
+
+        val doneButtonText = "Done" // Todo - extract string
+        val onDone = { }
+        val skipButtonText = "Skip" // Todo - extract string
+        val onSkip = { }
+
+        if (windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+            VerticalButtonGroup(
+                primaryText = doneButtonText,
+                onPrimary = onDone,
+                secondaryText = skipButtonText,
+                onSecondary = onSkip
+            )
+        } else {
+            HorizontalButtonGroup(
+                primaryText = doneButtonText,
+                onPrimary = onDone,
+                secondaryText = skipButtonText,
+                onSecondary = onSkip
             )
         }
     }
 }
 
+// Todo - very similar to topics widget, can we extract and re-use somehow???
 @Composable
 private fun TopicsGrid(
     topics: List<TopicItemUi>,
+    columnCount: Int,
     onClick: (ref: String, title: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val columnCount = 2
-
     LazyColumn(
         modifier.padding(horizontal = GovUkTheme.spacing.medium),
     ) {
@@ -162,4 +193,8 @@ private fun getRowCount(topicsCount: Int, columnCount: Int): Int {
         rowCount += 1
     }
     return rowCount
+}
+
+private fun getColumnCount(windowWidthSizeClass: WindowWidthSizeClass): Int {
+    return if (windowWidthSizeClass == WindowWidthSizeClass.COMPACT) 2 else 4
 }
