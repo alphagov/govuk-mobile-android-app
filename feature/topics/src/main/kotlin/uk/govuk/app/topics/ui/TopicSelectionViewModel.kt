@@ -28,22 +28,32 @@ internal class TopicSelectionViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            topicsRepo.selectInitialTopics()
+
             topicsRepo.topics.collect { topics ->
-                _topics.value = topics.map { topicItem -> topicItem.toTopicItemUi() }
+                _topics.value = topics.map { topicItem ->
+                    // Todo - items are selected by default
+                    topicItem.toTopicItemUi()
+                }
             }
         }
     }
 
     fun onPageView(title: String) {
-        analytics.screenView(
+        /*analytics.screenView(
             screenClass = SCREEN_CLASS,
             screenName = SCREEN_NAME,
             title = title
-        )
+        )*/
     }
 
-    fun onClick(title: String) {
-        analytics.buttonClick(title)
+    fun onClick(ref: String, title: String) {
+//        analytics.buttonClick(title)
+        _topics.value = _topics.value?.map { topic ->
+            if (topic.ref == ref) {
+                topic.copy(isSelected = !topic.isSelected)
+            } else {
+                topic
+            }
+        }
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
@@ -35,9 +36,9 @@ internal fun TopicSelectionRoute(
         topics = topics,
         onPageView = { title -> viewModel.onPageView(title) },
         onBack = onBack,
-        onClick = { title ->
+        onClick = { ref, title ->
 //            onClick(title)
-//            viewModel.onClick(title)
+            viewModel.onClick(ref, title)
         },
         onDone = onDone,
         onSkip = onSkip,
@@ -50,7 +51,7 @@ private fun TopicSelectionScreen(
     topics: List<TopicItemUi>?,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
-    onClick: (String) -> Unit,
+    onClick: (ref: String, title: String) -> Unit,
     onDone: () -> Unit,
     onSkip: () -> Unit,
     modifier: Modifier = Modifier
@@ -70,7 +71,7 @@ private fun TopicSelectionScreen(
         if (!topics.isNullOrEmpty()) {
             TopicsGrid(
                 topics = topics,
-                onClick = { _, _ -> }
+                onClick = onClick
             )
         }
     }
@@ -79,7 +80,7 @@ private fun TopicSelectionScreen(
 @Composable
 private fun TopicsGrid(
     topics: List<TopicItemUi>,
-    onClick: (String, String) -> Unit,
+    onClick: (ref: String, title: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val columnCount = 2
@@ -88,7 +89,12 @@ private fun TopicsGrid(
         modifier.padding(horizontal = GovUkTheme.spacing.medium),
     ) {
         item {
-            MediumVerticalSpacer()
+            Column {
+                BodyRegularLabel(
+                    text = "Topics you select will be shown on the app home page so you can find them more easily", // Todo - extract string
+                )
+                MediumVerticalSpacer()
+            }
         }
 
         items(
@@ -113,7 +119,7 @@ private fun TopicsRow(
     topics: List<TopicItemUi>,
     columnCount: Int,
     rowIndex: Int,
-    onClick: (String, String) -> Unit,
+    onClick: (ref: String, title: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -131,7 +137,10 @@ private fun TopicsRow(
                     icon = topic.icon,
                     title =  topic.title,
                     description = topic.description,
-                    isSelected = false,
+                    isSelected = topic.isSelected,
+                    onClick = {
+                        onClick(topic.ref, topic.title)
+                    },
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f)

@@ -46,6 +46,7 @@ fun TopicSelectionCard(
     title: String,
     description: String,
     isSelected: Boolean,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Todo - should probably introduce a default card in the design module
@@ -65,6 +66,9 @@ fun TopicSelectionCard(
     ) {
         Column(
             modifier = Modifier
+                .clickable {
+                    onClick()
+                }
                 .padding(GovUkTheme.spacing.medium)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -108,7 +112,7 @@ private fun SelectButton(
             tint = GovUkTheme.colourScheme.textAndIcons.link
         )
         BodyRegularLabel(
-            text = "Select",
+            text = "Select", // Todo - extract string
             modifier = Modifier.padding(top = 2.dp),
             color = GovUkTheme.colourScheme.textAndIcons.link
         )
@@ -129,7 +133,7 @@ private fun SelectedButton(
         )
         Spacer(Modifier.width(2.dp))
         BodyRegularLabel(
-            text = "Selected",
+            text = "Selected", // Todo - extract string
             modifier = Modifier.padding(top = 2.dp),
             color = GovUkTheme.colourScheme.textAndIcons.buttonSuccess
         )
@@ -249,6 +253,7 @@ private fun TopicSelectionCardUnselectedPreview() {
             title = "Benefits",
             description = "Claiming benefits, managing your benefits",
             isSelected = false,
+            onClick = { },
             modifier = Modifier.height(200.dp)
         )
     }
@@ -263,6 +268,7 @@ private fun TopicSelectionCardSelectedPreview() {
             title = "Benefits",
             description = "Claiming benefits, managing your benefits",
             isSelected = true,
+            onClick = { },
             modifier = Modifier.height(200.dp)
         )
     }
