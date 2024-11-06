@@ -76,6 +76,19 @@ class SearchViewModelTest {
                 }
             }
         }
+
+        @Test
+        fun `Given a search, and a search result is clicked, then log visited item`() {
+            Dispatchers.setMain(dispatcher)
+
+            runTest {
+                viewModel.onSearchResultClicked("search result title", "search result link")
+
+                coVerify {
+                    visited.visitableItemClick(title = "search result title", url = "search result link")
+                }
+            }
+        }
     }
 
     class UiStateTest {
