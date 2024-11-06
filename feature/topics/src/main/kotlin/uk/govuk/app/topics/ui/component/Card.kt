@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
@@ -42,11 +44,15 @@ fun TopicSelectionCard(
     modifier: Modifier = Modifier
 ) {
     // Todo - should probably introduce a default card in the design module
+    val cardColour = if (isSelected) {
+        GovUkTheme.colourScheme.surfaces.cardSelected
+    } else {
+        GovUkTheme.colourScheme.surfaces.card
+    }
+
     OutlinedCard(
         modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = GovUkTheme.colourScheme.surfaces.card
-        ),
+        colors = CardDefaults.cardColors(containerColor = cardColour),
         border = BorderStroke(
             width = 1.dp,
             color = GovUkTheme.colourScheme.strokes.listDivider
@@ -64,22 +70,56 @@ fun TopicSelectionCard(
                 tint = GovUkTheme.colourScheme.surfaces.icon
             )
             Title3BoldLabel("Benefits")
-            SubheadlineRegularLabel("Claiming benefits, mananging your benefits")
+            SubheadlineRegularLabel("Claiming benefits, managing your benefits")
             Spacer(Modifier.weight(1f))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = null,
-                    tint = GovUkTheme.colourScheme.textAndIcons.link
-                )
-                BodyRegularLabel(
-                    text = "Select",
-                    color = GovUkTheme.colourScheme.textAndIcons.link
-                )
+            if (isSelected) {
+                SelectedButton()
+            } else {
+                SelectButton()
             }
         }
+    }
+}
+
+@Composable
+private fun SelectButton(
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Add,
+            contentDescription = null,
+            tint = GovUkTheme.colourScheme.textAndIcons.link
+        )
+        BodyRegularLabel(
+            text = "Select",
+            modifier = Modifier.padding(top = 2.dp),
+            color = GovUkTheme.colourScheme.textAndIcons.link
+        )
+    }
+}
+
+@Composable
+private fun SelectedButton(
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Check,
+            contentDescription = null,
+            tint = GovUkTheme.colourScheme.textAndIcons.buttonSuccess
+        )
+        Spacer(Modifier.width(2.dp))
+        BodyRegularLabel(
+            text = "Selected",
+            modifier = Modifier.padding(top = 2.dp),
+            color = GovUkTheme.colourScheme.textAndIcons.buttonSuccess
+        )
     }
 }
 
@@ -189,10 +229,21 @@ fun TopicHorizontalCard(
 
 @Preview
 @Composable
-private fun TopicSelectionCardPreview() {
+private fun TopicSelectionCardUnselectedPreview() {
     GovUkTheme {
         TopicSelectionCard(
             isSelected = false,
+            modifier = Modifier.height(200.dp)
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun TopicSelectionCardSelectedPreview() {
+    GovUkTheme {
+        TopicSelectionCard(
+            isSelected = true,
             modifier = Modifier.height(200.dp)
         )
     }
