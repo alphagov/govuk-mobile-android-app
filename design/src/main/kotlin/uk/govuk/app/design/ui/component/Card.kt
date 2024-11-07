@@ -26,7 +26,7 @@ fun GovUkCard(
     }
 
     OutlinedCard(
-        modifier.clickable { },
+        modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = cardColour),
         border = BorderStroke(
             width = 1.dp,
