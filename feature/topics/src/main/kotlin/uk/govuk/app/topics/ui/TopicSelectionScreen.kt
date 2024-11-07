@@ -1,14 +1,10 @@
 package uk.govuk.app.topics.ui
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,12 +19,11 @@ import uk.govuk.app.design.ui.component.HorizontalButtonGroup
 import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
 import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
-import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
 import uk.govuk.app.design.ui.component.VerticalButtonGroup
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.R
 import uk.govuk.app.topics.ui.component.TopicSelectionCard
-import uk.govuk.app.topics.ui.model.TopicItemUi
+import uk.govuk.app.topics.ui.component.TopicsGrid
 
 @Composable
 internal fun TopicSelectionRoute(
@@ -67,7 +62,6 @@ private fun TopicSelectionScreen(
     modifier: Modifier = Modifier
 ) {
     val windowWidthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
-    val columnCount = getColumnCount(windowWidthSizeClass)
 
     val title = stringResource(R.string.topicSelectionTitle)
 
@@ -84,12 +78,32 @@ private fun TopicSelectionScreen(
                 .padding(horizontal = GovUkTheme.spacing.medium)
         )
 
-        TopicsGrid(
-            topics = uiState?.topics ?: emptyList(),
-            columnCount = columnCount,
-            onClick = onClick,
-            modifier = Modifier.weight(1f)
-        )
+        Column(
+            Modifier
+                .verticalScroll(rememberScrollState())
+                .weight(1f)
+                .padding(horizontal = GovUkTheme.spacing.medium)
+        ) {
+            BodyRegularLabel(
+                text = stringResource(R.string.topicSelectionDescription),
+            )
+            MediumVerticalSpacer()
+
+            TopicsGrid(
+                topics = uiState?.topics ?: emptyList(),
+            ) { modifier, topic ->
+                TopicSelectionCard(
+                    icon = topic.icon,
+                    title = topic.title,
+                    description = topic.description,
+                    isSelected = topic.isSelected,
+                    onClick = {
+                        onClick(topic.ref, topic.title)
+                    },
+                    modifier = modifier
+                )
+            }
+        }
 
         uiState?.let {
             ListDivider()
@@ -117,95 +131,4 @@ private fun TopicSelectionScreen(
             }
         }
     }
-}
-
-// Todo - very similar to topics widget, can we extract and re-use somehow???
-@Composable
-private fun TopicsGrid(
-    topics: List<TopicItemUi>,
-    columnCount: Int,
-    onClick: (ref: String, title: String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(
-        modifier.padding(horizontal = GovUkTheme.spacing.medium),
-    ) {
-        item {
-            Column {
-                BodyRegularLabel(
-                    text = stringResource(R.string.topicSelectionDescription),
-                )
-                MediumVerticalSpacer()
-            }
-        }
-
-        items(
-            getRowCount(
-                topicsCount = topics.size,
-                columnCount = columnCount
-            )
-        ) { rowIndex ->
-            TopicsRow(
-                topics = topics,
-                columnCount = columnCount,
-                rowIndex = rowIndex,
-                onClick = onClick
-            )
-            MediumVerticalSpacer()
-        }
-    }
-}
-
-@Composable
-private fun TopicsRow(
-    topics: List<TopicItemUi>,
-    columnCount: Int,
-    rowIndex: Int,
-    onClick: (ref: String, title: String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier.height(intrinsicSize = IntrinsicSize.Max)
-    ) {
-        for (columnIndex in 0 until columnCount) {
-            if (columnIndex > 0) {
-                SmallHorizontalSpacer()
-            }
-
-            val topicIndex = (rowIndex * columnCount) + columnIndex
-            if (topicIndex < topics.size) {
-                val topic = topics[topicIndex]
-                TopicSelectionCard(
-                    icon = topic.icon,
-                    title =  topic.title,
-                    description = topic.description,
-                    isSelected = topic.isSelected,
-                    onClick = {
-                        onClick(topic.ref, topic.title)
-                    },
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                )
-            } else {
-                Box(Modifier.weight(1f)) {  }
-            }
-
-            if (columnIndex < columnCount - 1) {
-                SmallHorizontalSpacer()
-            }
-        }
-    }
-}
-
-private fun getRowCount(topicsCount: Int, columnCount: Int): Int {
-    var rowCount = topicsCount / columnCount
-    if (topicsCount.mod(columnCount) > 0) {
-        rowCount += 1
-    }
-    return rowCount
-}
-
-private fun getColumnCount(windowWidthSizeClass: WindowWidthSizeClass): Int {
-    return if (windowWidthSizeClass == WindowWidthSizeClass.COMPACT) 2 else 4
 }
