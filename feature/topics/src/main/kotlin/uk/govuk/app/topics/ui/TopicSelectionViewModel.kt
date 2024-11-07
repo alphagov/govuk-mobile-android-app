@@ -7,6 +7,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.topics.ANALYTICS_TOGGLE_FUNCTION_ACTION_DESELECTED
+import uk.govuk.app.topics.ANALYTICS_TOGGLE_FUNCTION_ACTION_SELECTED
+import uk.govuk.app.topics.ANALYTICS_TOGGLE_FUNCTION_SECTION
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.extension.toTopicItemUi
 import uk.govuk.app.topics.ui.model.TopicItemUi
@@ -26,10 +29,6 @@ internal class TopicSelectionViewModel @Inject constructor(
     companion object {
         private const val SCREEN_CLASS = "TopicSelectionScreen"
         private const val SCREEN_NAME = "Topic Selection"
-        // Todo - extract for re-use
-        private const val TOGGLE_FUNCTION_SECTION = "Topics"
-        private const val TOGGLE_FUNCTION_ACTION_SELECTED = "Add"
-        private const val TOGGLE_FUNCTION_ACTION_DESELECTED = "Remove"
     }
 
     private val _uiState: MutableStateFlow<TopicSelectionUiState?> = MutableStateFlow(null)
@@ -62,13 +61,19 @@ internal class TopicSelectionViewModel @Inject constructor(
     }
 
     fun onClick(ref: String, title: String) {
-        if (selectedTopicRefs.contains(ref)) {
-            analytics.toggleFunction(title, TOGGLE_FUNCTION_SECTION, TOGGLE_FUNCTION_ACTION_DESELECTED)
+        val action = if (selectedTopicRefs.contains(ref)) {
             selectedTopicRefs.remove(ref)
+            ANALYTICS_TOGGLE_FUNCTION_ACTION_DESELECTED
         } else {
-            analytics.toggleFunction(title, TOGGLE_FUNCTION_SECTION, TOGGLE_FUNCTION_ACTION_SELECTED)
             selectedTopicRefs.add(ref)
+            ANALYTICS_TOGGLE_FUNCTION_ACTION_SELECTED
         }
+
+        analytics.toggleFunction(
+            text = title,
+            section = ANALYTICS_TOGGLE_FUNCTION_SECTION,
+            action = action
+        )
 
         _uiState.value?.let {
             val topics = it.topics.map { topic ->
