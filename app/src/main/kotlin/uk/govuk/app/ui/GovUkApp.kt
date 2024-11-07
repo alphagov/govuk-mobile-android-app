@@ -34,7 +34,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
-import uk.govuk.app.PRIVACY_POLICY_URL
 import uk.govuk.app.analytics.navigation.ANALYTICS_GRAPH_ROUTE
 import uk.govuk.app.analytics.navigation.analyticsGraph
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -47,6 +46,7 @@ import uk.govuk.app.onboarding.navigation.onboardingGraph
 import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
 import uk.govuk.app.search.ui.widget.SearchWidget
+import uk.govuk.app.settings.BuildConfig.PRIVACY_POLICY_URL
 import uk.govuk.app.settings.navigation.settingsGraph
 import uk.govuk.app.topics.navigation.navigateToTopic
 import uk.govuk.app.topics.navigation.navigateToTopicsAll
@@ -226,7 +226,6 @@ private fun BottomNavScaffold(
                 )
                 settingsGraph(
                     appVersion = BuildConfig.VERSION_NAME,
-                    privacyPolicyUrl = PRIVACY_POLICY_URL,
                     navController = navController,
                     modifier = Modifier.padding(paddingValues)
                 )
