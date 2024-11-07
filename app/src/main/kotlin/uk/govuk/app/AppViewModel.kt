@@ -15,6 +15,7 @@ import javax.inject.Inject
 internal data class AppUiState(
     val shouldDisplayAnalyticsConsent: Boolean,
     val shouldDisplayOnboarding: Boolean,
+    val shouldDisplayTopicSelection: Boolean,
     val isSearchEnabled: Boolean,
     val isTopicsEnabled: Boolean
 )
@@ -40,6 +41,7 @@ internal class AppViewModel @Inject constructor(
             _uiState.value = AppUiState(
                 shouldDisplayAnalyticsConsent = analytics.isAnalyticsConsentRequired(),
                 shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
+                shouldDisplayTopicSelection = flagRepo.isTopicsEnabled() && !appRepo.isTopicSelectionCompleted(),
                 isSearchEnabled = flagRepo.isSearchEnabled(),
                 isTopicsEnabled = flagRepo.isTopicsEnabled()
             )
@@ -49,6 +51,12 @@ internal class AppViewModel @Inject constructor(
     fun onboardingCompleted() {
         viewModelScope.launch {
             appRepo.onboardingCompleted()
+        }
+    }
+
+    fun topicSelectionCompleted() {
+        viewModelScope.launch {
+            appRepo.topicSelectionCompleted()
         }
     }
 

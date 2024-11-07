@@ -11,4 +11,8 @@ internal class AppRepo @Inject constructor(
     internal suspend fun isOnboardingCompleted() = appDataStore.isOnboardingCompleted()
 
     internal suspend fun onboardingCompleted() = appDataStore.onboardingCompleted()
+
+    internal suspend fun isTopicSelectionCompleted() = appDataStore.isTopicSelectionCompleted()
+
+    internal suspend fun topicSelectionCompleted() = appDataStore.topicSelectionCompleted()
 }

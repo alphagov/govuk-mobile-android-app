@@ -33,7 +33,7 @@ class AppDataStoreTest {
         val datastore = AppDataStore(dataStore)
 
         every { dataStore.data } returns flowOf(preferences)
-        every { preferences[booleanPreferencesKey(AppDataStore.ONBOARDING_COMPLETE_KEY)] } returns false
+        every { preferences[booleanPreferencesKey(AppDataStore.ONBOARDING_COMPLETED_KEY)] } returns false
 
         runTest {
             assertFalse(datastore.isOnboardingCompleted())
@@ -45,7 +45,7 @@ class AppDataStoreTest {
         val datastore = AppDataStore(dataStore)
 
         every { dataStore.data } returns flowOf(preferences)
-        every { preferences[booleanPreferencesKey(AppDataStore.ONBOARDING_COMPLETE_KEY)] } returns true
+        every { preferences[booleanPreferencesKey(AppDataStore.ONBOARDING_COMPLETED_KEY)] } returns true
 
         runTest {
             assertTrue(datastore.isOnboardingCompleted())

@@ -74,9 +74,11 @@ internal fun GovUkApp() {
             BottomNavScaffold(
                 shouldDisplayAnalyticsConsent = it.shouldDisplayAnalyticsConsent,
                 shouldDisplayOnboarding = it.shouldDisplayOnboarding,
+                shouldDisplayTopicSelection = it.shouldDisplayTopicSelection,
                 isSearchEnabled = it.isSearchEnabled,
                 isTopicsEnabled = it.isTopicsEnabled,
                 onboardingCompleted = { viewModel.onboardingCompleted() },
+                topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
                 onTabClick = { tabText -> viewModel.onTabClick(tabText) },
                 onWidgetClick = { text -> viewModel.onWidgetClick(text) }
             )
@@ -94,9 +96,11 @@ internal fun GovUkApp() {
 private fun BottomNavScaffold(
     shouldDisplayAnalyticsConsent: Boolean,
     shouldDisplayOnboarding: Boolean,
+    shouldDisplayTopicSelection: Boolean,
     isSearchEnabled: Boolean,
     isTopicsEnabled: Boolean,
     onboardingCompleted: () -> Unit,
+    topicSelectionCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
     onWidgetClick: (String) -> Unit
 ) {
@@ -115,9 +119,11 @@ private fun BottomNavScaffold(
                 navController = navController,
                 shouldDisplayAnalyticsConsent = shouldDisplayAnalyticsConsent,
                 shouldDisplayOnboarding = shouldDisplayOnboarding,
+                shouldDisplayTopicSelection = shouldDisplayTopicSelection,
                 isSearchEnabled = isSearchEnabled,
                 isTopicsEnabled = isTopicsEnabled,
                 onboardingCompleted = onboardingCompleted,
+                topicSelectionCompleted = topicSelectionCompleted,
                 onWidgetClick = onWidgetClick,
                 paddingValues = paddingValues
             )
@@ -210,22 +216,21 @@ private fun GovUkNavHost(
     navController: NavHostController,
     shouldDisplayAnalyticsConsent: Boolean,
     shouldDisplayOnboarding: Boolean,
+    shouldDisplayTopicSelection: Boolean,
     isSearchEnabled: Boolean,
     isTopicsEnabled: Boolean,
     onboardingCompleted: () -> Unit,
+    topicSelectionCompleted: () -> Unit,
     onWidgetClick: (String) -> Unit,
     paddingValues: PaddingValues
 ) {
     // Todo - we need a better way to do this! (build something in the view model)
-    val startDestination =
-        if (shouldDisplayAnalyticsConsent) {
-            ANALYTICS_GRAPH_ROUTE
-        } else if (shouldDisplayOnboarding) {
-            ONBOARDING_GRAPH_ROUTE
-        } else {
-//            HOME_GRAPH_ROUTE
-            TOPICS_GRAPH_ROUTE // Todo - revert!!!
-        }
+    val startDestination = when {
+        shouldDisplayAnalyticsConsent -> ANALYTICS_GRAPH_ROUTE
+        shouldDisplayOnboarding -> ONBOARDING_GRAPH_ROUTE
+        shouldDisplayTopicSelection -> TOPICS_GRAPH_ROUTE
+        else -> HOME_GRAPH_ROUTE
+    }
 
     NavHost(
         navController = navController,
@@ -234,25 +239,34 @@ private fun GovUkNavHost(
         analyticsGraph(
             privacyPolicyUrl = PRIVACY_POLICY_URL,
             analyticsConsentCompleted = {
-                if (shouldDisplayOnboarding) {
-                    navController.popBackStack()
-                    navController.navigate(ONBOARDING_GRAPH_ROUTE)
-                } else {
-                    navController.popBackStack()
-                    navController.navigate(HOME_GRAPH_ROUTE)
+                // Todo - we need a better way to do this! (build something in the view model)
+                val nextRoute = when {
+                    shouldDisplayOnboarding -> ONBOARDING_GRAPH_ROUTE
+                    shouldDisplayTopicSelection -> TOPICS_GRAPH_ROUTE
+                    else -> HOME_GRAPH_ROUTE
                 }
+                navController.popBackStack()
+                navController.navigate(nextRoute)
             }
         )
         onboardingGraph(
             onboardingCompleted = {
+                // Todo - we need a better way to do this! (build something in the view model)
                 onboardingCompleted()
+
+                val nextRoute = when {
+                    shouldDisplayTopicSelection -> TOPICS_GRAPH_ROUTE
+                    else -> HOME_GRAPH_ROUTE
+                }
                 navController.popBackStack()
-                navController.navigate(HOME_GRAPH_ROUTE)
+                navController.navigate(nextRoute)
             }
         )
         topicsGraph(
             navController = navController,
             topicSelectionCompleted = {
+                topicSelectionCompleted()
+
                 navController.popBackStack()
                 navController.navigate(HOME_GRAPH_ROUTE)
             },
