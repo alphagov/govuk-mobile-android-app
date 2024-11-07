@@ -37,9 +37,6 @@ fun NavGraphBuilder.topicsGraph(
     ) {
         composable(TOPIC_SELECTION_ROUTE) {
             TopicSelectionRoute(
-                onBack = {
-                    navController.popBackStack()
-                },
                 onDone = topicSelectionCompleted,
                 onSkip = topicSelectionCompleted
             )

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,8 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import uk.govuk.app.design.ui.component.BodyRegularLabel
-import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.HorizontalButtonGroup
+import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
 import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
@@ -29,7 +30,6 @@ import uk.govuk.app.topics.ui.model.TopicItemUi
 
 @Composable
 internal fun TopicSelectionRoute(
-    onBack: () -> Unit,
     onDone: () -> Unit,
     onSkip: () -> Unit,
     modifier: Modifier = Modifier
@@ -40,7 +40,6 @@ internal fun TopicSelectionRoute(
     TopicSelectionScreen(
         topics = topics,
         onPageView = { title -> viewModel.onPageView(title) },
-        onBack = onBack,
         onClick = { ref, title ->
 //            onClick(title)
             viewModel.onClick(ref, title)
@@ -55,7 +54,6 @@ internal fun TopicSelectionRoute(
 private fun TopicSelectionScreen(
     topics: List<TopicItemUi>?,
     onPageView: (String) -> Unit,
-    onBack: () -> Unit,
     onClick: (ref: String, title: String) -> Unit,
     onDone: () -> Unit,
     onSkip: () -> Unit,
@@ -71,9 +69,12 @@ private fun TopicSelectionScreen(
     }
 
     Column(modifier) {
-        ChildPageHeader(
+        LargeTitleBoldLabel(
             text = title,
-            onBack = onBack
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(top = GovUkTheme.spacing.medium)
+                .padding(horizontal = GovUkTheme.spacing.medium)
         )
 
         TopicsGrid(
