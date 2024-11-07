@@ -1,5 +1,6 @@
 package uk.govuk.app.settings.navigation
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.ui.Modifier
@@ -10,6 +11,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import uk.govuk.app.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
+import uk.govuk.app.settings.BuildConfig.HELP_AND_FEEDBACK_URL
+import uk.govuk.app.settings.BuildConfig.PRIVACY_POLICY_URL
+import uk.govuk.app.settings.BuildConfig.TERMS_AND_CONDITIONS_URL
 import uk.govuk.app.settings.ui.SettingsRoute
 import uk.govuk.app.settings.ui.SettingsSubRoute
 
@@ -19,7 +24,6 @@ private const val SETTINGS_SUB_ROUTE = "settings_sub_route"
 
 fun NavGraphBuilder.settingsGraph(
     appVersion: String,
-    privacyPolicyUrl: String,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
@@ -40,11 +44,17 @@ fun NavGraphBuilder.settingsGraph(
 
             SettingsRoute(
                 appVersion = appVersion,
-                onHelpClick = { navController.navigateToSettingsSubScreen() },
+                onHelpClick = {
+                    openInBrowser(context, HELP_AND_FEEDBACK_URL)
+                },
                 onPrivacyPolicyClick = {
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    intent.data = Uri.parse(privacyPolicyUrl)
-                    context.startActivity(intent)
+                    openInBrowser(context, PRIVACY_POLICY_URL)
+                },
+                onAccessibilityStatementClick = {
+                    openInBrowser(context, ACCESSIBILITY_STATEMENT_URL)
+                },
+                onTermsAndConditionsClick = {
+                    openInBrowser(context, TERMS_AND_CONDITIONS_URL)
                 },
                 onOpenSourceLicenseClick = {
                     val intent = Intent(context, OssLicensesMenuActivity::class.java)
@@ -65,4 +75,11 @@ fun NavGraphBuilder.settingsGraph(
     }
 }
 
+// TODO: do we still need this sub screen or can it be removed?
 private fun NavController.navigateToSettingsSubScreen() = navigate(SETTINGS_SUB_ROUTE)
+
+private fun openInBrowser(context: Context, url: String) {
+    val intent = Intent(Intent.ACTION_VIEW)
+    intent.data = Uri.parse(url)
+    context.startActivity(intent)
+}
