@@ -8,7 +8,7 @@ class StringUtilsTest {
     fun `buildFullUrl returns a full url when given a path`() {
         val url = StringUtils.buildFullUrl("/hello-world")
 
-        assertEquals("https://www.gov.uk/hello-world", url)
+        assertEquals("https://search.publishing.service.gov.uk/hello-world", url)
     }
 
     @Test
