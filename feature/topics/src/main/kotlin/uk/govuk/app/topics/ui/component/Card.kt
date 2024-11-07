@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -112,7 +113,7 @@ private fun SelectButton(
             tint = GovUkTheme.colourScheme.textAndIcons.link
         )
         BodyRegularLabel(
-            text = "Select", // Todo - extract string
+            text = stringResource(R.string.selectButton),
             modifier = Modifier.padding(top = 2.dp),
             color = GovUkTheme.colourScheme.textAndIcons.link
         )
@@ -133,7 +134,7 @@ private fun SelectedButton(
         )
         Spacer(Modifier.width(2.dp))
         BodyRegularLabel(
-            text = "Selected", // Todo - extract string
+            text = stringResource(R.string.selectedButton),
             modifier = Modifier.padding(top = 2.dp),
             color = GovUkTheme.colourScheme.textAndIcons.buttonSuccess
         )

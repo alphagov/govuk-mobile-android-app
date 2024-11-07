@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import uk.govuk.app.design.ui.component.BodyRegularLabel
@@ -25,6 +26,7 @@ import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
 import uk.govuk.app.design.ui.component.VerticalButtonGroup
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.topics.R
 import uk.govuk.app.topics.ui.component.TopicSelectionCard
 import uk.govuk.app.topics.ui.model.TopicItemUi
 
@@ -62,7 +64,7 @@ private fun TopicSelectionScreen(
     val windowWidthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
     val columnCount = getColumnCount(windowWidthSizeClass)
 
-    val title = "Select relevant topics"
+    val title = stringResource(R.string.topicSelectionTitle)
 
     LaunchedEffect(Unit) {
         onPageView(title)
@@ -87,8 +89,8 @@ private fun TopicSelectionScreen(
         uiState?.let {
             ListDivider()
 
-            val doneButtonText = "Done" // Todo - extract string
-            val skipButtonText = "Skip" // Todo - extract string
+            val doneButtonText = stringResource(R.string.doneButton)
+            val skipButtonText = stringResource(R.string.skipButton)
             val isDoneEnabled = it.isDoneEnabled
 
             if (windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
@@ -126,7 +128,7 @@ private fun TopicsGrid(
         item {
             Column {
                 BodyRegularLabel(
-                    text = "Topics you select will be shown on the app home page so you can find them more easily", // Todo - extract string
+                    text = stringResource(R.string.topicSelectionDescription),
                 )
                 MediumVerticalSpacer()
             }
