@@ -2,13 +2,14 @@ package uk.govuk.app.search.domain
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import uk.govuk.app.search.domain.SearchConfig.BASE_URL
 
 class StringUtilsTest {
     @Test
     fun `buildFullUrl returns a full url when given a path`() {
         val url = StringUtils.buildFullUrl("/hello-world")
 
-        assertEquals("https://search.publishing.service.gov.uk/hello-world", url)
+        assertEquals("${BASE_URL}/hello-world", url)
     }
 
     @Test
