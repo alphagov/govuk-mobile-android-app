@@ -22,18 +22,18 @@ import uk.govuk.app.topics.ui.model.TopicItemUi
 @Composable
 internal fun AllTopicsRoute(
     onBack: () -> Unit,
-    onClick: (String) -> Unit,
+    onClick: (ref: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: AllTopicsViewModel = hiltViewModel()
     val topics by viewModel.topics.collectAsState()
 
-    TopicSelectionScreen(
+    AllTopicsScreen(
         topics = topics,
         onPageView = { title -> viewModel.onPageView(title) },
         onBack = onBack,
-        onClick = { title ->
-            onClick(title)
+        onClick = { ref, title ->
+            onClick(ref)
             viewModel.onClick(title)
         },
         modifier = modifier
@@ -41,11 +41,11 @@ internal fun AllTopicsRoute(
 }
 
 @Composable
-private fun TopicSelectionScreen(
+private fun AllTopicsScreen(
     topics: List<TopicItemUi>?,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
-    onClick: (String) -> Unit,
+    onClick: (ref: String, title: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val title = stringResource(R.string.allTopicsTitle)
@@ -71,7 +71,7 @@ private fun TopicSelectionScreen(
                         TopicHorizontalCard(
                             icon = topic.icon,
                             title = topic.title,
-                            onClick = { onClick(topic.title) }
+                            onClick = { onClick(topic.ref, topic.title) }
                         )
                         MediumVerticalSpacer()
                     }

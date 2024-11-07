@@ -1,8 +1,6 @@
 package uk.govuk.app.topics.ui.component
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,9 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -33,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
+import uk.govuk.app.design.ui.component.GovUkCard
 import uk.govuk.app.design.ui.component.MediumHorizontalSpacer
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
@@ -50,28 +47,14 @@ fun TopicSelectionCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Todo - should probably introduce a default card in the design module
-    val cardColour = if (isSelected) {
-        GovUkTheme.colourScheme.surfaces.cardSelected
-    } else {
-        GovUkTheme.colourScheme.surfaces.card
-    }
 
-    OutlinedCard(
-        modifier,
-        colors = CardDefaults.cardColors(containerColor = cardColour),
-        border = BorderStroke(
-            width = 1.dp,
-            color = GovUkTheme.colourScheme.strokes.listDivider
-        )
+    GovUkCard (
+        modifier = modifier,
+        isSelected = isSelected,
+        onClick = onClick
     ) {
         Column(
-            modifier = Modifier
-                .clickable {
-                    onClick()
-                }
-                .padding(GovUkTheme.spacing.medium)
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
@@ -148,51 +131,39 @@ fun TopicVerticalCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    OutlinedCard(
+    GovUkCard(
         modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = GovUkTheme.colourScheme.surfaces.card
-        ),
-        border = BorderStroke(
-            width = 1.dp,
-            color = GovUkTheme.colourScheme.strokes.listDivider
-        )
+        onClick = onClick
     ) {
-        Column(
-            Modifier
-                .clickable { onClick() }
-                .padding(GovUkTheme.spacing.medium)
-        ){
-            Icon(
-                painterResource(icon),
-                contentDescription = null,
-                modifier = Modifier.size(40.dp),
-                tint = GovUkTheme.colourScheme.surfaces.icon
-            )
-            MediumVerticalSpacer()
-            Spacer(Modifier.weight(1f))
-            Row {
-                var baseline by remember { mutableFloatStateOf(0f) }
-                fun updateBaseline(textLayoutResult: TextLayoutResult) {
-                    baseline = textLayoutResult.size.height - textLayoutResult.lastBaseline
-                }
-                val baselinePadding = with(LocalDensity.current) { baseline.toDp() }
-
-                BodyBoldLabel(
-                    text = title,
-                    modifier = Modifier.weight(1f),
-                    onTextLayout = ::updateBaseline
-                )
-                SmallHorizontalSpacer()
-                Icon(
-                    painterResource(uk.govuk.app.design.R.drawable.ic_chevron),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .align(Alignment.Bottom)
-                        .padding(bottom = baselinePadding),
-                    tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
-                )
+        Icon(
+            painterResource(icon),
+            contentDescription = null,
+            modifier = Modifier.size(40.dp),
+            tint = GovUkTheme.colourScheme.surfaces.icon
+        )
+        MediumVerticalSpacer()
+        Spacer(Modifier.weight(1f))
+        Row {
+            var baseline by remember { mutableFloatStateOf(0f) }
+            fun updateBaseline(textLayoutResult: TextLayoutResult) {
+                baseline = textLayoutResult.size.height - textLayoutResult.lastBaseline
             }
+            val baselinePadding = with(LocalDensity.current) { baseline.toDp() }
+
+            BodyBoldLabel(
+                text = title,
+                modifier = Modifier.weight(1f),
+                onTextLayout = ::updateBaseline
+            )
+            SmallHorizontalSpacer()
+            Icon(
+                painterResource(uk.govuk.app.design.R.drawable.ic_chevron),
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.Bottom)
+                    .padding(bottom = baselinePadding),
+                tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
+            )
         }
     }
 }
@@ -201,23 +172,14 @@ fun TopicVerticalCard(
 fun TopicHorizontalCard(
     @DrawableRes icon: Int,
     title: String,
-    onClick: (String) -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    OutlinedCard(
+    GovUkCard(
         modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = GovUkTheme.colourScheme.surfaces.card
-        ),
-        border = BorderStroke(
-            width = 1.dp,
-            color = GovUkTheme.colourScheme.strokes.listDivider
-        )
+        onClick = { onClick() }
     ) {
         Row(
-            Modifier
-                .clickable { onClick(title) }
-                .padding(GovUkTheme.spacing.medium),
             verticalAlignment = Alignment.CenterVertically
         ){
             Icon(
