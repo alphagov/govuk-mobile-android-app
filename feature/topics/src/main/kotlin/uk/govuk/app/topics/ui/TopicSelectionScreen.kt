@@ -45,11 +45,14 @@ internal fun TopicSelectionRoute(
         onClick = { ref, title ->
             viewModel.onClick(ref, title)
         },
-        onDone = {
-            viewModel.onDone()
+        onDone = { text ->
+            viewModel.onDone(text)
             onDone()
         },
-        onSkip = onSkip,
+        onSkip = { text ->
+            viewModel.onSkip(text)
+            onSkip()
+        },
         modifier = modifier
     )
 }
@@ -59,8 +62,8 @@ private fun TopicSelectionScreen(
     uiState: TopicSelectionUiState?,
     onPageView: (String) -> Unit,
     onClick: (ref: String, title: String) -> Unit,
-    onDone: () -> Unit,
-    onSkip: () -> Unit,
+    onDone: (String) -> Unit,
+    onSkip: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val windowWidthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
@@ -98,17 +101,17 @@ private fun TopicSelectionScreen(
             if (windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
                 VerticalButtonGroup(
                     primaryText = doneButtonText,
-                    onPrimary = onDone,
+                    onPrimary = { onDone(doneButtonText) },
                     secondaryText = skipButtonText,
-                    onSecondary = onSkip,
+                    onSecondary = { onSkip(skipButtonText) },
                     primaryEnabled = isDoneEnabled
                 )
             } else {
                 HorizontalButtonGroup(
                     primaryText = doneButtonText,
-                    onPrimary = onDone,
+                    onPrimary = { onDone(doneButtonText) },
                     secondaryText = skipButtonText,
-                    onSecondary = onSkip,
+                    onSecondary = { onSkip(skipButtonText) },
                     primaryEnabled = isDoneEnabled
                 )
             }

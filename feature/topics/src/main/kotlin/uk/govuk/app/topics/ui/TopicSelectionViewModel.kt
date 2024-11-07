@@ -24,8 +24,12 @@ internal class TopicSelectionViewModel @Inject constructor(
 ): ViewModel() {
 
     companion object {
-        private const val SCREEN_CLASS = "AllTopicsScreen"
-        private const val SCREEN_NAME = "All Topics"
+        private const val SCREEN_CLASS = "TopicSelectionScreen"
+        private const val SCREEN_NAME = "Topic Selection"
+        // Todo - extract for re-use
+        private const val TOGGLE_FUNCTION_SECTION = "Topics"
+        private const val TOGGLE_FUNCTION_ACTION_SELECTED = "Add"
+        private const val TOGGLE_FUNCTION_ACTION_DESELECTED = "Remove"
     }
 
     private val _uiState: MutableStateFlow<TopicSelectionUiState?> = MutableStateFlow(null)
@@ -50,18 +54,19 @@ internal class TopicSelectionViewModel @Inject constructor(
     }
 
     fun onPageView(title: String) {
-        /*analytics.screenView(
+        analytics.screenView(
             screenClass = SCREEN_CLASS,
             screenName = SCREEN_NAME,
             title = title
-        )*/
+        )
     }
 
     fun onClick(ref: String, title: String) {
-//        analytics.buttonClick(title)
         if (selectedTopicRefs.contains(ref)) {
+            analytics.toggleFunction(title, TOGGLE_FUNCTION_SECTION, TOGGLE_FUNCTION_ACTION_DESELECTED)
             selectedTopicRefs.remove(ref)
         } else {
+            analytics.toggleFunction(title, TOGGLE_FUNCTION_SECTION, TOGGLE_FUNCTION_ACTION_SELECTED)
             selectedTopicRefs.add(ref)
         }
 
@@ -77,11 +82,17 @@ internal class TopicSelectionViewModel @Inject constructor(
         }
     }
 
-    fun onDone() {
+    fun onDone(text: String) {
+        analytics.buttonClick(text)
         viewModelScope.launch {
             for (ref in selectedTopicRefs) {
                 topicsRepo.selectTopic(ref)
             }
         }
     }
+
+    fun onSkip(text: String) {
+        analytics.buttonClick(text)
+    }
+
 }
