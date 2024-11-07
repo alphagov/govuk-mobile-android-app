@@ -35,10 +35,10 @@ internal fun TopicSelectionRoute(
     modifier: Modifier = Modifier
 ) {
     val viewModel: TopicSelectionViewModel = hiltViewModel()
-    val topics by viewModel.topics.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     TopicSelectionScreen(
-        topics = topics,
+        uiState = uiState,
         onPageView = { title -> viewModel.onPageView(title) },
         onClick = { ref, title ->
 //            onClick(title)
@@ -52,7 +52,7 @@ internal fun TopicSelectionRoute(
 
 @Composable
 private fun TopicSelectionScreen(
-    topics: List<TopicItemUi>?,
+    uiState: TopicSelectionUiState?,
     onPageView: (String) -> Unit,
     onClick: (ref: String, title: String) -> Unit,
     onDone: () -> Unit,
@@ -78,31 +78,34 @@ private fun TopicSelectionScreen(
         )
 
         TopicsGrid(
-            topics = topics ?: emptyList(),
+            topics = uiState?.topics ?: emptyList(),
             columnCount = columnCount,
             onClick = onClick,
             modifier = Modifier.weight(1f)
         )
 
-        topics?.let {
+        uiState?.let {
             ListDivider()
 
             val doneButtonText = "Done" // Todo - extract string
             val skipButtonText = "Skip" // Todo - extract string
+            val isDoneEnabled = it.isDoneEnabled
 
             if (windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
                 VerticalButtonGroup(
                     primaryText = doneButtonText,
                     onPrimary = onDone,
                     secondaryText = skipButtonText,
-                    onSecondary = onSkip
+                    onSecondary = onSkip,
+                    primaryEnabled = isDoneEnabled
                 )
             } else {
                 HorizontalButtonGroup(
                     primaryText = doneButtonText,
                     onPrimary = onDone,
                     secondaryText = skipButtonText,
-                    onSecondary = onSkip
+                    onSecondary = onSkip,
+                    primaryEnabled = isDoneEnabled
                 )
             }
         }

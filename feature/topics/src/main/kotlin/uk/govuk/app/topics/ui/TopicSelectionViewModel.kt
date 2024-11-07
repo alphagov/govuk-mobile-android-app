@@ -12,6 +12,11 @@ import uk.govuk.app.topics.extension.toTopicItemUi
 import uk.govuk.app.topics.ui.model.TopicItemUi
 import javax.inject.Inject
 
+internal data class TopicSelectionUiState(
+    val topics: List<TopicItemUi>,
+    val isDoneEnabled: Boolean
+)
+
 @HiltViewModel
 internal class TopicSelectionViewModel @Inject constructor(
     private val topicsRepo: TopicsRepo,
@@ -23,8 +28,8 @@ internal class TopicSelectionViewModel @Inject constructor(
         private const val SCREEN_NAME = "All Topics"
     }
 
-    private val _topics: MutableStateFlow<List<TopicItemUi>?> = MutableStateFlow(null)
-    val topics = _topics.asStateFlow()
+    private val _uiState: MutableStateFlow<TopicSelectionUiState?> = MutableStateFlow(null)
+    val uiState = _uiState.asStateFlow()
 
     private val selectedTopicRefs = mutableListOf<String>()
 
@@ -32,11 +37,14 @@ internal class TopicSelectionViewModel @Inject constructor(
         viewModelScope.launch {
 
             topicsRepo.topics.collect { topics ->
-                _topics.value = topics.map { topicItem ->
-                    topicItem.toTopicItemUi().copy(
-                        isSelected = selectedTopicRefs.contains(topicItem.ref)
-                    )
-                }
+                _uiState.value = TopicSelectionUiState(
+                    topics = topics.map { topicItem ->
+                        topicItem.toTopicItemUi().copy(
+                            isSelected = selectedTopicRefs.contains(topicItem.ref)
+                        )
+                    },
+                    isDoneEnabled = selectedTopicRefs.isNotEmpty()
+                )
             }
         }
     }
@@ -57,8 +65,15 @@ internal class TopicSelectionViewModel @Inject constructor(
             selectedTopicRefs.add(ref)
         }
 
-        _topics.value = _topics.value?.map { topic ->
-            topic.copy(isSelected = selectedTopicRefs.contains(topic.ref))
+        _uiState.value?.let {
+            val topics = it.topics.map { topic ->
+                topic.copy(isSelected = selectedTopicRefs.contains(topic.ref))
+            }
+
+            _uiState.value = it.copy(
+                topics = topics,
+                isDoneEnabled = selectedTopicRefs.isNotEmpty()
+            )
         }
     }
 }
