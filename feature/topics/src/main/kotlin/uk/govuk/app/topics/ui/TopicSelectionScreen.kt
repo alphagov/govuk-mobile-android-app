@@ -83,27 +83,27 @@ private fun TopicSelectionScreen(
             modifier = Modifier.weight(1f)
         )
 
-        ListDivider()
+        topics?.let {
+            ListDivider()
 
-        val doneButtonText = "Done" // Todo - extract string
-        val onDone = { }
-        val skipButtonText = "Skip" // Todo - extract string
-        val onSkip = { }
+            val doneButtonText = "Done" // Todo - extract string
+            val skipButtonText = "Skip" // Todo - extract string
 
-        if (windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
-            VerticalButtonGroup(
-                primaryText = doneButtonText,
-                onPrimary = onDone,
-                secondaryText = skipButtonText,
-                onSecondary = onSkip
-            )
-        } else {
-            HorizontalButtonGroup(
-                primaryText = doneButtonText,
-                onPrimary = onDone,
-                secondaryText = skipButtonText,
-                onSecondary = onSkip
-            )
+            if (windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+                VerticalButtonGroup(
+                    primaryText = doneButtonText,
+                    onPrimary = onDone,
+                    secondaryText = skipButtonText,
+                    onSecondary = onSkip
+                )
+            } else {
+                HorizontalButtonGroup(
+                    primaryText = doneButtonText,
+                    onPrimary = onDone,
+                    secondaryText = skipButtonText,
+                    onSecondary = onSkip
+                )
+            }
         }
     }
 }

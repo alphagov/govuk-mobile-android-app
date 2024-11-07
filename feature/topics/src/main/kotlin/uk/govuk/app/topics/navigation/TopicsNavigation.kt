@@ -28,6 +28,7 @@ const val TOPICS_ALL_STEP_BY_STEPS_ROUTE = "topics_all_step_by_steps_route"
 
 fun NavGraphBuilder.topicsGraph(
     navController: NavController,
+    topicSelectionCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -36,9 +37,11 @@ fun NavGraphBuilder.topicsGraph(
     ) {
         composable(TOPIC_SELECTION_ROUTE) {
             TopicSelectionRoute(
-                onBack = { },
-                onDone = { },
-                onSkip = { }
+                onBack = {
+                    navController.popBackStack()
+                },
+                onDone = topicSelectionCompleted,
+                onSkip = topicSelectionCompleted
             )
         }
 

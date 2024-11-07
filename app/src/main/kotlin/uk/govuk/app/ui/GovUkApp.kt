@@ -250,6 +250,14 @@ private fun GovUkNavHost(
                 navController.navigate(HOME_GRAPH_ROUTE)
             }
         )
+        topicsGraph(
+            navController = navController,
+            topicSelectionCompleted = {
+                navController.popBackStack()
+                navController.navigate(HOME_GRAPH_ROUTE)
+            },
+            modifier = Modifier.padding(paddingValues)
+        )
         homeGraph(
             widgets = homeScreenWidgets(
                 navController = navController,
@@ -266,10 +274,6 @@ private fun GovUkNavHost(
             modifier = Modifier.padding(paddingValues)
         )
         searchGraph(navController)
-        topicsGraph(
-            navController = navController,
-            modifier = Modifier.padding(paddingValues)
-        )
         visitedGraph(navController)
     }
 }
