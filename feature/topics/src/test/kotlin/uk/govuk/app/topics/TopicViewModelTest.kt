@@ -2,6 +2,7 @@ package uk.govuk.app.topics
 
 import androidx.lifecycle.SavedStateHandle
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -22,6 +23,7 @@ import uk.govuk.app.topics.data.remote.model.RemoteTopic
 import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
 import uk.govuk.app.topics.navigation.TOPIC_SUBTOPIC_ARG
 import uk.govuk.app.topics.ui.model.TopicUi
+import uk.govuk.app.visited.Visited
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TopicViewModelTest {
@@ -34,6 +36,7 @@ class TopicViewModelTest {
     private val topicsRepo = mockk<TopicsRepo>(relaxed = true)
     private val analytics = mockk<Analytics>(relaxed = true)
     private val savedStateHandle = mockk<SavedStateHandle>(relaxed = true)
+    private val visited = mockk<Visited>(relaxed = true)
 
     @Before
     fun setup() {
@@ -69,7 +72,7 @@ class TopicViewModelTest {
             subtopicsTitle = R.string.browseTitle
         )
 
-        val viewModel = TopicViewModel(topicsRepo, analytics, savedStateHandle)
+        val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         runTest {
             val result = viewModel.topic.first()
@@ -79,7 +82,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a page view, then log analytics`() {
-        val viewModel = TopicViewModel(topicsRepo, analytics, savedStateHandle)
+        val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         viewModel.onPageView("title")
 
@@ -94,7 +97,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a content click, then log analytics`() {
-        val viewModel = TopicViewModel(topicsRepo, analytics, savedStateHandle)
+        val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         viewModel.onContentClick(
             section = "section",
@@ -113,8 +116,23 @@ class TopicViewModelTest {
     }
 
     @Test
+    fun `Given a content click, then log visited item`() {
+        val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
+
+        viewModel.onContentClick(
+            section = "section",
+            text = "text",
+            url = "url"
+        )
+
+        coVerify {
+            visited.visitableItemClick(title = "text", url = "url")
+        }
+    }
+
+    @Test
     fun `Given a see all click, then log analytics`() {
-        val viewModel = TopicViewModel(topicsRepo, analytics, savedStateHandle)
+        val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         viewModel.onSeeAllClick(
             section = "section",
@@ -132,7 +150,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a subtopic click, then log analytics`() {
-        val viewModel = TopicViewModel(topicsRepo, analytics, savedStateHandle)
+        val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         viewModel.onSubtopicClick("text")
 

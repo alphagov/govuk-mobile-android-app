@@ -2,6 +2,7 @@ package uk.govuk.app.topics
 
 import androidx.lifecycle.SavedStateHandle
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -22,6 +23,7 @@ import uk.govuk.app.topics.data.remote.model.RemoteTopic
 import uk.govuk.app.topics.data.remote.model.RemoteTopic.RemoteTopicContent
 import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
 import uk.govuk.app.topics.ui.model.TopicUi.TopicContent
+import uk.govuk.app.visited.Visited
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AllStepByStepsViewModelTest {
@@ -34,6 +36,7 @@ class AllStepByStepsViewModelTest {
     private val topicsRepo = mockk<TopicsRepo>(relaxed = true)
     private val analytics = mockk<Analytics>(relaxed = true)
     private val savedStateHandle = mockk<SavedStateHandle>(relaxed = true)
+    private val visited = mockk<Visited>(relaxed = true)
 
     @Before
     fun setup() {
@@ -71,7 +74,7 @@ class AllStepByStepsViewModelTest {
             )
         )
 
-        val viewModel = AllStepByStepsViewModel(topicsRepo, analytics, savedStateHandle)
+        val viewModel = AllStepByStepsViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         runTest {
             val result = viewModel.stepBySteps.first()
@@ -81,7 +84,7 @@ class AllStepByStepsViewModelTest {
 
     @Test
     fun `Given a page view, then log analytics`() {
-        val viewModel = AllStepByStepsViewModel(topicsRepo, analytics, savedStateHandle)
+        val viewModel = AllStepByStepsViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         viewModel.onPageView("title")
 
@@ -96,7 +99,7 @@ class AllStepByStepsViewModelTest {
 
     @Test
     fun `Given a step by step click, then log analytics`() {
-        val viewModel = AllStepByStepsViewModel(topicsRepo, analytics, savedStateHandle)
+        val viewModel = AllStepByStepsViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         viewModel.onStepByStepClick(
             section = "section",
@@ -111,6 +114,21 @@ class AllStepByStepsViewModelTest {
                 external = true,
                 section = "section"
             )
+        }
+    }
+
+    @Test
+    fun `Given a step by step click, then log visited item`() {
+        val viewModel = AllStepByStepsViewModel(topicsRepo, analytics, visited, savedStateHandle)
+
+        viewModel.onStepByStepClick(
+            section = "section",
+            text = "text",
+            url = "url"
+        )
+
+        coVerify {
+            visited.visitableItemClick(title = "text", url = "url")
         }
     }
 }
