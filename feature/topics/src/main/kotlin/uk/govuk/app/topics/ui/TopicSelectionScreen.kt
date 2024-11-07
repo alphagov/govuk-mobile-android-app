@@ -43,10 +43,12 @@ internal fun TopicSelectionRoute(
         uiState = uiState,
         onPageView = { title -> viewModel.onPageView(title) },
         onClick = { ref, title ->
-//            onClick(title)
             viewModel.onClick(ref, title)
         },
-        onDone = onDone,
+        onDone = {
+            viewModel.onDone()
+            onDone()
+        },
         onSkip = onSkip,
         modifier = modifier
     )

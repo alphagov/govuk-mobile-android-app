@@ -76,4 +76,12 @@ internal class TopicSelectionViewModel @Inject constructor(
             )
         }
     }
+
+    fun onDone() {
+        viewModelScope.launch {
+            for (ref in selectedTopicRefs) {
+                topicsRepo.selectTopic(ref)
+            }
+        }
+    }
 }
