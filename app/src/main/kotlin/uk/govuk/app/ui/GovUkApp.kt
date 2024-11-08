@@ -36,7 +36,6 @@ import androidx.navigation.compose.rememberNavController
 import uk.govuk.app.AppUiState
 import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
-import uk.govuk.app.PRIVACY_POLICY_URL
 import uk.govuk.app.analytics.navigation.analyticsGraph
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.navigation.HOME_GRAPH_START_DESTINATION
@@ -47,6 +46,7 @@ import uk.govuk.app.onboarding.navigation.onboardingGraph
 import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
 import uk.govuk.app.search.ui.widget.SearchWidget
+import uk.govuk.app.settings.BuildConfig.PRIVACY_POLICY_URL
 import uk.govuk.app.settings.navigation.settingsGraph
 import uk.govuk.app.topics.navigation.navigateToTopic
 import uk.govuk.app.topics.navigation.navigateToTopicsAll
@@ -237,13 +237,13 @@ private fun GovUkNavHost(
                 navController = navController,
                 isSearchEnabled = uiState.isSearchEnabled,
                 isTopicsEnabled = uiState.isTopicsEnabled,
+                isRecentActivityEnabled = uiState.isRecentActivityEnabled,
                 onClick = onWidgetClick
             ),
             modifier = Modifier.padding(paddingValues)
         )
         settingsGraph(
             appVersion = BuildConfig.VERSION_NAME,
-            privacyPolicyUrl = PRIVACY_POLICY_URL,
             navController = navController,
             modifier = Modifier.padding(paddingValues)
         )
@@ -255,22 +255,25 @@ private fun GovUkNavHost(
 private fun homeScreenWidgets(
     navController: NavHostController,
     isSearchEnabled: Boolean,
+    isRecentActivityEnabled: Boolean,
     isTopicsEnabled: Boolean,
     onClick: (String) -> Unit
 ): List<@Composable (Modifier) -> Unit> {
-    return listOf(
-        { modifier ->
-            if (isSearchEnabled) {
-                SearchWidget(
-                    onClick = { text ->
-                        onClick(text)
-                        navController.navigate(SEARCH_GRAPH_ROUTE)
-                    },
-                    modifier = modifier
-                )
-            }
-        },
-        { modifier ->
+    val widgets = mutableListOf<@Composable (Modifier) -> Unit>()
+    if (isSearchEnabled) {
+        widgets.add { modifier ->
+            SearchWidget(
+                onClick = { text ->
+                    onClick(text)
+                    navController.navigate(SEARCH_GRAPH_ROUTE)
+                },
+                modifier = modifier
+            )
+        }
+    }
+
+    if (isRecentActivityEnabled) {
+        widgets.add { modifier ->
             VisitedWidget(
                 onClick = { text ->
                     onClick(text)
@@ -278,27 +281,29 @@ private fun homeScreenWidgets(
                 },
                 modifier = modifier
             )
-        },
-        { modifier ->
-            if (isTopicsEnabled) {
-                TopicsWidget(
-                    onTopicClick = { ref, title ->
-                        onClick(title)
-                        navController.navigateToTopic(ref)
-                    },
-                    onEditClick = { text ->
-                        onClick(text)
-                        navController.navigateToTopicsEdit()
-                    },
-                    onAllClick = { text ->
-                        onClick(text)
-                        navController.navigateToTopicsAll()
-                    },
-                    modifier = modifier
-                )
-            }
         }
-    )
+    }
+
+    if (isTopicsEnabled) {
+        widgets.add { modifier ->
+            TopicsWidget(
+                onTopicClick = { ref, title ->
+                    onClick(title)
+                    navController.navigateToTopic(ref)
+                },
+                onEditClick = { text ->
+                    onClick(text)
+                    navController.navigateToTopicsEdit()
+                },
+                onAllClick = { text ->
+                    onClick(text)
+                    navController.navigateToTopicsAll()
+                },
+                modifier = modifier
+            )
+        }
+    }
+    return widgets
 }
 
 @Composable

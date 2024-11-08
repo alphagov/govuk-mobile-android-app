@@ -12,12 +12,14 @@ import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.extension.toAllStepBySteps
 import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
 import uk.govuk.app.topics.ui.model.TopicUi.TopicContent
+import uk.govuk.app.visited.Visited
 import javax.inject.Inject
 
 @HiltViewModel
 internal class AllStepByStepsViewModel @Inject constructor(
     private val topicsRepo: TopicsRepo,
     private val analytics: Analytics,
+    private val visited: Visited,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
@@ -55,5 +57,8 @@ internal class AllStepByStepsViewModel @Inject constructor(
             external = true,
             section = section
         )
+        viewModelScope.launch {
+            visited.visitableItemClick(title = text, url = url)
+        }
     }
 }

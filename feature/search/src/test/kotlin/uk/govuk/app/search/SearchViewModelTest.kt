@@ -19,20 +19,22 @@ import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
 import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.search.data.SearchRepo
-import uk.govuk.app.search.di.SearchModule
 import uk.govuk.app.search.data.remote.model.Result
 import uk.govuk.app.search.data.remote.model.SearchResponse
+import uk.govuk.app.search.di.SearchModule
 import uk.govuk.app.search.domain.ResultStatus
 import uk.govuk.app.search.domain.SearchResult
+import uk.govuk.app.visited.Visited
 
 @RunWith(Enclosed::class)
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchViewModelTest {
     class AnalyticsTest {
         private val analytics = mockk<Analytics>(relaxed = true)
+        private val visited = mockk<Visited>(relaxed = true)
         private val service = SearchModule().providesSearchApi()
         private val repository = SearchRepo(service)
-        private val viewModel = SearchViewModel(analytics, repository)
+        private val viewModel = SearchViewModel(analytics, visited, repository)
         private val dispatcher = UnconfinedTestDispatcher()
         private val searchTerm = "search term"
 
@@ -66,11 +68,24 @@ class SearchViewModelTest {
         fun `Given a search, and a search result is clicked, then log analytics`() {
             Dispatchers.setMain(dispatcher)
 
-            viewModel.onSearchResultClicked("search result title", "search result link")
-
             runTest {
+                viewModel.onSearchResultClicked("search result title", "search result link")
+
                 coVerify {
                     analytics.searchResultClick("search result title", "search result link")
+                }
+            }
+        }
+
+        @Test
+        fun `Given a search, and a search result is clicked, then log visited item`() {
+            Dispatchers.setMain(dispatcher)
+
+            runTest {
+                viewModel.onSearchResultClicked("search result title", "search result link")
+
+                coVerify {
+                    visited.visitableItemClick(title = "search result title", url = "search result link")
                 }
             }
         }
@@ -78,9 +93,10 @@ class SearchViewModelTest {
 
     class UiStateTest {
         private val analytics = mockk<Analytics>(relaxed = true)
+        private val visited = mockk<Visited>(relaxed = true)
         private val dispatcher = UnconfinedTestDispatcher()
         private val repository = mockk<SearchRepo>(relaxed = true)
-        private val viewModel = SearchViewModel(analytics, repository)
+        private val viewModel = SearchViewModel(analytics, visited, repository)
         private val searchTerm = "search term"
         private val resultWithNoSearchResponse = SearchResponse(total = 0, results = emptyList())
         private val resultWithOneResult = SearchResponse(

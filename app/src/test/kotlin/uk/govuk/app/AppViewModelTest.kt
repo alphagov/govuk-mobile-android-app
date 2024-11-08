@@ -193,6 +193,30 @@ class AppViewModelTest {
     }
 
     @Test
+    fun `Given the recent activity feature is enabled, When init, then emit recent activity enabled state`() {
+        coEvery { flagRepo.isRecentActivityEnabled() } returns true
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertTrue(result!!.isRecentActivityEnabled)
+        }
+    }
+
+    @Test
+    fun `Given the recent activity feature is disabled, When init, then emit recent activity disabled state`() {
+        coEvery { flagRepo.isRecentActivityEnabled() } returns false
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.isRecentActivityEnabled)
+        }
+    }
+
+    @Test
     fun `Given the topics feature is enabled, When init, then emit topics enabled state`() {
         coEvery { flagRepo.isTopicsEnabled() } returns true
 

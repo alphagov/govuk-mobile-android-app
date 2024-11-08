@@ -19,6 +19,7 @@ interface Analytics {
     fun search(searchTerm: String)
     fun searchResultClick(text: String, url: String)
     fun visitedItemClick(text: String, url: String)
+    fun settingsItemClick(text: String, url: String)
     fun toggleFunction(text: String, section: String, action: String)
     fun buttonFunction(text: String, section: String, action: String)
 }

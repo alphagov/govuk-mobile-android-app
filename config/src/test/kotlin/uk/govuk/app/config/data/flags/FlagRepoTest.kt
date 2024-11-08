@@ -194,6 +194,26 @@ class FlagRepoTest {
     }
 
     @Test
+    fun `Given recent activity is enabled, When is recent activity enabled, then return true`() {
+        mockkStatic(::isEnabled)
+        every { isEnabled(any(), any(), any()) } returns true
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertTrue(flagRepo.isRecentActivityEnabled())
+    }
+
+    @Test
+    fun `Given recent activity is disabled, When is recent activity disabled, then return false`() {
+        mockkStatic(::isEnabled)
+        every { isEnabled(any(), any(), any()) } returns false
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertFalse(flagRepo.isRecentActivityEnabled())
+    }
+
+    @Test
     fun `Given topics is enabled, When is topics enabled, then return true`() {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns true

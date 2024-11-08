@@ -59,6 +59,9 @@ internal fun SearchRoute(
         onClear = {
             viewModel.onClear()
         },
+        onClick = { title, url ->
+            viewModel.onSearchResultClicked(title, url)
+        },
         modifier = modifier
     )
 }
@@ -70,6 +73,7 @@ private fun SearchScreen(
     onBack: () -> Unit,
     onSearch: (String) -> Unit,
     onClear: () -> Unit,
+    onClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -97,18 +101,20 @@ private fun SearchScreen(
     ) {
         Spacer(modifier = Modifier.height(58.dp))
 
-        when (uiState?.resultStatus) {
-            ResultStatus.Success ->
-                ShowResults(uiState!!.searchResults)
-            ResultStatus.Empty ->
-                NoResultsFound(searchTerm = uiState!!.searchTerm)
-            ResultStatus.DeviceOffline ->
-                DeviceIsOffline()
-            ResultStatus.ServiceNotResponding ->
-                ServiceNotResponding()
-            else ->
-                ShowNothing()
-        }
+        uiState?.let {
+            when (it.resultStatus) {
+                ResultStatus.Success ->
+                    ShowResults(it.searchResults, onClick)
+                ResultStatus.Empty ->
+                    NoResultsFound(searchTerm = it.searchTerm)
+                ResultStatus.DeviceOffline ->
+                    DeviceIsOffline()
+                ResultStatus.ServiceNotResponding ->
+                    ServiceNotResponding()
+                else ->
+                    ShowNothing()
+            }
+        } ?: ShowNothing()
     }
 
     LaunchedEffect(focusRequester) {
@@ -119,9 +125,7 @@ private fun SearchScreen(
 }
 
 @Composable
-fun ShowResults(searchResults: List<Result>) {
-    val viewModel: SearchViewModel = hiltViewModel()
-
+fun ShowResults(searchResults: List<Result>, onClick: (String, String) -> Unit) {
     Column(
         modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
                 .fillMaxSize(),
@@ -130,7 +134,9 @@ fun ShowResults(searchResults: List<Result>) {
         LazyColumn {
             items(searchResults) { searchResult ->
                 val title = StringUtils.collapseWhitespace(searchResult.title)
-                val description = StringUtils.collapseWhitespace(searchResult.description)
+                val description = searchResult.description?.let {
+                    StringUtils.collapseWhitespace(it)
+                } ?: ""
                 val url = StringUtils.buildFullUrl(searchResult.link)
 
                 val context = LocalContext.current
@@ -145,7 +151,7 @@ fun ShowResults(searchResults: List<Result>) {
                         0.dp
                     ),
                     onClick = {
-                        viewModel.onSearchResultClicked(title, url)
+                        onClick(title, url)
                         context.startActivity(intent)
                     }
                 ) {

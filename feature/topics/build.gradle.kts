@@ -45,12 +45,17 @@ sonar {
             "sonar.coverage.exclusions",
             properties["sonar.coverage.exclusions"].toString() + ",**/TopicsEncryptionHelper.*,**/TopicsRealmProvider.*"
         )
+        property(
+            "sonar.cpd.exclusions",
+            properties["sonar.cpd.exclusions"].toString() + ",**/TopicsEncryptionHelper.*,**/TopicsRealmProvider.*"
+        )
     }
 }
 
 dependencies {
     implementation(projects.design)
     implementation(projects.analytics)
+    implementation(projects.feature.visited)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material3)

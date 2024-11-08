@@ -13,12 +13,14 @@ import uk.govuk.app.topics.extension.toTopicUi
 import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
 import uk.govuk.app.topics.navigation.TOPIC_SUBTOPIC_ARG
 import uk.govuk.app.topics.ui.model.TopicUi
+import uk.govuk.app.visited.Visited
 import javax.inject.Inject
 
 @HiltViewModel
 internal class TopicViewModel @Inject constructor(
     private val topicsRepo: TopicsRepo,
     private val analytics: Analytics,
+    private val visited: Visited,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
@@ -60,6 +62,9 @@ internal class TopicViewModel @Inject constructor(
             external = true,
             section = section
         )
+        viewModelScope.launch {
+            visited.visitableItemClick(title = text, url = url)
+        }
     }
 
     fun onSeeAllClick(

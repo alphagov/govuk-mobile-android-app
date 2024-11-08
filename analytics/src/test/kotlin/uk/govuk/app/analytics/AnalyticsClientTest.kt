@@ -233,6 +233,28 @@ class AnalyticsClientTest {
     }
 
     @Test
+    fun `Given a settings item click, then log event`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
+        analyticsClient.settingsItemClick("settings item title", "settings item link")
+
+        verify {
+            analyticsLogger.logEvent(
+                true,
+                AnalyticsEvent(
+                    eventType = "Navigation",
+                    parameters = mapOf(
+                        "type" to "SettingsItem",
+                        "external" to true,
+                        "language" to Locale.getDefault().language,
+                        "text" to "settings item title",
+                        "url" to "settings item link"
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
     fun `Given a tab click, then log event`() {
         val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.tabClick("text")

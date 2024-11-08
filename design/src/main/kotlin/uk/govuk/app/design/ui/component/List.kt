@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -70,7 +71,8 @@ fun ExternalLinkListItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isFirst: Boolean = true,
-    isLast: Boolean = true
+    isLast: Boolean = true,
+    subText: String = ""
 ) {
     CardListItem(
         modifier = modifier,
@@ -79,7 +81,7 @@ fun ExternalLinkListItem(
         isLast = isLast
     ) {
         Row(
-            modifier = Modifier.padding(all = GovUkTheme.spacing.medium),
+            modifier = Modifier.padding(applyPadding(subText)),
             verticalAlignment = Alignment.CenterVertically
         ) {
             BodyRegularLabel(
@@ -94,6 +96,41 @@ fun ExternalLinkListItem(
                 painter = painterResource(R.drawable.ic_external_link),
                 contentDescription = stringResource(R.string.opens_in_web_browser),
                 tint = GovUkTheme.colourScheme.textAndIcons.link
+            )
+        }
+
+        ShowSubText(subText)
+    }
+}
+
+@Composable
+private fun applyPadding(subText: String): PaddingValues {
+    return if (subText.isNotEmpty()) {
+        PaddingValues(
+            top = GovUkTheme.spacing.medium,
+            start = GovUkTheme.spacing.medium,
+            end = GovUkTheme.spacing.medium,
+            bottom = 0.dp
+        )
+    } else {
+        PaddingValues(all = GovUkTheme.spacing.medium)
+    }
+}
+
+@Composable
+private fun ShowSubText(subText: String) {
+    if (subText.isNotEmpty()) {
+        Row(
+            modifier = Modifier.padding(
+                start = GovUkTheme.spacing.medium,
+                top = 0.dp,
+                bottom = GovUkTheme.spacing.medium
+            ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SubheadlineRegularLabel(
+                text = subText,
+                color = GovUkTheme.colourScheme.textAndIcons.primary
             )
         }
     }
