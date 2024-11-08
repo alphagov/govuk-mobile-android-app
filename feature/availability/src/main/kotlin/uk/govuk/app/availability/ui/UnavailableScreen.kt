@@ -60,12 +60,9 @@ private fun GoToGovUkButton(
     onGoToGovUkClick: () -> Unit
 ) {
     val text = stringResource(R.string.unavailable_button_title)
-    val altText = stringResource(R.string.unavailable_button_title_alt_text)
     SecondaryButton(
         text = text,
         onClick = { onGoToGovUkClick() },
-        modifier = Modifier
-            .clearAndSetSemantics { contentDescription = altText },
         externalLink = true
     )
 }
