@@ -7,6 +7,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.settings.BuildConfig.ACCESSIBILITY_STATEMENT_EVENT
+import uk.govuk.app.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
+import uk.govuk.app.settings.BuildConfig.HELP_AND_FEEDBACK_EVENT
+import uk.govuk.app.settings.BuildConfig.HELP_AND_FEEDBACK_URL
+import uk.govuk.app.settings.BuildConfig.OPEN_SOURCE_LICENCE_EVENT
+import uk.govuk.app.settings.BuildConfig.PRIVACY_POLICY_EVENT
+import uk.govuk.app.settings.BuildConfig.PRIVACY_POLICY_URL
+import uk.govuk.app.settings.BuildConfig.TERMS_AND_CONDITIONS_EVENT
+import uk.govuk.app.settings.BuildConfig.TERMS_AND_CONDITIONS_URL
 import javax.inject.Inject
 
 internal data class SettingsUiState(
@@ -44,12 +53,38 @@ internal class SettingsViewModel @Inject constructor(
     }
 
     fun onLicenseView() {
-        val eventText = "OpenSourceLicenses"
-
         analytics.screenView(
-            screenClass = eventText,
-            screenName = eventText,
-            title = eventText
+            screenClass = OPEN_SOURCE_LICENCE_EVENT,
+            screenName = OPEN_SOURCE_LICENCE_EVENT,
+            title = OPEN_SOURCE_LICENCE_EVENT
+        )
+    }
+
+    fun onHelpAndFeedbackView() {
+        analytics.settingsItemClick(
+            text = HELP_AND_FEEDBACK_EVENT,
+            url = HELP_AND_FEEDBACK_URL
+        )
+    }
+
+    fun onPrivacyPolicyView() {
+        analytics.settingsItemClick(
+            text = PRIVACY_POLICY_EVENT,
+            url = PRIVACY_POLICY_URL
+        )
+    }
+
+    fun onAccessibilityStatementView() {
+        analytics.settingsItemClick(
+            text = ACCESSIBILITY_STATEMENT_EVENT,
+            url = ACCESSIBILITY_STATEMENT_URL
+        )
+    }
+
+    fun onTermsAndConditionsView() {
+        analytics.settingsItemClick(
+            text = TERMS_AND_CONDITIONS_EVENT,
+            url = TERMS_AND_CONDITIONS_URL
         )
     }
 

@@ -2,7 +2,7 @@
 <resources>
   <string name="screen_title">Settings</string>
   <string name="about_title">About the app</string>
-  <string name="help_setting">Help and feedback</string>
+  <string name="help_and_feedback_title">Help and feedback</string>
   <string name="version_setting">App version number</string>
   <string name="privacy_title">Privacy and legal</string>
   <string name="privacy_description">
@@ -15,4 +15,7 @@
   <string name="share_setting">Share app usage statistics</string>
   <string name="link_opens_in">Opens in web browser</string>
   <string name="oss_licenses_title">Open source licenses</string>
+  <string name="accessibility_title">Accessibility statement</string>
+  <string name="terms_and_conditions_title">Terms and conditions</string>
+  <string name="privacy_policy_title">Privacy policy</string>
 </resources>

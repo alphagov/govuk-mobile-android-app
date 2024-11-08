@@ -37,6 +37,8 @@ internal fun SettingsRoute(
     appVersion: String,
     onHelpClick: () -> Unit,
     onPrivacyPolicyClick: () -> Unit,
+    onAccessibilityStatementClick: () -> Unit,
+    onTermsAndConditionsClick: () -> Unit,
     onOpenSourceLicenseClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -52,9 +54,23 @@ internal fun SettingsRoute(
                 viewModel.onLicenseView()
                 onOpenSourceLicenseClick()
             },
-            onHelpClick = onHelpClick,
+            onHelpClick = {
+                viewModel.onHelpAndFeedbackView()
+                onHelpClick()
+            },
             onAnalyticsConsentChange = { enabled -> viewModel.onAnalyticsConsentChanged(enabled) },
-            onPrivacyPolicyClick = onPrivacyPolicyClick,
+            onPrivacyPolicyClick = {
+                viewModel.onPrivacyPolicyView()
+                onPrivacyPolicyClick()
+            },
+            onAccessibilityStatementClick = {
+                viewModel.onAccessibilityStatementView()
+                onAccessibilityStatementClick()
+            },
+            onTermsAndConditionsClick = {
+                viewModel.onTermsAndConditionsView()
+                onTermsAndConditionsClick()
+            },
             modifier = modifier
         )
     }
@@ -69,6 +85,8 @@ private fun SettingsScreen(
     onHelpClick: () -> Unit,
     onAnalyticsConsentChange: (Boolean) -> Unit,
     onPrivacyPolicyClick: () -> Unit,
+    onAccessibilityStatementClick: () -> Unit,
+    onTermsAndConditionsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -96,8 +114,13 @@ private fun SettingsScreen(
                 onAnalyticsConsentChange = onAnalyticsConsentChange,
                 onPrivacyPolicyClick = onPrivacyPolicyClick
             )
+
             MediumVerticalSpacer()
+
+            PrivacyPolicy(onPrivacyPolicyClick)
+            AccessibilityStatement(onAccessibilityStatementClick)
             OpenSourceLicenses(onLicenseClick)
+            TermsAndConditions(onTermsAndConditionsClick)
         }
     }
 }
@@ -116,7 +139,7 @@ private fun AboutTheApp(
         SmallVerticalSpacer()
 
         ExternalLinkListItem(
-            title = stringResource(R.string.help_setting),
+            title = stringResource(R.string.help_and_feedback_title),
             onClick = onHelpClick,
             isFirst = true,
             isLast = false
@@ -188,6 +211,34 @@ private fun PrivacyAndLegal(
 }
 
 @Composable
+private fun PrivacyPolicy(
+    onPrivacyPolicyClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ExternalLinkListItem(
+        title = stringResource(R.string.privacy_policy_title),
+        onClick = onPrivacyPolicyClick,
+        modifier = modifier,
+        isFirst = true,
+        isLast = false,
+    )
+}
+
+@Composable
+private fun AccessibilityStatement(
+    onAccessibilityStatementClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ExternalLinkListItem(
+        title = stringResource(R.string.accessibility_title),
+        onClick = onAccessibilityStatementClick,
+        modifier = modifier,
+        isFirst = false,
+        isLast = false,
+    )
+}
+
+@Composable
 private fun OpenSourceLicenses(
     onLicenseClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -195,6 +246,23 @@ private fun OpenSourceLicenses(
     InternalLinkListItem(
         title = stringResource(R.string.oss_licenses_title),
         onClick = onLicenseClick,
-        modifier = modifier
+        modifier = modifier,
+        isFirst = false,
+        isLast = false,
     )
 }
+
+@Composable
+private fun TermsAndConditions(
+    onLicenseClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ExternalLinkListItem(
+        title = stringResource(R.string.terms_and_conditions_title),
+        onClick = onLicenseClick,
+        modifier = modifier,
+        isFirst = false,
+        isLast = true,
+    )
+}
+

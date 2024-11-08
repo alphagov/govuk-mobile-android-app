@@ -17,6 +17,15 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.settings.BuildConfig.ACCESSIBILITY_STATEMENT_EVENT
+import uk.govuk.app.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
+import uk.govuk.app.settings.BuildConfig.HELP_AND_FEEDBACK_EVENT
+import uk.govuk.app.settings.BuildConfig.HELP_AND_FEEDBACK_URL
+import uk.govuk.app.settings.BuildConfig.OPEN_SOURCE_LICENCE_EVENT
+import uk.govuk.app.settings.BuildConfig.PRIVACY_POLICY_EVENT
+import uk.govuk.app.settings.BuildConfig.PRIVACY_POLICY_URL
+import uk.govuk.app.settings.BuildConfig.TERMS_AND_CONDITIONS_EVENT
+import uk.govuk.app.settings.BuildConfig.TERMS_AND_CONDITIONS_URL
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SettingsViewModelTest {
@@ -108,16 +117,67 @@ class SettingsViewModelTest {
     @Test
     fun `Given a license page view, then log analytics`() {
         val viewModel = SettingsViewModel(analytics)
-        val eventText = "OpenSourceLicenses"
 
         viewModel.onLicenseView()
 
         verify {
             analytics.screenView(
-                screenClass = eventText,
-                screenName = eventText,
-                title = eventText
+                screenClass = OPEN_SOURCE_LICENCE_EVENT,
+                screenName = OPEN_SOURCE_LICENCE_EVENT,
+                title = OPEN_SOURCE_LICENCE_EVENT
             )
         }
+    }
+
+    @Test
+    fun `Given a help and feedback page view, then log analytics`() {
+        val viewModel = SettingsViewModel(analytics)
+
+        viewModel.onHelpAndFeedbackView()
+
+        verify {
+            analytics.settingsItemClick(
+                text = HELP_AND_FEEDBACK_EVENT,
+                url = HELP_AND_FEEDBACK_URL
+            )
+        }
+    }
+
+    @Test
+    fun `Given a privacy policy page view, then log analytics`() {
+        val viewModel = SettingsViewModel(analytics)
+
+        viewModel.onPrivacyPolicyView()
+
+        verify {
+            analytics.settingsItemClick(
+                text = PRIVACY_POLICY_EVENT,
+                url = PRIVACY_POLICY_URL
+            )
+        }
+    }
+
+    @Test
+    fun `Given a accessibility statement page view, then log analytics`() {
+        val viewModel = SettingsViewModel(analytics)
+
+        viewModel.onAccessibilityStatementView()
+
+        analytics.settingsItemClick(
+            text = ACCESSIBILITY_STATEMENT_EVENT,
+            url = ACCESSIBILITY_STATEMENT_URL
+        )
+    }
+
+    @Test
+    fun `Given a terms and conditions page view, then log analytics`() {
+        val viewModel = SettingsViewModel(analytics)
+
+        viewModel.onTermsAndConditionsView()
+
+        analytics.settingsItemClick(
+            text = TERMS_AND_CONDITIONS_EVENT,
+            url = TERMS_AND_CONDITIONS_URL
+        )
     }
 }
