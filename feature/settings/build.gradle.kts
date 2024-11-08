@@ -13,6 +13,20 @@ android {
 
     defaultConfig {
         minSdk = Version.MIN_SDK
+
+        buildConfigField("String", "ACCESSIBILITY_STATEMENT_EVENT", "\"AccessibilityStatement\"")
+        buildConfigField("String", "ACCESSIBILITY_STATEMENT_URL", "\"https://www.gov.uk/government/publications/accessibility-statement-for-the-govuk-app\"")
+
+        buildConfigField("String", "HELP_AND_FEEDBACK_EVENT", "\"HelpAndFeedback\"")
+        buildConfigField("String", "HELP_AND_FEEDBACK_URL", "\"https://www.gov.uk\"")
+
+        buildConfigField("String", "OPEN_SOURCE_LICENCE_EVENT", "\"OpenSourceLicenses\"")
+
+        buildConfigField("String", "PRIVACY_POLICY_EVENT", "\"PrivacyPolicy\"")
+        buildConfigField("String", "PRIVACY_POLICY_URL", "\"https://www.gov.uk/government/publications/govuk-app-privacy-notice-how-we-use-your-data\"")
+
+        buildConfigField("String", "TERMS_AND_CONDITIONS_EVENT", "\"TermsAndConditions\"")
+        buildConfigField("String", "TERMS_AND_CONDITIONS_URL", "\"http://www.gov.uk/government/publications/govuk-app-terms-and-conditions\"")
     }
 
     compileOptions {
@@ -26,6 +40,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
