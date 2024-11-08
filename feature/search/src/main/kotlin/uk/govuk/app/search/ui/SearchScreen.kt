@@ -135,7 +135,9 @@ fun ShowResults(searchResults: List<Result>, onClick: (String, String) -> Unit) 
         LazyColumn {
             items(searchResults) { searchResult ->
                 val title = StringUtils.collapseWhitespace(searchResult.title)
-                val description = StringUtils.collapseWhitespace(searchResult.description)
+                val description = searchResult.description?.let {
+                    StringUtils.collapseWhitespace(it)
+                } ?: ""
                 val url = StringUtils.buildFullUrl(searchResult.link)
 
                 val context = LocalContext.current
