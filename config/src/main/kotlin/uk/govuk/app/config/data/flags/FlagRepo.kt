@@ -10,6 +10,12 @@ class FlagRepo @Inject constructor(
     private val debugFlags: DebugFlags,
     private val configRepo: ConfigRepo
 ) {
+    fun isAppAvailable(): Boolean {
+        return isEnabled(
+            debugFlag = debugFlags.isAppAvailable,
+            remoteFlag = configRepo.config.available
+        )
+    }
 
     fun isOnboardingEnabled(): Boolean {
         return isEnabled(

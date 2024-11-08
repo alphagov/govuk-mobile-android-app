@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unavailable_title">Sorry, the app is unavailable</string>
+    <string name="unavailable_description">You cannot use the GOV.UK app at the moment. Try again later.</string>
+    <string name="unavailable_button_title">Go to the GOV.UK website</string>
+    <string name="unavailable_button_title_alt_text">Go to the GOV dot UK website. Opens in web browser. Button. Double tap to activate</string>
+</resources>

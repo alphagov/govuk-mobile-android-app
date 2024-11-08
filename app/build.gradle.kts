@@ -91,6 +91,7 @@ dependencies {
     implementation(projects.analytics)
     implementation(projects.config)
     implementation(projects.design)
+    implementation(projects.feature.availability)
     implementation(projects.feature.home)
     implementation(projects.feature.onboarding)
     implementation(projects.feature.settings)
