@@ -25,6 +25,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = true,
                 isSearchEnabled = true,
+                isRecentActivityEnabled = true,
                 isTopicsEnabled = true
             )
         )
@@ -66,6 +67,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = false,
                 isSearchEnabled = true,
+                isRecentActivityEnabled = true,
                 isTopicsEnabled = true
             )
         )
@@ -100,6 +102,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = true,
                 isSearchEnabled = true,
+                isRecentActivityEnabled = true,
                 isTopicsEnabled = true
             )
         )
@@ -134,6 +137,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = false,
                 isSearchEnabled = true,
+                isRecentActivityEnabled = true,
                 isTopicsEnabled = true
             )
         )
@@ -159,6 +163,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = true,
                 isSearchEnabled = true,
+                isRecentActivityEnabled = true,
                 isTopicsEnabled = true
             )
         )
@@ -193,6 +198,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = false,
                 isSearchEnabled = true,
+                isRecentActivityEnabled = true,
                 isTopicsEnabled = true
             )
         )
@@ -218,6 +224,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = true,
                 isSearchEnabled = true,
+                isRecentActivityEnabled = true,
                 isTopicsEnabled = true
             )
         )
@@ -243,33 +250,11 @@ class AppLaunchNavigationTest {
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = false,
                 isSearchEnabled = true,
+                isRecentActivityEnabled = true,
                 isTopicsEnabled = true
             )
         )
 
         assertEquals(HOME_GRAPH_ROUTE, appLaunchNavigation.startDestination)
-    }
-
-    @Test
-    fun `Given route stack is empty, when next, then do nothing`() {
-        val appLaunchNavigation = AppLaunchNavigation(
-            navController,
-            AppUiState(
-                shouldDisplayAnalyticsConsent = false,
-                shouldDisplayOnboarding = false,
-                shouldDisplayTopicSelection = false,
-                isSearchEnabled = true,
-                isTopicsEnabled = true
-            )
-        )
-
-        assertEquals(HOME_GRAPH_ROUTE, appLaunchNavigation.startDestination)
-
-        appLaunchNavigation.next()
-
-        verify(exactly = 0) {
-            navController.popBackStack()
-            navController.navigate(any<String>())
-        }
     }
 }

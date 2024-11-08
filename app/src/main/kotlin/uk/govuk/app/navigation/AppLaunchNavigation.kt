@@ -35,9 +35,7 @@ internal class AppLaunchNavigation(
     }
 
     fun next() {
-        if (routeStack.isNotEmpty()) {
-            navController.popBackStack()
-            navController.navigate(routeStack.pop())
-        }
+        navController.popBackStack()
+        navController.navigate(routeStack.pop())
     }
 }
