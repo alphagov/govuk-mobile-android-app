@@ -33,8 +33,8 @@ class TopicsRepoTest{
         coEvery { topicsApi.getTopics() } returns topicsResponse
         coEvery { topicsResponse.isSuccessful } returns true
         coEvery { topicsResponse.body() } returns listOf(
-            RemoteTopicItem("ref1", "title"),
-            RemoteTopicItem("ref2", "title")
+            RemoteTopicItem("ref1", "title", "description"),
+            RemoteTopicItem("ref2", "title", "description")
         )
 
         val repo = TopicsRepo(topicsApi, localDataSource)
@@ -43,8 +43,8 @@ class TopicsRepoTest{
             val topics = repo.topics
 
             val expected = listOf(
-                TopicItem("ref1", "title", true),
-                TopicItem("ref2", "title", true)
+                TopicItem("ref1", "title", "description", true),
+                TopicItem("ref2", "title", "description", true)
             )
 
             assertEquals(expected, topics.first())
@@ -68,9 +68,9 @@ class TopicsRepoTest{
         coEvery { topicsApi.getTopics() } returns topicsResponse
         coEvery { topicsResponse.isSuccessful } returns true
         coEvery { topicsResponse.body() } returns listOf(
-            RemoteTopicItem("ref1", "title"),
-            RemoteTopicItem("ref2", "title"),
-            RemoteTopicItem("ref3", "title")
+            RemoteTopicItem("ref1", "title", "description"),
+            RemoteTopicItem("ref2", "title", "description"),
+            RemoteTopicItem("ref3", "title", "description")
         )
 
         val repo = TopicsRepo(topicsApi, localDataSource)
@@ -79,9 +79,9 @@ class TopicsRepoTest{
             val topics = repo.topics
 
             val expected = listOf(
-                TopicItem("ref1", "title", true),
-                TopicItem("ref2", "title", false),
-                TopicItem("ref3", "title", false)
+                TopicItem("ref1", "title", "description", true),
+                TopicItem("ref2", "title", "description", false),
+                TopicItem("ref3", "title", "description", false)
             )
 
             assertEquals(expected, topics.first())
@@ -94,8 +94,8 @@ class TopicsRepoTest{
         coEvery { topicsApi.getTopics() } returns topicsResponse
         coEvery { topicsResponse.isSuccessful } returns true
         coEvery { topicsResponse.body() } returns listOf(
-            RemoteTopicItem("ref1", "title"),
-            RemoteTopicItem("ref2", "title")
+            RemoteTopicItem("ref1", "title", "description"),
+            RemoteTopicItem("ref2", "title", "description")
         )
 
         val repo = TopicsRepo(topicsApi, localDataSource)

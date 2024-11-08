@@ -51,4 +51,39 @@ class AppDataStoreTest {
             assertTrue(datastore.isOnboardingCompleted())
         }
     }
+
+    @Test
+    fun `Given the data store is empty, When is topic selection completed, then return false`() {
+        val datastore = AppDataStore(dataStore)
+
+        every { dataStore.data } returns emptyFlow()
+
+        runTest {
+            assertFalse(datastore.isTopicSelectionCompleted())
+        }
+    }
+
+    @Test
+    fun `Given the topic selection completed flag is false in the data store, When is topic selection completed, then return false`() {
+        val datastore = AppDataStore(dataStore)
+
+        every { dataStore.data } returns flowOf(preferences)
+        every { preferences[booleanPreferencesKey(AppDataStore.TOPIC_SELECTION_COMPLETED_KEY)] } returns false
+
+        runTest {
+            assertFalse(datastore.isTopicSelectionCompleted())
+        }
+    }
+
+    @Test
+    fun `Given the topic selection completed flag is true in the data store, When is topic selection completed, then return true`() {
+        val datastore = AppDataStore(dataStore)
+
+        every { dataStore.data } returns flowOf(preferences)
+        every { preferences[booleanPreferencesKey(AppDataStore.TOPIC_SELECTION_COMPLETED_KEY)] } returns true
+
+        runTest {
+            assertTrue(datastore.isTopicSelectionCompleted())
+        }
+    }
 }

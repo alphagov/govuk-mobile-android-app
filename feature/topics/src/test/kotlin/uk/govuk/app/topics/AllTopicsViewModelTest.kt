@@ -44,6 +44,7 @@ class AllTopicsViewModelTest {
             TopicItem(
                 ref = "benefits",
                 title = "Benefits",
+                description = "description",
                 isSelected = true
             )
         )
@@ -55,6 +56,7 @@ class AllTopicsViewModelTest {
                 ref = "benefits",
                 icon = R.drawable.ic_topic_benefits,
                 title = "Benefits",
+                description = "description",
                 isSelected = true
             )
         )

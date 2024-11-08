@@ -38,7 +38,6 @@ internal class TopicSelectionViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-
             topicsRepo.topics.collect { topics ->
                 _uiState.value = TopicSelectionUiState(
                     topics = topics.map { topicItem ->

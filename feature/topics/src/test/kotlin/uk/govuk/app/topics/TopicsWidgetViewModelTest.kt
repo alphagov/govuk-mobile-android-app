@@ -40,6 +40,7 @@ class TopicsWidgetViewModelTest {
             TopicItem(
                 ref = "benefits",
                 title = "Benefits",
+                description = "description",
                 isSelected = true
             )
         )
@@ -53,6 +54,7 @@ class TopicsWidgetViewModelTest {
                         ref = "benefits",
                         icon = R.drawable.ic_topic_benefits,
                         title = "Benefits",
+                        description = "description",
                         isSelected = true
                     )
                 ),
@@ -72,11 +74,13 @@ class TopicsWidgetViewModelTest {
             TopicItem(
                 ref = "benefits",
                 title = "Benefits",
+                description = "description",
                 isSelected = true
             ),
             TopicItem(
                 ref = "care",
                 title = "Care",
+                description = "description",
                 isSelected = false
             )
         )
@@ -90,6 +94,7 @@ class TopicsWidgetViewModelTest {
                         ref = "benefits",
                         icon = R.drawable.ic_topic_benefits,
                         title = "Benefits",
+                        description = "description",
                         isSelected = true
                     )
                 ),
