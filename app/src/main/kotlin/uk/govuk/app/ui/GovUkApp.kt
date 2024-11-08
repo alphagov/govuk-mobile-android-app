@@ -33,23 +33,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import uk.govuk.app.AppUiState
 import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
 import uk.govuk.app.PRIVACY_POLICY_URL
-import uk.govuk.app.analytics.navigation.ANALYTICS_GRAPH_ROUTE
 import uk.govuk.app.analytics.navigation.analyticsGraph
 import uk.govuk.app.design.ui.theme.GovUkTheme
-import uk.govuk.app.home.navigation.HOME_GRAPH_ROUTE
 import uk.govuk.app.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.govuk.app.home.navigation.homeGraph
+import uk.govuk.app.navigation.AppLaunchNavigation
 import uk.govuk.app.navigation.TopLevelDestination
-import uk.govuk.app.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.govuk.app.onboarding.navigation.onboardingGraph
 import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
 import uk.govuk.app.search.ui.widget.SearchWidget
 import uk.govuk.app.settings.navigation.settingsGraph
-import uk.govuk.app.topics.navigation.TOPICS_GRAPH_ROUTE
 import uk.govuk.app.topics.navigation.navigateToTopic
 import uk.govuk.app.topics.navigation.navigateToTopicsAll
 import uk.govuk.app.topics.navigation.navigateToTopicsEdit
@@ -72,11 +70,7 @@ internal fun GovUkApp() {
         )
         uiState?.let {
             BottomNavScaffold(
-                shouldDisplayAnalyticsConsent = it.shouldDisplayAnalyticsConsent,
-                shouldDisplayOnboarding = it.shouldDisplayOnboarding,
-                shouldDisplayTopicSelection = it.shouldDisplayTopicSelection,
-                isSearchEnabled = it.isSearchEnabled,
-                isTopicsEnabled = it.isTopicsEnabled,
+                uiState = it,
                 onboardingCompleted = { viewModel.onboardingCompleted() },
                 topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
                 onTabClick = { tabText -> viewModel.onTabClick(tabText) },
@@ -94,11 +88,7 @@ internal fun GovUkApp() {
 
 @Composable
 private fun BottomNavScaffold(
-    shouldDisplayAnalyticsConsent: Boolean,
-    shouldDisplayOnboarding: Boolean,
-    shouldDisplayTopicSelection: Boolean,
-    isSearchEnabled: Boolean,
-    isTopicsEnabled: Boolean,
+    uiState: AppUiState,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
@@ -117,11 +107,7 @@ private fun BottomNavScaffold(
         ) {
             GovUkNavHost(
                 navController = navController,
-                shouldDisplayAnalyticsConsent = shouldDisplayAnalyticsConsent,
-                shouldDisplayOnboarding = shouldDisplayOnboarding,
-                shouldDisplayTopicSelection = shouldDisplayTopicSelection,
-                isSearchEnabled = isSearchEnabled,
-                isTopicsEnabled = isTopicsEnabled,
+                uiState = uiState,
                 onboardingCompleted = onboardingCompleted,
                 topicSelectionCompleted = topicSelectionCompleted,
                 onWidgetClick = onWidgetClick,
@@ -214,69 +200,43 @@ private fun BottomNav(
 @Composable
 private fun GovUkNavHost(
     navController: NavHostController,
-    shouldDisplayAnalyticsConsent: Boolean,
-    shouldDisplayOnboarding: Boolean,
-    shouldDisplayTopicSelection: Boolean,
-    isSearchEnabled: Boolean,
-    isTopicsEnabled: Boolean,
+    uiState: AppUiState,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     onWidgetClick: (String) -> Unit,
     paddingValues: PaddingValues
 ) {
-    // Todo - we need a better way to do this! (build something in the view model)
-    val startDestination = when {
-        shouldDisplayAnalyticsConsent -> ANALYTICS_GRAPH_ROUTE
-        shouldDisplayOnboarding -> ONBOARDING_GRAPH_ROUTE
-        shouldDisplayTopicSelection -> TOPICS_GRAPH_ROUTE
-        else -> HOME_GRAPH_ROUTE
-    }
+    val appLaunchNavigation = AppLaunchNavigation(navController = navController, uiState = uiState)
 
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = appLaunchNavigation.startDestination
     ) {
         analyticsGraph(
             privacyPolicyUrl = PRIVACY_POLICY_URL,
             analyticsConsentCompleted = {
-                // Todo - we need a better way to do this! (build something in the view model)
-                val nextRoute = when {
-                    shouldDisplayOnboarding -> ONBOARDING_GRAPH_ROUTE
-                    shouldDisplayTopicSelection -> TOPICS_GRAPH_ROUTE
-                    else -> HOME_GRAPH_ROUTE
-                }
-                navController.popBackStack()
-                navController.navigate(nextRoute)
+                appLaunchNavigation.next()
             }
         )
         onboardingGraph(
             onboardingCompleted = {
-                // Todo - we need a better way to do this! (build something in the view model)
                 onboardingCompleted()
-
-                val nextRoute = when {
-                    shouldDisplayTopicSelection -> TOPICS_GRAPH_ROUTE
-                    else -> HOME_GRAPH_ROUTE
-                }
-                navController.popBackStack()
-                navController.navigate(nextRoute)
+                appLaunchNavigation.next()
             }
         )
         topicsGraph(
             navController = navController,
             topicSelectionCompleted = {
                 topicSelectionCompleted()
-
-                navController.popBackStack()
-                navController.navigate(HOME_GRAPH_ROUTE)
+                appLaunchNavigation.next()
             },
             modifier = Modifier.padding(paddingValues)
         )
         homeGraph(
             widgets = homeScreenWidgets(
                 navController = navController,
-                isSearchEnabled = isSearchEnabled,
-                isTopicsEnabled = isTopicsEnabled,
+                isSearchEnabled = uiState.isSearchEnabled,
+                isTopicsEnabled = uiState.isTopicsEnabled,
                 onClick = onWidgetClick
             ),
             modifier = Modifier.padding(paddingValues)
