@@ -119,7 +119,7 @@ class TopicSelectionViewModelTest {
             assertTrue(result.isDoneEnabled)
 
             verify{
-                analytics.toggleFunction(
+                analytics.buttonFunction(
                     text = "Benefits",
                     section = "Topics",
                     action = "Add"
@@ -162,7 +162,7 @@ class TopicSelectionViewModelTest {
             assertFalse(result.isDoneEnabled)
 
             verify{
-                analytics.toggleFunction(
+                analytics.buttonFunction(
                     text = "Benefits",
                     section = "Topics",
                     action = "Remove"

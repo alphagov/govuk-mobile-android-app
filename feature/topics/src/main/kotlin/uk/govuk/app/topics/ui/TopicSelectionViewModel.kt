@@ -68,7 +68,7 @@ internal class TopicSelectionViewModel @Inject constructor(
             ANALYTICS_TOGGLE_FUNCTION_ACTION_SELECTED
         }
 
-        analytics.toggleFunction(
+        analytics.buttonFunction(
             text = title,
             section = ANALYTICS_TOGGLE_FUNCTION_SECTION,
             action = action

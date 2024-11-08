@@ -301,6 +301,32 @@ class AnalyticsClientTest {
     }
 
     @Test
+    fun `Given a button function, then log event`() {
+        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
+        analyticsClient.buttonFunction(
+            text = "text",
+            section = "section",
+            action = "action"
+        )
+
+        verify {
+            analyticsLogger.logEvent(
+                true,
+                AnalyticsEvent(
+                    eventType = "Function",
+                    parameters = mapOf(
+                        "type" to "Button",
+                        "language" to Locale.getDefault().language,
+                        "text" to "text",
+                        "section" to "section",
+                        "action" to "action"
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
     fun `Given analytics are not set, when is analytics consent required, then return true`() {
         val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
 
