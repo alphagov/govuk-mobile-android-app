@@ -12,6 +12,8 @@ import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.visited.data.model.VisitedItem
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 class VisitedLocalDataSourceTest {
     private val realmProvider = mockk<VisitedRealmProvider>(relaxed = true)
@@ -84,14 +86,15 @@ class VisitedLocalDataSourceTest {
             localDataSource.insertOrUpdate("title1", "url1")
 
             val visitedItems = localDataSource.visitedItems.first()
+            val expectedEpochDay = LocalDateTime.ofEpochSecond(visitedItems[0].lastVisited, 0, ZoneOffset.UTC).toLocalDate().toEpochDay()
 
-            assertEquals(today.toEpochDay(), visitedItems[0].lastVisited)
+            assertEquals(today.toEpochDay(), expectedEpochDay)
         }
     }
 
     @Test
     fun `Given two historical visited items, when one is re-visited, then update the correct lastVisited date`() {
-        val today = LocalDate.now()
+        val today = LocalDateTime.now()
         val fiveDaysAgo = today.minusDays(5)
 
         runTest {
@@ -102,8 +105,8 @@ class VisitedLocalDataSourceTest {
 
             var visitedItems = localDataSource.visitedItems.first()
 
-            assertEquals(fiveDaysAgo.toEpochDay(), visitedItems[0].lastVisited)
-            assertEquals(fiveDaysAgo.toEpochDay(), visitedItems[1].lastVisited)
+            assertEquals(fiveDaysAgo.toEpochSecond(ZoneOffset.UTC), visitedItems[0].lastVisited)
+            assertEquals(fiveDaysAgo.toEpochSecond(ZoneOffset.UTC), visitedItems[1].lastVisited)
 
             localDataSource.insertOrUpdate("title2", "url2", today)
 
@@ -113,9 +116,9 @@ class VisitedLocalDataSourceTest {
             // Don't rely on the ordering, check for the correct title
             visitedItems.forEach { visitedItem ->
                 if (visitedItem.title == "title2") {
-                    assertEquals(today.toEpochDay(), visitedItem.lastVisited)
+                    assertEquals(today.toEpochSecond(ZoneOffset.UTC), visitedItem.lastVisited)
                 } else {
-                    assertEquals(fiveDaysAgo.toEpochDay(), visitedItem.lastVisited)
+                    assertEquals(fiveDaysAgo.toEpochSecond(ZoneOffset.UTC), visitedItem.lastVisited)
                 }
             }
         }
@@ -123,7 +126,7 @@ class VisitedLocalDataSourceTest {
 
     @Test
     fun `Given a historical visited item, when re-visited, then update the lastVisited date`() {
-        val today = LocalDate.now()
+        val today = LocalDateTime.now()
         val fiveDaysAgo = today.minusDays(5)
 
         runTest {
@@ -133,14 +136,14 @@ class VisitedLocalDataSourceTest {
 
             var visitedItems = localDataSource.visitedItems.first()
 
-            assertEquals(fiveDaysAgo.toEpochDay(), visitedItems[0].lastVisited)
+            assertEquals(fiveDaysAgo.toEpochSecond(ZoneOffset.UTC), visitedItems[0].lastVisited)
 
             localDataSource.insertOrUpdate("title1", "url1", today)
 
             // Re-read the visited items from the local data source
             visitedItems = localDataSource.visitedItems.first()
 
-            assertEquals(today.toEpochDay(), visitedItems[0].lastVisited)
+            assertEquals(today.toEpochSecond(ZoneOffset.UTC), visitedItems[0].lastVisited)
         }
     }
 }

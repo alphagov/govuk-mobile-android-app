@@ -2,12 +2,13 @@ package uk.govuk.app.visited.data
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 class DateFormatterTest {
     @Test
     fun `Given a date in epoch days, then you get back a formatted date string`() {
-        val dayInMillis = LocalDate.of(2023, 10, 15).toEpochDay()
+        val dayInMillis = LocalDateTime.of(2023, 10, 15, 0, 0, 0).toEpochSecond(ZoneOffset.UTC)
 
         val actual = localDateFormatter(dayInMillis)
         val expected = "15 October 2023"

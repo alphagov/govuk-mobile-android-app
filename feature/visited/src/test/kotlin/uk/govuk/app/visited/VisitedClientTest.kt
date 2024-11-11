@@ -17,7 +17,7 @@ class VisitedClientTest {
             visitedClient.visitableItemClick("title", "url")
 
             coVerify {
-                visitedLocalDataSource.insertOrUpdate("title", "url")
+                visitedLocalDataSource.insertOrUpdate("title", "url", any())
             }
         }
     }
