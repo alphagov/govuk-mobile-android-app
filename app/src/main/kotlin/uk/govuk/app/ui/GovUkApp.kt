@@ -38,12 +38,12 @@ import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
 import uk.govuk.app.BuildConfig.GOV_UK_URL
 import uk.govuk.app.analytics.navigation.analyticsGraph
-import uk.govuk.app.navigation.appUnavailableGraph
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.govuk.app.home.navigation.homeGraph
 import uk.govuk.app.navigation.AppLaunchNavigation
 import uk.govuk.app.navigation.TopLevelDestination
+import uk.govuk.app.navigation.appUnavailableGraph
 import uk.govuk.app.onboarding.navigation.onboardingGraph
 import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
@@ -208,30 +208,34 @@ private fun GovUkNavHost(
     onWidgetClick: (String) -> Unit,
     paddingValues: PaddingValues
 ) {
-    val appLaunchNavigation = AppLaunchNavigation(navController = navController, uiState = uiState)
+    val launchRoutes = rememberSaveable { AppLaunchNavigation(uiState).launchRoutes }
+    val startDestination = rememberSaveable { launchRoutes.pop() }
 
     NavHost(
         navController = navController,
-        startDestination = appLaunchNavigation.startDestination
+        startDestination = startDestination
     ) {
         appUnavailableGraph(GOV_UK_URL)
         analyticsGraph(
             privacyPolicyUrl = PRIVACY_POLICY_URL,
             analyticsConsentCompleted = {
-                appLaunchNavigation.next()
+                navController.popBackStack()
+                navController.navigate(launchRoutes.pop())
             }
         )
         onboardingGraph(
             onboardingCompleted = {
                 onboardingCompleted()
-                appLaunchNavigation.next()
+                navController.popBackStack()
+                navController.navigate(launchRoutes.pop())
             }
         )
         topicsGraph(
             navController = navController,
             topicSelectionCompleted = {
                 topicSelectionCompleted()
-                appLaunchNavigation.next()
+                navController.popBackStack()
+                navController.navigate(launchRoutes.pop())
             },
             modifier = Modifier.padding(paddingValues)
         )
