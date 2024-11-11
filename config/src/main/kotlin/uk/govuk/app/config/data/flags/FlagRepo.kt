@@ -1,6 +1,7 @@
 package uk.govuk.app.config.data.flags
 
 import uk.govuk.app.config.data.ConfigRepo
+import uk.govuk.app.config.extensions.isVersionLessThan
 import uk.govuk.config.BuildConfig
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -14,6 +15,13 @@ class FlagRepo @Inject constructor(
         return isEnabled(
             debugFlag = debugFlags.isAppAvailable,
             remoteFlag = configRepo.config.available
+        )
+    }
+
+    fun isRecommendUpdate(appVersion: String): Boolean {
+        return isEnabled(
+            debugFlag = appVersion.isVersionLessThan(debugFlags.recommendedVersion ?: ""),
+            remoteFlag = appVersion.isVersionLessThan(configRepo.config.recommendedVersion)
         )
     }
 

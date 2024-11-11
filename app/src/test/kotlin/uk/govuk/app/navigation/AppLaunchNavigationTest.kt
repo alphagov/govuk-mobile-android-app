@@ -22,6 +22,7 @@ class AppLaunchNavigationTest {
             navController,
             AppUiState(
                 shouldDisplayAppUnavailable = true,
+                shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = false,
@@ -35,11 +36,63 @@ class AppLaunchNavigationTest {
     }
 
     @Test
+    fun `Given recommend update, analytics consent, onboarding and topic selection should be displayed, then return correct start destination and navigate through routes`() {
+        val appLaunchNavigation = AppLaunchNavigation(
+            navController,
+            AppUiState(
+                shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = true,
+                shouldDisplayAnalyticsConsent = true,
+                shouldDisplayOnboarding = true,
+                shouldDisplayTopicSelection = true,
+                isSearchEnabled = true,
+                isRecentActivityEnabled = true,
+                isTopicsEnabled = true
+            )
+        )
+
+        assertEquals(RECOMMEND_UPDATE_GRAPH_ROUTE, appLaunchNavigation.startDestination)
+
+        appLaunchNavigation.next()
+
+        verify {
+            navController.popBackStack()
+            navController.navigate(ANALYTICS_GRAPH_ROUTE)
+        }
+
+        appLaunchNavigation.next()
+
+        verify {
+            navController.popBackStack()
+            navController.navigate(ONBOARDING_GRAPH_ROUTE)
+        }
+
+        clearMocks(navController)
+
+        appLaunchNavigation.next()
+
+        verify {
+            navController.popBackStack()
+            navController.navigate(TOPICS_GRAPH_ROUTE)
+        }
+
+        clearMocks(navController)
+
+        appLaunchNavigation.next()
+
+        verify {
+            navController.popBackStack()
+            navController.navigate(HOME_GRAPH_ROUTE)
+        }
+    }
+
+    @Test
     fun `Given analytics consent, onboarding and topic selection should be displayed, then return correct start destination and navigate through routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
             navController,
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = true,
@@ -83,6 +136,7 @@ class AppLaunchNavigationTest {
             navController,
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = false,
@@ -119,6 +173,7 @@ class AppLaunchNavigationTest {
             navController,
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = true,
@@ -155,6 +210,7 @@ class AppLaunchNavigationTest {
             navController,
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = false,
@@ -182,6 +238,7 @@ class AppLaunchNavigationTest {
             navController,
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = true,
@@ -218,6 +275,7 @@ class AppLaunchNavigationTest {
             navController,
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = false,
@@ -245,6 +303,7 @@ class AppLaunchNavigationTest {
             navController,
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = true,
@@ -272,6 +331,7 @@ class AppLaunchNavigationTest {
             navController,
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = false,

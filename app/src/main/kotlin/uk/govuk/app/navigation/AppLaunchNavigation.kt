@@ -33,6 +33,10 @@ internal class AppLaunchNavigation(
             routeStack.push(ANALYTICS_GRAPH_ROUTE)
         }
 
+        if (uiState.shouldDisplayRecommendUpdate) {
+            routeStack.push(RECOMMEND_UPDATE_GRAPH_ROUTE)
+        }
+
         if (uiState.shouldDisplayAppUnavailable) {
             routeStack.push(APP_UNAVAILABLE_GRAPH_ROUTE)
         }

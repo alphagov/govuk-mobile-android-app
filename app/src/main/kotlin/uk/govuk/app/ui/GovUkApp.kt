@@ -37,6 +37,7 @@ import uk.govuk.app.AppUiState
 import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
 import uk.govuk.app.BuildConfig.GOV_UK_URL
+import uk.govuk.app.BuildConfig.PLAY_STORE_URL
 import uk.govuk.app.analytics.navigation.analyticsGraph
 import uk.govuk.app.navigation.appUnavailableGraph
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -44,6 +45,7 @@ import uk.govuk.app.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.govuk.app.home.navigation.homeGraph
 import uk.govuk.app.navigation.AppLaunchNavigation
 import uk.govuk.app.navigation.TopLevelDestination
+import uk.govuk.app.navigation.recommendUpdateGraph
 import uk.govuk.app.onboarding.navigation.onboardingGraph
 import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
@@ -215,6 +217,12 @@ private fun GovUkNavHost(
         startDestination = appLaunchNavigation.startDestination
     ) {
         appUnavailableGraph(GOV_UK_URL)
+        recommendUpdateGraph(
+            appStoreUrl = PLAY_STORE_URL,
+            recommendUpdateSkipped = {
+                appLaunchNavigation.next()
+            }
+        )
         analyticsGraph(
             privacyPolicyUrl = PRIVACY_POLICY_URL,
             analyticsConsentCompleted = {
