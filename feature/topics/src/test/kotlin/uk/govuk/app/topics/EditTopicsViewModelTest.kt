@@ -17,7 +17,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.analytics.Analytics
-import uk.govuk.app.design.R
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.domain.model.TopicItem
 import uk.govuk.app.topics.ui.model.TopicItemUi
@@ -45,6 +44,7 @@ class EditTopicsViewModelTest {
             TopicItem(
                 ref = "benefits",
                 title = "Benefits",
+                description = "description",
                 isSelected = true
             )
         )
@@ -56,6 +56,7 @@ class EditTopicsViewModelTest {
                 ref = "benefits",
                 icon = R.drawable.ic_topic_benefits,
                 title = "Benefits",
+                description = "description",
                 isSelected = true
             )
         )

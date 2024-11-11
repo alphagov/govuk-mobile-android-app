@@ -141,6 +141,58 @@ class AppViewModelTest {
     }
 
     @Test
+    fun `Given the user has previously completed topic selection and topics are enabled, When init, then should not display topic selection`() {
+        coEvery { appRepo.isTopicSelectionCompleted() } returns true
+        every { flagRepo.isTopicsEnabled() } returns true
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.shouldDisplayTopicSelection)
+        }
+    }
+
+    @Test
+    fun `Given the user has not previously completed topic selection and topics are enabled, When init, then should display topic selection`() {
+        coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        every { flagRepo.isTopicsEnabled() } returns true
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertTrue(result!!.shouldDisplayTopicSelection)
+        }
+    }
+
+    @Test
+    fun `Given the user has previously completed topic selection and topics are disabled, When init, then should not display topic selection`() {
+        coEvery { appRepo.isTopicSelectionCompleted() } returns true
+        every { flagRepo.isTopicsEnabled() } returns false
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.shouldDisplayTopicSelection)
+        }
+    }
+
+    @Test
+    fun `Given the user has not previously completed topic selection and topics are disabled, When init, then should not display topic selection`() {
+        coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        every { flagRepo.isTopicsEnabled() } returns false
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.shouldDisplayTopicSelection)
+        }
+    }
+
+    @Test
     fun `Given the search feature is enabled, When init, then emit search enabled state`() {
         coEvery { flagRepo.isSearchEnabled() } returns true
 
@@ -220,6 +272,17 @@ class AppViewModelTest {
             viewModel.onboardingCompleted()
 
             coVerify { appRepo.onboardingCompleted() }
+        }
+    }
+
+    @Test
+    fun `When topic selection completed, then call repo topic selection completed`() {
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
+
+        runTest {
+            viewModel.topicSelectionCompleted()
+
+            coVerify { appRepo.topicSelectionCompleted() }
         }
     }
 

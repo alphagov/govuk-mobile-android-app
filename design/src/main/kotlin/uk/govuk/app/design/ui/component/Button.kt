@@ -233,18 +233,22 @@ fun VerticalButtonGroup(
     onPrimary: () -> Unit,
     secondaryText: String,
     onSecondary: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    primaryEnabled: Boolean = true,
+    secondaryEnabled: Boolean = true,
 ) {
     Column(modifier) {
         PrimaryButton(
             text = primaryText,
             onClick = onPrimary,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = primaryEnabled
         )
         SecondaryButton(
             text = secondaryText,
             onClick = onSecondary,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = secondaryEnabled
         )
     }
 }
@@ -255,7 +259,9 @@ fun HorizontalButtonGroup(
     onPrimary: () -> Unit,
     secondaryText: String,
     onSecondary: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    primaryEnabled: Boolean = true,
+    secondaryEnabled: Boolean = true,
 ) {
     Row(modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
@@ -263,12 +269,14 @@ fun HorizontalButtonGroup(
         PrimaryButton(
             text = primaryText,
             onClick = onPrimary,
-            modifier = Modifier.weight(0.5f)
+            modifier = Modifier.weight(0.5f),
+            enabled = primaryEnabled
         )
         SecondaryButton(
             text = secondaryText,
             onClick = onSecondary,
-            modifier = Modifier.weight(0.5f)
+            modifier = Modifier.weight(0.5f),
+            enabled = secondaryEnabled
         )
     }
 }

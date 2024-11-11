@@ -8,14 +8,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,6 +31,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
 import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
+import uk.govuk.app.design.ui.component.GovUkCard
+import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.search.R
 import uk.govuk.app.search.SearchViewModel
@@ -144,31 +143,19 @@ fun ShowResults(searchResults: List<Result>, onClick: (String, String) -> Unit) 
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse(url)
 
-                OutlinedCard(
-                    colors = CardDefaults.cardColors(
-                        containerColor = GovUkTheme.colourScheme.surfaces.card
-                    ),
+                GovUkCard(
                     modifier = Modifier.padding(
-                            GovUkTheme.spacing.medium,
-                            GovUkTheme.spacing.medium,
-                            GovUkTheme.spacing.medium,
-                            0.dp
-                        )
-                        .fillMaxWidth()
-                        .clickable(
-                            onClick = {
-                                onClick(title, url)
-                                context.startActivity(intent)
-                            }
-                        ),
+                        GovUkTheme.spacing.medium,
+                        GovUkTheme.spacing.medium,
+                        GovUkTheme.spacing.medium,
+                        0.dp
+                    ),
+                    onClick = {
+                        onClick(title, url)
+                        context.startActivity(intent)
+                    }
                 ) {
                     Row(
-                        Modifier.padding(
-                            GovUkTheme.spacing.medium,
-                            GovUkTheme.spacing.medium,
-                            GovUkTheme.spacing.medium,
-                            GovUkTheme.spacing.small
-                        ),
                         verticalAlignment = Alignment.Top
                     ) {
                         BodyRegularLabel(
@@ -188,15 +175,9 @@ fun ShowResults(searchResults: List<Result>, onClick: (String, String) -> Unit) 
                         )
                     }
 
-                    BodyRegularLabel(
-                        text = description,
-                        modifier = Modifier.padding(
-                            GovUkTheme.spacing.medium,
-                            0.dp,
-                            GovUkTheme.spacing.medium,
-                            GovUkTheme.spacing.medium
-                        )
-                    )
+                    SmallVerticalSpacer()
+
+                    BodyRegularLabel(description)
                 }
             }
         }

@@ -3,6 +3,7 @@ package uk.govuk.app.ui
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
@@ -32,19 +33,18 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import uk.govuk.app.AppUiState
 import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
 import uk.govuk.app.BuildConfig.GOV_UK_URL
-import uk.govuk.app.analytics.navigation.ANALYTICS_GRAPH_ROUTE
 import uk.govuk.app.analytics.navigation.analyticsGraph
 import uk.govuk.app.navigation.APP_UNAVAILABLE_GRAPH_ROUTE
 import uk.govuk.app.navigation.appUnavailableGraph
 import uk.govuk.app.design.ui.theme.GovUkTheme
-import uk.govuk.app.home.navigation.HOME_GRAPH_ROUTE
 import uk.govuk.app.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.govuk.app.home.navigation.homeGraph
+import uk.govuk.app.navigation.AppLaunchNavigation
 import uk.govuk.app.navigation.TopLevelDestination
-import uk.govuk.app.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.govuk.app.onboarding.navigation.onboardingGraph
 import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
@@ -73,13 +73,9 @@ internal fun GovUkApp() {
         )
         uiState?.let {
             BottomNavScaffold(
-                shouldDisplayAppUnavailable = it.shouldDisplayAppUnavailable,
-                shouldDisplayAnalyticsConsent = it.shouldDisplayAnalyticsConsent,
-                shouldDisplayOnboarding = it.shouldDisplayOnboarding,
-                isSearchEnabled = it.isSearchEnabled,
-                isRecentActivityEnabled = it.isRecentActivityEnabled,
-                isTopicsEnabled = it.isTopicsEnabled,
+                uiState = it,
                 onboardingCompleted = { viewModel.onboardingCompleted() },
+                topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
                 onTabClick = { tabText -> viewModel.onTabClick(tabText) },
                 onWidgetClick = { text -> viewModel.onWidgetClick(text) }
             )
@@ -95,15 +91,39 @@ internal fun GovUkApp() {
 
 @Composable
 private fun BottomNavScaffold(
-    shouldDisplayAppUnavailable: Boolean,
-    shouldDisplayAnalyticsConsent: Boolean,
-    shouldDisplayOnboarding: Boolean,
-    isSearchEnabled: Boolean,
-    isRecentActivityEnabled: Boolean,
-    isTopicsEnabled: Boolean,
+    uiState: AppUiState,
     onboardingCompleted: () -> Unit,
+    topicSelectionCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
     onWidgetClick: (String) -> Unit
+) {
+    val navController = rememberNavController()
+
+    Scaffold(
+        bottomBar = {
+            BottomNav(navController, onTabClick)
+        }
+    ) { paddingValues ->
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = GovUkTheme.colourScheme.surfaces.background
+        ) {
+            GovUkNavHost(
+                navController = navController,
+                uiState = uiState,
+                onboardingCompleted = onboardingCompleted,
+                topicSelectionCompleted = topicSelectionCompleted,
+                onWidgetClick = onWidgetClick,
+                paddingValues = paddingValues
+            )
+        }
+    }
+}
+
+@Composable
+private fun BottomNav(
+    navController: NavHostController,
+    onTabClick: (String) -> Unit
 ) {
     val topLevelDestinations = listOf(TopLevelDestination.Home, TopLevelDestination.Settings)
 
@@ -111,13 +131,12 @@ private fun BottomNavScaffold(
         mutableIntStateOf(0)
     }
 
-    val navController = rememberNavController()
     navController.addOnDestinationChangedListener { _, destination, _ ->
         selectedIndex =
             topLevelDestinations.indexOfFirst { topLevelDestination ->
                 topLevelDestination.route == destination.parent?.route ||
                         topLevelDestination.associatedRoutes.any {
-                            destination.route?.startsWith(it) ?: false
+                            destination.route?.startsWith(it) == true
                         }
             }
     }
@@ -126,125 +145,114 @@ private fun BottomNavScaffold(
     // or associated route)
     val displayBottomNavBar = selectedIndex != -1
 
-    Scaffold(
-        bottomBar = {
-            if (displayBottomNavBar) {
-                Column {
-                    HorizontalDivider(
-                        thickness = 1.dp,
-                        color = GovUkTheme.colourScheme.strokes.container
-                    )
-                    NavigationBar(
-                        containerColor = GovUkTheme.colourScheme.surfaces.background
-                    ) {
-                        topLevelDestinations.forEachIndexed { index, destination ->
-                            val tabText = stringResource(destination.stringResId)
-
-                            NavigationBarItem(
-                                selected = index == selectedIndex,
-                                onClick = {
-                                    selectedIndex = index
-                                    onTabClick(tabText)
-                                    navController.navigate(destination.route) {
-                                        // Pop up to the start destination of the graph to
-                                        // avoid building up a large stack of destinations
-                                        // on the back stack as users select items
-                                        popUpTo(HOME_GRAPH_START_DESTINATION) {
-                                            saveState = true
-                                        }
-                                        // Avoid multiple copies of the same destination when
-                                        // re-selecting the same item
-                                        launchSingleTop = true
-                                        // Restore state when re-selecting a previously selected item
-                                        restoreState = true
-                                    }
-                                },
-                                icon = {
-                                    Icon(painterResource(destination.icon), contentDescription = null)
-                                },
-                                label = {
-                                    Text(
-                                        text = tabText,
-                                        style = GovUkTheme.typography.captionBold,
-                                    )
-                                },
-                                colors = NavigationBarItemDefaults
-                                    .colors(
-                                        selectedIconColor = GovUkTheme.colourScheme.textAndIcons.buttonPrimary,
-                                        selectedTextColor = GovUkTheme.colourScheme.textAndIcons.link,
-                                        indicatorColor = GovUkTheme.colourScheme.surfaces.buttonPrimary,
-                                        unselectedIconColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-                                        unselectedTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-                                    )
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    ) { paddingValues ->
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = GovUkTheme.colourScheme.surfaces.background
-        ) {
-            val startDestination =
-                if (shouldDisplayAppUnavailable) {
-                    APP_UNAVAILABLE_GRAPH_ROUTE
-                } else if (shouldDisplayAnalyticsConsent) {
-                    ANALYTICS_GRAPH_ROUTE
-                } else if (shouldDisplayOnboarding) {
-                    ONBOARDING_GRAPH_ROUTE
-                } else {
-                    HOME_GRAPH_ROUTE
-                }
-
-            NavHost(
-                navController = navController,
-                startDestination = startDestination
+    if (displayBottomNavBar) {
+        Column {
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = GovUkTheme.colourScheme.strokes.container
+            )
+            NavigationBar(
+                containerColor = GovUkTheme.colourScheme.surfaces.background
             ) {
-                appUnavailableGraph(GOV_UK_URL)
-                analyticsGraph(
-                    privacyPolicyUrl = PRIVACY_POLICY_URL,
-                    analyticsConsentCompleted = {
-                        if (shouldDisplayOnboarding) {
-                            navController.popBackStack()
-                            navController.navigate(ONBOARDING_GRAPH_ROUTE)
-                        } else {
-                            navController.popBackStack()
-                            navController.navigate(HOME_GRAPH_ROUTE)
-                        }
-                    }
-                )
-                onboardingGraph(
-                    onboardingCompleted = {
-                        onboardingCompleted()
-                        navController.popBackStack()
-                        navController.navigate(HOME_GRAPH_ROUTE)
-                    }
-                )
-                homeGraph(
-                    widgets = homeScreenWidgets(
-                        navController = navController,
-                        isSearchEnabled = isSearchEnabled,
-                        isRecentActivityEnabled = isRecentActivityEnabled,
-                        isTopicsEnabled = isTopicsEnabled,
-                        onClick = onWidgetClick
-                    ),
-                    modifier = Modifier.padding(paddingValues)
-                )
-                settingsGraph(
-                    appVersion = BuildConfig.VERSION_NAME,
-                    navController = navController,
-                    modifier = Modifier.padding(paddingValues)
-                )
-                searchGraph(navController)
-                topicsGraph(
-                    navController = navController,
-                    modifier = Modifier.padding(paddingValues)
-                )
-                visitedGraph(navController)
+                topLevelDestinations.forEachIndexed { index, destination ->
+                    val tabText = stringResource(destination.stringResId)
+
+                    NavigationBarItem(
+                        selected = index == selectedIndex,
+                        onClick = {
+                            selectedIndex = index
+                            onTabClick(tabText)
+                            navController.navigate(destination.route) {
+                                // Pop up to the start destination of the graph to
+                                // avoid building up a large stack of destinations
+                                // on the back stack as users select items
+                                popUpTo(HOME_GRAPH_START_DESTINATION) {
+                                    saveState = true
+                                }
+                                // Avoid multiple copies of the same destination when
+                                // re-selecting the same item
+                                launchSingleTop = true
+                                // Restore state when re-selecting a previously selected item
+                                restoreState = true
+                            }
+                        },
+                        icon = {
+                            Icon(painterResource(destination.icon), contentDescription = null)
+                        },
+                        label = {
+                            Text(
+                                text = tabText,
+                                style = GovUkTheme.typography.captionBold,
+                            )
+                        },
+                        colors = NavigationBarItemDefaults
+                            .colors(
+                                selectedIconColor = GovUkTheme.colourScheme.textAndIcons.buttonPrimary,
+                                selectedTextColor = GovUkTheme.colourScheme.textAndIcons.link,
+                                indicatorColor = GovUkTheme.colourScheme.surfaces.buttonPrimary,
+                                unselectedIconColor = GovUkTheme.colourScheme.textAndIcons.secondary,
+                                unselectedTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
+                            )
+                    )
+                }
             }
         }
+    }
+}
+
+@Composable
+private fun GovUkNavHost(
+    navController: NavHostController,
+    uiState: AppUiState,
+    onboardingCompleted: () -> Unit,
+    topicSelectionCompleted: () -> Unit,
+    onWidgetClick: (String) -> Unit,
+    paddingValues: PaddingValues
+) {
+    val appLaunchNavigation = AppLaunchNavigation(navController = navController, uiState = uiState)
+
+    NavHost(
+        navController = navController,
+        startDestination = appLaunchNavigation.startDestination
+    ) {
+        appUnavailableGraph(GOV_UK_URL)
+        analyticsGraph(
+            privacyPolicyUrl = PRIVACY_POLICY_URL,
+            analyticsConsentCompleted = {
+                appLaunchNavigation.next()
+            }
+        )
+        onboardingGraph(
+            onboardingCompleted = {
+                onboardingCompleted()
+                appLaunchNavigation.next()
+            }
+        )
+        topicsGraph(
+            navController = navController,
+            topicSelectionCompleted = {
+                topicSelectionCompleted()
+                appLaunchNavigation.next()
+            },
+            modifier = Modifier.padding(paddingValues)
+        )
+        homeGraph(
+            widgets = homeScreenWidgets(
+                navController = navController,
+                isSearchEnabled = uiState.isSearchEnabled,
+                isTopicsEnabled = uiState.isTopicsEnabled,
+                isRecentActivityEnabled = uiState.isRecentActivityEnabled,
+                onClick = onWidgetClick
+            ),
+            modifier = Modifier.padding(paddingValues)
+        )
+        settingsGraph(
+            appVersion = BuildConfig.VERSION_NAME,
+            navController = navController,
+            modifier = Modifier.padding(paddingValues)
+        )
+        searchGraph(navController)
+        visitedGraph(navController)
     }
 }
 

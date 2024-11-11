@@ -12,4 +12,10 @@
     <string name="seeAllButton">See all</string>
     <string name="browseTitle">Browse</string>
     <string name="relatedTitle">Related</string>
+    <string name="topicSelectionTitle">Select relevant topics</string>
+    <string name="topicSelectionDescription">Topics you select will be shown on the app home page so you can find them more easily</string>
+    <string name="selectButton">Select</string>
+    <string name="selectedButton">Selected</string>
+    <string name="doneButton">Done</string>
+    <string name="skipButton">Skip</string>
 </resources>

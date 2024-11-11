@@ -20,7 +20,8 @@ class RemoteTopicTest {
             subtopics = listOf(
                 RemoteTopicItem(
                     ref = "ref",
-                    title = "title"
+                    title = "title",
+                    description = "description",
                 )
             ),
             content = listOf(
@@ -90,7 +91,8 @@ class RemoteTopicTest {
             subtopics = listOf(
                 RemoteTopicItem(
                     ref = "ref",
-                    title = "title"
+                    title = "title",
+                    description = "description",
                 )
             ),
             content = listOf(

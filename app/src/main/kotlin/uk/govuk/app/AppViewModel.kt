@@ -16,6 +16,7 @@ internal data class AppUiState(
     val shouldDisplayAppUnavailable: Boolean,
     val shouldDisplayAnalyticsConsent: Boolean,
     val shouldDisplayOnboarding: Boolean,
+    val shouldDisplayTopicSelection: Boolean,
     val isSearchEnabled: Boolean,
     val isRecentActivityEnabled: Boolean,
     val isTopicsEnabled: Boolean
@@ -43,6 +44,7 @@ internal class AppViewModel @Inject constructor(
                 shouldDisplayAppUnavailable = !flagRepo.isAppAvailable(),
                 shouldDisplayAnalyticsConsent = analytics.isAnalyticsConsentRequired(),
                 shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
+                shouldDisplayTopicSelection = flagRepo.isTopicsEnabled() && !appRepo.isTopicSelectionCompleted(),
                 isSearchEnabled = flagRepo.isSearchEnabled(),
                 isRecentActivityEnabled = flagRepo.isRecentActivityEnabled(),
                 isTopicsEnabled = flagRepo.isTopicsEnabled()
@@ -53,6 +55,12 @@ internal class AppViewModel @Inject constructor(
     fun onboardingCompleted() {
         viewModelScope.launch {
             appRepo.onboardingCompleted()
+        }
+    }
+
+    fun topicSelectionCompleted() {
+        viewModelScope.launch {
+            appRepo.topicSelectionCompleted()
         }
     }
 

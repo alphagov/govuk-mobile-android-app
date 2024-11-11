@@ -14,17 +14,29 @@ internal class AppDataStore @Inject constructor(
 ) {
 
     companion object {
-        internal const val ONBOARDING_COMPLETE_KEY = "onboarding_completed"
+        internal const val ONBOARDING_COMPLETED_KEY = "onboarding_completed"
+        internal const val TOPIC_SELECTION_COMPLETED_KEY = "topic_selection_completed"
     }
 
     internal suspend fun isOnboardingCompleted(): Boolean {
         return dataStore.data.firstOrNull()
-            ?.get(booleanPreferencesKey(ONBOARDING_COMPLETE_KEY)) ?: false
+            ?.get(booleanPreferencesKey(ONBOARDING_COMPLETED_KEY)) == true
     }
 
     internal suspend fun onboardingCompleted() {
-        dataStore.edit { onboardingPreferences ->
-            onboardingPreferences[booleanPreferencesKey(ONBOARDING_COMPLETE_KEY)] = true
+        dataStore.edit { prefs ->
+            prefs[booleanPreferencesKey(ONBOARDING_COMPLETED_KEY)] = true
+        }
+    }
+
+    internal suspend fun isTopicSelectionCompleted(): Boolean {
+        return dataStore.data.firstOrNull()
+            ?.get(booleanPreferencesKey(TOPIC_SELECTION_COMPLETED_KEY)) == true
+    }
+
+    internal suspend fun topicSelectionCompleted() {
+        dataStore.edit { prefs ->
+            prefs[booleanPreferencesKey(TOPIC_SELECTION_COMPLETED_KEY)] = true
         }
     }
 }
