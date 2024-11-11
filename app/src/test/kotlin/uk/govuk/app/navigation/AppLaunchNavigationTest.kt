@@ -17,10 +17,29 @@ class AppLaunchNavigationTest {
     private val navController = mockk<NavHostController>(relaxed = true)
 
     @Test
+    fun `Given app unavailable should be displayed, then return correct start destination`() {
+        val appLaunchNavigation = AppLaunchNavigation(
+            navController,
+            AppUiState(
+                shouldDisplayAppUnavailable = true,
+                shouldDisplayAnalyticsConsent = false,
+                shouldDisplayOnboarding = false,
+                shouldDisplayTopicSelection = false,
+                isSearchEnabled = false,
+                isRecentActivityEnabled = false,
+                isTopicsEnabled = false
+            )
+        )
+
+        assertEquals(APP_UNAVAILABLE_GRAPH_ROUTE, appLaunchNavigation.startDestination)
+    }
+
+    @Test
     fun `Given analytics consent, onboarding and topic selection should be displayed, then return correct start destination and navigate through routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
             navController,
             AppUiState(
+                shouldDisplayAppUnavailable = false,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = true,
@@ -63,6 +82,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             navController,
             AppUiState(
+                shouldDisplayAppUnavailable = false,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = false,
@@ -98,6 +118,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             navController,
             AppUiState(
+                shouldDisplayAppUnavailable = false,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = true,
@@ -133,6 +154,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             navController,
             AppUiState(
+                shouldDisplayAppUnavailable = false,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = false,
@@ -159,6 +181,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             navController,
             AppUiState(
+                shouldDisplayAppUnavailable = false,
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = true,
@@ -194,6 +217,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             navController,
             AppUiState(
+                shouldDisplayAppUnavailable = false,
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = false,
@@ -220,6 +244,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             navController,
             AppUiState(
+                shouldDisplayAppUnavailable = false,
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = true,
@@ -246,6 +271,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             navController,
             AppUiState(
+                shouldDisplayAppUnavailable = false,
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = false,

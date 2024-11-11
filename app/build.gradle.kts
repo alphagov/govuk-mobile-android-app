@@ -29,6 +29,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "GOV_UK_URL", "\"https://www.gov.uk\"")
     }
 
     buildTypes {

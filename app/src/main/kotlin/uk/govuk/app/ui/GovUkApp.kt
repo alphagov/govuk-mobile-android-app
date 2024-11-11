@@ -36,7 +36,9 @@ import androidx.navigation.compose.rememberNavController
 import uk.govuk.app.AppUiState
 import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
+import uk.govuk.app.BuildConfig.GOV_UK_URL
 import uk.govuk.app.analytics.navigation.analyticsGraph
+import uk.govuk.app.navigation.appUnavailableGraph
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.govuk.app.home.navigation.homeGraph
@@ -212,6 +214,7 @@ private fun GovUkNavHost(
         navController = navController,
         startDestination = appLaunchNavigation.startDestination
     ) {
+        appUnavailableGraph(GOV_UK_URL)
         analyticsGraph(
             privacyPolicyUrl = PRIVACY_POLICY_URL,
             analyticsConsentCompleted = {

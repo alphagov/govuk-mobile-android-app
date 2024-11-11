@@ -32,6 +32,10 @@ internal class AppLaunchNavigation(
         if (uiState.shouldDisplayAnalyticsConsent) {
             routeStack.push(ANALYTICS_GRAPH_ROUTE)
         }
+
+        if (uiState.shouldDisplayAppUnavailable) {
+            routeStack.push(APP_UNAVAILABLE_GRAPH_ROUTE)
+        }
     }
 
     fun next() {

@@ -154,6 +154,26 @@ class FlagRepoTest {
     }
 
     @Test
+    fun `Given app is available, When available is true, then return true`() {
+        mockkStatic(::isEnabled)
+        every { isEnabled(any(), any(), any()) } returns true
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertTrue(flagRepo.isAppAvailable())
+    }
+
+    @Test
+    fun `Given app is unavailable, When is app available is false, then return false`() {
+        mockkStatic(::isEnabled)
+        every { isEnabled(any(), any(), any()) } returns false
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertFalse(flagRepo.isAppAvailable())
+    }
+
+    @Test
     fun `Given onboarding is enabled, When is onboarding enabled, then return true`() {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns true

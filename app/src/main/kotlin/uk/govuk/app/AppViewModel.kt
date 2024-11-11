@@ -13,6 +13,7 @@ import uk.govuk.app.data.AppRepo
 import javax.inject.Inject
 
 internal data class AppUiState(
+    val shouldDisplayAppUnavailable: Boolean,
     val shouldDisplayAnalyticsConsent: Boolean,
     val shouldDisplayOnboarding: Boolean,
     val shouldDisplayTopicSelection: Boolean,
@@ -40,6 +41,7 @@ internal class AppViewModel @Inject constructor(
             }
 
             _uiState.value = AppUiState(
+                shouldDisplayAppUnavailable = !flagRepo.isAppAvailable(),
                 shouldDisplayAnalyticsConsent = analytics.isAnalyticsConsentRequired(),
                 shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
                 shouldDisplayTopicSelection = flagRepo.isTopicsEnabled() && !appRepo.isTopicSelectionCompleted(),

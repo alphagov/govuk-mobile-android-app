@@ -26,6 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -151,6 +153,11 @@ private fun BaseButton(
     enabled: Boolean = true,
     shape: RoundedCornerShape = RoundedCornerShape(30.dp),
 ) {
+    val altText = text.replace(
+        stringResource(R.string.gov_uk),
+        stringResource(R.string.gov_uk_alt_text)
+    )
+
     val interactionSource = remember { MutableInteractionSource() }
     val focusRequester = FocusRequester()
     val isFocused by interactionSource.collectIsFocusedAsState()
@@ -198,7 +205,13 @@ private fun BaseButton(
         border = borderColour?.let { BorderStroke(1.dp, it) },
         interactionSource = interactionSource
     ) {
-        Text(text = text, style = textStyle)
+        Text(
+            text = text,
+            style = textStyle,
+            modifier = Modifier.semantics {
+                contentDescription = altText
+            }
+        )
         if (externalLink) ExternalLinkIcon()
     }
 }
