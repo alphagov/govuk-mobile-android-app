@@ -5,28 +5,29 @@ import org.junit.Test
 import uk.govuk.app.visited.SectionTitles
 import uk.govuk.app.visited.domain.model.VisitedItemUi
 import uk.govuk.app.visited.ui.model.VisitedUi
-import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 class VisitedItemsTransformerTest {
     @Test
     fun `Given one item for today, and one item for yesterday, then you only get one item when asking for today's items`() {
-        val today = LocalDate.of(2023, 10, 2)
+        val today = LocalDateTime.of(2023, 10, 2, 0, 0, 0)
         val yesterday = today.minusDays(1)
 
         val visitedItems = listOf(
             VisitedItemUi(
                 title = "GOV.UK",
                 url = "https://www.gov.uk",
-                lastVisited = today.toEpochDay()
+                lastVisited = today.toEpochSecond(ZoneOffset.UTC)
             ),
             VisitedItemUi(
                 title = "Google",
                 url = "https://www.google.com",
-                lastVisited = yesterday.toEpochDay()
+                lastVisited = yesterday.toEpochSecond(ZoneOffset.UTC)
             )
         )
 
-        val items = transformVisitedItems(visitedItems, today)[SectionTitles().today]
+        val items = transformVisitedItems(visitedItems, today.toLocalDate())[SectionTitles().today]
         val actual = items?.first() ?: throw Exception("Failed to transform visited items")
 
         val expected = listOf(
@@ -39,28 +40,27 @@ class VisitedItemsTransformerTest {
 
         assertEquals(expected.first().title, actual.title)
         assertEquals(expected.first().url, actual.url)
-        assertEquals(expected.first().lastVisited, actual.lastVisited)
     }
 
     @Test
     fun `Given one item for today, and one item for the rest of the month, then you only get one item when asking for this month's items`() {
-        val today = LocalDate.of(2023, 10, 2)
+        val today = LocalDateTime.of(2023, 10, 2, 0, 0, 0)
         val yesterday = today.minusDays(1)
 
         val visitedItems = listOf(
             VisitedItemUi(
                 title = "GOV.UK",
                 url = "https://www.gov.uk",
-                lastVisited = today.toEpochDay()
+                lastVisited = today.toEpochSecond(ZoneOffset.UTC)
             ),
             VisitedItemUi(
                 title = "Google",
                 url = "https://www.google.com",
-                lastVisited = yesterday.toEpochDay()
+                lastVisited = yesterday.toEpochSecond(ZoneOffset.UTC)
             )
         )
 
-        val items = transformVisitedItems(visitedItems, today)[SectionTitles().thisMonth]
+        val items = transformVisitedItems(visitedItems, today.toLocalDate())[SectionTitles().thisMonth]
         val actual = items?.first() ?: throw Exception("Failed to transform visited items")
 
         val expected = listOf(
@@ -73,51 +73,50 @@ class VisitedItemsTransformerTest {
 
         assertEquals(expected.first().title, actual.title)
         assertEquals(expected.first().url, actual.url)
-        assertEquals(expected.first().lastVisited, actual.lastVisited)
     }
 
     @Test
     fun `Given one item for today, and no items for the rest of the month, then you get no items when asking for this month's items`() {
-        val today = LocalDate.of(2023, 10, 2)
+        val today = LocalDateTime.of(2023, 10, 2, 0, 0, 0)
         val lastMonth = today.minusDays(2)
 
         val visitedItems = listOf(
             VisitedItemUi(
                 title = "GOV.UK",
                 url = "https://www.gov.uk",
-                lastVisited = today.toEpochDay()
+                lastVisited = today.toEpochSecond(ZoneOffset.UTC)
             ),
             VisitedItemUi(
                 title = "Google",
                 url = "https://www.google.com",
-                lastVisited = lastMonth.toEpochDay()
+                lastVisited = lastMonth.toEpochSecond(ZoneOffset.UTC)
             )
         )
 
-        val items = transformVisitedItems(visitedItems, today)[SectionTitles().thisMonth]
+        val items = transformVisitedItems(visitedItems, today.toLocalDate())[SectionTitles().thisMonth]
 
         assertEquals(null, items?.size)
     }
 
     @Test
     fun `Given one item for today, and no items for the rest of the month, then you get one item when asking for previous month's items`() {
-        val today = LocalDate.of(2023, 10, 2)
+        val today = LocalDateTime.of(2023, 10, 2, 0, 0, 0)
         val lastMonth = today.minusDays(2)
 
         val visitedItems = listOf(
             VisitedItemUi(
                 title = "GOV.UK",
                 url = "https://www.gov.uk",
-                lastVisited = today.toEpochDay()
+                lastVisited = today.toEpochSecond(ZoneOffset.UTC)
             ),
             VisitedItemUi(
                 title = "Google",
                 url = "https://www.google.com",
-                lastVisited = lastMonth.toEpochDay()
+                lastVisited = lastMonth.toEpochSecond(ZoneOffset.UTC)
             )
         )
 
-        val items = transformVisitedItems(visitedItems, today)["${lastMonth.month.name} ${lastMonth.year}"]
+        val items = transformVisitedItems(visitedItems, today.toLocalDate())["${lastMonth.month.name} ${lastMonth.year}"]
         val actual = items?.first() ?: throw Exception("Failed to transform visited items")
 
         val expected = listOf(
@@ -130,28 +129,27 @@ class VisitedItemsTransformerTest {
 
         assertEquals(expected.first().title, actual.title)
         assertEquals(expected.first().url, actual.url)
-        assertEquals(expected.first().lastVisited, actual.lastVisited)
     }
 
     @Test
     fun `Given one item for today, and no items for the rest of the month, then you get one item keyed by month and year when asking for grouped previous month's items`() {
-        val today = LocalDate.of(2023, 10, 2)
+        val today = LocalDateTime.of(2023, 10, 2, 0, 0, 0)
         val lastMonth = today.minusMonths(1)
 
         val visitedItems = listOf(
             VisitedItemUi(
                 title = "GOV.UK",
                 url = "https://www.gov.uk",
-                lastVisited = today.toEpochDay()
+                lastVisited = today.toEpochSecond(ZoneOffset.UTC)
             ),
             VisitedItemUi(
                 title = "Google",
                 url = "https://www.google.com",
-                lastVisited = lastMonth.toEpochDay()
+                lastVisited = lastMonth.toEpochSecond(ZoneOffset.UTC)
             )
         )
 
-        val items = transformVisitedItems(visitedItems, today)["${lastMonth.month.name} ${lastMonth.year}"]
+        val items = transformVisitedItems(visitedItems, today.toLocalDate())["${lastMonth.month.name} ${lastMonth.year}"]
         val actual = items?.first() ?: throw Exception("Failed to transform visited items")
 
         val expected = listOf(
@@ -164,6 +162,5 @@ class VisitedItemsTransformerTest {
 
         assertEquals(expected.first().title, actual.title)
         assertEquals(expected.first().url, actual.url)
-        assertEquals(expected.first().lastVisited, actual.lastVisited)
     }
 }

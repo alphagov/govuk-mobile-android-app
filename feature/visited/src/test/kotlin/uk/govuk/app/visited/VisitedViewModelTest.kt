@@ -21,7 +21,8 @@ import uk.govuk.app.visited.data.VisitedRepo
 import uk.govuk.app.visited.data.localDateFormatter
 import uk.govuk.app.visited.domain.model.VisitedItemUi
 import uk.govuk.app.visited.ui.model.VisitedUi
-import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class VisitedViewModelTest {
@@ -70,18 +71,18 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given there are visited items, then the status in the view model is correct`() {
-        val today = LocalDate.now()
+        val today = LocalDateTime.now()
 
         val visitedItems = listOf(
             VisitedItemUi(
                 title = "GOV.UK",
                 url = "https://www.gov.uk",
-                lastVisited = today.toEpochDay()
+                lastVisited = today.toEpochSecond(ZoneOffset.UTC)
             ),
             VisitedItemUi(
                 title = "Google",
                 url = "https://www.google.com",
-                lastVisited = today.toEpochDay()
+                lastVisited = today.toEpochSecond(ZoneOffset.UTC)
             )
         )
 
@@ -92,12 +93,12 @@ class VisitedViewModelTest {
                         VisitedUi(
                             title = "GOV.UK",
                             url = "https://www.gov.uk",
-                            lastVisited = localDateFormatter(today.toEpochDay())
+                            lastVisited = localDateFormatter(today.toEpochSecond(ZoneOffset.UTC))
                         ),
                         VisitedUi(
                             title = "Google",
                             url = "https://www.google.com",
-                            lastVisited = localDateFormatter(today.toEpochDay())
+                            lastVisited = localDateFormatter(today.toEpochSecond(ZoneOffset.UTC))
                         )
                     )
                 )

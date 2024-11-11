@@ -4,9 +4,11 @@ import uk.govuk.app.visited.SectionTitles
 import uk.govuk.app.visited.domain.model.VisitedItemUi
 import uk.govuk.app.visited.ui.model.VisitedUi
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 fun transformVisitedItems(visitedItems: List<VisitedItemUi>, todaysDate: LocalDate): Map<String, List<VisitedUi>> {
-    fun VisitedItemUi.toLocalDate() = LocalDate.ofEpochDay(this.lastVisited)
+    fun VisitedItemUi.toLocalDate() = LocalDateTime.ofEpochSecond(this.lastVisited, 0, ZoneOffset.UTC).toLocalDate()
 
     val todaysItems = visitedItems.filter { it.toLocalDate().isEqual(todaysDate) }
     val thisMonthsItems = visitedItems.filter {

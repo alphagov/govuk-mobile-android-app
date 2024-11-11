@@ -6,7 +6,8 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import uk.govuk.app.visited.data.model.VisitedItem
-import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,17 +24,17 @@ internal class VisitedLocalDataSource @Inject constructor(
         )
     }
 
-    suspend fun insertOrUpdate(title: String, url: String, lastVisited: LocalDate = LocalDate.now()) {
+    suspend fun insertOrUpdate(title: String, url: String, lastVisited: LocalDateTime = LocalDateTime.now()) {
         realmProvider.open().write {
             val visitedItem = query<VisitedItem>("title = $0 AND url = $1", title, url).first().find()
 
             visitedItem?.apply {
-                this.lastVisited = lastVisited.toEpochDay()
+                this.lastVisited = lastVisited.toEpochSecond(ZoneOffset.UTC)
             } ?: copyToRealm(
                 VisitedItem().apply {
                     this.title = title
                     this.url = url
-                    this.lastVisited = lastVisited.toEpochDay()
+                    this.lastVisited = lastVisited.toEpochSecond(ZoneOffset.UTC)
                 }
             )
         }
