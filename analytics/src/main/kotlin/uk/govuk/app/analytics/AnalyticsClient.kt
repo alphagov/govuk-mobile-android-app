@@ -103,18 +103,24 @@ class AnalyticsClient @Inject constructor(
     }
 
     override fun toggleFunction(text: String, section: String, action: String) {
-        val parameters = mutableMapOf(
-            "text" to text,
-            "type" to "Toggle",
-            "section" to section,
-            "action" to action
+        function(
+            text = text,
+            type = "Toggle",
+            section = section,
+            action = action
         )
+    }
 
-        log(
-            AnalyticsEvent(
-                eventType = "Function",
-                parameters = parametersWithLanguage(parameters)
-            )
+    override fun buttonFunction(
+        text: String,
+        section: String,
+        action: String
+    ) {
+        function(
+            text = text,
+            type = "Button",
+            section = section,
+            action = action
         )
     }
 
@@ -145,6 +151,22 @@ class AnalyticsClient @Inject constructor(
         log(
             AnalyticsEvent(
                 eventType = "Navigation",
+                parameters = parametersWithLanguage(parameters)
+            )
+        )
+    }
+
+    private fun function(text: String, type: String, section: String, action: String) {
+        val parameters = mutableMapOf(
+            "text" to text,
+            "type" to type,
+            "section" to section,
+            "action" to action
+        )
+
+        log(
+            AnalyticsEvent(
+                eventType = "Function",
                 parameters = parametersWithLanguage(parameters)
             )
         )

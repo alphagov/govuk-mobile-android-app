@@ -21,9 +21,6 @@ internal class EditTopicsViewModel @Inject constructor(
     companion object {
         private const val SCREEN_CLASS = "EditTopicsScreen"
         private const val SCREEN_NAME = "Topic Selection"
-        private const val TOGGLE_FUNCTION_SECTION = "Topics"
-        private const val TOGGLE_FUNCTION_ACTION_SELECTED = "Add"
-        private const val TOGGLE_FUNCTION_ACTION_DESELECTED = "Remove"
     }
 
     private val _topics: MutableStateFlow<List<TopicItemUi>?> = MutableStateFlow(null)
@@ -59,14 +56,14 @@ internal class EditTopicsViewModel @Inject constructor(
 
     private fun logTopicToggleFunction(text: String, isSelected: Boolean) {
         val action = if (isSelected) {
-            TOGGLE_FUNCTION_ACTION_SELECTED
+            ANALYTICS_TOGGLE_FUNCTION_ACTION_SELECTED
         } else {
-            TOGGLE_FUNCTION_ACTION_DESELECTED
+            ANALYTICS_TOGGLE_FUNCTION_ACTION_DESELECTED
         }
 
         analytics.toggleFunction(
             text = text,
-            section = TOGGLE_FUNCTION_SECTION,
+            section = ANALYTICS_TOGGLE_FUNCTION_SECTION,
             action = action
         )
     }

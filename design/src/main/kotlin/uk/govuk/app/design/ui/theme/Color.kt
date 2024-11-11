@@ -12,9 +12,12 @@ private val Blue3 = Color(0xFF00D1FF)
 private val Blue4 = Color(0xFF45F2FD)
 private val Blue5 = Color(0xFF193E61)
 private val Blue6 = Color(0xFF7AC2FF)
-private val Blue7 = Color(0xFFE4EEFA)
+private val Blue7 = Color(0xFFE8F1F8)
 
 private val Yellow = Color(0xFFFFDD00)
+
+private val Green1 = Color(0xFF11875A)
+private val Green2 = Color(0xFF66F39E)
 
 private val Grey900 = Color(0xFF1A1A1A)
 private val Grey850 = Color(0xFF262626)
@@ -58,6 +61,7 @@ data class GovUkColourScheme(
         val buttonCompactHighlight: Color,
         val buttonCompactDisabled: Color,
         val buttonCompactFocused: Color,
+        val buttonSuccess: Color,
         val trailingIcon: Color
     )
 
@@ -66,6 +70,7 @@ data class GovUkColourScheme(
         val primary: Color,
         val card: Color,
         val cardHighlight: Color,
+        val cardSelected: Color,
         val fixedContainer: Color,
         val buttonPrimary: Color,
         val buttonPrimaryHighlight: Color,
@@ -112,6 +117,7 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonCompactHighlight = Blue5,
         buttonCompactDisabled = Grey600,
         buttonCompactFocused = Black,
+        buttonSuccess = Green1,
         trailingIcon = Grey300
     ),
     surfaces = Surfaces(
@@ -119,6 +125,7 @@ internal val LightColorScheme = GovUkColourScheme(
         primary = Blue1,
         card = White,
         cardHighlight = Grey400,
+        cardSelected = Blue7,
         fixedContainer = WhiteAlpha75,
         buttonPrimary = Blue1,
         buttonPrimaryHighlight = Blue5,
@@ -164,6 +171,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonCompactHighlight = Blue6,
         buttonCompactDisabled = Black,
         buttonCompactFocused = Black,
+        buttonSuccess = Green2,
         trailingIcon = Grey500
     ),
     surfaces = Surfaces(
@@ -171,6 +179,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         primary = Blue2,
         card = Grey800,
         cardHighlight = Grey850,
+        cardSelected = Blue5,
         fixedContainer = BlackAlpha75,
         buttonPrimary = Blue2,
         buttonPrimaryHighlight = Blue6,
@@ -217,6 +226,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             buttonCompactHighlight = Color.Unspecified,
             buttonCompactDisabled = Color.Unspecified,
             buttonCompactFocused = Color.Unspecified,
+            buttonSuccess = Color.Unspecified,
             trailingIcon = Color.Unspecified
         ),
         surfaces = Surfaces(
@@ -224,6 +234,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             primary = Color.Unspecified,
             card = Color.Unspecified,
             cardHighlight = Color.Unspecified,
+            cardSelected = Color.Unspecified,
             fixedContainer = Color.Unspecified,
             buttonPrimary = Color.Unspecified,
             buttonPrimaryHighlight = Color.Unspecified,
