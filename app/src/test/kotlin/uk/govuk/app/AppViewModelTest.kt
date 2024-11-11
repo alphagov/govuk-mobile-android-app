@@ -41,26 +41,26 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given the app is unavailable, When init, then should display unavailable`() {
+    fun `Given the app is unavailable, When init, then should display app unavailable`() {
         every { flagRepo.isAppAvailable() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
 
         runTest {
             val result = viewModel.uiState.first()
-            assertTrue(result!!.shouldDisplayUnavailable)
+            assertTrue(result!!.shouldDisplayAppUnavailable)
         }
     }
 
     @Test
-    fun `Given the app is available, When init, then should not display unavailable`() {
+    fun `Given the app is available, When init, then should not display app unavailable`() {
         every { flagRepo.isAppAvailable() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
 
         runTest {
             val result = viewModel.uiState.first()
-            assertFalse(result!!.shouldDisplayUnavailable)
+            assertFalse(result!!.shouldDisplayAppUnavailable)
         }
     }
 

@@ -164,7 +164,7 @@ class FlagRepoTest {
     }
 
     @Test
-    fun `Given app is unavailable, When is available is false, then return false`() {
+    fun `Given app is unavailable, When is app available is false, then return false`() {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns false
 

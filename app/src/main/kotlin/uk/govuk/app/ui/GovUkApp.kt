@@ -34,11 +34,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
+import uk.govuk.app.BuildConfig.GOV_UK_URL
 import uk.govuk.app.analytics.navigation.ANALYTICS_GRAPH_ROUTE
 import uk.govuk.app.analytics.navigation.analyticsGraph
-import uk.govuk.app.availability.BuildConfig.GOV_UK_URL
-import uk.govuk.app.availability.navigation.UNAVAILABLE_GRAPH_ROUTE
-import uk.govuk.app.availability.navigation.unavailableGraph
+import uk.govuk.app.navigation.APP_UNAVAILABLE_GRAPH_ROUTE
+import uk.govuk.app.navigation.appUnavailableGraph
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.navigation.HOME_GRAPH_ROUTE
 import uk.govuk.app.home.navigation.HOME_GRAPH_START_DESTINATION
@@ -73,7 +73,7 @@ internal fun GovUkApp() {
         )
         uiState?.let {
             BottomNavScaffold(
-                shouldDisplayUnavailable = it.shouldDisplayUnavailable,
+                shouldDisplayAppUnavailable = it.shouldDisplayAppUnavailable,
                 shouldDisplayAnalyticsConsent = it.shouldDisplayAnalyticsConsent,
                 shouldDisplayOnboarding = it.shouldDisplayOnboarding,
                 isSearchEnabled = it.isSearchEnabled,
@@ -95,7 +95,7 @@ internal fun GovUkApp() {
 
 @Composable
 private fun BottomNavScaffold(
-    shouldDisplayUnavailable: Boolean,
+    shouldDisplayAppUnavailable: Boolean,
     shouldDisplayAnalyticsConsent: Boolean,
     shouldDisplayOnboarding: Boolean,
     isSearchEnabled: Boolean,
@@ -188,8 +188,8 @@ private fun BottomNavScaffold(
             color = GovUkTheme.colourScheme.surfaces.background
         ) {
             val startDestination =
-                if (shouldDisplayUnavailable) {
-                    UNAVAILABLE_GRAPH_ROUTE
+                if (shouldDisplayAppUnavailable) {
+                    APP_UNAVAILABLE_GRAPH_ROUTE
                 } else if (shouldDisplayAnalyticsConsent) {
                     ANALYTICS_GRAPH_ROUTE
                 } else if (shouldDisplayOnboarding) {
@@ -202,7 +202,7 @@ private fun BottomNavScaffold(
                 navController = navController,
                 startDestination = startDestination
             ) {
-                unavailableGraph(GOV_UK_URL)
+                appUnavailableGraph(GOV_UK_URL)
                 analyticsGraph(
                     privacyPolicyUrl = PRIVACY_POLICY_URL,
                     analyticsConsentCompleted = {
