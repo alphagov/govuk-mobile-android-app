@@ -38,7 +38,6 @@ import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
 import uk.govuk.app.BuildConfig.GOV_UK_URL
 import uk.govuk.app.analytics.navigation.analyticsGraph
-import uk.govuk.app.navigation.APP_UNAVAILABLE_GRAPH_ROUTE
 import uk.govuk.app.navigation.appUnavailableGraph
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.navigation.HOME_GRAPH_START_DESTINATION
