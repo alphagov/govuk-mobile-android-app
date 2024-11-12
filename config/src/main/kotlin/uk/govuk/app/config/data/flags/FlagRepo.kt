@@ -19,8 +19,13 @@ class FlagRepo @Inject constructor(
     }
 
     fun isRecommendUpdate(appVersion: String): Boolean {
+        val debugRecommendedVersion = if (debugFlags.recommendedVersion != null) {
+            appVersion.isVersionLessThan(debugFlags.recommendedVersion)
+        } else {
+            null
+        }
         return isEnabled(
-            debugFlag = appVersion.isVersionLessThan(debugFlags.recommendedVersion ?: ""),
+            debugFlag = debugRecommendedVersion,
             remoteFlag = appVersion.isVersionLessThan(configRepo.config.recommendedVersion)
         )
     }
