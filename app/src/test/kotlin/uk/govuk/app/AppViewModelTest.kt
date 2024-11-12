@@ -66,7 +66,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given recommend update, When init, then should display recommend update`() {
-        every { flagRepo.isRecommendUpdate("0.0.1") } returns true
+        every { flagRepo.isRecommendUpdate(any()) } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
 
@@ -78,7 +78,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given don't recommend update, When init, then should not display recommend update`() {
-        every { flagRepo.isRecommendUpdate("0.0.1") } returns false
+        every { flagRepo.isRecommendUpdate(any()) } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
 
