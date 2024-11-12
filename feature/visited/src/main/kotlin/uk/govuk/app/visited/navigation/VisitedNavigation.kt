@@ -8,7 +8,7 @@ import androidx.navigation.navigation
 import uk.govuk.app.visited.ui.VisitedRoute
 
 const val VISITED_GRAPH_ROUTE = "visited_graph_route"
-private const val VISITED_ROUTE = "visited_route"
+const val VISITED_ROUTE = "visited_route"
 
 fun NavGraphBuilder.visitedGraph(
     navController: NavHostController,
