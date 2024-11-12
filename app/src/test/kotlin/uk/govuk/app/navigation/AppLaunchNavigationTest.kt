@@ -35,7 +35,6 @@ class AppLaunchNavigationTest {
     @Test
     fun `Given recommend update, analytics consent, onboarding and topic selection should be displayed, then return correct start destination and navigate through routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
-            navController,
             AppUiState(
                 shouldDisplayAppUnavailable = false,
                 shouldDisplayRecommendUpdate = true,
@@ -48,39 +47,14 @@ class AppLaunchNavigationTest {
             )
         )
 
-        assertEquals(RECOMMEND_UPDATE_GRAPH_ROUTE, appLaunchNavigation.startDestination)
+        val expected = Stack<String>()
+        expected.push(HOME_GRAPH_ROUTE)
+        expected.push(TOPICS_GRAPH_ROUTE)
+        expected.push(ONBOARDING_GRAPH_ROUTE)
+        expected.push(ANALYTICS_GRAPH_ROUTE)
+        expected.push(RECOMMEND_UPDATE_GRAPH_ROUTE)
 
-        appLaunchNavigation.next()
-
-        verify {
-            navController.popBackStack()
-            navController.navigate(ANALYTICS_GRAPH_ROUTE)
-        }
-
-        appLaunchNavigation.next()
-
-        verify {
-            navController.popBackStack()
-            navController.navigate(ONBOARDING_GRAPH_ROUTE)
-        }
-
-        clearMocks(navController)
-
-        appLaunchNavigation.next()
-
-        verify {
-            navController.popBackStack()
-            navController.navigate(TOPICS_GRAPH_ROUTE)
-        }
-
-        clearMocks(navController)
-
-        appLaunchNavigation.next()
-
-        verify {
-            navController.popBackStack()
-            navController.navigate(HOME_GRAPH_ROUTE)
-        }
+        assertEquals(expected, appLaunchNavigation.launchRoutes)
     }
 
     @Test

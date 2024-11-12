@@ -174,7 +174,7 @@ class FlagRepoTest {
     }
 
     @Test
-    fun `Given recommended version is 0_0_2, When app version is 0_0_1, then return true`() {
+    fun `Given the recommended version is 0_0_2, When the app version is 0_0_1, then return true`() {
         every { debugFlags.recommendedVersion } returns "0.0.2"
 
         val flagRepo = FlagRepo(debugFlags, configRepo)
@@ -183,8 +183,17 @@ class FlagRepoTest {
     }
 
     @Test
-    fun `Given recommended version is 0_0_2, When app version is 0_0_2, then return false`() {
+    fun `Given the recommended version is 0_0_2, When the app version is 0_0_2, then return false`() {
         every { debugFlags.recommendedVersion } returns "0.0.2"
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertFalse(flagRepo.isRecommendUpdate("0.0.2"))
+    }
+
+    @Test
+    fun `Given the recommended version is 0_0_1, When the app version is 0_0_2, then return false`() {
+        every { debugFlags.recommendedVersion } returns "0.0.1"
 
         val flagRepo = FlagRepo(debugFlags, configRepo)
 
