@@ -5,4 +5,9 @@
   <string name="visited_items_no_pages_description">You haven\'t used the app to visit any GOV.UK pages yet</string>
 
   <string name="visited_items_last_visited">Last visited on</string>
+
+  <string name="visited_items_edit_button">Edit</string>
+  <string name="visited_items_done_button">Done</string>
+  <string name="visited_items_select_all_button">Select all</string>
+  <string name="visited_items_remove_button">Remove</string>
 </resources>
