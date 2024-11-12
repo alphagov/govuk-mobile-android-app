@@ -221,7 +221,8 @@ private fun GovUkNavHost(
         recommendUpdateGraph(
             appStoreUrl = PLAY_STORE_URL,
             recommendUpdateSkipped = {
-                appLaunchNavigation.next()
+                navController.popBackStack()
+                navController.navigate(launchRoutes.pop())
             }
         )
         analyticsGraph(
