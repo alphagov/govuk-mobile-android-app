@@ -186,7 +186,7 @@ private fun Footer(
     Column(
         modifier = modifier
             .padding(top = GovUkTheme.spacing.medium, bottom = GovUkTheme.spacing.small)
-            .padding(horizontal = GovUkTheme.spacing.extraLarge),
+            .padding(horizontal = GovUkTheme.spacing.small),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
