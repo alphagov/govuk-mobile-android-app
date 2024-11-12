@@ -7,7 +7,7 @@ import org.junit.Test
 class StringExtensionTest {
 
     private val lesserVersionNumbers = listOf(
-        "1.0.0",
+        "1.0.9",
         "1",
         "1.0",
         "1.0.0",
@@ -15,7 +15,7 @@ class StringExtensionTest {
     )
 
     private val greaterVersionNumbers = listOf(
-        "1.0.1",
+        "1.0.10",
         "2.0.0",
         "2.0",
         "2",
