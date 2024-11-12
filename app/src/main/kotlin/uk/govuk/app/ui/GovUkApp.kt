@@ -39,7 +39,6 @@ import uk.govuk.app.BuildConfig
 import uk.govuk.app.BuildConfig.GOV_UK_URL
 import uk.govuk.app.analytics.navigation.analyticsGraph
 import uk.govuk.app.design.ui.theme.GovUkTheme
-import uk.govuk.app.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.govuk.app.home.navigation.homeGraph
 import uk.govuk.app.navigation.AppLaunchNavigation
 import uk.govuk.app.navigation.TopLevelDestination
@@ -161,18 +160,12 @@ private fun BottomNav(
                         onClick = {
                             selectedIndex = index
                             onTabClick(tabText)
+
                             navController.navigate(destination.route) {
                                 // Pop up to the start destination of the graph to
                                 // avoid building up a large stack of destinations
                                 // on the back stack as users select items
-                                popUpTo(HOME_GRAPH_START_DESTINATION) {
-                                    saveState = true
-                                }
-                                // Avoid multiple copies of the same destination when
-                                // re-selecting the same item
-                                launchSingleTop = true
-                                // Restore state when re-selecting a previously selected item
-                                restoreState = true
+                                popUpTo(destination.route)
                             }
                         },
                         icon = {
