@@ -74,7 +74,8 @@ internal fun GovUkApp() {
                 AppUnavailableScreen()
             } else if (it.shouldDisplayRecommendUpdate && !isRecommendUpdateSkipped) {
                 RecommendUpdateScreen(
-                    recommendUpdateSkipped = { isRecommendUpdateSkipped = true })
+                    recommendUpdateSkipped = { isRecommendUpdateSkipped = true }
+                )
             } else {
                 BottomNavScaffold(
                     uiState = it,
