@@ -174,6 +174,63 @@ class FlagRepoTest {
     }
 
     @Test
+    fun `Given the debug recommended version is 0_0_2, When the app version is 0_0_1, then return true`() {
+        every { debugFlags.recommendedVersion } returns "0.0.2"
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertTrue(flagRepo.isRecommendUpdate("0.0.1"))
+    }
+
+    @Test
+    fun `Given the debug recommended version is 0_0_2, When the app version is 0_0_2, then return false`() {
+        every { debugFlags.recommendedVersion } returns "0.0.2"
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertFalse(flagRepo.isRecommendUpdate("0.0.2"))
+    }
+
+    @Test
+    fun `Given the debug recommended version is 0_0_1, When the app version is 0_0_2, then return false`() {
+        every { debugFlags.recommendedVersion } returns "0.0.1"
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertFalse(flagRepo.isRecommendUpdate("0.0.2"))
+    }
+
+    @Test
+    fun `Given the remote recommended version is 0_0_2, When the app version is 0_0_1, then return true`() {
+        every { debugFlags.recommendedVersion } returns null
+        every { configRepo.config.recommendedVersion } returns "0.0.2"
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertTrue(flagRepo.isRecommendUpdate("0.0.1"))
+    }
+
+    @Test
+    fun `Given the remote recommended version is 0_0_2, When the app version is 0_0_2, then return false`() {
+        every { debugFlags.recommendedVersion } returns null
+        every { configRepo.config.recommendedVersion } returns "0.0.2"
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertFalse(flagRepo.isRecommendUpdate("0.0.2"))
+    }
+
+    @Test
+    fun `Given the remote recommended version is 0_0_1, When the app version is 0_0_2, then return false`() {
+        every { debugFlags.recommendedVersion } returns null
+        every { configRepo.config.recommendedVersion } returns "0.0.1"
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertFalse(flagRepo.isRecommendUpdate("0.0.2"))
+    }
+
+    @Test
     fun `Given onboarding is enabled, When is onboarding enabled, then return true`() {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns true

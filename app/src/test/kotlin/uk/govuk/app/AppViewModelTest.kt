@@ -65,6 +65,30 @@ class AppViewModelTest {
     }
 
     @Test
+    fun `Given recommend update, When init, then should display recommend update`() {
+        every { flagRepo.isRecommendUpdate(any()) } returns true
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertTrue(result!!.shouldDisplayRecommendUpdate)
+        }
+    }
+
+    @Test
+    fun `Given don't recommend update, When init, then should not display recommend update`() {
+        every { flagRepo.isRecommendUpdate(any()) } returns false
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.shouldDisplayRecommendUpdate)
+        }
+    }
+
+    @Test
     fun `Given analytics consent is required, When init, then should display analytics consent`() {
         coEvery { analytics.isAnalyticsConsentRequired() } returns true
 

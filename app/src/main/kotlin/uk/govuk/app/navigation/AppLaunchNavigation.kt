@@ -8,27 +8,31 @@ import uk.govuk.app.topics.navigation.TOPICS_GRAPH_ROUTE
 import java.util.Stack
 
 internal class AppLaunchNavigation(
-    uiState: AppUiState
+    private val uiState: AppUiState
 ) {
     val launchRoutes: Stack<String> = Stack()
 
     init {
+        setLaunchRoutes()
+    }
+
+    private fun setLaunchRoutes() {
         if (uiState.shouldDisplayAppUnavailable) {
-            launchRoutes.push(APP_UNAVAILABLE_GRAPH_ROUTE)
-        } else {
-            launchRoutes.push(HOME_GRAPH_ROUTE)
+            return
+        }
 
-            if (uiState.shouldDisplayTopicSelection) {
-                launchRoutes.push(TOPICS_GRAPH_ROUTE)
-            }
+        launchRoutes.push(HOME_GRAPH_ROUTE)
 
-            if (uiState.shouldDisplayOnboarding) {
-                launchRoutes.push(ONBOARDING_GRAPH_ROUTE)
-            }
+        if (uiState.shouldDisplayTopicSelection) {
+            launchRoutes.push(TOPICS_GRAPH_ROUTE)
+        }
 
-            if (uiState.shouldDisplayAnalyticsConsent) {
-                launchRoutes.push(ANALYTICS_GRAPH_ROUTE)
-            }
+        if (uiState.shouldDisplayOnboarding) {
+            launchRoutes.push(ONBOARDING_GRAPH_ROUTE)
+        }
+
+        if (uiState.shouldDisplayAnalyticsConsent) {
+            launchRoutes.push(ANALYTICS_GRAPH_ROUTE)
         }
     }
 }

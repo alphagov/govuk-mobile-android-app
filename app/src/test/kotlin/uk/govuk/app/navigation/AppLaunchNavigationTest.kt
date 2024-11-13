@@ -16,6 +16,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = true,
+                shouldDisplayRecommendUpdate = true,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = true,
@@ -26,7 +27,30 @@ class AppLaunchNavigationTest {
         )
 
         val expected = Stack<String>()
-        expected.push(APP_UNAVAILABLE_GRAPH_ROUTE)
+
+        assertEquals(expected, appLaunchNavigation.launchRoutes)
+    }
+
+    @Test
+    fun `Given recommend update, analytics consent, onboarding and topic selection should be displayed, then return correct start destination and navigate through routes`() {
+        val appLaunchNavigation = AppLaunchNavigation(
+            AppUiState(
+                shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = true,
+                shouldDisplayAnalyticsConsent = true,
+                shouldDisplayOnboarding = true,
+                shouldDisplayTopicSelection = true,
+                isSearchEnabled = true,
+                isRecentActivityEnabled = true,
+                isTopicsEnabled = true
+            )
+        )
+
+        val expected = Stack<String>()
+        expected.push(HOME_GRAPH_ROUTE)
+        expected.push(TOPICS_GRAPH_ROUTE)
+        expected.push(ONBOARDING_GRAPH_ROUTE)
+        expected.push(ANALYTICS_GRAPH_ROUTE)
 
         assertEquals(expected, appLaunchNavigation.launchRoutes)
     }
@@ -36,6 +60,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = true,
@@ -59,6 +84,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = false,
@@ -81,6 +107,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = true,
@@ -103,6 +130,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = false,
@@ -124,6 +152,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = true,
@@ -146,6 +175,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = false,
@@ -167,6 +197,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = true,
@@ -188,6 +219,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = false,

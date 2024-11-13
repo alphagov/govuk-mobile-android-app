@@ -31,6 +31,7 @@ android {
         }
 
         buildConfigField("String", "GOV_UK_URL", "\"https://www.gov.uk\"")
+        buildConfigField("String", "PLAY_STORE_URL", "\"https://play.google.com/store/apps/details?id=$applicationId\"")
     }
 
     buildTypes {
@@ -103,6 +104,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.adaptive.android)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.ui.tooling)
     implementation(libs.hilt.android)

@@ -6,5 +6,11 @@
     <string name="app_unavailable_title">Sorry, the app is unavailable</string>
 
     <string name="home">Home</string>
+
+    <string name="recommend_update_button_title_skip">Skip</string>
+    <string name="recommend_update_button_title_update">Update</string>
+    <string name="recommend_update_description">You can update your app if you want to get the latest features and improvements.</string>
+    <string name="recommend_update_title">You’re using an old version of the app</string>
+
     <string name="settings">Settings</string>
 </resources>
