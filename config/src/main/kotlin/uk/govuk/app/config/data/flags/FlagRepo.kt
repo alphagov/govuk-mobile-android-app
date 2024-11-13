@@ -18,6 +18,15 @@ class FlagRepo @Inject constructor(
         )
     }
 
+    fun isForcedUpdate(appVersion: String): Boolean {
+        return isEnabled(
+            debugFlag = debugFlags.minimumVersion?.let {
+                appVersion.isVersionLessThan(it)
+            },
+            remoteFlag = appVersion.isVersionLessThan(configRepo.config.minimumVersion)
+        )
+    }
+
     fun isRecommendUpdate(appVersion: String): Boolean {
         return isEnabled(
             debugFlag = debugFlags.recommendedVersion?.let {

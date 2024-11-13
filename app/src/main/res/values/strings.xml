@@ -5,6 +5,10 @@
     <string name="app_unavailable_description">You cannot use the GOV.UK app at the moment. Try again later.</string>
     <string name="app_unavailable_title">Sorry, the app is unavailable</string>
 
+    <string name="forced_update_button_title_update">Update</string>
+    <string name="forced_update_description">You\'re using an old version of the app. Update your app to continue.</string>
+    <string name="forced_update_title">You need to update your app</string>
+
     <string name="home">Home</string>
 
     <string name="recommend_update_button_title_skip">Skip</string>

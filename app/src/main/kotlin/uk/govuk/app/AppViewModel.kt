@@ -14,6 +14,7 @@ import javax.inject.Inject
 
 internal data class AppUiState(
     val shouldDisplayAppUnavailable: Boolean,
+    val shouldDisplayForcedUpdate: Boolean,
     val shouldDisplayRecommendUpdate: Boolean,
     val shouldDisplayAnalyticsConsent: Boolean,
     val shouldDisplayOnboarding: Boolean,
@@ -43,6 +44,7 @@ internal class AppViewModel @Inject constructor(
 
             _uiState.value = AppUiState(
                 shouldDisplayAppUnavailable = !flagRepo.isAppAvailable(),
+                shouldDisplayForcedUpdate = flagRepo.isForcedUpdate(BuildConfig.VERSION_NAME),
                 shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
                 shouldDisplayAnalyticsConsent = analytics.isAnalyticsConsentRequired(),
                 shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),

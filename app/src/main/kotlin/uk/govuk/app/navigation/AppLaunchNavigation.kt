@@ -21,6 +21,10 @@ internal class AppLaunchNavigation(
             return
         }
 
+        if (uiState.shouldDisplayForcedUpdate) {
+            return
+        }
+
         launchRoutes.push(HOME_GRAPH_ROUTE)
 
         if (uiState.shouldDisplayTopicSelection) {
