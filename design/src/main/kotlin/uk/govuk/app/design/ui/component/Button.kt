@@ -210,7 +210,7 @@ private fun BaseButton(
             style = textStyle,
             modifier = Modifier.semantics {
                 contentDescription = altText
-            }
+            }.weight(1f, fill = false)
         )
         if (externalLink) ExternalLinkIcon()
     }
