@@ -1,5 +1,6 @@
 package uk.govuk.app.topics.ui
 
+import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
@@ -92,12 +94,24 @@ private fun TopicSelectionScreen(
             TopicsGrid(
                 topics = uiState?.topics ?: emptyList(),
             ) { modifier, topic ->
+                val view = LocalView.current
+
+                val selectedAltText = stringResource(R.string.selected_alt_text)
+                val removedAltText = stringResource(R.string.removed_alt_text)
+
                 TopicSelectionCard(
                     icon = topic.icon,
                     title = topic.title,
                     description = topic.description,
                     isSelected = topic.isSelected,
                     onClick = {
+                        (view.context.getSystemService(Context.ACCESSIBILITY_SERVICE)
+                                as android.view.accessibility.AccessibilityManager).interrupt()
+                        if (topic.isSelected) {
+                            view.announceForAccessibility(removedAltText)
+                        } else {
+                            view.announceForAccessibility(selectedAltText)
+                        }
                         onClick(topic.ref, topic.title)
                     },
                     modifier = modifier

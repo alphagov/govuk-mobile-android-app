@@ -18,4 +18,6 @@
     <string name="selectedButton">Selected</string>
     <string name="doneButton">Done</string>
     <string name="skipButton">Skip</string>
+    <string name="removed_alt_text">Removed</string>
+    <string name="selected_alt_text">Selected</string>
 </resources>
