@@ -81,13 +81,12 @@ fun ExternalLinkListItem(
         isLast = isLast
     ) {
         Row(
-            modifier = Modifier.padding(applyPadding(subText)),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.padding(applyPadding(subText))
         ) {
             BodyRegularLabel(
                 text = title,
                 modifier = Modifier.weight(1f),
-                color = GovUkTheme.colourScheme.textAndIcons.link,
+                color = GovUkTheme.colourScheme.textAndIcons.link
             )
 
             MediumHorizontalSpacer()

@@ -10,6 +10,7 @@ import uk.govuk.app.settings.navigation.SETTINGS_GRAPH_ROUTE
 import uk.govuk.app.topics.navigation.TOPICS_ALL_ROUTE
 import uk.govuk.app.topics.navigation.TOPICS_ALL_STEP_BY_STEPS_ROUTE
 import uk.govuk.app.topics.navigation.TOPIC_ROUTE
+import uk.govuk.app.visited.navigation.VISITED_ROUTE
 
 
 internal sealed class TopLevelDestination(
@@ -23,6 +24,7 @@ internal sealed class TopLevelDestination(
         stringResId = R.string.home,
         icon = ic_home,
         associatedRoutes = listOf(
+            VISITED_ROUTE,
             TOPICS_ALL_ROUTE,
             TOPIC_ROUTE,
             TOPICS_ALL_STEP_BY_STEPS_ROUTE
