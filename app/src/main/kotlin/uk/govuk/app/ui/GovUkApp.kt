@@ -36,16 +36,12 @@ import androidx.navigation.compose.rememberNavController
 import uk.govuk.app.AppUiState
 import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
-import uk.govuk.app.BuildConfig.GOV_UK_URL
-import uk.govuk.app.BuildConfig.PLAY_STORE_URL
 import uk.govuk.app.analytics.navigation.analyticsGraph
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.govuk.app.home.navigation.homeGraph
 import uk.govuk.app.navigation.AppLaunchNavigation
 import uk.govuk.app.navigation.TopLevelDestination
-import uk.govuk.app.navigation.appUnavailableGraph
-import uk.govuk.app.navigation.recommendUpdateGraph
 import uk.govuk.app.onboarding.navigation.onboardingGraph
 import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
@@ -66,6 +62,7 @@ internal fun GovUkApp() {
     val viewModel: AppViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     var isSplashDone by rememberSaveable { mutableStateOf(false) }
+    var isRecommendUpdateSkipped by rememberSaveable { mutableStateOf(false) }
 
     if (isSplashDone && uiState != null) {
         SetStatusBarColour(
@@ -73,13 +70,20 @@ internal fun GovUkApp() {
             isLight = !isSystemInDarkTheme()
         )
         uiState?.let {
-            BottomNavScaffold(
-                uiState = it,
-                onboardingCompleted = { viewModel.onboardingCompleted() },
-                topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
-                onTabClick = { tabText -> viewModel.onTabClick(tabText) },
-                onWidgetClick = { text -> viewModel.onWidgetClick(text) }
-            )
+            if (it.shouldDisplayAppUnavailable) {
+                AppUnavailableScreen()
+            } else if (it.shouldDisplayRecommendUpdate && !isRecommendUpdateSkipped) {
+                RecommendUpdateScreen(
+                    recommendUpdateSkipped = { isRecommendUpdateSkipped = true })
+            } else {
+                BottomNavScaffold(
+                    uiState = it,
+                    onboardingCompleted = { viewModel.onboardingCompleted() },
+                    topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
+                    onTabClick = { tabText -> viewModel.onTabClick(tabText) },
+                    onWidgetClick = { text -> viewModel.onWidgetClick(text) }
+                )
+            }
         }
     } else {
         SetStatusBarColour(
@@ -217,14 +221,6 @@ private fun GovUkNavHost(
         navController = navController,
         startDestination = startDestination
     ) {
-        appUnavailableGraph(GOV_UK_URL)
-        recommendUpdateGraph(
-            appStoreUrl = PLAY_STORE_URL,
-            recommendUpdateSkipped = {
-                navController.popBackStack()
-                navController.navigate(launchRoutes.pop())
-            }
-        )
         analyticsGraph(
             privacyPolicyUrl = PRIVACY_POLICY_URL,
             analyticsConsentCompleted = {

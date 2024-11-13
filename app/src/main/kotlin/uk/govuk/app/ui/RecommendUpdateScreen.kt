@@ -1,14 +1,18 @@
 package uk.govuk.app.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.window.core.layout.WindowHeightSizeClass
+import uk.govuk.app.BuildConfig.PLAY_STORE_URL
 import uk.govuk.app.R
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.HorizontalButtonGroup
@@ -19,21 +23,7 @@ import uk.govuk.app.design.ui.component.VerticalButtonGroup
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
-internal fun RecommendUpdateRoute(
-    onUpdateClick: () -> Unit,
-    recommendUpdateSkipped: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    RecommendUpdateScreen(
-        onUpdateClick = onUpdateClick,
-        recommendUpdateSkipped = recommendUpdateSkipped,
-        modifier = modifier
-    )
-}
-
-@Composable
-private fun RecommendUpdateScreen(
-    onUpdateClick: () -> Unit,
+internal fun RecommendUpdateScreen(
     recommendUpdateSkipped: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -55,6 +45,13 @@ private fun RecommendUpdateScreen(
 
         val updateButtonText = stringResource(R.string.recommend_update_button_title_update)
         val skipButtonText = stringResource(R.string.recommend_update_button_title_skip)
+
+        val context = LocalContext.current
+        val onUpdateClick: () -> Unit = {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(PLAY_STORE_URL)
+            context.startActivity(intent)
+        }
 
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
         if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
@@ -80,7 +77,6 @@ private fun RecommendUpdateScreen(
 private fun RecommendUpdatePreview() {
     GovUkTheme {
         RecommendUpdateScreen(
-            onUpdateClick = {},
             recommendUpdateSkipped = {},
             Modifier
         )

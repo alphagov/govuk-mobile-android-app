@@ -1,12 +1,16 @@
 package uk.govuk.app.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import uk.govuk.app.BuildConfig.GOV_UK_URL
 import uk.govuk.app.R
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
@@ -16,19 +20,7 @@ import uk.govuk.app.design.ui.component.SecondaryButton
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
-internal fun AppUnavailableRoute(
-    onGoToGovUkClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    AppUnavailableScreen(
-        onGoToGovUkClick = onGoToGovUkClick,
-        modifier = modifier
-    )
-}
-
-@Composable
-private fun AppUnavailableScreen(
-    onGoToGovUkClick: () -> Unit,
+internal fun AppUnavailableScreen(
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -47,8 +39,13 @@ private fun AppUnavailableScreen(
 
         ListDivider()
 
+        val context = LocalContext.current
         GoToGovUkButton(
-            onGoToGovUkClick = { onGoToGovUkClick() }
+            onGoToGovUkClick = {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = Uri.parse(GOV_UK_URL)
+                context.startActivity(intent)
+            }
         )
     }
 }
@@ -70,7 +67,6 @@ private fun GoToGovUkButton(
 private fun AppUnavailablePreview() {
     GovUkTheme {
         AppUnavailableScreen(
-            onGoToGovUkClick = {},
             Modifier
         )
     }

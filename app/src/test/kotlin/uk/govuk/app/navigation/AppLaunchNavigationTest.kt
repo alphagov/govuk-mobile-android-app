@@ -27,7 +27,6 @@ class AppLaunchNavigationTest {
         )
 
         val expected = Stack<String>()
-        expected.push(APP_UNAVAILABLE_GRAPH_ROUTE)
 
         assertEquals(expected, appLaunchNavigation.launchRoutes)
     }
@@ -52,7 +51,6 @@ class AppLaunchNavigationTest {
         expected.push(TOPICS_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
-        expected.push(RECOMMEND_UPDATE_GRAPH_ROUTE)
 
         assertEquals(expected, appLaunchNavigation.launchRoutes)
     }

@@ -13,9 +13,7 @@ internal class AppLaunchNavigation(
     val launchRoutes: Stack<String> = Stack()
 
     init {
-        if (uiState.shouldDisplayAppUnavailable) {
-            launchRoutes.push(APP_UNAVAILABLE_GRAPH_ROUTE)
-        } else {
+        if (!uiState.shouldDisplayAppUnavailable) {
             launchRoutes.push(HOME_GRAPH_ROUTE)
 
             if (uiState.shouldDisplayTopicSelection) {
@@ -28,10 +26,6 @@ internal class AppLaunchNavigation(
 
             if (uiState.shouldDisplayAnalyticsConsent) {
                 launchRoutes.push(ANALYTICS_GRAPH_ROUTE)
-            }
-
-            if (uiState.shouldDisplayRecommendUpdate) {
-                launchRoutes.push(RECOMMEND_UPDATE_GRAPH_ROUTE)
             }
         }
     }
