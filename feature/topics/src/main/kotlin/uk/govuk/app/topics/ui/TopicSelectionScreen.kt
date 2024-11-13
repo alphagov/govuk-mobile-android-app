@@ -1,6 +1,7 @@
 package uk.govuk.app.topics.ui
 
 import android.content.Context
+import android.view.accessibility.AccessibilityManager
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -105,8 +106,13 @@ private fun TopicSelectionScreen(
                     description = topic.description,
                     isSelected = topic.isSelected,
                     onClick = {
-                        (view.context.getSystemService(Context.ACCESSIBILITY_SERVICE)
-                                as android.view.accessibility.AccessibilityManager).interrupt()
+                        val accessibilityManager =
+                            view.context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+
+                        if (accessibilityManager.isEnabled) {
+                            accessibilityManager.interrupt()
+                        }
+
                         if (topic.isSelected) {
                             view.announceForAccessibility(removedAltText)
                         } else {
