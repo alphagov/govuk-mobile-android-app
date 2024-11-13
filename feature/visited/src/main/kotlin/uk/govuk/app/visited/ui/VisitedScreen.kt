@@ -119,10 +119,15 @@ private fun VisitedScreen(
                 text = title,
                 modifier = modifier
                     .fillMaxWidth()
+                    .height(47.dp)
                     .padding(horizontal = GovUkTheme.spacing.medium)
+                    .padding(bottom = GovUkTheme.spacing.small)
             )
         }
-        LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
+        LazyColumn(
+            Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+                .padding(top = GovUkTheme.spacing.small)
+        ) {
             item {
                 if (visitedItems != null) {
                     if (visitedItems.isEmpty()) {
