@@ -58,7 +58,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
-                shouldDisplayForcedUpdate = true,
+                shouldDisplayForcedUpdate = false,
                 shouldDisplayRecommendUpdate = true,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
