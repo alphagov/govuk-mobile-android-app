@@ -1,5 +1,8 @@
 package uk.govuk.app.config.extensions
 
+/**
+ * Compares decimal separated numerical strings of any length e.g 1.0.0
+ */
 fun String.isVersionLessThan(targetVersion: String): Boolean {
     val versionDelimiter = "."
     val targetVersionList = targetVersion.split(versionDelimiter).map { it.toIntOrNull() }
