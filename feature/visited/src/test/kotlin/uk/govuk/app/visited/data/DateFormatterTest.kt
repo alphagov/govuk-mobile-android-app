@@ -11,7 +11,17 @@ class DateFormatterTest {
         val dayInMillis = LocalDateTime.of(2023, 10, 15, 0, 0, 0).toEpochSecond(ZoneOffset.UTC)
 
         val actual = localDateFormatter(dayInMillis)
-        val expected = "15 October 2023"
+        val expected = "15 October"
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `Given a date in epoch days, then you get back a formatted date string - with the day minus leading zero`() {
+        val dayInMillis = LocalDateTime.of(2023, 10, 1, 0, 0, 0).toEpochSecond(ZoneOffset.UTC)
+
+        val actual = localDateFormatter(dayInMillis)
+        val expected = "1 October"
 
         assertEquals(expected, actual)
     }
