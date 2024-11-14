@@ -24,6 +24,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -47,7 +50,6 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.visited.R
 import uk.govuk.app.visited.VisitedUiState
 import uk.govuk.app.visited.VisitedViewModel
-import kotlin.random.Random
 
 @Composable
 internal fun EditVisitedRoute(
@@ -129,12 +131,9 @@ private fun EditVisitedScreen(
                                 val lastVisited = item.lastVisited
                                 val url = item.url
 
-                                // TODO:
-                                //     - Add Select all and Remove handlers
-                                //     - Handle select/deselect
-                                //     - Add tests
                                 CheckableExternalLinkListItem(
                                     title = title,
+                                    url = url,
                                     subText = "$lastVisitedText $lastVisited",
                                     isFirst = index == 0,
                                     isLast = index == visitedItems.size - 1,
@@ -154,11 +153,14 @@ private fun EditVisitedScreen(
 @Composable
 private fun CheckableExternalLinkListItem(
     title: String,
+    url: String,
     subText: String,
     isFirst: Boolean,
     isLast: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    var checked by remember { mutableStateOf(false) }
+
     CardListItem(
         modifier = modifier,
         onClick = { /* Do nothing */ },
@@ -172,8 +174,16 @@ private fun CheckableExternalLinkListItem(
                 modifier = Modifier.padding(0.dp),
             ) {
                 Checkbox(
-                    checked = Random.nextBoolean(),
-                    onCheckedChange = { /* checked = it */ },
+                    checked = checked,
+                    onCheckedChange = {
+                        checked = it
+
+                        if (checked) {
+                            println("Adding : $title [$url]")
+                        } else {
+                            println("Removing : $title [$url]")
+                        }
+                    },
                     colors = CheckboxDefaults.colors(
                         checkedColor = GovUkTheme.colourScheme.surfaces.primary,
                         uncheckedColor = GovUkTheme.colourScheme.strokes.buttonCompactBorder,
