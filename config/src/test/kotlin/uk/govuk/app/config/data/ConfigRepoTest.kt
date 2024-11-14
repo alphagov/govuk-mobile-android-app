@@ -5,8 +5,6 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import retrofit2.Response
 import uk.govuk.app.config.SignatureValidator
@@ -53,7 +51,7 @@ class ConfigRepoTest {
     }
 
     @Test
-    fun `Given a successful config response with a body, then return true`() {
+    fun `Given a successful config response with a body, then return success`() {
         coEvery { configApi.getConfig() } returns Response.success(configResponse.toString())
         coEvery { signatureValidator.isValidSignature(any(), any()) } returns true
         coEvery { gson.fromJson(any<String>(), ConfigResponse::class.java) } returns ConfigResponse(config, "signature")
@@ -61,12 +59,12 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
-            assertTrue(repo.initConfig())
+            assert(repo.initConfig().isSuccess)
         }
     }
 
     @Test
-    fun `Given a successful config response with an empty body, then return false`() {
+    fun `Given a successful config response with an empty body, then return failure`() {
         coEvery { configApi.getConfig() } returns response
         coEvery { response.isSuccessful } returns true
         coEvery { response.body() } returns null
@@ -74,35 +72,35 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
-            assertFalse(repo.initConfig())
+            assert(repo.initConfig().isFailure)
         }
     }
 
     @Test
-    fun `Given an unsuccessful config response, then return false`() {
+    fun `Given an unsuccessful config response, then return failure`() {
         coEvery { configApi.getConfig() } returns response
         coEvery { response.isSuccessful } returns false
 
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
-            assertFalse(repo.initConfig())
+            assert(repo.initConfig().isFailure)
         }
     }
 
     @Test
-    fun `Given an exception is thrown fetching the config response, then return false`() {
+    fun `Given an exception is thrown fetching the config response, then return failure`() {
         coEvery { configApi.getConfig() } throws IOException()
 
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
-            assertFalse(repo.initConfig())
+            assert(repo.initConfig().isFailure)
         }
     }
 
     @Test
-    fun `Given an invalid signature, when config is requested, then return false`() {
+    fun `Given an invalid signature, when config is requested, then return failure`() {
         coEvery { configApi.getConfig() } returns Response.success(configResponse.toString())
         coEvery { signatureValidator.isValidSignature(any(), any()) } returns false
         coEvery { gson.fromJson(any<String>(), ConfigResponse::class.java) } returns ConfigResponse(config, "signature")
@@ -110,7 +108,7 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
-            assertFalse(repo.initConfig())
+            assert(repo.initConfig().isFailure)
         }
     }
 }

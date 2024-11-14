@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
 import uk.govuk.app.config.data.ConfigRepo
+import uk.govuk.app.config.data.InvalidSignatureException
 import uk.govuk.app.config.data.flags.FlagRepo
 import uk.govuk.app.data.AppRepo
 import javax.inject.Inject
@@ -30,29 +31,46 @@ internal class AppViewModel @Inject constructor(
     configRepo: ConfigRepo,
     flagRepo: FlagRepo,
     private val analytics: Analytics
-): ViewModel() {
+) : ViewModel() {
 
     private val _uiState: MutableStateFlow<AppUiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            val isConfigInitSuccess = configRepo.initConfig()
-            if (!isConfigInitSuccess) {
-                // Todo - handle config failure - specific message for network connectivity issue???
+            val configResult = configRepo.initConfig()
+            configResult.onSuccess {
+                _uiState.value = AppUiState(
+                    shouldDisplayAppUnavailable = !flagRepo.isAppAvailable(),
+                    shouldDisplayForcedUpdate = flagRepo.isForcedUpdate(BuildConfig.VERSION_NAME),
+                    shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
+                    shouldDisplayAnalyticsConsent = analytics.isAnalyticsConsentRequired(),
+                    shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
+                    shouldDisplayTopicSelection = flagRepo.isTopicsEnabled() && !appRepo.isTopicSelectionCompleted(),
+                    isSearchEnabled = flagRepo.isSearchEnabled(),
+                    isRecentActivityEnabled = flagRepo.isRecentActivityEnabled(),
+                    isTopicsEnabled = flagRepo.isTopicsEnabled()
+                )
             }
-
-            _uiState.value = AppUiState(
-                shouldDisplayAppUnavailable = !flagRepo.isAppAvailable(),
-                shouldDisplayForcedUpdate = flagRepo.isForcedUpdate(BuildConfig.VERSION_NAME),
-                shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
-                shouldDisplayAnalyticsConsent = analytics.isAnalyticsConsentRequired(),
-                shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
-                shouldDisplayTopicSelection = flagRepo.isTopicsEnabled() && !appRepo.isTopicSelectionCompleted(),
-                isSearchEnabled = flagRepo.isSearchEnabled(),
-                isRecentActivityEnabled = flagRepo.isRecentActivityEnabled(),
-                isTopicsEnabled = flagRepo.isTopicsEnabled()
-            )
+            configResult.onFailure { exception ->
+                var isAppUnavailable = false
+                var isForcedUpdate = false
+                when (exception) {
+                    is InvalidSignatureException -> isForcedUpdate = true
+                    else -> isAppUnavailable = true
+                }
+                _uiState.value = AppUiState(
+                    shouldDisplayAppUnavailable = isAppUnavailable,
+                    shouldDisplayForcedUpdate = isForcedUpdate,
+                    shouldDisplayRecommendUpdate = false,
+                    shouldDisplayAnalyticsConsent = false,
+                    shouldDisplayOnboarding = false,
+                    shouldDisplayTopicSelection = false,
+                    isSearchEnabled = false,
+                    isRecentActivityEnabled = false,
+                    isTopicsEnabled = false
+                )
+            }
         }
     }
 
