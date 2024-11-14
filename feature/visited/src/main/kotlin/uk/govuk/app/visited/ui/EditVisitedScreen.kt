@@ -2,6 +2,7 @@ package uk.govuk.app.visited.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -9,7 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TextButton
@@ -25,21 +29,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
-import uk.govuk.app.design.ui.component.ExternalLinkListItem
+import uk.govuk.app.design.ui.component.CardListItem
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeadingLabel
+import uk.govuk.app.design.ui.component.MediumHorizontalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
+import uk.govuk.app.design.ui.component.SubheadlineRegularLabel
 import uk.govuk.app.design.ui.component.Title2BoldLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.visited.R
 import uk.govuk.app.visited.VisitedUiState
 import uk.govuk.app.visited.VisitedViewModel
+import kotlin.random.Random
 
 @Composable
 internal fun EditVisitedRoute(
@@ -84,10 +92,20 @@ private fun EditVisitedScreen(
             .fillMaxWidth(),
 
         topBar = {
-            TopNavBar(title = titleText, onBack = onBack, modifier = modifier, scrollBehavior = scrollBehavior, doneText = doneText)
+            TopNavBar(
+                title = titleText,
+                doneText = doneText,
+                onBack = onBack,
+                scrollBehavior = scrollBehavior,
+                modifier = modifier
+            )
         },
         bottomBar = {
-            BottomNavBar(modifier = modifier, selectText = selectText, removeText = removeText)
+            BottomNavBar(
+                selectText = selectText,
+                removeText = removeText,
+                modifier = modifier
+            )
         }
     ) { innerPadding ->
         LazyColumn (
@@ -112,15 +130,15 @@ private fun EditVisitedScreen(
                                 val url = item.url
 
                                 // TODO:
-                                //     - Add Checkbox to select items
                                 //     - Add Select all and Remove handlers
-                                //     - Remove alt text from title and 'Open in browser' icon
-                                ExternalLinkListItem(
+                                //     - Handle select/deselect
+                                //     - Add tests
+                                CheckableExternalLinkListItem(
                                     title = title,
-                                    onClick = { /* Do nothing */ },
+                                    subText = "$lastVisitedText $lastVisited",
                                     isFirst = index == 0,
                                     isLast = index == visitedItems.size - 1,
-                                    subText = "$lastVisitedText $lastVisited"
+                                    modifier = modifier
                                 )
                             }
 
@@ -133,9 +151,90 @@ private fun EditVisitedScreen(
     }
 }
 
+@Composable
+private fun CheckableExternalLinkListItem(
+    title: String,
+    subText: String,
+    isFirst: Boolean,
+    isLast: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    CardListItem(
+        modifier = modifier,
+        onClick = { /* Do nothing */ },
+        isFirst = isFirst,
+        isLast = isLast
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.padding(0.dp),
+            ) {
+                Checkbox(
+                    checked = Random.nextBoolean(),
+                    onCheckedChange = { /* checked = it */ },
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = GovUkTheme.colourScheme.surfaces.primary,
+                        uncheckedColor = GovUkTheme.colourScheme.strokes.buttonCompactBorder,
+                        checkmarkColor = GovUkTheme.colourScheme.textAndIcons.selectedTick,
+                    )
+                )
+            }
+
+            Column(
+                modifier = Modifier.padding(0.dp),
+            ) {
+                Row(
+                    modifier = Modifier.padding(
+                        top = GovUkTheme.spacing.medium,
+                        start = GovUkTheme.spacing.medium,
+                        end = GovUkTheme.spacing.medium,
+                        bottom = 0.dp
+                    )
+                ) {
+                    BodyRegularLabel(
+                        text = title,
+                        modifier = Modifier.weight(1f),
+                        color = GovUkTheme.colourScheme.textAndIcons.link
+                    )
+
+                    MediumHorizontalSpacer()
+
+                    Icon(
+                        painter = painterResource(uk.govuk.app.design.R.drawable.ic_external_link),
+                        contentDescription = "",
+                        tint = GovUkTheme.colourScheme.textAndIcons.link
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.padding(
+                        start = GovUkTheme.spacing.medium,
+                        top = 0.dp,
+                        bottom = GovUkTheme.spacing.medium
+                    ),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SubheadlineRegularLabel(
+                        text = subText,
+                        color = GovUkTheme.colourScheme.textAndIcons.primary
+                    )
+                }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopNavBar(title: String, onBack: () -> Unit, modifier : Modifier = Modifier, scrollBehavior: TopAppBarScrollBehavior, doneText: String) {
+private fun TopNavBar(
+    title: String,
+    doneText: String,
+    onBack: () -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior,
+    modifier : Modifier = Modifier,
+) {
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = GovUkTheme.colourScheme.surfaces.background,
@@ -150,7 +249,7 @@ private fun TopNavBar(title: String, onBack: () -> Unit, modifier : Modifier = M
         actions = {
             TextButton(
                 onClick = onBack,
-                modifier = Modifier.wrapContentSize()
+                modifier = modifier.wrapContentSize()
             ) {
                 BodyRegularLabel(
                     text = doneText,
@@ -164,7 +263,11 @@ private fun TopNavBar(title: String, onBack: () -> Unit, modifier : Modifier = M
 }
 
 @Composable
-private fun BottomNavBar(modifier : Modifier = Modifier, selectText: String, removeText: String) {
+private fun BottomNavBar(
+    selectText: String,
+    removeText: String,
+    modifier : Modifier = Modifier
+) {
     val borderColor = GovUkTheme.colourScheme.strokes.listDivider
 
     NavigationBar(

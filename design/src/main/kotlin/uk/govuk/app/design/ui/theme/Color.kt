@@ -64,7 +64,8 @@ data class GovUkColourScheme(
         val buttonCompactFocused: Color,
         val buttonSuccess: Color,
         val trailingIcon: Color,
-        val buttonRemove: Color
+        val buttonRemove: Color,
+        val selectedTick: Color
     )
 
     data class Surfaces(
@@ -121,7 +122,8 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonCompactFocused = Black,
         buttonSuccess = Green1,
         trailingIcon = Grey300,
-        buttonRemove = Red1
+        buttonRemove = Red1,
+        selectedTick = White
     ),
     surfaces = Surfaces(
         background = Grey50,
@@ -176,7 +178,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonCompactFocused = Black,
         buttonSuccess = Green2,
         trailingIcon = Grey500,
-        buttonRemove = Red1
+        buttonRemove = Red1,
+        selectedTick = White
     ),
     surfaces = Surfaces(
         background = Black,
@@ -232,7 +235,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             buttonCompactFocused = Color.Unspecified,
             buttonSuccess = Color.Unspecified,
             trailingIcon = Color.Unspecified,
-            buttonRemove = Color.Unspecified
+            buttonRemove = Color.Unspecified,
+            selectedTick = Color.Unspecified
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,
