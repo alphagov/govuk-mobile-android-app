@@ -65,6 +65,30 @@ class AppViewModelTest {
     }
 
     @Test
+    fun `Given forced update, When init, then should display forced update`() {
+        every { flagRepo.isForcedUpdate(any()) } returns true
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertTrue(result!!.shouldDisplayForcedUpdate)
+        }
+    }
+
+    @Test
+    fun `Given don't forced update, When init, then should not display forced update`() {
+        every { flagRepo.isForcedUpdate(any()) } returns false
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.shouldDisplayForcedUpdate)
+        }
+    }
+
+    @Test
     fun `Given recommend update, When init, then should display recommend update`() {
         every { flagRepo.isRecommendUpdate(any()) } returns true
 

@@ -71,6 +71,8 @@ internal fun GovUkApp() {
         uiState?.let {
             if (it.shouldDisplayAppUnavailable) {
                 AppUnavailableScreen()
+            } else if (it.shouldDisplayForcedUpdate) {
+                ForcedUpdateScreen()
             } else if (it.shouldDisplayRecommendUpdate && !isRecommendUpdateSkipped) {
                 RecommendUpdateScreen(
                     recommendUpdateSkipped = { isRecommendUpdateSkipped = true }

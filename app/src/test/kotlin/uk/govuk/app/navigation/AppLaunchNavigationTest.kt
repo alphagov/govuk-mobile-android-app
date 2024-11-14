@@ -16,6 +16,28 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = true,
+                shouldDisplayForcedUpdate = true,
+                shouldDisplayRecommendUpdate = true,
+                shouldDisplayAnalyticsConsent = true,
+                shouldDisplayOnboarding = true,
+                shouldDisplayTopicSelection = true,
+                isSearchEnabled = true,
+                isRecentActivityEnabled = true,
+                isTopicsEnabled = true
+            )
+        )
+
+        val expected = Stack<String>()
+
+        assertEquals(expected, appLaunchNavigation.launchRoutes)
+    }
+
+    @Test
+    fun `Given forced update should be displayed, then return correct launch routes`() {
+        val appLaunchNavigation = AppLaunchNavigation(
+            AppUiState(
+                shouldDisplayAppUnavailable = false,
+                shouldDisplayForcedUpdate = true,
                 shouldDisplayRecommendUpdate = true,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
@@ -36,6 +58,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayForcedUpdate = false,
                 shouldDisplayRecommendUpdate = true,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
@@ -60,6 +83,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayForcedUpdate = false,
                 shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
@@ -84,6 +108,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayForcedUpdate = false,
                 shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
@@ -107,6 +132,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayForcedUpdate = false,
                 shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = false,
@@ -130,6 +156,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayForcedUpdate = false,
                 shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = false,
@@ -152,6 +179,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayForcedUpdate = false,
                 shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = true,
@@ -175,6 +203,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayForcedUpdate = false,
                 shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = true,
@@ -197,6 +226,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayForcedUpdate = false,
                 shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = false,
@@ -219,6 +249,7 @@ class AppLaunchNavigationTest {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState(
                 shouldDisplayAppUnavailable = false,
+                shouldDisplayForcedUpdate = false,
                 shouldDisplayRecommendUpdate = false,
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = false,

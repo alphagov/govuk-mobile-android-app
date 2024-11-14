@@ -174,6 +174,63 @@ class FlagRepoTest {
     }
 
     @Test
+    fun `Given the debug minimum version is 0_0_2, When the app version is 0_0_1, then return true`() {
+        every { debugFlags.minimumVersion } returns "0.0.2"
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertTrue(flagRepo.isForcedUpdate("0.0.1"))
+    }
+
+    @Test
+    fun `Given the debug minimum version is 0_0_2, When the app version is 0_0_2, then return false`() {
+        every { debugFlags.minimumVersion } returns "0.0.2"
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertFalse(flagRepo.isForcedUpdate("0.0.2"))
+    }
+
+    @Test
+    fun `Given the debug minimum version is 0_0_1, When the app version is 0_0_2, then return false`() {
+        every { debugFlags.minimumVersion } returns "0.0.1"
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertFalse(flagRepo.isForcedUpdate("0.0.2"))
+    }
+
+    @Test
+    fun `Given the remote minimum version is 0_0_2, When the app version is 0_0_1, then return true`() {
+        every { debugFlags.minimumVersion } returns null
+        every { configRepo.config.minimumVersion } returns "0.0.2"
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertTrue(flagRepo.isForcedUpdate("0.0.1"))
+    }
+
+    @Test
+    fun `Given the remote minimum version is 0_0_2, When the app version is 0_0_2, then return false`() {
+        every { debugFlags.minimumVersion } returns null
+        every { configRepo.config.minimumVersion } returns "0.0.2"
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertFalse(flagRepo.isForcedUpdate("0.0.2"))
+    }
+
+    @Test
+    fun `Given the remote minimum version is 0_0_1, When the app version is 0_0_2, then return false`() {
+        every { debugFlags.minimumVersion } returns null
+        every { configRepo.config.minimumVersion } returns "0.0.1"
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertFalse(flagRepo.isForcedUpdate("0.0.2"))
+    }
+
+    @Test
     fun `Given the debug recommended version is 0_0_2, When the app version is 0_0_1, then return true`() {
         every { debugFlags.recommendedVersion } returns "0.0.2"
 
