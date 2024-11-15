@@ -15,6 +15,7 @@ private val Blue6 = Color(0xFF7AC2FF)
 private val Blue7 = Color(0xFFE8F1F8)
 
 private val Yellow = Color(0xFFFFDD00)
+
 private val Red1 = Color(0xFFD4351C)
 
 private val Green1 = Color(0xFF11875A)
