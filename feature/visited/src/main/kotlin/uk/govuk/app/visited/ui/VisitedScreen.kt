@@ -80,6 +80,7 @@ private fun VisitedScreen(
 
     val title = stringResource(R.string.visited_items_title)
     val editText = stringResource(R.string.visited_items_edit_button)
+    val visitedItems = uiState?.visited
 
     Column(modifier) {
         val visitedItems = uiState?.visited
