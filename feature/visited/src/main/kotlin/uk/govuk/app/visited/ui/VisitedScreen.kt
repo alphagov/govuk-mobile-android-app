@@ -83,11 +83,10 @@ private fun VisitedScreen(
     val visitedItems = uiState?.visited
 
     Column(modifier) {
-        val visitedItems = uiState?.visited
-
         Column(modifier) {
             Row(
-                modifier = Modifier.height(64.dp)
+                modifier = Modifier
+                    .height(64.dp)
                     .fillMaxWidth()
                     .padding(end = GovUkTheme.spacing.small),
                 verticalAlignment = Alignment.CenterVertically,
@@ -126,7 +125,8 @@ private fun VisitedScreen(
             )
         }
         LazyColumn(
-            Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+            Modifier
+                .padding(horizontal = GovUkTheme.spacing.medium)
                 .padding(top = GovUkTheme.spacing.small)
         ) {
             item {
@@ -145,7 +145,8 @@ private fun NoVisitedItems(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier.padding(GovUkTheme.spacing.medium)
+        modifier
+            .padding(GovUkTheme.spacing.medium)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

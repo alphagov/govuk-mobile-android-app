@@ -110,7 +110,7 @@ private fun EditVisitedScreen(
             )
         }
     ) { innerPadding ->
-        LazyColumn (
+        LazyColumn(
             modifier = modifier
                 .padding(innerPadding)
                 .padding(horizontal = GovUkTheme.spacing.medium)
@@ -231,7 +231,7 @@ private fun TopNavBar(
     doneText: String,
     onBack: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
-    modifier : Modifier = Modifier,
+    modifier: Modifier = Modifier,
 ) {
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -264,7 +264,7 @@ private fun TopNavBar(
 private fun BottomNavBar(
     selectText: String,
     removeText: String,
-    modifier : Modifier = Modifier
+    modifier: Modifier = Modifier
 ) {
     val borderColor = GovUkTheme.colourScheme.strokes.listDivider
 
