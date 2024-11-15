@@ -175,15 +175,7 @@ private fun CheckableExternalLinkListItem(
             ) {
                 Checkbox(
                     checked = checked,
-                    onCheckedChange = {
-                        checked = it
-
-                        if (checked) {
-                            println("Adding : $title [$url]")
-                        } else {
-                            println("Removing : $title [$url]")
-                        }
-                    },
+                    onCheckedChange = { checked = it },
                     colors = CheckboxDefaults.colors(
                         checkedColor = GovUkTheme.colourScheme.surfaces.primary,
                         uncheckedColor = GovUkTheme.colourScheme.strokes.buttonCompactBorder,
