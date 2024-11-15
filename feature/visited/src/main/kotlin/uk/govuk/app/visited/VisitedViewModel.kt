@@ -26,7 +26,8 @@ internal class VisitedViewModel @Inject constructor(
 ): ViewModel() {
 
     companion object {
-        private const val SCREEN_CLASS = "VisitedScreen"
+        private const val EDIT_SCREEN_CLASS = "EditVisitedScreen"
+        private const val VIEW_SCREEN_CLASS = "VisitedScreen"
         private const val SCREEN_NAME = "Pages you've visited"
         private const val SCREEN_TITLE = "Pages you've visited"
     }
@@ -45,7 +46,15 @@ internal class VisitedViewModel @Inject constructor(
 
     fun onPageView() {
         analytics.screenView(
-            screenClass = SCREEN_CLASS,
+            screenClass = VIEW_SCREEN_CLASS,
+            screenName = SCREEN_NAME,
+            title = SCREEN_TITLE
+        )
+    }
+
+    fun onEditPageView() {
+        analytics.screenView(
+            screenClass = EDIT_SCREEN_CLASS,
             screenName = SCREEN_NAME,
             title = SCREEN_TITLE
         )

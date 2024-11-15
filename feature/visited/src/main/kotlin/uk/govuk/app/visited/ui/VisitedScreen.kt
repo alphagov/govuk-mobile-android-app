@@ -4,9 +4,16 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -16,12 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
-import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.ExternalLinkListItem
 import uk.govuk.app.design.ui.component.ExtraLargeVerticalSpacer
+import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeadingLabel
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
@@ -29,10 +38,12 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.visited.R
 import uk.govuk.app.visited.VisitedUiState
 import uk.govuk.app.visited.VisitedViewModel
+import uk.govuk.app.visited.navigation.navigateToEditVisited
 import uk.govuk.app.visited.ui.model.VisitedUi
 
 @Composable
 internal fun VisitedRoute(
+    navController: NavController,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -46,6 +57,9 @@ internal fun VisitedRoute(
         onClick = { title, url ->
             viewModel.onVisitedItemClicked(title, url)
         },
+        onEditClick = {
+            navController.navigateToEditVisited()
+        },
         modifier = modifier
     )
 }
@@ -57,6 +71,7 @@ private fun VisitedScreen(
     onPageView: () -> Unit,
     onBack: () -> Unit,
     onClick: (title: String, url: String) -> Unit,
+    onEditClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -64,21 +79,61 @@ private fun VisitedScreen(
     }
 
     val title = stringResource(R.string.visited_items_title)
+    val editText = stringResource(R.string.visited_items_edit_button)
+    val visitedItems = uiState?.visited
 
     Column(modifier) {
-        ChildPageHeader(
-            text = title,
-            onBack = onBack
-        )
-        LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
-            item {
-                val visitedItems = uiState?.visited
-                if (visitedItems != null) {
-                    if (visitedItems.isEmpty()) {
-                        NoVisitedItems(modifier)
-                    } else {
-                        ShowVisitedItems(visitedItems, onClick)
+        Column(modifier) {
+            Row(
+                modifier = Modifier
+                    .height(64.dp)
+                    .fillMaxWidth()
+                    .padding(end = GovUkTheme.spacing.small),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                TextButton(
+                    onClick = onBack,
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(uk.govuk.app.design.R.string.content_desc_back),
+                        tint = GovUkTheme.colourScheme.textAndIcons.link
+                    )
+                }
+
+                if (!visitedItems.isNullOrEmpty()) {
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    TextButton(
+                        onClick = onEditClick,
+                        modifier = Modifier.padding(end = GovUkTheme.spacing.small)
+                    ) {
+                        BodyRegularLabel(
+                            text = editText,
+                            color = GovUkTheme.colourScheme.textAndIcons.link,
+                        )
                     }
+                }
+            }
+            LargeTitleBoldLabel(
+                text = title,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(47.dp)
+                    .padding(horizontal = GovUkTheme.spacing.medium)
+                    .padding(bottom = GovUkTheme.spacing.small)
+            )
+        }
+        LazyColumn(
+            Modifier
+                .padding(horizontal = GovUkTheme.spacing.medium)
+                .padding(top = GovUkTheme.spacing.small)
+        ) {
+            item {
+                if (visitedItems.isNullOrEmpty()) {
+                    NoVisitedItems(modifier)
+                } else {
+                    ShowVisitedItems(visitedItems, onClick)
                 }
             }
         }
@@ -90,7 +145,8 @@ private fun NoVisitedItems(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier.padding(GovUkTheme.spacing.medium)
+        modifier
+            .padding(GovUkTheme.spacing.medium)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

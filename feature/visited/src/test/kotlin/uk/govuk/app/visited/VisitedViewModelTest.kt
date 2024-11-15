@@ -57,6 +57,21 @@ class VisitedViewModelTest {
     }
 
     @Test
+    fun `Given an edit page view, then log analytics`() {
+        val viewModel = VisitedViewModel(visitedRepo, visited, analytics)
+
+        viewModel.onEditPageView()
+
+        verify {
+            analytics.screenView(
+                screenClass = "EditVisitedScreen",
+                screenName = "Pages you've visited",
+                title = "Pages you've visited"
+            )
+        }
+    }
+
+    @Test
     fun `Given the user re-views a visited item, then run the insert or update function`() {
         val viewModel = VisitedViewModel(visitedRepo, visited, analytics)
 
