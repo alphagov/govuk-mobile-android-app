@@ -129,12 +129,10 @@ private fun VisitedScreen(
                 .padding(top = GovUkTheme.spacing.small)
         ) {
             item {
-                if (visitedItems != null) {
-                    if (visitedItems.isEmpty()) {
-                        NoVisitedItems(modifier)
-                    } else {
-                        ShowVisitedItems(visitedItems, onClick)
-                    }
+                if (visitedItems.isNullOrEmpty()) {
+                    NoVisitedItems(modifier)
+                } else {
+                    ShowVisitedItems(visitedItems, onClick)
                 }
             }
         }

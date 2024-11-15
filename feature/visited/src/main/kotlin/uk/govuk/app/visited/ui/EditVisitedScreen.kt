@@ -118,25 +118,21 @@ private fun EditVisitedScreen(
                 .background(GovUkTheme.colourScheme.surfaces.background)
         ) {
             item {
-                if (visitedItems != null) {
+                visitedItems?.let { items ->
                     val lastVisitedText = stringResource(R.string.visited_items_last_visited)
 
-                    visitedItems.forEach { (sectionTitle, visitedItems) ->
-                        if (visitedItems.isNotEmpty()) {
+                    items.forEach { (sectionTitle, sectionItems) ->
+                        sectionItems.takeIf { it.isNotEmpty() }?.let { items ->
                             ListHeadingLabel(sectionTitle)
                             SmallVerticalSpacer()
 
-                            visitedItems.forEachIndexed { index, item ->
-                                val title = item.title
-                                val lastVisited = item.lastVisited
-                                val url = item.url
-
+                            items.forEachIndexed { index, (title, lastVisited, url) ->
                                 CheckableExternalLinkListItem(
                                     title = title,
                                     url = url,
                                     subText = "$lastVisitedText $lastVisited",
                                     isFirst = index == 0,
-                                    isLast = index == visitedItems.size - 1,
+                                    isLast = index == items.size - 1,
                                     modifier = modifier
                                 )
                             }
