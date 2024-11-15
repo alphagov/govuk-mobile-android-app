@@ -24,7 +24,7 @@ class ConfigRepo @Inject constructor(
             }
         }
 
-    suspend fun initConfig(): Boolean {
+    suspend fun initConfig(): Result<Unit> {
         return try {
             val response = configApi.getConfig()
             if (response.isSuccessful) {
@@ -32,19 +32,19 @@ class ConfigRepo @Inject constructor(
                     val signature = response.headers()["x-amz-meta-govuk-sig"] ?: ""
                     val valid = signatureValidator.isValidSignature(signature, it)
                     if (!valid) {
-                        return false
+                        return Result.failure(InvalidSignatureException())
                     }
 
                     val configResponse = gson.fromJson(it, ConfigResponse::class.java)
 
                     _config = configResponse.config
-                    true
-                } ?: false
+                    Result.success(Unit)
+                } ?: Result.failure(Exception())
             } else {
-                false
+                Result.failure(Exception())
             }
         } catch (e: Exception) {
-            false
+            Result.failure(e)
         }
     }
 }
