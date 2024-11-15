@@ -94,6 +94,7 @@ class AppViewModelTest {
     @Test
     fun `Given forced update, When init, then should display forced update`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isForcedUpdate(any()) } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
@@ -107,6 +108,7 @@ class AppViewModelTest {
     @Test
     fun `Given don't forced update, When init, then should not display forced update`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isForcedUpdate(any()) } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
@@ -120,6 +122,7 @@ class AppViewModelTest {
     @Test
     fun `Given recommend update, When init, then should display recommend update`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isRecommendUpdate(any()) } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
@@ -133,6 +136,7 @@ class AppViewModelTest {
     @Test
     fun `Given don't recommend update, When init, then should not display recommend update`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isRecommendUpdate(any()) } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
@@ -146,6 +150,7 @@ class AppViewModelTest {
     @Test
     fun `Given analytics consent is required, When init, then should display analytics consent`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         coEvery { analytics.isAnalyticsConsentRequired() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
@@ -159,6 +164,7 @@ class AppViewModelTest {
     @Test
     fun `Given the analytics enabled state is enabled, When init, then should not display analytics consent`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         coEvery { analytics.isAnalyticsConsentRequired() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
@@ -172,6 +178,7 @@ class AppViewModelTest {
     @Test
     fun `Given the user has previously completed onboarding and onboarding is enabled, When init, then should not display onboarding`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         coEvery { appRepo.isOnboardingCompleted() } returns true
         every { flagRepo.isOnboardingEnabled() } returns true
 
@@ -186,6 +193,7 @@ class AppViewModelTest {
     @Test
     fun `Given the user has not previously completed onboarding and onboarding is enabled, When init, then should display onboarding`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         coEvery { appRepo.isOnboardingCompleted() } returns false
         every { flagRepo.isOnboardingEnabled() } returns true
 
@@ -200,6 +208,7 @@ class AppViewModelTest {
     @Test
     fun `Given the user has previously completed onboarding and onboarding is disabled, When init, then should not display onboarding`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         coEvery { appRepo.isOnboardingCompleted() } returns true
         every { flagRepo.isOnboardingEnabled() } returns false
 
@@ -214,6 +223,7 @@ class AppViewModelTest {
     @Test
     fun `Given the user has not previously completed onboarding and onboarding is disabled, When init, then should not display onboarding`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         coEvery { appRepo.isOnboardingCompleted() } returns false
         every { flagRepo.isOnboardingEnabled() } returns false
 
@@ -228,6 +238,7 @@ class AppViewModelTest {
     @Test
     fun `Given the user has previously completed topic selection and topics are enabled, When init, then should not display topic selection`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns true
         every { flagRepo.isTopicsEnabled() } returns true
 
@@ -242,6 +253,7 @@ class AppViewModelTest {
     @Test
     fun `Given the user has not previously completed topic selection and topics are enabled, When init, then should display topic selection`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
         every { flagRepo.isTopicsEnabled() } returns true
 
@@ -256,6 +268,7 @@ class AppViewModelTest {
     @Test
     fun `Given the user has previously completed topic selection and topics are disabled, When init, then should not display topic selection`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns true
         every { flagRepo.isTopicsEnabled() } returns false
 
@@ -270,6 +283,7 @@ class AppViewModelTest {
     @Test
     fun `Given the user has not previously completed topic selection and topics are disabled, When init, then should not display topic selection`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
         every { flagRepo.isTopicsEnabled() } returns false
 
@@ -284,6 +298,7 @@ class AppViewModelTest {
     @Test
     fun `Given the search feature is enabled, When init, then emit search enabled state`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isSearchEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo,  flagRepo, analytics)
@@ -297,6 +312,7 @@ class AppViewModelTest {
     @Test
     fun `Given the search feature is disabled, When init, then emit search disabled state`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isSearchEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
@@ -310,6 +326,7 @@ class AppViewModelTest {
     @Test
     fun `Given the recent activity feature is enabled, When init, then emit recent activity enabled state`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isRecentActivityEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
@@ -323,6 +340,7 @@ class AppViewModelTest {
     @Test
     fun `Given the recent activity feature is disabled, When init, then emit recent activity disabled state`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isRecentActivityEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
@@ -336,6 +354,7 @@ class AppViewModelTest {
     @Test
     fun `Given the topics feature is enabled, When init, then emit topics enabled state`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isTopicsEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo,  flagRepo, analytics)
@@ -349,6 +368,7 @@ class AppViewModelTest {
     @Test
     fun `Given the topics feature is disabled, When init, then emit topics disabled state`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isTopicsEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
@@ -362,6 +382,7 @@ class AppViewModelTest {
     @Test
     fun `When onboarding completed, then call repo onboarding completed`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
 
@@ -375,6 +396,7 @@ class AppViewModelTest {
     @Test
     fun `When topic selection completed, then call repo topic selection completed`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
 
@@ -388,6 +410,7 @@ class AppViewModelTest {
     @Test
     fun `When tab is clicked, then log analytics`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
 
@@ -403,6 +426,7 @@ class AppViewModelTest {
     @Test
     fun `When widget is clicked, then log analytics`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analytics)
 
