@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.visited.data.VisitedRepo
+import uk.govuk.app.visited.data.store.VisitedLocalDataSource
 import uk.govuk.app.visited.data.transformVisitedItems
 import uk.govuk.app.visited.ui.model.VisitedUi
 import java.time.LocalDate
@@ -15,12 +16,14 @@ import javax.inject.Inject
 
 
 internal data class VisitedUiState(
-    val visited: Map<String, List<VisitedUi>>
+    val visited: Map<String, List<VisitedUi>>,
+    var hasSelectedItems: Boolean = false
 )
 
 @HiltViewModel
 internal class VisitedViewModel @Inject constructor(
     private val visitedRepo: VisitedRepo,
+    private val visitedLocalDataSource: VisitedLocalDataSource,
     private val visited: Visited,
     private val analyticsClient: AnalyticsClient
 ): ViewModel() {
@@ -39,7 +42,10 @@ internal class VisitedViewModel @Inject constructor(
         viewModelScope.launch {
             visitedRepo.visitedItems.collect { visitedItems ->
                 val allVisitedItems = transformVisitedItems(visitedItems, LocalDate.now())
-                _uiState.value = VisitedUiState(visited = allVisitedItems)
+                _uiState.value = VisitedUiState(
+                    visited = allVisitedItems,
+                    hasSelectedItems = false
+                )
             }
         }
     }
@@ -65,5 +71,31 @@ internal class VisitedViewModel @Inject constructor(
             visited.visitableItemClick(title = title, url = url)
         }
         analyticsClient.visitedItemClick(text = title, url = url)
+    }
+
+    fun removeSelectedItems() {
+        _uiState.value?.visited?.forEach { (_, visitedItems) ->
+            visitedItems.forEach { visitedItem ->
+                if (visitedItem.isSelected) {
+                    viewModelScope.launch {
+                        visitedLocalDataSource.remove(visitedItem.title, visitedItem.url)
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateHasSelectedItems() {
+        _uiState.value = _uiState.value?.copy(
+            hasSelectedItems = _uiState.value?.visited?.any { (_, visitedItems) ->
+                visitedItems.any { it.isSelected }
+            } ?: false
+        )
+    }
+
+    internal fun getUiStateForTest(): VisitedUiState? = _uiState.value
+
+    internal fun setUiStateForTest(state: VisitedUiState?) {
+        _uiState.value = state
     }
 }

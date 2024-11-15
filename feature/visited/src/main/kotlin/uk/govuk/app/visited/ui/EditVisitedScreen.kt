@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -16,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -50,6 +52,7 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.visited.R
 import uk.govuk.app.visited.VisitedUiState
 import uk.govuk.app.visited.VisitedViewModel
+import uk.govuk.app.visited.ui.model.VisitedUi
 
 @Composable
 internal fun EditVisitedRoute(
@@ -61,8 +64,13 @@ internal fun EditVisitedRoute(
 
     EditVisitedScreen(
         uiState = uiState,
+        onRemove = {
+            viewModel.removeSelectedItems()
+            onBack()
+        },
         onEditPageView = { viewModel.onEditPageView() },
         onBack = onBack,
+        onSelect = { viewModel.updateHasSelectedItems() },
         modifier = modifier
     )
 }
@@ -71,8 +79,10 @@ internal fun EditVisitedRoute(
 @Composable
 private fun EditVisitedScreen(
     uiState: VisitedUiState?,
+    onRemove: () -> Unit,
     onEditPageView: () -> Unit,
     onBack: () -> Unit,
+    onSelect: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -106,6 +116,8 @@ private fun EditVisitedScreen(
             BottomNavBar(
                 selectText = selectText,
                 removeText = removeText,
+                onRemove = onRemove,
+                uiState = uiState,
                 modifier = modifier
             )
         }
@@ -126,13 +138,13 @@ private fun EditVisitedScreen(
                             ListHeadingLabel(sectionTitle)
                             SmallVerticalSpacer()
 
-                            items.forEachIndexed { index, (title, lastVisited, url) ->
+                            items.forEachIndexed { index, item ->
                                 CheckableExternalLinkListItem(
-                                    title = title,
-                                    url = url,
-                                    subText = "$lastVisitedText $lastVisited",
+                                    item = item,
+                                    subText = "$lastVisitedText ${item.lastVisited}",
                                     isFirst = index == 0,
                                     isLast = index == items.size - 1,
+                                    onSelect = onSelect,
                                     modifier = modifier
                                 )
                             }
@@ -148,11 +160,11 @@ private fun EditVisitedScreen(
 
 @Composable
 private fun CheckableExternalLinkListItem(
-    title: String,
-    url: String,
+    item: VisitedUi,
     subText: String,
     isFirst: Boolean,
     isLast: Boolean,
+    onSelect: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var checked by remember { mutableStateOf(false) }
@@ -171,7 +183,16 @@ private fun CheckableExternalLinkListItem(
             ) {
                 Checkbox(
                     checked = checked,
-                    onCheckedChange = { checked = it },
+                    onCheckedChange = {
+                        checked = it
+
+                        if (checked) {
+                            item.isSelected = true
+                        } else {
+                            item.isSelected = false
+                        }
+                        onSelect()
+                    },
                     colors = CheckboxDefaults.colors(
                         checkedColor = GovUkTheme.colourScheme.surfaces.primary,
                         uncheckedColor = GovUkTheme.colourScheme.strokes.buttonCompactBorder,
@@ -192,7 +213,7 @@ private fun CheckableExternalLinkListItem(
                     )
                 ) {
                     BodyRegularLabel(
-                        text = title,
+                        text = item.title,
                         modifier = Modifier.weight(1f),
                         color = GovUkTheme.colourScheme.textAndIcons.link
                     )
@@ -264,6 +285,8 @@ private fun TopNavBar(
 private fun BottomNavBar(
     selectText: String,
     removeText: String,
+    onRemove: () -> Unit,
+    uiState: VisitedUiState?,
     modifier: Modifier = Modifier
 ) {
     val borderColor = GovUkTheme.colourScheme.strokes.listDivider
@@ -302,12 +325,18 @@ private fun BottomNavBar(
                     textAlign = TextAlign.Start
                 )
             }
+
             TextButton(
-                onClick = { /* TODO */ },
+                onClick = onRemove,
+                enabled = uiState?.hasSelectedItems ?: false,
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = GovUkTheme.colourScheme.textAndIcons.buttonRemove,
+                    disabledContentColor = GovUkTheme.colourScheme.textAndIcons.buttonRemoveDisabled
+                )
             ) {
-                BodyRegularLabel(
+                Text(
                     text = removeText,
-                    color = GovUkTheme.colourScheme.textAndIcons.buttonRemove,
+                    style = GovUkTheme.typography.bodyRegular,
                     textAlign = TextAlign.End
                 )
             }
@@ -320,9 +349,14 @@ private fun BottomNavBar(
 private fun EditVisitedScreenPreview() {
     GovUkTheme {
         EditVisitedScreen(
-            uiState = VisitedUiState(visited = emptyMap()),
+            uiState = VisitedUiState(
+                visited = emptyMap(),
+                hasSelectedItems = false
+            ),
+            onRemove = {},
             onEditPageView = {},
             onBack = {},
+            onSelect = {},
             modifier = Modifier
         )
     }

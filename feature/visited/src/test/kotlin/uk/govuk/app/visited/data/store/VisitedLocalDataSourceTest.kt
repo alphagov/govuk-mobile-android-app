@@ -146,4 +146,77 @@ class VisitedLocalDataSourceTest {
             assertEquals(today.toEpochSecond(ZoneOffset.UTC), visitedItems[0].lastVisited)
         }
     }
+
+    @Test
+    fun `Given a visited item, when it is removed, then we have no visited items`() {
+        val today = LocalDateTime.now()
+
+        runTest {
+            val localDataSource = VisitedLocalDataSource(realmProvider)
+
+            localDataSource.insertOrUpdate("title1", "url1", today)
+
+            localDataSource.remove("title1", "url1")
+
+            val visitedItems = localDataSource.visitedItems.first()
+
+            assertEquals(0, visitedItems.size)
+        }
+    }
+
+    @Test
+    fun `Given more than one visited item, when one is removed, then the correct visited items remain`() {
+        val today = LocalDateTime.now()
+
+        runTest {
+            val localDataSource = VisitedLocalDataSource(realmProvider)
+
+            localDataSource.insertOrUpdate("title1", "url1", today)
+            localDataSource.insertOrUpdate("title2", "url2", today)
+            localDataSource.insertOrUpdate("title3", "url3", today)
+
+            localDataSource.remove("title2", "url2")
+
+            val visitedItems = localDataSource.visitedItems.first()
+
+            assertEquals(2, visitedItems.size)
+            assertEquals("title1", visitedItems[0].title)
+            assertEquals("title3", visitedItems[1].title)
+        }
+    }
+
+    @Test
+    fun `Given more than one visited item, when an incorrect title is asked to be removed, then the correct visited items remain`() {
+        val today = LocalDateTime.now()
+
+        runTest {
+            val localDataSource = VisitedLocalDataSource(realmProvider)
+
+            localDataSource.insertOrUpdate("title1", "url1", today)
+            localDataSource.insertOrUpdate("title2", "url2", today)
+            localDataSource.insertOrUpdate("title3", "url3", today)
+
+            localDataSource.remove("title99", "url99")
+
+            val visitedItems = localDataSource.visitedItems.first()
+
+            assertEquals(3, visitedItems.size)
+            assertEquals("title1", visitedItems[0].title)
+            assertEquals("title2", visitedItems[1].title)
+            assertEquals("title3", visitedItems[2].title)
+        }
+    }
+
+    @Test
+    fun `Given no visited items, when a title is asked to be removed, then the correct visited items remain`() {
+        runTest {
+            val localDataSource = VisitedLocalDataSource(realmProvider)
+
+            localDataSource.remove("title99", "url99")
+
+            val visitedItems = localDataSource.visitedItems.first()
+
+            assertEquals(0, visitedItems.size)
+        }
+    }
 }
