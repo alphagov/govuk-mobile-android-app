@@ -69,22 +69,24 @@ internal fun GovUkApp() {
             isLight = !isSystemInDarkTheme()
         )
         uiState?.let {
-            if (it.shouldDisplayAppUnavailable) {
-                AppUnavailableScreen()
-            } else if (it.shouldDisplayForcedUpdate) {
-                ForcedUpdateScreen()
-            } else if (it.shouldDisplayRecommendUpdate && !isRecommendUpdateSkipped) {
-                RecommendUpdateScreen(
-                    recommendUpdateSkipped = { isRecommendUpdateSkipped = true }
-                )
-            } else {
-                BottomNavScaffold(
-                    uiState = it,
-                    onboardingCompleted = { viewModel.onboardingCompleted() },
-                    topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
-                    onTabClick = { tabText -> viewModel.onTabClick(tabText) },
-                    onWidgetClick = { text -> viewModel.onWidgetClick(text) }
-                )
+            when (it) {
+                is AppUiState.AppUnavailable -> AppUnavailableScreen()
+                is AppUiState.ForcedUpdate -> ForcedUpdateScreen()
+                is AppUiState.Default -> {
+                    if (it.shouldDisplayRecommendUpdate && !isRecommendUpdateSkipped) {
+                        RecommendUpdateScreen(
+                            recommendUpdateSkipped = { isRecommendUpdateSkipped = true }
+                        )
+                    } else {
+                        BottomNavScaffold(
+                            uiState = it,
+                            onboardingCompleted = { viewModel.onboardingCompleted() },
+                            topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
+                            onTabClick = { tabText -> viewModel.onTabClick(tabText) },
+                            onWidgetClick = { text -> viewModel.onWidgetClick(text) }
+                        )
+                    }
+                }
             }
         }
     } else {

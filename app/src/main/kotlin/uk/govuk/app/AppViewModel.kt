@@ -13,18 +13,6 @@ import uk.govuk.app.config.data.flags.FlagRepo
 import uk.govuk.app.data.AppRepo
 import javax.inject.Inject
 
-internal data class AppUiState(
-    val shouldDisplayAppUnavailable: Boolean,
-    val shouldDisplayForcedUpdate: Boolean,
-    val shouldDisplayRecommendUpdate: Boolean,
-    val shouldDisplayAnalyticsConsent: Boolean,
-    val shouldDisplayOnboarding: Boolean,
-    val shouldDisplayTopicSelection: Boolean,
-    val isSearchEnabled: Boolean,
-    val isRecentActivityEnabled: Boolean,
-    val isTopicsEnabled: Boolean
-)
-
 @HiltViewModel
 internal class AppViewModel @Inject constructor(
     private val appRepo: AppRepo,
@@ -40,36 +28,27 @@ internal class AppViewModel @Inject constructor(
         viewModelScope.launch {
             val configResult = configRepo.initConfig()
             configResult.onSuccess {
-                _uiState.value = AppUiState(
-                    shouldDisplayAppUnavailable = !flagRepo.isAppAvailable(),
-                    shouldDisplayForcedUpdate = flagRepo.isForcedUpdate(BuildConfig.VERSION_NAME),
-                    shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
-                    shouldDisplayAnalyticsConsent = analytics.isAnalyticsConsentRequired(),
-                    shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
-                    shouldDisplayTopicSelection = flagRepo.isTopicsEnabled() && !appRepo.isTopicSelectionCompleted(),
-                    isSearchEnabled = flagRepo.isSearchEnabled(),
-                    isRecentActivityEnabled = flagRepo.isRecentActivityEnabled(),
-                    isTopicsEnabled = flagRepo.isTopicsEnabled()
-                )
+                _uiState.value = if (!flagRepo.isAppAvailable()) {
+                    AppUiState.AppUnavailable
+                } else if (flagRepo.isForcedUpdate(BuildConfig.VERSION_NAME)) {
+                    AppUiState.ForcedUpdate
+                } else {
+                    AppUiState.Default(
+                        shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
+                        shouldDisplayAnalyticsConsent = analytics.isAnalyticsConsentRequired(),
+                        shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
+                        shouldDisplayTopicSelection = flagRepo.isTopicsEnabled() && !appRepo.isTopicSelectionCompleted(),
+                        isSearchEnabled = flagRepo.isSearchEnabled(),
+                        isRecentActivityEnabled = flagRepo.isRecentActivityEnabled(),
+                        isTopicsEnabled = flagRepo.isTopicsEnabled()
+                    )
+                }
             }
             configResult.onFailure { exception ->
-                var isAppUnavailable = false
-                var isForcedUpdate = false
-                when (exception) {
-                    is InvalidSignatureException -> isForcedUpdate = true
-                    else -> isAppUnavailable = true
+                _uiState.value = when (exception) {
+                    is InvalidSignatureException -> AppUiState.ForcedUpdate
+                    else -> AppUiState.AppUnavailable
                 }
-                _uiState.value = AppUiState(
-                    shouldDisplayAppUnavailable = isAppUnavailable,
-                    shouldDisplayForcedUpdate = isForcedUpdate,
-                    shouldDisplayRecommendUpdate = false,
-                    shouldDisplayAnalyticsConsent = false,
-                    shouldDisplayOnboarding = false,
-                    shouldDisplayTopicSelection = false,
-                    isSearchEnabled = false,
-                    isRecentActivityEnabled = false,
-                    isTopicsEnabled = false
-                )
             }
         }
     }
