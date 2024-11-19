@@ -41,6 +41,13 @@ class TopicViewModelTest {
     private val savedStateHandle = mockk<SavedStateHandle>(relaxed = true)
     private val visited = mockk<Visited>(relaxed = true)
 
+    private val remoteTopic = RemoteTopic(
+        title = "title",
+        description = "description",
+        subtopics = emptyList(),
+        content = emptyList()
+    )
+
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
@@ -55,14 +62,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a topic is returned, When init, then emit topic`() {
-        val topic = RemoteTopic(
-            title = "title",
-            description = "description",
-            subtopics = emptyList(),
-            content = emptyList()
-        )
-
-        coEvery { topicsRepo.getTopic(REF) } returns Result.success(topic)
+        coEvery { topicsRepo.getTopic(REF) } returns Result.success(remoteTopic)
 
         val expected = TopicUi(
             title = "title",
@@ -85,14 +85,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a topic is returned, When init, then the results and status in the view model are correct`() {
-        val topic = RemoteTopic(
-            title = "title",
-            description = "description",
-            subtopics = emptyList(),
-            content = emptyList()
-        )
-
-        coEvery { topicsRepo.getTopic(REF) } returns Result.success(topic)
+        coEvery { topicsRepo.getTopic(REF) } returns Result.success(remoteTopic)
 
         val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
@@ -129,7 +122,22 @@ class TopicViewModelTest {
     }
 
     @Test
+    fun `Given there is a general error when getting a topic, When init, then the results and status in the view model are correct`() {
+        coEvery { topicsRepo.getTopic(REF) } returns Result.failure(Exception())
+
+        val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertTrue(result is TopicUiState.ServiceError)
+            assertEquals(REF, result!!.topicReference)
+        }
+    }
+
+    @Test
     fun `Given a page view, then log analytics`() {
+        coEvery { topicsRepo.getTopic(REF) } returns Result.success(remoteTopic)
+
         val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         viewModel.onPageView("title")
@@ -145,6 +153,8 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a content click, then log analytics`() {
+        coEvery { topicsRepo.getTopic(REF) } returns Result.success(remoteTopic)
+
         val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         viewModel.onContentClick(
@@ -165,6 +175,8 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a content click, then log visited item`() {
+        coEvery { topicsRepo.getTopic(REF) } returns Result.success(remoteTopic)
+
         val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         viewModel.onContentClick(
@@ -180,6 +192,8 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a see all click, then log analytics`() {
+        coEvery { topicsRepo.getTopic(REF) } returns Result.success(remoteTopic)
+
         val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         viewModel.onSeeAllClick(
@@ -198,6 +212,8 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a subtopic click, then log analytics`() {
+        coEvery { topicsRepo.getTopic(REF) } returns Result.success(remoteTopic)
+
         val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         viewModel.onSubtopicClick("text")

@@ -1,6 +1,5 @@
 package uk.govuk.app.search.data
 
-import uk.govuk.app.networking.domain.ApiException
 import uk.govuk.app.networking.domain.DeviceOfflineException
 import uk.govuk.app.networking.domain.ServiceNotRespondingException
 import uk.govuk.app.search.data.remote.SearchApi
@@ -24,7 +23,7 @@ class SearchRepo @Inject constructor(
         } catch (e: retrofit2.HttpException) {
             Result.failure(ServiceNotRespondingException())
         } catch (e: Exception) {
-            Result.failure(ApiException())
+            Result.failure(e)
         }
     }
 }
