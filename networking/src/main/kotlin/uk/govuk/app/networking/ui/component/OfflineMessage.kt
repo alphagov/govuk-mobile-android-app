@@ -20,11 +20,15 @@ import uk.govuk.app.networking.R
 
 @Composable
 fun OfflineMessage(
-    title: Int = R.string.no_internet_title,
-    description: Int = R.string.no_internet_description,
-    linkTitle: Int = R.string.try_again,
+    title: String? = null,
+    description: String? = null,
+    linkTitle: String? = null,
     onTryAgainClick: () -> Unit
 ) {
+    val messageTitle = title ?: run { stringResource(R.string.no_internet_title) }
+    val messageDescription = description ?: run { stringResource(R.string.no_internet_description) }
+    val messageLinkTitle = linkTitle ?: run { stringResource(R.string.try_again) }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -40,7 +44,7 @@ fun OfflineMessage(
             horizontalArrangement = Arrangement.Center
         ) {
             BodyBoldLabel(
-                text = stringResource(title),
+                text = messageTitle,
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
         }
@@ -56,7 +60,7 @@ fun OfflineMessage(
             horizontalArrangement = Arrangement.Center
         ) {
             BodyRegularLabel(
-                text = stringResource(description),
+                text = messageDescription,
                 modifier = Modifier.align(Alignment.CenterVertically),
                 textAlign = TextAlign.Center
             )
@@ -76,7 +80,7 @@ fun OfflineMessage(
                 onClick = { onTryAgainClick() }
             ) {
                 BodyRegularLabel(
-                    text = stringResource(linkTitle),
+                    text = messageLinkTitle,
                     modifier = Modifier.align(Alignment.CenterVertically),
                     textAlign = TextAlign.Center,
                     color = GovUkTheme.colourScheme.textAndIcons.link
@@ -90,11 +94,6 @@ fun OfflineMessage(
 @Composable
 private fun TestOfflineMessage() {
     GovUkTheme {
-        OfflineMessage(
-            title = R.string.no_internet_title,
-            description = R.string.no_internet_description,
-            linkTitle = R.string.try_again,
-            onTryAgainClick = {}
-        )
+        OfflineMessage(onTryAgainClick = {})
     }
 }
