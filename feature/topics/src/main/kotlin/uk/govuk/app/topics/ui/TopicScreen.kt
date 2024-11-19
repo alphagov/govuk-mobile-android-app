@@ -73,18 +73,18 @@ internal fun TopicRoute(
                         modifier = modifier
                     )
                 } ?: run {
-                    TopicServiceUnavailable()
+                    ServiceNotRespondingScreen()
                 }
             }
 
-            is TopicUiState.Offline -> TopicScreenOffline(
+            is TopicUiState.Offline -> OfflineScreen(
                 topicReference = it.topicReference,
                 onPageView = { title -> viewModel.onPageView(title) },
                 onBack = onBack,
                 onTryAgainClick = { viewModel.getTopic() }
             )
 
-            is TopicUiState.ServiceError -> TopicServiceUnavailable()
+            is TopicUiState.ServiceError -> ServiceNotRespondingScreen()
         }
     }
 }
@@ -230,7 +230,7 @@ private fun LazyListScope.subtopics(
 }
 
 @Composable
-private fun TopicScreenOffline(
+private fun OfflineScreen(
     topicReference: String,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
@@ -253,22 +253,14 @@ private fun TopicScreenOffline(
 }
 
 @Composable
-private fun TopicServiceUnavailable() {}
+private fun ServiceNotRespondingScreen() {}
 
 @Preview
 @Composable
-private fun TestTopicScreenOffline() {
+private fun TestOfflineScreen() {
     GovUkTheme {
-        TopicScreenOffline(
+        OfflineScreen(
             "benefits", {}, {}, {}
         )
-    }
-}
-
-@Preview
-@Composable
-private fun TestTopicScreenUnavailable() {
-    GovUkTheme {
-        TopicServiceUnavailable()
     }
 }
