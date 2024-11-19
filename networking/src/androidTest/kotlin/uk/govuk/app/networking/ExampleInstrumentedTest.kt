@@ -11,6 +11,6 @@ class ExampleInstrumentedTest {
     @Test
     fun useAppContext() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("uk.govuk.config.test", appContext.packageName)
+        assertEquals("uk.govuk.app.networking.test", appContext.packageName)
     }
 }
