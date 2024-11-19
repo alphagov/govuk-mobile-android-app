@@ -12,7 +12,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ChildPageHeader
@@ -23,8 +25,11 @@ import uk.govuk.app.design.ui.component.ListHeadingLabel
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.networking.ui.component.OfflineMessage
 import uk.govuk.app.topics.R
+import uk.govuk.app.topics.TopicUiState
 import uk.govuk.app.topics.TopicViewModel
+import uk.govuk.app.topics.extension.toTopicName
 import uk.govuk.app.topics.ui.model.TopicUi
 
 @Composable
@@ -36,38 +41,57 @@ internal fun TopicRoute(
     modifier: Modifier = Modifier
 ) {
     val viewModel: TopicViewModel = hiltViewModel()
-    val topic by viewModel.topic.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
-    TopicScreen(
-        topic = topic,
-        onPageView = { title -> viewModel.onPageView(title) },
-        onBack = onBack,
-        onExternalLink = { section, text, url ->
-            viewModel.onContentClick(
-                section = section,
-                text = text,
-                url = url
+    uiState?.let {
+        when (it) {
+            is TopicUiState.Default -> {
+                it.topicUi?.let { topicUi ->
+                    TopicScreen(
+                        topic = topicUi,
+                        onPageView = { title -> viewModel.onPageView(title) },
+                        onBack = onBack,
+                        onExternalLink = { section, text, url ->
+                            viewModel.onContentClick(
+                                section = section,
+                                text = text,
+                                url = url
+                            )
+                            onExternalLink(url)
+                        },
+                        onStepByStepSeeAll = { section, text ->
+                            onStepByStepSeeAll()
+                            viewModel.onSeeAllClick(
+                                section = section,
+                                text = text
+                            )
+                        },
+                        onSubtopic = { text, ref ->
+                            viewModel.onSubtopicClick(text)
+                            onSubtopic(ref)
+                        },
+                        modifier = modifier
+                    )
+                } ?: run {
+                    TopicServiceUnavailable()
+                }
+            }
+
+            is TopicUiState.Offline -> TopicScreenOffline(
+                topicReference = it.topicReference,
+                onPageView = { title -> viewModel.onPageView(title) },
+                onBack = onBack,
+                onTryAgainClick = { viewModel.getTopic() }
             )
-            onExternalLink(url)
-        },
-        onStepByStepSeeAll = { section, text ->
-            onStepByStepSeeAll()
-            viewModel.onSeeAllClick(
-                section = section,
-                text = text
-            )
-        },
-        onSubtopic = { text, ref ->
-            viewModel.onSubtopicClick(text)
-            onSubtopic(ref)
-        },
-        modifier = modifier
-    )
+
+            is TopicUiState.ServiceError -> TopicServiceUnavailable()
+        }
+    }
 }
 
 @Composable
 private fun TopicScreen(
-    topic: TopicUi?,
+    topic: TopicUi,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
     onExternalLink: (section: String, text: String, url: String) -> Unit,
@@ -76,57 +100,55 @@ private fun TopicScreen(
     modifier: Modifier = Modifier
 ) {
     Column(modifier.fillMaxSize()) {
-        if (topic != null) {
-            LaunchedEffect(Unit) {
-                onPageView(topic.title)
-            }
+        LaunchedEffect(Unit) {
+            onPageView(topic.title)
+        }
 
-            ChildPageHeader(
-                text = topic.title,
-                onBack = onBack
-            )
+        ChildPageHeader(
+            text = topic.title,
+            onBack = onBack
+        )
 
-            val popularPagesTitle = stringResource(R.string.popularPagesTitle)
-            val stepByStepsTitle = stringResource(R.string.stepByStepGuidesTitle)
-            val servicesTitle = stringResource(R.string.servicesTitle)
+        val popularPagesTitle = stringResource(R.string.popularPagesTitle)
+        val stepByStepsTitle = stringResource(R.string.stepByStepGuidesTitle)
+        val servicesTitle = stringResource(R.string.servicesTitle)
 
-            LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
-                item{
-                    Column {
+        LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
+            item {
+                Column {
+                    MediumVerticalSpacer()
+                    topic.description?.let { description ->
+                        BodyRegularLabel(description)
                         MediumVerticalSpacer()
-                        if (topic.description != null) {
-                            BodyRegularLabel(topic.description)
-                            MediumVerticalSpacer()
-                        }
                     }
                 }
-
-                contentItems(
-                    contentItems = topic.popularPages,
-                    section = popularPagesTitle,
-                    onClick = onExternalLink
-                )
-
-                contentItems(
-                    contentItems = topic.stepBySteps,
-                    section = stepByStepsTitle,
-                    onClick = onExternalLink,
-                    displaySeeAll = topic.displayStepByStepSeeAll,
-                    onSeeAll = onStepByStepSeeAll
-                )
-
-                contentItems(
-                    contentItems = topic.services,
-                    section = servicesTitle,
-                    onClick = onExternalLink
-                )
-
-                subtopics(
-                    subtopics = topic.subtopics,
-                    title = topic.subtopicsTitle,
-                    onClick = onSubtopic
-                )
             }
+
+            contentItems(
+                contentItems = topic.popularPages,
+                section = popularPagesTitle,
+                onClick = onExternalLink
+            )
+
+            contentItems(
+                contentItems = topic.stepBySteps,
+                section = stepByStepsTitle,
+                onClick = onExternalLink,
+                displaySeeAll = topic.displayStepByStepSeeAll,
+                onSeeAll = onStepByStepSeeAll
+            )
+
+            contentItems(
+                contentItems = topic.services,
+                section = servicesTitle,
+                onClick = onExternalLink
+            )
+
+            subtopics(
+                subtopics = topic.subtopics,
+                title = topic.subtopicsTitle,
+                onClick = onSubtopic
+            )
         }
     }
 }
@@ -134,9 +156,9 @@ private fun TopicScreen(
 private fun LazyListScope.contentItems(
     contentItems: List<TopicUi.TopicContent>,
     section: String,
-    onClick: (section: String, text:String, url:String) -> Unit,
+    onClick: (section: String, text: String, url: String) -> Unit,
     displaySeeAll: Boolean = false,
-    onSeeAll: (section: String, text:String) -> Unit = { _, _ -> }
+    onSeeAll: (section: String, text: String) -> Unit = { _, _ -> }
 ) {
     if (contentItems.isNotEmpty()) {
         item {
@@ -180,7 +202,7 @@ private fun LazyListScope.contentItems(
 private fun LazyListScope.subtopics(
     subtopics: List<TopicUi.Subtopic>,
     @StringRes title: Int,
-    onClick: (text:String, ref: String) -> Unit,
+    onClick: (text: String, ref: String) -> Unit,
 ) {
     if (subtopics.isNotEmpty()) {
 
@@ -204,5 +226,49 @@ private fun LazyListScope.subtopics(
         item {
             LargeVerticalSpacer()
         }
+    }
+}
+
+@Composable
+private fun TopicScreenOffline(
+    topicReference: String,
+    onPageView: (String) -> Unit,
+    onBack: () -> Unit,
+    onTryAgainClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val topicName = topicReference.toTopicName(LocalContext.current)
+
+    Column(modifier.fillMaxSize()) {
+        LaunchedEffect(Unit) {
+            onPageView(topicName)
+        }
+
+        ChildPageHeader(
+            text = topicName,
+            onBack = onBack
+        )
+        OfflineMessage(onTryAgainClick = onTryAgainClick)
+    }
+}
+
+@Composable
+private fun TopicServiceUnavailable() {}
+
+@Preview
+@Composable
+private fun TestTopicScreenOffline() {
+    GovUkTheme {
+        TopicScreenOffline(
+            "benefits", {}, {}, {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun TestTopicScreenUnavailable() {
+    GovUkTheme {
+        TopicServiceUnavailable()
     }
 }

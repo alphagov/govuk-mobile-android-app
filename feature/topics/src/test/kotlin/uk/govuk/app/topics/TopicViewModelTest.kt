@@ -15,9 +15,12 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.networking.domain.DeviceOfflineException
+import uk.govuk.app.networking.domain.ServiceNotRespondingException
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.data.remote.model.RemoteTopic
 import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
@@ -59,7 +62,7 @@ class TopicViewModelTest {
             content = emptyList()
         )
 
-        coEvery { topicsRepo.getTopic(REF) } returns topic
+        coEvery { topicsRepo.getTopic(REF) } returns Result.success(topic)
 
         val expected = TopicUi(
             title = "title",
@@ -75,8 +78,53 @@ class TopicViewModelTest {
         val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         runTest {
-            val result = viewModel.topic.first()
+            val result = viewModel.uiState.value?.topicUi
             assertEquals(expected, result)
+        }
+    }
+
+    @Test
+    fun `Given a topic is returned, When init, then the results and status in the view model are correct`() {
+        val topic = RemoteTopic(
+            title = "title",
+            description = "description",
+            subtopics = emptyList(),
+            content = emptyList()
+        )
+
+        coEvery { topicsRepo.getTopic(REF) } returns Result.success(topic)
+
+        val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertTrue(result is TopicUiState.Default)
+        }
+    }
+
+    @Test
+    fun `Given the device is offline, When init, then the results and status in the view model are correct`() {
+        coEvery { topicsRepo.getTopic(REF) } returns Result.failure(DeviceOfflineException())
+
+        val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertTrue(result is TopicUiState.Offline)
+            assertEquals(REF, result!!.topicReference)
+        }
+    }
+
+    @Test
+    fun `Given the topic API is unavailable, When init, then the results and status in the view model are correct`() {
+        coEvery { topicsRepo.getTopic(REF) } returns Result.failure(ServiceNotRespondingException())
+
+        val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertTrue(result is TopicUiState.ServiceError)
+            assertEquals(REF, result!!.topicReference)
         }
     }
 

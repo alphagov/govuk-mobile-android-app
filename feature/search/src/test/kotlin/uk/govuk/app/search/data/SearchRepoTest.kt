@@ -4,14 +4,16 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import retrofit2.HttpException
+import uk.govuk.app.networking.domain.ApiException
+import uk.govuk.app.networking.domain.DeviceOfflineException
+import uk.govuk.app.networking.domain.ServiceNotRespondingException
 import uk.govuk.app.search.data.remote.SearchApi
 import uk.govuk.app.search.data.remote.model.Result
 import uk.govuk.app.search.data.remote.model.SearchResponse
-import uk.govuk.app.search.domain.ResultStatus
 import uk.govuk.app.search.domain.SearchConfig
-import uk.govuk.app.search.domain.SearchResult
 import java.net.UnknownHostException
 
 class SearchRepoTest {
@@ -36,7 +38,7 @@ class SearchRepoTest {
 
         val repo = SearchRepo(searchApi)
 
-        val expected = SearchResult(ResultStatus.Success, resultWithOneResult)
+        val expected = kotlin.Result.success(resultWithOneResult)
 
         runTest {
             val actual = repo.performSearch(searchTerm, 10)
@@ -50,7 +52,7 @@ class SearchRepoTest {
 
         val repo = SearchRepo(searchApi)
 
-        val expected = SearchResult(ResultStatus.Empty, resultWithNoSearchResponse)
+        val expected = kotlin.Result.success(resultWithNoSearchResponse)
 
         runTest {
             val actual = repo.performSearch(searchTerm, 10)
@@ -64,11 +66,9 @@ class SearchRepoTest {
 
         val repo = SearchRepo(searchApi)
 
-        val expected = SearchResult(ResultStatus.DeviceOffline, resultWithNoSearchResponse)
-
         runTest {
-            val actual = repo.performSearch(searchTerm, 10)
-            assertEquals(expected, actual)
+            val result = repo.performSearch(searchTerm, 10)
+            assertTrue(result.isFailure)
         }
     }
 
@@ -81,11 +81,9 @@ class SearchRepoTest {
 
         val repo = SearchRepo(searchApi)
 
-        val expected = SearchResult(ResultStatus.ServiceNotResponding, resultWithNoSearchResponse)
-
         runTest {
-            val actual = repo.performSearch(searchTerm, 10)
-            assertEquals(expected, actual)
+            val result = repo.performSearch(searchTerm, 10)
+            assertTrue(result.isFailure)
         }
     }
 
@@ -96,11 +94,9 @@ class SearchRepoTest {
 
         val repo = SearchRepo(searchApi)
 
-        val expected = SearchResult(ResultStatus.Error(message), resultWithNoSearchResponse)
-
         runTest {
-            val actual = repo.performSearch(searchTerm, 10)
-            assertEquals(expected, actual)
+            val result = repo.performSearch(searchTerm, 10)
+            assertTrue(result.isFailure)
         }
     }
 
@@ -110,11 +106,9 @@ class SearchRepoTest {
 
         val repo = SearchRepo(searchApi)
 
-        val expected = SearchResult(ResultStatus.Error("Unknown error"), resultWithNoSearchResponse)
-
         runTest {
-            val actual = repo.performSearch(searchTerm, 10)
-            assertEquals(expected, actual)
+            val result = repo.performSearch(searchTerm, 10)
+            assertTrue(result.isFailure)
         }
     }
 }

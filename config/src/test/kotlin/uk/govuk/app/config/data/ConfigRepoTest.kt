@@ -5,6 +5,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import retrofit2.Response
 import uk.govuk.app.config.SignatureValidator
@@ -59,7 +60,7 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
-            assert(repo.initConfig().isSuccess)
+            assertTrue(repo.initConfig().isSuccess)
         }
     }
 
@@ -72,7 +73,7 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
-            assert(repo.initConfig().isFailure)
+            assertTrue(repo.initConfig().isFailure)
         }
     }
 
@@ -84,7 +85,7 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
-            assert(repo.initConfig().isFailure)
+            assertTrue(repo.initConfig().isFailure)
         }
     }
 
@@ -95,7 +96,7 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
-            assert(repo.initConfig().isFailure)
+            assertTrue(repo.initConfig().isFailure)
         }
     }
 
@@ -108,7 +109,7 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
-            assert(repo.initConfig().isFailure)
+            assertTrue(repo.initConfig().isFailure)
         }
     }
 }

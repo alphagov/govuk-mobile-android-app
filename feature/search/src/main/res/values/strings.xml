@@ -4,8 +4,6 @@
     <string name="search_placeholder">Search</string>
     <string name="search_no_results">No results for</string>
     <string name="search_load_more">Load more results</string>
-    <string name="search_device_offline">You\'re offline</string>
-    <string name="search_check_connection">Check your internet connection and try again</string>
     <string name="search_service_problem">There\'s a problem</string>
     <string name="search_not_working">Search is not working. Try again later, or search on the GOV.UK website.</string>
     <string name="search_on_website">Go to the GOV.UK website</string>

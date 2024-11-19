@@ -65,7 +65,7 @@ class AllStepByStepsViewModelTest {
             subtopics = emptyList()
         )
 
-        coEvery { topicsRepo.getTopic(REF) } returns topic
+        coEvery { topicsRepo.getTopic(REF) } returns Result.success(topic)
 
         val expected = listOf(
             TopicContent(
