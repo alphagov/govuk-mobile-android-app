@@ -19,7 +19,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.domain.model.TopicItem
 import uk.govuk.app.topics.ui.TopicSelectionViewModel
@@ -30,7 +30,7 @@ class TopicSelectionViewModelTest {
 
     private val dispatcher = UnconfinedTestDispatcher()
     private val topicsRepo = mockk<TopicsRepo>(relaxed = true)
-    private val analytics = mockk<Analytics>(relaxed = true)
+    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
 
     @Before
     fun setup() {
@@ -78,7 +78,7 @@ class TopicSelectionViewModelTest {
             ),
         )
 
-        val viewModel = TopicSelectionViewModel(topicsRepo, analytics)
+        val viewModel = TopicSelectionViewModel(topicsRepo, analyticsClient)
 
         runTest {
             val result = viewModel.uiState.first()!!
@@ -106,7 +106,7 @@ class TopicSelectionViewModelTest {
 
         every { topicsRepo.topics } returns flowOf(topics)
 
-        val viewModel = TopicSelectionViewModel(topicsRepo, analytics)
+        val viewModel = TopicSelectionViewModel(topicsRepo, analyticsClient)
 
         viewModel.onClick("benefits", "Benefits")
 
@@ -119,7 +119,7 @@ class TopicSelectionViewModelTest {
             assertTrue(result.isDoneEnabled)
 
             verify{
-                analytics.buttonFunction(
+                analyticsClient.buttonFunction(
                     text = "Benefits",
                     section = "Topics",
                     action = "Add"
@@ -147,10 +147,10 @@ class TopicSelectionViewModelTest {
 
         every { topicsRepo.topics } returns flowOf(topics)
 
-        val viewModel = TopicSelectionViewModel(topicsRepo, analytics)
+        val viewModel = TopicSelectionViewModel(topicsRepo, analyticsClient)
 
         viewModel.onClick("benefits", "Benefits")
-        clearMocks(analytics)
+        clearMocks(analyticsClient)
         viewModel.onClick("benefits", "Benefits")
 
         runTest {
@@ -162,7 +162,7 @@ class TopicSelectionViewModelTest {
             assertFalse(result.isDoneEnabled)
 
             verify{
-                analytics.buttonFunction(
+                analyticsClient.buttonFunction(
                     text = "Benefits",
                     section = "Topics",
                     action = "Remove"
@@ -173,12 +173,12 @@ class TopicSelectionViewModelTest {
 
     @Test
     fun `Given a page view, then log analytics`() {
-        val viewModel = TopicSelectionViewModel(topicsRepo, analytics)
+        val viewModel = TopicSelectionViewModel(topicsRepo, analyticsClient)
 
         viewModel.onPageView("title")
 
         verify {
-            analytics.screenView(
+            analyticsClient.screenView(
                 screenClass = "TopicSelectionScreen",
                 screenName = "Topic Selection",
                 title = "title"
@@ -188,15 +188,15 @@ class TopicSelectionViewModelTest {
 
     @Test
     fun `Given a user is done, then log analytics and update topics repo`() {
-        val viewModel = TopicSelectionViewModel(topicsRepo, analytics)
+        val viewModel = TopicSelectionViewModel(topicsRepo, analyticsClient)
 
         viewModel.onClick("ref1", "title")
         viewModel.onClick("ref2", "title")
         viewModel.onDone("Done")
 
         coVerify {
-            analytics.topicsCustomised()
-            analytics.buttonClick(
+            analyticsClient.topicsCustomised()
+            analyticsClient.buttonClick(
                 text = "Done"
             )
             topicsRepo.selectTopic("ref1")
@@ -206,12 +206,12 @@ class TopicSelectionViewModelTest {
 
     @Test
     fun `Given a user has skipped, then log analytics`() {
-        val viewModel = TopicSelectionViewModel(topicsRepo, analytics)
+        val viewModel = TopicSelectionViewModel(topicsRepo, analyticsClient)
 
         viewModel.onSkip("Skip")
 
         verify {
-            analytics.buttonClick(
+            analyticsClient.buttonClick(
                 text = "Skip"
             )
         }

@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.config.data.ConfigRepo
 import uk.govuk.app.config.data.InvalidSignatureException
 import uk.govuk.app.config.data.flags.FlagRepo
@@ -18,7 +18,7 @@ internal class AppViewModel @Inject constructor(
     private val appRepo: AppRepo,
     configRepo: ConfigRepo,
     flagRepo: FlagRepo,
-    private val analytics: Analytics
+    private val analyticsClient: AnalyticsClient
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<AppUiState?> = MutableStateFlow(null)
@@ -35,7 +35,7 @@ internal class AppViewModel @Inject constructor(
                 } else {
                     AppUiState.Default(
                         shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
-                        shouldDisplayAnalyticsConsent = analytics.isAnalyticsConsentRequired(),
+                        shouldDisplayAnalyticsConsent = analyticsClient.isAnalyticsConsentRequired(),
                         shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
                         shouldDisplayTopicSelection = flagRepo.isTopicsEnabled() && !appRepo.isTopicSelectionCompleted(),
                         isSearchEnabled = flagRepo.isSearchEnabled(),
@@ -66,10 +66,10 @@ internal class AppViewModel @Inject constructor(
     }
 
     fun onWidgetClick(text: String) {
-        analytics.widgetClick(text)
+        analyticsClient.widgetClick(text)
     }
 
     fun onTabClick(text: String) {
-        analytics.tabClick(text)
+        analyticsClient.tabClick(text)
     }
 }

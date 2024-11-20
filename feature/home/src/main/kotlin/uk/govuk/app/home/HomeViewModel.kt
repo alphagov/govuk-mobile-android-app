@@ -2,12 +2,12 @@ package uk.govuk.app.home
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 import javax.inject.Inject
 
 @HiltViewModel
 internal class HomeViewModel @Inject constructor(
-    private val analytics: Analytics
+    private val analyticsClient: AnalyticsClient
 ): ViewModel() {
 
     companion object {
@@ -17,7 +17,7 @@ internal class HomeViewModel @Inject constructor(
     }
 
     fun onPageView() {
-        analytics.screenView(
+        analyticsClient.screenView(
             screenClass = SCREEN_CLASS,
             screenName = SCREEN_NAME,
             title = TITLE

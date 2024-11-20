@@ -16,7 +16,7 @@ import org.junit.Test
 class AnalyticsViewModelTest {
 
     private val dispatcher = UnconfinedTestDispatcher()
-    private val analytics = mockk<Analytics>(relaxed = true)
+    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
 
     @Before
     fun setup() {
@@ -30,26 +30,26 @@ class AnalyticsViewModelTest {
 
     @Test
     fun `Given analytics have been enabled, then update and emit ui state`() {
-        val viewModel = AnalyticsViewModel(analytics)
+        val viewModel = AnalyticsViewModel(analyticsClient)
 
         viewModel.onConsentGranted()
 
         runTest {
             coVerify {
-                analytics.enable()
+                analyticsClient.enable()
             }
         }
     }
 
     @Test
     fun `Given analytics have been disabled, then update and emit ui state`() {
-        val viewModel = AnalyticsViewModel(analytics)
+        val viewModel = AnalyticsViewModel(analyticsClient)
 
         viewModel.onConsentDenied()
 
         runTest {
             coVerify {
-                analytics.disable()
+                analyticsClient.disable()
             }
         }
     }

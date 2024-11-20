@@ -3,20 +3,20 @@ package uk.govuk.app.home
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Test
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 
 class HomeViewModelTest {
 
-    private val analytics = mockk<Analytics>(relaxed = true)
+    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
 
     @Test
     fun `Given a page view, then log analytics`() {
-        val viewModel = HomeViewModel(analytics)
+        val viewModel = HomeViewModel(analyticsClient)
 
         viewModel.onPageView()
 
         verify {
-            analytics.screenView(
+            analyticsClient.screenView(
                 screenClass = "HomeScreen",
                 screenName = "Homepage",
                 title = "Homepage"

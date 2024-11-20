@@ -17,7 +17,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.search.data.SearchRepo
 import uk.govuk.app.search.data.remote.model.Result
 import uk.govuk.app.search.data.remote.model.SearchResponse
@@ -30,11 +30,11 @@ import uk.govuk.app.visited.Visited
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchViewModelTest {
     class AnalyticsTest {
-        private val analytics = mockk<Analytics>(relaxed = true)
+        private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
         private val visited = mockk<Visited>(relaxed = true)
         private val service = SearchModule().providesSearchApi()
         private val repository = SearchRepo(service)
-        private val viewModel = SearchViewModel(analytics, visited, repository)
+        private val viewModel = SearchViewModel(analyticsClient, visited, repository)
         private val dispatcher = UnconfinedTestDispatcher()
         private val searchTerm = "search term"
 
@@ -43,7 +43,7 @@ class SearchViewModelTest {
             viewModel.onPageView()
 
             verify {
-                analytics.screenView(
+                analyticsClient.screenView(
                     screenClass = "SearchScreen",
                     screenName = "Search",
                     title = "Search"
@@ -59,7 +59,7 @@ class SearchViewModelTest {
 
             runTest {
                 coVerify {
-                    analytics.search(searchTerm)
+                    analyticsClient.search(searchTerm)
                 }
             }
         }
@@ -72,7 +72,7 @@ class SearchViewModelTest {
                 viewModel.onSearchResultClicked("search result title", "search result link")
 
                 coVerify {
-                    analytics.searchResultClick("search result title", "search result link")
+                    analyticsClient.searchResultClick("search result title", "search result link")
                 }
             }
         }
@@ -92,11 +92,11 @@ class SearchViewModelTest {
     }
 
     class UiStateTest {
-        private val analytics = mockk<Analytics>(relaxed = true)
+        private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
         private val visited = mockk<Visited>(relaxed = true)
         private val dispatcher = UnconfinedTestDispatcher()
         private val repository = mockk<SearchRepo>(relaxed = true)
-        private val viewModel = SearchViewModel(analytics, visited, repository)
+        private val viewModel = SearchViewModel(analyticsClient, visited, repository)
         private val searchTerm = "search term"
         private val resultWithNoSearchResponse = SearchResponse(total = 0, results = emptyList())
         private val resultWithOneResult = SearchResponse(

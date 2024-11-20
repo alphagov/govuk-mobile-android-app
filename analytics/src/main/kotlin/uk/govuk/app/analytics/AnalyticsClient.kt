@@ -12,27 +12,27 @@ import javax.inject.Singleton
 class AnalyticsClient @Inject constructor(
     private val analyticsRepo: AnalyticsRepo,
     private val firebaseAnalyticsClient: FirebaseAnalyticsClient
-): Analytics {
+) {
 
-    override suspend fun isAnalyticsConsentRequired(): Boolean {
+    suspend fun isAnalyticsConsentRequired(): Boolean {
         return analyticsRepo.getAnalyticsEnabledState() == AnalyticsEnabledState.NOT_SET
     }
 
-    override suspend fun isAnalyticsEnabled(): Boolean {
+    suspend fun isAnalyticsEnabled(): Boolean {
         return analyticsRepo.getAnalyticsEnabledState() == AnalyticsEnabledState.ENABLED
     }
 
-    override suspend fun enable() {
+    suspend fun enable() {
         analyticsRepo.analyticsEnabled()
         firebaseAnalyticsClient.enable()
     }
 
-    override suspend fun disable() {
+    suspend fun disable() {
         analyticsRepo.analyticsDisabled()
         firebaseAnalyticsClient.disable()
     }
 
-    override fun screenView(screenClass: String, screenName: String, title: String) {
+    fun screenView(screenClass: String, screenName: String, title: String) {
         firebaseAnalyticsClient.logEvent(
             FirebaseAnalytics.Event.SCREEN_VIEW,
             parametersWithLanguage(
@@ -45,15 +45,15 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    override fun pageIndicatorClick() {
+    fun pageIndicatorClick() {
         navigation(type = "Dot")
     }
 
-    override fun buttonClick(
+    fun buttonClick(
         text: String,
-        url: String?,
-        external: Boolean,
-        section: String?
+        url: String? = null,
+        external: Boolean = false,
+        section: String? = null
     ) {
         navigation(
             text = text,
@@ -64,15 +64,15 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    override fun tabClick(text: String) {
+    fun tabClick(text: String) {
         navigation(text = text, type = "Tab")
     }
 
-    override fun widgetClick(text: String) {
+    fun widgetClick(text: String) {
         navigation(text = text, type = "Widget")
     }
 
-    override fun search(searchTerm: String) {
+    fun search(searchTerm: String) {
         firebaseAnalyticsClient.logEvent(
             "Search",
             mapOf(
@@ -81,22 +81,22 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    override fun searchResultClick(text: String, url: String) {
+    fun searchResultClick(text: String, url: String) {
         // external as these links will be opened in the device browser
         navigation(text = text, type = "SearchResult", url = url, external = true)
     }
 
-    override fun visitedItemClick(text: String, url: String) {
+    fun visitedItemClick(text: String, url: String) {
         // external as these links will be opened in the device browser
         navigation(text = text, type = "VisitedItem", url = url, external = true)
     }
 
-    override fun settingsItemClick(text: String, url: String) {
+    fun settingsItemClick(text: String, url: String) {
         // external as these links will be opened in the device browser
         navigation(text = text, type = "SettingsItem", url = url, external = true)
     }
 
-    override fun toggleFunction(text: String, section: String, action: String) {
+    fun toggleFunction(text: String, section: String, action: String) {
         function(
             text = text,
             type = "Toggle",
@@ -105,7 +105,7 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    override fun buttonFunction(
+    fun buttonFunction(
         text: String,
         section: String,
         action: String
@@ -118,7 +118,7 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    override fun topicsCustomised() {
+    fun topicsCustomised() {
         firebaseAnalyticsClient.setUserProperty("topics_customised", "true")
     }
 

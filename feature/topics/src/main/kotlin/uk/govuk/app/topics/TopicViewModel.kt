@@ -7,7 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.extension.toTopicUi
 import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 internal class TopicViewModel @Inject constructor(
     private val topicsRepo: TopicsRepo,
-    private val analytics: Analytics,
+    private val analyticsClient: AnalyticsClient,
     private val visited: Visited,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
@@ -44,7 +44,7 @@ internal class TopicViewModel @Inject constructor(
     }
 
     fun onPageView(title: String) {
-        analytics.screenView(
+        analyticsClient.screenView(
             screenClass = SCREEN_CLASS,
             screenName = title,
             title = title
@@ -56,7 +56,7 @@ internal class TopicViewModel @Inject constructor(
         text: String,
         url: String
     ) {
-        analytics.buttonClick(
+        analyticsClient.buttonClick(
             text = text,
             url = url,
             external = true,
@@ -71,7 +71,7 @@ internal class TopicViewModel @Inject constructor(
         section: String,
         text: String,
     ) {
-        analytics.buttonClick(
+        analyticsClient.buttonClick(
             text = text,
             external = false,
             section = section
@@ -81,7 +81,7 @@ internal class TopicViewModel @Inject constructor(
     fun onSubtopicClick(
         text: String
     ) {
-        analytics.buttonClick(
+        analyticsClient.buttonClick(
             text = text,
             external = false,
             section = SUBTOPIC_SECTION

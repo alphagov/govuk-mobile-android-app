@@ -8,18 +8,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class AnalyticsViewModel @Inject constructor(
-    private val analytics: Analytics
+    private val analyticsClient: AnalyticsClient
 ): ViewModel() {
 
     fun onConsentGranted() {
         viewModelScope.launch {
-            analytics.enable()
+            analyticsClient.enable()
         }
     }
 
     fun onConsentDenied() {
         viewModelScope.launch {
-            analytics.disable()
+            analyticsClient.disable()
         }
     }
 }

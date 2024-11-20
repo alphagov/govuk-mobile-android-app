@@ -9,17 +9,11 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import uk.govuk.app.analytics.Analytics
-import uk.govuk.app.analytics.AnalyticsClient
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
 internal class AnalyticsModule {
-
-    @Provides
-    @Singleton
-    fun provideAnalytics(analyticsClient: AnalyticsClient): Analytics = analyticsClient
 
     @Provides
     @Singleton

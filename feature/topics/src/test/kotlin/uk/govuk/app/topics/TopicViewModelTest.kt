@@ -17,7 +17,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.data.remote.model.RemoteTopic
 import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
@@ -34,7 +34,7 @@ class TopicViewModelTest {
 
     private val dispatcher = UnconfinedTestDispatcher()
     private val topicsRepo = mockk<TopicsRepo>(relaxed = true)
-    private val analytics = mockk<Analytics>(relaxed = true)
+    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val savedStateHandle = mockk<SavedStateHandle>(relaxed = true)
     private val visited = mockk<Visited>(relaxed = true)
 
@@ -72,7 +72,7 @@ class TopicViewModelTest {
             subtopicsTitle = R.string.browseTitle
         )
 
-        val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
+        val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
         runTest {
             val result = viewModel.topic.first()
@@ -82,12 +82,12 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a page view, then log analytics`() {
-        val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
+        val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
         viewModel.onPageView("title")
 
         verify {
-            analytics.screenView(
+            analyticsClient.screenView(
                 screenClass = "TopicScreen",
                 screenName = "title",
                 title = "title"
@@ -97,7 +97,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a content click, then log analytics`() {
-        val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
+        val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
         viewModel.onContentClick(
             section = "section",
@@ -106,7 +106,7 @@ class TopicViewModelTest {
         )
 
         verify {
-            analytics.buttonClick(
+            analyticsClient.buttonClick(
                 text = "text",
                 url = "url",
                 external = true,
@@ -117,7 +117,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a content click, then log visited item`() {
-        val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
+        val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
         viewModel.onContentClick(
             section = "section",
@@ -132,7 +132,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a see all click, then log analytics`() {
-        val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
+        val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
         viewModel.onSeeAllClick(
             section = "section",
@@ -140,7 +140,7 @@ class TopicViewModelTest {
         )
 
         verify {
-            analytics.buttonClick(
+            analyticsClient.buttonClick(
                 text = "text",
                 external = false,
                 section = "section"
@@ -150,12 +150,12 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a subtopic click, then log analytics`() {
-        val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
+        val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
         viewModel.onSubtopicClick("text")
 
         verify {
-            analytics.buttonClick(
+            analyticsClient.buttonClick(
                 text = "text",
                 external = false,
                 section = "Sub topics"

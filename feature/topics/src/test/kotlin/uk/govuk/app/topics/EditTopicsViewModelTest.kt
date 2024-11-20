@@ -16,7 +16,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.domain.model.TopicItem
 import uk.govuk.app.topics.ui.model.TopicItemUi
@@ -26,7 +26,7 @@ class EditTopicsViewModelTest {
 
     private val dispatcher = UnconfinedTestDispatcher()
     private val topicsRepo = mockk<TopicsRepo>(relaxed = true)
-    private val analytics = mockk<Analytics>(relaxed = true)
+    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
 
     @Before
     fun setup() {
@@ -61,7 +61,7 @@ class EditTopicsViewModelTest {
             )
         )
 
-        val viewModel = EditTopicsViewModel(topicsRepo, analytics)
+        val viewModel = EditTopicsViewModel(topicsRepo, analyticsClient)
 
         runTest {
             val result = viewModel.topics.first()
@@ -73,14 +73,14 @@ class EditTopicsViewModelTest {
 
     @Test
     fun `Given a user has selected a topic, When the topic is selected, then select topic in repo and send analytics`() {
-        val viewModel = EditTopicsViewModel(topicsRepo, analytics)
+        val viewModel = EditTopicsViewModel(topicsRepo, analyticsClient)
 
         viewModel.onTopicSelectedChanged("ref", "title", true)
 
         coVerify {
             topicsRepo.selectTopic("ref")
-            analytics.topicsCustomised()
-            analytics.toggleFunction(
+            analyticsClient.topicsCustomised()
+            analyticsClient.toggleFunction(
                 text = "title",
                 section = "Topics",
                 action = "Add"
@@ -90,14 +90,14 @@ class EditTopicsViewModelTest {
 
     @Test
     fun `Given a user has deselected a topic, When the topic is deselected, then deselect topic in repo and send analytics`() {
-        val viewModel = EditTopicsViewModel(topicsRepo, analytics)
+        val viewModel = EditTopicsViewModel(topicsRepo, analyticsClient)
 
         viewModel.onTopicSelectedChanged("ref", "title", false)
 
         coVerify {
             topicsRepo.deselectTopic("ref")
-            analytics.topicsCustomised()
-            analytics.toggleFunction(
+            analyticsClient.topicsCustomised()
+            analyticsClient.toggleFunction(
                 text = "title",
                 section = "Topics",
                 action = "Remove"
@@ -107,12 +107,12 @@ class EditTopicsViewModelTest {
 
     @Test
     fun `Given a page view, then log analytics`() {
-        val viewModel = EditTopicsViewModel(topicsRepo, analytics)
+        val viewModel = EditTopicsViewModel(topicsRepo, analyticsClient)
 
         viewModel.onPageView("title")
 
         verify {
-            analytics.screenView(
+            analyticsClient.screenView(
                 screenClass = "EditTopicsScreen",
                 screenName = "Topic Selection",
                 title = "title"

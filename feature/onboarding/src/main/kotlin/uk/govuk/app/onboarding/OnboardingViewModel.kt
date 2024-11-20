@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 import javax.inject.Inject
 
 internal data class OnboardingUiState(
@@ -16,7 +16,7 @@ internal data class OnboardingUiState(
 @HiltViewModel
 internal class OnboardingViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val analytics: Analytics
+    private val analyticsClient: AnalyticsClient
 ): ViewModel() {
 
     companion object {
@@ -56,7 +56,7 @@ internal class OnboardingViewModel @Inject constructor(
 
     fun onPageView(pageIndex: Int) {
         val page = uiState.value.pages[pageIndex]
-        analytics.screenView(
+        analyticsClient.screenView(
             screenClass = SCREEN_CLASS,
             screenName = page.screenName,
             title = context.getString(page.title)
@@ -64,11 +64,11 @@ internal class OnboardingViewModel @Inject constructor(
     }
 
     fun onButtonClick(text: String) {
-        analytics.buttonClick(text)
+        analyticsClient.buttonClick(text)
     }
 
     fun onPagerIndicatorClick() {
-        analytics.pageIndicatorClick()
+        analyticsClient.pageIndicatorClick()
     }
 
 }
