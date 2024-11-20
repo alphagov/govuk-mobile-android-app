@@ -1,9 +1,6 @@
 package uk.govuk.app.analytics
 
-import android.os.Bundle
-import androidx.core.os.bundleOf
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import uk.govuk.app.analytics.data.AnalyticsRepo
 import uk.govuk.app.analytics.data.local.AnalyticsEnabledState
 import uk.govuk.app.analytics.extension.redactPii
@@ -14,8 +11,7 @@ import javax.inject.Singleton
 @Singleton
 class AnalyticsClient @Inject constructor(
     private val analyticsRepo: AnalyticsRepo,
-    private val firebaseAnalytics: FirebaseAnalytics,
-    private val firebaseCrashlytics: FirebaseCrashlytics
+    private val firebaseAnalyticsClient: FirebaseAnalyticsClient
 ): Analytics {
 
     override suspend fun isAnalyticsConsentRequired(): Boolean {
@@ -28,21 +24,19 @@ class AnalyticsClient @Inject constructor(
 
     override suspend fun enable() {
         analyticsRepo.analyticsEnabled()
-        firebaseAnalytics.setAnalyticsCollectionEnabled(true)
-        firebaseCrashlytics.setCrashlyticsCollectionEnabled(true)
+        firebaseAnalyticsClient.enable()
     }
 
     override suspend fun disable() {
         analyticsRepo.analyticsDisabled()
-        firebaseAnalytics.setAnalyticsCollectionEnabled(false)
-        firebaseCrashlytics.setCrashlyticsCollectionEnabled(false)
+        firebaseAnalyticsClient.disable()
     }
 
     override fun screenView(screenClass: String, screenName: String, title: String) {
-        firebaseAnalytics.logEvent(
+        firebaseAnalyticsClient.logEvent(
             FirebaseAnalytics.Event.SCREEN_VIEW,
             parametersWithLanguage(
-                bundleOf(
+                mapOf(
                     FirebaseAnalytics.Param.SCREEN_CLASS to screenClass,
                     FirebaseAnalytics.Param.SCREEN_NAME to screenName,
                     "screen_title" to title,
@@ -79,12 +73,10 @@ class AnalyticsClient @Inject constructor(
     }
 
     override fun search(searchTerm: String) {
-        firebaseAnalytics.logEvent(
+        firebaseAnalyticsClient.logEvent(
             "Search",
-            parametersWithLanguage(
-                bundleOf(
-                    "text" to searchTerm.redactPii()
-                )
+            mapOf(
+                "text" to searchTerm.redactPii()
             )
         )
     }
@@ -127,7 +119,7 @@ class AnalyticsClient @Inject constructor(
     }
 
     override fun topicsCustomised() {
-        firebaseAnalytics.setUserProperty("topics_customised", "true")
+        firebaseAnalyticsClient.setUserProperty("topics_customised", "true")
     }
 
     private fun navigation(
@@ -137,47 +129,38 @@ class AnalyticsClient @Inject constructor(
         external: Boolean = false,
         section: String? = null
     ) {
-        val parameters = bundleOf(
+        val parameters = mutableMapOf(
             "type" to type,
             "external" to external,
         )
 
         text?.let {
-            parameters.putString("text", it)
+            parameters["text"] = it
         }
 
         url?.let {
-            parameters.putString("url", it)
+            parameters["url"] = it
         }
 
         section?.let {
-            parameters.putString("section", it)
+            parameters["section"] = it
         }
 
-        firebaseAnalytics.logEvent(
-            "Navigation",
-            parametersWithLanguage(parameters)
-        )
+        firebaseAnalyticsClient.logEvent("Navigation", parametersWithLanguage(parameters))
     }
 
     private fun function(text: String, type: String, section: String, action: String) {
-        val parameters = bundleOf(
+        val parameters = mapOf(
             "text" to text,
             "type" to type,
             "section" to section,
             "action" to action
         )
 
-        firebaseAnalytics.logEvent(
-            "Function",
-            parametersWithLanguage(parameters)
-        )
+        firebaseAnalyticsClient.logEvent("Function", parametersWithLanguage(parameters))
     }
 
-    private fun parametersWithLanguage(parameters: Bundle): Bundle {
-        val bundle = Bundle()
-        bundle.putString("language", Locale.getDefault().language)
-        bundle.putAll(parameters)
-        return bundle
+    private fun parametersWithLanguage(parameters: Map<String, Any>): Map<String, Any> {
+        return parameters + Pair("language", Locale.getDefault().language)
     }
 }

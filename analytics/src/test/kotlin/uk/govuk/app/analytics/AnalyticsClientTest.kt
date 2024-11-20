@@ -10,8 +10,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import uk.gov.logging.api.analytics.AnalyticsEvent
-import uk.gov.logging.api.analytics.logging.AnalyticsLogger
 import uk.govuk.app.analytics.data.AnalyticsRepo
 import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.DISABLED
 import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.ENABLED
@@ -20,15 +18,14 @@ import java.util.Locale
 
 class AnalyticsClientTest {
 
-    private val analyticsLogger = mockk<AnalyticsLogger>(relaxed = true)
     private val analyticsRepo = mockk<AnalyticsRepo>(relaxed = true)
-    private val firebaseAnalytics = mockk<FirebaseAnalytics>(relaxed = true)
+    private val firebaseAnalyticClient = mockk<FirebaseAnalyticsClient>(relaxed = true)
 
     private lateinit var analyticsClient: AnalyticsClient
 
     @Before
     fun setup() {
-        analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo, firebaseAnalytics)
+        analyticsClient = AnalyticsClient(analyticsRepo, firebaseAnalyticClient)
     }
 
     @Test
@@ -40,16 +37,13 @@ class AnalyticsClientTest {
         )
 
         verify {
-            analyticsLogger.logEvent(
-                true,
-                AnalyticsEvent(
-                    eventType = FirebaseAnalytics.Event.SCREEN_VIEW,
-                    parameters = mapOf(
-                        FirebaseAnalytics.Param.SCREEN_CLASS to "screenClass",
-                        FirebaseAnalytics.Param.SCREEN_NAME to "screenName",
-                        "screen_title" to "title",
-                        "language" to Locale.getDefault().language
-                    )
+            firebaseAnalyticClient.logEvent(
+                FirebaseAnalytics.Event.SCREEN_VIEW,
+                mapOf(
+                    FirebaseAnalytics.Param.SCREEN_CLASS to "screenClass",
+                    FirebaseAnalytics.Param.SCREEN_NAME to "screenName",
+                    "screen_title" to "title",
+                    "language" to Locale.getDefault().language
                 )
             )
         }
@@ -60,15 +54,12 @@ class AnalyticsClientTest {
         analyticsClient.pageIndicatorClick()
 
         verify {
-            analyticsLogger.logEvent(
-                true,
-                AnalyticsEvent(
-                    eventType = "Navigation",
-                    parameters = mapOf(
-                        "type" to "Dot",
-                        "external" to false,
-                        "language" to Locale.getDefault().language,
-                    )
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "Dot",
+                    "external" to false,
+                    "language" to Locale.getDefault().language,
                 )
             )
         }
@@ -79,16 +70,13 @@ class AnalyticsClientTest {
         analyticsClient.buttonClick("text")
 
         verify {
-            analyticsLogger.logEvent(
-                true,
-                AnalyticsEvent(
-                    eventType = "Navigation",
-                    parameters = mapOf(
-                        "type" to "Button",
-                        "external" to false,
-                        "language" to Locale.getDefault().language,
-                        "text" to "text"
-                    )
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "Button",
+                    "external" to false,
+                    "language" to Locale.getDefault().language,
+                    "text" to "text"
                 )
             )
         }
@@ -104,18 +92,15 @@ class AnalyticsClientTest {
         )
 
         verify {
-            analyticsLogger.logEvent(
-                true,
-                AnalyticsEvent(
-                    eventType = "Navigation",
-                    parameters = mapOf(
-                        "type" to "Button",
-                        "external" to true,
-                        "url" to "url",
-                        "section" to "section",
-                        "language" to Locale.getDefault().language,
-                        "text" to "text"
-                    )
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "Button",
+                    "external" to true,
+                    "url" to "url",
+                    "section" to "section",
+                    "language" to Locale.getDefault().language,
+                    "text" to "text"
                 )
             )
         }
@@ -126,13 +111,10 @@ class AnalyticsClientTest {
         analyticsClient.search("search term")
 
         verify {
-            analyticsLogger.logEvent(
-                true,
-                AnalyticsEvent(
-                    eventType = "Search",
-                    parameters = mapOf(
-                        "text" to "search term"
-                    )
+            firebaseAnalyticClient.logEvent(
+                "Search",
+                mapOf(
+                    "text" to "search term"
                 )
             )
         }
@@ -143,13 +125,10 @@ class AnalyticsClientTest {
         analyticsClient.search("search term A1 1AA")
 
         verify {
-            analyticsLogger.logEvent(
-                true,
-                AnalyticsEvent(
-                    eventType = "Search",
-                    parameters = mapOf(
-                        "text" to "search term [postcode]"
-                    )
+            firebaseAnalyticClient.logEvent(
+                "Search",
+                mapOf(
+                    "text" to "search term [postcode]"
                 )
             )
         }
@@ -160,13 +139,10 @@ class AnalyticsClientTest {
         analyticsClient.search("search term test@email.com")
 
         verify {
-            analyticsLogger.logEvent(
-                true,
-                AnalyticsEvent(
-                    eventType = "Search",
-                    parameters = mapOf(
-                        "text" to "search term [email]"
-                    )
+            firebaseAnalyticClient.logEvent(
+                "Search",
+                mapOf(
+                    "text" to "search term [email]"
                 )
             )
         }
@@ -177,13 +153,10 @@ class AnalyticsClientTest {
         analyticsClient.search("search term AA 00 00 00 A")
 
         verify {
-            analyticsLogger.logEvent(
-                true,
-                AnalyticsEvent(
-                    eventType = "Search",
-                    parameters = mapOf(
-                        "text" to "search term [NI number]"
-                    )
+            firebaseAnalyticClient.logEvent(
+                "Search",
+                mapOf(
+                    "text" to "search term [NI number]"
                 )
             )
         }
@@ -194,17 +167,14 @@ class AnalyticsClientTest {
         analyticsClient.searchResultClick("search result title", "search result link")
 
         verify {
-            analyticsLogger.logEvent(
-                true,
-                AnalyticsEvent(
-                    eventType = "Navigation",
-                    parameters = mapOf(
-                        "type" to "SearchResult",
-                        "external" to true,
-                        "language" to Locale.getDefault().language,
-                        "text" to "search result title",
-                        "url" to "search result link"
-                    )
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "SearchResult",
+                    "external" to true,
+                    "language" to Locale.getDefault().language,
+                    "text" to "search result title",
+                    "url" to "search result link"
                 )
             )
         }
@@ -215,17 +185,14 @@ class AnalyticsClientTest {
         analyticsClient.visitedItemClick("visited item title", "visited item link")
 
         verify {
-            analyticsLogger.logEvent(
-                true,
-                AnalyticsEvent(
-                    eventType = "Navigation",
-                    parameters = mapOf(
-                        "type" to "VisitedItem",
-                        "external" to true,
-                        "language" to Locale.getDefault().language,
-                        "text" to "visited item title",
-                        "url" to "visited item link"
-                    )
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "VisitedItem",
+                    "external" to true,
+                    "language" to Locale.getDefault().language,
+                    "text" to "visited item title",
+                    "url" to "visited item link"
                 )
             )
         }
@@ -236,17 +203,14 @@ class AnalyticsClientTest {
         analyticsClient.settingsItemClick("settings item title", "settings item link")
 
         verify {
-            analyticsLogger.logEvent(
-                true,
-                AnalyticsEvent(
-                    eventType = "Navigation",
-                    parameters = mapOf(
-                        "type" to "SettingsItem",
-                        "external" to true,
-                        "language" to Locale.getDefault().language,
-                        "text" to "settings item title",
-                        "url" to "settings item link"
-                    )
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "SettingsItem",
+                    "external" to true,
+                    "language" to Locale.getDefault().language,
+                    "text" to "settings item title",
+                    "url" to "settings item link"
                 )
             )
         }
@@ -257,16 +221,13 @@ class AnalyticsClientTest {
         analyticsClient.tabClick("text")
 
         verify {
-            analyticsLogger.logEvent(
-                true,
-                AnalyticsEvent(
-                    eventType = "Navigation",
-                    parameters = mapOf(
-                        "type" to "Tab",
-                        "external" to false,
-                        "language" to Locale.getDefault().language,
-                        "text" to "text"
-                    )
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "Tab",
+                    "external" to false,
+                    "language" to Locale.getDefault().language,
+                    "text" to "text"
                 )
             )
         }
@@ -277,16 +238,13 @@ class AnalyticsClientTest {
         analyticsClient.widgetClick("text")
 
         verify {
-            analyticsLogger.logEvent(
-                true,
-                AnalyticsEvent(
-                    eventType = "Navigation",
-                    parameters = mapOf(
-                        "type" to "Widget",
-                        "external" to false,
-                        "language" to Locale.getDefault().language,
-                        "text" to "text"
-                    )
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "Widget",
+                    "external" to false,
+                    "language" to Locale.getDefault().language,
+                    "text" to "text"
                 )
             )
         }
@@ -301,17 +259,14 @@ class AnalyticsClientTest {
         )
 
         verify {
-            analyticsLogger.logEvent(
-                true,
-                AnalyticsEvent(
-                    eventType = "Function",
-                    parameters = mapOf(
-                        "type" to "Toggle",
-                        "language" to Locale.getDefault().language,
-                        "text" to "text",
-                        "section" to "section",
-                        "action" to "action"
-                    )
+            firebaseAnalyticClient.logEvent(
+                "Function",
+                mapOf(
+                    "type" to "Toggle",
+                    "language" to Locale.getDefault().language,
+                    "text" to "text",
+                    "section" to "section",
+                    "action" to "action"
                 )
             )
         }
@@ -326,17 +281,14 @@ class AnalyticsClientTest {
         )
 
         verify {
-            analyticsLogger.logEvent(
-                true,
-                AnalyticsEvent(
-                    eventType = "Function",
-                    parameters = mapOf(
-                        "type" to "Button",
-                        "language" to Locale.getDefault().language,
-                        "text" to "text",
-                        "section" to "section",
-                        "action" to "action"
-                    )
+            firebaseAnalyticClient.logEvent(
+                "Function",
+                mapOf(
+                    "type" to "Button",
+                    "language" to Locale.getDefault().language,
+                    "text" to "text",
+                    "section" to "section",
+                    "action" to "action"
                 )
             )
         }
@@ -403,7 +355,7 @@ class AnalyticsClientTest {
 
             coVerify {
                 analyticsRepo.analyticsEnabled()
-                analyticsLogger.setEnabled(true)
+                firebaseAnalyticClient.enable()
             }
         }
     }
@@ -415,7 +367,7 @@ class AnalyticsClientTest {
 
             coVerify {
                 analyticsRepo.analyticsDisabled()
-                analyticsLogger.setEnabled(false)
+                firebaseAnalyticClient.disable()
             }
         }
     }
@@ -425,7 +377,7 @@ class AnalyticsClientTest {
         analyticsClient.topicsCustomised()
 
         verify {
-            firebaseAnalytics.setUserProperty("topics_customised", "true")
+            firebaseAnalyticClient.setUserProperty("topics_customised", "true")
         }
     }
 
