@@ -26,6 +26,7 @@ import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.networking.ui.component.OfflineMessage
+import uk.govuk.app.networking.ui.component.ServiceNotRespondingMessage
 import uk.govuk.app.topics.R
 import uk.govuk.app.topics.TopicUiState
 import uk.govuk.app.topics.TopicViewModel
@@ -73,7 +74,7 @@ internal fun TopicRoute(
                         modifier = modifier
                     )
                 } ?: run {
-                    ServiceNotRespondingScreen()
+                    ServiceNotRespondingMessage()
                 }
             }
 
@@ -84,7 +85,7 @@ internal fun TopicRoute(
                 onTryAgainClick = { viewModel.getTopic() }
             )
 
-            is TopicUiState.ServiceError -> ServiceNotRespondingScreen()
+            is TopicUiState.ServiceError -> ServiceNotRespondingMessage()
         }
     }
 }
@@ -251,9 +252,6 @@ private fun OfflineScreen(
         OfflineMessage(onTryAgainClick = onTryAgainClick)
     }
 }
-
-@Composable
-private fun ServiceNotRespondingScreen() {}
 
 @Preview
 @Composable

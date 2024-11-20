@@ -92,7 +92,7 @@ fun OfflineMessage(
 
 @Preview
 @Composable
-private fun TestOfflineMessage() {
+private fun OfflineMessagePreview() {
     GovUkTheme {
         OfflineMessage(onTryAgainClick = {})
     }

@@ -30,7 +30,6 @@ android {
             useSupportLibrary = true
         }
 
-        buildConfigField("String", "GOV_UK_URL", "\"https://www.gov.uk\"")
         buildConfigField("String", "PLAY_STORE_URL", "\"https://play.google.com/store/apps/details?id=$applicationId\"")
     }
 
@@ -100,6 +99,7 @@ dependencies {
     implementation(projects.feature.search)
     implementation(projects.feature.topics)
     implementation(projects.feature.visited)
+    implementation(projects.networking)
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
