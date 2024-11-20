@@ -66,5 +66,7 @@ internal class EditTopicsViewModel @Inject constructor(
             section = ANALYTICS_TOGGLE_FUNCTION_SECTION,
             action = action
         )
+
+        analytics.topicsCustomised()
     }
 }

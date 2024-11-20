@@ -195,6 +195,7 @@ class TopicSelectionViewModelTest {
         viewModel.onDone("Done")
 
         coVerify {
+            analytics.topicsCustomised()
             analytics.buttonClick(
                 text = "Done"
             )

@@ -8,6 +8,7 @@ import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import uk.gov.logging.api.analytics.AnalyticsEvent
 import uk.gov.logging.api.analytics.logging.AnalyticsLogger
@@ -21,10 +22,17 @@ class AnalyticsClientTest {
 
     private val analyticsLogger = mockk<AnalyticsLogger>(relaxed = true)
     private val analyticsRepo = mockk<AnalyticsRepo>(relaxed = true)
+    private val firebaseAnalytics = mockk<FirebaseAnalytics>(relaxed = true)
+
+    private lateinit var analyticsClient: AnalyticsClient
+
+    @Before
+    fun setup() {
+        analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo, firebaseAnalytics)
+    }
 
     @Test
     fun `Given a screen view, then log event`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.screenView(
             screenClass = "screenClass",
             screenName = "screenName",
@@ -49,7 +57,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a page indicator click, then log event`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.pageIndicatorClick()
 
         verify {
@@ -69,7 +76,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a button click, then log event`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.buttonClick("text")
 
         verify {
@@ -90,7 +96,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a button click with optional parameters, then log event`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.buttonClick(
             text = "text",
             url = "url",
@@ -118,7 +123,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a search, then log event`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.search("search term")
 
         verify {
@@ -136,7 +140,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a search with postcode, then redact and log event`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.search("search term A1 1AA")
 
         verify {
@@ -154,7 +157,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a search with email address, then redact and log event`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.search("search term test@email.com")
 
         verify {
@@ -172,7 +174,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a search with NI number, then redact and log event`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.search("search term AA 00 00 00 A")
 
         verify {
@@ -190,7 +191,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a search result click, then log event`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.searchResultClick("search result title", "search result link")
 
         verify {
@@ -212,7 +212,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a visited item click, then log event`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.visitedItemClick("visited item title", "visited item link")
 
         verify {
@@ -234,7 +233,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a settings item click, then log event`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.settingsItemClick("settings item title", "settings item link")
 
         verify {
@@ -256,7 +254,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a tab click, then log event`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.tabClick("text")
 
         verify {
@@ -277,7 +274,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a widget click, then log event`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.widgetClick("text")
 
         verify {
@@ -298,7 +294,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a toggle function, then log event`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.toggleFunction(
             text = "text",
             section = "section",
@@ -324,7 +319,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a button function, then log event`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
         analyticsClient.buttonFunction(
             text = "text",
             section = "section",
@@ -350,8 +344,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given analytics are not set, when is analytics consent required, then return true`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
-
         coEvery { analyticsRepo.getAnalyticsEnabledState() } returns NOT_SET
 
         runTest {
@@ -361,8 +353,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given analytics are enabled, when is analytics consent required, then return false`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
-
         coEvery { analyticsRepo.getAnalyticsEnabledState() } returns ENABLED
 
         runTest {
@@ -372,8 +362,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given analytics are disabled, when is analytics consent required, then return false`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
-
         coEvery { analyticsRepo.getAnalyticsEnabledState() } returns DISABLED
 
         runTest {
@@ -383,8 +371,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given analytics are not set, when is analytics enabled, then return false`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
-
         coEvery { analyticsRepo.getAnalyticsEnabledState() } returns NOT_SET
 
         runTest {
@@ -394,8 +380,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given analytics are enabled, when is analytics enabled, then return true`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
-
         coEvery { analyticsRepo.getAnalyticsEnabledState() } returns ENABLED
 
         runTest {
@@ -405,8 +389,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given analytics are disabled, when is analytics enabled, then return false`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
-
         coEvery { analyticsRepo.getAnalyticsEnabledState() } returns DISABLED
 
         runTest {
@@ -416,8 +398,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given analytics have been enabled, then enable`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
-
         runTest {
             analyticsClient.enable()
 
@@ -430,8 +410,6 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given analytics have been disabled, then disable`() {
-        val analyticsClient = AnalyticsClient(analyticsLogger, analyticsRepo)
-
         runTest {
             analyticsClient.disable()
 
@@ -439,6 +417,15 @@ class AnalyticsClientTest {
                 analyticsRepo.analyticsDisabled()
                 analyticsLogger.setEnabled(false)
             }
+        }
+    }
+
+    @Test
+    fun `Given topics have been customised, then set user property`() {
+        analyticsClient.topicsCustomised()
+
+        verify {
+            firebaseAnalytics.setUserProperty("topics_customised", "true")
         }
     }
 

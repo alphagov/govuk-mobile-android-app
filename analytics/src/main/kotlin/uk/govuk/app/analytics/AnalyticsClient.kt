@@ -13,7 +13,8 @@ import javax.inject.Singleton
 @Singleton
 class AnalyticsClient @Inject constructor(
     private val analyticsLogger: AnalyticsLogger,
-    private val analyticsRepo: AnalyticsRepo
+    private val analyticsRepo: AnalyticsRepo,
+    private val firebaseAnalytics: FirebaseAnalytics
 ): Analytics {
 
     override suspend fun isAnalyticsConsentRequired(): Boolean {
@@ -122,6 +123,10 @@ class AnalyticsClient @Inject constructor(
             section = section,
             action = action
         )
+    }
+
+    override fun topicsCustomised() {
+        firebaseAnalytics.setUserProperty("topics_customised", "true")
     }
 
     private fun navigation(

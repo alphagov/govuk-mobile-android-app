@@ -22,4 +22,5 @@ interface Analytics {
     fun settingsItemClick(text: String, url: String)
     fun toggleFunction(text: String, section: String, action: String)
     fun buttonFunction(text: String, section: String, action: String)
+    fun topicsCustomised()
 }
