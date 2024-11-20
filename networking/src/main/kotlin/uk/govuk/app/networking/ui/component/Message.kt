@@ -32,9 +32,9 @@ internal fun Message(
     ) {
         Row(
             Modifier.padding(
-                start = GovUkTheme.spacing.medium,
-                top = GovUkTheme.spacing.large,
-                end = GovUkTheme.spacing.medium
+                start = GovUkTheme.spacing.large,
+                top = GovUkTheme.spacing.extraLarge,
+                end = GovUkTheme.spacing.large
             ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
@@ -48,10 +48,9 @@ internal fun Message(
 
         Row(
             Modifier.padding(
-                start = GovUkTheme.spacing.medium,
+                start = GovUkTheme.spacing.large,
                 top = GovUkTheme.spacing.small,
-                end = GovUkTheme.spacing.medium,
-                bottom = GovUkTheme.spacing.medium
+                end = GovUkTheme.spacing.large
             ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
@@ -65,7 +64,11 @@ internal fun Message(
 
         Row(
             Modifier
-                .padding(all = GovUkTheme.spacing.medium)
+                .padding(
+                    start = GovUkTheme.spacing.large,
+                    top = GovUkTheme.spacing.large,
+                    end = GovUkTheme.spacing.large
+                )
                 .clickable(onClick = { onLinkClick() }),
             verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.Center
