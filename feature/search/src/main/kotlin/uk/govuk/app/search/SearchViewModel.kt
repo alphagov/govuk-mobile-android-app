@@ -33,8 +33,8 @@ internal class SearchViewModel @Inject constructor(
             }
             searchResult.onFailure { exception ->
                 _uiState.value = when (exception) {
-                    is DeviceOfflineException -> SearchUiState.Offline
-                    else -> SearchUiState.ServiceError
+                    is DeviceOfflineException -> SearchUiState.Offline(searchTerm)
+                    else -> SearchUiState.ServiceError(searchTerm)
                 }
             }
         }

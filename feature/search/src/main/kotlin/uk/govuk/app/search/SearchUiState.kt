@@ -3,18 +3,14 @@ package uk.govuk.app.search
 import uk.govuk.app.search.data.remote.model.Result
 
 internal sealed class SearchUiState(
-    val searchTerm: String = "",
-    val searchResults: List<Result> = listOf()
+    val searchTerm: String
 ) {
     internal class Default(
         searchTerm: String,
-        searchResults: List<Result>
-    ) : SearchUiState(
-        searchTerm = searchTerm,
-        searchResults = searchResults
-    )
+        val searchResults: List<Result>
+    ) : SearchUiState(searchTerm = searchTerm)
 
-    internal data object Offline : SearchUiState()
+    internal class Offline(searchTerm: String) : SearchUiState(searchTerm = searchTerm)
 
-    internal data object ServiceError : SearchUiState()
+    internal class ServiceError(searchTerm: String) : SearchUiState(searchTerm = searchTerm)
 }

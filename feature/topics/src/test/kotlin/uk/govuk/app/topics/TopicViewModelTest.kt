@@ -78,8 +78,8 @@ class TopicViewModelTest {
         val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         runTest {
-            val result = viewModel.uiState.value?.topicUi
-            assertEquals(expected, result)
+            val result = viewModel.uiState.first() as TopicUiState.Default
+            assertEquals(expected, result.topicUi)
         }
     }
 
@@ -102,9 +102,8 @@ class TopicViewModelTest {
         val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertTrue(result is TopicUiState.Offline)
-            assertEquals(REF, result!!.topicReference)
+            val result = viewModel.uiState.first() as TopicUiState.Offline
+            assertEquals(REF, result.topicReference)
         }
     }
 
@@ -115,9 +114,8 @@ class TopicViewModelTest {
         val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertTrue(result is TopicUiState.ServiceError)
-            assertEquals(REF, result!!.topicReference)
+            val result = viewModel.uiState.first() as TopicUiState.ServiceError
+            assertEquals(REF, result.topicReference)
         }
     }
 
@@ -128,9 +126,8 @@ class TopicViewModelTest {
         val viewModel = TopicViewModel(topicsRepo, analytics, visited, savedStateHandle)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertTrue(result is TopicUiState.ServiceError)
-            assertEquals(REF, result!!.topicReference)
+            val result = viewModel.uiState.first() as TopicUiState.ServiceError
+            assertEquals(REF, result.topicReference)
         }
     }
 

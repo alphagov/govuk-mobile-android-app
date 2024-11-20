@@ -13,7 +13,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.experimental.runners.Enclosed
@@ -129,10 +128,9 @@ class SearchViewModelTest {
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.first()
+                val result = viewModel.uiState.first() as SearchUiState.Default
 
-                assertEquals(searchTerm, result!!.searchTerm)
-                assertTrue(result is SearchUiState.Default)
+                assertEquals(searchTerm, result.searchTerm)
                 assertEquals(1, result.searchResults.size)
             }
         }
@@ -144,10 +142,9 @@ class SearchViewModelTest {
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.first()
+                val result = viewModel.uiState.first() as SearchUiState.Default
 
-                assertEquals(searchTerm, result!!.searchTerm)
-                assertTrue(result is SearchUiState.Default)
+                assertEquals(searchTerm, result.searchTerm)
                 assertEquals(0, result.searchResults.size)
             }
         }
@@ -159,8 +156,8 @@ class SearchViewModelTest {
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.first()
-                assertTrue(result is SearchUiState.Offline)
+                val result = viewModel.uiState.first() as SearchUiState.Offline
+                assertEquals(searchTerm, result.searchTerm)
             }
         }
 
@@ -171,8 +168,8 @@ class SearchViewModelTest {
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.first()
-                assertTrue(result is SearchUiState.ServiceError)
+                val result = viewModel.uiState.first() as SearchUiState.ServiceError
+                assertEquals(searchTerm, result.searchTerm)
             }
         }
 
@@ -183,8 +180,8 @@ class SearchViewModelTest {
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.first()
-                assertTrue(result is SearchUiState.ServiceError)
+                val result = viewModel.uiState.first() as SearchUiState.ServiceError
+                assertEquals(searchTerm, result.searchTerm)
             }
         }
     }

@@ -49,7 +49,7 @@ internal class TopicViewModel @Inject constructor(
                 getTopicResult.onFailure { exception ->
                     _uiState.value = when (exception) {
                         is DeviceOfflineException -> TopicUiState.Offline(ref)
-                        else -> TopicUiState.ServiceError
+                        else -> TopicUiState.ServiceError(ref)
                     }
                 }
             }

@@ -7,5 +7,5 @@ internal sealed class TopicUiState {
 
     internal class Offline(val topicReference: String) : TopicUiState()
 
-    internal data object ServiceError : TopicUiState()
+    internal class ServiceError(val topicReference: String) : TopicUiState()
 }
