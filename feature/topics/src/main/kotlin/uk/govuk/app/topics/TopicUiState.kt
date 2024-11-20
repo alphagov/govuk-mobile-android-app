@@ -2,13 +2,10 @@ package uk.govuk.app.topics
 
 import uk.govuk.app.topics.ui.model.TopicUi
 
-internal sealed class TopicUiState(
-    val topicUi: TopicUi? = null,
-    val topicReference: String = ""
-) {
-    internal class Default(topicUi: TopicUi?) : TopicUiState(topicUi = topicUi)
+internal sealed class TopicUiState {
+    internal class Default(val topicUi: TopicUi) : TopicUiState()
 
-    internal class Offline(topicReference: String) : TopicUiState(topicReference = topicReference)
+    internal class Offline(val topicReference: String) : TopicUiState()
 
-    internal class ServiceError(topicReference: String) : TopicUiState(topicReference = topicReference)
+    internal data object ServiceError : TopicUiState()
 }

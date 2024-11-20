@@ -47,35 +47,31 @@ internal fun TopicRoute(
     uiState?.let {
         when (it) {
             is TopicUiState.Default -> {
-                it.topicUi?.let { topicUi ->
-                    TopicScreen(
-                        topic = topicUi,
-                        onPageView = { title -> viewModel.onPageView(title) },
-                        onBack = onBack,
-                        onExternalLink = { section, text, url ->
-                            viewModel.onContentClick(
-                                section = section,
-                                text = text,
-                                url = url
-                            )
-                            onExternalLink(url)
-                        },
-                        onStepByStepSeeAll = { section, text ->
-                            onStepByStepSeeAll()
-                            viewModel.onSeeAllClick(
-                                section = section,
-                                text = text
-                            )
-                        },
-                        onSubtopic = { text, ref ->
-                            viewModel.onSubtopicClick(text)
-                            onSubtopic(ref)
-                        },
-                        modifier = modifier
-                    )
-                } ?: run {
-                    ServiceNotRespondingMessage()
-                }
+                TopicScreen(
+                    topic = it.topicUi,
+                    onPageView = { title -> viewModel.onPageView(title) },
+                    onBack = onBack,
+                    onExternalLink = { section, text, url ->
+                        viewModel.onContentClick(
+                            section = section,
+                            text = text,
+                            url = url
+                        )
+                        onExternalLink(url)
+                    },
+                    onStepByStepSeeAll = { section, text ->
+                        onStepByStepSeeAll()
+                        viewModel.onSeeAllClick(
+                            section = section,
+                            text = text
+                        )
+                    },
+                    onSubtopic = { text, ref ->
+                        viewModel.onSubtopicClick(text)
+                        onSubtopic(ref)
+                    },
+                    modifier = modifier
+                )
             }
 
             is TopicUiState.Offline -> OfflineScreen(

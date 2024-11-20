@@ -245,9 +245,9 @@ private fun GovUkNavHost(
         homeGraph(
             widgets = homeScreenWidgets(
                 navController = navController,
-                isSearchEnabled = uiState.isSearchEnabled,
-                isTopicsEnabled = uiState.isTopicsEnabled,
-                isRecentActivityEnabled = uiState.isRecentActivityEnabled,
+                isSearchEnabled = if (uiState is AppUiState.Default) uiState.isSearchEnabled else false,
+                isTopicsEnabled = if (uiState is AppUiState.Default) uiState.isTopicsEnabled else false,
+                isRecentActivityEnabled = if (uiState is AppUiState.Default) uiState.isRecentActivityEnabled else false,
                 onClick = onWidgetClick
             ),
             modifier = Modifier.padding(paddingValues)

@@ -50,7 +50,6 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.AppUnavailable)
-            assertTrue(result!!.shouldDisplayAppUnavailable)
         }
     }
 
@@ -63,7 +62,6 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.ForcedUpdate)
-            assertTrue(result!!.shouldDisplayForcedUpdate)
         }
     }
 
@@ -77,7 +75,6 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.AppUnavailable)
-            assertTrue(result!!.shouldDisplayAppUnavailable)
         }
     }
 
@@ -91,7 +88,6 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertFalse(result!!.shouldDisplayAppUnavailable)
         }
     }
 
@@ -106,7 +102,6 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.ForcedUpdate)
-            assertTrue(result!!.shouldDisplayForcedUpdate)
         }
     }
 
@@ -121,7 +116,6 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertFalse(result!!.shouldDisplayForcedUpdate)
         }
     }
 
@@ -136,7 +130,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertTrue(result!!.shouldDisplayRecommendUpdate)
+            assertTrue((result as AppUiState.Default).shouldDisplayRecommendUpdate)
         }
     }
 
@@ -151,7 +145,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertFalse(result!!.shouldDisplayRecommendUpdate)
+            assertFalse((result as AppUiState.Default).shouldDisplayRecommendUpdate)
         }
     }
 
@@ -166,7 +160,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertTrue(result!!.shouldDisplayAnalyticsConsent)
+            assertTrue((result as AppUiState.Default).shouldDisplayAnalyticsConsent)
         }
     }
 
@@ -181,7 +175,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertFalse(result!!.shouldDisplayAnalyticsConsent)
+            assertFalse((result as AppUiState.Default).shouldDisplayAnalyticsConsent)
         }
     }
 
@@ -197,7 +191,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertFalse(result!!.shouldDisplayOnboarding)
+            assertFalse((result as AppUiState.Default).shouldDisplayOnboarding)
         }
     }
 
@@ -213,7 +207,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertTrue(result!!.shouldDisplayOnboarding)
+            assertTrue((result as AppUiState.Default).shouldDisplayOnboarding)
         }
     }
 
@@ -229,7 +223,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertFalse(result!!.shouldDisplayOnboarding)
+            assertFalse((result as AppUiState.Default).shouldDisplayOnboarding)
         }
     }
 
@@ -245,7 +239,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertFalse(result!!.shouldDisplayOnboarding)
+            assertFalse((result as AppUiState.Default).shouldDisplayOnboarding)
         }
     }
 
@@ -261,7 +255,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertFalse(result!!.shouldDisplayTopicSelection)
+            assertFalse((result as AppUiState.Default).shouldDisplayTopicSelection)
         }
     }
 
@@ -277,7 +271,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertTrue(result!!.shouldDisplayTopicSelection)
+            assertTrue((result as AppUiState.Default).shouldDisplayTopicSelection)
         }
     }
 
@@ -293,7 +287,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertFalse(result!!.shouldDisplayTopicSelection)
+            assertFalse((result as AppUiState.Default).shouldDisplayTopicSelection)
         }
     }
 
@@ -309,7 +303,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertFalse(result!!.shouldDisplayTopicSelection)
+            assertFalse((result as AppUiState.Default).shouldDisplayTopicSelection)
         }
     }
 
@@ -324,7 +318,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertTrue(result!!.isSearchEnabled)
+            assertTrue((result as AppUiState.Default).isSearchEnabled)
         }
     }
 
@@ -339,7 +333,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertFalse(result!!.isSearchEnabled)
+            assertFalse((result as AppUiState.Default).isSearchEnabled)
         }
     }
 
@@ -354,7 +348,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertTrue(result!!.isRecentActivityEnabled)
+            assertTrue((result as AppUiState.Default).isRecentActivityEnabled)
         }
     }
 
@@ -369,7 +363,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertFalse(result!!.isRecentActivityEnabled)
+            assertFalse((result as AppUiState.Default).isRecentActivityEnabled)
         }
     }
 
@@ -384,7 +378,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertTrue(result!!.isTopicsEnabled)
+            assertTrue((result as AppUiState.Default).isTopicsEnabled)
         }
     }
 
@@ -399,7 +393,7 @@ class AppViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is AppUiState.Default)
-            assertFalse(result!!.isTopicsEnabled)
+            assertFalse((result as AppUiState.Default).isTopicsEnabled)
         }
     }
 

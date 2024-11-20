@@ -14,7 +14,6 @@ import uk.govuk.app.topics.extension.toTopicUi
 import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
 import uk.govuk.app.topics.navigation.TOPIC_SUBTOPIC_ARG
 import uk.govuk.app.visited.Visited
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,7 +49,7 @@ internal class TopicViewModel @Inject constructor(
                 getTopicResult.onFailure { exception ->
                     _uiState.value = when (exception) {
                         is DeviceOfflineException -> TopicUiState.Offline(ref)
-                        else -> TopicUiState.ServiceError(ref)
+                        else -> TopicUiState.ServiceError
                     }
                 }
             }
