@@ -1,5 +1,7 @@
 package uk.govuk.app.analytics
 
+import android.os.Bundle
+import androidx.core.os.bundleOf
 import com.google.firebase.analytics.FirebaseAnalytics
 import uk.gov.logging.api.analytics.AnalyticsEvent
 import uk.gov.logging.api.analytics.logging.AnalyticsLogger
@@ -36,15 +38,13 @@ class AnalyticsClient @Inject constructor(
     }
 
     override fun screenView(screenClass: String, screenName: String, title: String) {
-        log(
-            AnalyticsEvent(
-                eventType = FirebaseAnalytics.Event.SCREEN_VIEW,
-                parameters = parametersWithLanguage(
-                    mapOf(
-                        FirebaseAnalytics.Param.SCREEN_CLASS to screenClass,
-                        FirebaseAnalytics.Param.SCREEN_NAME to screenName,
-                        "screen_title" to title,
-                    )
+        firebaseAnalytics.logEvent(
+            FirebaseAnalytics.Event.SCREEN_VIEW,
+            bundleWithLanguage(
+                bundleOf(
+                    FirebaseAnalytics.Param.SCREEN_CLASS to screenClass,
+                    FirebaseAnalytics.Param.SCREEN_NAME to screenName,
+                    "screen_title" to title,
                 )
             )
         )
@@ -179,6 +179,13 @@ class AnalyticsClient @Inject constructor(
 
     private fun parametersWithLanguage(parameters: Map<String, Any>): Map<String, Any> {
         return parameters + Pair("language", Locale.getDefault().language)
+    }
+
+    private fun bundleWithLanguage(parameters: Bundle): Bundle {
+        val bundle = Bundle()
+        bundle.putString("language", Locale.getDefault().language)
+        bundle.putAll(parameters)
+        return bundle
     }
 
     private fun log(event: AnalyticsEvent) {
