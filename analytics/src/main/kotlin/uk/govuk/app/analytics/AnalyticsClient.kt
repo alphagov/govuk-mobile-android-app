@@ -136,28 +136,26 @@ class AnalyticsClient @Inject constructor(
         external: Boolean = false,
         section: String? = null
     ) {
-        val parameters = mutableMapOf(
+        val parameters = bundleOf(
             "type" to type,
             "external" to external,
         )
 
         text?.let {
-            parameters["text"] = it
+            parameters.putString("text", it)
         }
 
         url?.let {
-            parameters["url"] = it
+            parameters.putString("url", it)
         }
 
         section?.let {
-            parameters["section"] = it
+            parameters.putString("section", it)
         }
 
-        log(
-            AnalyticsEvent(
-                eventType = "Navigation",
-                parameters = parametersWithLanguage(parameters)
-            )
+        firebaseAnalytics.logEvent(
+            "Navigation",
+            bundleWithLanguage(parameters)
         )
     }
 
