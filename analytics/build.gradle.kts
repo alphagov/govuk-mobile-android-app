@@ -29,6 +29,16 @@ android {
     }
 }
 
+sonar {
+    // Exclude firebase analytics client as it uses bundles, which are troublesome to unit test
+    properties {
+        property(
+            "sonar.coverage.exclusions",
+            properties["sonar.coverage.exclusions"].toString() + ",**/FirebaseAnalyticsClient.*"
+        )
+    }
+}
+
 dependencies {
     implementation(projects.design)
 
