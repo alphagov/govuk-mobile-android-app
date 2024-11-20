@@ -3,7 +3,7 @@ package uk.govuk.app.analytics
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import com.google.firebase.analytics.FirebaseAnalytics
-import uk.gov.logging.api.analytics.logging.AnalyticsLogger
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import uk.govuk.app.analytics.data.AnalyticsRepo
 import uk.govuk.app.analytics.data.local.AnalyticsEnabledState
 import uk.govuk.app.analytics.extension.redactPii
@@ -13,9 +13,9 @@ import javax.inject.Singleton
 
 @Singleton
 class AnalyticsClient @Inject constructor(
-    private val analyticsLogger: AnalyticsLogger,
     private val analyticsRepo: AnalyticsRepo,
-    private val firebaseAnalytics: FirebaseAnalytics
+    private val firebaseAnalytics: FirebaseAnalytics,
+    private val firebaseCrashlytics: FirebaseCrashlytics
 ): Analytics {
 
     override suspend fun isAnalyticsConsentRequired(): Boolean {
@@ -28,12 +28,14 @@ class AnalyticsClient @Inject constructor(
 
     override suspend fun enable() {
         analyticsRepo.analyticsEnabled()
-        analyticsLogger.setEnabled(true)
+        firebaseAnalytics.setAnalyticsCollectionEnabled(true)
+        firebaseCrashlytics.setCrashlyticsCollectionEnabled(true)
     }
 
     override suspend fun disable() {
         analyticsRepo.analyticsDisabled()
-        analyticsLogger.setEnabled(false)
+        firebaseAnalytics.setAnalyticsCollectionEnabled(false)
+        firebaseCrashlytics.setCrashlyticsCollectionEnabled(false)
     }
 
     override fun screenView(screenClass: String, screenName: String, title: String) {

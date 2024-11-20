@@ -38,19 +38,6 @@ dependencies {
     implementation(libs.androidx.adaptive.android)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
-
-    implementation(libs.gov.logging.api) {
-        artifact {
-            classifier = "release"
-            type = "aar"
-        }
-    }
-    implementation(libs.gov.logging.impl) {
-        artifact {
-            classifier = "release"
-            type = "aar"
-        }
-    }
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)

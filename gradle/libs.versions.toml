@@ -19,7 +19,6 @@ crashlytics = "3.0.2"
 ossLicenses = "0.10.6"
 retrofit = "2.11.0"
 
-gov-logging = "0.4.4"
 firebaseBom = "33.1.2"
 
 realm = "2.0.0"
@@ -50,8 +49,6 @@ lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "
 androidx-adaptive-android = { group = "androidx.compose.material3.adaptive", name = "adaptive-android", version.ref = "adaptiveAndroid" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
 
-gov-logging-api = { group = "uk.gov.logging", name = "logging-api", version.ref = "gov-logging"}
-gov-logging-impl = { group = "uk.gov.logging", name = "logging-impl", version.ref = "gov-logging"}
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
