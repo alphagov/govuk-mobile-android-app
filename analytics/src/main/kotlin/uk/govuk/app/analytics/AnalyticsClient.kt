@@ -78,10 +78,10 @@ class AnalyticsClient @Inject constructor(
     }
 
     override fun search(searchTerm: String) {
-        log(
-            AnalyticsEvent(
-                eventType = "Search",
-                parameters = mapOf(
+        firebaseAnalytics.logEvent(
+            "Search",
+            bundleWithLanguage(
+                bundleOf(
                     "text" to searchTerm.redactPii()
                 )
             )
