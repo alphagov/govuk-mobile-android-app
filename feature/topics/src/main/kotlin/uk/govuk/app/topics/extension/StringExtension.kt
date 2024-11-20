@@ -5,8 +5,8 @@ import uk.govuk.app.topics.R
 import java.util.Locale
 
 /**
- * Maps a topic reference to a topic name and returns it
- * If the reference cannot be mapped then the reference is formatted and returned
+ * Maps a topic reference to a topic name and returns it.
+ * If the reference cannot be mapped then the reference is formatted and returned.
  */
 fun String.toTopicName(context: Context): String {
     return when (this) {

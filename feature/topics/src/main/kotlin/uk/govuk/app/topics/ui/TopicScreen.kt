@@ -255,7 +255,7 @@ private fun OfflineScreen(
 
 @Preview
 @Composable
-private fun TestOfflineScreen() {
+private fun OfflineScreenPreview() {
     GovUkTheme {
         OfflineScreen(
             "benefits", {}, {}, {}
