@@ -74,15 +74,20 @@ internal fun TopicRoute(
                 )
             }
 
-            is TopicUiState.Offline -> OfflineScreen(
+            is TopicUiState.Offline -> NetworkError(
                 topicReference = it.topicReference,
                 onPageView = { title -> viewModel.onPageView(title) },
                 onBack = onBack,
-                onTryAgainClick = { viewModel.getTopic() },
-                modifier = modifier
+                content = { OfflineMessage(modifier = modifier) { viewModel.getTopic() } }
             )
 
-            is TopicUiState.ServiceError -> ServiceNotRespondingMessage()
+
+            is TopicUiState.ServiceError -> NetworkError(
+                topicReference = it.topicReference,
+                onPageView = { title -> viewModel.onPageView(title) },
+                onBack = onBack,
+                content = { ServiceNotRespondingMessage(modifier = modifier) }
+            )
         }
     }
 }
@@ -228,12 +233,11 @@ private fun LazyListScope.subtopics(
 }
 
 @Composable
-private fun OfflineScreen(
+private fun NetworkError(
     topicReference: String,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
-    onTryAgainClick: () -> Unit,
-    modifier: Modifier = Modifier
+    content: @Composable () -> Unit
 ) {
     val topicName = topicReference.toTopicName(LocalContext.current)
 
@@ -246,19 +250,33 @@ private fun OfflineScreen(
             text = topicName,
             onBack = onBack
         )
-        OfflineMessage(
-            onTryAgainClick = onTryAgainClick,
-            modifier = modifier
+
+        content()
+    }
+}
+
+@Preview
+@Composable
+private fun NetworkErrorOfflinePreview() {
+    GovUkTheme {
+        NetworkError(
+            topicReference = "benefits",
+            onPageView = {},
+            onBack = {},
+            content = { OfflineMessage {} }
         )
     }
 }
 
 @Preview
 @Composable
-private fun OfflineScreenPreview() {
+private fun NetworkErrorServiceNotRespondingPreview() {
     GovUkTheme {
-        OfflineScreen(
-            "benefits", {}, {}, {}
+        NetworkError(
+            topicReference = "benefits",
+            onPageView = {},
+            onBack = {},
+            content = { ServiceNotRespondingMessage() }
         )
     }
 }
