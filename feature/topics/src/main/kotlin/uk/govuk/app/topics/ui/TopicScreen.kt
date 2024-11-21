@@ -26,7 +26,7 @@ import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.networking.ui.component.OfflineMessage
-import uk.govuk.app.networking.ui.component.ServiceNotRespondingMessage
+import uk.govuk.app.networking.ui.component.ProblemMessage
 import uk.govuk.app.topics.R
 import uk.govuk.app.topics.TopicUiState
 import uk.govuk.app.topics.TopicViewModel
@@ -86,7 +86,7 @@ internal fun TopicRoute(
                 topicReference = it.topicReference,
                 onPageView = { title -> viewModel.onPageView(title) },
                 onBack = onBack,
-                content = { ServiceNotRespondingMessage(modifier = modifier) }
+                content = { ProblemMessage(modifier = modifier) }
             )
         }
     }
@@ -270,13 +270,13 @@ private fun NetworkErrorOfflinePreview() {
 
 @Preview
 @Composable
-private fun NetworkErrorServiceNotRespondingPreview() {
+private fun NetworkErrorProblemScreenPreview() {
     GovUkTheme {
         NetworkError(
             topicReference = "benefits",
             onPageView = {},
             onBack = {},
-            content = { ServiceNotRespondingMessage() }
+            content = { ProblemMessage() }
         )
     }
 }

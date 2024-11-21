@@ -2,7 +2,6 @@ package uk.govuk.app.search.ui
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,22 +24,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
-import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.GovUkCard
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.networking.ui.component.OfflineMessage
-import uk.govuk.app.networking.ui.component.ServiceNotRespondingMessage
+import uk.govuk.app.networking.ui.component.ProblemMessage
 import uk.govuk.app.search.R
 import uk.govuk.app.search.SearchUiState
 import uk.govuk.app.search.SearchViewModel
 import uk.govuk.app.search.data.remote.model.Result
-import uk.govuk.app.search.domain.SearchConfig
 import uk.govuk.app.search.domain.StringUtils
 import uk.govuk.app.search.ui.component.SearchHeader
 
@@ -115,7 +111,7 @@ private fun SearchScreen(
                 is SearchUiState.Offline -> OfflineMessage(onTryAgainClick = {
                     viewModel.onSearch(it.searchTerm)
                 })
-                is SearchUiState.ServiceError -> ServiceNotRespondingMessage()
+                is SearchUiState.ServiceError -> ProblemMessage()
             }
         } ?: ShowNothing()
     }
