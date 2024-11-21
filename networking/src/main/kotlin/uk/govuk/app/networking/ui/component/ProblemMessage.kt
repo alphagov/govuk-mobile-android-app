@@ -12,7 +12,7 @@ import uk.govuk.app.networking.R
 import uk.govuk.app.networking.domain.Constants.GOV_UK_URL
 
 @Composable
-fun ServiceNotRespondingMessage(
+fun ProblemMessage(
     modifier: Modifier = Modifier,
     title: String? = null,
     description: String? = null,
@@ -27,8 +27,8 @@ fun ServiceNotRespondingMessage(
     }
 
     Message(
-        title = title ?: stringResource(R.string.service_not_responding_title),
-        description = description ?: stringResource(R.string.service_not_responding_description),
+        title = title ?: stringResource(R.string.problem_title),
+        description = description ?: stringResource(R.string.problem_description),
         linkTitle = linkTitle ?: stringResource(R.string.go_to_the_gov_uk_website),
         modifier = modifier,
         hasExternalLink = true,
@@ -38,8 +38,8 @@ fun ServiceNotRespondingMessage(
 
 @Preview
 @Composable
-private fun ServiceNotRespondingMessagePreview() {
+private fun ProblemMessagePreview() {
     GovUkTheme {
-        ServiceNotRespondingMessage(onLinkClick = {})
+        ProblemMessage(onLinkClick = {})
     }
 }

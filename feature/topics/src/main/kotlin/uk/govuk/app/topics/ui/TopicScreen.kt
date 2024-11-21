@@ -26,7 +26,7 @@ import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.networking.ui.component.OfflineMessage
-import uk.govuk.app.networking.ui.component.ServiceNotRespondingMessage
+import uk.govuk.app.networking.ui.component.ProblemMessage
 import uk.govuk.app.topics.R
 import uk.govuk.app.topics.TopicUiState
 import uk.govuk.app.topics.TopicViewModel
@@ -74,15 +74,20 @@ internal fun TopicRoute(
                 )
             }
 
-            is TopicUiState.Offline -> OfflineScreen(
+            is TopicUiState.Offline -> ErrorScreen(
                 topicReference = it.topicReference,
                 onPageView = { title -> viewModel.onPageView(title) },
                 onBack = onBack,
-                onTryAgainClick = { viewModel.getTopic() },
-                modifier = modifier
+                content = { OfflineMessage(modifier = modifier) { viewModel.getTopic() } }
             )
 
-            is TopicUiState.ServiceError -> ServiceNotRespondingMessage()
+
+            is TopicUiState.ServiceError -> ErrorScreen(
+                topicReference = it.topicReference,
+                onPageView = { title -> viewModel.onPageView(title) },
+                onBack = onBack,
+                content = { ProblemMessage(modifier = modifier) }
+            )
         }
     }
 }
@@ -228,12 +233,11 @@ private fun LazyListScope.subtopics(
 }
 
 @Composable
-private fun OfflineScreen(
+private fun ErrorScreen(
     topicReference: String,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
-    onTryAgainClick: () -> Unit,
-    modifier: Modifier = Modifier
+    content: @Composable () -> Unit
 ) {
     val topicName = topicReference.toTopicName(LocalContext.current)
 
@@ -246,19 +250,33 @@ private fun OfflineScreen(
             text = topicName,
             onBack = onBack
         )
-        OfflineMessage(
-            onTryAgainClick = onTryAgainClick,
-            modifier = modifier
+
+        content()
+    }
+}
+
+@Preview
+@Composable
+private fun ErrorScreenOfflinePreview() {
+    GovUkTheme {
+        ErrorScreen(
+            topicReference = "benefits",
+            onPageView = {},
+            onBack = {},
+            content = { OfflineMessage {} }
         )
     }
 }
 
 @Preview
 @Composable
-private fun OfflineScreenPreview() {
+private fun ErrorScreenProblemPreview() {
     GovUkTheme {
-        OfflineScreen(
-            "benefits", {}, {}, {}
+        ErrorScreen(
+            topicReference = "benefits",
+            onPageView = {},
+            onBack = {},
+            content = { ProblemMessage() }
         )
     }
 }
