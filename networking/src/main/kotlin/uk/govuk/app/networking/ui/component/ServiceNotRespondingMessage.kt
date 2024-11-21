@@ -3,6 +3,7 @@ package uk.govuk.app.networking.ui.component
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -12,6 +13,7 @@ import uk.govuk.app.networking.domain.Constants.GOV_UK_URL
 
 @Composable
 fun ServiceNotRespondingMessage(
+    modifier: Modifier = Modifier,
     title: String? = null,
     description: String? = null,
     linkTitle: String? = null,
@@ -28,6 +30,7 @@ fun ServiceNotRespondingMessage(
         title = title ?: stringResource(R.string.service_not_responding_title),
         description = description ?: stringResource(R.string.service_not_responding_description),
         linkTitle = linkTitle ?: stringResource(R.string.go_to_the_gov_uk_website),
+        modifier = modifier,
         hasExternalLink = true,
         onLinkClick = messageOnLinkClick
     )

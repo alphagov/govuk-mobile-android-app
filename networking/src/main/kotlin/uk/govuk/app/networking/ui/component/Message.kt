@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,12 +25,15 @@ internal fun Message(
     title: String,
     description: String,
     linkTitle: String,
+    modifier: Modifier = Modifier,
     hasExternalLink: Boolean = false,
     onLinkClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
             Modifier.padding(
@@ -64,11 +69,7 @@ internal fun Message(
 
         Row(
             Modifier
-                .padding(
-                    start = GovUkTheme.spacing.large,
-                    top = GovUkTheme.spacing.large,
-                    end = GovUkTheme.spacing.large
-                )
+                .padding(all = GovUkTheme.spacing.large)
                 .clickable(onClick = { onLinkClick() }),
             verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.Center

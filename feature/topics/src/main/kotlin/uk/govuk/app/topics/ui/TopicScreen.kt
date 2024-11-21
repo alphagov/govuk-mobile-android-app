@@ -78,7 +78,8 @@ internal fun TopicRoute(
                 topicReference = it.topicReference,
                 onPageView = { title -> viewModel.onPageView(title) },
                 onBack = onBack,
-                onTryAgainClick = { viewModel.getTopic() }
+                onTryAgainClick = { viewModel.getTopic() },
+                modifier = modifier
             )
 
             is TopicUiState.ServiceError -> ServiceNotRespondingMessage()
@@ -236,7 +237,7 @@ private fun OfflineScreen(
 ) {
     val topicName = topicReference.toTopicName(LocalContext.current)
 
-    Column(modifier.fillMaxSize()) {
+    Column {
         LaunchedEffect(Unit) {
             onPageView(topicName)
         }
@@ -245,7 +246,10 @@ private fun OfflineScreen(
             text = topicName,
             onBack = onBack
         )
-        OfflineMessage(onTryAgainClick = onTryAgainClick)
+        OfflineMessage(
+            onTryAgainClick = onTryAgainClick,
+            modifier = modifier
+        )
     }
 }
 
