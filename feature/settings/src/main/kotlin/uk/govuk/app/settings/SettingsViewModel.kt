@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.settings.BuildConfig.ACCESSIBILITY_STATEMENT_EVENT
 import uk.govuk.app.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
 import uk.govuk.app.settings.BuildConfig.HELP_AND_FEEDBACK_EVENT
@@ -24,7 +24,7 @@ internal data class SettingsUiState(
 
 @HiltViewModel
 internal class SettingsViewModel @Inject constructor(
-    private val analytics: Analytics
+    private val analyticsClient: AnalyticsClient
 ): ViewModel() {
 
     companion object {
@@ -39,13 +39,13 @@ internal class SettingsViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _uiState.value = SettingsUiState(
-                isAnalyticsEnabled = analytics.isAnalyticsEnabled(),
+                isAnalyticsEnabled = analyticsClient.isAnalyticsEnabled(),
             )
         }
     }
 
     fun onPageView() {
-        analytics.screenView(
+        analyticsClient.screenView(
             screenClass = SCREEN_CLASS,
             screenName = SCREEN_NAME,
             title = TITLE
@@ -53,7 +53,7 @@ internal class SettingsViewModel @Inject constructor(
     }
 
     fun onLicenseView() {
-        analytics.screenView(
+        analyticsClient.screenView(
             screenClass = OPEN_SOURCE_LICENCE_EVENT,
             screenName = OPEN_SOURCE_LICENCE_EVENT,
             title = OPEN_SOURCE_LICENCE_EVENT
@@ -61,28 +61,28 @@ internal class SettingsViewModel @Inject constructor(
     }
 
     fun onHelpAndFeedbackView() {
-        analytics.settingsItemClick(
+        analyticsClient.settingsItemClick(
             text = HELP_AND_FEEDBACK_EVENT,
             url = HELP_AND_FEEDBACK_URL
         )
     }
 
     fun onPrivacyPolicyView() {
-        analytics.settingsItemClick(
+        analyticsClient.settingsItemClick(
             text = PRIVACY_POLICY_EVENT,
             url = PRIVACY_POLICY_URL
         )
     }
 
     fun onAccessibilityStatementView() {
-        analytics.settingsItemClick(
+        analyticsClient.settingsItemClick(
             text = ACCESSIBILITY_STATEMENT_EVENT,
             url = ACCESSIBILITY_STATEMENT_URL
         )
     }
 
     fun onTermsAndConditionsView() {
-        analytics.settingsItemClick(
+        analyticsClient.settingsItemClick(
             text = TERMS_AND_CONDITIONS_EVENT,
             url = TERMS_AND_CONDITIONS_URL
         )
@@ -91,9 +91,9 @@ internal class SettingsViewModel @Inject constructor(
     fun onAnalyticsConsentChanged(enabled: Boolean) {
         viewModelScope.launch {
             if (enabled) {
-                analytics.enable()
+                analyticsClient.enable()
             } else {
-                analytics.disable()
+                analyticsClient.disable()
             }
             _uiState.value = SettingsUiState(
                 isAnalyticsEnabled = enabled

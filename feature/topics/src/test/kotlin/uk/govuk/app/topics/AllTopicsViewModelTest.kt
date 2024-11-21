@@ -16,7 +16,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.domain.model.TopicItem
 import uk.govuk.app.topics.ui.model.TopicItemUi
@@ -26,7 +26,7 @@ class AllTopicsViewModelTest {
 
     private val dispatcher = UnconfinedTestDispatcher()
     private val topicsRepo = mockk<TopicsRepo>(relaxed = true)
-    private val analytics = mockk<Analytics>(relaxed = true)
+    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
 
     @Before
     fun setup() {
@@ -61,7 +61,7 @@ class AllTopicsViewModelTest {
             )
         )
 
-        val viewModel = AllTopicsViewModel(topicsRepo, analytics)
+        val viewModel = AllTopicsViewModel(topicsRepo, analyticsClient)
 
         runTest {
             val result = viewModel.topics.first()
@@ -73,12 +73,12 @@ class AllTopicsViewModelTest {
 
     @Test
     fun `Given a page view, then log analytics`() {
-        val viewModel = AllTopicsViewModel(topicsRepo, analytics)
+        val viewModel = AllTopicsViewModel(topicsRepo, analyticsClient)
 
         viewModel.onPageView("title")
 
         verify {
-            analytics.screenView(
+            analyticsClient.screenView(
                 screenClass = "AllTopicsScreen",
                 screenName = "All Topics",
                 title = "title"
@@ -88,12 +88,12 @@ class AllTopicsViewModelTest {
 
     @Test
     fun `Given a click, then log analytics`() {
-        val viewModel = AllTopicsViewModel(topicsRepo, analytics)
+        val viewModel = AllTopicsViewModel(topicsRepo, analyticsClient)
 
         viewModel.onClick("title")
 
         verify {
-            analytics.buttonClick("title")
+            analyticsClient.buttonClick("title")
         }
     }
 

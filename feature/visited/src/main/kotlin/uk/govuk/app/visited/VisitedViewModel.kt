@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.visited.data.VisitedRepo
 import uk.govuk.app.visited.data.transformVisitedItems
 import uk.govuk.app.visited.ui.model.VisitedUi
@@ -22,7 +22,7 @@ internal data class VisitedUiState(
 internal class VisitedViewModel @Inject constructor(
     private val visitedRepo: VisitedRepo,
     private val visited: Visited,
-    private val analytics: Analytics
+    private val analyticsClient: AnalyticsClient
 ): ViewModel() {
 
     companion object {
@@ -45,7 +45,7 @@ internal class VisitedViewModel @Inject constructor(
     }
 
     fun onPageView() {
-        analytics.screenView(
+        analyticsClient.screenView(
             screenClass = VIEW_SCREEN_CLASS,
             screenName = SCREEN_NAME,
             title = SCREEN_TITLE
@@ -53,7 +53,7 @@ internal class VisitedViewModel @Inject constructor(
     }
 
     fun onEditPageView() {
-        analytics.screenView(
+        analyticsClient.screenView(
             screenClass = EDIT_SCREEN_CLASS,
             screenName = SCREEN_NAME,
             title = SCREEN_TITLE
@@ -64,6 +64,6 @@ internal class VisitedViewModel @Inject constructor(
         viewModelScope.launch {
             visited.visitableItemClick(title = title, url = url)
         }
-        analytics.visitedItemClick(text = title, url = url)
+        analyticsClient.visitedItemClick(text = title, url = url)
     }
 }

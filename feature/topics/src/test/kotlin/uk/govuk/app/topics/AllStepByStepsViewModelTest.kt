@@ -17,7 +17,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.data.remote.model.RemoteTopic
 import uk.govuk.app.topics.data.remote.model.RemoteTopic.RemoteTopicContent
@@ -34,7 +34,7 @@ class AllStepByStepsViewModelTest {
 
     private val dispatcher = UnconfinedTestDispatcher()
     private val topicsRepo = mockk<TopicsRepo>(relaxed = true)
-    private val analytics = mockk<Analytics>(relaxed = true)
+    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val savedStateHandle = mockk<SavedStateHandle>(relaxed = true)
     private val visited = mockk<Visited>(relaxed = true)
 
@@ -74,7 +74,7 @@ class AllStepByStepsViewModelTest {
             )
         )
 
-        val viewModel = AllStepByStepsViewModel(topicsRepo, analytics, visited, savedStateHandle)
+        val viewModel = AllStepByStepsViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
         runTest {
             val result = viewModel.stepBySteps.first()
@@ -84,12 +84,12 @@ class AllStepByStepsViewModelTest {
 
     @Test
     fun `Given a page view, then log analytics`() {
-        val viewModel = AllStepByStepsViewModel(topicsRepo, analytics, visited, savedStateHandle)
+        val viewModel = AllStepByStepsViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
         viewModel.onPageView("title")
 
         verify {
-            analytics.screenView(
+            analyticsClient.screenView(
                 screenClass = "AllStepByStepsScreen",
                 screenName = "title",
                 title = "title"
@@ -99,7 +99,7 @@ class AllStepByStepsViewModelTest {
 
     @Test
     fun `Given a step by step click, then log analytics`() {
-        val viewModel = AllStepByStepsViewModel(topicsRepo, analytics, visited, savedStateHandle)
+        val viewModel = AllStepByStepsViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
         viewModel.onStepByStepClick(
             section = "section",
@@ -108,7 +108,7 @@ class AllStepByStepsViewModelTest {
         )
 
         verify {
-            analytics.buttonClick(
+            analyticsClient.buttonClick(
                 text = "text",
                 url = "url",
                 external = true,
@@ -119,7 +119,7 @@ class AllStepByStepsViewModelTest {
 
     @Test
     fun `Given a step by step click, then log visited item`() {
-        val viewModel = AllStepByStepsViewModel(topicsRepo, analytics, visited, savedStateHandle)
+        val viewModel = AllStepByStepsViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
         viewModel.onStepByStepClick(
             section = "section",

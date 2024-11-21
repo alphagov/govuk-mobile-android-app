@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.networking.domain.DeviceOfflineException
 import uk.govuk.app.search.data.SearchRepo
 import uk.govuk.app.visited.Visited
@@ -14,10 +14,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class SearchViewModel @Inject constructor(
-    private val analytics: Analytics,
+    private val analyticsClient: AnalyticsClient,
     private val visited: Visited,
     private val repository: SearchRepo
-) : ViewModel() {
+): ViewModel() {
 
     private val _uiState: MutableStateFlow<SearchUiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
@@ -47,7 +47,7 @@ internal class SearchViewModel @Inject constructor(
     }
 
     fun onPageView() {
-        analytics.screenView(
+        analyticsClient.screenView(
             screenClass = SCREEN_CLASS,
             screenName = SCREEN_NAME,
             title = TITLE
@@ -56,11 +56,11 @@ internal class SearchViewModel @Inject constructor(
 
     fun onSearch(searchTerm: String) {
         fetchSearchResults(searchTerm)
-        analytics.search(searchTerm)
+        analyticsClient.search(searchTerm)
     }
 
     fun onSearchResultClicked(title: String, url: String) {
-        analytics.searchResultClick(text = title, url = url)
+        analyticsClient.searchResultClick(text = title, url = url)
         viewModelScope.launch {
             visited.visitableItemClick(title = title, url = url)
         }

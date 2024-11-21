@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.extension.toTopicItemUi
 import uk.govuk.app.topics.ui.model.TopicItemUi
@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 internal class AllTopicsViewModel @Inject constructor(
     private val topicsRepo: TopicsRepo,
-    private val analytics: Analytics
+    private val analyticsClient: AnalyticsClient
 ): ViewModel() {
 
     companion object {
@@ -36,7 +36,7 @@ internal class AllTopicsViewModel @Inject constructor(
     }
 
     fun onPageView(title: String) {
-        analytics.screenView(
+        analyticsClient.screenView(
             screenClass = SCREEN_CLASS,
             screenName = SCREEN_NAME,
             title = title
@@ -44,6 +44,6 @@ internal class AllTopicsViewModel @Inject constructor(
     }
 
     fun onClick(title: String) {
-        analytics.buttonClick(title)
+        analyticsClient.buttonClick(title)
     }
 }

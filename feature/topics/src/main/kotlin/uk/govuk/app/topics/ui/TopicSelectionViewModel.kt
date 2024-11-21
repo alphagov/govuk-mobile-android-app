@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.topics.ANALYTICS_TOGGLE_FUNCTION_ACTION_DESELECTED
 import uk.govuk.app.topics.ANALYTICS_TOGGLE_FUNCTION_ACTION_SELECTED
 import uk.govuk.app.topics.ANALYTICS_TOGGLE_FUNCTION_SECTION
@@ -23,7 +23,7 @@ internal data class TopicSelectionUiState(
 @HiltViewModel
 internal class TopicSelectionViewModel @Inject constructor(
     private val topicsRepo: TopicsRepo,
-    private val analytics: Analytics
+    private val analyticsClient: AnalyticsClient
 ): ViewModel() {
 
     companion object {
@@ -52,7 +52,7 @@ internal class TopicSelectionViewModel @Inject constructor(
     }
 
     fun onPageView(title: String) {
-        analytics.screenView(
+        analyticsClient.screenView(
             screenClass = SCREEN_CLASS,
             screenName = SCREEN_NAME,
             title = title
@@ -68,7 +68,7 @@ internal class TopicSelectionViewModel @Inject constructor(
             ANALYTICS_TOGGLE_FUNCTION_ACTION_SELECTED
         }
 
-        analytics.buttonFunction(
+        analyticsClient.buttonFunction(
             text = title,
             section = ANALYTICS_TOGGLE_FUNCTION_SECTION,
             action = action
@@ -87,7 +87,8 @@ internal class TopicSelectionViewModel @Inject constructor(
     }
 
     fun onDone(text: String) {
-        analytics.buttonClick(text)
+        analyticsClient.buttonClick(text)
+        analyticsClient.topicsCustomised()
         viewModelScope.launch {
             for (ref in selectedTopicRefs) {
                 topicsRepo.selectTopic(ref)
@@ -96,7 +97,7 @@ internal class TopicSelectionViewModel @Inject constructor(
     }
 
     fun onSkip(text: String) {
-        analytics.buttonClick(text)
+        analyticsClient.buttonClick(text)
     }
 
 }

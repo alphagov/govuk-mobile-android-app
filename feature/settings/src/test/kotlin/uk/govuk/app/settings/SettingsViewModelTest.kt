@@ -16,7 +16,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.settings.BuildConfig.ACCESSIBILITY_STATEMENT_EVENT
 import uk.govuk.app.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
 import uk.govuk.app.settings.BuildConfig.HELP_AND_FEEDBACK_EVENT
@@ -31,7 +31,7 @@ import uk.govuk.app.settings.BuildConfig.TERMS_AND_CONDITIONS_URL
 class SettingsViewModelTest {
 
     private val dispatcher = UnconfinedTestDispatcher()
-    private val analytics = mockk<Analytics>(relaxed = true)
+    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
 
     @Before
     fun setup() {
@@ -45,9 +45,9 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given analytics are enabled, When init, then return analytics enabled`() {
-        coEvery { analytics.isAnalyticsEnabled() } returns true
+        coEvery { analyticsClient.isAnalyticsEnabled() } returns true
 
-        val viewModel = SettingsViewModel(analytics)
+        val viewModel = SettingsViewModel(analyticsClient)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -57,9 +57,9 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given analytics are disabled, When init, then return analytics disabled`() {
-        coEvery { analytics.isAnalyticsEnabled() } returns false
+        coEvery { analyticsClient.isAnalyticsEnabled() } returns false
 
-        val viewModel = SettingsViewModel(analytics)
+        val viewModel = SettingsViewModel(analyticsClient)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -69,12 +69,12 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given a page view, then log analytics`() {
-        val viewModel = SettingsViewModel(analytics)
+        val viewModel = SettingsViewModel(analyticsClient)
 
         viewModel.onPageView()
 
         verify {
-            analytics.screenView(
+            analyticsClient.screenView(
                 screenClass = "SettingsScreen",
                 screenName = "Settings",
                 title = "Settings"
@@ -84,7 +84,7 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given analytics have been enabled, then update and emit ui state`() {
-        val viewModel = SettingsViewModel(analytics)
+        val viewModel = SettingsViewModel(analyticsClient)
 
         viewModel.onAnalyticsConsentChanged(true)
 
@@ -93,14 +93,14 @@ class SettingsViewModelTest {
             assertTrue(result!!.isAnalyticsEnabled)
 
             coVerify {
-                analytics.enable()
+                analyticsClient.enable()
             }
         }
     }
 
     @Test
     fun `Given analytics have been disabled, then update and emit ui state`() {
-        val viewModel = SettingsViewModel(analytics)
+        val viewModel = SettingsViewModel(analyticsClient)
 
         viewModel.onAnalyticsConsentChanged(false)
 
@@ -109,19 +109,19 @@ class SettingsViewModelTest {
             assertFalse(result!!.isAnalyticsEnabled)
 
             coVerify {
-                analytics.disable()
+                analyticsClient.disable()
             }
         }
     }
 
     @Test
     fun `Given a license page view, then log analytics`() {
-        val viewModel = SettingsViewModel(analytics)
+        val viewModel = SettingsViewModel(analyticsClient)
 
         viewModel.onLicenseView()
 
         verify {
-            analytics.screenView(
+            analyticsClient.screenView(
                 screenClass = OPEN_SOURCE_LICENCE_EVENT,
                 screenName = OPEN_SOURCE_LICENCE_EVENT,
                 title = OPEN_SOURCE_LICENCE_EVENT
@@ -131,12 +131,12 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given a help and feedback page view, then log analytics`() {
-        val viewModel = SettingsViewModel(analytics)
+        val viewModel = SettingsViewModel(analyticsClient)
 
         viewModel.onHelpAndFeedbackView()
 
         verify {
-            analytics.settingsItemClick(
+            analyticsClient.settingsItemClick(
                 text = HELP_AND_FEEDBACK_EVENT,
                 url = HELP_AND_FEEDBACK_URL
             )
@@ -145,12 +145,12 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given a privacy policy page view, then log analytics`() {
-        val viewModel = SettingsViewModel(analytics)
+        val viewModel = SettingsViewModel(analyticsClient)
 
         viewModel.onPrivacyPolicyView()
 
         verify {
-            analytics.settingsItemClick(
+            analyticsClient.settingsItemClick(
                 text = PRIVACY_POLICY_EVENT,
                 url = PRIVACY_POLICY_URL
             )
@@ -159,11 +159,11 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given a accessibility statement page view, then log analytics`() {
-        val viewModel = SettingsViewModel(analytics)
+        val viewModel = SettingsViewModel(analyticsClient)
 
         viewModel.onAccessibilityStatementView()
 
-        analytics.settingsItemClick(
+        analyticsClient.settingsItemClick(
             text = ACCESSIBILITY_STATEMENT_EVENT,
             url = ACCESSIBILITY_STATEMENT_URL
         )
@@ -171,11 +171,11 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given a terms and conditions page view, then log analytics`() {
-        val viewModel = SettingsViewModel(analytics)
+        val viewModel = SettingsViewModel(analyticsClient)
 
         viewModel.onTermsAndConditionsView()
 
-        analytics.settingsItemClick(
+        analyticsClient.settingsItemClick(
             text = TERMS_AND_CONDITIONS_EVENT,
             url = TERMS_AND_CONDITIONS_URL
         )

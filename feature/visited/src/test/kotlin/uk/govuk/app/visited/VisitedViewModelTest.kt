@@ -16,7 +16,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.visited.data.VisitedRepo
 import uk.govuk.app.visited.data.localDateFormatter
 import uk.govuk.app.visited.domain.model.VisitedItemUi
@@ -28,7 +28,7 @@ import java.time.ZoneOffset
 class VisitedViewModelTest {
     private val dispatcher = UnconfinedTestDispatcher()
     private val visitedRepo = mockk<VisitedRepo>(relaxed = true)
-    private val analytics = mockk<Analytics>(relaxed = true)
+    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val visited = mockk<Visited>(relaxed = true)
 
     @Before
@@ -43,12 +43,12 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given a page view, then log analytics`() {
-        val viewModel = VisitedViewModel(visitedRepo, visited, analytics)
+        val viewModel = VisitedViewModel(visitedRepo, visited, analyticsClient)
 
         viewModel.onPageView()
 
         verify {
-            analytics.screenView(
+            analyticsClient.screenView(
                 screenClass = "VisitedScreen",
                 screenName = "Pages you've visited",
                 title = "Pages you've visited"
@@ -58,12 +58,12 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given an edit page view, then log analytics`() {
-        val viewModel = VisitedViewModel(visitedRepo, visited, analytics)
+        val viewModel = VisitedViewModel(visitedRepo, visited, analyticsClient)
 
         viewModel.onEditPageView()
 
         verify {
-            analytics.screenView(
+            analyticsClient.screenView(
                 screenClass = "EditVisitedScreen",
                 screenName = "Pages you've visited",
                 title = "Pages you've visited"
@@ -73,7 +73,7 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given the user re-views a visited item, then run the insert or update function`() {
-        val viewModel = VisitedViewModel(visitedRepo, visited, analytics)
+        val viewModel = VisitedViewModel(visitedRepo, visited, analyticsClient)
 
         runTest {
             viewModel.onVisitedItemClicked("visited item title", "visited item title")
@@ -121,7 +121,7 @@ class VisitedViewModelTest {
 
         coEvery { visitedRepo.visitedItems } returns flowOf(visitedItems)
 
-        val viewModel = VisitedViewModel(visitedRepo, visited, analytics)
+        val viewModel = VisitedViewModel(visitedRepo, visited, analyticsClient)
 
         runTest {
             assertEquals(expected, viewModel.uiState.first())
@@ -135,7 +135,7 @@ class VisitedViewModelTest {
 
         coEvery { visitedRepo.visitedItems } returns flowOf(visitedItems)
 
-        val viewModel = VisitedViewModel(visitedRepo, visited, analytics)
+        val viewModel = VisitedViewModel(visitedRepo, visited, analyticsClient)
         viewModel.onPageView()
 
         runTest {
