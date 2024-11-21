@@ -100,7 +100,7 @@ internal fun GovUkApp() {
 
 @Composable
 private fun BottomNavScaffold(
-    uiState: AppUiState,
+    uiState: AppUiState.Default,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
@@ -206,7 +206,7 @@ private fun BottomNav(
 @Composable
 private fun GovUkNavHost(
     navController: NavHostController,
-    uiState: AppUiState,
+    uiState: AppUiState.Default,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     onWidgetClick: (String) -> Unit,
@@ -245,9 +245,9 @@ private fun GovUkNavHost(
         homeGraph(
             widgets = homeScreenWidgets(
                 navController = navController,
-                isSearchEnabled = if (uiState is AppUiState.Default) uiState.isSearchEnabled else false,
-                isTopicsEnabled = if (uiState is AppUiState.Default) uiState.isTopicsEnabled else false,
-                isRecentActivityEnabled = if (uiState is AppUiState.Default) uiState.isRecentActivityEnabled else false,
+                isSearchEnabled = uiState.isSearchEnabled,
+                isTopicsEnabled = uiState.isTopicsEnabled,
+                isRecentActivityEnabled = uiState.isRecentActivityEnabled,
                 onClick = onWidgetClick
             ),
             modifier = Modifier.padding(paddingValues)
