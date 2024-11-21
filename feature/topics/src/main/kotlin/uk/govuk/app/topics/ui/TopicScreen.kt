@@ -74,7 +74,7 @@ internal fun TopicRoute(
                 )
             }
 
-            is TopicUiState.Offline -> NetworkErrorScreen(
+            is TopicUiState.Offline -> ErrorScreen(
                 topicReference = it.topicReference,
                 onPageView = { title -> viewModel.onPageView(title) },
                 onBack = onBack,
@@ -82,7 +82,7 @@ internal fun TopicRoute(
             )
 
 
-            is TopicUiState.ServiceError -> NetworkErrorScreen(
+            is TopicUiState.ServiceError -> ErrorScreen(
                 topicReference = it.topicReference,
                 onPageView = { title -> viewModel.onPageView(title) },
                 onBack = onBack,
@@ -233,7 +233,7 @@ private fun LazyListScope.subtopics(
 }
 
 @Composable
-private fun NetworkErrorScreen(
+private fun ErrorScreen(
     topicReference: String,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
@@ -257,9 +257,9 @@ private fun NetworkErrorScreen(
 
 @Preview
 @Composable
-private fun NetworkErrorScreenOfflinePreview() {
+private fun ErrorScreenOfflinePreview() {
     GovUkTheme {
-        NetworkErrorScreen(
+        ErrorScreen(
             topicReference = "benefits",
             onPageView = {},
             onBack = {},
@@ -270,9 +270,9 @@ private fun NetworkErrorScreenOfflinePreview() {
 
 @Preview
 @Composable
-private fun NetworkErrorScreenProblemPreview() {
+private fun ErrorScreenProblemPreview() {
     GovUkTheme {
-        NetworkErrorScreen(
+        ErrorScreen(
             topicReference = "benefits",
             onPageView = {},
             onBack = {},
