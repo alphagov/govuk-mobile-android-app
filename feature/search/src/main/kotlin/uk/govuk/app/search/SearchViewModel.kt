@@ -7,24 +7,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.Analytics
+import uk.govuk.app.networking.domain.DeviceOfflineException
 import uk.govuk.app.search.data.SearchRepo
-import uk.govuk.app.search.data.remote.model.Result
-import uk.govuk.app.search.domain.ResultStatus
 import uk.govuk.app.visited.Visited
 import javax.inject.Inject
-
-internal data class SearchUiState(
-    val searchTerm: String,
-    val searchResults: List<Result>,
-    val resultStatus: ResultStatus,
-)
 
 @HiltViewModel
 internal class SearchViewModel @Inject constructor(
     private val analytics: Analytics,
     private val visited: Visited,
     private val repository: SearchRepo
-): ViewModel() {
+) : ViewModel() {
 
     private val _uiState: MutableStateFlow<SearchUiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
@@ -32,12 +25,18 @@ internal class SearchViewModel @Inject constructor(
     private fun fetchSearchResults(searchTerm: String) {
         viewModelScope.launch {
             val searchResult = repository.performSearch(searchTerm)
-
-            _uiState.value = SearchUiState(
-                searchTerm = searchTerm,
-                searchResults = searchResult.response.results,
-                resultStatus = searchResult.status
-            )
+            searchResult.onSuccess { result ->
+                _uiState.value = SearchUiState.Default(
+                    searchTerm = searchTerm,
+                    searchResults = result.results
+                )
+            }
+            searchResult.onFailure { exception ->
+                _uiState.value = when (exception) {
+                    is DeviceOfflineException -> SearchUiState.Offline(searchTerm)
+                    else -> SearchUiState.ServiceError(searchTerm)
+                }
+            }
         }
     }
 

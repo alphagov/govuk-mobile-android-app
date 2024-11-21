@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import uk.govuk.app.BuildConfig.GOV_UK_URL
 import uk.govuk.app.R
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
@@ -18,6 +17,7 @@ import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SecondaryButton
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.networking.domain.Constants.GOV_UK_URL
 
 @Composable
 internal fun AppUnavailableScreen(

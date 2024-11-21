@@ -34,10 +34,11 @@ import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.GovUkCard
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.networking.ui.component.OfflineMessage
 import uk.govuk.app.search.R
+import uk.govuk.app.search.SearchUiState
 import uk.govuk.app.search.SearchViewModel
 import uk.govuk.app.search.data.remote.model.Result
-import uk.govuk.app.search.domain.ResultStatus
 import uk.govuk.app.search.domain.SearchConfig
 import uk.govuk.app.search.domain.StringUtils
 import uk.govuk.app.search.ui.component.SearchHeader
@@ -102,17 +103,18 @@ private fun SearchScreen(
         Spacer(modifier = Modifier.height(58.dp))
 
         uiState?.let {
-            when (it.resultStatus) {
-                ResultStatus.Success ->
-                    ShowResults(it.searchResults, onClick)
-                ResultStatus.Empty ->
-                    NoResultsFound(searchTerm = it.searchTerm)
-                ResultStatus.DeviceOffline ->
-                    DeviceIsOffline()
-                ResultStatus.ServiceNotResponding ->
-                    ServiceNotResponding()
-                else ->
-                    ShowNothing()
+            when (it) {
+                is SearchUiState.Default -> {
+                    if (it.searchResults.isEmpty()) {
+                        NoResultsFound(searchTerm = it.searchTerm)
+                    } else {
+                        ShowResults(it.searchResults, onClick)
+                    }
+                }
+                is SearchUiState.Offline -> OfflineMessage(onTryAgainClick = {
+                    viewModel.onSearch(it.searchTerm)
+                })
+                is SearchUiState.ServiceError -> ServiceNotResponding()
             }
         } ?: ShowNothing()
     }
@@ -127,8 +129,9 @@ private fun SearchScreen(
 @Composable
 fun ShowResults(searchResults: List<Result>, onClick: (String, String) -> Unit) {
     Column(
-        modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
-                .fillMaxSize(),
+        modifier = Modifier
+            .padding(bottom = GovUkTheme.spacing.medium)
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LazyColumn {
@@ -204,41 +207,6 @@ fun NoResultsFound(searchTerm: String) {
 }
 
 @Composable
-fun DeviceIsOffline() {
-    Row(
-        Modifier.padding(
-            GovUkTheme.spacing.medium,
-            GovUkTheme.spacing.large,
-            GovUkTheme.spacing.medium,
-            0.dp
-        ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        BodyBoldLabel(
-            text = stringResource(R.string.search_device_offline),
-            modifier = Modifier.align(Alignment.CenterVertically)
-        )
-    }
-
-    Row(
-        Modifier.padding(
-            GovUkTheme.spacing.medium,
-            GovUkTheme.spacing.small,
-            GovUkTheme.spacing.medium,
-            GovUkTheme.spacing.medium
-        ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        BodyRegularLabel(
-            text = stringResource(R.string.search_check_connection),
-            modifier = Modifier.align(Alignment.CenterVertically)
-        )
-    }
-}
-
-@Composable
 fun ServiceNotResponding() {
     val context = LocalContext.current
     val intent = Intent(Intent.ACTION_VIEW)
@@ -278,8 +246,9 @@ fun ServiceNotResponding() {
     }
 
     Row(
-        Modifier.padding(GovUkTheme.spacing.medium)
-            .clickable(onClick =  { context.startActivity(intent) }),
+        Modifier
+            .padding(GovUkTheme.spacing.medium)
+            .clickable(onClick = { context.startActivity(intent) }),
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.Center
     ) {

@@ -53,9 +53,10 @@ sonar {
 }
 
 dependencies {
-    implementation(projects.design)
     implementation(projects.analytics)
+    implementation(projects.design)
     implementation(projects.feature.visited)
+    implementation(projects.networking)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material3)

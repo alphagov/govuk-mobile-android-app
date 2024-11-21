@@ -100,7 +100,7 @@ internal fun GovUkApp() {
 
 @Composable
 private fun BottomNavScaffold(
-    uiState: AppUiState,
+    uiState: AppUiState.Default,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
@@ -206,7 +206,7 @@ private fun BottomNav(
 @Composable
 private fun GovUkNavHost(
     navController: NavHostController,
-    uiState: AppUiState,
+    uiState: AppUiState.Default,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     onWidgetClick: (String) -> Unit,

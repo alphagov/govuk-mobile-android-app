@@ -17,26 +17,30 @@ internal class AppLaunchNavigation(
     }
 
     private fun setLaunchRoutes() {
-        if (uiState.shouldDisplayAppUnavailable) {
-            return
-        }
+        when (uiState) {
+            is AppUiState.Default -> {
+                launchRoutes.push(HOME_GRAPH_ROUTE)
 
-        if (uiState.shouldDisplayForcedUpdate) {
-            return
-        }
+                if (uiState.shouldDisplayTopicSelection) {
+                    launchRoutes.push(TOPICS_GRAPH_ROUTE)
+                }
 
-        launchRoutes.push(HOME_GRAPH_ROUTE)
+                if (uiState.shouldDisplayOnboarding) {
+                    launchRoutes.push(ONBOARDING_GRAPH_ROUTE)
+                }
 
-        if (uiState.shouldDisplayTopicSelection) {
-            launchRoutes.push(TOPICS_GRAPH_ROUTE)
-        }
+                if (uiState.shouldDisplayAnalyticsConsent) {
+                    launchRoutes.push(ANALYTICS_GRAPH_ROUTE)
+                }
+            }
 
-        if (uiState.shouldDisplayOnboarding) {
-            launchRoutes.push(ONBOARDING_GRAPH_ROUTE)
-        }
+            is AppUiState.AppUnavailable -> {
+                // Do nothing
+            }
 
-        if (uiState.shouldDisplayAnalyticsConsent) {
-            launchRoutes.push(ANALYTICS_GRAPH_ROUTE)
+            is AppUiState.ForcedUpdate -> {
+                // Do nothing
+            }
         }
     }
 }
