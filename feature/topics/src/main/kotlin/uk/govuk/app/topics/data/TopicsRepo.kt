@@ -3,6 +3,9 @@ package uk.govuk.app.topics.data
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import uk.govuk.app.networking.domain.ApiException
+import uk.govuk.app.networking.domain.DeviceOfflineException
+import uk.govuk.app.networking.domain.ServiceNotRespondingException
 import uk.govuk.app.topics.data.local.TopicsLocalDataSource
 import uk.govuk.app.topics.data.remote.TopicsApi
 import uk.govuk.app.topics.data.remote.model.RemoteTopic
@@ -58,20 +61,21 @@ internal class TopicsRepo @Inject constructor(
         localDataSource.deselect(ref)
     }
 
-    suspend fun getTopic(ref: String): RemoteTopic? {
-        try {
+    suspend fun getTopic(ref: String): Result<RemoteTopic> {
+        return try {
             val response = topicsApi.getTopic(ref)
             if (response.isSuccessful) {
                 response.body()?.let {
-                    return it
-                } // Todo - handle failure
-            } else {
-                // Todo - handle failure
+                    return Result.success(it)
+                }
             }
+            Result.failure(ApiException())
+        } catch (e: java.net.UnknownHostException) {
+            Result.failure(DeviceOfflineException())
+        } catch (e: retrofit2.HttpException) {
+            Result.failure(ServiceNotRespondingException())
         } catch (e: Exception) {
-            // Todo - handle failure
+            Result.failure(e)
         }
-
-        return null
     }
 }

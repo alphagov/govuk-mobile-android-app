@@ -18,12 +18,13 @@ import org.junit.Test
 import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
 import uk.govuk.app.analytics.AnalyticsClient
+import uk.govuk.app.networking.domain.ApiException
+import uk.govuk.app.networking.domain.DeviceOfflineException
+import uk.govuk.app.networking.domain.ServiceNotRespondingException
 import uk.govuk.app.search.data.SearchRepo
 import uk.govuk.app.search.data.remote.model.Result
 import uk.govuk.app.search.data.remote.model.SearchResponse
 import uk.govuk.app.search.di.SearchModule
-import uk.govuk.app.search.domain.ResultStatus
-import uk.govuk.app.search.domain.SearchResult
 import uk.govuk.app.visited.Visited
 
 @RunWith(Enclosed::class)
@@ -122,93 +123,65 @@ class SearchViewModelTest {
 
         @Test
         fun `Given a search with a result, then the results and status in the view model are correct`() {
-            coEvery { repository.performSearch(searchTerm) } returns SearchResult(
-                status = ResultStatus.Success,
-                response = resultWithOneResult
-            )
+            coEvery { repository.performSearch(searchTerm) } returns kotlin.Result.success(resultWithOneResult)
 
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.first()
+                val result = viewModel.uiState.first() as SearchUiState.Default
 
-                assertEquals(searchTerm, result!!.searchTerm)
-                assertEquals(ResultStatus.Success, result.resultStatus)
+                assertEquals(searchTerm, result.searchTerm)
                 assertEquals(1, result.searchResults.size)
             }
         }
 
         @Test
         fun `Given a search without any results, then the results and status in the view model are correct`() {
-            coEvery { repository.performSearch(searchTerm) } returns SearchResult(
-                status = ResultStatus.Empty,
-                response = resultWithNoSearchResponse
-            )
+            coEvery { repository.performSearch(searchTerm) } returns kotlin.Result.success(resultWithNoSearchResponse)
 
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.first()
+                val result = viewModel.uiState.first() as SearchUiState.Default
 
-                assertEquals(searchTerm, result!!.searchTerm)
-                assertEquals(ResultStatus.Empty, result.resultStatus)
+                assertEquals(searchTerm, result.searchTerm)
                 assertEquals(0, result.searchResults.size)
             }
         }
 
         @Test
         fun `Given a search when the device is offline, then the results and status in the view model are correct`() {
-            coEvery { repository.performSearch(searchTerm) } returns SearchResult(
-                status = ResultStatus.DeviceOffline,
-                response = resultWithNoSearchResponse
-            )
+            coEvery { repository.performSearch(searchTerm) } returns kotlin.Result.failure(DeviceOfflineException())
 
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.first()
-
-                assertEquals(searchTerm, result!!.searchTerm)
-                assertEquals(ResultStatus.DeviceOffline, result.resultStatus)
-                assertEquals(0, result.searchResults.size)
+                val result = viewModel.uiState.first() as SearchUiState.Offline
+                assertEquals(searchTerm, result.searchTerm)
             }
         }
 
         @Test
         fun `Given a search when the Search API is unavailable, then the results and status in the view model are correct`() {
-            coEvery { repository.performSearch(searchTerm) } returns SearchResult(
-                status = ResultStatus.ServiceNotResponding,
-                response = resultWithNoSearchResponse
-            )
+            coEvery { repository.performSearch(searchTerm) } returns kotlin.Result.failure(ServiceNotRespondingException())
 
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.first()
-
-                assertEquals(searchTerm, result!!.searchTerm)
-                assertEquals(ResultStatus.ServiceNotResponding, result.resultStatus)
-                assertEquals(0, result.searchResults.size)
+                val result = viewModel.uiState.first() as SearchUiState.ServiceError
+                assertEquals(searchTerm, result.searchTerm)
             }
         }
 
         @Test
         fun `Given a search that returns an error, then the results and status in the view model are correct`() {
-            val errorMessage = "error message"
-
-            coEvery { repository.performSearch(searchTerm) } returns SearchResult(
-                status = ResultStatus.Error(errorMessage),
-                response = resultWithNoSearchResponse
-            )
+            coEvery { repository.performSearch(searchTerm) } returns kotlin.Result.failure(ApiException())
 
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.first()
-
-                assertEquals(searchTerm, result!!.searchTerm)
-                assertEquals(ResultStatus.Error(errorMessage), result.resultStatus)
-                assertEquals(0, result.searchResults.size)
+                val result = viewModel.uiState.first() as SearchUiState.ServiceError
+                assertEquals(searchTerm, result.searchTerm)
             }
         }
     }

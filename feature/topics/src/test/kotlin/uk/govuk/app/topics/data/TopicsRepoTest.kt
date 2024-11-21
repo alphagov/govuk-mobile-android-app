@@ -8,9 +8,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
+import retrofit2.HttpException
 import retrofit2.Response
+import uk.govuk.app.networking.domain.ApiException
 import uk.govuk.app.topics.data.local.TopicsLocalDataSource
 import uk.govuk.app.topics.data.local.model.LocalTopicItem
 import uk.govuk.app.topics.data.remote.TopicsApi
@@ -18,6 +20,7 @@ import uk.govuk.app.topics.data.remote.model.RemoteTopic
 import uk.govuk.app.topics.data.remote.model.RemoteTopicItem
 import uk.govuk.app.topics.domain.model.TopicItem
 import java.io.IOException
+import java.net.UnknownHostException
 
 class TopicsRepoTest{
 
@@ -151,20 +154,22 @@ class TopicsRepoTest{
     }
 
     @Test
-    fun `Given a successful topic response with a body, then return topic`() {
+    fun `Given a successful topic response with a body, then return success with topic`() {
         coEvery { topicsApi.getTopic("ref") } returns topicResponse
         coEvery { topicResponse.isSuccessful } returns true
         coEvery { topicResponse.body() } returns topic
 
         val repo = TopicsRepo(topicsApi, localDataSource)
 
+        val expected = Result.success(topic)
+
         runTest {
-            assertEquals(topic, repo.getTopic("ref"))
+            assertEquals(expected, repo.getTopic("ref"))
         }
     }
 
     @Test
-    fun `Given a successful topic response with an empty body, then return null`() {
+    fun `Given a successful topic response with an empty body, then return failure`() {
         coEvery { topicsApi.getTopic("ref") } returns topicResponse
         coEvery { topicResponse.isSuccessful } returns true
         coEvery { topicResponse.body() } returns null
@@ -172,30 +177,82 @@ class TopicsRepoTest{
         val repo = TopicsRepo(topicsApi, localDataSource)
 
         runTest {
-            assertNull(repo.getTopic("ref"))
+            val result = repo.getTopic("ref")
+            assertTrue(result.isFailure)
         }
     }
 
     @Test
-    fun `Given an unsuccessful config response, then return null`() {
+    fun `Given an unsuccessful config response, then return failure`() {
         coEvery { topicsApi.getTopic("ref") } returns topicResponse
         coEvery { topicResponse.isSuccessful } returns false
 
         val repo = TopicsRepo(topicsApi, localDataSource)
 
         runTest {
-            assertNull(repo.getTopic("ref"))
+            val result = repo.getTopic("ref")
+            assertTrue(result.isFailure)
         }
     }
 
     @Test
-    fun `Given an exception is thrown fetching the topics response, then return null`() {
+    fun `Given an exception is thrown fetching the topics response, then return failure`() {
         coEvery { topicsApi.getTopic("ref") } throws IOException()
 
         val repo = TopicsRepo(topicsApi, localDataSource)
 
         runTest {
-            assertNull(repo.getTopic("ref"))
+            val result = repo.getTopic("ref")
+            assertTrue(result.isFailure)
+        }
+    }
+
+    @Test
+    fun `initTopic returns failure when the device is offline`() {
+        coEvery { topicsApi.getTopic("ref") } throws UnknownHostException()
+
+        val repo = TopicsRepo(topicsApi, localDataSource)
+
+        runTest {
+            val result = repo.getTopic("ref")
+            assertTrue(result.isFailure)
+        }
+    }
+
+    @Test
+    fun `initTopic returns failure when the Topic API is offline`() {
+        val httpException = mockk<HttpException>(relaxed = true)
+        coEvery { topicsApi.getTopic("ref") } throws httpException
+
+        val repo = TopicsRepo(topicsApi, localDataSource)
+
+        runTest {
+            val result = repo.getTopic("ref")
+            assertTrue(result.isFailure)
+        }
+    }
+
+    @Test
+    fun `initTopic returns failure when an API error occurs`() {
+        coEvery { topicsApi.getTopic("ref") } throws ApiException()
+
+        val repo = TopicsRepo(topicsApi, localDataSource)
+
+        runTest {
+            val result = repo.getTopic("ref")
+            assertTrue(result.isFailure)
+        }
+    }
+
+    @Test
+    fun `initTopic returns failure when any unknown error occurs`() {
+        coEvery { topicsApi.getTopic("ref") } throws Exception()
+
+        val repo = TopicsRepo(topicsApi, localDataSource)
+
+        runTest {
+            val result = repo.getTopic("ref")
+            assertTrue(result.isFailure)
         }
     }
 }

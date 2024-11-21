@@ -33,7 +33,10 @@ internal class AllStepByStepsViewModel @Inject constructor(
     init {
         savedStateHandle.get<String>(TOPIC_REF_ARG)?.let { ref ->
             viewModelScope.launch {
-                _stepBySteps.value = topicsRepo.getTopic(ref)?.toAllStepBySteps()
+                val getTopicResult = topicsRepo.getTopic(ref)
+                getTopicResult.onSuccess {
+                    _stepBySteps.value = it.toAllStepBySteps()
+                }
             }
         }
     }

@@ -49,7 +49,7 @@ class AppViewModelTest {
 
         runTest {
             val result = viewModel.uiState.first()
-            assertTrue(result!!.shouldDisplayAppUnavailable)
+            assertTrue(result is AppUiState.AppUnavailable)
         }
     }
 
@@ -61,7 +61,7 @@ class AppViewModelTest {
 
         runTest {
             val result = viewModel.uiState.first()
-            assertTrue(result!!.shouldDisplayForcedUpdate)
+            assertTrue(result is AppUiState.ForcedUpdate)
         }
     }
 
@@ -74,7 +74,7 @@ class AppViewModelTest {
 
         runTest {
             val result = viewModel.uiState.first()
-            assertTrue(result!!.shouldDisplayAppUnavailable)
+            assertTrue(result is AppUiState.AppUnavailable)
         }
     }
 
@@ -87,7 +87,7 @@ class AppViewModelTest {
 
         runTest {
             val result = viewModel.uiState.first()
-            assertFalse(result!!.shouldDisplayAppUnavailable)
+            assertTrue(result is AppUiState.Default)
         }
     }
 
@@ -101,7 +101,7 @@ class AppViewModelTest {
 
         runTest {
             val result = viewModel.uiState.first()
-            assertTrue(result!!.shouldDisplayForcedUpdate)
+            assertTrue(result is AppUiState.ForcedUpdate)
         }
     }
 
@@ -115,7 +115,7 @@ class AppViewModelTest {
 
         runTest {
             val result = viewModel.uiState.first()
-            assertFalse(result!!.shouldDisplayForcedUpdate)
+            assertTrue(result is AppUiState.Default)
         }
     }
 
@@ -128,8 +128,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertTrue(result!!.shouldDisplayRecommendUpdate)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertTrue(result.shouldDisplayRecommendUpdate)
         }
     }
 
@@ -142,8 +142,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertFalse(result!!.shouldDisplayRecommendUpdate)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertFalse(result.shouldDisplayRecommendUpdate)
         }
     }
 
@@ -156,8 +156,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertTrue(result!!.shouldDisplayAnalyticsConsent)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertTrue(result.shouldDisplayAnalyticsConsent)
         }
     }
 
@@ -170,8 +170,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertFalse(result!!.shouldDisplayAnalyticsConsent)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertFalse(result.shouldDisplayAnalyticsConsent)
         }
     }
 
@@ -185,8 +185,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertFalse(result!!.shouldDisplayOnboarding)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertFalse(result.shouldDisplayOnboarding)
         }
     }
 
@@ -200,8 +200,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertTrue(result!!.shouldDisplayOnboarding)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertTrue(result.shouldDisplayOnboarding)
         }
     }
 
@@ -215,8 +215,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertFalse(result!!.shouldDisplayOnboarding)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertFalse(result.shouldDisplayOnboarding)
         }
     }
 
@@ -230,8 +230,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertFalse(result!!.shouldDisplayOnboarding)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertFalse(result.shouldDisplayOnboarding)
         }
     }
 
@@ -245,8 +245,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertFalse(result!!.shouldDisplayTopicSelection)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertFalse(result.shouldDisplayTopicSelection)
         }
     }
 
@@ -260,8 +260,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertTrue(result!!.shouldDisplayTopicSelection)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertTrue(result.shouldDisplayTopicSelection)
         }
     }
 
@@ -275,8 +275,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertFalse(result!!.shouldDisplayTopicSelection)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertFalse(result.shouldDisplayTopicSelection)
         }
     }
 
@@ -290,8 +290,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertFalse(result!!.shouldDisplayTopicSelection)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertFalse(result.shouldDisplayTopicSelection)
         }
     }
 
@@ -301,11 +301,11 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isSearchEnabled() } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo,  flagRepo, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertTrue(result!!.isSearchEnabled)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertTrue(result.isSearchEnabled)
         }
     }
 
@@ -318,8 +318,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertFalse(result!!.isSearchEnabled)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertFalse(result.isSearchEnabled)
         }
     }
 
@@ -332,8 +332,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertTrue(result!!.isRecentActivityEnabled)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertTrue(result.isRecentActivityEnabled)
         }
     }
 
@@ -346,8 +346,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertFalse(result!!.isRecentActivityEnabled)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertFalse(result.isRecentActivityEnabled)
         }
     }
 
@@ -357,11 +357,11 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isTopicsEnabled() } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo,  flagRepo, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertTrue(result!!.isTopicsEnabled)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertTrue(result.isTopicsEnabled)
         }
     }
 
@@ -374,8 +374,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, analyticsClient)
 
         runTest {
-            val result = viewModel.uiState.first()
-            assertFalse(result!!.isTopicsEnabled)
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertFalse(result.isTopicsEnabled)
         }
     }
 
