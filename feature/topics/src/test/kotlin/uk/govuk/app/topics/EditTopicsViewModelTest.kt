@@ -79,6 +79,7 @@ class EditTopicsViewModelTest {
 
         coVerify {
             topicsRepo.selectTopic("ref")
+            topicsRepo.topicsCustomised()
             analyticsClient.topicsCustomised()
             analyticsClient.toggleFunction(
                 text = "title",
@@ -96,6 +97,7 @@ class EditTopicsViewModelTest {
 
         coVerify {
             topicsRepo.deselectTopic("ref")
+            topicsRepo.topicsCustomised()
             analyticsClient.topicsCustomised()
             analyticsClient.toggleFunction(
                 text = "title",

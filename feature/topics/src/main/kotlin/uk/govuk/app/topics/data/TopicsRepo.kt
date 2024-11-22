@@ -78,4 +78,12 @@ internal class TopicsRepo @Inject constructor(
             Result.failure(e)
         }
     }
+
+    internal suspend fun isTopicsCustomised(): Boolean {
+        return localDataSource.isTopicsCustomised()
+    }
+
+    internal suspend fun topicsCustomised() {
+        localDataSource.topicsCustomised()
+    }
 }

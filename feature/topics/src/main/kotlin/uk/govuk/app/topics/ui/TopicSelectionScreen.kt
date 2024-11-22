@@ -25,6 +25,8 @@ import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.VerticalButtonGroup
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.R
+import uk.govuk.app.topics.TopicSelectionUiState
+import uk.govuk.app.topics.TopicSelectionViewModel
 import uk.govuk.app.topics.ui.component.TopicSelectionCard
 import uk.govuk.app.topics.ui.component.TopicsGrid
 

@@ -1,6 +1,7 @@
 package uk.govuk.app.topics.data.local
 
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
@@ -18,8 +19,11 @@ import uk.govuk.app.topics.data.local.model.LocalTopicItem
 class TopicsLocalDataSourceTest {
 
     private val realmProvider = mockk<TopicsRealmProvider>(relaxed = true)
+    private val dataStore = mockk<TopicsDataStore>(relaxed = true)
 
     private lateinit var realm: Realm
+
+    private lateinit var localDataSource: TopicsLocalDataSource
 
     @Before
     fun setup() {
@@ -31,6 +35,8 @@ class TopicsLocalDataSourceTest {
         realm = Realm.open(config)
 
         coEvery { realmProvider.open() } returns realm
+
+        localDataSource = TopicsLocalDataSource(realmProvider, dataStore)
     }
 
     @After
@@ -57,8 +63,6 @@ class TopicsLocalDataSourceTest {
                 copyToRealm(expected[1])
             }
 
-            val localDataSource = TopicsLocalDataSource(realmProvider)
-
             val topics = localDataSource.topics.first()
 
             assertEquals(2, topics.size)
@@ -72,8 +76,6 @@ class TopicsLocalDataSourceTest {
     @Test
     fun `Given topics to select, when select all, then select topics in realm`() {
         runTest {
-            val localDataSource = TopicsLocalDataSource(realmProvider)
-
             localDataSource.selectAll(listOf("ref1", "ref2"))
 
             val topics = realm.query<LocalTopicItem>().find()
@@ -88,8 +90,6 @@ class TopicsLocalDataSourceTest {
     @Test
     fun `Given a new topic to select, when select, then insert topic into realm`() {
         runTest {
-            val localDataSource = TopicsLocalDataSource(realmProvider)
-
             localDataSource.select("ref1")
 
             val topics = realm.query<LocalTopicItem>().find()
@@ -109,8 +109,6 @@ class TopicsLocalDataSourceTest {
                 }
             }
 
-            val localDataSource = TopicsLocalDataSource(realmProvider)
-
             localDataSource.select("ref1")
 
             val topics = realm.query<LocalTopicItem>().find()
@@ -123,8 +121,6 @@ class TopicsLocalDataSourceTest {
     @Test
     fun `Given a new topic to deselect, when deselect, then insert topic into realm`() {
         runTest {
-            val localDataSource = TopicsLocalDataSource(realmProvider)
-
             localDataSource.deselect("ref1")
 
             val topics = realm.query<LocalTopicItem>().find()
@@ -144,14 +140,41 @@ class TopicsLocalDataSourceTest {
                 }
             }
 
-            val localDataSource = TopicsLocalDataSource(realmProvider)
-
             localDataSource.deselect("ref1")
 
             val topics = realm.query<LocalTopicItem>().find()
             assertEquals(1, topics.size)
             assertEquals("ref1", topics[0].ref)
             assertFalse(topics[0].isSelected)
+        }
+    }
+
+    @Test
+    fun `Given topics are customised, when is topics customised, then return true`() {
+        runTest {
+            coEvery { dataStore.isTopicsCustomised() } returns true
+
+            assertTrue(localDataSource.isTopicsCustomised())
+        }
+    }
+
+    @Test
+    fun `Given topics are not customised, when is topics customised, then return false`() {
+        runTest {
+            coEvery { dataStore.isTopicsCustomised() } returns false
+
+            assertFalse(localDataSource.isTopicsCustomised())
+        }
+    }
+
+    @Test
+    fun `Given a user customises topics, topics customised, then update data store`() {
+        runTest {
+            localDataSource.topicsCustomised()
+
+            coVerify {
+                dataStore.topicsCustomised()
+            }
         }
     }
 }

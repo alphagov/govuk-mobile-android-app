@@ -13,6 +13,7 @@ import javax.inject.Inject
 
 internal data class TopicsWidgetUiState(
     val topics: List<TopicItemUi>,
+    val isCustomised: Boolean,
     val displayShowAll: Boolean
 )
 
@@ -33,6 +34,7 @@ internal class TopicsWidgetViewModel @Inject constructor(
 
                 _uiState.value = TopicsWidgetUiState(
                     topics = filteredTopics,
+                    isCustomised = topicsRepo.isTopicsCustomised(),
                     displayShowAll = topics.size > filteredTopics.size
                 )
             }
