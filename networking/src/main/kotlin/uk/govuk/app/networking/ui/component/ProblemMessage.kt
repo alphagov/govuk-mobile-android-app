@@ -16,23 +16,23 @@ fun ProblemMessage(
     modifier: Modifier = Modifier,
     title: String? = null,
     description: String? = null,
-    linkTitle: String? = null,
-    onLinkClick: (() -> Unit)? = null
+    buttonTitle: String? = null,
+    onButtonClick: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
-    val messageOnLinkClick = onLinkClick ?: {
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse(GOV_UK_URL)
-        context.startActivity(intent)
-    }
 
     Message(
         title = title ?: stringResource(R.string.problem_title),
         description = description ?: stringResource(R.string.problem_description),
-        linkTitle = linkTitle ?: stringResource(R.string.go_to_the_gov_uk_website),
+        buttonTitle = buttonTitle ?: stringResource(R.string.go_to_the_gov_uk_website),
         modifier = modifier,
-        hasExternalLink = true,
-        onLinkClick = messageOnLinkClick
+        externalLink = true,
+        onButtonClick = onButtonClick ?: {
+            Intent(Intent.ACTION_VIEW).let { intent ->
+                intent.data = Uri.parse(GOV_UK_URL)
+                context.startActivity(intent)
+            }
+        }
     )
 }
 
@@ -40,6 +40,6 @@ fun ProblemMessage(
 @Composable
 private fun ProblemMessagePreview() {
     GovUkTheme {
-        ProblemMessage(onLinkClick = {})
+        ProblemMessage()
     }
 }

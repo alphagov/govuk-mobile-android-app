@@ -108,9 +108,7 @@ private fun SearchScreen(
                         ShowResults(it.searchResults, onClick)
                     }
                 }
-                is SearchUiState.Offline -> OfflineMessage(onTryAgainClick = {
-                    viewModel.onSearch(it.searchTerm)
-                })
+                is SearchUiState.Offline -> OfflineMessage { viewModel.onSearch(it.searchTerm) }
                 is SearchUiState.ServiceError -> ProblemMessage()
             }
         } ?: ShowNothing()
