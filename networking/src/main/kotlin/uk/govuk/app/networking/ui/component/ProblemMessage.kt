@@ -28,9 +28,10 @@ fun ProblemMessage(
         modifier = modifier,
         externalLink = true,
         onButtonClick = onButtonClick ?: {
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse(GOV_UK_URL)
-            context.startActivity(intent)
+            Intent(Intent.ACTION_VIEW).let { intent ->
+                intent.data = Uri.parse(GOV_UK_URL)
+                context.startActivity(intent)
+            }
         }
     )
 }
