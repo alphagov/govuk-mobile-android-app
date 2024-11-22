@@ -12,15 +12,15 @@ fun OfflineMessage(
     modifier: Modifier = Modifier,
     title: String? = null,
     description: String? = null,
-    linkTitle: String? = null,
-    onTryAgainClick: () -> Unit
+    buttonTitle: String? = null,
+    onButtonClick: () -> Unit
 ) {
     Message(
         title = title ?: stringResource(R.string.no_internet_title),
         description = description ?: stringResource(R.string.no_internet_description),
-        linkTitle = linkTitle ?: stringResource(R.string.try_again),
+        buttonTitle = buttonTitle ?: stringResource(R.string.try_again),
         modifier = modifier,
-        onLinkClick = onTryAgainClick
+        onButtonClick = onButtonClick
     )
 }
 
@@ -28,6 +28,6 @@ fun OfflineMessage(
 @Composable
 private fun OfflineMessagePreview() {
     GovUkTheme {
-        OfflineMessage(onTryAgainClick = {})
+        OfflineMessage(onButtonClick = {})
     }
 }
