@@ -1,8 +1,10 @@
 package uk.govuk.app.topics.ui
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -44,50 +46,52 @@ internal fun TopicRoute(
     val viewModel: TopicViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
-    uiState?.let {
-        when (it) {
-            is TopicUiState.Default -> {
-                TopicScreen(
-                    topic = it.topicUi,
+    Box(Modifier.fillMaxSize()) {
+        uiState?.let {
+            when (it) {
+                is TopicUiState.Default -> {
+                    TopicScreen(
+                        topic = it.topicUi,
+                        onPageView = { title -> viewModel.onPageView(title) },
+                        onBack = onBack,
+                        onExternalLink = { section, text, url ->
+                            viewModel.onContentClick(
+                                section = section,
+                                text = text,
+                                url = url
+                            )
+                            onExternalLink(url)
+                        },
+                        onStepByStepSeeAll = { section, text ->
+                            onStepByStepSeeAll()
+                            viewModel.onSeeAllClick(
+                                section = section,
+                                text = text
+                            )
+                        },
+                        onSubtopic = { text, ref ->
+                            viewModel.onSubtopicClick(text)
+                            onSubtopic(ref)
+                        },
+                        modifier = modifier
+                    )
+                }
+
+                is TopicUiState.Offline -> ErrorScreen(
+                    topicReference = it.topicReference,
                     onPageView = { title -> viewModel.onPageView(title) },
                     onBack = onBack,
-                    onExternalLink = { section, text, url ->
-                        viewModel.onContentClick(
-                            section = section,
-                            text = text,
-                            url = url
-                        )
-                        onExternalLink(url)
-                    },
-                    onStepByStepSeeAll = { section, text ->
-                        onStepByStepSeeAll()
-                        viewModel.onSeeAllClick(
-                            section = section,
-                            text = text
-                        )
-                    },
-                    onSubtopic = { text, ref ->
-                        viewModel.onSubtopicClick(text)
-                        onSubtopic(ref)
-                    },
-                    modifier = modifier
+                    content = { OfflineMessage(modifier = modifier) { viewModel.getTopic() } }
+                )
+
+
+                is TopicUiState.ServiceError -> ErrorScreen(
+                    topicReference = it.topicReference,
+                    onPageView = { title -> viewModel.onPageView(title) },
+                    onBack = onBack,
+                    content = { ProblemMessage(modifier = modifier) }
                 )
             }
-
-            is TopicUiState.Offline -> ErrorScreen(
-                topicReference = it.topicReference,
-                onPageView = { title -> viewModel.onPageView(title) },
-                onBack = onBack,
-                content = { OfflineMessage(modifier = modifier) { viewModel.getTopic() } }
-            )
-
-
-            is TopicUiState.ServiceError -> ErrorScreen(
-                topicReference = it.topicReference,
-                onPageView = { title -> viewModel.onPageView(title) },
-                onBack = onBack,
-                content = { ProblemMessage(modifier = modifier) }
-            )
         }
     }
 }
@@ -102,7 +106,7 @@ private fun TopicScreen(
     onSubtopic: (text: String, ref: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier.fillMaxSize()) {
+    Column(modifier.fillMaxWidth()) {
         LaunchedEffect(Unit) {
             onPageView(topic.title)
         }
