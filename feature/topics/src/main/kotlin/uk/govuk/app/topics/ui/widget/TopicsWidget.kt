@@ -37,6 +37,7 @@ fun TopicsWidget(
     uiState?.let {
         TopicsWidgetContent(
             topics = it.topics,
+            isCustomised = it.isCustomised,
             displayShowAll = it.displayShowAll,
             onTopicClick = onTopicClick,
             onEditClick = onEditClick,
@@ -49,6 +50,7 @@ fun TopicsWidget(
 @Composable
 private fun TopicsWidgetContent(
     topics: List<TopicItemUi>,
+    isCustomised: Boolean,
     displayShowAll: Boolean,
     onTopicClick: (String, String) -> Unit,
     onEditClick: (String) -> Unit,
@@ -61,7 +63,12 @@ private fun TopicsWidgetContent(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Title3BoldLabel(stringResource(R.string.topicsWidgetTitle))
+            val title = if (isCustomised) {
+                stringResource(R.string.customisedTopicsWidgetTitle)
+            } else {
+                stringResource(R.string.topicsWidgetTitle)
+            }
+            Title3BoldLabel(title)
 
             Spacer(Modifier.weight(1f))
 
@@ -141,6 +148,7 @@ private fun TopicsWidgetPreview() {
                     isSelected = true
                 ),
             ),
+            isCustomised = true,
             displayShowAll = true,
             onTopicClick = { _, _ -> },
             onEditClick = { },

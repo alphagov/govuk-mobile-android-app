@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import retrofit2.HttpException
@@ -253,6 +254,41 @@ class TopicsRepoTest{
         runTest {
             val result = repo.getTopic("ref")
             assertTrue(result.isFailure)
+        }
+    }
+
+    @Test
+    fun `Given topics are customised, when is topics customised, then return true`() {
+        val repo = TopicsRepo(topicsApi, localDataSource)
+
+        runTest {
+            coEvery { localDataSource.isTopicsCustomised() } returns true
+
+            assertTrue(repo.isTopicsCustomised())
+        }
+    }
+
+    @Test
+    fun `Given topics are not customised, when is topics customised, then return false`() {
+        val repo = TopicsRepo(topicsApi, localDataSource)
+
+        runTest {
+            coEvery { localDataSource.isTopicsCustomised() } returns false
+
+            assertFalse(repo.isTopicsCustomised())
+        }
+    }
+
+    @Test
+    fun `Given a user customises topics, topics customised, then update local data source`() {
+        val repo = TopicsRepo(topicsApi, localDataSource)
+
+        runTest {
+            repo.topicsCustomised()
+
+            coVerify {
+                localDataSource.topicsCustomised()
+            }
         }
     }
 }

@@ -11,7 +11,8 @@ import javax.inject.Singleton
 
 @Singleton
 internal class TopicsLocalDataSource @Inject constructor(
-    private val realmProvider: TopicsRealmProvider
+    private val realmProvider: TopicsRealmProvider,
+    private val topicsDataStore: TopicsDataStore
 ) {
 
     val topics: Flow<List<LocalTopicItem>> = flow {
@@ -47,5 +48,13 @@ internal class TopicsLocalDataSource @Inject constructor(
                 )
             }
         }
+    }
+
+    internal suspend fun isTopicsCustomised(): Boolean {
+        return topicsDataStore.isTopicsCustomised()
+    }
+
+    internal suspend fun topicsCustomised() {
+        topicsDataStore.topicsCustomised()
     }
 }

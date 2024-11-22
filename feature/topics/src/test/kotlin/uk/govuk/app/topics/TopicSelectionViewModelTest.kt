@@ -22,7 +22,6 @@ import org.junit.Test
 import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.domain.model.TopicItem
-import uk.govuk.app.topics.ui.TopicSelectionViewModel
 import uk.govuk.app.topics.ui.model.TopicItemUi
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -201,6 +200,7 @@ class TopicSelectionViewModelTest {
             )
             topicsRepo.selectTopic("ref1")
             topicsRepo.selectTopic("ref2")
+            topicsRepo.topicsCustomised()
         }
     }
 
@@ -214,6 +214,10 @@ class TopicSelectionViewModelTest {
             analyticsClient.buttonClick(
                 text = "Skip"
             )
+        }
+
+        coVerify(exactly = 0) {
+            topicsRepo.topicsCustomised()
         }
     }
 }

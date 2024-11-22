@@ -1,4 +1,4 @@
-package uk.govuk.app.topics.ui
+package uk.govuk.app.topics
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,9 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.AnalyticsClient
-import uk.govuk.app.topics.ANALYTICS_TOGGLE_FUNCTION_ACTION_DESELECTED
-import uk.govuk.app.topics.ANALYTICS_TOGGLE_FUNCTION_ACTION_SELECTED
-import uk.govuk.app.topics.ANALYTICS_TOGGLE_FUNCTION_SECTION
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.extension.toTopicItemUi
 import uk.govuk.app.topics.ui.model.TopicItemUi
@@ -90,6 +87,7 @@ internal class TopicSelectionViewModel @Inject constructor(
         analyticsClient.buttonClick(text)
         analyticsClient.topicsCustomised()
         viewModelScope.launch {
+            topicsRepo.topicsCustomised()
             for (ref in selectedTopicRefs) {
                 topicsRepo.selectTopic(ref)
             }

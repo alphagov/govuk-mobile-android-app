@@ -1,5 +1,6 @@
 package uk.govuk.app.topics
 
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +47,7 @@ class TopicsWidgetViewModelTest {
         )
 
         every { topicsRepo.topics } returns flowOf(topics)
+        coEvery { topicsRepo.isTopicsCustomised() } returns true
 
         val expected =
             TopicsWidgetUiState(
@@ -58,6 +60,7 @@ class TopicsWidgetViewModelTest {
                         isSelected = true
                     )
                 ),
+                isCustomised = true,
                 displayShowAll = false
             )
 
@@ -86,6 +89,7 @@ class TopicsWidgetViewModelTest {
         )
 
         every { topicsRepo.topics } returns flowOf(topics)
+        coEvery { topicsRepo.isTopicsCustomised() } returns false
 
         val expected =
             TopicsWidgetUiState(
@@ -98,6 +102,7 @@ class TopicsWidgetViewModelTest {
                         isSelected = true
                     )
                 ),
+                isCustomised = false,
                 displayShowAll = true
             )
 
