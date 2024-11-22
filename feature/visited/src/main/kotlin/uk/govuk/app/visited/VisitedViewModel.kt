@@ -14,10 +14,10 @@ import uk.govuk.app.visited.ui.model.VisitedUi
 import java.time.LocalDate
 import javax.inject.Inject
 
-
 internal data class VisitedUiState(
-    val visited: Map<String, List<VisitedUi>>,
-    var hasSelectedItems: Boolean = false
+    var visited: Map<String, List<VisitedUi>>?,
+    var hasSelectedItems: Boolean = false,
+    var hasAllSelectedItems: Boolean = false
 )
 
 @HiltViewModel
@@ -26,7 +26,7 @@ internal class VisitedViewModel @Inject constructor(
     private val visitedLocalDataSource: VisitedLocalDataSource,
     private val visited: Visited,
     private val analyticsClient: AnalyticsClient
-): ViewModel() {
+) : ViewModel() {
 
     companion object {
         private const val EDIT_SCREEN_CLASS = "EditVisitedScreen"
@@ -44,7 +44,8 @@ internal class VisitedViewModel @Inject constructor(
                 val allVisitedItems = transformVisitedItems(visitedItems, LocalDate.now())
                 _uiState.value = VisitedUiState(
                     visited = allVisitedItems,
-                    hasSelectedItems = false
+                    hasSelectedItems = false,
+                    hasAllSelectedItems = false
                 )
             }
         }
@@ -73,7 +74,7 @@ internal class VisitedViewModel @Inject constructor(
         analyticsClient.visitedItemClick(text = title, url = url)
     }
 
-    fun removeSelectedItems() {
+    fun onRemove() {
         _uiState.value?.visited?.forEach { (_, visitedItems) ->
             visitedItems.forEach { visitedItem ->
                 if (visitedItem.isSelected) {
@@ -85,12 +86,52 @@ internal class VisitedViewModel @Inject constructor(
         }
     }
 
-    fun updateHasSelectedItems() {
+    fun onSelectAll() {
         _uiState.value = _uiState.value?.copy(
-            hasSelectedItems = _uiState.value?.visited?.any { (_, visitedItems) ->
+            visited = _uiState.value?.visited?.mapValues { (_, visitedItems) ->
+                visitedItems.map { it.copy(isSelected = true) }
+            },
+            hasSelectedItems = true,
+            hasAllSelectedItems = true
+        )
+    }
+
+    fun onDeselectAll() {
+        _uiState.value = _uiState.value?.copy(
+            visited = _uiState.value?.visited?.mapValues { (_, visitedItems) ->
+                visitedItems.map { it.copy(isSelected = false) }
+            },
+            hasSelectedItems = false,
+            hasAllSelectedItems = false
+        )
+    }
+
+    fun onSelect(title: String, url: String) {
+        _uiState.value = _uiState.value?.let { currentState ->
+            val updatedVisited = currentState.visited?.mapValues { (_, visitedItems) ->
+                visitedItems.map {
+                    if (it.title == title && it.url == url) {
+                        it.copy(isSelected = !it.isSelected)
+                    } else {
+                        it
+                    }
+                }
+            }
+
+            val hasAllSelectedItems = updatedVisited?.all { (_, visitedItems) ->
+                visitedItems.all { it.isSelected }
+            } ?: false
+
+            val hasSelectedItems = updatedVisited?.any { (_, visitedItems) ->
                 visitedItems.any { it.isSelected }
             } ?: false
-        )
+
+            currentState.copy(
+                visited = updatedVisited,
+                hasAllSelectedItems = hasAllSelectedItems,
+                hasSelectedItems = hasSelectedItems
+            )
+        }
     }
 
     internal fun getUiStateForTest(): VisitedUiState? = _uiState.value

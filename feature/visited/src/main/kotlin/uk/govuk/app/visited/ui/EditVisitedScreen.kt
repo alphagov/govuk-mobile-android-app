@@ -26,9 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -65,12 +62,16 @@ internal fun EditVisitedRoute(
     EditVisitedScreen(
         uiState = uiState,
         onRemove = {
-            viewModel.removeSelectedItems()
+            viewModel.onRemove()
             onBack()
         },
         onEditPageView = { viewModel.onEditPageView() },
         onBack = onBack,
-        onSelect = { viewModel.updateHasSelectedItems() },
+        onSelect = { title, url ->
+            viewModel.onSelect(title, url)
+        },
+        onSelectAll = { viewModel.onSelectAll() },
+        onDeselectAll = { viewModel.onDeselectAll() },
         modifier = modifier
     )
 }
@@ -82,7 +83,9 @@ private fun EditVisitedScreen(
     onRemove: () -> Unit,
     onEditPageView: () -> Unit,
     onBack: () -> Unit,
-    onSelect: () -> Unit,
+    onSelect: (String, String) -> Unit,
+    onSelectAll: () -> Unit,
+    onDeselectAll: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -94,8 +97,6 @@ private fun EditVisitedScreen(
     val visitedItems = uiState?.visited
     val titleText = stringResource(R.string.visited_items_title)
     val doneText = stringResource(R.string.visited_items_done_button)
-    val selectText = stringResource(R.string.visited_items_select_all_button)
-    val removeText = stringResource(R.string.visited_items_remove_button)
 
     Scaffold(
         containerColor = GovUkTheme.colourScheme.surfaces.background,
@@ -114,10 +115,10 @@ private fun EditVisitedScreen(
         },
         bottomBar = {
             BottomNavBar(
-                selectText = selectText,
-                removeText = removeText,
                 onRemove = onRemove,
                 uiState = uiState,
+                onSelectAll = onSelectAll,
+                onDeselectAll = onDeselectAll,
                 modifier = modifier
             )
         }
@@ -133,7 +134,9 @@ private fun EditVisitedScreen(
                 visitedItems?.let { items ->
                     val lastVisitedText = stringResource(R.string.visited_items_last_visited)
 
-                    items.forEach { (sectionTitle, sectionItems) ->
+                    items.forEach { group ->
+                        val sectionTitle = group.key
+                        val sectionItems = group.value
                         sectionItems.takeIf { it.isNotEmpty() }?.let { items ->
                             ListHeadingLabel(sectionTitle)
                             SmallVerticalSpacer()
@@ -164,11 +167,9 @@ private fun CheckableExternalLinkListItem(
     subText: String,
     isFirst: Boolean,
     isLast: Boolean,
-    onSelect: () -> Unit,
+    onSelect: (String, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var checked by remember { mutableStateOf(false) }
-
     CardListItem(
         modifier = modifier,
         onClick = { /* Do nothing */ },
@@ -182,17 +183,8 @@ private fun CheckableExternalLinkListItem(
                 modifier = Modifier.padding(0.dp),
             ) {
                 Checkbox(
-                    checked = checked,
-                    onCheckedChange = {
-                        checked = it
-
-                        if (checked) {
-                            item.isSelected = true
-                        } else {
-                            item.isSelected = false
-                        }
-                        onSelect()
-                    },
+                    checked = item.isSelected,
+                    onCheckedChange = { onSelect(item.title, item.url) },
                     colors = CheckboxDefaults.colors(
                         checkedColor = GovUkTheme.colourScheme.surfaces.primary,
                         uncheckedColor = GovUkTheme.colourScheme.strokes.buttonCompactBorder,
@@ -283,12 +275,15 @@ private fun TopNavBar(
 
 @Composable
 private fun BottomNavBar(
-    selectText: String,
-    removeText: String,
     onRemove: () -> Unit,
     uiState: VisitedUiState?,
+    onSelectAll: () -> Unit,
+    onDeselectAll: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val selectText = stringResource(R.string.visited_items_select_all_button)
+    val deselectText = stringResource(R.string.visited_items_deselect_all_button)
+    val removeText = stringResource(R.string.visited_items_remove_button)
     val borderColor = GovUkTheme.colourScheme.strokes.listDivider
 
     NavigationBar(
@@ -316,19 +311,31 @@ private fun BottomNavBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TextButton(
-                onClick = { /* TODO */ }
-            ) {
-                BodyRegularLabel(
-                    text = selectText,
-                    color = GovUkTheme.colourScheme.textAndIcons.link,
-                    textAlign = TextAlign.Start
-                )
+            if (uiState?.hasAllSelectedItems == true) {
+                TextButton(
+                    onClick = onDeselectAll
+                ) {
+                    BodyRegularLabel(
+                        text = deselectText,
+                        color = GovUkTheme.colourScheme.textAndIcons.link,
+                        textAlign = TextAlign.Start
+                    )
+                }
+            } else {
+                TextButton(
+                    onClick = onSelectAll
+                ) {
+                    BodyRegularLabel(
+                        text = selectText,
+                        color = GovUkTheme.colourScheme.textAndIcons.link,
+                        textAlign = TextAlign.Start
+                    )
+                }
             }
 
             TextButton(
                 onClick = onRemove,
-                enabled = uiState?.hasSelectedItems ?: false,
+                enabled = uiState?.hasSelectedItems == true,
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = GovUkTheme.colourScheme.textAndIcons.buttonRemove,
                     disabledContentColor = GovUkTheme.colourScheme.textAndIcons.buttonRemoveDisabled
@@ -356,7 +363,9 @@ private fun EditVisitedScreenPreview() {
             onRemove = {},
             onEditPageView = {},
             onBack = {},
-            onSelect = {},
+            onSelect = { _, _ -> },
+            onSelectAll = {},
+            onDeselectAll = {},
             modifier = Modifier
         )
     }
