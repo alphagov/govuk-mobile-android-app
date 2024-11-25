@@ -18,7 +18,7 @@ android {
         buildConfigField("String", "ACCESSIBILITY_STATEMENT_URL", "\"https://www.gov.uk/government/publications/accessibility-statement-for-the-govuk-app\"")
 
         buildConfigField("String", "HELP_AND_FEEDBACK_EVENT", "\"HelpAndFeedback\"")
-        buildConfigField("String", "HELP_AND_FEEDBACK_URL", "\"https://www.gov.uk\"")
+        buildConfigField("String", "HELP_AND_FEEDBACK_URL", "\"https://www.gov.uk/contact/govuk-app\"")
 
         buildConfigField("String", "OPEN_SOURCE_LICENCE_EVENT", "\"OpenSourceLicenses\"")
 
