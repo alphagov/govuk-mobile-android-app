@@ -125,7 +125,7 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonSuccess = Green1,
         trailingIcon = Grey300,
         buttonRemove = Red1,
-        buttonRemoveDisabled = Grey600,
+        buttonRemoveDisabled = Grey700,
         selectedTick = White
     ),
     surfaces = Surfaces(
