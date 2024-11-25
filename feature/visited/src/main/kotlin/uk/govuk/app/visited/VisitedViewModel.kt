@@ -33,6 +33,12 @@ internal class VisitedViewModel @Inject constructor(
         private const val VIEW_SCREEN_CLASS = "VisitedScreen"
         private const val SCREEN_NAME = "Pages you've visited"
         private const val SCREEN_TITLE = "Pages you've visited"
+        private const val REMOVE_ACTION = "Remove"
+        private const val EDIT_BUTTON = "Edit"
+        private const val REMOVE_BUTTON = "Remove"
+        private const val SELECT_ALL_BUTTON = "Select all"
+        private const val DESELECT_ALL_BUTTON = "Deselect all"
+        private const val DONE_BUTTON = "Done"
     }
 
     private val _uiState: MutableStateFlow<VisitedUiState?> = MutableStateFlow(null)
@@ -67,6 +73,54 @@ internal class VisitedViewModel @Inject constructor(
         )
     }
 
+    fun onRemoveVisitedItem(title: String) {
+        analyticsClient.buttonFunction(
+            text = title,
+            section = SCREEN_NAME,
+            action = REMOVE_ACTION
+        )
+    }
+
+    fun onEditClick() {
+        analyticsClient.buttonFunction(
+            text = "",
+            section = SCREEN_NAME,
+            action = EDIT_BUTTON
+        )
+    }
+
+    fun onRemoveClick() {
+        analyticsClient.buttonFunction(
+            text = "",
+            section = SCREEN_NAME,
+            action = REMOVE_BUTTON
+        )
+    }
+
+    fun onSelectAllClick() {
+        analyticsClient.buttonFunction(
+            text = "",
+            section = SCREEN_NAME,
+            action = SELECT_ALL_BUTTON
+        )
+    }
+
+    fun onDeselectAllClick() {
+        analyticsClient.buttonFunction(
+            text = "",
+            section = SCREEN_NAME,
+            action = DESELECT_ALL_BUTTON
+        )
+    }
+
+    fun onDoneClick() {
+        analyticsClient.buttonFunction(
+            text = "",
+            section = SCREEN_NAME,
+            action = DONE_BUTTON
+        )
+    }
+
     fun onVisitedItemClicked(title: String, url: String) {
         viewModelScope.launch {
             visited.visitableItemClick(title = title, url = url)
@@ -80,6 +134,7 @@ internal class VisitedViewModel @Inject constructor(
                 if (visitedItem.isSelected) {
                     viewModelScope.launch {
                         visitedLocalDataSource.remove(visitedItem.title, visitedItem.url)
+                        onRemoveVisitedItem(visitedItem.title)
                     }
                 }
             }

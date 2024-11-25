@@ -62,16 +62,26 @@ internal fun EditVisitedRoute(
     EditVisitedScreen(
         uiState = uiState,
         onRemove = {
+            viewModel.onRemoveClick()
             viewModel.onRemove()
             onBack()
         },
         onEditPageView = { viewModel.onEditPageView() },
-        onBack = onBack,
+        onBack = {
+            viewModel.onDoneClick()
+            onBack()
+        },
         onSelect = { title, url ->
             viewModel.onSelect(title, url)
         },
-        onSelectAll = { viewModel.onSelectAll() },
-        onDeselectAll = { viewModel.onDeselectAll() },
+        onSelectAll = {
+            viewModel.onSelectAllClick()
+            viewModel.onSelectAll()
+        },
+        onDeselectAll = {
+            viewModel.onDeselectAllClick()
+            viewModel.onDeselectAll()
+        },
         modifier = modifier
     )
 }

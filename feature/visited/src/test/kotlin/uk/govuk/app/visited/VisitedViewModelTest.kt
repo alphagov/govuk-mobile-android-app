@@ -79,6 +79,102 @@ class VisitedViewModelTest {
     }
 
     @Test
+    fun `Given a visited item is removed, then log analytics`() {
+        val viewModel =
+            VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
+
+        viewModel.onRemoveVisitedItem("Title")
+
+        verify {
+            analyticsClient.buttonFunction(
+                text = "Title",
+                section = "Pages you've visited",
+                action = "Remove"
+            )
+        }
+    }
+
+    @Test
+    fun `Given an edit button click, then log analytics`() {
+        val viewModel =
+            VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
+
+        viewModel.onEditClick()
+
+        verify {
+            analyticsClient.buttonFunction(
+                text = "",
+                section = "Pages you've visited",
+                action = "Edit"
+            )
+        }
+    }
+
+    @Test
+    fun `Given a remove button click, then log analytics`() {
+        val viewModel =
+            VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
+
+        viewModel.onRemoveClick()
+
+        verify {
+            analyticsClient.buttonFunction(
+                text = "",
+                section = "Pages you've visited",
+                action = "Remove"
+            )
+        }
+    }
+
+    @Test
+    fun `Given a select all button click, then log analytics`() {
+        val viewModel =
+            VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
+
+        viewModel.onSelectAllClick()
+
+        verify {
+            analyticsClient.buttonFunction(
+                text = "",
+                section = "Pages you've visited",
+                action = "Select all"
+            )
+        }
+    }
+
+    @Test
+    fun `Given a deselect all button click, then log analytics`() {
+        val viewModel =
+            VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
+
+        viewModel.onDeselectAllClick()
+
+        verify {
+            analyticsClient.buttonFunction(
+                text = "",
+                section = "Pages you've visited",
+                action = "Deselect all"
+            )
+        }
+    }
+
+    @Test
+    fun `Given a done button click, then log analytics`() {
+        val viewModel =
+            VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
+
+        viewModel.onDoneClick()
+
+        verify {
+            analyticsClient.buttonFunction(
+                text = "",
+                section = "Pages you've visited",
+                action = "Done"
+            )
+        }
+    }
+
+    @Test
     fun `Given the user re-views a visited item, then run the insert or update function`() {
         val viewModel =
             VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
@@ -172,6 +268,8 @@ class VisitedViewModelTest {
             coVerify(exactly = 2) { visitedLocalDataSource.remove(any(), any()) }
             coVerify { visitedLocalDataSource.remove("Title 1", "Url 1") }
             coVerify { visitedLocalDataSource.remove("Title 3", "Url 3") }
+            coVerify { viewModel.onRemoveVisitedItem("Title 1") }
+            coVerify { viewModel.onRemoveVisitedItem("Title 3") }
         }
     }
 
@@ -210,6 +308,7 @@ class VisitedViewModelTest {
             viewModel.onRemove()
 
             coVerify(exactly = 0) { visitedLocalDataSource.remove(any(), any()) }
+            coVerify(exactly = 0) { viewModel.onRemoveVisitedItem(any()) }
 
             assertTrue(viewModel.getUiStateForTest()?.visited.isNullOrEmpty())
         }
@@ -225,6 +324,7 @@ class VisitedViewModelTest {
             viewModel.onRemove()
 
             coVerify(exactly = 0) { visitedLocalDataSource.remove(any(), any()) }
+            coVerify(exactly = 0) { viewModel.onRemoveVisitedItem(any()) }
 
             assertNull(viewModel.getUiStateForTest())
         }
