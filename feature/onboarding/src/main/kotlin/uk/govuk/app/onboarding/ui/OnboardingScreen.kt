@@ -23,10 +23,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -35,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowHeightSizeClass
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ExtraLargeVerticalSpacer
@@ -148,6 +152,7 @@ private fun Page(
     page: OnboardingPage,
     modifier: Modifier = Modifier
 ) {
+    val focusRequester = remember { FocusRequester() }
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
     Column(
@@ -167,9 +172,20 @@ private fun Page(
             ExtraLargeVerticalSpacer()
         }
 
-        LargeTitleBoldLabel(stringResource(page.title), modifier = Modifier.focusable(), textAlign = TextAlign.Center)
+        LargeTitleBoldLabel(
+            text = stringResource(page.title),
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .focusable(),
+            textAlign = TextAlign.Center
+        )
         MediumVerticalSpacer()
         BodyRegularLabel(stringResource(page.body), modifier = Modifier.focusable(), textAlign = TextAlign.Center)
+
+        LaunchedEffect(page.title) {
+            delay(200)
+            focusRequester.requestFocus()
+        }
     }
 }
 
