@@ -321,26 +321,22 @@ private fun BottomNavBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            var onClick = onSelectAll
+            var buttonText = selectText
+
             if (uiState?.hasAllSelectedItems == true) {
-                TextButton(
-                    onClick = onDeselectAll
-                ) {
-                    BodyRegularLabel(
-                        text = deselectText,
-                        color = GovUkTheme.colourScheme.textAndIcons.link,
-                        textAlign = TextAlign.Start
-                    )
-                }
-            } else {
-                TextButton(
-                    onClick = onSelectAll
-                ) {
-                    BodyRegularLabel(
-                        text = selectText,
-                        color = GovUkTheme.colourScheme.textAndIcons.link,
-                        textAlign = TextAlign.Start
-                    )
-                }
+                onClick = onDeselectAll
+                buttonText = deselectText
+            }
+
+            TextButton(
+                onClick = onClick
+            ) {
+                BodyRegularLabel(
+                    text = buttonText,
+                    color = GovUkTheme.colourScheme.textAndIcons.link,
+                    textAlign = TextAlign.Start
+                )
             }
 
             TextButton(
