@@ -15,7 +15,6 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -251,16 +250,19 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given selected items, when onRemove is called, then the correct visited items are removed`() {
+        val initialVisitedItems = listOf(
+            VisitedItemUi("Title 1", "Url 1", 1024),
+            VisitedItemUi("Title 2", "Url 2", 1024),
+            VisitedItemUi("Title 3", "Url 3", 1024)
+        )
+
+        coEvery { visitedRepo.visitedItems } returns flowOf(initialVisitedItems)
+
         val viewModel =
             VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
 
-        val initialVisitedItems = listOf(
-            VisitedUi("Title 1", "Url 1", "1 January", isSelected = true),
-            VisitedUi("Title 2", "Url 2", "1 January", isSelected = false),
-            VisitedUi("Title 3", "Url 3", "1 January", isSelected = true)
-        )
-
-        viewModel.setUiStateForTest(VisitedUiState(visited = mapOf("section" to initialVisitedItems)))
+        viewModel.onSelect("Title 1", "Url 1")
+        viewModel.onSelect("Title 3", "Url 3")
 
         runTest {
             viewModel.onRemove()
@@ -284,15 +286,15 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given no selected items, then the ui state value of the selected items is false`() {
-        val viewModel =
-            VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
-
         val initialVisitedItems = listOf(
-            VisitedUi("Title 1", "Url 1", "1 January", isSelected = false),
-            VisitedUi("Title 2", "Url 2", "1 January", isSelected = false)
+            VisitedItemUi("Title 1", "Url 1", 1024),
+            VisitedItemUi("Title 2", "Url 2", 1024)
         )
 
-        viewModel.setUiStateForTest(VisitedUiState(visited = mapOf("section" to initialVisitedItems)))
+        coEvery { visitedRepo.visitedItems } returns flowOf(initialVisitedItems)
+
+        val viewModel =
+            VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
 
         viewModel.uiState.value?.hasSelectedItems?.let { assertFalse(it) }
         viewModel.uiState.value?.hasAllSelectedItems?.let { assertFalse(it) }
@@ -300,72 +302,49 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given an empty state, when onRemove is called, then there is nothing to do`() {
+        val initialVisitedItems = emptyList<VisitedItemUi>()
+
+        coEvery { visitedRepo.visitedItems } returns flowOf(initialVisitedItems)
+
         val viewModel =
             VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
-        viewModel.setUiStateForTest(VisitedUiState(visited = emptyMap()))
 
         runTest {
             viewModel.onRemove()
 
             coVerify(exactly = 0) { visitedLocalDataSource.remove(any(), any()) }
             coVerify(exactly = 0) { viewModel.onRemoveVisitedItem(any()) }
-
-            assertTrue(viewModel.getUiStateForTest()?.visited.isNullOrEmpty())
         }
     }
 
     @Test
     fun `Given a null state, when onRemove is called, then there is nothing to do`() {
+        val initialVisitedItems = emptyList<VisitedItemUi>()
+
+        coEvery { visitedRepo.visitedItems } returns flowOf(initialVisitedItems)
+
         val viewModel =
             VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
-        viewModel.setUiStateForTest(null)
 
         runTest {
             viewModel.onRemove()
 
             coVerify(exactly = 0) { visitedLocalDataSource.remove(any(), any()) }
             coVerify(exactly = 0) { viewModel.onRemoveVisitedItem(any()) }
-
-            assertNull(viewModel.getUiStateForTest())
         }
     }
 
-
     @Test
-    fun `Given no selected items, when onSelectAll is called, then all items are selected and the selected status is correct`() {
-        val viewModel =
-            VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
-
+    fun `Given some visited items, when onSelectAll is called, then all items are selected and the selected status is correct`() {
         val initialVisitedItems = listOf(
-            VisitedUi("Title 1", "Url 1", "1 January", isSelected = false),
-            VisitedUi("Title 2", "Url 2", "1 January", isSelected = false)
+            VisitedItemUi("Title 1", "Url 1", 1024),
+            VisitedItemUi("Title 2", "Url 2", 1024)
         )
 
-        viewModel.setUiStateForTest(VisitedUiState(visited = mapOf("section" to initialVisitedItems)))
+        coEvery { visitedRepo.visitedItems } returns flowOf(initialVisitedItems)
 
-        viewModel.onSelectAll()
-
-        viewModel.uiState.value?.visited?.values?.forEach { items ->
-            items.forEach { item ->
-                assertTrue(item.isSelected)
-            }
-        }
-
-        viewModel.uiState.value?.hasSelectedItems?.let { assertTrue(it) }
-        viewModel.uiState.value?.hasAllSelectedItems?.let { assertTrue(it) }
-    }
-
-    @Test
-    fun `Given selected items, when onSelectAll is called, then all items are selected and the selected status is correct`() {
         val viewModel =
             VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
-
-        val initialVisitedItems = listOf(
-            VisitedUi("Title 1", "Url 1", "1 January", isSelected = true),
-            VisitedUi("Title 2", "Url 2", "1 January", isSelected = true)
-        )
-
-        viewModel.setUiStateForTest(VisitedUiState(visited = mapOf("section" to initialVisitedItems)))
 
         viewModel.onSelectAll()
 
@@ -381,12 +360,12 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given no items, when onSelectAll is called, then no items are selected and the selected status is correct`() {
+        val initialVisitedItems = emptyList<VisitedItemUi>()
+
+        coEvery { visitedRepo.visitedItems } returns flowOf(initialVisitedItems)
+
         val viewModel =
             VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
-
-        val initialVisitedItems = emptyList<VisitedUi>()
-
-        viewModel.setUiStateForTest(VisitedUiState(visited = mapOf("section" to initialVisitedItems)))
 
         viewModel.onSelectAll()
 
@@ -395,17 +374,18 @@ class VisitedViewModelTest {
     }
 
     @Test
-    fun `Given selected items, when onDeselectAll is called, then all items are deselected and the selected status is correct`() {
+    fun `Given all selected items, when onDeselectAll is called, then all items are deselected and the selected status is correct`() {
+        val initialVisitedItems = listOf(
+            VisitedItemUi("Title 1", "Url 1", 1024),
+            VisitedItemUi("Title 2", "Url 2", 1024)
+        )
+
+        coEvery { visitedRepo.visitedItems } returns flowOf(initialVisitedItems)
+
         val viewModel =
             VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
 
-        val initialVisitedItems = listOf(
-            VisitedUi("Title 1", "Url 1", "1 January", isSelected = true),
-            VisitedUi("Title 2", "Url 2", "1 January", isSelected = true)
-        )
-
-        viewModel.setUiStateForTest(VisitedUiState(visited = mapOf("section" to initialVisitedItems)))
-
+        viewModel.onSelectAll()
         viewModel.onDeselectAll()
 
         viewModel.uiState.value?.visited?.values?.forEach { items ->
@@ -420,15 +400,15 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given no selected items, when onDeselectAll is called, then all items are deselected and the selected status is correct`() {
-        val viewModel =
-            VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
-
         val initialVisitedItems = listOf(
-            VisitedUi("Title 1", "Url 1", "1 January", isSelected = false),
-            VisitedUi("Title 2", "Url 2", "1 January", isSelected = false)
+            VisitedItemUi("Title 1", "Url 1", 1024),
+            VisitedItemUi("Title 2", "Url 2", 1024)
         )
 
-        viewModel.setUiStateForTest(VisitedUiState(visited = mapOf("section" to initialVisitedItems)))
+        coEvery { visitedRepo.visitedItems } returns flowOf(initialVisitedItems)
+
+        val viewModel =
+            VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
 
         viewModel.onDeselectAll()
 
@@ -444,12 +424,12 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given no items, when onDeselectAll is called, then no items are deselected and the selected status is correct`() {
+        val initialVisitedItems = emptyList<VisitedItemUi>()
+
+        coEvery { visitedRepo.visitedItems } returns flowOf(initialVisitedItems)
+
         val viewModel =
             VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
-
-        val initialVisitedItems = emptyList<VisitedUi>()
-
-        viewModel.setUiStateForTest(VisitedUiState(visited = mapOf("section" to initialVisitedItems)))
 
         viewModel.onDeselectAll()
 
@@ -459,15 +439,15 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given no selected items, when onSelect is called, then the appropriate item is selected and the selected status is correct`() {
-        val viewModel =
-            VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
-
         val initialVisitedItems = listOf(
-            VisitedUi("Title 1", "Url 1", "1 January", isSelected = false),
-            VisitedUi("Title 2", "Url 2", "1 January", isSelected = false)
+            VisitedItemUi("Title 1", "Url 1", 1024),
+            VisitedItemUi("Title 2", "Url 2", 1024)
         )
 
-        viewModel.setUiStateForTest(VisitedUiState(visited = mapOf("section" to initialVisitedItems)))
+        coEvery { visitedRepo.visitedItems } returns flowOf(initialVisitedItems)
+
+        val viewModel =
+            VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
 
         viewModel.onSelect("Title 2", "Url 2")
 
@@ -486,17 +466,18 @@ class VisitedViewModelTest {
     }
 
     @Test
-    fun `Given one selected items, when onSelect is called, then the appropriate item is selected and the selected status is correct`() {
+    fun `Given one selected items, when onSelect is called for another, then the appropriate item is selected and the selected status is correct`() {
+        val initialVisitedItems = listOf(
+            VisitedItemUi("Title 1", "Url 1", 1024),
+            VisitedItemUi("Title 2", "Url 2", 1024)
+        )
+
+        coEvery { visitedRepo.visitedItems } returns flowOf(initialVisitedItems)
+
         val viewModel =
             VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
 
-        val initialVisitedItems = listOf(
-            VisitedUi("Title 1", "Url 1", "1 January", isSelected = true),
-            VisitedUi("Title 2", "Url 2", "1 January", isSelected = false)
-        )
-
-        viewModel.setUiStateForTest(VisitedUiState(visited = mapOf("section" to initialVisitedItems)))
-
+        viewModel.onSelect("Title 1", "Url 1")
         viewModel.onSelect("Title 2", "Url 2")
 
         viewModel.uiState.value?.visited?.values?.forEach { items ->
@@ -511,16 +492,18 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given selected items, when onSelect is called, then the appropriate item is deselected and the selected status is correct`() {
+        val initialVisitedItems = listOf(
+            VisitedItemUi("Title 1", "Url 1", 1024),
+            VisitedItemUi("Title 2", "Url 2", 1024)
+        )
+
+        coEvery { visitedRepo.visitedItems } returns flowOf(initialVisitedItems)
+
         val viewModel =
             VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
 
-        val initialVisitedItems = listOf(
-            VisitedUi("Title 1", "Url 1", "1 January", isSelected = true),
-            VisitedUi("Title 2", "Url 2", "1 January", isSelected = true)
-        )
-
-        viewModel.setUiStateForTest(VisitedUiState(visited = mapOf("section" to initialVisitedItems)))
-
+        viewModel.onSelect("Title 1", "Url 1")
+        viewModel.onSelect("Title 2", "Url 2")
         viewModel.onSelect("Title 2", "Url 2")
 
         viewModel.uiState.value?.visited?.values?.forEach { items ->
@@ -539,16 +522,17 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given one selected item, when onSelect is called, then the appropriate item is deselected and the selected status is correct`() {
+        val initialVisitedItems = listOf(
+            VisitedItemUi("Title 1", "Url 1", 1024),
+            VisitedItemUi("Title 2", "Url 2", 1024)
+        )
+
+        coEvery { visitedRepo.visitedItems } returns flowOf(initialVisitedItems)
+
         val viewModel =
             VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
 
-        val initialVisitedItems = listOf(
-            VisitedUi("Title 1", "Url 1", "1 January", isSelected = false),
-            VisitedUi("Title 2", "Url 2", "1 January", isSelected = true)
-        )
-
-        viewModel.setUiStateForTest(VisitedUiState(visited = mapOf("section" to initialVisitedItems)))
-
+        viewModel.onSelect("Title 2", "Url 2")
         viewModel.onSelect("Title 2", "Url 2")
 
         viewModel.uiState.value?.visited?.values?.forEach { items ->
@@ -563,12 +547,12 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given no items, when onSelect is called, then nothing is selected and the selected status is correct`() {
+        val initialVisitedItems = emptyList<VisitedItemUi>()
+
+        coEvery { visitedRepo.visitedItems } returns flowOf(initialVisitedItems)
+
         val viewModel =
             VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
-
-        val initialVisitedItems = emptyList<VisitedUi>()
-
-        viewModel.setUiStateForTest(VisitedUiState(visited = mapOf("section" to initialVisitedItems)))
 
         viewModel.onSelect("Title 1", "Url 1")
 
@@ -583,15 +567,15 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given some unselected items, when onSelect is called for an item that does not exist, then nothing is selected and the selected status is correct`() {
-        val viewModel =
-            VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
-
         val initialVisitedItems = listOf(
-            VisitedUi("Title 1", "Url 1", "1 January", isSelected = false),
-            VisitedUi("Title 2", "Url 2", "1 January", isSelected = false)
+            VisitedItemUi("Title 1", "Url 1", 1024),
+            VisitedItemUi("Title 2", "Url 2", 1024)
         )
 
-        viewModel.setUiStateForTest(VisitedUiState(visited = mapOf("section" to initialVisitedItems)))
+        coEvery { visitedRepo.visitedItems } returns flowOf(initialVisitedItems)
+
+        val viewModel =
+            VisitedViewModel(visitedRepo, visitedLocalDataSource, visited, analyticsClient)
 
         viewModel.onSelect("Title 99", "Url 99")
 

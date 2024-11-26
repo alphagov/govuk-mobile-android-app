@@ -188,10 +188,4 @@ internal class VisitedViewModel @Inject constructor(
             )
         }
     }
-
-    internal fun getUiStateForTest(): VisitedUiState? = _uiState.value
-
-    internal fun setUiStateForTest(state: VisitedUiState?) {
-        _uiState.value = state
-    }
 }
