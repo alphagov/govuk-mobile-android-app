@@ -142,23 +142,11 @@ internal class VisitedViewModel @Inject constructor(
     }
 
     fun onSelectAll() {
-        _uiState.value = _uiState.value?.copy(
-            visited = _uiState.value?.visited?.mapValues { (_, visitedItems) ->
-                visitedItems.map { it.copy(isSelected = true) }
-            },
-            hasSelectedItems = true,
-            hasAllSelectedItems = true
-        )
+        setAll(true)
     }
 
     fun onDeselectAll() {
-        _uiState.value = _uiState.value?.copy(
-            visited = _uiState.value?.visited?.mapValues { (_, visitedItems) ->
-                visitedItems.map { it.copy(isSelected = false) }
-            },
-            hasSelectedItems = false,
-            hasAllSelectedItems = false
-        )
+        setAll(false)
     }
 
     fun onSelect(title: String, url: String) {
@@ -187,5 +175,15 @@ internal class VisitedViewModel @Inject constructor(
                 hasSelectedItems = hasSelectedItems
             )
         }
+    }
+
+    private fun setAll(state: Boolean) {
+        _uiState.value = _uiState.value?.copy(
+            visited = _uiState.value?.visited?.mapValues { (_, visitedItems) ->
+                visitedItems.map { it.copy(isSelected = state) }
+            },
+            hasSelectedItems = state,
+            hasAllSelectedItems = state
+        )
     }
 }
