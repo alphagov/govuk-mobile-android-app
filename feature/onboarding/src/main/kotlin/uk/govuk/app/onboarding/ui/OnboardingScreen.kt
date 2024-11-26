@@ -159,14 +159,15 @@ private fun Page(
         modifier = modifier
             .verticalScroll(rememberScrollState())
             .fillMaxWidth()
-            .padding(top = GovUkTheme.spacing.extraLarge)
-            .padding(horizontal = GovUkTheme.spacing.extraLarge),
-        horizontalAlignment = Alignment.CenterHorizontally,
+            .padding(top = GovUkTheme.spacing.extraLarge),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (windowSizeClass.windowHeightSizeClass != WindowHeightSizeClass.COMPACT) {
             Image(
                 painter = painterResource(id = page.image),
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(horizontal = GovUkTheme.spacing.extraLarge)
             )
 
             ExtraLargeVerticalSpacer()
@@ -176,11 +177,18 @@ private fun Page(
             text = stringResource(page.title),
             modifier = Modifier
                 .focusRequester(focusRequester)
-                .focusable(),
+                .focusable()
+                .padding(horizontal = GovUkTheme.spacing.extraLarge),
             textAlign = TextAlign.Center
         )
         MediumVerticalSpacer()
-        BodyRegularLabel(stringResource(page.body), modifier = Modifier.focusable(), textAlign = TextAlign.Center)
+        BodyRegularLabel(
+            stringResource(page.body),
+            modifier = Modifier
+                .focusable()
+                .padding(horizontal = GovUkTheme.spacing.extraLarge),
+            textAlign = TextAlign.Center
+        )
 
         LaunchedEffect(page.title) {
             delay(200)
