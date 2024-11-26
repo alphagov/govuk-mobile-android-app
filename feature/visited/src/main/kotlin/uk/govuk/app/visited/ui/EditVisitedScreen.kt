@@ -26,6 +26,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -256,6 +259,8 @@ private fun TopNavBar(
     scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier,
 ) {
+    var isDoneButtonEnabled by remember { mutableStateOf(true) }
+
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = GovUkTheme.colourScheme.surfaces.background,
@@ -269,8 +274,12 @@ private fun TopNavBar(
         },
         actions = {
             TextButton(
-                onClick = onBack,
-                modifier = modifier.wrapContentSize()
+                onClick = {
+                    isDoneButtonEnabled = false
+                    onBack()
+                },
+                modifier = modifier.wrapContentSize(),
+                enabled = isDoneButtonEnabled
             ) {
                 BodyRegularLabel(
                     text = doneText,
