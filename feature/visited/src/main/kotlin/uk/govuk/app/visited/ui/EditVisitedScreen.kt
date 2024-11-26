@@ -182,7 +182,7 @@ private fun CheckableExternalLinkListItem(
 ) {
     CardListItem(
         modifier = modifier,
-        onClick = { /* Do nothing */ },
+        onClick = { onSelect(item.title, item.url) },
         isFirst = isFirst,
         isLast = isLast
     ) {
