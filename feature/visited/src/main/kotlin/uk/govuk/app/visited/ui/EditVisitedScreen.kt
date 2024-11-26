@@ -364,7 +364,8 @@ private fun EditVisitedScreenPreview() {
         EditVisitedScreen(
             uiState = VisitedUiState(
                 visited = emptyMap(),
-                hasSelectedItems = false
+                hasSelectedItems = false,
+                hasAllSelectedItems = false
             ),
             onRemove = {},
             onEditPageView = {},

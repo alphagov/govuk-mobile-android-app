@@ -15,9 +15,9 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 internal data class VisitedUiState(
-    var visited: Map<String, List<VisitedUi>>?,
-    var hasSelectedItems: Boolean = false,
-    var hasAllSelectedItems: Boolean = false
+    val visited: Map<String, List<VisitedUi>>?,
+    val hasSelectedItems: Boolean,
+    val hasAllSelectedItems: Boolean
 )
 
 @HiltViewModel

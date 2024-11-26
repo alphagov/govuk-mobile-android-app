@@ -219,7 +219,9 @@ class VisitedViewModelTest {
                             lastVisited = localDateFormatter(today.toEpochSecond(ZoneOffset.UTC))
                         )
                     )
-                )
+                ),
+                hasSelectedItems = false,
+                hasAllSelectedItems = false
             )
 
         coEvery { visitedRepo.visitedItems } returns flowOf(visitedItems)
@@ -235,7 +237,11 @@ class VisitedViewModelTest {
     @Test
     fun `Given there are no visited items, then the status in the view model are correct`() {
         val visitedItems = emptyList<VisitedItemUi>()
-        val expected = VisitedUiState(visited = emptyMap())
+        val expected = VisitedUiState(
+            visited = emptyMap(),
+            hasSelectedItems = false,
+            hasAllSelectedItems = false
+        )
 
         coEvery { visitedRepo.visitedItems } returns flowOf(visitedItems)
 
