@@ -9,5 +9,6 @@
   <string name="visited_items_edit_button">Edit</string>
   <string name="visited_items_done_button">Done</string>
   <string name="visited_items_select_all_button">Select all</string>
+  <string name="visited_items_deselect_all_button">Deselect all</string>
   <string name="visited_items_remove_button">Remove</string>
 </resources>

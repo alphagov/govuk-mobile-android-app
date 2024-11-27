@@ -58,6 +58,7 @@ internal fun VisitedRoute(
             viewModel.onVisitedItemClicked(title, url)
         },
         onEditClick = {
+            viewModel.onEditClick()
             navController.navigateToEditVisited()
         },
         modifier = modifier

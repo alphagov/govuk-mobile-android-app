@@ -39,4 +39,14 @@ internal class VisitedLocalDataSource @Inject constructor(
             )
         }
     }
+
+    suspend fun remove(title: String, url: String) {
+        realmProvider.open().write {
+            val visitedItem = query<VisitedItem>("title = $0 AND url = $1", title, url).first().find()
+
+            visitedItem?.apply {
+                delete(this)
+            }
+        }
+    }
 }
