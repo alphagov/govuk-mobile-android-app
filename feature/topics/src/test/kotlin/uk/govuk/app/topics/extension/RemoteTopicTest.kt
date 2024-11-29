@@ -130,7 +130,7 @@ class RemoteTopicTest {
     }
 
     @Test
-    fun `Given a remote topic, When mapping to topic ui, then return with subtopic title of browse`() {
+    fun `Given a remote topic, When mapping to topic ui, then return with subtopic title and icon of browse`() {
         val remoteTopic = RemoteTopic(
             title = "title",
             description = "description",
@@ -144,7 +144,7 @@ class RemoteTopicTest {
     }
 
     @Test
-    fun `Given a remote subtopic with empty content, When mapping to topic ui, then return with subtopic title of browse`() {
+    fun `Given a remote subtopic with empty content, When mapping to topic ui, then return with subtopic title and icon of browse`() {
         val remoteTopic = RemoteTopic(
             title = "title",
             description = "description",
@@ -158,7 +158,7 @@ class RemoteTopicTest {
     }
 
     @Test
-    fun `Given a remote subtopic with content, When mapping to topic ui, then return with subtopic title of related`() {
+    fun `Given a remote subtopic with content, When mapping to topic ui, then return with subtopic title and icon of related`() {
         val remoteTopic = RemoteTopic(
             title = "title",
             description = "description",
