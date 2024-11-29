@@ -72,7 +72,10 @@ class TopicViewModelTest {
             displayStepByStepSeeAll = false,
             services = emptyList(),
             subtopics = emptyList(),
-            subtopicsTitle = R.string.browseTitle
+            subtopicsSection = TopicUi.SubTopicsSection(
+                title = R.string.browseTitle,
+                icon = R.drawable.ic_topic_browse
+            )
         )
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)

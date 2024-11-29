@@ -1,6 +1,5 @@
 package uk.govuk.app.topics.ui
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +13,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -23,9 +24,8 @@ import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.ExternalLinkListItem
 import uk.govuk.app.design.ui.component.InternalLinkListItem
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
-import uk.govuk.app.design.ui.component.ListHeadingLabel
+import uk.govuk.app.design.ui.component.ListHeader
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
-import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.networking.ui.component.OfflineMessage
 import uk.govuk.app.networking.ui.component.ProblemMessage
@@ -34,6 +34,8 @@ import uk.govuk.app.topics.TopicUiState
 import uk.govuk.app.topics.TopicViewModel
 import uk.govuk.app.topics.extension.toTopicName
 import uk.govuk.app.topics.ui.model.TopicUi
+
+private data class Section(val title: String, val icon: Painter)
 
 @Composable
 internal fun TopicRoute(
@@ -116,9 +118,18 @@ private fun TopicScreen(
             onBack = onBack
         )
 
-        val popularPagesTitle = stringResource(R.string.popularPagesTitle)
-        val stepByStepsTitle = stringResource(R.string.stepByStepGuidesTitle)
-        val servicesTitle = stringResource(R.string.servicesTitle)
+        val popularPagesSection = Section(
+            stringResource(R.string.popularPagesTitle),
+            painterResource(R.drawable.ic_topic_popular)
+        )
+        val stepByStepSection = Section(
+            stringResource(R.string.stepByStepGuidesTitle),
+            painterResource(R.drawable.ic_topic_step_by_step)
+        )
+        val servicesSection = Section(
+            stringResource(R.string.servicesTitle),
+            painterResource(R.drawable.ic_topic_services_and_info)
+        )
 
         LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
             item {
@@ -133,13 +144,13 @@ private fun TopicScreen(
 
             contentItems(
                 contentItems = topic.popularPages,
-                section = popularPagesTitle,
+                section = popularPagesSection,
                 onClick = onExternalLink
             )
 
             contentItems(
                 contentItems = topic.stepBySteps,
-                section = stepByStepsTitle,
+                section = stepByStepSection,
                 onClick = onExternalLink,
                 displaySeeAll = topic.displayStepByStepSeeAll,
                 onSeeAll = onStepByStepSeeAll
@@ -147,13 +158,13 @@ private fun TopicScreen(
 
             contentItems(
                 contentItems = topic.services,
-                section = servicesTitle,
+                section = servicesSection,
                 onClick = onExternalLink
             )
 
             subtopics(
                 subtopics = topic.subtopics,
-                title = topic.subtopicsTitle,
+                section = topic.subtopicsSection,
                 onClick = onSubtopic
             )
         }
@@ -162,18 +173,17 @@ private fun TopicScreen(
 
 private fun LazyListScope.contentItems(
     contentItems: List<TopicUi.TopicContent>,
-    section: String,
+    section: Section,
     onClick: (section: String, text: String, url: String) -> Unit,
     displaySeeAll: Boolean = false,
     onSeeAll: (section: String, text: String) -> Unit = { _, _ -> }
 ) {
     if (contentItems.isNotEmpty()) {
         item {
-            ListHeadingLabel(section)
-        }
-
-        item {
-            SmallVerticalSpacer()
+            ListHeader(
+                title = section.title,
+                icon = section.icon
+            )
         }
 
         var lastIndex = contentItems.lastIndex
@@ -182,8 +192,8 @@ private fun LazyListScope.contentItems(
         itemsIndexed(contentItems) { index, content ->
             ExternalLinkListItem(
                 title = content.title,
-                onClick = { onClick(section, content.title, content.url) },
-                isFirst = index == 0,
+                onClick = { onClick(section.title, content.title, content.url) },
+                isFirst = false,
                 isLast = index == lastIndex
             )
         }
@@ -193,7 +203,7 @@ private fun LazyListScope.contentItems(
                 val title = stringResource(R.string.seeAllButton)
                 InternalLinkListItem(
                     title = title,
-                    onClick = { onSeeAll(section, title) },
+                    onClick = { onSeeAll(section.title, title) },
                     isFirst = lastIndex == 0,
                     isLast = true
                 )
@@ -208,24 +218,22 @@ private fun LazyListScope.contentItems(
 
 private fun LazyListScope.subtopics(
     subtopics: List<TopicUi.Subtopic>,
-    @StringRes title: Int,
+    section: TopicUi.SubTopicsSection,
     onClick: (text: String, ref: String) -> Unit,
 ) {
     if (subtopics.isNotEmpty()) {
-
         item {
-            ListHeadingLabel(stringResource(title))
-        }
-
-        item {
-            SmallVerticalSpacer()
+            ListHeader(
+                title = stringResource(section.title),
+                icon = painterResource(section.icon)
+            )
         }
 
         itemsIndexed(subtopics) { index, subtopic ->
             InternalLinkListItem(
                 title = subtopic.title,
                 onClick = { onClick(subtopic.title, subtopic.ref) },
-                isFirst = index == 0,
+                isFirst = false,
                 isLast = index == subtopics.lastIndex
             )
         }
