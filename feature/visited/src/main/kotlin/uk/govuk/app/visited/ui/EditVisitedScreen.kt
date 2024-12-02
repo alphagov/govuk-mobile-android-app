@@ -14,7 +14,6 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -34,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,7 +42,6 @@ import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.CardListItem
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeadingLabel
-import uk.govuk.app.design.ui.component.MediumHorizontalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.SubheadlineRegularLabel
 import uk.govuk.app.design.ui.component.Title2BoldLabel
@@ -221,14 +218,6 @@ private fun CheckableExternalLinkListItem(
                         text = item.title,
                         modifier = Modifier.weight(1f),
                         color = GovUkTheme.colourScheme.textAndIcons.link
-                    )
-
-                    MediumHorizontalSpacer()
-
-                    Icon(
-                        painter = painterResource(uk.govuk.app.design.R.drawable.ic_external_link),
-                        contentDescription = "",
-                        tint = GovUkTheme.colourScheme.textAndIcons.link
                     )
                 }
 
