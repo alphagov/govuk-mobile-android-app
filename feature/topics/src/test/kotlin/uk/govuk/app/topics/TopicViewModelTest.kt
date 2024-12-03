@@ -72,7 +72,7 @@ class TopicViewModelTest {
             displayStepByStepSeeAll = false,
             services = emptyList(),
             subtopics = emptyList(),
-            subtopicsSection = TopicUi.SubTopicsSection(
+            subtopicsSection = TopicUi.Section(
                 title = R.string.browseTitle,
                 icon = R.drawable.ic_topic_browse
             )

@@ -13,9 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,8 +32,6 @@ import uk.govuk.app.topics.TopicUiState
 import uk.govuk.app.topics.TopicViewModel
 import uk.govuk.app.topics.extension.toTopicName
 import uk.govuk.app.topics.ui.model.TopicUi
-
-private data class Section(val title: String, val icon: Painter)
 
 @Composable
 internal fun TopicRoute(
@@ -118,17 +114,17 @@ private fun TopicScreen(
             onBack = onBack
         )
 
-        val popularPagesSection = Section(
-            stringResource(R.string.popularPagesTitle),
-            painterResource(R.drawable.ic_topic_popular)
+        val popularPagesSection = TopicUi.Section(
+            R.string.popularPagesTitle,
+            R.drawable.ic_topic_popular
         )
-        val stepByStepSection = Section(
-            stringResource(R.string.stepByStepGuidesTitle),
-            painterResource(R.drawable.ic_topic_step_by_step)
+        val stepByStepSection = TopicUi.Section(
+            R.string.stepByStepGuidesTitle,
+            R.drawable.ic_topic_step_by_step
         )
-        val servicesSection = Section(
-            stringResource(R.string.servicesTitle),
-            painterResource(R.drawable.ic_topic_services_and_info)
+        val servicesSection = TopicUi.Section(
+            R.string.servicesTitle,
+            R.drawable.ic_topic_services_and_info
         )
 
         LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
@@ -173,7 +169,7 @@ private fun TopicScreen(
 
 private fun LazyListScope.contentItems(
     contentItems: List<TopicUi.TopicContent>,
-    section: Section,
+    section: TopicUi.Section,
     onClick: (section: String, text: String, url: String) -> Unit,
     displaySeeAll: Boolean = false,
     onSeeAll: (section: String, text: String) -> Unit = { _, _ -> }
@@ -190,9 +186,10 @@ private fun LazyListScope.contentItems(
         if (displaySeeAll) lastIndex += 1
 
         itemsIndexed(contentItems) { index, content ->
+            val sectionTitle = stringResource(section.title)
             ExternalLinkListItem(
                 title = content.title,
-                onClick = { onClick(section.title, content.title, content.url) },
+                onClick = { onClick(sectionTitle, content.title, content.url) },
                 isFirst = false,
                 isLast = index == lastIndex
             )
@@ -200,10 +197,11 @@ private fun LazyListScope.contentItems(
 
         if (displaySeeAll) {
             item {
+                val sectionTitle = stringResource(section.title)
                 val title = stringResource(R.string.seeAllButton)
                 InternalLinkListItem(
                     title = title,
-                    onClick = { onSeeAll(section.title, title) },
+                    onClick = { onSeeAll(sectionTitle, title) },
                     isFirst = lastIndex == 0,
                     isLast = true
                 )
@@ -218,14 +216,14 @@ private fun LazyListScope.contentItems(
 
 private fun LazyListScope.subtopics(
     subtopics: List<TopicUi.Subtopic>,
-    section: TopicUi.SubTopicsSection,
+    section: TopicUi.Section,
     onClick: (text: String, ref: String) -> Unit,
 ) {
     if (subtopics.isNotEmpty()) {
         item {
             ListHeader(
-                title = stringResource(section.title),
-                icon = painterResource(section.icon)
+                title = section.title,
+                icon = section.icon
             )
         }
 

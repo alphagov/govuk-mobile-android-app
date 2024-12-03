@@ -1,5 +1,7 @@
 package uk.govuk.app.design.ui.component
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,7 +27,6 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -36,8 +37,8 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
 fun ListHeader(
-    title: String,
-    icon: Painter
+    @StringRes title: Int,
+    @DrawableRes icon: Int
 ) {
     val borderColor = GovUkTheme.colourScheme.strokes.listDivider
     val backgroundColor = GovUkTheme.colourScheme.surfaces.card
@@ -62,12 +63,12 @@ fun ListHeader(
                     .padding(all = GovUkTheme.spacing.medium)
             ) {
                 Image(
-                    painter = icon,
+                    painter = painterResource(icon),
                     contentDescription = null,
                     modifier = Modifier.size(40.dp)
                 )
                 Title3BoldLabel(
-                    text = title,
+                    text = stringResource(title),
                     modifier = Modifier.padding(start = GovUkTheme.spacing.medium)
                 )
             }

@@ -32,12 +32,12 @@ internal fun RemoteTopic.toTopicUi(maxStepBySteps: Int, isSubtopic: Boolean): To
         },
         subtopicsSection =
         if (isSubtopic && content.isNotEmpty()) {
-            TopicUi.SubTopicsSection(
+            TopicUi.Section(
                 title = R.string.relatedTitle,
                 icon = R.drawable.ic_topic_related
             )
         } else {
-            TopicUi.SubTopicsSection(
+            TopicUi.Section(
                 title = R.string.browseTitle,
                 icon = R.drawable.ic_topic_browse
             )

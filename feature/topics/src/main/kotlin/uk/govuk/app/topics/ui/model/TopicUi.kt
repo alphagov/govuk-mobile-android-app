@@ -11,9 +11,9 @@ internal data class TopicUi(
     val displayStepByStepSeeAll: Boolean,
     val services: List<TopicContent>,
     val subtopics: List<Subtopic>,
-    val subtopicsSection: SubTopicsSection
+    val subtopicsSection: Section
 ) {
-    data class SubTopicsSection(
+    data class Section(
         @StringRes val title: Int,
         @DrawableRes val icon: Int
     )
