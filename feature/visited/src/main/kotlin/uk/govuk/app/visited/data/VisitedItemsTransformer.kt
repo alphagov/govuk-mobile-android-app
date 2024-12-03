@@ -21,7 +21,7 @@ fun transformVisitedItems(visitedItems: List<VisitedItemUi>, todaysDate: LocalDa
             it.toLocalDate().year != todaysDate.year
     }
 
-    fun VisitedItemUi.previousMonthKey() = "${toLocalDate().month.name} ${toLocalDate().year}"
+    fun VisitedItemUi.previousMonthKey() = "${capitaliseMonth(toLocalDate().month.name)} ${toLocalDate().year}"
     val groupedPreviousMonthsItems = previousMonthsItems.groupBy { it.previousMonthKey() }
 
     fun toVisitedUi(items: List<VisitedItemUi>): List<VisitedUi> = items.map {
