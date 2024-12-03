@@ -115,16 +115,16 @@ private fun TopicScreen(
         )
 
         val popularPagesSection = TopicUi.Section(
-            R.string.popularPagesTitle,
-            R.drawable.ic_topic_popular
+            title = R.string.popularPagesTitle,
+            icon = R.drawable.ic_topic_popular
         )
         val stepByStepSection = TopicUi.Section(
-            R.string.stepByStepGuidesTitle,
-            R.drawable.ic_topic_step_by_step
+            title = R.string.stepByStepGuidesTitle,
+            icon = R.drawable.ic_topic_step_by_step
         )
         val servicesSection = TopicUi.Section(
-            R.string.servicesTitle,
-            R.drawable.ic_topic_services_and_info
+            title = R.string.servicesTitle,
+            icon = R.drawable.ic_topic_services_and_info
         )
 
         LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
