@@ -254,7 +254,6 @@ private fun GovUkNavHost(
         )
         settingsGraph(
             appVersion = BuildConfig.VERSION_NAME,
-            navController = navController,
             modifier = Modifier.padding(paddingValues)
         )
         searchGraph(navController)
