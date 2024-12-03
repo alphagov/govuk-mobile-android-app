@@ -117,20 +117,24 @@ private fun VisitedScreen(
                     }
                 }
             }
-            LargeTitleBoldLabel(
-                text = title,
-                modifier = modifier
-                    .fillMaxWidth()
-                    .wrapContentSize()
-                    .padding(horizontal = GovUkTheme.spacing.medium)
-                    .padding(bottom = GovUkTheme.spacing.small)
-            )
         }
         LazyColumn(
             Modifier
                 .padding(horizontal = GovUkTheme.spacing.medium)
                 .padding(top = GovUkTheme.spacing.small)
         ) {
+
+            item {
+                LargeTitleBoldLabel(
+                    text = title,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .wrapContentSize()
+                        .padding(horizontal = GovUkTheme.spacing.medium)
+                        .padding(bottom = GovUkTheme.spacing.small)
+                )
+            }
+
             item {
                 if (visitedItems.isNullOrEmpty()) {
                     NoVisitedItems(modifier)

@@ -1,6 +1,5 @@
 package uk.govuk.app.visited.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,7 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,11 +37,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.CardListItem
+import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeadingLabel
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.SubheadlineRegularLabel
-import uk.govuk.app.design.ui.component.Title2BoldLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.visited.R
 import uk.govuk.app.visited.VisitedUiState
@@ -116,10 +113,8 @@ private fun EditVisitedScreen(
 
         topBar = {
             TopNavBar(
-                title = titleText,
                 doneText = doneText,
                 onBack = onBack,
-                scrollBehavior = scrollBehavior,
                 modifier = modifier
             )
         },
@@ -137,9 +132,21 @@ private fun EditVisitedScreen(
             modifier = modifier
                 .padding(innerPadding)
                 .padding(horizontal = GovUkTheme.spacing.medium)
+                .padding(top = GovUkTheme.spacing.small)
                 .fillMaxWidth()
-                .background(GovUkTheme.colourScheme.surfaces.background)
         ) {
+            item {
+                LargeTitleBoldLabel(
+                    text = titleText,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .wrapContentSize()
+                        .padding(horizontal = GovUkTheme.spacing.medium)
+                        .padding(bottom = GovUkTheme.spacing.small),
+                    textAlign = TextAlign.Start
+                )
+            }
+
             item {
                 visitedItems?.let { items ->
                     val lastVisitedText = stringResource(R.string.visited_items_last_visited)
@@ -239,29 +246,23 @@ private fun CheckableExternalLinkListItem(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopNavBar(
-    title: String,
     doneText: String,
     onBack: () -> Unit,
-    scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier,
 ) {
     var isDoneButtonEnabled by remember { mutableStateOf(true) }
 
-    CenterAlignedTopAppBar(
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = GovUkTheme.colourScheme.surfaces.background,
-            scrolledContainerColor = GovUkTheme.colourScheme.surfaces.background,
-            titleContentColor = GovUkTheme.colourScheme.textAndIcons.primary,
-        ),
-        title = {
-            Title2BoldLabel(
-                title,
-            )
-        },
-        actions = {
+    Column(modifier) {
+        Row(
+            modifier = Modifier
+                .height(64.dp)
+                .fillMaxWidth()
+                .padding(end = GovUkTheme.spacing.small),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
             TextButton(
                 onClick = {
                     isDoneButtonEnabled = false
@@ -276,9 +277,8 @@ private fun TopNavBar(
                     textAlign = TextAlign.End
                 )
             }
-        },
-        scrollBehavior = scrollBehavior,
-    )
+        }
+    }
 }
 
 @Composable
