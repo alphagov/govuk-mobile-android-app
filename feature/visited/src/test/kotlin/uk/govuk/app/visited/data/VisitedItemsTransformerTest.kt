@@ -116,7 +116,7 @@ class VisitedItemsTransformerTest {
             )
         )
 
-        val items = transformVisitedItems(visitedItems, today.toLocalDate())["${lastMonth.month.name} ${lastMonth.year}"]
+        val items = transformVisitedItems(visitedItems, today.toLocalDate())["${capitaliseMonth(lastMonth.month.name)} ${lastMonth.year}"]
         val actual = items?.first() ?: throw Exception("Failed to transform visited items")
 
         val expected = listOf(
@@ -149,7 +149,7 @@ class VisitedItemsTransformerTest {
             )
         )
 
-        val items = transformVisitedItems(visitedItems, today.toLocalDate())["${lastMonth.month.name} ${lastMonth.year}"]
+        val items = transformVisitedItems(visitedItems, today.toLocalDate())["${capitaliseMonth(lastMonth.month.name)} ${lastMonth.year}"]
         val actual = items?.first() ?: throw Exception("Failed to transform visited items")
 
         val expected = listOf(
