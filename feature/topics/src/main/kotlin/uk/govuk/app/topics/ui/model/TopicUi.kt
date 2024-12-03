@@ -1,5 +1,6 @@
 package uk.govuk.app.topics.ui.model
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
 internal data class TopicUi(
@@ -10,8 +11,13 @@ internal data class TopicUi(
     val displayStepByStepSeeAll: Boolean,
     val services: List<TopicContent>,
     val subtopics: List<Subtopic>,
-    @StringRes val subtopicsTitle: Int,
+    val subtopicsSection: Section
 ) {
+    data class Section(
+        @StringRes val title: Int,
+        @DrawableRes val icon: Int
+    )
+
     data class Subtopic(
         val ref: String,
         val title: String

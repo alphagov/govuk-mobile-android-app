@@ -130,7 +130,7 @@ class RemoteTopicTest {
     }
 
     @Test
-    fun `Given a remote topic, When mapping to topic ui, then return with subtopic title of browse`() {
+    fun `Given a remote topic, When mapping to topic ui, then return with subtopic title and icon of browse`() {
         val remoteTopic = RemoteTopic(
             title = "title",
             description = "description",
@@ -139,11 +139,12 @@ class RemoteTopicTest {
         )
 
         val topicUi = remoteTopic.toTopicUi(1, false)
-        assertEquals(R.string.browseTitle, topicUi.subtopicsTitle)
+        assertEquals(R.string.browseTitle, topicUi.subtopicsSection.title)
+        assertEquals(R.drawable.ic_topic_browse, topicUi.subtopicsSection.icon)
     }
 
     @Test
-    fun `Given a remote subtopic with empty content, When mapping to topic ui, then return with subtopic title of browse`() {
+    fun `Given a remote subtopic with empty content, When mapping to topic ui, then return with subtopic title and icon of browse`() {
         val remoteTopic = RemoteTopic(
             title = "title",
             description = "description",
@@ -152,11 +153,12 @@ class RemoteTopicTest {
         )
 
         val topicUi = remoteTopic.toTopicUi(1, true)
-        assertEquals(R.string.browseTitle, topicUi.subtopicsTitle)
+        assertEquals(R.string.browseTitle, topicUi.subtopicsSection.title)
+        assertEquals(R.drawable.ic_topic_browse, topicUi.subtopicsSection.icon)
     }
 
     @Test
-    fun `Given a remote subtopic with content, When mapping to topic ui, then return with subtopic title of related`() {
+    fun `Given a remote subtopic with content, When mapping to topic ui, then return with subtopic title and icon of related`() {
         val remoteTopic = RemoteTopic(
             title = "title",
             description = "description",
@@ -172,7 +174,8 @@ class RemoteTopicTest {
         )
 
         val topicUi = remoteTopic.toTopicUi(1, true)
-        assertEquals(R.string.relatedTitle, topicUi.subtopicsTitle)
+        assertEquals(R.string.relatedTitle, topicUi.subtopicsSection.title)
+        assertEquals(R.drawable.ic_topic_related, topicUi.subtopicsSection.icon)
     }
 
     @Test

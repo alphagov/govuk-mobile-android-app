@@ -1,5 +1,8 @@
 package uk.govuk.app.design.ui.component
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -7,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +34,48 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import uk.govuk.app.design.R
 import uk.govuk.app.design.ui.theme.GovUkTheme
+
+@Composable
+fun ListHeader(
+    @StringRes title: Int,
+    @DrawableRes icon: Int
+) {
+    val borderColor = GovUkTheme.colourScheme.strokes.listDivider
+    val backgroundColor = GovUkTheme.colourScheme.surfaces.card
+
+    Box(
+        modifier = Modifier
+            .drawBehind {
+                drawCell(
+                    isFirst = true,
+                    isLast = false,
+                    borderColor = borderColor,
+                    backgroundColor = backgroundColor,
+                    backgroundColorHighlight = backgroundColor,
+                    isClicked = false
+                )
+            }
+    ) {
+        Column {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(all = GovUkTheme.spacing.medium)
+            ) {
+                Image(
+                    painter = painterResource(icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp)
+                )
+                Title3BoldLabel(
+                    text = stringResource(title),
+                    modifier = Modifier.padding(start = GovUkTheme.spacing.medium)
+                )
+            }
+            ListDivider()
+        }
+    }
+}
 
 @Composable
 fun InternalLinkListItem(

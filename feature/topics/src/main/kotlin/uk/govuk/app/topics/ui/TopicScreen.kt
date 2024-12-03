@@ -1,6 +1,5 @@
 package uk.govuk.app.topics.ui
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,9 +22,8 @@ import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.ExternalLinkListItem
 import uk.govuk.app.design.ui.component.InternalLinkListItem
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
-import uk.govuk.app.design.ui.component.ListHeadingLabel
+import uk.govuk.app.design.ui.component.ListHeader
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
-import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.networking.ui.component.OfflineMessage
 import uk.govuk.app.networking.ui.component.ProblemMessage
@@ -116,9 +114,18 @@ private fun TopicScreen(
             onBack = onBack
         )
 
-        val popularPagesTitle = stringResource(R.string.popularPagesTitle)
-        val stepByStepsTitle = stringResource(R.string.stepByStepGuidesTitle)
-        val servicesTitle = stringResource(R.string.servicesTitle)
+        val popularPagesSection = TopicUi.Section(
+            title = R.string.popularPagesTitle,
+            icon = R.drawable.ic_topic_popular
+        )
+        val stepByStepSection = TopicUi.Section(
+            title = R.string.stepByStepGuidesTitle,
+            icon = R.drawable.ic_topic_step_by_step
+        )
+        val servicesSection = TopicUi.Section(
+            title = R.string.servicesTitle,
+            icon = R.drawable.ic_topic_services_and_info
+        )
 
         LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
             item {
@@ -133,13 +140,13 @@ private fun TopicScreen(
 
             contentItems(
                 contentItems = topic.popularPages,
-                section = popularPagesTitle,
+                section = popularPagesSection,
                 onClick = onExternalLink
             )
 
             contentItems(
                 contentItems = topic.stepBySteps,
-                section = stepByStepsTitle,
+                section = stepByStepSection,
                 onClick = onExternalLink,
                 displaySeeAll = topic.displayStepByStepSeeAll,
                 onSeeAll = onStepByStepSeeAll
@@ -147,13 +154,13 @@ private fun TopicScreen(
 
             contentItems(
                 contentItems = topic.services,
-                section = servicesTitle,
+                section = servicesSection,
                 onClick = onExternalLink
             )
 
             subtopics(
                 subtopics = topic.subtopics,
-                title = topic.subtopicsTitle,
+                section = topic.subtopicsSection,
                 onClick = onSubtopic
             )
         }
@@ -162,38 +169,39 @@ private fun TopicScreen(
 
 private fun LazyListScope.contentItems(
     contentItems: List<TopicUi.TopicContent>,
-    section: String,
+    section: TopicUi.Section,
     onClick: (section: String, text: String, url: String) -> Unit,
     displaySeeAll: Boolean = false,
     onSeeAll: (section: String, text: String) -> Unit = { _, _ -> }
 ) {
     if (contentItems.isNotEmpty()) {
         item {
-            ListHeadingLabel(section)
-        }
-
-        item {
-            SmallVerticalSpacer()
+            ListHeader(
+                title = section.title,
+                icon = section.icon
+            )
         }
 
         var lastIndex = contentItems.lastIndex
         if (displaySeeAll) lastIndex += 1
 
         itemsIndexed(contentItems) { index, content ->
+            val sectionTitle = stringResource(section.title)
             ExternalLinkListItem(
                 title = content.title,
-                onClick = { onClick(section, content.title, content.url) },
-                isFirst = index == 0,
+                onClick = { onClick(sectionTitle, content.title, content.url) },
+                isFirst = false,
                 isLast = index == lastIndex
             )
         }
 
         if (displaySeeAll) {
             item {
+                val sectionTitle = stringResource(section.title)
                 val title = stringResource(R.string.seeAllButton)
                 InternalLinkListItem(
                     title = title,
-                    onClick = { onSeeAll(section, title) },
+                    onClick = { onSeeAll(sectionTitle, title) },
                     isFirst = lastIndex == 0,
                     isLast = true
                 )
@@ -208,24 +216,22 @@ private fun LazyListScope.contentItems(
 
 private fun LazyListScope.subtopics(
     subtopics: List<TopicUi.Subtopic>,
-    @StringRes title: Int,
+    section: TopicUi.Section,
     onClick: (text: String, ref: String) -> Unit,
 ) {
     if (subtopics.isNotEmpty()) {
-
         item {
-            ListHeadingLabel(stringResource(title))
-        }
-
-        item {
-            SmallVerticalSpacer()
+            ListHeader(
+                title = section.title,
+                icon = section.icon
+            )
         }
 
         itemsIndexed(subtopics) { index, subtopic ->
             InternalLinkListItem(
                 title = subtopic.title,
                 onClick = { onClick(subtopic.title, subtopic.ref) },
-                isFirst = index == 0,
+                isFirst = false,
                 isLast = index == subtopics.lastIndex
             )
         }
