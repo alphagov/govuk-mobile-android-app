@@ -3,6 +3,7 @@ package uk.govuk.app.settings.navigation
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
@@ -17,6 +18,7 @@ import uk.govuk.app.settings.BuildConfig.PRIVACY_POLICY_URL
 import uk.govuk.app.settings.BuildConfig.TERMS_AND_CONDITIONS_URL
 import uk.govuk.app.settings.ui.SettingsRoute
 import uk.govuk.app.settings.ui.SettingsSubRoute
+import java.net.URLEncoder
 
 const val SETTINGS_GRAPH_ROUTE = "settings_graph_route"
 private const val SETTINGS_ROUTE = "settings_route"
@@ -24,7 +26,6 @@ private const val SETTINGS_SUB_ROUTE = "settings_sub_route"
 
 fun NavGraphBuilder.settingsGraph(
     appVersion: String,
-    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -45,7 +46,11 @@ fun NavGraphBuilder.settingsGraph(
             SettingsRoute(
                 appVersion = appVersion,
                 onHelpClick = {
-                    openInBrowser(context, HELP_AND_FEEDBACK_URL)
+                    val deviceInfo = "${Build.MANUFACTURER} ${Build.MODEL} ${Build.VERSION.RELEASE}"
+                    val url = "$HELP_AND_FEEDBACK_URL?" +
+                            "app_version=$appVersion&" +
+                            "phone_model=${URLEncoder.encode(deviceInfo, "UTF-8")}"
+                    openInBrowser(context, url)
                 },
                 onPrivacyPolicyClick = {
                     openInBrowser(context, PRIVACY_POLICY_URL)
