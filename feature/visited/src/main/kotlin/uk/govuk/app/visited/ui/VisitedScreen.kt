@@ -32,7 +32,6 @@ import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ExternalLinkListItem
 import uk.govuk.app.design.ui.component.ExtraLargeVerticalSpacer
 import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
-import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeadingLabel
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -142,6 +141,10 @@ private fun VisitedScreen(
                     ShowVisitedItems(visitedItems, onClick)
                 }
             }
+
+            item {
+                Spacer(modifier = Modifier.height(100.dp))
+            }
         }
     }
 }
@@ -200,8 +203,6 @@ private fun ShowVisitedItems(
                     subText = "$lastVisitedText $lastVisited"
                 )
             }
-
-            LargeVerticalSpacer()
         }
     }
 }
