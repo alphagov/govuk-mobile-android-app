@@ -49,7 +49,7 @@ fun NavGraphBuilder.settingsGraph(
                     val deviceInfo = "${Build.MANUFACTURER} ${Build.MODEL} ${Build.VERSION.RELEASE}"
                     val url = "$HELP_AND_FEEDBACK_URL?" +
                             "app_version=$appVersion&" +
-                            "phone_model=${URLEncoder.encode(deviceInfo, "UTF-8")}"
+                            "phone=${URLEncoder.encode(deviceInfo, "UTF-8")}"
                     openInBrowser(context, url)
                 },
                 onPrivacyPolicyClick = {
