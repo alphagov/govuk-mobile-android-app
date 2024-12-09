@@ -49,10 +49,10 @@ data class ActionButton(
 
 @Composable
 fun ChildPageHeader(
+    modifier: Modifier = Modifier,
     text: String? = null,
     backButton: ActionButton? = null,
-    actionButton: ActionButton? = null,
-    modifier: Modifier = Modifier,
+    actionButton: ActionButton? = null
 ) {
     Column(modifier) {
         if (backButton != null || actionButton != null) {
@@ -64,11 +64,8 @@ fun ChildPageHeader(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                ChildPageHeaderBackButton(backButton, modifier = modifier.weight(1f))
-                ChildPageHeaderActionButton(
-                    actionButton,
-                    modifier = modifier.weight(1f)
-                )
+                ChildPageHeaderBackButton(backButton)
+                ChildPageHeaderActionButton(actionButton)
             }
         }
 
@@ -80,35 +77,32 @@ fun ChildPageHeader(
 
 @Composable
 private fun ChildPageHeaderBackButton(
-    actionButton: ActionButton? = null,
-    modifier: Modifier = Modifier
+    actionButton: ActionButton? = null
 ) {
     if (actionButton == null) return
 
     TextButton(
-        onClick = actionButton.onClick,
-        modifier = modifier,
+        onClick = actionButton.onClick
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = stringResource(R.string.content_desc_back),
             tint = GovUkTheme.colourScheme.textAndIcons.link
         )
-        Spacer(Modifier.weight(1f))
+        Spacer(Modifier)
     }
 }
 
 @Composable
 private fun ChildPageHeaderActionButton(
-    actionButton: ActionButton? = null,
-    modifier: Modifier = Modifier
+    actionButton: ActionButton? = null
 ) {
     if (actionButton == null) return
 
-    Spacer(modifier)
+    Spacer(Modifier)
 
     TextButton(
-        onClick = actionButton.onClick,
+        onClick = actionButton.onClick
     ) {
         BodyRegularLabel(
             text = actionButton.text!!,
@@ -183,7 +177,7 @@ private fun ChildPageHeaderActionNoBackPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun Default_ChildPageHeaderBackNoActionPreview() {
+private fun ChildPageHeaderBackNoActionPreview() {
     GovUkTheme {
         ChildPageHeader(
             text = "Child page title",
@@ -207,7 +201,7 @@ private fun ChildPageHeaderNoActionOrBackPreview() {
 private fun ChildPageHeaderLongTextNoActionOrBackPreview() {
     GovUkTheme {
         ChildPageHeader(
-            text = "Child page title Child page title Child page title",
+            text = "This is a very long child page title that goes on and on",
         )
     }
 }
