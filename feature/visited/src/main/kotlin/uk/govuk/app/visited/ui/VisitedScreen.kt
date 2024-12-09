@@ -4,17 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -29,9 +23,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
+import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.ExternalLinkListItem
 import uk.govuk.app.design.ui.component.ExtraLargeVerticalSpacer
-import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeadingLabel
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
@@ -84,38 +78,26 @@ private fun VisitedScreen(
     val editText = stringResource(R.string.visited_items_edit_button)
     val visitedItems = uiState?.visited
 
-    Column(modifier.fillMaxWidth()) {
-        Column {
-            Row(
-                modifier = Modifier
-                    .height(64.dp)
-                    .fillMaxWidth()
-                    .padding(end = GovUkTheme.spacing.small),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                TextButton(
-                    onClick = onBack,
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(uk.govuk.app.design.R.string.content_desc_back),
-                        tint = GovUkTheme.colourScheme.textAndIcons.link
-                    )
-                }
-
-                if (!visitedItems.isNullOrEmpty()) {
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    TextButton(
-                        onClick = onEditClick,
-                        modifier = Modifier.padding(end = GovUkTheme.spacing.small)
-                    ) {
-                        BodyRegularLabel(
-                            text = editText,
-                            color = GovUkTheme.colourScheme.textAndIcons.link,
-                        )
-                    }
-                }
+    Column(modifier) {
+        Column(modifier) {
+            if (visitedItems.isNullOrEmpty()) {
+                ChildPageHeader(
+                    text = title,
+                    includeActionButton = false,
+                    includeBackButton = true,
+                    onBack = onBack,
+                    modifier = modifier
+                )
+            } else {
+                ChildPageHeader(
+                    text = title,
+                    includeActionButton = true,
+                    actionText = editText,
+                    onAction = onEditClick,
+                    includeBackButton = true,
+                    onBack = onBack,
+                    modifier = modifier
+                )
             }
         }
         LazyColumn(
@@ -123,18 +105,6 @@ private fun VisitedScreen(
                 .padding(horizontal = GovUkTheme.spacing.medium)
                 .padding(top = GovUkTheme.spacing.small)
         ) {
-
-            item {
-                LargeTitleBoldLabel(
-                    text = title,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentSize()
-                        .padding(horizontal = GovUkTheme.spacing.medium)
-                        .padding(bottom = GovUkTheme.spacing.small)
-                )
-            }
-
             item {
                 if (visitedItems.isNullOrEmpty()) {
                     NoVisitedItems(modifier)
