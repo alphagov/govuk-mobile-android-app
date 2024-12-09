@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import uk.govuk.app.design.ui.component.ActionButton
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.ExternalLinkListItem
@@ -111,7 +112,7 @@ private fun TopicScreen(
 
         ChildPageHeader(
             text = topic.title,
-            onBack = onBack
+            backButton = ActionButton(onClick = onBack)
         )
 
         val popularPagesSection = TopicUi.Section(
@@ -258,7 +259,7 @@ private fun ErrorScreen(
 
         ChildPageHeader(
             text = topicName,
-            onBack = onBack
+            backButton = ActionButton(onClick = onBack)
         )
 
         content()

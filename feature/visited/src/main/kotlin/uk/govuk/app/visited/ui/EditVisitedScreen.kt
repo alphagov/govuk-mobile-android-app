@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import uk.govuk.app.design.ui.component.ActionButton
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.CardListItem
 import uk.govuk.app.design.ui.component.ChildPageHeader
@@ -110,10 +111,7 @@ private fun EditVisitedScreen(
         topBar = {
             ChildPageHeader(
                 text = titleText,
-                includeActionButton = true,
-                actionText = doneText,
-                onAction = onBack,
-                includeBackButton = false,
+                actionButton = ActionButton(text = doneText, onClick = onBack),
                 modifier = modifier
             )
         },

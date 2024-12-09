@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import uk.govuk.app.design.ui.component.ActionButton
 import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ChildPageHeader
@@ -83,19 +84,14 @@ private fun VisitedScreen(
             if (visitedItems.isNullOrEmpty()) {
                 ChildPageHeader(
                     text = title,
-                    includeActionButton = false,
-                    includeBackButton = true,
-                    onBack = onBack,
+                    backButton = ActionButton(onClick = onBack),
                     modifier = modifier
                 )
             } else {
                 ChildPageHeader(
                     text = title,
-                    includeActionButton = true,
-                    actionText = editText,
-                    onAction = onEditClick,
-                    includeBackButton = true,
-                    onBack = onBack,
+                    backButton = ActionButton(onClick = onBack),
+                    actionButton = ActionButton(text = editText, onClick = onEditClick),
                     modifier = modifier
                 )
             }

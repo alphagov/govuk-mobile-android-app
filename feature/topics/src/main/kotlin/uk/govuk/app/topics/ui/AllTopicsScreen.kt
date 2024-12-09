@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import uk.govuk.app.design.ui.component.ActionButton
 import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -57,7 +58,7 @@ private fun AllTopicsScreen(
     Column(modifier) {
         ChildPageHeader(
             text = title,
-            onBack = onBack
+            backButton = ActionButton(onClick = onBack)
         )
 
         if (!topics.isNullOrEmpty()) {
