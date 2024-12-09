@@ -1,8 +1,10 @@
 package uk.govuk.app.design.ui.component
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -42,31 +44,70 @@ fun TabHeader(
 
 @Composable
 fun ChildPageHeader(
-    text: String,
-    onBack: () -> Unit,
+    text: String? = null,
+    includeActionButton: Boolean = false,
+    actionText: String = "",
+    onAction: () -> Unit = {},
+    includeBackButton: Boolean = true,
+    onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
-        Box(
-            modifier = Modifier.height(64.dp),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            TextButton(
-                onClick = onBack,
+        if (includeBackButton || includeActionButton) {
+            Row(
+                modifier = Modifier
+                    .height(64.dp)
+                    .fillMaxWidth()
+                    .padding(GovUkTheme.spacing.small),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.content_desc_back),
-                    tint = GovUkTheme.colourScheme.textAndIcons.link
+                if (includeBackButton) {
+                    TextButton(
+                        onClick = onBack,
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.content_desc_back),
+                            tint = GovUkTheme.colourScheme.textAndIcons.link
+                        )
+                        Spacer(Modifier.weight(1f))
+                    }
+                }
+
+                if (includeActionButton) {
+                    Spacer(Modifier.weight(1f))
+
+                    TextButton(
+                        onClick = onAction,
+                    ) {
+                        BodyRegularLabel(
+                            text = actionText,
+                            color = GovUkTheme.colourScheme.textAndIcons.link,
+                            textAlign = TextAlign.End
+                        )
+                    }
+                }
+            }
+        }
+
+        if (text != null) {
+            Row(
+                modifier = Modifier
+                    .defaultMinSize(64.dp)
+                    .fillMaxWidth()
+                    .padding(GovUkTheme.spacing.small),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                LargeTitleBoldLabel(
+                    text = text,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = GovUkTheme.spacing.medium)
                 )
             }
         }
-        LargeTitleBoldLabel(
-            text = text,
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = GovUkTheme.spacing.medium)
-        )
     }
 }
 
@@ -80,11 +121,71 @@ private fun TabHeaderPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun ChildPageHeaderPreview() {
+private fun ChildPageHeaderNoTextWithBackAndActionPreview() {
+    GovUkTheme {
+        ChildPageHeader(
+            includeActionButton = true,
+            actionText = "Done",
+            onBack = { }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ChildPageHeaderBackAndActionPreview() {
+    GovUkTheme {
+        ChildPageHeader(
+            text = "Child page title",
+            includeActionButton = true,
+            actionText = "Done",
+            onBack = { }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ChildPageHeaderActionNoBackPreview() {
+    GovUkTheme {
+        ChildPageHeader(
+            text = "Child page title",
+            includeActionButton = true,
+            actionText = "Done",
+            includeBackButton = false
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun Default_ChildPageHeaderBackNoActionPreview() {
     GovUkTheme {
         ChildPageHeader(
             text = "Child page title",
             onBack = { }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ChildPageHeaderNoActionOrBackPreview() {
+    GovUkTheme {
+        ChildPageHeader(
+            text = "Child page title",
+            includeBackButton = false
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ChildPageHeaderLongTextNoActionOrBackPreview() {
+    GovUkTheme {
+        ChildPageHeader(
+            text = "Child page title Child page title Child page title",
+            includeBackButton = false
         )
     }
 }
