@@ -42,11 +42,11 @@ fun TabHeader(
 
 @Composable
 fun ChildPageHeader(
-    text: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    text: String? = null
 ) {
-    Column(modifier) {
+    Column(modifier.fillMaxWidth()) {
         Box(
             modifier = Modifier.height(64.dp),
             contentAlignment = Alignment.CenterStart
@@ -61,12 +61,14 @@ fun ChildPageHeader(
                 )
             }
         }
-        LargeTitleBoldLabel(
-            text = text,
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = GovUkTheme.spacing.medium)
-        )
+        text?.let {
+            LargeTitleBoldLabel(
+                text = it,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = GovUkTheme.spacing.medium)
+            )
+        }
     }
 }
 
@@ -80,10 +82,20 @@ private fun TabHeaderPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun ChildPageHeaderPreview() {
+private fun ChildPageHeaderWithTitlePreview() {
     GovUkTheme {
         ChildPageHeader(
-            text = "Child page title",
+            onBack = { },
+            text = "Child page title"
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ChildPageHeaderNoTitlePreview() {
+    GovUkTheme {
+        ChildPageHeader(
             onBack = { }
         )
     }
