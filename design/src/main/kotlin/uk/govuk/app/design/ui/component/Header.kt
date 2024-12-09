@@ -42,18 +42,20 @@ fun TabHeader(
     }
 }
 
+data class ActionButton(
+    val text: String? = null,
+    val onClick: () -> Unit
+)
+
 @Composable
 fun ChildPageHeader(
     text: String? = null,
-    includeActionButton: Boolean = false,
-    actionText: String = "",
-    onAction: () -> Unit = {},
-    includeBackButton: Boolean = true,
-    onBack: () -> Unit = {},
+    backButton: ActionButton? = null,
+    actionButton: ActionButton? = null,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
-        if (includeBackButton || includeActionButton) {
+        if (backButton != null || actionButton != null) {
             Row(
                 modifier = Modifier
                     .height(64.dp)
@@ -62,52 +64,78 @@ fun ChildPageHeader(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (includeBackButton) {
-                    TextButton(
-                        onClick = onBack,
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.content_desc_back),
-                            tint = GovUkTheme.colourScheme.textAndIcons.link
-                        )
-                        Spacer(Modifier.weight(1f))
-                    }
-                }
-
-                if (includeActionButton) {
-                    Spacer(Modifier.weight(1f))
-
-                    TextButton(
-                        onClick = onAction,
-                    ) {
-                        BodyRegularLabel(
-                            text = actionText,
-                            color = GovUkTheme.colourScheme.textAndIcons.link,
-                            textAlign = TextAlign.End
-                        )
-                    }
-                }
+                ChildPageHeaderBackButton(backButton, modifier = modifier.weight(1f))
+                ChildPageHeaderActionButton(
+                    actionButton,
+                    modifier = modifier.weight(1f)
+                )
             }
         }
 
         if (text != null) {
-            Row(
-                modifier = Modifier
-                    .defaultMinSize(64.dp)
-                    .fillMaxWidth()
-                    .padding(GovUkTheme.spacing.small),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                LargeTitleBoldLabel(
-                    text = text,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = GovUkTheme.spacing.medium)
-                )
-            }
+            ChildPageHeaderText(text = text, modifier = modifier)
         }
+    }
+}
+
+@Composable
+private fun ChildPageHeaderBackButton(
+    actionButton: ActionButton? = null,
+    modifier: Modifier = Modifier
+) {
+    if (actionButton == null) return
+
+    TextButton(
+        onClick = actionButton.onClick,
+        modifier = modifier,
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            contentDescription = stringResource(R.string.content_desc_back),
+            tint = GovUkTheme.colourScheme.textAndIcons.link
+        )
+        Spacer(Modifier.weight(1f))
+    }
+}
+
+@Composable
+private fun ChildPageHeaderActionButton(
+    actionButton: ActionButton? = null,
+    modifier: Modifier = Modifier
+) {
+    if (actionButton == null) return
+
+    Spacer(modifier)
+
+    TextButton(
+        onClick = actionButton.onClick,
+    ) {
+        BodyRegularLabel(
+            text = actionButton.text!!,
+            color = GovUkTheme.colourScheme.textAndIcons.link,
+            textAlign = TextAlign.End
+        )
+    }
+}
+
+@Composable
+private fun ChildPageHeaderText(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .defaultMinSize(64.dp)
+            .fillMaxWidth()
+            .padding(GovUkTheme.spacing.small),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        LargeTitleBoldLabel(
+            text = text,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = GovUkTheme.spacing.medium)
+        )
     }
 }
 
@@ -124,9 +152,8 @@ private fun TabHeaderPreview() {
 private fun ChildPageHeaderNoTextWithBackAndActionPreview() {
     GovUkTheme {
         ChildPageHeader(
-            includeActionButton = true,
-            actionText = "Done",
-            onBack = { }
+            backButton = ActionButton(onClick = { }),
+            actionButton = ActionButton(text = "Done", onClick = { })
         )
     }
 }
@@ -137,9 +164,8 @@ private fun ChildPageHeaderBackAndActionPreview() {
     GovUkTheme {
         ChildPageHeader(
             text = "Child page title",
-            includeActionButton = true,
-            actionText = "Done",
-            onBack = { }
+            backButton = ActionButton(onClick = { }),
+            actionButton = ActionButton(text = "Done", onClick = { })
         )
     }
 }
@@ -150,9 +176,7 @@ private fun ChildPageHeaderActionNoBackPreview() {
     GovUkTheme {
         ChildPageHeader(
             text = "Child page title",
-            includeActionButton = true,
-            actionText = "Done",
-            includeBackButton = false
+            actionButton = ActionButton(text = "Done", onClick = { })
         )
     }
 }
@@ -163,7 +187,7 @@ private fun Default_ChildPageHeaderBackNoActionPreview() {
     GovUkTheme {
         ChildPageHeader(
             text = "Child page title",
-            onBack = { }
+            backButton = ActionButton(onClick = { }),
         )
     }
 }
@@ -174,7 +198,6 @@ private fun ChildPageHeaderNoActionOrBackPreview() {
     GovUkTheme {
         ChildPageHeader(
             text = "Child page title",
-            includeBackButton = false
         )
     }
 }
@@ -185,7 +208,6 @@ private fun ChildPageHeaderLongTextNoActionOrBackPreview() {
     GovUkTheme {
         ChildPageHeader(
             text = "Child page title Child page title Child page title",
-            includeBackButton = false
         )
     }
 }
