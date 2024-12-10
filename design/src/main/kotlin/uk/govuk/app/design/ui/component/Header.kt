@@ -46,8 +46,8 @@ fun TabHeader(
 fun ChildPageHeader(
     modifier: Modifier = Modifier,
     text: String? = null,
-    onBack: (() -> Unit)?,
-    onAction: (() -> Unit)?,
+    onBack: (() -> Unit)? = null,
+    onAction: (() -> Unit)? = null,
     actionText: String? = null
 ) {
     Column(modifier) {
@@ -134,7 +134,7 @@ private fun ChildPageHeaderBackAndActionPreview() {
     GovUkTheme {
         ChildPageHeader(
             text = "Child page title",
-            onBack = { },
+            onBack = {},
             onAction = {},
             actionText = "Done"
         )
@@ -147,7 +147,6 @@ private fun ChildPageHeaderActionNoBackPreview() {
     GovUkTheme {
         ChildPageHeader(
             text = "Child page title",
-            onBack = null,
             onAction = {},
             actionText = "Done"
         )
@@ -160,8 +159,7 @@ private fun ChildPageHeaderBackNoActionPreview() {
     GovUkTheme {
         ChildPageHeader(
             text = "Child page title",
-            onBack = {},
-            onAction = null
+            onBack = {}
         )
     }
 }
@@ -171,9 +169,7 @@ private fun ChildPageHeaderBackNoActionPreview() {
 private fun ChildPageHeaderNoActionOrBackPreview() {
     GovUkTheme {
         ChildPageHeader(
-            text = "Child page title",
-            onBack = null,
-            onAction = null
+            text = "Child page title"
         )
     }
 }
@@ -183,9 +179,7 @@ private fun ChildPageHeaderNoActionOrBackPreview() {
 private fun ChildPageHeaderLongTextNoActionOrBackPreview() {
     GovUkTheme {
         ChildPageHeader(
-            text = "This is a very long child page title that goes on and on",
-            onBack = null,
-            onAction = null
+            text = "This is a very long child page title that goes on and on"
         )
     }
 }
