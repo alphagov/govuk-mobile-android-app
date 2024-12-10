@@ -13,7 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import uk.govuk.app.design.ui.component.ActionButton
 import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.ExternalLinkListItem
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
@@ -65,7 +64,8 @@ private fun AllStepByStepsScreen(
 
         ChildPageHeader(
             text = title,
-            backButton = ActionButton(onClick = onBack)
+            onBack = onBack,
+            onAction = null
         )
 
         if (stepBySteps != null) {
