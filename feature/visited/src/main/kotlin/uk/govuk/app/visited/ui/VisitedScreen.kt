@@ -80,11 +80,7 @@ private fun VisitedScreen(
 
     Column(modifier) {
         Column(modifier) {
-            var onAction: (() -> Unit)? = null
-
-            if (!visitedItems.isNullOrEmpty()) {
-                onAction = onEditClick
-            }
+            val onAction = if (!visitedItems.isNullOrEmpty()) onEditClick else null
 
             ChildPageHeader(
                 text = title,
