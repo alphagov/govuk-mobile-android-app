@@ -76,16 +76,14 @@ private fun VisitedScreen(
     val visitedItems = uiState?.visited
 
     Column(modifier) {
-        Column(modifier) {
-            val onAction = if (!visitedItems.isNullOrEmpty()) onEditClick else null
+        val onAction = if (!visitedItems.isNullOrEmpty()) onEditClick else null
 
-            ChildPageHeader(
-                text = title,
-                onBack = onBack,
-                onAction = onAction,
-                actionText = editText
-            )
-        }
+        ChildPageHeader(
+            text = title,
+            onBack = onBack,
+            onAction = onAction,
+            actionText = editText
+        )
         LazyColumn(
             Modifier
                 .padding(horizontal = GovUkTheme.spacing.medium)
