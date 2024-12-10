@@ -111,8 +111,7 @@ private fun TopicScreen(
 
         ChildPageHeader(
             text = topic.title,
-            onBack = onBack,
-            onAction = null
+            onBack = onBack
         )
 
         val popularPagesSection = TopicUi.Section(
@@ -259,8 +258,7 @@ private fun ErrorScreen(
 
         ChildPageHeader(
             text = topicName,
-            onBack = onBack,
-            onAction = null
+            onBack = onBack
         )
 
         content()

@@ -110,7 +110,6 @@ private fun EditVisitedScreen(
         topBar = {
             ChildPageHeader(
                 text = titleText,
-                onBack = null,
                 onAction = onBack,
                 actionText = doneText
             )

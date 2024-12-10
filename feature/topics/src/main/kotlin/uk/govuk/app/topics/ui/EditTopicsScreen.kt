@@ -61,8 +61,7 @@ private fun EditTopicsScreen(
     Column(modifier) {
         ChildPageHeader(
             text = title,
-            onBack = onBack,
-            onAction = null
+            onBack = onBack
         )
         LazyColumn(
             Modifier

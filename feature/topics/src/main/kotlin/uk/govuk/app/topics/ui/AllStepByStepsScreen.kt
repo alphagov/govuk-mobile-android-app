@@ -64,8 +64,7 @@ private fun AllStepByStepsScreen(
 
         ChildPageHeader(
             text = title,
-            onBack = onBack,
-            onAction = null
+            onBack = onBack
         )
 
         if (stepBySteps != null) {

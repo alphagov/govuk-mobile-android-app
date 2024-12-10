@@ -57,8 +57,7 @@ private fun AllTopicsScreen(
     Column(modifier) {
         ChildPageHeader(
             text = title,
-            onBack = onBack,
-            onAction = null
+            onBack = onBack
         )
 
         if (!topics.isNullOrEmpty()) {
