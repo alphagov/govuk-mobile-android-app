@@ -84,8 +84,8 @@ private fun VisitedScreen(
     val editText = stringResource(R.string.visited_items_edit_button)
     val visitedItems = uiState?.visited
 
-    Column(modifier) {
-        Column(modifier) {
+    Column(modifier.fillMaxWidth()) {
+        Column {
             Row(
                 modifier = Modifier
                     .height(64.dp)
@@ -127,7 +127,7 @@ private fun VisitedScreen(
             item {
                 LargeTitleBoldLabel(
                     text = title,
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentSize()
                         .padding(horizontal = GovUkTheme.spacing.medium)
@@ -141,10 +141,6 @@ private fun VisitedScreen(
                 } else {
                     ShowVisitedItems(visitedItems, onClick)
                 }
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(76.dp))
             }
         }
     }
