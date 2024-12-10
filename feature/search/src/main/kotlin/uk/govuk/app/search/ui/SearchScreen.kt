@@ -46,12 +46,14 @@ internal fun SearchRoute(
     modifier: Modifier = Modifier
 ) {
     val viewModel: SearchViewModel = hiltViewModel()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     SearchScreen(
         viewModel = viewModel,
         onPageView = { viewModel.onPageView() },
         onBack = onBack,
         onSearch = { searchTerm ->
+            keyboardController?.hide()
             viewModel.onSearch(searchTerm)
         },
         onClear = {
