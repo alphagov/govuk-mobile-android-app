@@ -257,7 +257,9 @@ private fun GovUkNavHost(
             modifier = Modifier.padding(paddingValues)
         )
         searchGraph(navController)
-        visitedGraph(navController)
+        visitedGraph(
+            navController = navController,
+            modifier = Modifier.padding(paddingValues))
     }
 }
 
