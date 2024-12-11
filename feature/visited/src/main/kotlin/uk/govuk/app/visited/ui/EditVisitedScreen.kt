@@ -54,45 +54,51 @@ internal fun EditVisitedRoute(
 
     EditVisitedScreen(
         uiState = uiState,
-        onRemove = {
-            viewModel.onRemoveClick()
-            viewModel.onRemove()
-            onBack()
-        },
-        onEditPageView = { viewModel.onEditPageView() },
-        onBack = {
-            viewModel.onDoneClick()
-            onBack()
-        },
-        onSelect = { title, url ->
-            viewModel.onSelect(title, url)
-        },
-        onSelectAll = {
-            viewModel.onSelectAllClick()
-            viewModel.onSelectAll()
-        },
-        onDeselectAll = {
-            viewModel.onDeselectAllClick()
-            viewModel.onDeselectAll()
-        },
+        actions = EditVisitedScreenActions(
+            onEditPageView = { viewModel.onEditPageView() },
+            onBack = {
+                viewModel.onDoneClick()
+                onBack()
+            },
+            onSelect = { title, url ->
+                viewModel.onSelect(title, url)
+            },
+            onSelectAll = {
+                viewModel.onSelectAllClick()
+                viewModel.onSelectAll()
+            },
+            onDeselectAll = {
+                viewModel.onDeselectAllClick()
+                viewModel.onDeselectAll()
+            },
+            onRemove = {
+                viewModel.onRemoveClick()
+                viewModel.onRemove()
+                onBack()
+            }
+        ),
         modifier = modifier
     )
 }
+
+private class EditVisitedScreenActions(
+    val onEditPageView: () -> Unit,
+    val onBack: () -> Unit,
+    val onSelect: (String, String) -> Unit,
+    val onSelectAll: () -> Unit,
+    val onDeselectAll: () -> Unit,
+    val onRemove: () -> Unit,
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EditVisitedScreen(
     uiState: VisitedUiState?,
-    onRemove: () -> Unit,
-    onEditPageView: () -> Unit,
-    onBack: () -> Unit,
-    onSelect: (String, String) -> Unit,
-    onSelectAll: () -> Unit,
-    onDeselectAll: () -> Unit,
+    actions: EditVisitedScreenActions,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
-        onEditPageView()
+        actions.onEditPageView()
     }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
@@ -110,16 +116,16 @@ private fun EditVisitedScreen(
         topBar = {
             ChildPageHeader(
                 text = titleText,
-                onAction = onBack,
+                onAction = actions.onBack,
                 actionText = doneText
             )
         },
         bottomBar = {
             BottomNavBar(
-                onRemove = onRemove,
+                onRemove = actions.onRemove,
                 uiState = uiState,
-                onSelectAll = onSelectAll,
-                onDeselectAll = onDeselectAll,
+                onSelectAll = actions.onSelectAll,
+                onDeselectAll = actions.onDeselectAll,
                 modifier = modifier
             )
         }
@@ -148,7 +154,7 @@ private fun EditVisitedScreen(
                                     subText = "$lastVisitedText ${item.lastVisited}",
                                     isFirst = index == 0,
                                     isLast = index == items.size - 1,
-                                    onSelect = onSelect,
+                                    onSelect = actions.onSelect,
                                     modifier = modifier
                                 )
                             }
@@ -315,12 +321,14 @@ private fun EditVisitedScreenPreview() {
                 hasSelectedItems = false,
                 hasAllSelectedItems = false
             ),
-            onRemove = {},
-            onEditPageView = {},
-            onBack = {},
-            onSelect = { _, _ -> },
-            onSelectAll = {},
-            onDeselectAll = {},
+            actions = EditVisitedScreenActions(
+                onBack = {},
+                onEditPageView = {},
+                onSelect = { _, _ -> },
+                onSelectAll = {},
+                onDeselectAll = {},
+                onRemove = {}
+            ),
             modifier = Modifier
         )
     }
