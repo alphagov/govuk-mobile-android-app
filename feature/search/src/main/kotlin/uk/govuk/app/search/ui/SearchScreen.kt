@@ -168,7 +168,8 @@ fun ShowResults(searchResults: List<Result>, onClick: (String, String) -> Unit) 
                             contentDescription = stringResource(
                                 uk.govuk.app.design.R.string.opens_in_web_browser
                             ),
-                            tint = GovUkTheme.colourScheme.textAndIcons.link
+                            tint = GovUkTheme.colourScheme.textAndIcons.link,
+                            modifier = Modifier.padding(start = GovUkTheme.spacing.medium)
                         )
                     }
 
