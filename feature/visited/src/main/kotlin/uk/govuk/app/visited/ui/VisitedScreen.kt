@@ -4,17 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,14 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
+import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.ExternalLinkListItem
 import uk.govuk.app.design.ui.component.ExtraLargeVerticalSpacer
-import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeadingLabel
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
@@ -85,66 +76,25 @@ private fun VisitedScreen(
     val visitedItems = uiState?.visited
 
     Column(modifier) {
-        Column(modifier) {
-            Row(
-                modifier = Modifier
-                    .height(64.dp)
-                    .fillMaxWidth()
-                    .padding(end = GovUkTheme.spacing.small),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                TextButton(
-                    onClick = onBack,
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(uk.govuk.app.design.R.string.content_desc_back),
-                        tint = GovUkTheme.colourScheme.textAndIcons.link
-                    )
-                }
+        val onAction = if (!visitedItems.isNullOrEmpty()) onEditClick else null
 
-                if (!visitedItems.isNullOrEmpty()) {
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    TextButton(
-                        onClick = onEditClick,
-                        modifier = Modifier.padding(end = GovUkTheme.spacing.small)
-                    ) {
-                        BodyRegularLabel(
-                            text = editText,
-                            color = GovUkTheme.colourScheme.textAndIcons.link,
-                        )
-                    }
-                }
-            }
-        }
+        ChildPageHeader(
+            text = title,
+            onBack = onBack,
+            onAction = onAction,
+            actionText = editText
+        )
         LazyColumn(
             Modifier
                 .padding(horizontal = GovUkTheme.spacing.medium)
                 .padding(top = GovUkTheme.spacing.small)
         ) {
-
-            item {
-                LargeTitleBoldLabel(
-                    text = title,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .wrapContentSize()
-                        .padding(horizontal = GovUkTheme.spacing.medium)
-                        .padding(bottom = GovUkTheme.spacing.small)
-                )
-            }
-
             item {
                 if (visitedItems.isNullOrEmpty()) {
                     NoVisitedItems(modifier)
                 } else {
                     ShowVisitedItems(visitedItems, onClick)
                 }
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(76.dp))
             }
         }
     }
