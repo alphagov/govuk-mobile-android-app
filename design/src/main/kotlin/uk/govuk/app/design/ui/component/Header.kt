@@ -1,10 +1,8 @@
 package uk.govuk.app.design.ui.component
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,7 +35,7 @@ fun TabHeader(
         Title2BoldLabel(
             text = text,
             textAlign = TextAlign.Center,
-            modifier = modifier.weight(1f)
+            modifier = Modifier.weight(1f)
         )
     }
 }
@@ -55,9 +53,7 @@ fun ChildPageHeader(
             Row(
                 modifier = Modifier
                     .height(64.dp)
-                    .fillMaxWidth()
-                    .padding(GovUkTheme.spacing.small),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (onBack != null) {
@@ -69,12 +65,11 @@ fun ChildPageHeader(
                             contentDescription = stringResource(R.string.content_desc_back),
                             tint = GovUkTheme.colourScheme.textAndIcons.link
                         )
-                        Spacer(Modifier)
                     }
                 }
 
                 if (onAction != null && actionText != null) {
-                    Spacer(Modifier)
+                    Spacer(Modifier.weight(1f))
 
                     TextButton(
                         onClick = onAction
@@ -90,20 +85,12 @@ fun ChildPageHeader(
         }
 
         if (text != null) {
-            Row(
-                modifier = modifier
-                    .defaultMinSize(64.dp)
+            LargeTitleBoldLabel(
+                text = text,
+                modifier = Modifier
                     .fillMaxWidth()
-                    .padding(GovUkTheme.spacing.small),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                LargeTitleBoldLabel(
-                    text = text,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = GovUkTheme.spacing.medium)
-                )
-            }
+                    .padding(horizontal = GovUkTheme.spacing.medium)
+            )
         }
     }
 }

@@ -21,6 +21,7 @@ import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.ExternalLinkListItem
 import uk.govuk.app.design.ui.component.InternalLinkListItem
+import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeader
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
@@ -110,7 +111,6 @@ private fun TopicScreen(
         }
 
         ChildPageHeader(
-            text = topic.title,
             onBack = onBack
         )
 
@@ -130,6 +130,7 @@ private fun TopicScreen(
         LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
             item {
                 Column {
+                    LargeTitleBoldLabel(topic.title)
                     MediumVerticalSpacer()
                     topic.description?.let { description ->
                         BodyRegularLabel(description)
