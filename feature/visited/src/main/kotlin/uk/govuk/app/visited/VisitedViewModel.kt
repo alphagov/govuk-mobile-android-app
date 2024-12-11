@@ -124,7 +124,7 @@ internal class VisitedViewModel @Inject constructor(
 
     fun onVisitedItemClicked(title: String, url: String) {
         viewModelScope.launch {
-            delay(500)
+            delay(1000)
             visited.visitableItemClick(title = title, url = url)
         }
         analyticsClient.visitedItemClick(text = title, url = url)
