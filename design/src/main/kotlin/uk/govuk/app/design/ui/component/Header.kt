@@ -1,5 +1,6 @@
 package uk.govuk.app.design.ui.component
 
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,7 +51,8 @@ fun ChildPageHeader(
     text: String? = null,
     onBack: (() -> Unit)? = null,
     onAction: (() -> Unit)? = null,
-    actionText: String? = null
+    actionText: String? = null,
+    focusRequester: FocusRequester? = null
 ) {
     Column(modifier) {
         if (onBack != null || onAction != null) {
@@ -97,11 +101,19 @@ fun ChildPageHeader(
                     .padding(GovUkTheme.spacing.small),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                var titleModifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = GovUkTheme.spacing.medium)
+                focusRequester?.let {
+                    titleModifier = titleModifier.then(
+                        Modifier
+                            .focusRequester(it)
+                            .focusable()
+                    )
+                }
                 LargeTitleBoldLabel(
                     text = text,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = GovUkTheme.spacing.medium)
+                    modifier = titleModifier
                 )
             }
         }
