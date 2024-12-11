@@ -159,7 +159,6 @@ private fun PrivacyPolicyLink(
     ) {
         BodyRegularLabel(
             text = stringResource(R.string.analytics_consent_privacy_policy),
-            modifier = Modifier.weight(1f),
             color = GovUkTheme.colourScheme.textAndIcons.link,
         )
         SmallHorizontalSpacer()
