@@ -46,12 +46,14 @@ internal fun SearchRoute(
     modifier: Modifier = Modifier
 ) {
     val viewModel: SearchViewModel = hiltViewModel()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     SearchScreen(
         viewModel = viewModel,
         onPageView = { viewModel.onPageView() },
         onBack = onBack,
         onSearch = { searchTerm ->
+            keyboardController?.hide()
             viewModel.onSearch(searchTerm)
         },
         onClear = {
@@ -132,9 +134,6 @@ fun ShowResults(searchResults: List<Result>, onClick: (String, String) -> Unit) 
         LazyColumn {
             items(searchResults) { searchResult ->
                 val title = StringUtils.collapseWhitespace(searchResult.title)
-                val description = searchResult.description?.let {
-                    StringUtils.collapseWhitespace(it)
-                } ?: ""
                 val url = StringUtils.buildFullUrl(searchResult.link)
 
                 val context = LocalContext.current
@@ -173,9 +172,11 @@ fun ShowResults(searchResults: List<Result>, onClick: (String, String) -> Unit) 
                         )
                     }
 
-                    SmallVerticalSpacer()
-
-                    BodyRegularLabel(description)
+                    val description = searchResult.description
+                    if (!description.isNullOrBlank()) {
+                        SmallVerticalSpacer()
+                        BodyRegularLabel(StringUtils.collapseWhitespace(description))
+                    }
                 }
             }
         }
