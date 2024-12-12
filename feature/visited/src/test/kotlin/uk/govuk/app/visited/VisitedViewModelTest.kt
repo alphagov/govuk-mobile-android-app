@@ -180,7 +180,6 @@ class VisitedViewModelTest {
 
         runTest {
             viewModel.onVisitedItemClicked("visited item title", "visited item title")
-
             coVerify {
                 visited.visitableItemClick("visited item title", "visited item title")
             }

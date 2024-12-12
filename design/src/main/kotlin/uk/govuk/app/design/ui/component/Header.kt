@@ -1,5 +1,6 @@
 package uk.govuk.app.design.ui.component
 
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,8 +13,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.invisibleToUser
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,6 +44,7 @@ fun TabHeader(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ChildPageHeader(
     modifier: Modifier = Modifier,
@@ -48,7 +53,7 @@ fun ChildPageHeader(
     onAction: (() -> Unit)? = null,
     actionText: String? = null
 ) {
-    Column(modifier) {
+    Column(modifier.semantics { this.invisibleToUser() }) {
         if (onBack != null || onAction != null) {
             Row(
                 modifier = Modifier
@@ -90,6 +95,7 @@ fun ChildPageHeader(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = GovUkTheme.spacing.medium)
+                    .focusable()
             )
         }
     }

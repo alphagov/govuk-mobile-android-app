@@ -11,13 +11,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ChildPageHeader
@@ -74,6 +83,10 @@ private fun VisitedScreen(
     val title = stringResource(R.string.visited_items_title)
     val editText = stringResource(R.string.visited_items_edit_button)
     val visitedItems = uiState?.visited
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+    val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
 
     Column(modifier) {
         val onAction = if (!visitedItems.isNullOrEmpty()) onEditClick else null
@@ -82,8 +95,10 @@ private fun VisitedScreen(
             text = title,
             onBack = onBack,
             onAction = onAction,
-            actionText = editText
+            actionText = editText,
+            modifier = Modifier.focusRequester(focusRequester)
         )
+
         LazyColumn(
             Modifier
                 .padding(horizontal = GovUkTheme.spacing.medium)
@@ -96,6 +111,17 @@ private fun VisitedScreen(
                     ShowVisitedItems(visitedItems, onClick)
                 }
             }
+        }
+    }
+
+    LaunchedEffect(lifecycleState) {
+        when (lifecycleState) {
+            Lifecycle.State.RESUMED -> {
+                focusManager.clearFocus(true)
+                delay(500)
+                focusRequester.requestFocus()
+            }
+            else -> { /* Do nothing */ }
         }
     }
 }
@@ -129,6 +155,7 @@ private fun ShowVisitedItems(
     onClick: (title: String, url: String) -> Unit,
 ) {
     val lastVisitedText = stringResource(R.string.visited_items_last_visited)
+    val coroutineScope = rememberCoroutineScope()
 
     items.forEach { (sectionTitle, visitedItems) ->
         if (visitedItems.isNotEmpty()) {
@@ -146,7 +173,10 @@ private fun ShowVisitedItems(
                 ExternalLinkListItem(
                     title = title,
                     onClick = {
-                        onClick(title, url)
+                        coroutineScope.launch {
+                            delay(500)
+                            onClick(title, url)
+                        }
                         context.startActivity(intent)
                     },
                     isFirst = index == 0,
