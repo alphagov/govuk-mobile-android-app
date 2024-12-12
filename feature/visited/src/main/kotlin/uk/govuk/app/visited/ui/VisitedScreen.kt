@@ -94,18 +94,13 @@ private fun VisitedScreen(
         val onAction = if (!visitedItems.isNullOrEmpty()) onEditClick else null
 
         ChildPageHeader(
+            text = title,
             onBack = onBack,
             onAction = onAction,
             actionText = editText,
+            modifier = Modifier.focusRequester(focusRequester)
         )
-        LargeTitleBoldLabel(
-            text = title,
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequester)
-                .focusable()
-                .padding(horizontal = GovUkTheme.spacing.medium)
-        )
+
         LazyColumn(
             Modifier
                 .padding(horizontal = GovUkTheme.spacing.medium)
