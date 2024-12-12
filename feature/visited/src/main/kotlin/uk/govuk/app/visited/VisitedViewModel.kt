@@ -3,7 +3,6 @@ package uk.govuk.app.visited
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -124,7 +123,6 @@ internal class VisitedViewModel @Inject constructor(
 
     fun onVisitedItemClicked(title: String, url: String) {
         viewModelScope.launch {
-            delay(1000)
             visited.visitableItemClick(title = title, url = url)
         }
         analyticsClient.visitedItemClick(text = title, url = url)

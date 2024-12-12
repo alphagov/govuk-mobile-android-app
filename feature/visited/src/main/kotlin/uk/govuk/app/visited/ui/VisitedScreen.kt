@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +29,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ChildPageHeader
@@ -169,6 +171,7 @@ private fun ShowVisitedItems(
     onClick: (title: String, url: String) -> Unit,
 ) {
     val lastVisitedText = stringResource(R.string.visited_items_last_visited)
+    val coroutineScope = rememberCoroutineScope()
 
     items.forEach { (sectionTitle, visitedItems) ->
         if (visitedItems.isNotEmpty()) {
@@ -186,7 +189,10 @@ private fun ShowVisitedItems(
                 ExternalLinkListItem(
                     title = title,
                     onClick = {
-                        onClick(title, url)
+                        coroutineScope.launch {
+                            delay(500)
+                            onClick(title, url)
+                        }
                         context.startActivity(intent)
                     },
                     isFirst = index == 0,
