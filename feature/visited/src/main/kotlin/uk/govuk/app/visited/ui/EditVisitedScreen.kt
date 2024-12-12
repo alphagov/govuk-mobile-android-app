@@ -1,10 +1,10 @@
 package uk.govuk.app.visited.ui
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ButtonDefaults
@@ -54,45 +54,51 @@ internal fun EditVisitedRoute(
 
     EditVisitedScreen(
         uiState = uiState,
-        onRemove = {
-            viewModel.onRemoveClick()
-            viewModel.onRemove()
-            onBack()
-        },
-        onEditPageView = { viewModel.onEditPageView() },
-        onBack = {
-            viewModel.onDoneClick()
-            onBack()
-        },
-        onSelect = { title, url ->
-            viewModel.onSelect(title, url)
-        },
-        onSelectAll = {
-            viewModel.onSelectAllClick()
-            viewModel.onSelectAll()
-        },
-        onDeselectAll = {
-            viewModel.onDeselectAllClick()
-            viewModel.onDeselectAll()
-        },
+        actions = EditVisitedScreenActions(
+            onEditPageView = { viewModel.onEditPageView() },
+            onBack = {
+                viewModel.onDoneClick()
+                onBack()
+            },
+            onSelect = { title, url ->
+                viewModel.onSelect(title, url)
+            },
+            onSelectAll = {
+                viewModel.onSelectAllClick()
+                viewModel.onSelectAll()
+            },
+            onDeselectAll = {
+                viewModel.onDeselectAllClick()
+                viewModel.onDeselectAll()
+            },
+            onRemove = {
+                viewModel.onRemoveClick()
+                viewModel.onRemove()
+                onBack()
+            }
+        ),
         modifier = modifier
     )
 }
+
+private class EditVisitedScreenActions(
+    val onEditPageView: () -> Unit,
+    val onBack: () -> Unit,
+    val onSelect: (String, String) -> Unit,
+    val onSelectAll: () -> Unit,
+    val onDeselectAll: () -> Unit,
+    val onRemove: () -> Unit,
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EditVisitedScreen(
     uiState: VisitedUiState?,
-    onRemove: () -> Unit,
-    onEditPageView: () -> Unit,
-    onBack: () -> Unit,
-    onSelect: (String, String) -> Unit,
-    onSelectAll: () -> Unit,
-    onDeselectAll: () -> Unit,
+    actions: EditVisitedScreenActions,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
-        onEditPageView()
+        actions.onEditPageView()
     }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
@@ -110,16 +116,16 @@ private fun EditVisitedScreen(
         topBar = {
             ChildPageHeader(
                 text = titleText,
-                onAction = onBack,
+                onAction = actions.onBack,
                 actionText = doneText
             )
         },
         bottomBar = {
             BottomNavBar(
-                onRemove = onRemove,
+                onRemove = actions.onRemove,
                 uiState = uiState,
-                onSelectAll = onSelectAll,
-                onDeselectAll = onDeselectAll,
+                onSelectAll = actions.onSelectAll,
+                onDeselectAll = actions.onDeselectAll,
                 modifier = modifier
             )
         }
@@ -148,7 +154,7 @@ private fun EditVisitedScreen(
                                     subText = "$lastVisitedText ${item.lastVisited}",
                                     isFirst = index == 0,
                                     isLast = index == items.size - 1,
-                                    onSelect = onSelect,
+                                    onSelect = actions.onSelect,
                                     modifier = modifier
                                 )
                             }
@@ -248,7 +254,6 @@ private fun BottomNavBar(
         contentColor = GovUkTheme.colourScheme.textAndIcons.primary,
         modifier = modifier
             .fillMaxWidth()
-            .height(81.dp)
             .drawBehind {
                 val borderSize = 1.dp
                 val topEdge = 0f
@@ -263,10 +268,9 @@ private fun BottomNavBar(
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .height(64.dp)
+                .defaultMinSize(minHeight = 64.dp)
                 .padding(horizontal = GovUkTheme.spacing.large),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            verticalAlignment = Alignment.CenterVertically
         ) {
             var onClick = onSelectAll
             var buttonText = selectText
@@ -276,14 +280,18 @@ private fun BottomNavBar(
                 buttonText = deselectText
             }
 
-            TextButton(
-                onClick = onClick
+            Box(
+                modifier = Modifier.weight(1f)
             ) {
-                BodyRegularLabel(
-                    text = buttonText,
-                    color = GovUkTheme.colourScheme.textAndIcons.link,
-                    textAlign = TextAlign.Start
-                )
+                TextButton(
+                    onClick = onClick
+                ) {
+                    BodyRegularLabel(
+                        text = buttonText,
+                        color = GovUkTheme.colourScheme.textAndIcons.link,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
 
             TextButton(
@@ -296,8 +304,7 @@ private fun BottomNavBar(
             ) {
                 Text(
                     text = removeText,
-                    style = GovUkTheme.typography.bodyRegular,
-                    textAlign = TextAlign.End
+                    style = GovUkTheme.typography.bodyRegular
                 )
             }
         }
@@ -314,12 +321,14 @@ private fun EditVisitedScreenPreview() {
                 hasSelectedItems = false,
                 hasAllSelectedItems = false
             ),
-            onRemove = {},
-            onEditPageView = {},
-            onBack = {},
-            onSelect = { _, _ -> },
-            onSelectAll = {},
-            onDeselectAll = {},
+            actions = EditVisitedScreenActions(
+                onBack = {},
+                onEditPageView = {},
+                onSelect = { _, _ -> },
+                onSelectAll = {},
+                onDeselectAll = {},
+                onRemove = {}
+            ),
             modifier = Modifier
         )
     }
