@@ -12,7 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -31,6 +33,7 @@ import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ChildPageHeader
 import uk.govuk.app.design.ui.component.ExternalLinkListItem
 import uk.govuk.app.design.ui.component.ExtraLargeVerticalSpacer
+import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeadingLabel
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
@@ -86,16 +89,23 @@ private fun VisitedScreen(
     val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
+    var isViewingItem by remember { mutableStateOf(false) }
 
     Column(modifier) {
         val onAction = if (!visitedItems.isNullOrEmpty()) onEditClick else null
 
         ChildPageHeader(
-            text = title,
             onBack = onBack,
             onAction = onAction,
             actionText = editText,
-            focusRequester = focusRequester
+        )
+        LargeTitleBoldLabel(
+            text = title,
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester)
+                .focusable()
+                .padding(horizontal = GovUkTheme.spacing.medium)
         )
         LazyColumn(
             Modifier
@@ -106,7 +116,10 @@ private fun VisitedScreen(
                 if (visitedItems.isNullOrEmpty()) {
                     NoVisitedItems(modifier)
                 } else {
-                    ShowVisitedItems(visitedItems, onClick)
+                    ShowVisitedItems(visitedItems) { title, url ->
+                        isViewingItem = true
+                        onClick(title, url)
+                    }
                 }
             }
         }
@@ -115,9 +128,12 @@ private fun VisitedScreen(
     LaunchedEffect(lifecycleState) {
         when (lifecycleState) {
             Lifecycle.State.RESUMED -> {
-                focusManager.clearFocus(true)
-                delay(500)
-                focusRequester.requestFocus()
+                if (isViewingItem) {
+                    focusManager.clearFocus(true)
+                    delay(500)
+                    focusRequester.requestFocus()
+                    isViewingItem = false
+                }
             }
             else -> { /* Do nothing */ }
         }
