@@ -12,10 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -91,7 +89,6 @@ private fun VisitedScreen(
     val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
-    var isViewingItem by remember { mutableStateOf(false) }
 
     Column(modifier) {
         val onAction = if (!visitedItems.isNullOrEmpty()) onEditClick else null
@@ -118,10 +115,7 @@ private fun VisitedScreen(
                 if (visitedItems.isNullOrEmpty()) {
                     NoVisitedItems(modifier)
                 } else {
-                    ShowVisitedItems(visitedItems) { title, url ->
-                        isViewingItem = true
-                        onClick(title, url)
-                    }
+                    ShowVisitedItems(visitedItems, onClick)
                 }
             }
         }
@@ -130,12 +124,9 @@ private fun VisitedScreen(
     LaunchedEffect(lifecycleState) {
         when (lifecycleState) {
             Lifecycle.State.RESUMED -> {
-                if (isViewingItem) {
-                    focusManager.clearFocus(true)
-                    delay(500)
-                    focusRequester.requestFocus()
-                    isViewingItem = false
-                }
+                focusManager.clearFocus(true)
+                delay(500)
+                focusRequester.requestFocus()
             }
             else -> { /* Do nothing */ }
         }
