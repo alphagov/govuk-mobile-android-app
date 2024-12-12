@@ -6,7 +6,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -181,7 +180,6 @@ class VisitedViewModelTest {
 
         runTest {
             viewModel.onVisitedItemClicked("visited item title", "visited item title")
-            delay(1000)
             coVerify {
                 visited.visitableItemClick("visited item title", "visited item title")
             }
