@@ -10,6 +10,6 @@
     <string name="analytics_consent_stop">You can stop sharing these statistics at any time by changing your app settings.</string>
     <string name="analytics_consent_button_enable">Allow statistics sharing</string>
     <string name="analytics_consent_button_disable">Don\'t allow statistics sharing</string>
-    <string name="analytics_consent_privacy_policy">Read more about this in the privacy policy</string>
+    <string name="analytics_consent_privacy_policy">Read more about this in the privacy notice</string>
     <string name="analytics_consent_link_opens_in">Opens in web browser</string>
 </resources>
