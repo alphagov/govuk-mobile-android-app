@@ -19,20 +19,19 @@ internal class TopicsRepo @Inject constructor(
     private val localDataSource: TopicsLocalDataSource,
 ) {
 
-    suspend fun initTopics(): Boolean {
-        return try {
+    suspend fun sync(): Boolean {
+        var success = false
+        try {
             val response = topicsApi.getTopics()
             if (response.isSuccessful) {
                 response.body()?.let { topics ->
                     localDataSource.sync(topics.map { it.ref })
-                    true
+                    success = true
                 }
             }
+        } catch (_: Exception) { }
 
-            false
-        } catch (_: Exception) {
-            false
-        }
+        return success
     }
 
     private val remoteTopics = flow {
