@@ -1,6 +1,5 @@
 package uk.govuk.app.onboarding.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -84,7 +83,6 @@ internal fun OnboardingRoute(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun OnboardingScreen(
     pages: List<OnboardingPage>,
@@ -111,7 +109,10 @@ private fun OnboardingScreen(
                 .weight(1f),
             verticalAlignment = Alignment.Top
         ) { pageIndex ->
-            Page(pages[pageIndex])
+            Page(
+                page = pages[pageIndex],
+                isCurrentPage = pagerState.currentPage == pageIndex
+            )
         }
 
         ListDivider()
@@ -150,7 +151,8 @@ private fun OnboardingScreen(
 @Composable
 private fun Page(
     page: OnboardingPage,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isCurrentPage: Boolean
 ) {
     val focusRequester = remember { FocusRequester() }
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -189,8 +191,10 @@ private fun Page(
                 .padding(horizontal = GovUkTheme.spacing.extraLarge),
             textAlign = TextAlign.Center
         )
+    }
 
-        LaunchedEffect(page.title) {
+    LaunchedEffect(page.title) {
+        if (isCurrentPage) {
             delay(200)
             focusRequester.requestFocus()
         }
