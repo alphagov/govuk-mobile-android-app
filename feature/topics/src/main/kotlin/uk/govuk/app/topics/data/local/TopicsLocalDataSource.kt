@@ -25,6 +25,8 @@ internal class TopicsLocalDataSource @Inject constructor(
         val topicsToDelete = localTopics.filter { !topics.map { it.ref }.contains(it.ref) }
         val topicsToInsert = topics.filter { topic -> !(localTopics.map { it.ref }.contains(topic.ref)) }
 
+        val isSelected = !isTopicsCustomised()
+
         realmProvider.open().writeBlocking {
             for (topic in topicsToDelete) {
                 delete(topic)
@@ -36,40 +38,17 @@ internal class TopicsLocalDataSource @Inject constructor(
                         this.ref = topic.ref
                         this.title = topic.title
                         this.description = topic.description
-                        this.isSelected = false
+                        this.isSelected = isSelected
                     }
                 )
             }
         }
     }
 
-    suspend fun selectAll(refs: List<String>) {
-        insertOrUpdate(
-            refs.map { ref -> Pair(ref, true) }
-        )
-    }
-
-    suspend fun select(ref: String) {
-        insertOrUpdate(listOf(Pair(ref, true)))
-    }
-
-    suspend fun deselect(ref: String) {
-        insertOrUpdate(listOf(Pair(ref, false)))
-    }
-
-    private suspend fun insertOrUpdate(topics: List<Pair<String, Boolean>>) {
+    suspend fun toggleSelection(ref: String, isSelected: Boolean) {
         realmProvider.open().write {
-            for ((ref, isSelected) in topics) {
-                val localTopic = query<LocalTopicItem>("ref = $0", ref).first().find()
-
-                localTopic?.apply {
-                    this.isSelected = isSelected
-                } ?: copyToRealm(
-                    LocalTopicItem().apply {
-                        this.ref = ref
-                        this.isSelected = isSelected
-                    }
-                )
+            query<LocalTopicItem>("ref = $0", ref).first().find()?.apply {
+                this.isSelected = isSelected
             }
         }
     }

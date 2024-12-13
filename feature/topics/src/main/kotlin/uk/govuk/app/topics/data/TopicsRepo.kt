@@ -33,24 +33,19 @@ internal class TopicsRepo @Inject constructor(
     }
 
     val topics = localDataSource.topics.map { localTopics ->
-        val isTopicsCustomised = isTopicsCustomised()
-
         localTopics.map { localTopic ->
             TopicItem(
                 ref = localTopic.ref,
                 title = localTopic.title,
                 description = localTopic.description,
-                isSelected = localTopic.isSelected || !isTopicsCustomised
+                isSelected = localTopic.isSelected
             )
         }
     }
 
-    suspend fun selectTopic(ref: String) {
-        localDataSource.select(ref)
-    }
-
-    suspend fun deselectTopic(ref: String) {
-        localDataSource.deselect(ref)
+    suspend fun toggleSelection(ref: String, isSelected: Boolean) {
+        localDataSource.topicsCustomised()
+        localDataSource.toggleSelection(ref, isSelected)
     }
 
     suspend fun getTopic(ref: String): Result<RemoteTopic> {

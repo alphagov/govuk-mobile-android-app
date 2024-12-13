@@ -44,12 +44,7 @@ internal class EditTopicsViewModel @Inject constructor(
 
     fun onTopicSelectedChanged(ref: String, title: String, isSelected: Boolean) {
         viewModelScope.launch {
-            topicsRepo.topicsCustomised()
-            if (isSelected) {
-                topicsRepo.selectTopic(ref)
-            } else {
-                topicsRepo.deselectTopic(ref)
-            }
+            topicsRepo.toggleSelection(ref, isSelected)
             logTopicToggleFunction(title, isSelected)
         }
     }
