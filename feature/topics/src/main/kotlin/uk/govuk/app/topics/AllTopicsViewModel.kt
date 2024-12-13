@@ -28,7 +28,6 @@ internal class AllTopicsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            topicsRepo.selectInitialTopics()
             topicsRepo.topics.collect { topics ->
                 _topics.value = topics.map { topicItem -> topicItem.toTopicItemUi() }
             }
