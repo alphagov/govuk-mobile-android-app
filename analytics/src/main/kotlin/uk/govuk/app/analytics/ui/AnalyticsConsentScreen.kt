@@ -160,6 +160,7 @@ private fun PrivacyPolicyLink(
         BodyRegularLabel(
             text = stringResource(R.string.analytics_consent_privacy_policy),
             color = GovUkTheme.colourScheme.textAndIcons.link,
+            modifier = Modifier.weight(1f, fill = false)
         )
         SmallHorizontalSpacer()
         Icon(
@@ -167,7 +168,8 @@ private fun PrivacyPolicyLink(
                 uk.govuk.app.design.R.drawable.ic_external_link
             ),
             contentDescription = stringResource(R.string.analytics_consent_link_opens_in),
-            tint = GovUkTheme.colourScheme.textAndIcons.link
+            tint = GovUkTheme.colourScheme.textAndIcons.link,
+            modifier = Modifier.align(Alignment.CenterVertically)
         )
     }
 }
