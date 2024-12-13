@@ -25,7 +25,7 @@ internal class TopicsRepo @Inject constructor(
             val response = topicsApi.getTopics()
             if (response.isSuccessful) {
                 response.body()?.let { topics ->
-                    localDataSource.sync(topics.map { it.ref })
+                    localDataSource.sync(topics)
                     success = true
                 }
             }

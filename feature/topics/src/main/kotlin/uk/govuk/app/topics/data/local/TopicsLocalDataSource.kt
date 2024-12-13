@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import uk.govuk.app.topics.data.local.model.LocalTopicItem
+import uk.govuk.app.topics.data.remote.model.RemoteTopicItem
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,20 +20,22 @@ internal class TopicsLocalDataSource @Inject constructor(
         emitAll(realmProvider.open().query<LocalTopicItem>().asFlow().map { it.list })
     }
 
-    suspend fun sync(refs: List<String>) {
+    suspend fun sync(topics: List<RemoteTopicItem>) {
         val localTopics = realmProvider.open().query<LocalTopicItem>().find().toList()
-        val topicsToDelete = localTopics.filter { !refs.contains(it.ref) }
-        val refsToInsert = refs.filter { ref -> !(localTopics.map { it.ref }.contains(ref)) }
+        val topicsToDelete = localTopics.filter { !topics.map { it.ref }.contains(it.ref) }
+        val topicsToInsert = topics.filter { topic -> !(localTopics.map { it.ref }.contains(topic.ref)) }
 
         realmProvider.open().writeBlocking {
             for (topic in topicsToDelete) {
                 delete(topic)
             }
 
-            for (ref in refsToInsert) {
+            for (topic in topicsToInsert) {
                 copyToRealm(
                     LocalTopicItem().apply {
-                        this.ref = ref
+                        this.ref = topic.ref
+                        this.title = topic.title
+                        this.description = topic.description
                         this.isSelected = false
                     }
                 )
