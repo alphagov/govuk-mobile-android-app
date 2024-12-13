@@ -19,6 +19,27 @@ internal class TopicsLocalDataSource @Inject constructor(
         emitAll(realmProvider.open().query<LocalTopicItem>().asFlow().map { it.list })
     }
 
+    suspend fun sync(refs: List<String>) {
+        val localTopics = realmProvider.open().query<LocalTopicItem>().find().toList()
+        val topicsToDelete = localTopics.filter { !refs.contains(it.ref) }
+        val refsToInsert = refs.filter { ref -> !(localTopics.map { it.ref }.contains(ref)) }
+
+        realmProvider.open().writeBlocking {
+            for (topic in topicsToDelete) {
+                delete(topic)
+            }
+
+            for (ref in refsToInsert) {
+                copyToRealm(
+                    LocalTopicItem().apply {
+                        this.ref = ref
+                        this.isSelected = false
+                    }
+                )
+            }
+        }
+    }
+
     suspend fun selectAll(refs: List<String>) {
         insertOrUpdate(
             refs.map { ref -> Pair(ref, true) }
