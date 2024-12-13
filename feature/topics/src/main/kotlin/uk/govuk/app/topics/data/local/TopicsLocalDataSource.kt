@@ -20,10 +20,9 @@ internal class TopicsLocalDataSource @Inject constructor(
         emitAll(realmProvider.open().query<LocalTopicItem>().asFlow().map { it.list })
     }
 
-    suspend fun sync(topics: List<RemoteTopicItem>) {
+    suspend fun sync(remoteTopics: List<RemoteTopicItem>) {
         val localTopics = realmProvider.open().query<LocalTopicItem>().find().toList()
-        val topicsToDelete = localTopics.filter { !topics.map { it.ref }.contains(it.ref) }
-        val topicsToInsert = topics.filter { topic -> !(localTopics.map { it.ref }.contains(topic.ref)) }
+        val topicsToDelete = localTopics.filter { !remoteTopics.map { it.ref }.contains(it.ref) }
 
         val isSelected = !isTopicsCustomised()
 
@@ -31,17 +30,28 @@ internal class TopicsLocalDataSource @Inject constructor(
             for (topic in topicsToDelete) {
                 delete(topic)
             }
+        }
 
-            for (topic in topicsToInsert) {
-                copyToRealm(
-                    LocalTopicItem().apply {
-                        this.ref = topic.ref
-                        this.title = topic.title
-                        this.description = topic.description
-                        this.isSelected = isSelected
-                    }
-                )
-            }
+        for (topic in remoteTopics) {
+            insertOrUpdate(topic, isSelected)
+        }
+    }
+
+    private suspend fun insertOrUpdate(topic: RemoteTopicItem, isSelected: Boolean) {
+        realmProvider.open().writeBlocking {
+            val localTopic = query<LocalTopicItem>("ref = $0", topic.ref).first().find()
+
+            localTopic?.apply {
+                this.title = topic.title
+                this.description = topic.description
+            } ?: copyToRealm(
+                LocalTopicItem().apply {
+                    this.ref = topic.ref
+                    this.title = topic.title
+                    this.description = topic.description
+                    this.isSelected = isSelected
+                }
+            )
         }
     }
 
