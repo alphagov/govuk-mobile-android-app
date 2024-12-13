@@ -151,8 +151,8 @@ private fun OnboardingScreen(
 @Composable
 private fun Page(
     page: OnboardingPage,
-    modifier: Modifier = Modifier,
-    isCurrentPage: Boolean
+    isCurrentPage: Boolean,
+    modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
