@@ -1,6 +1,5 @@
 package uk.govuk.app.topics
 
-import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -39,7 +38,7 @@ class AllTopicsViewModelTest {
     }
 
     @Test
-    fun `Given topics are emitted, When init, then select initial topics in repo and emit topics`() {
+    fun `Given topics are emitted, When init, then emit topics`() {
         val topics = listOf(
             TopicItem(
                 ref = "benefits",
@@ -66,8 +65,6 @@ class AllTopicsViewModelTest {
         runTest {
             val result = viewModel.topics.first()
             assertEquals(expected, result)
-
-            coVerify { topicsRepo.selectInitialTopics() }
         }
     }
 

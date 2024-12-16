@@ -24,20 +24,23 @@ internal class TopicsLocalDataSource @Inject constructor(
         val localTopics = realmProvider.open().query<LocalTopicItem>().find().toList()
         val topicsToDelete = localTopics.filter { !remoteTopics.map { it.ref }.contains(it.ref) }
 
-        val isSelected = !isTopicsCustomised()
+        val isSelectedOnInsert = !isTopicsCustomised()
 
         realmProvider.open().writeBlocking {
             for (topic in topicsToDelete) {
-                delete(topic)
+                val liveTopic = findLatest(topic)
+                if (liveTopic != null) {
+                    delete(liveTopic)
+                }
             }
         }
 
         for (topic in remoteTopics) {
-            insertOrUpdate(topic, isSelected)
+            insertOrUpdate(topic, isSelectedOnInsert)
         }
     }
 
-    private suspend fun insertOrUpdate(topic: RemoteTopicItem, isSelected: Boolean) {
+    private suspend fun insertOrUpdate(topic: RemoteTopicItem, isSelectedOnInsert: Boolean) {
         realmProvider.open().writeBlocking {
             val localTopic = query<LocalTopicItem>("ref = $0", topic.ref).first().find()
 
@@ -49,7 +52,7 @@ internal class TopicsLocalDataSource @Inject constructor(
                     this.ref = topic.ref
                     this.title = topic.title
                     this.description = topic.description
-                    this.isSelected = isSelected
+                    this.isSelected = isSelectedOnInsert
                 }
             )
         }

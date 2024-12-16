@@ -56,9 +56,9 @@ internal class TopicsRepo @Inject constructor(
                 }
             }
             Result.failure(ApiException())
-        } catch (e: java.net.UnknownHostException) {
+        } catch (_: java.net.UnknownHostException) {
             Result.failure(DeviceOfflineException())
-        } catch (e: retrofit2.HttpException) {
+        } catch (_: retrofit2.HttpException) {
             Result.failure(ServiceNotRespondingException())
         } catch (e: Exception) {
             Result.failure(e)

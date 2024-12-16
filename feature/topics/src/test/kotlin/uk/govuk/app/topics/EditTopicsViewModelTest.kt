@@ -39,7 +39,7 @@ class EditTopicsViewModelTest {
     }
 
     @Test
-    fun `Given topics are emitted, When init, then select initial topics in repo and emit topics`() {
+    fun `Given topics are emitted, When init, then emit topics`() {
         val topics = listOf(
             TopicItem(
                 ref = "benefits",
@@ -66,8 +66,6 @@ class EditTopicsViewModelTest {
         runTest {
             val result = viewModel.topics.first()
             assertEquals(expected, result)
-
-            coVerify { topicsRepo.selectInitialTopics() }
         }
     }
 
@@ -78,7 +76,7 @@ class EditTopicsViewModelTest {
         viewModel.onTopicSelectedChanged("ref", "title", true)
 
         coVerify {
-            topicsRepo.selectTopic("ref")
+            topicsRepo.toggleSelection("ref", true)
             topicsRepo.topicsCustomised()
             analyticsClient.topicsCustomised()
             analyticsClient.toggleFunction(
@@ -96,7 +94,7 @@ class EditTopicsViewModelTest {
         viewModel.onTopicSelectedChanged("ref", "title", false)
 
         coVerify {
-            topicsRepo.deselectTopic("ref")
+            topicsRepo.toggleSelection("ref", false)
             topicsRepo.topicsCustomised()
             analyticsClient.topicsCustomised()
             analyticsClient.toggleFunction(
