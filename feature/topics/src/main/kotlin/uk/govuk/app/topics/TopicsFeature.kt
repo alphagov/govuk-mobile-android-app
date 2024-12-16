@@ -1,6 +1,6 @@
 package uk.govuk.app.topics
 
-interface TopicsFeature  {
+fun interface TopicsFeature  {
 
     suspend fun init(): Boolean
 
