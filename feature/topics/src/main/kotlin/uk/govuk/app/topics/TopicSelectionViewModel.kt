@@ -87,10 +87,7 @@ internal class TopicSelectionViewModel @Inject constructor(
         analyticsClient.buttonClick(text)
         analyticsClient.topicsCustomised()
         viewModelScope.launch {
-            for (ref in selectedTopicRefs) {
-                topicsRepo.toggleSelection(ref, true)
-            }
-
+            topicsRepo.topicsCustomised()
             uiState.value?.topics?.let { topics ->
                 topics.filter { !selectedTopicRefs.contains(it.ref) }.forEach { topic ->
                     topicsRepo.toggleSelection(topic.ref, false)
