@@ -80,7 +80,8 @@ private fun AnalyticsConsentScreen(
         ) {
             LargeTitleBoldLabel(
                 text = stringResource(R.string.analytics_consent_title),
-                modifier = Modifier.semantics { heading() })
+                modifier = Modifier.semantics { heading() }
+            )
             MediumVerticalSpacer()
             BodyRegularLabel(stringResource(R.string.analytics_consent_bullet_title))
             MediumVerticalSpacer()
