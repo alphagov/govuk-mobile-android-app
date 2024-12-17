@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
@@ -340,8 +341,8 @@ fun ListHeadingLabel(
         text = text,
         modifier = modifier.padding(
             start = GovUkTheme.spacing.medium,
-            end = GovUkTheme.spacing.medium
-        )
+            end = GovUkTheme.spacing.medium,
+        ).semantics { heading() }
     )
 }
 

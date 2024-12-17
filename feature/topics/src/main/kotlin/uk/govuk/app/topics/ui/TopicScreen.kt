@@ -15,6 +15,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
@@ -130,7 +132,10 @@ private fun TopicScreen(
         LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
             item {
                 Column {
-                    LargeTitleBoldLabel(topic.title)
+                    LargeTitleBoldLabel(
+                        text = topic.title,
+                        modifier = Modifier.semantics { heading() }
+                    )
                     MediumVerticalSpacer()
                     topic.description?.let { description ->
                         BodyRegularLabel(description)

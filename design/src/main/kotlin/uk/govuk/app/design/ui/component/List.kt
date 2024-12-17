@@ -29,6 +29,8 @@ import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -38,13 +40,14 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 @Composable
 fun ListHeader(
     @StringRes title: Int,
-    @DrawableRes icon: Int
+    @DrawableRes icon: Int,
+    modifier: Modifier = Modifier
 ) {
     val borderColor = GovUkTheme.colourScheme.strokes.listDivider
     val backgroundColor = GovUkTheme.colourScheme.surfaces.card
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .drawBehind {
                 drawCell(
                     isFirst = true,
@@ -69,7 +72,9 @@ fun ListHeader(
                 )
                 Title3BoldLabel(
                     text = stringResource(title),
-                    modifier = Modifier.padding(start = GovUkTheme.spacing.medium)
+                    modifier = Modifier
+                        .padding(start = GovUkTheme.spacing.medium)
+                        .semantics { heading() }
                 )
             }
             ListDivider()

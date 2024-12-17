@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.invisibleToUser
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -39,7 +40,9 @@ fun TabHeader(
         Title2BoldLabel(
             text = text,
             textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .semantics { heading() }
         )
     }
 }
@@ -96,6 +99,7 @@ fun ChildPageHeader(
                     .fillMaxWidth()
                     .padding(horizontal = GovUkTheme.spacing.medium)
                     .focusable()
+                    .semantics { heading() }
             )
         }
     }
