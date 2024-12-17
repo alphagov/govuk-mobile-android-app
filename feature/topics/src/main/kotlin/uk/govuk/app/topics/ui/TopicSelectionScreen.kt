@@ -15,6 +15,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import uk.govuk.app.design.ui.component.BodyRegularLabel
@@ -81,6 +83,7 @@ private fun TopicSelectionScreen(
                 .fillMaxWidth()
                 .padding(top = GovUkTheme.spacing.medium)
                 .padding(horizontal = GovUkTheme.spacing.medium)
+                .semantics { heading() }
         )
 
         Column(

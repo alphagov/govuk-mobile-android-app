@@ -22,6 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
@@ -143,6 +145,7 @@ private fun ScalingHeader(
                 .padding(vertical = padding.dp)
                 .align(Alignment.CenterHorizontally)
                 .height(logoHeight.dp)
+                .semantics { heading() }
         )
         HorizontalDivider(
             modifier = Modifier.alpha(dividerAlpha),

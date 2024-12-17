@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -76,7 +78,9 @@ private fun AnalyticsConsentScreen(
                 .padding(horizontal = GovUkTheme.spacing.medium)
                 .padding(top = GovUkTheme.spacing.medium)
         ) {
-            LargeTitleBoldLabel(stringResource(R.string.analytics_consent_title))
+            LargeTitleBoldLabel(
+                text = stringResource(R.string.analytics_consent_title),
+                modifier = Modifier.semantics { heading() })
             MediumVerticalSpacer()
             BodyRegularLabel(stringResource(R.string.analytics_consent_bullet_title))
             MediumVerticalSpacer()
