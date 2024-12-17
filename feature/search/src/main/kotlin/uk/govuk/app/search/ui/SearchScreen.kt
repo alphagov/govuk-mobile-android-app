@@ -19,7 +19,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -113,7 +116,7 @@ private fun SearchScreen(
                     if (it.searchResults.isEmpty()) {
                         NoResultsFound(searchTerm = it.searchTerm)
                     } else {
-                        ShowResults(it.searchResults, onClick)
+                        ShowResults(it.searchTerm, it.searchResults, onClick)
                     }
                 }
                 is SearchUiState.Offline -> OfflineMessage { viewModel.onSearch(it.searchTerm) }
@@ -131,11 +134,14 @@ private fun SearchScreen(
 
 @Composable
 fun ShowResults(
+    searchTerm: String,
     searchResults: List<Result>,
     onClick: (String, String) -> Unit
 ) {
     val listState = rememberLazyListState()
     val focusRequester = remember { FocusRequester() }
+
+    var previousSearchTerm by rememberSaveable { mutableStateOf("") }
 
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -204,9 +210,13 @@ fun ShowResults(
         }
     }
 
-    LaunchedEffect(searchResults) {
-        listState.animateScrollToItem(0)
-        focusRequester.requestFocus()
+    LaunchedEffect(searchTerm) {
+        // We only want to trigger scroll and focus if we have a new search (rather than orientation change)
+        if (searchTerm != previousSearchTerm) {
+            listState.animateScrollToItem(0)
+            focusRequester.requestFocus()
+            previousSearchTerm = searchTerm
+        }
     }
 }
 
