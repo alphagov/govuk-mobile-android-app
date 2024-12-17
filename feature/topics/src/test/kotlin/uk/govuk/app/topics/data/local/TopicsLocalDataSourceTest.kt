@@ -15,6 +15,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.topics.data.local.model.LocalTopicItem
+import uk.govuk.app.topics.data.remote.model.RemoteTopicItem
 
 class TopicsLocalDataSourceTest {
 
@@ -49,10 +50,14 @@ class TopicsLocalDataSourceTest {
         val expected = listOf(
             LocalTopicItem().apply {
                 ref = "ref1"
+                title = "title1"
+                description = "description1"
                 isSelected = true
             },
             LocalTopicItem().apply {
                 ref = "ref2"
+                title = "title2"
+                description = "description2"
                 isSelected = false
             }
         )
@@ -74,73 +79,137 @@ class TopicsLocalDataSourceTest {
     }
 
     @Test
-    fun `Given topics to select, when select all, then select topics in realm`() {
-        runTest {
-            localDataSource.selectAll(listOf("ref1", "ref2"))
+    fun `Given new remote topics and topics have not been customised, when topics are synced, then insert new topics as selected`() {
+        val remoteTopics = listOf(
+            RemoteTopicItem(
+                ref = "ref",
+                title = "title",
+                description = "description"
+            )
+        )
 
-            val topics = realm.query<LocalTopicItem>().find()
-            assertEquals(2, topics.size)
-            assertEquals("ref1", topics[0].ref)
-            assertTrue(topics[0].isSelected)
-            assertEquals("ref2", topics[1].ref)
-            assertTrue(topics[1].isSelected)
-        }
-    }
+        coEvery { dataStore.isTopicsCustomised() } returns false
 
-    @Test
-    fun `Given a new topic to select, when select, then insert topic into realm`() {
         runTest {
-            localDataSource.select("ref1")
+            localDataSource.sync(remoteTopics)
 
             val topics = realm.query<LocalTopicItem>().find()
             assertEquals(1, topics.size)
-            assertEquals("ref1", topics[0].ref)
+            assertEquals("ref", topics[0].ref)
             assertTrue(topics[0].isSelected)
         }
     }
 
     @Test
-    fun `Given an existing topic to select, when select, then update topic in realm`() {
-        runTest {
-            realm.write {
-                LocalTopicItem().apply {
-                    ref = "ref1"
-                    isSelected = false
-                }
-            }
+    fun `Given new remote topics and topics have been customised, when topics are synced, then insert new topics as deselected`() {
+        val remoteTopics = listOf(
+            RemoteTopicItem(
+                ref = "ref",
+                title = "title",
+                description = "description"
+            )
+        )
 
-            localDataSource.select("ref1")
+        coEvery { dataStore.isTopicsCustomised() } returns true
+
+        runTest {
+            localDataSource.sync(remoteTopics)
 
             val topics = realm.query<LocalTopicItem>().find()
             assertEquals(1, topics.size)
-            assertEquals("ref1", topics[0].ref)
-            assertTrue(topics[0].isSelected)
-        }
-    }
-
-    @Test
-    fun `Given a new topic to deselect, when deselect, then insert topic into realm`() {
-        runTest {
-            localDataSource.deselect("ref1")
-
-            val topics = realm.query<LocalTopicItem>().find()
-            assertEquals(1, topics.size)
-            assertEquals("ref1", topics[0].ref)
+            assertEquals("ref", topics[0].ref)
             assertFalse(topics[0].isSelected)
         }
     }
 
     @Test
-    fun `Given an existing topic to deselect, when deselect, then update topic in realm`() {
+    fun `Given a topic is not present in the remote topics, when topics are synced, then delete the topic`() {
         runTest {
             realm.write {
-                LocalTopicItem().apply {
-                    ref = "ref1"
-                    isSelected = false
-                }
+                copyToRealm(
+                    LocalTopicItem().apply {
+                        ref = "ref1"
+                        isSelected = false
+                    }
+                )
             }
 
-            localDataSource.deselect("ref1")
+            localDataSource.sync(emptyList())
+
+            val topics = realm.query<LocalTopicItem>().find()
+            assertTrue(topics.isEmpty())
+        }
+    }
+
+    @Test
+    fun `Given a remote topic is updated, when topics are synced, then update the topic in realm`() {
+        val remoteTopics = listOf(
+            RemoteTopicItem(
+                ref = "ref1",
+                title = "title2",
+                description = "desc2"
+            )
+        )
+
+        coEvery { dataStore.isTopicsCustomised() } returns false
+
+        runTest {
+            realm.write {
+                copyToRealm(
+                    LocalTopicItem().apply {
+                        ref = "ref1"
+                        title = "title1"
+                        description = "desc1"
+                        isSelected = false
+                    }
+                )
+            }
+
+            localDataSource.sync(remoteTopics)
+
+            val topics = realm.query<LocalTopicItem>().find()
+            assertEquals(1, topics.size)
+            assertEquals("ref1", topics[0].ref)
+            assertEquals("title2", topics[0].title)
+            assertEquals("desc2", topics[0].description)
+            assertFalse(topics[0].isSelected)
+        }
+    }
+
+    @Test
+    fun `Given a topic is selected, then update the topic in realm`() {
+        runTest {
+            realm.write {
+                copyToRealm(
+                    LocalTopicItem().apply {
+                        ref = "ref1"
+                        isSelected = false
+                    }
+                )
+            }
+
+            localDataSource.toggleSelection("ref1", true)
+
+            val topics = realm.query<LocalTopicItem>().find()
+            assertEquals(1, topics.size)
+            assertEquals("ref1", topics[0].ref)
+            assertTrue(topics[0].isSelected)
+        }
+    }
+
+    @Test
+    fun `Given a topic is deselected, then update the topic in realm`() {
+        runTest {
+            realm.write {
+                copyToRealm(
+                    LocalTopicItem().apply {
+                        ref = "ref1"
+                        isSelected = true
+                    }
+                )
+            }
+
+            localDataSource.toggleSelection("ref1", false)
 
             val topics = realm.query<LocalTopicItem>().find()
             assertEquals(1, topics.size)
@@ -168,7 +237,7 @@ class TopicsLocalDataSourceTest {
     }
 
     @Test
-    fun `Given a user customises topics, topics customised, then update data store`() {
+    fun `Given a user customises topics, when topics customised, then update data store`() {
         runTest {
             localDataSource.topicsCustomised()
 

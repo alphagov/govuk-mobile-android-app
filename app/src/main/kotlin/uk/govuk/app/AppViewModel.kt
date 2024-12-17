@@ -11,6 +11,7 @@ import uk.govuk.app.config.data.ConfigRepo
 import uk.govuk.app.config.data.InvalidSignatureException
 import uk.govuk.app.config.data.flags.FlagRepo
 import uk.govuk.app.data.AppRepo
+import uk.govuk.app.topics.TopicsFeature
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,6 +19,7 @@ internal class AppViewModel @Inject constructor(
     private val appRepo: AppRepo,
     configRepo: ConfigRepo,
     flagRepo: FlagRepo,
+    topicsFeature: TopicsFeature,
     private val analyticsClient: AnalyticsClient
 ) : ViewModel() {
 
@@ -33,11 +35,15 @@ internal class AppViewModel @Inject constructor(
                 } else if (flagRepo.isForcedUpdate(BuildConfig.VERSION_NAME)) {
                     AppUiState.ForcedUpdate
                 } else {
+                    val topicsInitSuccess = topicsFeature.init()
+
                     AppUiState.Default(
                         shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
                         shouldDisplayAnalyticsConsent = analyticsClient.isAnalyticsConsentRequired(),
                         shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
-                        shouldDisplayTopicSelection = flagRepo.isTopicsEnabled() && !appRepo.isTopicSelectionCompleted(),
+                        shouldDisplayTopicSelection = flagRepo.isTopicsEnabled()
+                                && !appRepo.isTopicSelectionCompleted()
+                                && topicsInitSuccess,
                         isSearchEnabled = flagRepo.isSearchEnabled(),
                         isRecentActivityEnabled = flagRepo.isRecentActivityEnabled(),
                         isTopicsEnabled = flagRepo.isTopicsEnabled()

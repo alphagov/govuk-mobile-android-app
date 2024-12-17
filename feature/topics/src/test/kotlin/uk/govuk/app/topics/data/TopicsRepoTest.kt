@@ -32,49 +32,71 @@ class TopicsRepoTest{
     private val topic = mockk<RemoteTopic>(relaxed = true)
 
     @Test
-    fun `Given the local data source is empty, when get topics, then emit selected topic items`() {
-        every { localDataSource.topics } returns flowOf(emptyList())
+    fun `Given the topics api response is unsuccessful, when sync, then return false`() {
         coEvery { topicsApi.getTopics() } returns topicsResponse
-        coEvery { topicsResponse.isSuccessful } returns true
-        coEvery { topicsResponse.body() } returns listOf(
-            RemoteTopicItem("ref1", "title", "description"),
-            RemoteTopicItem("ref2", "title", "description")
-        )
+        every { topicsResponse.isSuccessful } returns false
 
         val repo = TopicsRepo(topicsApi, localDataSource)
 
         runTest {
-            val topics = repo.topics
-
-            val expected = listOf(
-                TopicItem("ref1", "title", "description", true),
-                TopicItem("ref2", "title", "description", true)
-            )
-
-            assertEquals(expected, topics.first())
+            assertFalse(repo.sync())
         }
     }
 
     @Test
-    fun `Given the local data source is not empty, when get topics, then emit topic items`() {
+    fun `Given the topics api response body is empty, when sync, then return false`() {
+        coEvery { topicsApi.getTopics() } returns topicsResponse
+        every { topicsResponse.isSuccessful } returns true
+        every { topicsResponse.body() } returns null
+
+        val repo = TopicsRepo(topicsApi, localDataSource)
+
+        runTest {
+            assertFalse(repo.sync())
+        }
+    }
+
+    @Test
+    fun `Given the topics api throws an exception, when sync, then return false`() {
+        coEvery { topicsApi.getTopics() } throws IOException()
+
+        val repo = TopicsRepo(topicsApi, localDataSource)
+
+        runTest {
+            assertFalse(repo.sync())
+        }
+    }
+
+    @Test
+    fun `Given the topics api is successful, when sync, then sync local data source and return true`() {
+        coEvery { topicsApi.getTopics() } returns topicsResponse
+        every { topicsResponse.isSuccessful } returns true
+        every { topicsResponse.body() } returns emptyList()
+
+        val repo = TopicsRepo(topicsApi, localDataSource)
+
+        runTest {
+            assertTrue(repo.sync())
+        }
+    }
+
+    @Test
+    fun `Given locally cached topics, when get topics, then emit topic items`() {
         every { localDataSource.topics } returns flowOf(
             listOf(
                 LocalTopicItem().apply {
                     ref = "ref1"
+                    title = "title1"
+                    description = "desc1"
                     isSelected = true
                 },
                 LocalTopicItem().apply {
                     ref = "ref2"
+                    title = "title2"
+                    description = "desc2"
                     isSelected = false
                 }
             )
-        )
-        coEvery { topicsApi.getTopics() } returns topicsResponse
-        coEvery { topicsResponse.isSuccessful } returns true
-        coEvery { topicsResponse.body() } returns listOf(
-            RemoteTopicItem("ref1", "title", "description"),
-            RemoteTopicItem("ref2", "title", "description"),
-            RemoteTopicItem("ref3", "title", "description")
         )
 
         val repo = TopicsRepo(topicsApi, localDataSource)
@@ -83,74 +105,11 @@ class TopicsRepoTest{
             val topics = repo.topics
 
             val expected = listOf(
-                TopicItem("ref1", "title", "description", true),
-                TopicItem("ref2", "title", "description", false),
-                TopicItem("ref3", "title", "description", false)
+                TopicItem("ref1", "title1", "desc1", true),
+                TopicItem("ref2", "title2", "desc2", false),
             )
 
             assertEquals(expected, topics.first())
-        }
-    }
-
-    @Test
-    fun `Given the local data source is empty, when select initial topics, then select all in the local data source`() {
-        every { localDataSource.topics } returns flowOf(emptyList())
-        coEvery { topicsApi.getTopics() } returns topicsResponse
-        coEvery { topicsResponse.isSuccessful } returns true
-        coEvery { topicsResponse.body() } returns listOf(
-            RemoteTopicItem("ref1", "title", "description"),
-            RemoteTopicItem("ref2", "title", "description")
-        )
-
-        val repo = TopicsRepo(topicsApi, localDataSource)
-
-        runTest {
-            repo.selectInitialTopics()
-
-            coVerify {
-                localDataSource.selectAll(listOf("ref1", "ref2"))
-            }
-        }
-    }
-
-    @Test
-    fun `Given the local data source is not empty, when select initial topics, then don't call local data source`() {
-        coEvery { localDataSource.topics } returns flowOf(listOf(LocalTopicItem()))
-
-        val repo = TopicsRepo(topicsApi, localDataSource)
-
-        runTest {
-            repo.selectInitialTopics()
-
-            coVerify(exactly = 0) {
-                localDataSource.selectAll(any())
-            }
-        }
-    }
-
-    @Test
-    fun `Given a topic is selected, then select in local data source`() {
-        val repo = TopicsRepo(topicsApi, localDataSource)
-
-        runTest {
-            repo.selectTopic("ref")
-
-            coVerify {
-                localDataSource.select("ref")
-            }
-        }
-    }
-
-    @Test
-    fun `Given a topic is deselected, then deselect in local data source`() {
-        val repo = TopicsRepo(topicsApi, localDataSource)
-
-        runTest {
-            repo.deselectTopic("ref")
-
-            coVerify {
-                localDataSource.deselect("ref")
-            }
         }
     }
 
@@ -170,6 +129,19 @@ class TopicsRepoTest{
     }
 
     @Test
+    fun `Given the user it toggling the selection of a topic, when toggle selection, then update local data source`() {
+        val repo = TopicsRepo(topicsApi, localDataSource)
+
+        runTest {
+            repo.toggleSelection("ref", true)
+
+            coVerify{
+                localDataSource.toggleSelection("ref", true)
+            }
+        }
+    }
+
+    @Test
     fun `Given a successful topic response with an empty body, then return failure`() {
         coEvery { topicsApi.getTopic("ref") } returns topicResponse
         coEvery { topicResponse.isSuccessful } returns true
@@ -184,7 +156,7 @@ class TopicsRepoTest{
     }
 
     @Test
-    fun `Given an unsuccessful config response, then return failure`() {
+    fun `Given an unsuccessful topic response, then return failure`() {
         coEvery { topicsApi.getTopic("ref") } returns topicResponse
         coEvery { topicResponse.isSuccessful } returns false
 
@@ -209,7 +181,7 @@ class TopicsRepoTest{
     }
 
     @Test
-    fun `initTopic returns failure when the device is offline`() {
+    fun `Get topic returns failure when the device is offline`() {
         coEvery { topicsApi.getTopic("ref") } throws UnknownHostException()
 
         val repo = TopicsRepo(topicsApi, localDataSource)
@@ -221,7 +193,7 @@ class TopicsRepoTest{
     }
 
     @Test
-    fun `initTopic returns failure when the Topic API is offline`() {
+    fun `Get topic returns failure when the Topic API is offline`() {
         val httpException = mockk<HttpException>(relaxed = true)
         coEvery { topicsApi.getTopic("ref") } throws httpException
 
@@ -234,7 +206,7 @@ class TopicsRepoTest{
     }
 
     @Test
-    fun `initTopic returns failure when an API error occurs`() {
+    fun `Get topic returns failure when an API error occurs`() {
         coEvery { topicsApi.getTopic("ref") } throws ApiException()
 
         val repo = TopicsRepo(topicsApi, localDataSource)
@@ -246,7 +218,7 @@ class TopicsRepoTest{
     }
 
     @Test
-    fun `initTopic returns failure when any unknown error occurs`() {
+    fun `Get topic returns failure when any unknown error occurs`() {
         coEvery { topicsApi.getTopic("ref") } throws Exception()
 
         val repo = TopicsRepo(topicsApi, localDataSource)
@@ -280,7 +252,7 @@ class TopicsRepoTest{
     }
 
     @Test
-    fun `Given a user customises topics, topics customised, then update local data source`() {
+    fun `Given a user customises topics, when topics customised, then update local data source`() {
         val repo = TopicsRepo(topicsApi, localDataSource)
 
         runTest {

@@ -187,10 +187,33 @@ class TopicSelectionViewModelTest {
 
     @Test
     fun `Given a user is done, then log analytics and update topics repo`() {
+        val topics = listOf(
+            TopicItem(
+                ref = "ref1",
+                title = "title1",
+                description = "desc1",
+                isSelected = true
+            ),
+            TopicItem(
+                ref = "ref2",
+                title = "title2",
+                description = "desc2",
+                isSelected = true
+            ),
+            TopicItem(
+                ref = "ref3",
+                title = "title3",
+                description = "desc3",
+                isSelected = true
+            )
+        )
+
+        every { topicsRepo.topics } returns flowOf(topics)
+
         val viewModel = TopicSelectionViewModel(topicsRepo, analyticsClient)
 
-        viewModel.onClick("ref1", "title")
-        viewModel.onClick("ref2", "title")
+        viewModel.onClick("ref1", "title1")
+        viewModel.onClick("ref2", "title2")
         viewModel.onDone("Done")
 
         coVerify {
@@ -198,8 +221,7 @@ class TopicSelectionViewModelTest {
             analyticsClient.buttonClick(
                 text = "Done"
             )
-            topicsRepo.selectTopic("ref1")
-            topicsRepo.selectTopic("ref2")
+            topicsRepo.toggleSelection("ref3", false)
             topicsRepo.topicsCustomised()
         }
     }

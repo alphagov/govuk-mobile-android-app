@@ -7,12 +7,20 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import uk.govuk.app.topics.BuildConfig
+import uk.govuk.app.topics.TopicsFeature
+import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.data.remote.TopicsApi
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
 internal class TopicsModule {
+
+    @Provides
+    @Singleton
+    fun providesTopicFeature(topicsRepo: TopicsRepo): TopicsFeature {
+        return TopicsFeature { return@TopicsFeature topicsRepo.sync() }
+    }
 
     @Provides
     @Singleton

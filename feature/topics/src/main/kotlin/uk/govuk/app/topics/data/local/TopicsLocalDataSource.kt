@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import uk.govuk.app.topics.data.local.model.LocalTopicItem
+import uk.govuk.app.topics.data.remote.model.RemoteTopicItem
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,33 +20,48 @@ internal class TopicsLocalDataSource @Inject constructor(
         emitAll(realmProvider.open().query<LocalTopicItem>().asFlow().map { it.list })
     }
 
-    suspend fun selectAll(refs: List<String>) {
-        insertOrUpdate(
-            refs.map { ref -> Pair(ref, true) }
-        )
+    suspend fun sync(remoteTopics: List<RemoteTopicItem>) {
+        val localTopics = realmProvider.open().query<LocalTopicItem>().find().toList()
+        val topicsToDelete = localTopics.filter { !remoteTopics.map { it.ref }.contains(it.ref) }
+
+        val isSelectedOnInsert = !isTopicsCustomised()
+
+        realmProvider.open().writeBlocking {
+            for (topic in topicsToDelete) {
+                val liveTopic = findLatest(topic)
+                if (liveTopic != null) {
+                    delete(liveTopic)
+                }
+            }
+        }
+
+        for (topic in remoteTopics) {
+            insertOrUpdate(topic, isSelectedOnInsert)
+        }
     }
 
-    suspend fun select(ref: String) {
-        insertOrUpdate(listOf(Pair(ref, true)))
+    private suspend fun insertOrUpdate(topic: RemoteTopicItem, isSelectedOnInsert: Boolean) {
+        realmProvider.open().writeBlocking {
+            val localTopic = query<LocalTopicItem>("ref = $0", topic.ref).first().find()
+
+            localTopic?.apply {
+                this.title = topic.title
+                this.description = topic.description
+            } ?: copyToRealm(
+                LocalTopicItem().apply {
+                    this.ref = topic.ref
+                    this.title = topic.title
+                    this.description = topic.description
+                    this.isSelected = isSelectedOnInsert
+                }
+            )
+        }
     }
 
-    suspend fun deselect(ref: String) {
-        insertOrUpdate(listOf(Pair(ref, false)))
-    }
-
-    private suspend fun insertOrUpdate(topics: List<Pair<String, Boolean>>) {
+    suspend fun toggleSelection(ref: String, isSelected: Boolean) {
         realmProvider.open().write {
-            for ((ref, isSelected) in topics) {
-                val localTopic = query<LocalTopicItem>("ref = $0", ref).first().find()
-
-                localTopic?.apply {
-                    this.isSelected = isSelected
-                } ?: copyToRealm(
-                    LocalTopicItem().apply {
-                        this.ref = ref
-                        this.isSelected = isSelected
-                    }
-                )
+            query<LocalTopicItem>("ref = $0", ref).first().find()?.apply {
+                this.isSelected = isSelected
             }
         }
     }

@@ -1,8 +1,6 @@
 package uk.govuk.app.topics.data
 
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import uk.govuk.app.networking.domain.ApiException
 import uk.govuk.app.networking.domain.DeviceOfflineException
 import uk.govuk.app.networking.domain.ServiceNotRespondingException
@@ -18,47 +16,35 @@ internal class TopicsRepo @Inject constructor(
     private val topicsApi: TopicsApi,
     private val localDataSource: TopicsLocalDataSource,
 ) {
-    private val remoteTopics = flow {
+
+    suspend fun sync(): Boolean {
+        var success = false
         try {
             val response = topicsApi.getTopics()
             if (response.isSuccessful) {
-                response.body()?.let {
-                    emit(it)
-                } // Todo - handle failure
-            } else {
-                // Todo - handle failure
+                response.body()?.let { topics ->
+                    localDataSource.sync(topics)
+                    success = true
+                }
             }
-        } catch (e: Exception) {
-            // Todo - handle failure
-        }
+        } catch (_: Exception) { }
+
+        return success
     }
 
-    val topics = remoteTopics.combine(localDataSource.topics) { remoteTopics, localTopics ->
-        return@combine remoteTopics.map { remoteTopic ->
+    val topics = localDataSource.topics.map { localTopics ->
+        localTopics.map { localTopic ->
             TopicItem(
-                ref = remoteTopic.ref,
-                title = remoteTopic.title,
-                description = remoteTopic.description,
-                isSelected = localTopics.isEmpty() || localTopics.any { localTopic ->
-                    remoteTopic.ref == localTopic.ref && localTopic.isSelected
-                }
+                ref = localTopic.ref,
+                title = localTopic.title,
+                description = localTopic.description,
+                isSelected = localTopic.isSelected
             )
         }
     }
 
-    suspend fun selectInitialTopics() {
-        val isLocalEmpty = localDataSource.topics.first().isEmpty()
-        if (isLocalEmpty) {
-            localDataSource.selectAll(remoteTopics.first().map { it.ref })
-        }
-    }
-
-    suspend fun selectTopic(ref: String) {
-        localDataSource.select(ref)
-    }
-
-    suspend fun deselectTopic(ref: String) {
-        localDataSource.deselect(ref)
+    suspend fun toggleSelection(ref: String, isSelected: Boolean) {
+        localDataSource.toggleSelection(ref, isSelected)
     }
 
     suspend fun getTopic(ref: String): Result<RemoteTopic> {
@@ -70,9 +56,9 @@ internal class TopicsRepo @Inject constructor(
                 }
             }
             Result.failure(ApiException())
-        } catch (e: java.net.UnknownHostException) {
+        } catch (_: java.net.UnknownHostException) {
             Result.failure(DeviceOfflineException())
-        } catch (e: retrofit2.HttpException) {
+        } catch (_: retrofit2.HttpException) {
             Result.failure(ServiceNotRespondingException())
         } catch (e: Exception) {
             Result.failure(e)
