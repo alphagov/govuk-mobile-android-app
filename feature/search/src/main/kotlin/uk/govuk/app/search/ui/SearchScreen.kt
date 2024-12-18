@@ -31,6 +31,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
@@ -133,7 +135,7 @@ private fun SearchScreen(
 }
 
 @Composable
-fun ShowResults(
+private fun ShowResults(
     searchTerm: String,
     searchResults: List<Result>,
     onClick: (String, String) -> Unit
@@ -155,6 +157,7 @@ fun ShowResults(
                     .padding(top = GovUkTheme.spacing.medium)
                     .focusRequester(focusRequester)
                     .focusable()
+                    .semantics { heading() }
             )
         }
         items(searchResults) { searchResult ->
@@ -221,7 +224,7 @@ fun ShowResults(
 }
 
 @Composable
-fun NoResultsFound(searchTerm: String) {
+private fun NoResultsFound(searchTerm: String) {
     Row(
         Modifier.padding(
             GovUkTheme.spacing.medium,
@@ -240,7 +243,7 @@ fun NoResultsFound(searchTerm: String) {
 }
 
 @Composable
-fun ShowNothing() {
+private fun ShowNothing() {
     // does nothing on purpose as this is shown before
     // the user actually searches or when an unknown
     // error occurs.
