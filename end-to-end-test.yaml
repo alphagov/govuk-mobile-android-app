@@ -1,0 +1,45 @@
+appId: uk.govuk.app
+
+---
+
+- startRecording: "maestro_recording"
+- assertVisible: "Search"
+- tapOn: "Search"
+- inputText: "micropig"
+- pressKey: "Enter"
+- assertVisible: "Keeping a pet pig or 'micropig'"
+- tapOn: "Keeping a pet pig or 'micropig'"
+- back
+- tapOn: "Back"
+- assertVisible: "Benefits"
+- tapOn: "Benefits"
+- assertVisible: "Universal Credit"
+- tapOn: "Universal Credit"
+- back
+- tapOn: "Home"
+- tapOn: "Pages you've visited"
+- assertVisible: "Today"
+- assertVisible: "Universal Credit"
+- assertVisible: "Keeping a pet pig or 'micropig'"
+#- tapOn: "Edit"
+#- assertVisible: "Universal Credit"
+#- assertVisible: "Keeping a pet pig or 'micropig'"
+#- tapOn: "Select all"
+#- tapOn: "Remove"
+#- assertVisible: "Pages you've visited"
+#- assertVisible: "No pages"
+- tapOn: "Home"
+- tapOn: "Settings"
+- tapOn: "Help and feedback"
+- back
+- tapOn: "Privacy notice"
+- back
+- tapOn: "Accessibility statement"
+- back
+- tapOn: "Terms and conditions"
+- back
+- tapOn: "Open source licenses"
+- assertVisible: "Open source licenses"
+- back
+- tapOn: "Home"
+- stopRecording
