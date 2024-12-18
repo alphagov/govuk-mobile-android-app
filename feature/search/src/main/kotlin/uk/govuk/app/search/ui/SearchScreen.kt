@@ -2,34 +2,45 @@ package uk.govuk.app.search.ui
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.GovUkCard
+import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
+import uk.govuk.app.design.ui.component.Title3BoldLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.networking.ui.component.OfflineMessage
 import uk.govuk.app.networking.ui.component.ProblemMessage
@@ -86,13 +97,13 @@ private fun SearchScreen(
     val keyboard = LocalSoftwareKeyboardController.current
 
     Column(modifier) {
-       SearchHeader(
-           onBack = onBack,
-           onSearch = onSearch,
-           onClear = onClear,
-           placeholder = stringResource(R.string.search_placeholder),
-           focusRequester = focusRequester
-       )
+        SearchHeader(
+            onBack = onBack,
+            onSearch = onSearch,
+            onClear = onClear,
+            placeholder = stringResource(R.string.search_placeholder),
+            focusRequester = focusRequester
+        )
     }
 
     Column(
@@ -107,7 +118,7 @@ private fun SearchScreen(
                     if (it.searchResults.isEmpty()) {
                         NoResultsFound(searchTerm = it.searchTerm)
                     } else {
-                        ShowResults(it.searchResults, onClick)
+                        ShowResults(it.searchTerm, it.searchResults, onClick)
                     }
                 }
                 is SearchUiState.Offline -> OfflineMessage { viewModel.onSearch(it.searchTerm) }
@@ -124,68 +135,96 @@ private fun SearchScreen(
 }
 
 @Composable
-fun ShowResults(searchResults: List<Result>, onClick: (String, String) -> Unit) {
-    Column(
-        modifier = Modifier
-            .padding(bottom = GovUkTheme.spacing.medium)
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+private fun ShowResults(
+    searchTerm: String,
+    searchResults: List<Result>,
+    onClick: (String, String) -> Unit
+) {
+    val listState = rememberLazyListState()
+    val focusRequester = remember { FocusRequester() }
+
+    var previousSearchTerm by rememberSaveable { mutableStateOf("") }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth(),
+        state = listState
     ) {
-        LazyColumn {
-            items(searchResults) { searchResult ->
-                val title = StringUtils.collapseWhitespace(searchResult.title)
-                val url = StringUtils.buildFullUrl(searchResult.link)
+        item {
+            Title3BoldLabel(
+                text = stringResource(R.string.search_results_heading),
+                modifier = Modifier
+                    .padding(horizontal = GovUkTheme.spacing.extraLarge,)
+                    .padding(top = GovUkTheme.spacing.medium)
+                    .focusRequester(focusRequester)
+                    .focusable()
+                    .semantics { heading() }
+            )
+        }
+        items(searchResults) { searchResult ->
+            val title = StringUtils.collapseWhitespace(searchResult.title)
+            val url = StringUtils.buildFullUrl(searchResult.link)
 
-                val context = LocalContext.current
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse(url)
+            val context = LocalContext.current
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(url)
 
-                GovUkCard(
-                    modifier = Modifier.padding(
-                        GovUkTheme.spacing.medium,
-                        GovUkTheme.spacing.medium,
-                        GovUkTheme.spacing.medium,
-                        0.dp
-                    ),
-                    onClick = {
-                        onClick(title, url)
-                        context.startActivity(intent)
-                    }
+            GovUkCard(
+                modifier = Modifier.padding(
+                    GovUkTheme.spacing.medium,
+                    GovUkTheme.spacing.medium,
+                    GovUkTheme.spacing.medium,
+                    0.dp
+                ),
+                onClick = {
+                    onClick(title, url)
+                    context.startActivity(intent)
+                }
+            ) {
+                Row(
+                    verticalAlignment = Alignment.Top
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.Top
-                    ) {
-                        BodyRegularLabel(
-                            text = title,
-                            modifier = Modifier.weight(1f),
-                            color = GovUkTheme.colourScheme.textAndIcons.link,
-                        )
+                    BodyRegularLabel(
+                        text = title,
+                        modifier = Modifier.weight(1f),
+                        color = GovUkTheme.colourScheme.textAndIcons.link,
+                    )
 
-                        Icon(
-                            painter = painterResource(
-                                uk.govuk.app.design.R.drawable.ic_external_link
-                            ),
-                            contentDescription = stringResource(
-                                uk.govuk.app.design.R.string.opens_in_web_browser
-                            ),
-                            tint = GovUkTheme.colourScheme.textAndIcons.link,
-                            modifier = Modifier.padding(start = GovUkTheme.spacing.medium)
-                        )
-                    }
+                    Icon(
+                        painter = painterResource(
+                            uk.govuk.app.design.R.drawable.ic_external_link
+                        ),
+                        contentDescription = stringResource(
+                            uk.govuk.app.design.R.string.opens_in_web_browser
+                        ),
+                        tint = GovUkTheme.colourScheme.textAndIcons.link,
+                        modifier = Modifier.padding(start = GovUkTheme.spacing.medium)
+                    )
+                }
 
-                    val description = searchResult.description
-                    if (!description.isNullOrBlank()) {
-                        SmallVerticalSpacer()
-                        BodyRegularLabel(StringUtils.collapseWhitespace(description))
-                    }
+                val description = searchResult.description
+                if (!description.isNullOrBlank()) {
+                    SmallVerticalSpacer()
+                    BodyRegularLabel(StringUtils.collapseWhitespace(description))
                 }
             }
+        }
+        item {
+            MediumVerticalSpacer()
+        }
+    }
+
+    LaunchedEffect(searchTerm) {
+        // We only want to trigger scroll and focus if we have a new search (rather than orientation change)
+        if (searchTerm != previousSearchTerm) {
+            listState.animateScrollToItem(0)
+            focusRequester.requestFocus()
+            previousSearchTerm = searchTerm
         }
     }
 }
 
 @Composable
-fun NoResultsFound(searchTerm: String) {
+private fun NoResultsFound(searchTerm: String) {
     Row(
         Modifier.padding(
             GovUkTheme.spacing.medium,
@@ -204,7 +243,7 @@ fun NoResultsFound(searchTerm: String) {
 }
 
 @Composable
-fun ShowNothing() {
+private fun ShowNothing() {
     // does nothing on purpose as this is shown before
     // the user actually searches or when an unknown
     // error occurs.
