@@ -61,11 +61,13 @@ fun HomeNavigationCard(
     title: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isSelected: Boolean = false,
     @DrawableRes icon: Int? = null,
     description: String? = null
 ) {
     GovUkCard(
         modifier = modifier,
+        isSelected = isSelected,
         onClick = onClick
     ) {
         Row(

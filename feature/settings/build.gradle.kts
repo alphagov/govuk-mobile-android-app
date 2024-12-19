@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.play.services.oss.licenses)
     implementation(libs.play.services.measurement.api)
+    implementation(libs.androidx.ui.tooling)
 
     ksp(libs.hilt.compiler)
 

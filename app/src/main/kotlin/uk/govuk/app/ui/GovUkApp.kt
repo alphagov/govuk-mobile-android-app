@@ -1,6 +1,7 @@
 package uk.govuk.app.ui
 
 import android.app.Activity
+import android.content.Context
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -46,7 +48,9 @@ import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
 import uk.govuk.app.search.ui.widget.SearchWidget
 import uk.govuk.app.settings.BuildConfig.PRIVACY_POLICY_URL
+import uk.govuk.app.settings.navigation.navigateToHelpAndFeedback
 import uk.govuk.app.settings.navigation.settingsGraph
+import uk.govuk.app.settings.ui.FeedbackPromptWidget
 import uk.govuk.app.topics.navigation.navigateToTopic
 import uk.govuk.app.topics.navigation.navigateToTopicsAll
 import uk.govuk.app.topics.navigation.navigateToTopicsEdit
@@ -215,6 +219,8 @@ private fun GovUkNavHost(
     val launchRoutes = rememberSaveable { AppLaunchNavigation(uiState).launchRoutes }
     val startDestination = rememberSaveable { launchRoutes.pop() }
 
+    val context = LocalContext.current
+
     NavHost(
         navController = navController,
         startDestination = startDestination
@@ -244,6 +250,7 @@ private fun GovUkNavHost(
         )
         homeGraph(
             widgets = homeScreenWidgets(
+                context = context,
                 navController = navController,
                 isSearchEnabled = uiState.isSearchEnabled,
                 isTopicsEnabled = uiState.isTopicsEnabled,
@@ -264,6 +271,7 @@ private fun GovUkNavHost(
 }
 
 private fun homeScreenWidgets(
+    context: Context,
     navController: NavHostController,
     isSearchEnabled: Boolean,
     isRecentActivityEnabled: Boolean,
@@ -271,6 +279,16 @@ private fun homeScreenWidgets(
     onClick: (String) -> Unit
 ): List<@Composable (Modifier) -> Unit> {
     val widgets = mutableListOf<@Composable (Modifier) -> Unit>()
+
+    widgets.add { modifier ->
+        FeedbackPromptWidget(
+            onClick = { text ->
+                onClick(text)
+                navigateToHelpAndFeedback(context, BuildConfig.VERSION_NAME)
+            }
+        )
+    }
+
     if (isSearchEnabled) {
         widgets.add { modifier ->
             SearchWidget(
