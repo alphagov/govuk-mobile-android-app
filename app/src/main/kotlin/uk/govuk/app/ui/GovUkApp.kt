@@ -285,7 +285,8 @@ private fun homeScreenWidgets(
             onClick = { text ->
                 onClick(text)
                 navigateToHelpAndFeedback(context, BuildConfig.VERSION_NAME)
-            }
+            },
+            modifier = modifier
         )
     }
 
