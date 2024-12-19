@@ -8,6 +8,20 @@ import androidx.compose.ui.Modifier
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
+fun ExtraSmallHorizontalSpacer(
+    modifier: Modifier = Modifier
+) {
+    Spacer(modifier.width(GovUkTheme.spacing.extraSmall))
+}
+
+@Composable
+fun ExtraSmallVerticalSpacer(
+    modifier: Modifier = Modifier
+) {
+    Spacer(modifier.height(GovUkTheme.spacing.extraSmall))
+}
+
+@Composable
 fun SmallHorizontalSpacer(
     modifier: Modifier = Modifier
 ) {
