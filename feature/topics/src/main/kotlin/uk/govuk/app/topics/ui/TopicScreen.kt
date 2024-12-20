@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -253,11 +255,12 @@ private fun ErrorScreen(
     topicReference: String,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     val topicName = topicReference.toTopicName(LocalContext.current)
 
-    Column {
+    Column(modifier.verticalScroll(rememberScrollState())) {
         LaunchedEffect(Unit) {
             onPageView(topicName)
         }

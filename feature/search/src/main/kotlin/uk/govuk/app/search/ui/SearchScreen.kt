@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -121,8 +123,12 @@ private fun SearchScreen(
                         ShowResults(it.searchTerm, it.searchResults, onClick)
                     }
                 }
-                is SearchUiState.Offline -> OfflineMessage { viewModel.onSearch(it.searchTerm) }
-                is SearchUiState.ServiceError -> ProblemMessage()
+                is SearchUiState.Offline -> ShowError {
+                    OfflineMessage { viewModel.onSearch(it.searchTerm) }
+                }
+                is SearchUiState.ServiceError -> ShowError {
+                    ProblemMessage()
+                }
             }
         } ?: ShowNothing()
     }
@@ -239,6 +245,16 @@ private fun NoResultsFound(searchTerm: String) {
             text = "${stringResource(R.string.search_no_results)} '${searchTerm}'",
             modifier = Modifier.align(Alignment.CenterVertically),
         )
+    }
+}
+
+@Composable
+private fun ShowError(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Column(modifier.verticalScroll(rememberScrollState())) {
+        content()
     }
 }
 
