@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.topics.data.TopicsRepo
@@ -60,6 +61,7 @@ class TopicsWidgetViewModelTest {
                         isSelected = true
                     )
                 ),
+                isError = false,
                 isCustomised = true,
                 displayShowAll = false
             )
@@ -102,6 +104,7 @@ class TopicsWidgetViewModelTest {
                         isSelected = true
                     )
                 ),
+                isError = false,
                 isCustomised = false,
                 displayShowAll = true
             )
@@ -110,6 +113,17 @@ class TopicsWidgetViewModelTest {
 
         runTest {
             assertEquals(expected, viewModel.uiState.first())
+        }
+    }
+
+    @Test
+    fun `Given topics are empty, When init, then emit error ui state`() {
+        every { topicsRepo.topics } returns flowOf(emptyList())
+
+        val viewModel = TopicsWidgetViewModel(topicsRepo)
+
+        runTest {
+            assertTrue(viewModel.uiState.first()?.isError == true)
         }
     }
 }
