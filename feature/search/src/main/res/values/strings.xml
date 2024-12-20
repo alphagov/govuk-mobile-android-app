@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="search_widget_title">Find government services and information</string>
+    <string name="search_bar_text">Search</string>
     <string name="search_placeholder">Search</string>
+    <string name="content_desc_clear">Clear search</string>
     <string name="search_no_results">No results for</string>
     <string name="search_load_more">Load more results</string>
     <string name="search_service_problem">There\'s a problem</string>

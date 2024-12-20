@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import uk.govuk.app.design.R
+import uk.govuk.app.search.R
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
