@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -22,6 +21,7 @@ import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.CompactButton
 import uk.govuk.app.design.ui.component.Title3BoldLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.networking.ui.component.ProblemMessage
 import uk.govuk.app.topics.R
 import uk.govuk.app.topics.TopicsWidgetUiState
 import uk.govuk.app.topics.TopicsWidgetViewModel
@@ -92,7 +92,9 @@ private fun TopicsWidgetContent(
 
         when {
             uiState.isError -> {
-                Text("Blah blah blah")
+                ProblemMessage(
+                    description = stringResource(R.string.topics_error_message)
+                )
             }
             uiState.topics.isEmpty() -> {
                 BodyRegularLabel(

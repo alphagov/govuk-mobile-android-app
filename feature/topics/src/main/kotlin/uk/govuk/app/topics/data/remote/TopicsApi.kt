@@ -7,7 +7,7 @@ import uk.govuk.app.topics.data.remote.model.RemoteTopic
 import uk.govuk.app.topics.data.remote.model.RemoteTopicItem
 
 internal interface TopicsApi {
-    @GET("list")
+    @GET("lis")
     suspend fun getTopics(): Response<List<RemoteTopicItem>>
 
     @GET("{ref}")
