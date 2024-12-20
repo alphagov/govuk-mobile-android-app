@@ -5,6 +5,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 data class GovUkSpacing(
+    val extraSmall: Dp,
     val small: Dp,
     val medium: Dp,
     val large: Dp,
@@ -12,6 +13,7 @@ data class GovUkSpacing(
 )
 
 internal val Spacing = GovUkSpacing(
+    extraSmall = 4.dp,
     small = 8.dp,
     medium = 16.dp,
     large = 24.dp,
@@ -20,6 +22,7 @@ internal val Spacing = GovUkSpacing(
 
 internal val LocalSpacing = staticCompositionLocalOf {
     GovUkSpacing(
+        extraSmall = Dp.Unspecified,
         small = Dp.Unspecified,
         medium = Dp.Unspecified,
         large = Dp.Unspecified,

@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Build
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
@@ -17,12 +16,10 @@ import uk.govuk.app.settings.BuildConfig.HELP_AND_FEEDBACK_URL
 import uk.govuk.app.settings.BuildConfig.PRIVACY_POLICY_URL
 import uk.govuk.app.settings.BuildConfig.TERMS_AND_CONDITIONS_URL
 import uk.govuk.app.settings.ui.SettingsRoute
-import uk.govuk.app.settings.ui.SettingsSubRoute
 import java.net.URLEncoder
 
 const val SETTINGS_GRAPH_ROUTE = "settings_graph_route"
 private const val SETTINGS_ROUTE = "settings_route"
-private const val SETTINGS_SUB_ROUTE = "settings_sub_route"
 
 fun NavGraphBuilder.settingsGraph(
     appVersion: String,
@@ -46,11 +43,7 @@ fun NavGraphBuilder.settingsGraph(
             SettingsRoute(
                 appVersion = appVersion,
                 onHelpClick = {
-                    val deviceInfo = "${Build.MANUFACTURER} ${Build.MODEL} ${Build.VERSION.RELEASE}"
-                    val url = "$HELP_AND_FEEDBACK_URL?" +
-                            "app_version=$appVersion&" +
-                            "phone=${URLEncoder.encode(deviceInfo, "UTF-8")}"
-                    openInBrowser(context, url)
+                    navigateToHelpAndFeedback(context, appVersion)
                 },
                 onPrivacyPolicyClick = {
                     openInBrowser(context, PRIVACY_POLICY_URL)
@@ -68,20 +61,19 @@ fun NavGraphBuilder.settingsGraph(
                 modifier = modifier
             )
         }
-        composable(
-            SETTINGS_SUB_ROUTE,
-            deepLinks = listOf(
-                navDeepLink {
-                    uriPattern = "/subroute"
-                    action = Intent.ACTION_VIEW
-                }
-            )
-        ) { SettingsSubRoute(modifier) }
     }
 }
 
-// TODO: do we still need this sub screen or can it be removed?
-private fun NavController.navigateToSettingsSubScreen() = navigate(SETTINGS_SUB_ROUTE)
+fun navigateToHelpAndFeedback(
+    context: Context,
+    appVersion: String
+) {
+    val deviceInfo = "${Build.MANUFACTURER} ${Build.MODEL} ${Build.VERSION.RELEASE}"
+    val url = "$HELP_AND_FEEDBACK_URL?" +
+            "app_version=$appVersion&" +
+            "phone=${URLEncoder.encode(deviceInfo, "UTF-8")}"
+    openInBrowser(context, url)
+}
 
 private fun openInBrowser(context: Context, url: String) {
     val intent = Intent(Intent.ACTION_VIEW)
