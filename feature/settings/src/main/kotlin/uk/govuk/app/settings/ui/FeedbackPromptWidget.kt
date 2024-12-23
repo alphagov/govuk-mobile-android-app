@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.tooling.preview.Preview
 import uk.govuk.app.design.ui.component.HomeNavigationCard
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -26,6 +27,7 @@ fun FeedbackPromptWidget(
             .focusable()
             .clearAndSetSemantics {
                 contentDescription = altText
+                onClick(label = null, action = null)
             },
         isSelected = true
     )

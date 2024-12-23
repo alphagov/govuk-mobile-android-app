@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -16,6 +17,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.BodyBoldLabel
+import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.CompactButton
 import uk.govuk.app.design.ui.component.Title3BoldLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -89,15 +91,24 @@ private fun TopicsWidgetContent(
             }
         }
 
-        TopicsGrid(
-            topics = topics,
-        ) { modifier, topic ->
-            TopicVerticalCard(
-                icon = topic.icon,
-                title = topic.title,
-                onClick = { onTopicClick(topic.ref, topic.title) },
-                modifier = modifier
+        if (topics.isEmpty()) {
+            BodyRegularLabel(
+                text = stringResource(R.string.empty_topics),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = GovUkTheme.spacing.small)
             )
+        } else {
+            TopicsGrid(
+                topics = topics,
+            ) { modifier, topic ->
+                TopicVerticalCard(
+                    icon = topic.icon,
+                    title = topic.title,
+                    onClick = { onTopicClick(topic.ref, topic.title) },
+                    modifier = modifier
+                )
+            }
         }
 
         if (displayShowAll) {
@@ -153,6 +164,21 @@ private fun TopicsWidgetPreview() {
                     isSelected = true
                 ),
             ),
+            isCustomised = true,
+            displayShowAll = true,
+            onTopicClick = { _, _ -> },
+            onEditClick = { },
+            onAllClick = { }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TopicsWidgetEmptyTopicsPreview() {
+    GovUkTheme {
+        TopicsWidgetContent(
+            topics = emptyList(),
             isCustomised = true,
             displayShowAll = true,
             onTopicClick = { _, _ -> },
