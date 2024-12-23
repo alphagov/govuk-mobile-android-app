@@ -124,7 +124,7 @@ private fun SearchScreen(
                     }
                 }
                 is SearchUiState.Offline -> ShowError {
-                    OfflineMessage { viewModel.onSearch(it.searchTerm) }
+                    OfflineMessage({ viewModel.onSearch(it.searchTerm) })
                 }
                 is SearchUiState.ServiceError -> ShowError {
                     ProblemMessage()

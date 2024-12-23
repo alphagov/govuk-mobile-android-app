@@ -49,7 +49,7 @@ internal fun TopicRoute(
     val viewModel: TopicViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
-    Box(Modifier.fillMaxSize()) {
+    Box(modifier.fillMaxSize()) {
         uiState?.let {
             when (it) {
                 is TopicUiState.Default -> {
@@ -75,8 +75,7 @@ internal fun TopicRoute(
                         onSubtopic = { text, ref ->
                             viewModel.onSubtopicClick(text)
                             onSubtopic(ref)
-                        },
-                        modifier = modifier
+                        }
                     )
                 }
 
@@ -84,7 +83,7 @@ internal fun TopicRoute(
                     topicReference = it.topicReference,
                     onPageView = { title -> viewModel.onPageView(title) },
                     onBack = onBack,
-                    content = { OfflineMessage(modifier = modifier) { viewModel.getTopic() } }
+                    content = { OfflineMessage({ viewModel.getTopic() }) }
                 )
 
 
@@ -92,7 +91,7 @@ internal fun TopicRoute(
                     topicReference = it.topicReference,
                     onPageView = { title -> viewModel.onPageView(title) },
                     onBack = onBack,
-                    content = { ProblemMessage(modifier = modifier) }
+                    content = { ProblemMessage() }
                 )
             }
         }
@@ -282,7 +281,7 @@ private fun ErrorScreenOfflinePreview() {
             topicReference = "benefits",
             onPageView = {},
             onBack = {},
-            content = { OfflineMessage {} }
+            content = { OfflineMessage({}) }
         )
     }
 }
