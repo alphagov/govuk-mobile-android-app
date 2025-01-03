@@ -12,28 +12,6 @@ import java.util.Stack
 class AppLaunchNavigationTest {
 
     @Test
-    fun `Given app unavailable should be displayed, then return correct launch routes`() {
-        val appLaunchNavigation = AppLaunchNavigation(
-            AppUiState.AppUnavailable
-        )
-
-        val expected = Stack<String>()
-
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
-    }
-
-    @Test
-    fun `Given forced update should be displayed, then return correct launch routes`() {
-        val appLaunchNavigation = AppLaunchNavigation(
-            AppUiState.ForcedUpdate
-        )
-
-        val expected = Stack<String>()
-
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
-    }
-
-    @Test
     fun `Given recommend update, analytics consent, onboarding and topic selection should be displayed, then return correct start destination and navigate through routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState.Default(

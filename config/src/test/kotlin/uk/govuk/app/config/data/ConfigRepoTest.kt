@@ -12,7 +12,9 @@ import uk.govuk.app.config.SignatureValidator
 import uk.govuk.app.config.data.remote.ConfigApi
 import uk.govuk.app.config.data.remote.model.Config
 import uk.govuk.app.config.data.remote.model.ConfigResponse
+import uk.govuk.app.networking.domain.DeviceOfflineException
 import java.io.IOException
+import java.net.UnknownHostException
 
 class ConfigRepoTest {
 
@@ -86,6 +88,18 @@ class ConfigRepoTest {
 
         runTest {
             assertTrue(repo.initConfig().isFailure)
+        }
+    }
+
+    @Test
+    fun `Given an unknown host exception is thrown fetching the config response, then return device offline failure`() {
+        coEvery { configApi.getConfig() } throws UnknownHostException()
+
+        val repo = ConfigRepo(configApi, gson, signatureValidator)
+
+        runTest {
+            assertTrue(repo.initConfig().isFailure)
+            assertTrue(repo.initConfig().exceptionOrNull() is DeviceOfflineException)
         }
     }
 

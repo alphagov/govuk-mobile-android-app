@@ -1,5 +1,6 @@
 package uk.govuk.app
 
+import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -7,6 +8,8 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -438,6 +441,29 @@ class AppViewModelTest {
 
             coVerify {
                 analyticsClient.widgetClick("text")
+            }
+        }
+    }
+
+    @Test
+    fun `Given the user tries again, then emit loading state and fetch config`() {
+        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+
+        runTest {
+            val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+
+            val uiStates = mutableListOf<AppUiState?>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.uiState.toList(uiStates)
+            }
+
+            clearMocks(configRepo)
+            coEvery { configRepo.initConfig() } returns Result.success(Unit)
+
+            viewModel.onTryAgain()
+            assertTrue(uiStates[1] is AppUiState.Loading)
+            coVerify {
+                configRepo.initConfig()
             }
         }
     }
