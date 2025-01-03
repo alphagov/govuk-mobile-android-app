@@ -75,6 +75,9 @@ internal fun GovUkApp() {
         uiState?.let {
             when (it) {
                 is AppUiState.AppUnavailable -> AppUnavailableScreen()
+                is AppUiState.DeviceOffline -> DeviceOfflineScreen(
+                    onTryAgain = { viewModel.onTryAgain() }
+                )
                 is AppUiState.ForcedUpdate -> ForcedUpdateScreen()
                 is AppUiState.Default -> {
                     if (it.shouldDisplayRecommendUpdate && !isRecommendUpdateSkipped) {

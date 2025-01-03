@@ -13,5 +13,7 @@ internal sealed class AppUiState {
 
     internal data object AppUnavailable : AppUiState()
 
+    internal data object DeviceOffline : AppUiState()
+
     internal data object ForcedUpdate : AppUiState()
 }

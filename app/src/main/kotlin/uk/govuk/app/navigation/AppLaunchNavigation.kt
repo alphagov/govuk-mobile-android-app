@@ -38,6 +38,10 @@ internal class AppLaunchNavigation(
                 // Do nothing
             }
 
+            is AppUiState.DeviceOffline -> {
+                // Do nothing
+            }
+
             is AppUiState.ForcedUpdate -> {
                 // Do nothing
             }
