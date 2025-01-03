@@ -32,6 +32,7 @@ internal class AppViewModel @Inject constructor(
     }
 
     fun onTryAgain() {
+        _uiState.value = AppUiState.Loading
         fetchConfig()
     }
 
