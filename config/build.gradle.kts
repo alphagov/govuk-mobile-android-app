@@ -39,6 +39,8 @@ android {
 }
 
 dependencies {
+    implementation(projects.networking)
+
     implementation(libs.hilt.android)
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)

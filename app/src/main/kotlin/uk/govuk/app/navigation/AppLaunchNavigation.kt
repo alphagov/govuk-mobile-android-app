@@ -8,7 +8,7 @@ import uk.govuk.app.topics.navigation.TOPICS_GRAPH_ROUTE
 import java.util.Stack
 
 internal class AppLaunchNavigation(
-    private val uiState: AppUiState
+    private val uiState: AppUiState.Default
 ) {
     val launchRoutes: Stack<String> = Stack()
 
@@ -17,30 +17,18 @@ internal class AppLaunchNavigation(
     }
 
     private fun setLaunchRoutes() {
-        when (uiState) {
-            is AppUiState.Default -> {
-                launchRoutes.push(HOME_GRAPH_ROUTE)
+        launchRoutes.push(HOME_GRAPH_ROUTE)
 
-                if (uiState.shouldDisplayTopicSelection) {
-                    launchRoutes.push(TOPICS_GRAPH_ROUTE)
-                }
+        if (uiState.shouldDisplayTopicSelection) {
+            launchRoutes.push(TOPICS_GRAPH_ROUTE)
+        }
 
-                if (uiState.shouldDisplayOnboarding) {
-                    launchRoutes.push(ONBOARDING_GRAPH_ROUTE)
-                }
+        if (uiState.shouldDisplayOnboarding) {
+            launchRoutes.push(ONBOARDING_GRAPH_ROUTE)
+        }
 
-                if (uiState.shouldDisplayAnalyticsConsent) {
-                    launchRoutes.push(ANALYTICS_GRAPH_ROUTE)
-                }
-            }
-
-            is AppUiState.AppUnavailable -> {
-                // Do nothing
-            }
-
-            is AppUiState.ForcedUpdate -> {
-                // Do nothing
-            }
+        if (uiState.shouldDisplayAnalyticsConsent) {
+            launchRoutes.push(ANALYTICS_GRAPH_ROUTE)
         }
     }
 }

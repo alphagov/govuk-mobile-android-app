@@ -11,7 +11,11 @@ internal sealed class AppUiState {
         val isTopicsEnabled: Boolean
     ) : AppUiState()
 
+    internal data object Loading : AppUiState()
+
     internal data object AppUnavailable : AppUiState()
+
+    internal data object DeviceOffline : AppUiState()
 
     internal data object ForcedUpdate : AppUiState()
 }

@@ -11,15 +11,16 @@ import uk.govuk.app.config.data.ConfigRepo
 import uk.govuk.app.config.data.InvalidSignatureException
 import uk.govuk.app.config.data.flags.FlagRepo
 import uk.govuk.app.data.AppRepo
+import uk.govuk.app.networking.domain.DeviceOfflineException
 import uk.govuk.app.topics.TopicsFeature
 import javax.inject.Inject
 
 @HiltViewModel
 internal class AppViewModel @Inject constructor(
     private val appRepo: AppRepo,
-    configRepo: ConfigRepo,
-    flagRepo: FlagRepo,
-    topicsFeature: TopicsFeature,
+    private val configRepo: ConfigRepo,
+    private val flagRepo: FlagRepo,
+    private val topicsFeature: TopicsFeature,
     private val analyticsClient: AnalyticsClient
 ) : ViewModel() {
 
@@ -27,6 +28,15 @@ internal class AppViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
+        fetchConfig()
+    }
+
+    fun onTryAgain() {
+        _uiState.value = AppUiState.Loading
+        fetchConfig()
+    }
+
+    private fun fetchConfig() {
         viewModelScope.launch {
             val configResult = configRepo.initConfig()
             configResult.onSuccess {
@@ -53,6 +63,7 @@ internal class AppViewModel @Inject constructor(
             configResult.onFailure { exception ->
                 _uiState.value = when (exception) {
                     is InvalidSignatureException -> AppUiState.ForcedUpdate
+                    is DeviceOfflineException -> AppUiState.DeviceOffline
                     else -> AppUiState.AppUnavailable
                 }
             }
