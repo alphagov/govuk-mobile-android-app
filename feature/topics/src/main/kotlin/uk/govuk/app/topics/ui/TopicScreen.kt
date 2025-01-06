@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,7 +49,7 @@ internal fun TopicRoute(
     val viewModel: TopicViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
-    Box(Modifier.fillMaxSize()) {
+    Box(modifier.fillMaxSize()) {
         uiState?.let {
             when (it) {
                 is TopicUiState.Default -> {
@@ -73,8 +75,7 @@ internal fun TopicRoute(
                         onSubtopic = { text, ref ->
                             viewModel.onSubtopicClick(text)
                             onSubtopic(ref)
-                        },
-                        modifier = modifier
+                        }
                     )
                 }
 
@@ -82,7 +83,7 @@ internal fun TopicRoute(
                     topicReference = it.topicReference,
                     onPageView = { title -> viewModel.onPageView(title) },
                     onBack = onBack,
-                    content = { OfflineMessage(modifier = modifier) { viewModel.getTopic() } }
+                    content = { OfflineMessage({ viewModel.getTopic() }) }
                 )
 
 
@@ -90,7 +91,7 @@ internal fun TopicRoute(
                     topicReference = it.topicReference,
                     onPageView = { title -> viewModel.onPageView(title) },
                     onBack = onBack,
-                    content = { ProblemMessage(modifier = modifier) }
+                    content = { ProblemMessage() }
                 )
             }
         }
@@ -253,11 +254,12 @@ private fun ErrorScreen(
     topicReference: String,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     val topicName = topicReference.toTopicName(LocalContext.current)
 
-    Column {
+    Column(modifier.verticalScroll(rememberScrollState())) {
         LaunchedEffect(Unit) {
             onPageView(topicName)
         }
@@ -279,7 +281,7 @@ private fun ErrorScreenOfflinePreview() {
             topicReference = "benefits",
             onPageView = {},
             onBack = {},
-            content = { OfflineMessage {} }
+            content = { OfflineMessage({}) }
         )
     }
 }

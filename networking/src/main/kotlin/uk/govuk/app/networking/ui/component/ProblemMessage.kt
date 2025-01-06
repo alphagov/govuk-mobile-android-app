@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import uk.govuk.app.design.ui.component.Error
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.networking.R
 import uk.govuk.app.networking.domain.Constants.GOV_UK_URL
@@ -14,20 +15,17 @@ import uk.govuk.app.networking.domain.Constants.GOV_UK_URL
 @Composable
 fun ProblemMessage(
     modifier: Modifier = Modifier,
-    title: String? = null,
-    description: String? = null,
-    buttonTitle: String? = null,
-    onButtonClick: (() -> Unit)? = null
+    description: String? = null
 ) {
     val context = LocalContext.current
 
-    Message(
-        title = title ?: stringResource(R.string.problem_title),
+    Error(
+        title = stringResource(R.string.problem_title),
         description = description ?: stringResource(R.string.problem_description),
-        buttonTitle = buttonTitle ?: stringResource(R.string.go_to_the_gov_uk_website),
+        buttonTitle = stringResource(R.string.go_to_the_gov_uk_website),
         modifier = modifier,
         externalLink = true,
-        onButtonClick = onButtonClick ?: {
+        onButtonClick = {
             Intent(Intent.ACTION_VIEW).let { intent ->
                 intent.data = Uri.parse(GOV_UK_URL)
                 context.startActivity(intent)

@@ -4,21 +4,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import uk.govuk.app.design.ui.component.Error
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.networking.R
 
 @Composable
 fun OfflineMessage(
-    modifier: Modifier = Modifier,
-    title: String? = null,
-    description: String? = null,
-    buttonTitle: String? = null,
-    onButtonClick: () -> Unit
+    onButtonClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Message(
-        title = title ?: stringResource(R.string.no_internet_title),
-        description = description ?: stringResource(R.string.no_internet_description),
-        buttonTitle = buttonTitle ?: stringResource(R.string.try_again),
+    Error(
+        title = stringResource(R.string.no_internet_title),
+        description = stringResource(R.string.no_internet_description),
+        buttonTitle = stringResource(R.string.try_again),
         modifier = modifier,
         onButtonClick = onButtonClick
     )
