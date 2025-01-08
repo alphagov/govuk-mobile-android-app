@@ -89,9 +89,8 @@ internal class TopicSelectionViewModel @Inject constructor(
         viewModelScope.launch {
             topicsRepo.topicsCustomised()
             uiState.value?.topics?.let { topics ->
-                topics.filter { !selectedTopicRefs.contains(it.ref) }.forEach { topic ->
-                    topicsRepo.toggleSelection(topic.ref, false)
-                }
+                val topicsToDeselect = topics.filter { !selectedTopicRefs.contains(it.ref) }.map { it.ref }
+                topicsRepo.deselectAll(topicsToDeselect)
             }
         }
     }

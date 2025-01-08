@@ -142,6 +142,19 @@ class TopicsRepoTest{
     }
 
     @Test
+    fun `Given topics are being deselected, when deselect all, then update local data source`() {
+        val repo = TopicsRepo(topicsApi, localDataSource)
+
+        runTest {
+            repo.deselectAll(listOf("ref1", "ref2"))
+
+            coVerify{
+                localDataSource.deselectAll(listOf("ref1", "ref2"))
+            }
+        }
+    }
+
+    @Test
     fun `Given a successful topic response with an empty body, then return failure`() {
         coEvery { topicsApi.getTopic("ref") } returns topicResponse
         coEvery { topicResponse.isSuccessful } returns true

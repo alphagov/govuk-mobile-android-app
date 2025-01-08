@@ -35,26 +35,26 @@ internal class TopicsLocalDataSource @Inject constructor(
             }
         }
 
-        for (topic in remoteTopics) {
-            insertOrUpdate(topic, isSelectedOnInsert)
-        }
+        insertOrUpdate(remoteTopics, isSelectedOnInsert)
     }
 
-    private suspend fun insertOrUpdate(topic: RemoteTopicItem, isSelectedOnInsert: Boolean) {
+    private suspend fun insertOrUpdate(topics: List<RemoteTopicItem>, isSelectedOnInsert: Boolean) {
         realmProvider.open().writeBlocking {
-            val localTopic = query<LocalTopicItem>("ref = $0", topic.ref).first().find()
+            topics.forEach { topic ->
+                val localTopic = query<LocalTopicItem>("ref = $0", topic.ref).first().find()
 
-            localTopic?.apply {
-                this.title = topic.title
-                this.description = topic.description
-            } ?: copyToRealm(
-                LocalTopicItem().apply {
-                    this.ref = topic.ref
+                localTopic?.apply {
                     this.title = topic.title
                     this.description = topic.description
-                    this.isSelected = isSelectedOnInsert
-                }
-            )
+                } ?: copyToRealm(
+                    LocalTopicItem().apply {
+                        this.ref = topic.ref
+                        this.title = topic.title
+                        this.description = topic.description
+                        this.isSelected = isSelectedOnInsert
+                    }
+                )
+            }
         }
     }
 
@@ -62,6 +62,15 @@ internal class TopicsLocalDataSource @Inject constructor(
         realmProvider.open().write {
             query<LocalTopicItem>("ref = $0", ref).first().find()?.apply {
                 this.isSelected = isSelected
+            }
+        }
+    }
+
+    suspend fun deselectAll(refs: List<String>) {
+        realmProvider.open().write {
+            val topics = query<LocalTopicItem>("ref IN $0", refs).find()
+            topics.forEach { topic ->
+                findLatest(topic)?.isSelected = false
             }
         }
     }
