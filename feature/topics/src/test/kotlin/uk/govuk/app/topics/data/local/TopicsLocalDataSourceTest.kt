@@ -219,6 +219,35 @@ class TopicsLocalDataSourceTest {
     }
 
     @Test
+    fun `Given multiple topics are deselected, then update the topics in realm`() {
+        runTest {
+            realm.write {
+                copyToRealm(
+                    LocalTopicItem().apply {
+                        ref = "ref1"
+                        isSelected = true
+                    }
+                )
+                copyToRealm(
+                    LocalTopicItem().apply {
+                        ref = "ref2"
+                        isSelected = true
+                    }
+                )
+            }
+
+            localDataSource.deselectAll(listOf("ref1", "ref2"))
+
+            val topics = realm.query<LocalTopicItem>().find()
+            assertEquals(2, topics.size)
+            assertEquals("ref1", topics[0].ref)
+            assertFalse(topics[0].isSelected)
+            assertEquals("ref2", topics[1].ref)
+            assertFalse(topics[1].isSelected)
+        }
+    }
+
+    @Test
     fun `Given topics are customised, when is topics customised, then return true`() {
         runTest {
             coEvery { dataStore.isTopicsCustomised() } returns true

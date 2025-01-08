@@ -205,6 +205,12 @@ class TopicSelectionViewModelTest {
                 title = "title3",
                 description = "desc3",
                 isSelected = true
+            ),
+            TopicItem(
+                ref = "ref4",
+                title = "title4",
+                description = "desc4",
+                isSelected = true
             )
         )
 
@@ -221,7 +227,7 @@ class TopicSelectionViewModelTest {
             analyticsClient.buttonClick(
                 text = "Done"
             )
-            topicsRepo.toggleSelection("ref3", false)
+            topicsRepo.deselectAll(listOf("ref3","ref4"))
             topicsRepo.topicsCustomised()
         }
     }
