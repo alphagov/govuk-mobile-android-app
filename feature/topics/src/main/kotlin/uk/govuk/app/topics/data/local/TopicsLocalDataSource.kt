@@ -66,6 +66,15 @@ internal class TopicsLocalDataSource @Inject constructor(
         }
     }
 
+    suspend fun deselectAll(refs: List<String>) {
+        realmProvider.open().write {
+            val topics = query<LocalTopicItem>("ref IN $0", refs).find()
+            topics.forEach { topic ->
+                findLatest(topic)?.isSelected = false
+            }
+        }
+    }
+
     internal suspend fun isTopicsCustomised(): Boolean {
         return topicsDataStore.isTopicsCustomised()
     }

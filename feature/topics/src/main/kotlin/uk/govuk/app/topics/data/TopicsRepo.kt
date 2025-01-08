@@ -47,6 +47,10 @@ internal class TopicsRepo @Inject constructor(
         localDataSource.toggleSelection(ref, isSelected)
     }
 
+    suspend fun deselectAll(refs: List<String>) {
+        localDataSource.deselectAll(refs)
+    }
+
     suspend fun getTopic(ref: String): Result<RemoteTopic> {
         return try {
             val response = topicsApi.getTopic(ref)
