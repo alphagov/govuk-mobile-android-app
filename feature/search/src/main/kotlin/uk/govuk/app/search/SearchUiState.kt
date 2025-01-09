@@ -13,7 +13,9 @@ internal sealed class SearchUiState(
         val searchResults: List<Result>
     ) : SearchUiState(uuid = uuid, searchTerm = searchTerm)
 
-    internal class Offline(id: UUID, searchTerm: String) : SearchUiState(uuid = id, searchTerm = searchTerm)
+    internal class Empty(uuid: UUID, searchTerm: String) : SearchUiState(uuid = uuid, searchTerm = searchTerm)
 
-    internal class ServiceError(id: UUID, searchTerm: String) : SearchUiState(uuid = id, searchTerm = searchTerm)
+    internal class Offline(uuid: UUID, searchTerm: String) : SearchUiState(uuid = uuid, searchTerm = searchTerm)
+
+    internal class ServiceError(uuid: UUID, searchTerm: String) : SearchUiState(uuid = uuid, searchTerm = searchTerm)
 }

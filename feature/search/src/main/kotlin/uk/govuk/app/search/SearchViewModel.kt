@@ -28,11 +28,15 @@ internal class SearchViewModel @Inject constructor(
             val id = UUID.randomUUID()
             val searchResult = repository.performSearch(searchTerm)
             searchResult.onSuccess { result ->
-                _uiState.value = SearchUiState.Default(
-                    uuid = id,
-                    searchTerm = searchTerm,
-                    searchResults = result.results
-                )
+                if (result.results.isNotEmpty()) {
+                    _uiState.value = SearchUiState.Default(
+                        uuid = id,
+                        searchTerm = searchTerm,
+                        searchResults = result.results
+                    )
+                } else {
+                    _uiState.value = SearchUiState.Empty(id, searchTerm)
+                }
             }
             searchResult.onFailure { exception ->
                 _uiState.value = when (exception) {

@@ -121,29 +121,9 @@ private fun SearchScreen(
 
         uiState?.let {
             when (it) {
-                is SearchUiState.Default -> {
-                    if (it.searchResults.isEmpty()) {
-                        ShowError(it.uuid) { focusRequester ->
-                            NoResultsFound(
-                                searchTerm = it.searchTerm,
-                                focusRequester = focusRequester
-                            )
-                        }
-                    } else {
-                        ShowResults(it.searchTerm, it.searchResults, onResultClick)
-                    }
-                }
-                is SearchUiState.Offline -> ShowError(it.uuid) { focusRequester ->
-                    OfflineMessage(
-                        onButtonClick = { onRetry(it.searchTerm) },
-                        focusRequester = focusRequester
-                    )
-                }
-                is SearchUiState.ServiceError -> ShowError(it.uuid) { focusRequester ->
-                    ProblemMessage(
-                        focusRequester = focusRequester
-                    )
-                }
+                is SearchUiState.Default ->
+                    ShowResults(it.searchTerm, it.searchResults, onResultClick)
+                else -> ShowError(uiState.uuid, uiState, onRetry)
             }
         } ?: ShowNothing()
     }
@@ -272,13 +252,31 @@ private fun NoResultsFound(
 @Composable
 private fun ShowError(
     uuid: UUID,
+    uiState: SearchUiState,
+    onRetry: (String) -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable (FocusRequester) -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
+    val searchTerm = uiState.searchTerm
 
     Column(modifier.verticalScroll(rememberScrollState())) {
-        content(focusRequester)
+        when (uiState) {
+            is SearchUiState.Empty ->
+                NoResultsFound(
+                    searchTerm = searchTerm,
+                    focusRequester = focusRequester
+                )
+            is SearchUiState.Offline ->
+                OfflineMessage(
+                    onButtonClick = { onRetry(searchTerm) },
+                    focusRequester = focusRequester
+                )
+            is SearchUiState.ServiceError ->
+                ProblemMessage(
+                    focusRequester = focusRequester
+                )
+            else -> { } // Do nothing
+        }
     }
 
     LaunchedEffect(uuid) {
