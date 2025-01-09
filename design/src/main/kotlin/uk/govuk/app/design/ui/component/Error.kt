@@ -1,11 +1,14 @@
 package uk.govuk.app.design.ui.component
 
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -17,7 +20,8 @@ fun Error(
     buttonTitle: String,
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
-    externalLink: Boolean = false
+    externalLink: Boolean = false,
+    focusRequester: FocusRequester = FocusRequester()
 ) {
     Column(
         modifier = modifier
@@ -28,6 +32,9 @@ fun Error(
         BodyBoldLabel(
             text = title,
             textAlign = TextAlign.Center,
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .focusable()
         )
 
         SmallVerticalSpacer()

@@ -52,6 +52,7 @@ import uk.govuk.app.search.SearchViewModel
 import uk.govuk.app.search.data.remote.model.Result
 import uk.govuk.app.search.domain.StringUtils
 import uk.govuk.app.search.ui.component.SearchHeader
+import java.util.UUID
 
 @Composable
 internal fun SearchRoute(
@@ -59,10 +60,12 @@ internal fun SearchRoute(
     modifier: Modifier = Modifier
 ) {
     val viewModel: SearchViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
+
     val keyboardController = LocalSoftwareKeyboardController.current
 
     SearchScreen(
-        viewModel = viewModel,
+        uiState = uiState,
         onPageView = { viewModel.onPageView() },
         onBack = onBack,
         onSearch = { searchTerm ->
@@ -72,8 +75,11 @@ internal fun SearchRoute(
         onClear = {
             viewModel.onClear()
         },
-        onClick = { title, url ->
+        onResultClick = { title, url ->
             viewModel.onSearchResultClicked(title, url)
+        },
+        onRetry = { searchTerm ->
+            viewModel.onSearch(searchTerm)
         },
         modifier = modifier
     )
@@ -81,16 +87,15 @@ internal fun SearchRoute(
 
 @Composable
 private fun SearchScreen(
-    viewModel: SearchViewModel,
+    uiState: SearchUiState?,
     onPageView: () -> Unit,
     onBack: () -> Unit,
     onSearch: (String) -> Unit,
     onClear: () -> Unit,
-    onClick: (String, String) -> Unit,
+    onResultClick: (String, String) -> Unit,
+    onRetry: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-
     LaunchedEffect(Unit) {
         onPageView()
     }
@@ -118,16 +123,26 @@ private fun SearchScreen(
             when (it) {
                 is SearchUiState.Default -> {
                     if (it.searchResults.isEmpty()) {
-                        NoResultsFound(searchTerm = it.searchTerm)
+                        ShowError(it.uuid) { focusRequester ->
+                            NoResultsFound(
+                                searchTerm = it.searchTerm,
+                                focusRequester = focusRequester
+                            )
+                        }
                     } else {
-                        ShowResults(it.searchTerm, it.searchResults, onClick)
+                        ShowResults(it.searchTerm, it.searchResults, onResultClick)
                     }
                 }
-                is SearchUiState.Offline -> ShowError {
-                    OfflineMessage({ viewModel.onSearch(it.searchTerm) })
+                is SearchUiState.Offline -> ShowError(it.uuid) { focusRequester ->
+                    OfflineMessage(
+                        onButtonClick = { onRetry(it.searchTerm) },
+                        focusRequester = focusRequester
+                    )
                 }
-                is SearchUiState.ServiceError -> ShowError {
-                    ProblemMessage()
+                is SearchUiState.ServiceError -> ShowError(it.uuid) { focusRequester ->
+                    ProblemMessage(
+                        focusRequester = focusRequester
+                    )
                 }
             }
         } ?: ShowNothing()
@@ -230,7 +245,10 @@ private fun ShowResults(
 }
 
 @Composable
-private fun NoResultsFound(searchTerm: String) {
+private fun NoResultsFound(
+    searchTerm: String,
+    focusRequester: FocusRequester
+) {
     Row(
         Modifier.padding(
             GovUkTheme.spacing.medium,
@@ -243,18 +261,28 @@ private fun NoResultsFound(searchTerm: String) {
     ) {
         BodyRegularLabel(
             text = "${stringResource(R.string.search_no_results)} '${searchTerm}'",
-            modifier = Modifier.align(Alignment.CenterVertically),
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .focusRequester(focusRequester)
+                .focusable()
         )
     }
 }
 
 @Composable
 private fun ShowError(
+    uuid: UUID,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    content: @Composable (FocusRequester) -> Unit
 ) {
+    val focusRequester = remember { FocusRequester() }
+
     Column(modifier.verticalScroll(rememberScrollState())) {
-        content()
+        content(focusRequester)
+    }
+
+    LaunchedEffect(uuid) {
+        focusRequester.requestFocus()
     }
 }
 
