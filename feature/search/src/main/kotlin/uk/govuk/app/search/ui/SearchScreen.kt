@@ -52,6 +52,7 @@ import uk.govuk.app.search.SearchViewModel
 import uk.govuk.app.search.data.remote.model.Result
 import uk.govuk.app.search.domain.StringUtils
 import uk.govuk.app.search.ui.component.SearchHeader
+import java.util.UUID
 
 @Composable
 internal fun SearchRoute(
@@ -59,10 +60,12 @@ internal fun SearchRoute(
     modifier: Modifier = Modifier
 ) {
     val viewModel: SearchViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
+
     val keyboardController = LocalSoftwareKeyboardController.current
 
     SearchScreen(
-        viewModel = viewModel,
+        uiState = uiState,
         onPageView = { viewModel.onPageView() },
         onBack = onBack,
         onSearch = { searchTerm ->
@@ -72,8 +75,11 @@ internal fun SearchRoute(
         onClear = {
             viewModel.onClear()
         },
-        onClick = { title, url ->
+        onResultClick = { title, url ->
             viewModel.onSearchResultClicked(title, url)
+        },
+        onRetry = { searchTerm ->
+            viewModel.onSearch(searchTerm)
         },
         modifier = modifier
     )
@@ -81,16 +87,15 @@ internal fun SearchRoute(
 
 @Composable
 private fun SearchScreen(
-    viewModel: SearchViewModel,
+    uiState: SearchUiState?,
     onPageView: () -> Unit,
     onBack: () -> Unit,
     onSearch: (String) -> Unit,
     onClear: () -> Unit,
-    onClick: (String, String) -> Unit,
+    onResultClick: (String, String) -> Unit,
+    onRetry: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-
     LaunchedEffect(Unit) {
         onPageView()
     }
@@ -116,19 +121,9 @@ private fun SearchScreen(
 
         uiState?.let {
             when (it) {
-                is SearchUiState.Default -> {
-                    if (it.searchResults.isEmpty()) {
-                        NoResultsFound(searchTerm = it.searchTerm)
-                    } else {
-                        ShowResults(it.searchTerm, it.searchResults, onClick)
-                    }
-                }
-                is SearchUiState.Offline -> ShowError {
-                    OfflineMessage({ viewModel.onSearch(it.searchTerm) })
-                }
-                is SearchUiState.ServiceError -> ShowError {
-                    ProblemMessage()
-                }
+                is SearchUiState.Default ->
+                    ShowResults(it.searchTerm, it.searchResults, onResultClick)
+                else -> ShowError(uiState.uuid, uiState, onRetry)
             }
         } ?: ShowNothing()
     }
@@ -230,7 +225,10 @@ private fun ShowResults(
 }
 
 @Composable
-private fun NoResultsFound(searchTerm: String) {
+private fun NoResultsFound(
+    searchTerm: String,
+    focusRequester: FocusRequester
+) {
     Row(
         Modifier.padding(
             GovUkTheme.spacing.medium,
@@ -243,18 +241,46 @@ private fun NoResultsFound(searchTerm: String) {
     ) {
         BodyRegularLabel(
             text = "${stringResource(R.string.search_no_results)} '${searchTerm}'",
-            modifier = Modifier.align(Alignment.CenterVertically),
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .focusRequester(focusRequester)
+                .focusable()
         )
     }
 }
 
 @Composable
 private fun ShowError(
+    uuid: UUID,
+    uiState: SearchUiState,
+    onRetry: (String) -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
 ) {
+    val focusRequester = remember { FocusRequester() }
+    val searchTerm = uiState.searchTerm
+
     Column(modifier.verticalScroll(rememberScrollState())) {
-        content()
+        when (uiState) {
+            is SearchUiState.Empty ->
+                NoResultsFound(
+                    searchTerm = searchTerm,
+                    focusRequester = focusRequester
+                )
+            is SearchUiState.Offline ->
+                OfflineMessage(
+                    onButtonClick = { onRetry(searchTerm) },
+                    focusRequester = focusRequester
+                )
+            is SearchUiState.ServiceError ->
+                ProblemMessage(
+                    focusRequester = focusRequester
+                )
+            else -> { } // Do nothing
+        }
+    }
+
+    LaunchedEffect(uuid) {
+        focusRequester.requestFocus()
     }
 }
 

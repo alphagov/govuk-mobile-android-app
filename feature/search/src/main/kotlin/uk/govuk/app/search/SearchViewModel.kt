@@ -10,6 +10,7 @@ import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.networking.domain.DeviceOfflineException
 import uk.govuk.app.search.data.SearchRepo
 import uk.govuk.app.visited.Visited
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,17 +25,23 @@ internal class SearchViewModel @Inject constructor(
 
     private fun fetchSearchResults(searchTerm: String) {
         viewModelScope.launch {
+            val id = UUID.randomUUID()
             val searchResult = repository.performSearch(searchTerm)
             searchResult.onSuccess { result ->
-                _uiState.value = SearchUiState.Default(
-                    searchTerm = searchTerm,
-                    searchResults = result.results
-                )
+                if (result.results.isNotEmpty()) {
+                    _uiState.value = SearchUiState.Default(
+                        uuid = id,
+                        searchTerm = searchTerm,
+                        searchResults = result.results
+                    )
+                } else {
+                    _uiState.value = SearchUiState.Empty(id, searchTerm)
+                }
             }
             searchResult.onFailure { exception ->
                 _uiState.value = when (exception) {
-                    is DeviceOfflineException -> SearchUiState.Offline(searchTerm)
-                    else -> SearchUiState.ServiceError(searchTerm)
+                    is DeviceOfflineException -> SearchUiState.Offline(id, searchTerm)
+                    else -> SearchUiState.ServiceError(id, searchTerm)
                 }
             }
         }
