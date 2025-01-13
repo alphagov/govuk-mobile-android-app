@@ -2,6 +2,7 @@ package uk.govuk.app.search.ui
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -129,7 +130,15 @@ private fun SearchScreen(
 
         uiState?.let {
             when (it) {
-                is SearchUiState.Default -> ShowSuggested(it.previousSearches)
+                is SearchUiState.Default ->
+                    ShowSuggested(
+                        previousSearches = it.previousSearches,
+                        onClick = {
+                            // Todo - update search header text
+                            onSearch
+                        },
+                        onRemove = { } // Todo - handle click
+                    )
                 is SearchUiState.Results ->
                     ShowResults(it.searchTerm, it.searchResults, onResultClick)
                 else -> ShowError(uiState as Error, onRetry)
@@ -149,6 +158,8 @@ private fun SearchScreen(
 @Composable
 private fun ShowSuggested(
     previousSearches: List<String>,
+    onClick: (String) -> Unit,
+    onRemove: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (previousSearches.isNotEmpty()) {
@@ -174,7 +185,8 @@ private fun ShowSuggested(
                     ListDivider()
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .clickable { onClick(searchTerm) },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
@@ -190,7 +202,7 @@ private fun ShowSuggested(
                         )
                         ExtraSmallHorizontalSpacer()
                         TextButton(
-                            onClick = { } // Todo - handle click
+                            onClick = { onRemove(searchTerm) }
                         ) {
                                 Icon(
                                     imageVector = Icons.Filled.Clear,
