@@ -112,12 +112,16 @@ private fun SearchScreen(
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
 
+    var searchTerm by remember { mutableStateOf("") }
+
     Column(modifier) {
         SearchHeader(
             onBack = onBack,
-            onSearch = onSearch,
-            onClear = onClear,
+            searchTerm = searchTerm,
             placeholder = stringResource(R.string.search_placeholder),
+            onSearchTermChange = { searchTerm = it },
+            onSearch = { onSearch(searchTerm) },
+            onClear = onClear,
             focusRequester = focusRequester
         )
     }
@@ -134,8 +138,8 @@ private fun SearchScreen(
                     ShowSuggested(
                         previousSearches = it.previousSearches,
                         onClick = {
-                            // Todo - update search header text
-                            onSearch
+                            searchTerm = it
+                            onSearch(it)
                         },
                         onRemove = { } // Todo - handle click
                     )

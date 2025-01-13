@@ -21,8 +21,10 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 @Composable
 fun SearchHeader(
     onBack: () -> Unit,
+    searchTerm: String,
     placeholder: String,
-    onSearch: (String) -> Unit,
+    onSearchTermChange: (String) -> Unit,
+    onSearch: () -> Unit,
     onClear: () -> Unit,
     modifier: Modifier = Modifier,
     focusRequester: FocusRequester = FocusRequester()
@@ -42,7 +44,9 @@ fun SearchHeader(
                 )
             }
             SearchField(
+                searchTerm = searchTerm,
                 placeholder = placeholder,
+                onSearchTermChange = onSearchTermChange,
                 onSearch = onSearch,
                 onClear = onClear,
                 modifier = Modifier
@@ -60,7 +64,9 @@ private fun SearchHeaderPreview() {
     GovUkTheme {
         SearchHeader(
             onBack = { },
+            searchTerm = "",
             placeholder = "Search",
+            onSearchTermChange = { },
             onSearch = { },
             onClear = { }
         )
