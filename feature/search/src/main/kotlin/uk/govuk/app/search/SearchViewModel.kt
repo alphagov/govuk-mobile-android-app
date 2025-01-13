@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.networking.domain.DeviceOfflineException
+import uk.govuk.app.search.SearchUiState.Error
 import uk.govuk.app.search.data.SearchRepo
 import uk.govuk.app.visited.Visited
 import java.util.UUID
@@ -29,19 +30,18 @@ internal class SearchViewModel @Inject constructor(
             val searchResult = repository.performSearch(searchTerm)
             searchResult.onSuccess { result ->
                 if (result.results.isNotEmpty()) {
-                    _uiState.value = SearchUiState.Default(
-                        uuid = id,
+                    _uiState.value = SearchUiState.Results(
                         searchTerm = searchTerm,
                         searchResults = result.results
                     )
                 } else {
-                    _uiState.value = SearchUiState.Empty(id, searchTerm)
+                    _uiState.value = Error.Empty(id, searchTerm)
                 }
             }
             searchResult.onFailure { exception ->
                 _uiState.value = when (exception) {
-                    is DeviceOfflineException -> SearchUiState.Offline(id, searchTerm)
-                    else -> SearchUiState.ServiceError(id, searchTerm)
+                    is DeviceOfflineException -> Error.Offline(id, searchTerm)
+                    else -> Error.ServiceError(id)
                 }
             }
         }

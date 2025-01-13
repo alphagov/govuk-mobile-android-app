@@ -128,7 +128,7 @@ class SearchViewModelTest {
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.first() as SearchUiState.Default
+                val result = viewModel.uiState.first() as SearchUiState.Results
 
                 assertEquals(searchTerm, result.searchTerm)
                 assertEquals(1, result.searchResults.size)

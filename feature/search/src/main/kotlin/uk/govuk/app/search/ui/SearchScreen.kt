@@ -48,11 +48,11 @@ import uk.govuk.app.networking.ui.component.OfflineMessage
 import uk.govuk.app.networking.ui.component.ProblemMessage
 import uk.govuk.app.search.R
 import uk.govuk.app.search.SearchUiState
+import uk.govuk.app.search.SearchUiState.Error
 import uk.govuk.app.search.SearchViewModel
 import uk.govuk.app.search.data.remote.model.Result
 import uk.govuk.app.search.domain.StringUtils
 import uk.govuk.app.search.ui.component.SearchHeader
-import java.util.UUID
 
 @Composable
 internal fun SearchRoute(
@@ -121,9 +121,9 @@ private fun SearchScreen(
 
         uiState?.let {
             when (it) {
-                is SearchUiState.Default ->
+                is SearchUiState.Results ->
                     ShowResults(it.searchTerm, it.searchResults, onResultClick)
-                else -> ShowError(uiState.uuid, uiState, onRetry)
+                else -> ShowError(uiState as Error, onRetry)
             }
         } ?: ShowNothing()
     }
@@ -251,27 +251,25 @@ private fun NoResultsFound(
 
 @Composable
 private fun ShowError(
-    uuid: UUID,
-    uiState: SearchUiState,
+    error: Error,
     onRetry: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusRequester = remember { FocusRequester() }
-    val searchTerm = uiState.searchTerm
 
     Column(modifier.verticalScroll(rememberScrollState())) {
-        when (uiState) {
-            is SearchUiState.Empty ->
+        when (error) {
+            is Error.Empty ->
                 NoResultsFound(
-                    searchTerm = searchTerm,
+                    searchTerm = error.searchTerm,
                     focusRequester = focusRequester
                 )
-            is SearchUiState.Offline ->
+            is Error.Offline ->
                 OfflineMessage(
-                    onButtonClick = { onRetry(searchTerm) },
+                    onButtonClick = { onRetry(error.searchTerm) },
                     focusRequester = focusRequester
                 )
-            is SearchUiState.ServiceError ->
+            is Error.ServiceError ->
                 ProblemMessage(
                     focusRequester = focusRequester
                 )
@@ -279,7 +277,7 @@ private fun ShowError(
         }
     }
 
-    LaunchedEffect(uuid) {
+    LaunchedEffect(error.uuid) {
         focusRequester.requestFocus()
     }
 }
