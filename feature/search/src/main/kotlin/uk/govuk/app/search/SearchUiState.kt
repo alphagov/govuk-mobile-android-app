@@ -4,6 +4,11 @@ import uk.govuk.app.search.data.remote.model.Result
 import java.util.UUID
 
 internal sealed class SearchUiState() {
+
+    internal class Default(
+        val previousSearches: List<String>
+    ): SearchUiState()
+
     internal class Results(
         val searchTerm: String,
         val searchResults: List<Result>

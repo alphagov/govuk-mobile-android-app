@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.networking.domain.DeviceOfflineException
-import uk.govuk.app.search.SearchUiState.Error
+import uk.govuk.app.search.SearchUiState.*
 import uk.govuk.app.search.data.SearchRepo
 import uk.govuk.app.visited.Visited
 import java.util.UUID
@@ -24,13 +24,23 @@ internal class SearchViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<SearchUiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
 
+    init {
+        _uiState.value = Default(
+            listOf(
+                "dog",
+                "cat",
+                "micropig"
+            )
+        )
+    }
+
     private fun fetchSearchResults(searchTerm: String) {
         viewModelScope.launch {
             val id = UUID.randomUUID()
             val searchResult = repository.performSearch(searchTerm)
             searchResult.onSuccess { result ->
                 if (result.results.isNotEmpty()) {
-                    _uiState.value = SearchUiState.Results(
+                    _uiState.value = Results(
                         searchTerm = searchTerm,
                         searchResults = result.results
                     )

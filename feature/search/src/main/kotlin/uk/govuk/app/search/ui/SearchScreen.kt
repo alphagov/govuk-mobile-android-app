@@ -11,12 +11,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,8 +43,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
+import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
+import uk.govuk.app.design.ui.component.ExtraSmallHorizontalSpacer
 import uk.govuk.app.design.ui.component.GovUkCard
+import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.Title3BoldLabel
@@ -121,6 +129,7 @@ private fun SearchScreen(
 
         uiState?.let {
             when (it) {
+                is SearchUiState.Default -> ShowSuggested(it.previousSearches)
                 is SearchUiState.Results ->
                     ShowResults(it.searchTerm, it.searchResults, onResultClick)
                 else -> ShowError(uiState as Error, onRetry)
@@ -132,6 +141,71 @@ private fun SearchScreen(
         focusRequester.requestFocus()
         delay(100)
         keyboard?.show()
+    }
+}
+
+// Todo - add modifiers to these functions
+
+@Composable
+private fun ShowSuggested(
+    previousSearches: List<String>,
+    modifier: Modifier = Modifier
+) {
+    if (previousSearches.isNotEmpty()) {
+        LazyColumn(
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = GovUkTheme.spacing.medium)
+        ) {
+            item {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            top = GovUkTheme.spacing.medium,
+                            bottom = GovUkTheme.spacing.small
+                        )
+                ) {
+                    BodyBoldLabel("Previous searches") // Todo - header semantics???
+                }
+            }
+            items(previousSearches) { searchTerm ->
+                Column{
+                    ListDivider()
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = null, // Todo - content desc???
+                            modifier = Modifier.size(18.dp),
+                            tint = GovUkTheme.colourScheme.textAndIcons.secondary
+                        )
+                        ExtraSmallHorizontalSpacer()
+                        BodyRegularLabel(
+                            text = searchTerm,
+                            modifier = Modifier.weight(1f)
+                        )
+                        ExtraSmallHorizontalSpacer()
+                        TextButton(
+                            onClick = { } // Todo - handle click
+                        ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Clear,
+                                    contentDescription = null, // Todo - content desc???
+                                    modifier = Modifier.size(18.dp),
+                                    tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
+                                )
+                        }
+                    }
+                }
+            }
+            item {
+                ListDivider()
+            }
+        }
     }
 }
 
