@@ -25,6 +25,10 @@ internal class SearchViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
+        fetchPreviousSearches()
+    }
+
+    private fun fetchPreviousSearches() {
         _uiState.value = Default(
             listOf(
                 "dog",
@@ -84,6 +88,6 @@ internal class SearchViewModel @Inject constructor(
     }
 
     fun onClear() {
-        _uiState.value = null
+        fetchPreviousSearches()
     }
 }
