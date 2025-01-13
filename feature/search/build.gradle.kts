@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.realm)
     alias(libs.plugins.kover)
 }
 
@@ -30,6 +31,19 @@ android {
     }
 }
 
+sonar {
+    properties {
+        property(
+            "sonar.coverage.exclusions",
+            properties["sonar.coverage.exclusions"].toString() + ",**/SearchEncryptionHelper.*,**/SearchRealmProvider.*"
+        )
+        property(
+            "sonar.cpd.exclusions",
+            properties["sonar.cpd.exclusions"].toString() + ",**/SearchEncryptionHelper.*,**/SearchRealmProvider.*"
+        )
+    }
+}
+
 dependencies {
     implementation(projects.design)
     implementation(projects.analytics)
@@ -41,9 +55,11 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
+    implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
+    implementation(libs.realm.base)
 
     ksp(libs.hilt.compiler)
 
