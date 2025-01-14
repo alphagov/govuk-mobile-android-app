@@ -196,7 +196,7 @@ private fun ShowPreviousSearches(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     BodyBoldLabel(
-                        text = "Previous searches",
+                        text = stringResource(R.string.previous_searches_heading),
                         modifier = Modifier.weight(1f)
                     )
 
@@ -206,7 +206,7 @@ private fun ShowPreviousSearches(
                         onClick = onRemoveAll
                     ) {
                         BodyRegularLabel(
-                            text = "Delete all",
+                            text = stringResource(R.string.remove_all_button),
                             color = GovUkTheme.colourScheme.textAndIcons.link,
                         )
                     }
