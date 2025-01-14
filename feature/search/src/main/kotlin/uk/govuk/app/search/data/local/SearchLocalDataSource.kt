@@ -1,6 +1,7 @@
 package uk.govuk.app.search.data.local
 
 import io.realm.kotlin.ext.query
+import io.realm.kotlin.query.Sort
 import uk.govuk.app.search.data.local.model.LocalSearchItem
 import java.util.Calendar
 import javax.inject.Inject
@@ -12,7 +13,10 @@ internal class SearchLocalDataSource @Inject constructor(
 ) {
 
     suspend fun fetchPreviousSearches(): List<LocalSearchItem> {
-        return realmProvider.open().query<LocalSearchItem>().find()
+        return realmProvider.open()
+            .query<LocalSearchItem>()
+            .sort("timestamp", Sort.DESCENDING)
+            .find()
     }
 
     suspend fun insertOrUpdate(searchTerm: String) {
@@ -22,12 +26,22 @@ internal class SearchLocalDataSource @Inject constructor(
 
             localSearch?.apply {
                 this.timestamp = now
-            } ?: copyToRealm(
-                LocalSearchItem().apply {
-                    this.searchTerm = searchTerm
-                    this.timestamp = now
+            } ?: run {
+                copyToRealm(
+                    LocalSearchItem().apply {
+                        this.searchTerm = searchTerm
+                        this.timestamp = now
+                    }
+                )
+
+                val searches = query<LocalSearchItem>().sort("timestamp", Sort.DESCENDING).find()
+                if (searches.size > 5) {
+                    searches.drop(5).forEach {
+                        val toDelete = findLatest(it)
+                        if (toDelete != null) delete(toDelete)
+                    }
                 }
-            )
+            }
         }
     }
 }
