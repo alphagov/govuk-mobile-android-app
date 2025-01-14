@@ -34,9 +34,9 @@ internal class SearchLocalDataSource @Inject constructor(
                     }
                 )
 
-                val searches = query<LocalSearchItem>().sort("timestamp", Sort.DESCENDING).find()
-                if (searches.size > 5) {
-                    searches.drop(5).forEach {
+                val localSearches = query<LocalSearchItem>().sort("timestamp", Sort.DESCENDING).find()
+                if (localSearches.size > 5) {
+                    localSearches.drop(5).forEach {
                         findLatest(it)?.apply {
                             delete(this)
                         }
@@ -47,7 +47,7 @@ internal class SearchLocalDataSource @Inject constructor(
     }
 
     suspend fun removePreviousSearch(searchTerm: String) {
-        realmProvider.open().write {
+        realmProvider.open().writeBlocking {
             val localSearch = query<LocalSearchItem>("searchTerm = $0", searchTerm).first().find()
 
             localSearch?.let {
@@ -55,6 +55,12 @@ internal class SearchLocalDataSource @Inject constructor(
                     delete(this)
                 }
             }
+        }
+    }
+
+    suspend fun removeAllPreviousSearches() {
+        realmProvider.open().writeBlocking {
+            deleteAll()
         }
     }
 }

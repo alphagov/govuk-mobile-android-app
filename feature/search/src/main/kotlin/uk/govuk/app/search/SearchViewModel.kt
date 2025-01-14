@@ -88,13 +88,16 @@ internal class SearchViewModel @Inject constructor(
     }
 
     fun onRemoveAllPreviousSearches() {
-
+        viewModelScope.launch {
+            searchRepo.removeAllPreviousSearches()
+        }
+        emitPreviousSearches()
     }
 
     fun onRemovePreviousSearch(searchTerm: String) {
         viewModelScope.launch {
             searchRepo.removePreviousSearch(searchTerm)
-            emitPreviousSearches()
         }
+        emitPreviousSearches()
     }
 }

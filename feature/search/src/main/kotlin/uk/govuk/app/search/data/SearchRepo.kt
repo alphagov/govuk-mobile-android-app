@@ -23,6 +23,10 @@ internal class SearchRepo @Inject constructor(
         localDataSource.removePreviousSearch(searchTerm)
     }
 
+    suspend fun removeAllPreviousSearches() {
+        localDataSource.removeAllPreviousSearches()
+    }
+
     suspend fun performSearch(
         searchTerm: String, count: Int = SearchConfig.DEFAULT_RESULTS_PER_PAGE
     ): Result<SearchResponse> {

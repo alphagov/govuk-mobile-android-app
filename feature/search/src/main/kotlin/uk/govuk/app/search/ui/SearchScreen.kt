@@ -50,6 +50,7 @@ import uk.govuk.app.design.ui.component.ExtraSmallHorizontalSpacer
 import uk.govuk.app.design.ui.component.GovUkCard
 import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
+import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.Title3BoldLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -90,6 +91,9 @@ internal fun SearchRoute(
         onRetry = { searchTerm ->
             viewModel.onSearch(searchTerm)
         },
+        onRemoveAllPreviousSearches = {
+            viewModel.onRemoveAllPreviousSearches()
+        },
         onRemovePreviousSearch = { searchTerm ->
             viewModel.onRemovePreviousSearch(searchTerm)
         },
@@ -106,6 +110,7 @@ private fun SearchScreen(
     onClear: () -> Unit,
     onResultClick: (String, String) -> Unit,
     onRetry: (String) -> Unit,
+    onRemoveAllPreviousSearches: () -> Unit,
     onRemovePreviousSearch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -144,12 +149,13 @@ private fun SearchScreen(
         uiState?.let {
             when (it) {
                 is SearchUiState.Default ->
-                    ShowSuggested(
+                    ShowPreviousSearches(
                         previousSearches = it.previousSearches,
                         onClick = {
                             searchTerm = it
                             onSearch(it)
                         },
+                        onRemoveAll = onRemoveAllPreviousSearches,
                         onRemove = onRemovePreviousSearch
                     )
                 is SearchUiState.Results ->
@@ -169,9 +175,10 @@ private fun SearchScreen(
 // Todo - add modifiers to these functions
 
 @Composable
-private fun ShowSuggested(
+private fun ShowPreviousSearches(
     previousSearches: List<String>,
     onClick: (String) -> Unit,
+    onRemoveAll: () -> Unit,
     onRemove: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -183,14 +190,28 @@ private fun ShowSuggested(
         ) {
             item {
                 Row(
-                    Modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            top = GovUkTheme.spacing.medium,
-                            bottom = GovUkTheme.spacing.small
-                        )
+                            top = GovUkTheme.spacing.small,
+                        ),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    BodyBoldLabel("Previous searches") // Todo - header semantics???
+                    BodyBoldLabel(
+                        text = "Previous searches",
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    SmallHorizontalSpacer()
+
+                    TextButton(
+                        onClick = onRemoveAll
+                    ) {
+                        BodyRegularLabel(
+                            text = "Delete all",
+                            color = GovUkTheme.colourScheme.textAndIcons.link,
+                        )
+                    }
                 }
             }
             items(previousSearches) { searchTerm ->
