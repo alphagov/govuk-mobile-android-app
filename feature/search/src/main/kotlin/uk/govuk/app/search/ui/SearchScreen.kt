@@ -172,8 +172,6 @@ private fun SearchScreen(
     }
 }
 
-// Todo - add modifiers to these functions
-
 @Composable
 private fun ShowPreviousSearches(
     previousSearches: List<String>,
@@ -259,7 +257,8 @@ private fun ShowPreviousSearches(
 private fun ShowResults(
     searchTerm: String,
     searchResults: List<Result>,
-    onClick: (String, String) -> Unit
+    onClick: (String, String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
     val focusRequester = remember { FocusRequester() }
@@ -267,7 +266,7 @@ private fun ShowResults(
     var previousSearchTerm by rememberSaveable { mutableStateOf("") }
 
     LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         state = listState
     ) {
         item {
@@ -347,10 +346,11 @@ private fun ShowResults(
 @Composable
 private fun NoResultsFound(
     searchTerm: String,
-    focusRequester: FocusRequester
+    focusRequester: FocusRequester,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        Modifier.padding(
+        modifier.padding(
             GovUkTheme.spacing.medium,
             GovUkTheme.spacing.large,
             GovUkTheme.spacing.medium,
