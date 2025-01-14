@@ -2,6 +2,7 @@ package uk.govuk.app.search.ui
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,6 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.GovUkCard
+import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.Title3BoldLabel
@@ -128,6 +130,8 @@ private fun SearchScreen(
             when (it) {
                 is SearchUiState.Default ->
                     ShowResults(it.searchTerm, it.searchResults, onResultClick)
+                is SearchUiState.Autocomplete ->
+                    ShowAutocomplete(it.searchTerm, it.suggestions, onSearch)
                 else -> ShowError(uiState.uuid, uiState, onRetry)
             }
         } ?: ShowNothing()
@@ -286,6 +290,57 @@ private fun ShowError(
 
     LaunchedEffect(uuid) {
         focusRequester.requestFocus()
+    }
+}
+
+@Composable
+private fun ShowAutocomplete(
+    searchTerm: String,
+    suggestions: List<String>,
+    onSearch: (String) -> Unit
+) {
+    val listState = rememberLazyListState()
+
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = GovUkTheme.spacing.medium),
+        state = listState
+    ) {
+        item {
+            Title3BoldLabel(
+                text = stringResource(R.string.search_autocomplete_heading),
+                modifier = Modifier
+                    .padding(horizontal = 0.dp)
+                    .padding(bottom = GovUkTheme.spacing.medium)
+                    .padding(top = GovUkTheme.spacing.large)
+                    .semantics { heading() }
+            )
+        }
+        item {
+            ListDivider()
+        }
+
+        items(suggestions) { suggestion ->
+            Row(
+                modifier = Modifier.padding(
+                        vertical = GovUkTheme.spacing.medium,
+                        horizontal = GovUkTheme.spacing.small
+                    )
+                    .clickable(onClick = { onSearch(suggestion) }),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(uk.govuk.app.design.R.drawable.baseline_search_24),
+                    contentDescription = null,
+                    tint = GovUkTheme.colourScheme.textAndIcons.suggestedIcon,
+                    modifier = Modifier.padding(end = GovUkTheme.spacing.small)
+                )
+
+                BodyRegularLabel(text = suggestion)
+            }
+
+            ListDivider()
+        }
     }
 }
 

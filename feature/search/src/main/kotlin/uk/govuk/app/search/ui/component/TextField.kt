@@ -37,8 +37,10 @@ fun SearchField(
         value = searchQuery,
         onValueChange = {
             searchQuery = it
-            searchQuery.takeIf { searchQuery.length >= 3 }?.let {
+            if (searchQuery.length >= 3) {
                 onAutocomplete(searchQuery)
+            } else {
+                onClear()
             }
         },
         modifier = modifier,

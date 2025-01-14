@@ -84,6 +84,7 @@ internal class SearchViewModel @Inject constructor(
     }
 
     private fun fetchAutocompleteSuggestions(searchTerm: String) {
+//        TODO: fetch autocomplete suggestions from API
         val wordList = arrayOf(
             "companies house",
             "household support fund",
@@ -101,6 +102,15 @@ internal class SearchViewModel @Inject constructor(
             it.contains(searchTerm, ignoreCase = true)
         }
 
-        println(filteredList)
+        viewModelScope.launch {
+            val id = UUID.randomUUID()
+            if (filteredList.isNotEmpty()) {
+                _uiState.value = SearchUiState.Autocomplete(
+                    uuid = id,
+                    searchTerm = searchTerm,
+                    suggestions = filteredList
+                )
+            }
+        }
     }
 }

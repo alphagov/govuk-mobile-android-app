@@ -13,6 +13,12 @@ internal sealed class SearchUiState(
         val searchResults: List<Result>
     ) : SearchUiState(uuid = uuid, searchTerm = searchTerm)
 
+    internal class Autocomplete(
+        uuid: UUID,
+        searchTerm: String,
+        val suggestions: List<String>
+    ) : SearchUiState(uuid = uuid, searchTerm = searchTerm)
+
     internal class Empty(uuid: UUID, searchTerm: String) : SearchUiState(uuid = uuid, searchTerm = searchTerm)
 
     internal class Offline(uuid: UUID, searchTerm: String) : SearchUiState(uuid = uuid, searchTerm = searchTerm)
