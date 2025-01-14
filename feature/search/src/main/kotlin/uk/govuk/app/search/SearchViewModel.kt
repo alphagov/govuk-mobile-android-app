@@ -86,4 +86,15 @@ internal class SearchViewModel @Inject constructor(
     fun onClear() {
         emitPreviousSearches()
     }
+
+    fun onRemoveAllPreviousSearches() {
+
+    }
+
+    fun onRemovePreviousSearch(searchTerm: String) {
+        viewModelScope.launch {
+            searchRepo.removePreviousSearch(searchTerm)
+            emitPreviousSearches()
+        }
+    }
 }

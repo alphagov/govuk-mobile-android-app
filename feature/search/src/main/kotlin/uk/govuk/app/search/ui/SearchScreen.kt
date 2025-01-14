@@ -90,6 +90,9 @@ internal fun SearchRoute(
         onRetry = { searchTerm ->
             viewModel.onSearch(searchTerm)
         },
+        onRemovePreviousSearch = { searchTerm ->
+            viewModel.onRemovePreviousSearch(searchTerm)
+        },
         modifier = modifier
     )
 }
@@ -103,6 +106,7 @@ private fun SearchScreen(
     onClear: () -> Unit,
     onResultClick: (String, String) -> Unit,
     onRetry: (String) -> Unit,
+    onRemovePreviousSearch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -146,7 +150,7 @@ private fun SearchScreen(
                             searchTerm = it
                             onSearch(it)
                         },
-                        onRemove = { } // Todo - handle click
+                        onRemove = onRemovePreviousSearch
                     )
                 is SearchUiState.Results ->
                     ShowResults(it.searchTerm, it.searchResults, onResultClick)

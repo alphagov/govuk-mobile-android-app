@@ -19,7 +19,7 @@ internal class SearchLocalDataSource @Inject constructor(
             .find()
     }
 
-    suspend fun insertOrUpdate(searchTerm: String) {
+    suspend fun insertOrUpdatePreviousSearch(searchTerm: String) {
         realmProvider.open().writeBlocking {
             val localSearch = query<LocalSearchItem>("searchTerm = $0", searchTerm).first().find()
             val now = Calendar.getInstance().timeInMillis
@@ -37,9 +37,22 @@ internal class SearchLocalDataSource @Inject constructor(
                 val searches = query<LocalSearchItem>().sort("timestamp", Sort.DESCENDING).find()
                 if (searches.size > 5) {
                     searches.drop(5).forEach {
-                        val toDelete = findLatest(it)
-                        if (toDelete != null) delete(toDelete)
+                        findLatest(it)?.apply {
+                            delete(this)
+                        }
                     }
+                }
+            }
+        }
+    }
+
+    suspend fun removePreviousSearch(searchTerm: String) {
+        realmProvider.open().write {
+            val localSearch = query<LocalSearchItem>("searchTerm = $0", searchTerm).first().find()
+
+            localSearch?.let {
+                findLatest(it)?.apply {
+                    delete(this)
                 }
             }
         }

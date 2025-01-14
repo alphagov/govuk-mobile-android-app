@@ -19,10 +19,14 @@ internal class SearchRepo @Inject constructor(
         return localDataSource.fetchPreviousSearches().map { it.searchTerm }
     }
 
+    suspend fun removePreviousSearch(searchTerm: String) {
+        localDataSource.removePreviousSearch(searchTerm)
+    }
+
     suspend fun performSearch(
         searchTerm: String, count: Int = SearchConfig.DEFAULT_RESULTS_PER_PAGE
     ): Result<SearchResponse> {
-        localDataSource.insertOrUpdate(searchTerm)
+        localDataSource.insertOrUpdatePreviousSearch(searchTerm)
 
         return try {
             val response = searchApi.getSearchResults(searchTerm, count)
