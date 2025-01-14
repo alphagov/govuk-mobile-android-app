@@ -19,7 +19,6 @@ internal class SearchRepo @Inject constructor(
         return localDataSource.fetchPreviousSearches().map { it.searchTerm }
     }
 
-    // Todo - what are we doing about white space???
     suspend fun performSearch(
         searchTerm: String, count: Int = SearchConfig.DEFAULT_RESULTS_PER_PAGE
     ): Result<SearchResponse> {

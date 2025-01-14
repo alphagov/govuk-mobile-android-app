@@ -121,8 +121,7 @@ private fun SearchScreen(
             placeholder = stringResource(R.string.search_placeholder),
             onSearchTermChange = {
                 searchTerm = it
-                // Todo - what are we doing about blank strings???
-                if (searchTerm.isEmpty()) {
+                if (searchTerm.isBlank()) {
                     onClear()
                 }
             },

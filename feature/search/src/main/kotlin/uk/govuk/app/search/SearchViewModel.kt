@@ -51,7 +51,7 @@ internal class SearchViewModel @Inject constructor(
     private fun fetchSearchResults(searchTerm: String) {
         viewModelScope.launch {
             val id = UUID.randomUUID()
-            val searchResult = searchRepo.performSearch(searchTerm)
+            val searchResult = searchRepo.performSearch(searchTerm.trim())
             searchResult.onSuccess { result ->
                 if (result.results.isNotEmpty()) {
                     _uiState.value = Results(
