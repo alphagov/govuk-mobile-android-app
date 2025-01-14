@@ -17,13 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import uk.govuk.app.search.R
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.search.R
 
 @Composable
 fun SearchField(
     placeholder: String,
+    onAutocomplete: (String) -> Unit,
     onSearch: (String) -> Unit,
     onClear: () -> Unit,
     modifier: Modifier = Modifier
@@ -36,6 +37,9 @@ fun SearchField(
         value = searchQuery,
         onValueChange = {
             searchQuery = it
+            searchQuery.takeIf { searchQuery.length >= 3 }?.let {
+                onAutocomplete(searchQuery)
+            }
         },
         modifier = modifier,
         placeholder = {

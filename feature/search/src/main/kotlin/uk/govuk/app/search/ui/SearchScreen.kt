@@ -68,6 +68,9 @@ internal fun SearchRoute(
         uiState = uiState,
         onPageView = { viewModel.onPageView() },
         onBack = onBack,
+        onAutocomplete = { searchTerm ->
+            viewModel.onAutocomplete(searchTerm)
+        },
         onSearch = { searchTerm ->
             keyboardController?.hide()
             viewModel.onSearch(searchTerm)
@@ -90,6 +93,7 @@ private fun SearchScreen(
     uiState: SearchUiState?,
     onPageView: () -> Unit,
     onBack: () -> Unit,
+    onAutocomplete: (String) -> Unit,
     onSearch: (String) -> Unit,
     onClear: () -> Unit,
     onResultClick: (String, String) -> Unit,
@@ -106,6 +110,7 @@ private fun SearchScreen(
     Column(modifier) {
         SearchHeader(
             onBack = onBack,
+            onAutocomplete = onAutocomplete,
             onSearch = onSearch,
             onClear = onClear,
             placeholder = stringResource(R.string.search_placeholder),

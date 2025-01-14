@@ -22,6 +22,7 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 fun SearchHeader(
     onBack: () -> Unit,
     placeholder: String,
+    onAutocomplete: (String) -> Unit,
     onSearch: (String) -> Unit,
     onClear: () -> Unit,
     modifier: Modifier = Modifier,
@@ -43,6 +44,7 @@ fun SearchHeader(
             }
             SearchField(
                 placeholder = placeholder,
+                onAutocomplete = onAutocomplete,
                 onSearch = onSearch,
                 onClear = onClear,
                 modifier = Modifier
@@ -61,6 +63,7 @@ private fun SearchHeaderPreview() {
         SearchHeader(
             onBack = { },
             placeholder = "Search",
+            onAutocomplete = { },
             onSearch = { },
             onClear = { }
         )

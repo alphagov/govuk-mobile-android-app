@@ -61,6 +61,12 @@ internal class SearchViewModel @Inject constructor(
         )
     }
 
+    fun onAutocomplete(searchTerm: String) {
+        fetchAutocompleteSuggestions(searchTerm)
+//        TODO: analytics
+//        analyticsClient.autocomplete(searchTerm)
+    }
+
     fun onSearch(searchTerm: String) {
         fetchSearchResults(searchTerm)
         analyticsClient.search(searchTerm)
@@ -75,5 +81,26 @@ internal class SearchViewModel @Inject constructor(
 
     fun onClear() {
         _uiState.value = null
+    }
+
+    private fun fetchAutocompleteSuggestions(searchTerm: String) {
+        val wordList = arrayOf(
+            "companies house",
+            "household support fund",
+            "council house",
+            "moving house",
+            "companies house login",
+            "dog",
+            "dog breeding",
+            "category",
+            "catch certificate",
+            "cat"
+        )
+
+        val filteredList = wordList.filter {
+            it.contains(searchTerm, ignoreCase = true)
+        }
+
+        println(filteredList)
     }
 }
