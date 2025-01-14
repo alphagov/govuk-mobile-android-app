@@ -18,30 +18,40 @@ import javax.inject.Inject
 internal class SearchViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient,
     private val visited: Visited,
-    private val repository: SearchRepo
+    private val searchRepo: SearchRepo
 ): ViewModel() {
+
+    companion object {
+        private const val SCREEN_CLASS = "SearchScreen"
+        private const val SCREEN_NAME = "Search"
+        private const val TITLE = "Search"
+    }
 
     private val _uiState: MutableStateFlow<SearchUiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
 
     init {
-        fetchPreviousSearches()
+        emitPreviousSearches()
     }
 
-    private fun fetchPreviousSearches() {
-        _uiState.value = Default(
-            listOf(
-                "dog",
-                "cat",
-                "micropig"
-            )
+    fun onPageView() {
+        analyticsClient.screenView(
+            screenClass = SCREEN_CLASS,
+            screenName = SCREEN_NAME,
+            title = TITLE
         )
+    }
+
+    private fun emitPreviousSearches() {
+        viewModelScope.launch {
+            _uiState.value = Default(searchRepo.fetchPreviousSearches())
+        }
     }
 
     private fun fetchSearchResults(searchTerm: String) {
         viewModelScope.launch {
             val id = UUID.randomUUID()
-            val searchResult = repository.performSearch(searchTerm)
+            val searchResult = searchRepo.performSearch(searchTerm)
             searchResult.onSuccess { result ->
                 if (result.results.isNotEmpty()) {
                     _uiState.value = Results(
@@ -61,20 +71,6 @@ internal class SearchViewModel @Inject constructor(
         }
     }
 
-    companion object {
-        private const val SCREEN_CLASS = "SearchScreen"
-        private const val SCREEN_NAME = "Search"
-        private const val TITLE = "Search"
-    }
-
-    fun onPageView() {
-        analyticsClient.screenView(
-            screenClass = SCREEN_CLASS,
-            screenName = SCREEN_NAME,
-            title = TITLE
-        )
-    }
-
     fun onSearch(searchTerm: String) {
         fetchSearchResults(searchTerm)
         analyticsClient.search(searchTerm)
@@ -88,6 +84,6 @@ internal class SearchViewModel @Inject constructor(
     }
 
     fun onClear() {
-        fetchPreviousSearches()
+        emitPreviousSearches()
     }
 }

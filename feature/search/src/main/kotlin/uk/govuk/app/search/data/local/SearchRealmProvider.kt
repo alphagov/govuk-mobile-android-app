@@ -12,7 +12,7 @@ internal class SearchRealmProvider @Inject constructor(
 ) {
 
     private companion object {
-        private const val REALM_NAME = "topics"
+        private const val REALM_NAME = "search"
     }
 
     private lateinit var realm: Realm

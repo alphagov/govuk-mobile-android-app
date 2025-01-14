@@ -2,6 +2,7 @@ package uk.govuk.app.search.data
 
 import uk.govuk.app.networking.domain.DeviceOfflineException
 import uk.govuk.app.networking.domain.ServiceNotRespondingException
+import uk.govuk.app.search.data.local.SearchLocalDataSource
 import uk.govuk.app.search.data.remote.SearchApi
 import uk.govuk.app.search.data.remote.model.SearchResponse
 import uk.govuk.app.search.domain.SearchConfig
@@ -9,12 +10,21 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SearchRepo @Inject constructor(
-    private val searchApi: SearchApi
+internal class SearchRepo @Inject constructor(
+    private val searchApi: SearchApi,
+    private val localDataSource: SearchLocalDataSource
 ) {
+
+    suspend fun fetchPreviousSearches(): List<String> {
+        return localDataSource.fetchPreviousSearches().map { it.searchTerm }
+    }
+
+    // Todo - what are we doing about white space???
     suspend fun performSearch(
         searchTerm: String, count: Int = SearchConfig.DEFAULT_RESULTS_PER_PAGE
     ): Result<SearchResponse> {
+        localDataSource.insertOrUpdate(searchTerm)
+
         return try {
             val response = searchApi.getSearchResults(searchTerm, count)
             Result.success(response)
