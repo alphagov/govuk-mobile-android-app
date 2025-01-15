@@ -200,7 +200,9 @@ private fun ShowPreviousSearches(
                 ) {
                     BodyBoldLabel(
                         text = stringResource(R.string.previous_searches_heading),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .semantics { heading() }
                     )
 
                     SmallHorizontalSpacer()
@@ -226,7 +228,7 @@ private fun ShowPreviousSearches(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Search,
-                            contentDescription = null, // Todo - content desc???
+                            contentDescription = null,
                             modifier = Modifier.size(18.dp),
                             tint = GovUkTheme.colourScheme.textAndIcons.secondary
                         )
@@ -241,7 +243,7 @@ private fun ShowPreviousSearches(
                         ) {
                                 Icon(
                                     imageVector = Icons.Filled.Clear,
-                                    contentDescription = null, // Todo - content desc???
+                                    contentDescription = null,
                                     modifier = Modifier.size(18.dp),
                                     tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
                                 )
