@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.experimental.runners.Enclosed
@@ -22,9 +23,10 @@ import uk.govuk.app.networking.domain.ApiException
 import uk.govuk.app.networking.domain.DeviceOfflineException
 import uk.govuk.app.networking.domain.ServiceNotRespondingException
 import uk.govuk.app.search.data.SearchRepo
-import uk.govuk.app.search.data.remote.model.SearchResult
+import uk.govuk.app.search.data.local.SearchLocalDataSource
+import uk.govuk.app.search.data.remote.SearchApi
 import uk.govuk.app.search.data.remote.model.SearchResponse
-import uk.govuk.app.search.di.SearchModule
+import uk.govuk.app.search.data.remote.model.SearchResult
 import uk.govuk.app.visited.Visited
 
 @RunWith(Enclosed::class)
@@ -33,11 +35,24 @@ class SearchViewModelTest {
     class AnalyticsTest {
         private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
         private val visited = mockk<Visited>(relaxed = true)
-        private val service = SearchModule().providesSearchApi()
-        private val repository = SearchRepo(service)
-        private val viewModel = SearchViewModel(analyticsClient, visited, repository)
+        private val searchApi = mockk<SearchApi>(relaxed = true)
+        private val searchLocalDataSource = mockk<SearchLocalDataSource>(relaxed = true)
+        private val repository = SearchRepo(searchApi, searchLocalDataSource)
         private val dispatcher = UnconfinedTestDispatcher()
         private val searchTerm = "search term"
+
+        private lateinit var viewModel: SearchViewModel
+
+        @Before
+        fun setup() {
+            Dispatchers.setMain(dispatcher)
+            viewModel = SearchViewModel(analyticsClient, visited, repository)
+        }
+
+        @After
+        fun tearDown() {
+            Dispatchers.resetMain()
+        }
 
         @Test
         fun `Given a page view, then log analytics`() {
@@ -54,8 +69,6 @@ class SearchViewModelTest {
 
         @Test
         fun `Given a search, then log analytics`() {
-            Dispatchers.setMain(dispatcher)
-
             viewModel.onSearch(searchTerm)
 
             runTest {
@@ -67,8 +80,6 @@ class SearchViewModelTest {
 
         @Test
         fun `Given a search, and a search result is clicked, then log analytics`() {
-            Dispatchers.setMain(dispatcher)
-
             runTest {
                 viewModel.onSearchResultClicked("search result title", "search result link")
 
@@ -80,8 +91,6 @@ class SearchViewModelTest {
 
         @Test
         fun `Given a search, and a search result is clicked, then log visited item`() {
-            Dispatchers.setMain(dispatcher)
-
             runTest {
                 viewModel.onSearchResultClicked("search result title", "search result link")
 
@@ -97,7 +106,6 @@ class SearchViewModelTest {
         private val visited = mockk<Visited>(relaxed = true)
         private val dispatcher = UnconfinedTestDispatcher()
         private val repository = mockk<SearchRepo>(relaxed = true)
-        private val viewModel = SearchViewModel(analyticsClient, visited, repository)
         private val searchTerm = "search term"
         private val resultWithNoSearchResponse = SearchResponse(total = 0, results = emptyList())
         private val resultWithOneResult = SearchResponse(
@@ -122,9 +130,72 @@ class SearchViewModelTest {
         }
 
         @Test
-        fun `Given a search with a result, then the results and status in the view model are correct`() {
-            coEvery { repository.performSearch(searchTerm) } returns kotlin.Result.success(resultWithOneResult)
+        fun `Given a user has previous searches, when init, then emit previous searches`() {
+            val previousSearches = listOf("dog", "cat", "tax")
+            coEvery { repository.fetchPreviousSearches() } returns previousSearches
 
+            runTest {
+                val viewModel = SearchViewModel(analyticsClient, visited, repository)
+                val result = viewModel.uiState.first() as SearchUiState.Default
+
+                assertEquals(previousSearches, result.previousSearches)
+            }
+        }
+
+        @Test
+        fun `Given a user clears the search, then emit previous searches`() {
+            val previousSearches = listOf("pig")
+            coEvery { repository.fetchPreviousSearches() }returns listOf("dog") andThen previousSearches
+
+            runTest {
+                val viewModel = SearchViewModel(analyticsClient, visited, repository)
+                viewModel.onClear()
+                val result = viewModel.uiState.value as SearchUiState.Default
+
+                assertEquals(previousSearches, result.previousSearches)
+            }
+        }
+
+        @Test
+        fun `Given a user removes a previous search, then update repo and emit previous searches`() {
+            val previousSearches = listOf("pig")
+            coEvery { repository.fetchPreviousSearches() }returns listOf("dog", "pig") andThen previousSearches
+
+            runTest {
+                val viewModel = SearchViewModel(analyticsClient, visited, repository)
+                viewModel.onRemovePreviousSearch("dog")
+                val result = viewModel.uiState.value as SearchUiState.Default
+
+                assertEquals(previousSearches, result.previousSearches)
+            }
+
+            coVerify {
+                repository.removePreviousSearch("dog")
+            }
+        }
+
+        @Test
+        fun `Given a user removes all previous searches, then update repo and emit previous searches`() {
+            coEvery { repository.fetchPreviousSearches() }returns listOf("dog", "pig") andThen emptyList()
+
+            runTest {
+                val viewModel = SearchViewModel(analyticsClient, visited, repository)
+                viewModel.onRemoveAllPreviousSearches()
+                val result = viewModel.uiState.value as SearchUiState.Default
+
+                assertEquals(emptyList<String>(), result.previousSearches)
+            }
+
+            coVerify {
+                repository.removeAllPreviousSearches()
+            }
+        }
+
+        @Test
+        fun `Given a search with a result, then emit search results`() {
+            coEvery { repository.performSearch(searchTerm) } returns Result.success(resultWithOneResult)
+
+            val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onSearch(searchTerm)
 
             runTest {
@@ -136,51 +207,54 @@ class SearchViewModelTest {
         }
 
         @Test
-        fun `Given a search without any results, then the results and status in the view model are correct`() {
-            coEvery { repository.performSearch(searchTerm) } returns kotlin.Result.success(resultWithNoSearchResponse)
+        fun `Given a search without any results, then emit empty state`() {
+            coEvery { repository.performSearch(searchTerm) } returns Result.success(resultWithNoSearchResponse)
 
+            val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.first() as SearchUiState.Empty
-
-                assertEquals(searchTerm, result.searchTerm)
+                val result = viewModel.uiState.first()
+                assertTrue(result is SearchUiState.Error.Empty)
             }
         }
 
         @Test
-        fun `Given a search when the device is offline, then the results and status in the view model are correct`() {
-            coEvery { repository.performSearch(searchTerm) } returns kotlin.Result.failure(DeviceOfflineException())
+        fun `Given a search when the device is offline, then emit offline state`() {
+            coEvery { repository.performSearch(searchTerm) } returns Result.failure(DeviceOfflineException())
 
+            val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.first() as SearchUiState.Offline
-                assertEquals(searchTerm, result.searchTerm)
+                val result = viewModel.uiState.first()
+                assertTrue(result is SearchUiState.Error.Offline)
             }
         }
 
         @Test
-        fun `Given a search when the Search API is unavailable, then the results and status in the view model are correct`() {
-            coEvery { repository.performSearch(searchTerm) } returns kotlin.Result.failure(ServiceNotRespondingException())
+        fun `Given a search when the Search API is unavailable, then emit service error state`() {
+            coEvery { repository.performSearch(searchTerm) } returns Result.failure(ServiceNotRespondingException())
 
+            val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.first() as SearchUiState.ServiceError
-                assertEquals(searchTerm, result.searchTerm)
+                val result = viewModel.uiState.first()
+                assertTrue(result is SearchUiState.Error.ServiceError)
             }
         }
 
         @Test
-        fun `Given a search that returns an error, then the results and status in the view model are correct`() {
-            coEvery { repository.performSearch(searchTerm) } returns kotlin.Result.failure(ApiException())
+        fun `Given a search that returns an error, then emit service error state`() {
+            coEvery { repository.performSearch(searchTerm) } returns Result.failure(ApiException())
 
+            val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.first() as SearchUiState.ServiceError
-                assertEquals(searchTerm, result.searchTerm)
+                val result = viewModel.uiState.first() as SearchUiState
+                assertTrue(result is SearchUiState.Error.ServiceError)
             }
         }
     }

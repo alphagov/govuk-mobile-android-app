@@ -35,9 +35,9 @@ internal class SearchRepo @Inject constructor(
         return try {
             val response = searchApi.getSearchResults(searchTerm, count)
             Result.success(response)
-        } catch (e: java.net.UnknownHostException) {
+        } catch (_: java.net.UnknownHostException) {
             Result.failure(DeviceOfflineException())
-        } catch (e: retrofit2.HttpException) {
+        } catch (_: retrofit2.HttpException) {
             Result.failure(ServiceNotRespondingException())
         } catch (e: Exception) {
             Result.failure(e)
