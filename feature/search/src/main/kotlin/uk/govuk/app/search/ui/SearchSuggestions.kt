@@ -21,8 +21,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import uk.govuk.app.design.ui.component.BodyBoldLabel
@@ -43,6 +49,7 @@ internal fun PreviousSearches(
 ) {
     if (previousSearches.isNotEmpty()) {
         var showDialog by remember { mutableStateOf(false) }
+        val context = LocalContext.current
 
         LazyColumn(
             modifier
@@ -68,7 +75,13 @@ internal fun PreviousSearches(
                     SmallHorizontalSpacer()
 
                     TextButton(
-                        onClick = { showDialog = true }
+                        onClick = { showDialog = true },
+                        modifier = Modifier
+                            .clearAndSetSemantics {
+                                contentDescription = context.getString(R.string.content_desc_delete)
+                                role = Role.Button
+                                onClick { true }
+                            }
                     ) {
                         BodyRegularLabel(
                             text = stringResource(R.string.remove_all_button),
@@ -83,7 +96,11 @@ internal fun PreviousSearches(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onClick(searchTerm) },
+                            .clickable { onClick(searchTerm) }
+                            .semantics {
+                                role = Role.Button
+                                onClick(label = context.getString(R.string.content_desc_search)) { true }
+                            },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
@@ -103,7 +120,7 @@ internal fun PreviousSearches(
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Clear,
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.content_desc_remove),
                                 modifier = Modifier.size(18.dp),
                                 tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
                             )
@@ -131,11 +148,18 @@ private fun ShowRemoveAllConfirmationDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(
-                onClick = onConfirm
+                onClick = onConfirm,
+                modifier = Modifier
+                    .clearAndSetSemantics {
+                        contentDescription = context.getString(R.string.content_desc_delete)
+                        role = Role.Button
+                        onClick { true }
+                    }
             ) {
                 BodyBoldLabel(
                     text = stringResource(R.string.remove_confirmation_dialog_button),
