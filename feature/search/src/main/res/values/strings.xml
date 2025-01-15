@@ -9,4 +9,7 @@
     <string name="search_results_heading">Search results</string>
     <string name="previous_searches_heading">Previous searches</string>
     <string name="remove_all_button">Delete all</string>
+    <string name="remove_confirmation_dialog_button">Delete</string>
+    <string name="remove_confirmation_dialog_title">Delete previous searches?</string>
+    <string name="remove_confirmation_dialog_message">Permanently delete all your previous searches</string>
 </resources>
