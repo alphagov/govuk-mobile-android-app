@@ -24,6 +24,7 @@ import uk.govuk.app.search.SearchUiState
 import uk.govuk.app.search.SearchUiState.Error
 import uk.govuk.app.search.SearchViewModel
 import uk.govuk.app.search.ui.component.SearchHeader
+import uk.govuk.app.search.ui.component.SearchHeaderActions
 
 @Composable
 internal fun SearchRoute(
@@ -92,17 +93,19 @@ private fun SearchScreen(
 
     Column(modifier) {
         SearchHeader(
-            onBack = actions.onBack,
             searchTerm = searchTerm,
             placeholder = stringResource(R.string.search_placeholder),
-            onSearchTermChange = {
-                searchTerm = it
-                if (searchTerm.isBlank()) {
-                    actions.onClear()
-                }
-            },
-            onSearch = { actions.onSearch(searchTerm) },
-            onClear = actions.onClear,
+            actions = SearchHeaderActions(
+                onBack = actions.onBack,
+                onSearchTermChange = {
+                    searchTerm = it
+                    if (searchTerm.isBlank()) {
+                        actions.onClear()
+                    }
+                },
+                onSearch = { actions.onSearch(searchTerm) },
+                onClear = actions.onClear
+            ),
             focusRequester = focusRequester
         )
     }
