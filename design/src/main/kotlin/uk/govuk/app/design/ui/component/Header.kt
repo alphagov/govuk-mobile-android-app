@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.invisibleToUser
 import androidx.compose.ui.semantics.semantics
@@ -53,8 +54,10 @@ fun ChildPageHeader(
     modifier: Modifier = Modifier,
     text: String? = null,
     onBack: (() -> Unit)? = null,
+    backAltText: String? = null,
     onAction: (() -> Unit)? = null,
-    actionText: String? = null
+    actionText: String? = null,
+    actionAltText: String? = null
 ) {
     Column(modifier.semantics { this.invisibleToUser() }) {
         if (onBack != null || onAction != null) {
@@ -70,7 +73,7 @@ fun ChildPageHeader(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.content_desc_back),
+                            contentDescription = backAltText ?: stringResource(R.string.content_desc_back),
                             tint = GovUkTheme.colourScheme.textAndIcons.link
                         )
                     }
@@ -85,7 +88,10 @@ fun ChildPageHeader(
                         BodyRegularLabel(
                             text = actionText,
                             color = GovUkTheme.colourScheme.textAndIcons.link,
-                            textAlign = TextAlign.End
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.semantics {
+                                contentDescription = actionAltText ?: actionText
+                            }
                         )
                     }
                 }

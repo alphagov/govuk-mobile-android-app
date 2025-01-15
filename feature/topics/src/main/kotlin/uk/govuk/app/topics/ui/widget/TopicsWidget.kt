@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -78,13 +79,17 @@ private fun TopicsWidgetContent(
 
             if (!uiState.isError) {
                 val editButtonText = stringResource(R.string.editButton)
+                val editButtonAltText = stringResource(R.string.editButtonAltText)
 
                 TextButton(
                     onClick = { onEditClick(editButtonText) }
                 ) {
                     BodyBoldLabel(
                         text = editButtonText,
-                        color = GovUkTheme.colourScheme.textAndIcons.link
+                        color = GovUkTheme.colourScheme.textAndIcons.link,
+                        modifier = Modifier.semantics {
+                            contentDescription = editButtonAltText
+                        }
                     )
                 }
             }
