@@ -37,46 +37,52 @@ internal fun SearchRoute(
 
     SearchScreen(
         uiState = uiState,
-        onPageView = { viewModel.onPageView() },
-        onBack = onBack,
-        onSearch = { searchTerm ->
-            keyboardController?.hide()
-            viewModel.onSearch(searchTerm)
-        },
-        onClear = {
-            viewModel.onClear()
-        },
-        onResultClick = { title, url ->
-            viewModel.onSearchResultClicked(title, url)
-        },
-        onRetry = { searchTerm ->
-            viewModel.onSearch(searchTerm)
-        },
-        onRemoveAllPreviousSearches = {
-            viewModel.onRemoveAllPreviousSearches()
-        },
-        onRemovePreviousSearch = { searchTerm ->
-            viewModel.onRemovePreviousSearch(searchTerm)
-        },
+        actions = SearchScreenActions(
+            onPageView = { viewModel.onPageView() },
+            onBack = onBack,
+            onSearch = { searchTerm ->
+                keyboardController?.hide()
+                viewModel.onSearch(searchTerm)
+            },
+            onClear = {
+                viewModel.onClear()
+            },
+            onResultClick = { title, url ->
+                viewModel.onSearchResultClicked(title, url)
+            },
+            onRetry = { searchTerm ->
+                viewModel.onSearch(searchTerm)
+            },
+            onRemoveAllPreviousSearches = {
+                viewModel.onRemoveAllPreviousSearches()
+            },
+            onRemovePreviousSearch = { searchTerm ->
+                viewModel.onRemovePreviousSearch(searchTerm)
+            }
+        ),
         modifier = modifier
     )
 }
 
+private class SearchScreenActions(
+    val onPageView: () -> Unit,
+    val onBack: () -> Unit,
+    val onSearch: (String) -> Unit,
+    val onClear: () -> Unit,
+    val onResultClick: (String, String) -> Unit,
+    val onRetry: (String) -> Unit,
+    val onRemoveAllPreviousSearches: () -> Unit,
+    val onRemovePreviousSearch: (String) -> Unit,
+)
+
 @Composable
 private fun SearchScreen(
     uiState: SearchUiState?,
-    onPageView: () -> Unit,
-    onBack: () -> Unit,
-    onSearch: (String) -> Unit,
-    onClear: () -> Unit,
-    onResultClick: (String, String) -> Unit,
-    onRetry: (String) -> Unit,
-    onRemoveAllPreviousSearches: () -> Unit,
-    onRemovePreviousSearch: (String) -> Unit,
+    actions: SearchScreenActions,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
-        onPageView()
+        actions.onPageView()
     }
 
     val focusRequester = remember { FocusRequester() }
@@ -86,17 +92,17 @@ private fun SearchScreen(
 
     Column(modifier) {
         SearchHeader(
-            onBack = onBack,
+            onBack = actions.onBack,
             searchTerm = searchTerm,
             placeholder = stringResource(R.string.search_placeholder),
             onSearchTermChange = {
                 searchTerm = it
                 if (searchTerm.isBlank()) {
-                    onClear()
+                    actions.onClear()
                 }
             },
-            onSearch = { onSearch(searchTerm) },
-            onClear = onClear,
+            onSearch = { actions.onSearch(searchTerm) },
+            onClear = actions.onClear,
             focusRequester = focusRequester
         )
     }
@@ -114,16 +120,16 @@ private fun SearchScreen(
                         previousSearches = it.previousSearches,
                         onClick = {
                             searchTerm = it
-                            onSearch(it)
+                            actions.onSearch(it)
                         },
-                        onRemoveAll = onRemoveAllPreviousSearches,
-                        onRemove = onRemovePreviousSearch
+                        onRemoveAll = actions.onRemoveAllPreviousSearches,
+                        onRemove = actions.onRemovePreviousSearch
                     )
 
                 is SearchUiState.Results ->
-                    SearchResults(it.searchTerm, it.searchResults, onResultClick)
+                    SearchResults(it.searchTerm, it.searchResults, actions.onResultClick)
 
-                else -> SearchError(uiState as Error, onRetry)
+                else -> SearchError(uiState as Error, actions.onRetry)
             }
         }
     }

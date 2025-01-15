@@ -7,11 +7,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import retrofit2.HttpException
-import uk.govuk.app.networking.domain.ApiException
-import uk.govuk.app.networking.domain.DeviceOfflineException
-import uk.govuk.app.networking.domain.ServiceNotRespondingException
 import uk.govuk.app.search.data.remote.SearchApi
-import uk.govuk.app.search.data.remote.model.Result
+import uk.govuk.app.search.data.remote.model.SearchResult
 import uk.govuk.app.search.data.remote.model.SearchResponse
 import uk.govuk.app.search.domain.SearchConfig
 import java.net.UnknownHostException
@@ -20,11 +17,11 @@ class SearchRepoTest {
 
     private val searchApi = mockk<SearchApi>(relaxed = true)
     private val searchTerm = "search term"
-    private val resultWithNoSearchResponse = SearchResponse(total = 0, results = emptyList())
-    private val resultWithOneResult = SearchResponse(
+    private val responseWithNoSearchResults = SearchResponse(total = 0, results = emptyList())
+    private val responseWithOneSearchResult = SearchResponse(
         total = 1,
         results = listOf(
-            Result(
+            SearchResult(
                 title = "title",
                 description = "description",
                 link = "link"
@@ -34,11 +31,11 @@ class SearchRepoTest {
 
     @Test
     fun `initSearch returns Success status when results are found`() {
-        coEvery { searchApi.getSearchResults(searchTerm, SearchConfig.DEFAULT_RESULTS_PER_PAGE) } returns resultWithOneResult
+        coEvery { searchApi.getSearchResults(searchTerm, SearchConfig.DEFAULT_RESULTS_PER_PAGE) } returns responseWithOneSearchResult
 
         val repo = SearchRepo(searchApi)
 
-        val expected = kotlin.Result.success(resultWithOneResult)
+        val expected = Result.success(responseWithOneSearchResult)
 
         runTest {
             val actual = repo.performSearch(searchTerm, 10)
@@ -48,11 +45,11 @@ class SearchRepoTest {
 
     @Test
     fun `initSearch returns Empty status when no results are found`() {
-        coEvery { searchApi.getSearchResults(searchTerm, SearchConfig.DEFAULT_RESULTS_PER_PAGE) } returns resultWithNoSearchResponse
+        coEvery { searchApi.getSearchResults(searchTerm, SearchConfig.DEFAULT_RESULTS_PER_PAGE) } returns responseWithNoSearchResults
 
         val repo = SearchRepo(searchApi)
 
-        val expected = kotlin.Result.success(resultWithNoSearchResponse)
+        val expected = kotlin.Result.success(responseWithNoSearchResults)
 
         runTest {
             val actual = repo.performSearch(searchTerm, 10)

@@ -22,7 +22,7 @@ import uk.govuk.app.networking.domain.ApiException
 import uk.govuk.app.networking.domain.DeviceOfflineException
 import uk.govuk.app.networking.domain.ServiceNotRespondingException
 import uk.govuk.app.search.data.SearchRepo
-import uk.govuk.app.search.data.remote.model.Result
+import uk.govuk.app.search.data.remote.model.SearchResult
 import uk.govuk.app.search.data.remote.model.SearchResponse
 import uk.govuk.app.search.di.SearchModule
 import uk.govuk.app.visited.Visited
@@ -103,7 +103,7 @@ class SearchViewModelTest {
         private val resultWithOneResult = SearchResponse(
             total = 1,
             results = listOf(
-                Result(
+                SearchResult(
                     title = "title",
                     description = "description",
                     link = "link"

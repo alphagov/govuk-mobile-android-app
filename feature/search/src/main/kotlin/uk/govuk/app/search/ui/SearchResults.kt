@@ -34,13 +34,13 @@ import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.Title3BoldLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.search.R
-import uk.govuk.app.search.data.remote.model.Result
+import uk.govuk.app.search.data.remote.model.SearchResult
 import uk.govuk.app.search.domain.StringUtils
 
 @Composable
 internal fun SearchResults(
     searchTerm: String,
-    searchResults: List<Result>,
+    searchResults: List<SearchResult>,
     onClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -92,7 +92,7 @@ private fun Header(
 
 @Composable
 private fun SearchResult(
-    searchResult: Result,
+    searchResult: SearchResult,
     onClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {

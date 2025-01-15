@@ -1,6 +1,6 @@
 package uk.govuk.app.search
 
-import uk.govuk.app.search.data.remote.model.Result
+import uk.govuk.app.search.data.remote.model.SearchResult
 import java.util.UUID
 
 internal sealed class SearchUiState() {
@@ -11,7 +11,7 @@ internal sealed class SearchUiState() {
 
     internal class Results(
         val searchTerm: String,
-        val searchResults: List<Result>
+        val searchResults: List<SearchResult>
     ) : SearchUiState()
 
     internal sealed class Error(
