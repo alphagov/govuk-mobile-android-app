@@ -1,21 +1,26 @@
 package uk.govuk.app.search
 
-import uk.govuk.app.search.data.remote.model.Result
+import uk.govuk.app.search.data.remote.model.SearchResult
 import java.util.UUID
 
-internal sealed class SearchUiState(
-    val uuid: UUID,
-    val searchTerm: String
-) {
+internal sealed class SearchUiState() {
+
     internal class Default(
-        uuid: UUID,
-        searchTerm: String,
-        val searchResults: List<Result>
-    ) : SearchUiState(uuid = uuid, searchTerm = searchTerm)
+        val previousSearches: List<String>
+    ): SearchUiState()
 
-    internal class Empty(uuid: UUID, searchTerm: String) : SearchUiState(uuid = uuid, searchTerm = searchTerm)
+    internal class Results(
+        val searchTerm: String,
+        val searchResults: List<SearchResult>
+    ) : SearchUiState()
 
-    internal class Offline(uuid: UUID, searchTerm: String) : SearchUiState(uuid = uuid, searchTerm = searchTerm)
+    internal sealed class Error(
+        val uuid: UUID
+    ) : SearchUiState() {
+        internal class Empty(uuid: UUID, val searchTerm: String) : Error(uuid)
 
-    internal class ServiceError(uuid: UUID, searchTerm: String) : SearchUiState(uuid = uuid, searchTerm = searchTerm)
+        internal class Offline(uuid: UUID, val searchTerm: String) : Error(uuid)
+
+        internal class ServiceError(uuid: UUID) : Error(uuid)
+    }
 }

@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.networking.domain.DeviceOfflineException
+import uk.govuk.app.search.SearchUiState.*
 import uk.govuk.app.search.data.SearchRepo
 import uk.govuk.app.visited.Visited
 import java.util.UUID
@@ -17,40 +18,20 @@ import javax.inject.Inject
 internal class SearchViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient,
     private val visited: Visited,
-    private val repository: SearchRepo
+    private val searchRepo: SearchRepo
 ): ViewModel() {
-
-    private val _uiState: MutableStateFlow<SearchUiState?> = MutableStateFlow(null)
-    val uiState = _uiState.asStateFlow()
-
-    private fun fetchSearchResults(searchTerm: String) {
-        viewModelScope.launch {
-            val id = UUID.randomUUID()
-            val searchResult = repository.performSearch(searchTerm)
-            searchResult.onSuccess { result ->
-                if (result.results.isNotEmpty()) {
-                    _uiState.value = SearchUiState.Default(
-                        uuid = id,
-                        searchTerm = searchTerm,
-                        searchResults = result.results
-                    )
-                } else {
-                    _uiState.value = SearchUiState.Empty(id, searchTerm)
-                }
-            }
-            searchResult.onFailure { exception ->
-                _uiState.value = when (exception) {
-                    is DeviceOfflineException -> SearchUiState.Offline(id, searchTerm)
-                    else -> SearchUiState.ServiceError(id, searchTerm)
-                }
-            }
-        }
-    }
 
     companion object {
         private const val SCREEN_CLASS = "SearchScreen"
         private const val SCREEN_NAME = "Search"
         private const val TITLE = "Search"
+    }
+
+    private val _uiState: MutableStateFlow<SearchUiState?> = MutableStateFlow(null)
+    val uiState = _uiState.asStateFlow()
+
+    init {
+        emitPreviousSearches()
     }
 
     fun onPageView() {
@@ -59,6 +40,35 @@ internal class SearchViewModel @Inject constructor(
             screenName = SCREEN_NAME,
             title = TITLE
         )
+    }
+
+    private fun emitPreviousSearches() {
+        viewModelScope.launch {
+            _uiState.value = Default(searchRepo.fetchPreviousSearches())
+        }
+    }
+
+    private fun fetchSearchResults(searchTerm: String) {
+        viewModelScope.launch {
+            val id = UUID.randomUUID()
+            val searchResult = searchRepo.performSearch(searchTerm.trim())
+            searchResult.onSuccess { result ->
+                if (result.results.isNotEmpty()) {
+                    _uiState.value = Results(
+                        searchTerm = searchTerm,
+                        searchResults = result.results
+                    )
+                } else {
+                    _uiState.value = Error.Empty(id, searchTerm)
+                }
+            }
+            searchResult.onFailure { exception ->
+                _uiState.value = when (exception) {
+                    is DeviceOfflineException -> Error.Offline(id, searchTerm)
+                    else -> Error.ServiceError(id)
+                }
+            }
+        }
     }
 
     fun onSearch(searchTerm: String) {
@@ -74,6 +84,20 @@ internal class SearchViewModel @Inject constructor(
     }
 
     fun onClear() {
-        _uiState.value = null
+        emitPreviousSearches()
+    }
+
+    fun onRemoveAllPreviousSearches() {
+        viewModelScope.launch {
+            searchRepo.removeAllPreviousSearches()
+        }
+        emitPreviousSearches()
+    }
+
+    fun onRemovePreviousSearch(searchTerm: String) {
+        viewModelScope.launch {
+            searchRepo.removePreviousSearch(searchTerm)
+        }
+        emitPreviousSearches()
     }
 }

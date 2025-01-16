@@ -7,4 +7,12 @@
     <string name="search_no_results">No results for</string>
     <string name="search_not_working">Search is not working. Try again later, or search on the GOV.UK website.</string>
     <string name="search_results_heading">Search results</string>
+    <string name="previous_searches_heading">Previous searches</string>
+    <string name="remove_all_button">Delete all</string>
+    <string name="remove_confirmation_dialog_button">Delete</string>
+    <string name="remove_confirmation_dialog_title">Delete previous searches?</string>
+    <string name="remove_confirmation_dialog_message">Permanently delete all your previous searches</string>
+    <string name="content_desc_delete_all">Delete all previous searches</string>
+    <string name="content_desc_search">search</string>
+    <string name="content_desc_remove">Remove from search history</string>
 </resources>

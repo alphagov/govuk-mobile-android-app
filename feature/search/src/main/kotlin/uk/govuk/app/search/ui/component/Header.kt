@@ -18,12 +18,18 @@ import uk.govuk.app.design.R
 import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
+class SearchHeaderActions(
+    val onBack: () -> Unit,
+    val onSearchTermChange: (String) -> Unit,
+    val onSearch: () -> Unit,
+    val onClear: () -> Unit
+)
+
 @Composable
 fun SearchHeader(
-    onBack: () -> Unit,
+    searchTerm: String,
     placeholder: String,
-    onSearch: (String) -> Unit,
-    onClear: () -> Unit,
+    actions: SearchHeaderActions,
     modifier: Modifier = Modifier,
     focusRequester: FocusRequester = FocusRequester()
 ) {
@@ -33,7 +39,7 @@ fun SearchHeader(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextButton(
-                onClick = onBack
+                onClick = actions.onBack
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -42,9 +48,11 @@ fun SearchHeader(
                 )
             }
             SearchField(
+                searchTerm = searchTerm,
                 placeholder = placeholder,
-                onSearch = onSearch,
-                onClear = onClear,
+                onSearchTermChange = actions.onSearchTermChange,
+                onSearch = actions.onSearch,
+                onClear = actions.onClear,
                 modifier = Modifier
                     .weight(1f)
                     .focusRequester(focusRequester)
@@ -59,10 +67,14 @@ fun SearchHeader(
 private fun SearchHeaderPreview() {
     GovUkTheme {
         SearchHeader(
-            onBack = { },
+            searchTerm = "",
             placeholder = "Search",
-            onSearch = { },
-            onClear = { }
+            actions = SearchHeaderActions(
+                onBack = { },
+                onSearchTermChange = { },
+                onSearch = { },
+                onClear = { }
+            )
         )
     }
 }
