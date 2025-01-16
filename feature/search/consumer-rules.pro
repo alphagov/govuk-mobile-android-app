@@ -4,4 +4,4 @@
 }
 
 -keep class uk.govuk.app.search.data.remote.model.SearchResponse
--keep class uk.govuk.app.search.data.remote.model.Result
+-keep class uk.govuk.app.search.data.remote.model.SearchResult
