@@ -3,6 +3,7 @@ package uk.govuk.app.search.data.local
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.Sort
 import uk.govuk.app.search.data.local.model.LocalSearchItem
+import uk.govuk.app.search.domain.SearchConfig
 import java.util.Calendar
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -35,8 +36,8 @@ internal class SearchLocalDataSource @Inject constructor(
                 )
 
                 val localSearches = query<LocalSearchItem>().sort("timestamp", Sort.DESCENDING).find()
-                if (localSearches.size > 5) {
-                    localSearches.drop(5).forEach {
+                if (localSearches.size > SearchConfig.MAX_PREVIOUS_SEARCH_COUNT) {
+                    localSearches.drop(SearchConfig.MAX_PREVIOUS_SEARCH_COUNT).forEach {
                         findLatest(it)?.apply {
                             delete(this)
                         }
