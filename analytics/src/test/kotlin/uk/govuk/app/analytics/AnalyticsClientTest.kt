@@ -163,6 +163,62 @@ class AnalyticsClientTest {
     }
 
     @Test
+    fun `Given an autocomplete, then log event`() {
+        analyticsClient.autocomplete("input")
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Autocomplete",
+                mapOf(
+                    "text" to "input"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given an autocomplete with postcode, then redact and log event`() {
+        analyticsClient.autocomplete("input A1 1AA")
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Autocomplete",
+                mapOf(
+                    "text" to "input [postcode]"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given an autocomplete with email address, then redact and log event`() {
+        analyticsClient.autocomplete("input test@email.com")
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Autocomplete",
+                mapOf(
+                    "text" to "input [email]"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given an autocomplete with NI number, then redact and log event`() {
+        analyticsClient.autocomplete("input AA 00 00 00 A")
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Autocomplete",
+                mapOf(
+                    "text" to "input [NI number]"
+                )
+            )
+        }
+    }
+
+    @Test
     fun `Given a search result click, then log event`() {
         analyticsClient.searchResultClick("search result title", "search result link")
 

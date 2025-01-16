@@ -15,4 +15,5 @@
     <string name="content_desc_delete_all">Delete all previous searches</string>
     <string name="content_desc_search">search</string>
     <string name="content_desc_remove">Remove from search history</string>
+    <string name="search_autocomplete_heading">Suggested searches</string>
 </resources>
