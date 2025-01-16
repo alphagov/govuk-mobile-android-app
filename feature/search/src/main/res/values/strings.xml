@@ -12,7 +12,7 @@
     <string name="remove_confirmation_dialog_button">Delete</string>
     <string name="remove_confirmation_dialog_title">Delete previous searches?</string>
     <string name="remove_confirmation_dialog_message">Permanently delete all your previous searches</string>
-    <string name="content_desc_delete">Delete from search history</string>
+    <string name="content_desc_delete_all">Delete all previous searches</string>
     <string name="content_desc_search">search</string>
     <string name="content_desc_remove">Remove from search history</string>
 </resources>

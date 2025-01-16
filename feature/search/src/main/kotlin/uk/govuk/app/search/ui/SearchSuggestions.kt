@@ -80,7 +80,7 @@ internal fun PreviousSearches(
                             text = stringResource(R.string.remove_all_button),
                             modifier = Modifier
                                 .semantics {
-                                    contentDescription = context.getString(R.string.content_desc_delete)
+                                    contentDescription = context.getString(R.string.content_desc_delete_all)
                                 },
                             color = GovUkTheme.colourScheme.textAndIcons.link,
                         )
@@ -145,7 +145,6 @@ private fun ShowRemoveAllConfirmationDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
@@ -154,10 +153,6 @@ private fun ShowRemoveAllConfirmationDialog(
             ) {
                 BodyBoldLabel(
                     text = stringResource(R.string.remove_confirmation_dialog_button),
-                    modifier = Modifier
-                        .semantics {
-                            contentDescription = context.getString(R.string.content_desc_delete)
-                        },
                     color = GovUkTheme.colourScheme.textAndIcons.buttonRemove
                 )
             }
