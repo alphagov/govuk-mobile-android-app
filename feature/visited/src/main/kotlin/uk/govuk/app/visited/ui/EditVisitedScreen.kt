@@ -109,6 +109,7 @@ private fun EditVisitedScreen(
     val visitedItems = uiState?.visited
     val titleText = stringResource(R.string.visited_items_title)
     val doneText = stringResource(R.string.visited_items_done_button)
+    val doneAltText = stringResource(R.string.visited_items_done_button_alt_text)
 
     Scaffold(
         containerColor = GovUkTheme.colourScheme.surfaces.background,
@@ -120,7 +121,8 @@ private fun EditVisitedScreen(
             ChildPageHeader(
                 text = titleText,
                 onAction = actions.onBack,
-                actionText = doneText
+                actionText = doneText,
+                actionAltText = doneAltText
             )
         },
         bottomBar = {

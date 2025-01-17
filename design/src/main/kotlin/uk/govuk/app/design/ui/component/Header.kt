@@ -54,7 +54,6 @@ fun ChildPageHeader(
     modifier: Modifier = Modifier,
     text: String? = null,
     onBack: (() -> Unit)? = null,
-    backAltText: String? = null,
     onAction: (() -> Unit)? = null,
     actionText: String? = null,
     actionAltText: String? = null
@@ -73,7 +72,7 @@ fun ChildPageHeader(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = backAltText ?: stringResource(R.string.content_desc_back),
+                            contentDescription = stringResource(R.string.content_desc_back),
                             tint = GovUkTheme.colourScheme.textAndIcons.link
                         )
                     }

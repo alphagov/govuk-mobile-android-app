@@ -81,7 +81,6 @@ private fun VisitedScreen(
     }
 
     val title = stringResource(R.string.visited_items_title)
-    val backAltText = stringResource(R.string.visited_items_back_button_alt_text)
     val editText = stringResource(R.string.visited_items_edit_button)
     val editAltText = stringResource(R.string.visited_items_edit_button_alt_text)
     val visitedItems = uiState?.visited
@@ -96,7 +95,6 @@ private fun VisitedScreen(
         ChildPageHeader(
             text = title,
             onBack = onBack,
-            backAltText = backAltText,
             onAction = onAction,
             actionText = editText,
             actionAltText = editAltText,
