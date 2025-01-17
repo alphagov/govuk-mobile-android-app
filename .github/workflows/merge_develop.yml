@@ -2,8 +2,7 @@ name: Merge into develop
 
 on:
   push:
-#    branches: [ develop ]
-    branches: [ GOVUKAPP-1085_sign_alpha_build ]
+    branches: [ develop ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -38,8 +37,7 @@ jobs:
           ALPHA_KEYSTORE: ${{ secrets.ALPHA_KEYSTORE }}
 
       - name: Build APK and distribute to firebase
-#        run: ./gradlew assembleAlpha appDistributionAlpha
-        run: ./gradlew assembleAlpha
+        run: ./gradlew assembleAlpha appDistributionAlpha
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           ALPHA_KEYSTORE: ${{ secrets.ALPHA_KEYSTORE }}
