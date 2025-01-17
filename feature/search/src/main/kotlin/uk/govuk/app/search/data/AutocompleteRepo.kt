@@ -1,27 +1,26 @@
 package uk.govuk.app.search.data
 
+import uk.govuk.app.networking.domain.DeviceOfflineException
+import uk.govuk.app.networking.domain.ServiceNotRespondingException
+import uk.govuk.app.search.data.remote.AutocompleteApi
+import uk.govuk.app.search.data.remote.model.AutocompleteResponse
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class AutocompleteRepo @Inject constructor() {
-    fun performLookup(searchTerm: String): Result<List<String>> {
-//        TODO: fetch autocomplete suggestions from API
-        val wordList = arrayOf(
-            "companies house",
-            "household support fund",
-            "council house",
-            "moving house",
-            "companies house login",
-            "dog",
-            "dog breeding",
-            "category",
-            "catch certificate",
-            "cat"
-        )
-
-        val suggestions = wordList.filter {
-            it.contains(searchTerm, ignoreCase = true)
+@Singleton
+internal class AutocompleteRepo @Inject constructor(
+    private val autocompleteApi: AutocompleteApi,
+) {
+    suspend fun performLookup(searchTerm: String): Result<AutocompleteResponse> {
+        return try {
+            val response = autocompleteApi.getSuggestions(searchTerm)
+            return Result.success(response)
+        } catch (_: java.net.UnknownHostException) {
+            Result.failure(DeviceOfflineException())
+        } catch (_: retrofit2.HttpException) {
+            Result.failure(ServiceNotRespondingException())
+        } catch (e: Exception) {
+            Result.failure(e)
         }
-
-        return Result.success(suggestions)
     }
 }

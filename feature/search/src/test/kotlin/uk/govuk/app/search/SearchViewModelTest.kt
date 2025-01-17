@@ -24,7 +24,9 @@ import uk.govuk.app.networking.domain.ServiceNotRespondingException
 import uk.govuk.app.search.data.AutocompleteRepo
 import uk.govuk.app.search.data.SearchRepo
 import uk.govuk.app.search.data.local.SearchLocalDataSource
+import uk.govuk.app.search.data.remote.AutocompleteApi
 import uk.govuk.app.search.data.remote.SearchApi
+import uk.govuk.app.search.data.remote.model.AutocompleteResponse
 import uk.govuk.app.search.data.remote.model.SearchResponse
 import uk.govuk.app.search.data.remote.model.SearchResult
 import uk.govuk.app.visited.Visited
@@ -38,7 +40,8 @@ class SearchViewModelTest {
         private val searchApi = mockk<SearchApi>(relaxed = true)
         private val searchLocalDataSource = mockk<SearchLocalDataSource>(relaxed = true)
         private val repository = SearchRepo(searchApi, searchLocalDataSource)
-        private val autocompleteRepository = AutocompleteRepo()
+        private val autocompleteApi = mockk<AutocompleteApi>(relaxed = true)
+        private val autocompleteRepository = AutocompleteRepo(autocompleteApi)
         private val dispatcher = UnconfinedTestDispatcher()
         private val searchTerm = "search term"
 
@@ -273,7 +276,7 @@ class SearchViewModelTest {
 
         @Test
         fun `Given an autocomplete with one suggestion, then emit autocomplete suggestions`() {
-            coEvery { autocompleteRepository.performLookup(searchTerm) } returns Result.success(listOf("dog"))
+            coEvery { autocompleteRepository.performLookup(searchTerm) } returns Result.success(AutocompleteResponse(suggestions = listOf("dog")))
 
             val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
             viewModel.onAutocomplete(searchTerm)
@@ -288,7 +291,7 @@ class SearchViewModelTest {
 
         @Test
         fun `Given an autocomplete with no suggestions, then emit no autocomplete suggestions`() {
-            coEvery { autocompleteRepository.performLookup(searchTerm) } returns Result.success(emptyList())
+            coEvery { autocompleteRepository.performLookup(searchTerm) } returns Result.success(AutocompleteResponse(suggestions = emptyList()))
 
             val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
             viewModel.onAutocomplete(searchTerm)
@@ -300,5 +303,45 @@ class SearchViewModelTest {
                 assertEquals(0, result.suggestions.size)
             }
         }
+
+        @Test
+        fun `Given an autocomplete lookup, when the device is offline, then emit offline state`() {
+            coEvery { autocompleteRepository.performLookup(searchTerm) } returns Result.failure(DeviceOfflineException())
+
+            val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+            viewModel.onAutocomplete(searchTerm)
+
+            runTest {
+                val result = viewModel.uiState.value
+                assertTrue(result is SearchUiState.Error.Offline)
+            }
+        }
+
+        @Test
+        fun `Given an autocomplete lookup, when the Autocomplete API is unavailable, then emit service error state`() {
+            coEvery { autocompleteRepository.performLookup(searchTerm) } returns Result.failure(ServiceNotRespondingException())
+
+            val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+            viewModel.onAutocomplete(searchTerm)
+
+            runTest {
+                val result = viewModel.uiState.value
+                assertTrue(result is SearchUiState.Error.ServiceError)
+            }
+        }
+
+        @Test
+        fun `Given an autocomplete lookup that returns an error, then emit service error state`() {
+            coEvery { autocompleteRepository.performLookup(searchTerm) } returns Result.failure(ApiException())
+
+            val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+            viewModel.onAutocomplete(searchTerm)
+
+            runTest {
+                val result = viewModel.uiState.value as SearchUiState
+                assertTrue(result is SearchUiState.Error.ServiceError)
+            }
+        }
+
     }
 }

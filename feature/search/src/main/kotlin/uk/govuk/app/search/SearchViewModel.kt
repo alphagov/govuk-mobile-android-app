@@ -80,10 +80,10 @@ internal class SearchViewModel @Inject constructor(
             val id = UUID.randomUUID()
             val autocompleteResult = autocompleteRepo.performLookup(searchTerm.trim())
             autocompleteResult.onSuccess { result ->
-                if (result.isNotEmpty()) {
+                if (result.suggestions.isNotEmpty()) {
                     _uiState.value = SearchUiState.Autocomplete(
                         searchTerm = searchTerm,
-                        suggestions = result,
+                        suggestions = result.suggestions,
                     )
                 } else {
                     _uiState.value = SearchUiState.Autocomplete(
