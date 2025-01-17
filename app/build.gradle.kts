@@ -33,6 +33,15 @@ android {
         buildConfigField("String", "PLAY_STORE_URL", "\"https://play.google.com/store/apps/details?id=$applicationId\"")
     }
 
+    signingConfigs {
+        create("alpha") {
+            storeFile = file("${project.rootDir}/alpha.jks")
+            storePassword = System.getenv("ALPHA_KEY_PASSWORD")
+            keyAlias = System.getenv("ALPHA_KEY_ALIAS")
+            keyPassword = System.getenv("ALPHA_KEY_PASSWORD")
+        }
+    }
+
     buildTypes {
         create("alpha") {
             applicationIdSuffix = ".dev"
@@ -42,7 +51,12 @@ android {
                 "proguard-rules.pro"
             )
             matchingFallbacks += listOf("debug")
-            signingConfig = signingConfigs.getByName("debug")
+
+            signingConfig = if (System.getenv("ALPHA_KEYSTORE") != null) {
+                signingConfigs.getByName("alpha")
+            } else {
+                signingConfigs.getByName("debug")
+            }
 
             firebaseAppDistribution {
                 artifactType = "APK"
