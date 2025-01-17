@@ -131,7 +131,7 @@ internal fun PreviousSearches(
         }
 
         if (showDialog) {
-            ShowRemoveAllConfirmationDialog(
+            RemoveAllConfirmationDialog(
                 onConfirm = onRemoveAll,
                 onDismiss = { showDialog = false }
             )
@@ -140,7 +140,7 @@ internal fun PreviousSearches(
 }
 
 @Composable
-private fun ShowRemoveAllConfirmationDialog(
+private fun RemoveAllConfirmationDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
@@ -151,7 +151,7 @@ private fun ShowRemoveAllConfirmationDialog(
             TextButton(
                 onClick = onConfirm
             ) {
-                BodyBoldLabel(
+                BodyRegularLabel(
                     text = stringResource(R.string.remove_confirmation_dialog_button),
                     color = GovUkTheme.colourScheme.textAndIcons.buttonRemove
                 )
@@ -162,10 +162,11 @@ private fun ShowRemoveAllConfirmationDialog(
             BodyBoldLabel(stringResource(R.string.remove_confirmation_dialog_title))
         },
         text = {
-            BodyBoldLabel(
+            BodyRegularLabel(
                 text = stringResource(R.string.remove_confirmation_dialog_message),
                 color = GovUkTheme.colourScheme.textAndIcons.secondary
             )
-        }
+        },
+        containerColor = GovUkTheme.colourScheme.surfaces.alert
     )
 }
