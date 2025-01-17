@@ -53,6 +53,7 @@ android {
             matchingFallbacks += listOf("debug")
 
             signingConfig = if (System.getenv("ALPHA_KEYSTORE") != null) {
+                println("Signing with Alpha Keystore!!!")
                 signingConfigs.getByName("alpha")
             } else {
                 signingConfigs.getByName("debug")
