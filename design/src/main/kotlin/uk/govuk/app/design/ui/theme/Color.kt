@@ -271,7 +271,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             toggleDisabled = Color.Unspecified,
             toggleHandle = Color.Unspecified,
             toggleBorder = Color.Unspecified,
-            icon = Color.Unspecified,
+            icon = Color.Unspecified
         ),
         strokes = Strokes(
             container = Color.Unspecified,
