@@ -22,6 +22,7 @@ internal class VisitedRealmProvider @Inject constructor(
             val realmKey = encryptionHelper.getRealmKey()
 
             val config = RealmConfiguration.Builder(schema = setOf(VisitedItem::class))
+                .schemaVersion(1)
                 .name(REALM_NAME)
                 .encryptionKey(realmKey)
                 .build()

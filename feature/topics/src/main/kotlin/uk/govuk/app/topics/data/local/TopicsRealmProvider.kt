@@ -23,6 +23,7 @@ internal class TopicsRealmProvider @Inject constructor(
             val realmKey = encryptionHelper.getRealmKey()
 
             val config = RealmConfiguration.Builder(schema = setOf(LocalTopicItem::class))
+                .schemaVersion(1)
                 .name(REALM_NAME)
                 .encryptionKey(realmKey)
                 .build()
