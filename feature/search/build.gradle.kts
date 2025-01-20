@@ -35,11 +35,11 @@ sonar {
     properties {
         property(
             "sonar.coverage.exclusions",
-            properties["sonar.coverage.exclusions"].toString() + ",**/SearchEncryptionHelper.*,**/SearchRealmProvider.*"
+            properties["sonar.coverage.exclusions"].toString() + ",**/SearchRealmProvider.*"
         )
         property(
             "sonar.cpd.exclusions",
-            properties["sonar.cpd.exclusions"].toString() + ",**/SearchEncryptionHelper.*,**/SearchRealmProvider.*"
+            properties["sonar.cpd.exclusions"].toString() + ",**/SearchRealmProvider.*"
         )
     }
 }
@@ -49,6 +49,8 @@ dependencies {
     implementation(projects.analytics)
     implementation(projects.networking)
     implementation(projects.feature.visited)
+    implementation(projects.feature.visited)
+    implementation(projects.data)
 
     implementation(libs.androidx.navigation.compose)
     implementation(platform(libs.androidx.compose.bom))

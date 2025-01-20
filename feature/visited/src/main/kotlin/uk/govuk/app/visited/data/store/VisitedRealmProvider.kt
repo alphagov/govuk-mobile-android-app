@@ -2,13 +2,14 @@ package uk.govuk.app.visited.data.store
 
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
+import uk.govuk.app.data.local.RealmEncryptionHelper
 import uk.govuk.app.visited.data.model.VisitedItem
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 internal class VisitedRealmProvider @Inject constructor(
-    private val encryptionHelper: VisitedEncryptionHelper
+    private val encryptionHelper: RealmEncryptionHelper
 ) {
     private companion object {
         private const val REALM_NAME = "visited"

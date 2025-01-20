@@ -1,4 +1,4 @@
-package uk.govuk.app.search.data.local
+package uk.govuk.app.data.local
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
@@ -11,13 +11,15 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
+import javax.inject.Singleton
 
-internal class SearchEncryptionHelper @Inject constructor(
-    private val dataStore: SearchDataStore
+@Singleton
+class RealmEncryptionHelper @Inject constructor(
+    private val dataStore: RealmDataStore
 ) {
 
     private companion object {
-        private const val KEYSTORE_KEY_ALIAS = "realm_search_key"
+        private const val KEYSTORE_KEY_ALIAS = "realm_key"
     }
 
     private val keyStore: KeyStore = KeyStore.getInstance("AndroidKeyStore")
@@ -27,8 +29,8 @@ internal class SearchEncryptionHelper @Inject constructor(
     }
 
     suspend fun getRealmKey(): ByteArray {
-        val encryptedRealmKey = dataStore.getRealmSearchKey()
-        val realmIv = dataStore.getRealmSearchIv()
+        val encryptedRealmKey = dataStore.getRealmKey()
+        val realmIv = dataStore.getRealmIv()
 
         return if (encryptedRealmKey != null && realmIv != null &&
             keyStore.containsAlias(KEYSTORE_KEY_ALIAS)
@@ -96,7 +98,7 @@ internal class SearchEncryptionHelper @Inject constructor(
         val encodedKey = Base64.encodeToString(encryptedKey, Base64.DEFAULT)
         val encodedIv = Base64.encodeToString(iv, Base64.DEFAULT)
 
-        dataStore.saveRealmSearchKey(encodedKey)
-        dataStore.saveRealmSearchIv(encodedIv)
+        dataStore.saveRealmKey(encodedKey)
+        dataStore.saveRealmIv(encodedIv)
     }
 }

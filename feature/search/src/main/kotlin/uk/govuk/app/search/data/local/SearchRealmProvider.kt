@@ -2,13 +2,14 @@ package uk.govuk.app.search.data.local
 
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
+import uk.govuk.app.data.local.RealmEncryptionHelper
 import uk.govuk.app.search.data.local.model.LocalSearchItem
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 internal class SearchRealmProvider @Inject constructor(
-    private val encryptionHelper: SearchEncryptionHelper
+    private val encryptionHelper: RealmEncryptionHelper
 ) {
 
     private companion object {

@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -23,9 +25,28 @@ android {
     }
 }
 
+sonar {
+    properties {
+        property(
+            "sonar.coverage.exclusions",
+            properties["sonar.coverage.exclusions"].toString() + ",**/RealmEncryptionHelper.*"
+        )
+        property(
+            "sonar.cpd.exclusions",
+            properties["sonar.cpd.exclusions"].toString() + ",**/RealmEncryptionHelper.*"
+        )
+    }
+}
+
 dependencies {
 
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.datastore.preferences)
+
+    ksp(libs.hilt.compiler)
+
     testImplementation(libs.junit)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
