@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.realm)
 }
 
 android {
@@ -44,6 +45,8 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 
     ksp(libs.hilt.compiler)
+
+    implementation(libs.realm.base)
 
     testImplementation(libs.junit)
 
