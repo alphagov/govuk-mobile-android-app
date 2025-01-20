@@ -30,7 +30,16 @@ jobs:
       - name: Generate release notes
         run: git log --format=%B -n 1 > releasenotes.txt
 
+      - name: Decode keystore
+        run: |
+          echo $ALPHA_KEYSTORE | base64 -di > alpha.jks
+        env:
+          ALPHA_KEYSTORE: ${{ secrets.ALPHA_KEYSTORE }}
+
       - name: Build APK and distribute to firebase
         run: ./gradlew assembleAlpha appDistributionAlpha
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          ALPHA_KEYSTORE: ${{ secrets.ALPHA_KEYSTORE }}
+          ALPHA_KEY_PASSWORD: ${{ secrets.ALPHA_KEY_PASSWORD }}
+          ALPHA_KEY_ALIAS: ${{ secrets.ALPHA_KEY_ALIAS }}
