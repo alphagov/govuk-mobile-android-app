@@ -39,19 +39,6 @@ android {
     }
 }
 
-sonar {
-    properties {
-        property(
-            "sonar.coverage.exclusions",
-            properties["sonar.coverage.exclusions"].toString() + ",**/TopicsRealmProvider.*"
-        )
-        property(
-            "sonar.cpd.exclusions",
-            properties["sonar.cpd.exclusions"].toString() + ",**/TopicsRealmProvider.*"
-        )
-    }
-}
-
 dependencies {
     implementation(projects.analytics)
     implementation(projects.design)
