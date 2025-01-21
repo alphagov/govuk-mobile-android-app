@@ -68,8 +68,17 @@ class AnalyticsClient @Inject constructor(
         navigation(text = text, type = "Tab")
     }
 
-    fun widgetClick(text: String) {
-        navigation(text = text, type = "Widget")
+    fun widgetClick(
+        text: String,
+        external: Boolean,
+        section: String
+    ) {
+        navigation(
+            text = text,
+            type = "Widget",
+            external = external,
+            section = section
+        )
     }
 
     fun search(searchTerm: String) {
