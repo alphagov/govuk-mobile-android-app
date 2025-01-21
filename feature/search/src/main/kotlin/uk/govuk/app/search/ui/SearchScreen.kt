@@ -136,7 +136,14 @@ private fun SearchScreen(
                     )
 
                 is SearchUiState.Autocomplete ->
-                    SearchAutocomplete(it.searchTerm, it.suggestions, actions.onSearch)
+                    SearchAutocomplete(
+                        searchTerm = it.searchTerm,
+                        suggestions = it.suggestions,
+                        onSearch = {
+                            searchTerm = it
+                            actions.onSearch(it)
+                        }
+                    )
 
                 is SearchUiState.Results ->
                     SearchResults(it.searchTerm, it.searchResults, actions.onResultClick)
