@@ -302,6 +302,21 @@ class SearchViewModelTest {
         }
 
         @Test
+        fun `Given an autocomplete with less than AUTOCOMPLETE_MIN_LENGTH chars, then emit previous suggestions`() {
+            val previousSearches = listOf("dog", "cat", "tax")
+            coEvery { repository.fetchPreviousSearches() } returns previousSearches
+
+            runTest {
+                val viewModel = SearchViewModel(analyticsClient, visited, repository)
+                viewModel.onAutocomplete("a")
+
+                val result = viewModel.uiState.value as SearchUiState.Default
+
+                assertEquals(previousSearches, result.previousSearches)
+            }
+        }
+
+        @Test
         fun `Given an autocomplete lookup, when the device is offline, then emit offline state`() {
             coEvery { repository.performLookup(searchTerm) } returns Result.failure(DeviceOfflineException())
 

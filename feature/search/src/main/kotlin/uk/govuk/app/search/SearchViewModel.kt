@@ -12,6 +12,7 @@ import uk.govuk.app.search.SearchUiState.Default
 import uk.govuk.app.search.SearchUiState.Error
 import uk.govuk.app.search.SearchUiState.Results
 import uk.govuk.app.search.data.SearchRepo
+import uk.govuk.app.search.domain.SearchConfig
 import uk.govuk.app.visited.Visited
 import java.util.UUID
 import javax.inject.Inject
@@ -130,7 +131,11 @@ internal class SearchViewModel @Inject constructor(
     }
 
     fun onAutocomplete(searchTerm: String) {
-        fetchAutocompleteSuggestions(searchTerm)
-        analyticsClient.autocomplete(searchTerm)
+        if (searchTerm.length >= SearchConfig.AUTOCOMPLETE_MIN_LENGTH) {
+            fetchAutocompleteSuggestions(searchTerm)
+            analyticsClient.autocomplete(searchTerm)
+        } else {
+            onClear()
+        }
     }
 }

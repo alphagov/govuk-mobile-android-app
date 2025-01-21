@@ -21,4 +21,6 @@ object SearchConfig {
     const val DEFAULT_RESULTS_PER_PAGE = 10
 
     const val MAX_PREVIOUS_SEARCH_COUNT = 5
+
+    const val AUTOCOMPLETE_MIN_LENGTH = 3
 }

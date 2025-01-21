@@ -106,11 +106,7 @@ private fun SearchScreen(
                     if (searchTerm.isBlank()) {
                         actions.onClear()
                     } else {
-                        if (searchTerm.length >= 3) {
-                            actions.onAutocomplete(searchTerm)
-                        } else {
-                            actions.onClear()
-                        }
+                        actions.onAutocomplete(searchTerm)
                     }
                 },
                 onSearch = { actions.onSearch(searchTerm) },
