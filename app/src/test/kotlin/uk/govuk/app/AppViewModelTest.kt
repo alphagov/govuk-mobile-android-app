@@ -430,17 +430,33 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `When widget is clicked, then log analytics`() {
+    fun `When an external widget is clicked, then log analytics`() {
         coEvery { configRepo.initConfig() } returns Result.success(Unit)
         every { flagRepo.isAppAvailable() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
 
         runTest {
-            viewModel.onWidgetClick("text")
+            viewModel.onWidgetClick("text", true, "section")
 
             coVerify {
-                analyticsClient.widgetClick("text")
+                analyticsClient.widgetClick("text", true, "section")
+            }
+        }
+    }
+
+    @Test
+    fun `When an internal widget is clicked, then log analytics`() {
+        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+
+        runTest {
+            viewModel.onWidgetClick("text", false, "section")
+
+            coVerify {
+                analyticsClient.widgetClick("text", false, "section")
             }
         }
     }

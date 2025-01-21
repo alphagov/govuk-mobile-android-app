@@ -82,8 +82,16 @@ internal class AppViewModel @Inject constructor(
         }
     }
 
-    fun onWidgetClick(text: String) {
-        analyticsClient.widgetClick(text)
+    fun onWidgetClick(
+        text: String,
+        external: Boolean,
+        section: String
+    ) {
+        analyticsClient.widgetClick(
+            text,
+            external,
+            section
+        )
     }
 
     fun onTabClick(text: String) {

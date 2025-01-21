@@ -42,6 +42,7 @@ import androidx.navigation.compose.rememberNavController
 import uk.govuk.app.AppUiState
 import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
+import uk.govuk.app.R
 import uk.govuk.app.analytics.navigation.analyticsGraph
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.navigation.homeGraph
@@ -90,12 +91,15 @@ internal fun GovUkApp() {
                             recommendUpdateSkipped = { isRecommendUpdateSkipped = true }
                         )
                     } else {
+                        val section = stringResource(R.string.homepage)
                         BottomNavScaffold(
                             uiState = it,
                             onboardingCompleted = { viewModel.onboardingCompleted() },
                             topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
                             onTabClick = { tabText -> viewModel.onTabClick(tabText) },
-                            onWidgetClick = { text -> viewModel.onWidgetClick(text) }
+                            onWidgetClick = { text, external ->
+                                viewModel.onWidgetClick(text, external, section)
+                            }
                         )
                     }
                 }
@@ -128,7 +132,7 @@ private fun BottomNavScaffold(
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
-    onWidgetClick: (String) -> Unit
+    onWidgetClick: (String, Boolean) -> Unit
 ) {
     val navController = rememberNavController()
 
@@ -233,7 +237,7 @@ private fun GovUkNavHost(
     uiState: AppUiState.Default,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
-    onWidgetClick: (String) -> Unit,
+    onWidgetClick: (String, Boolean) -> Unit,
     paddingValues: PaddingValues
 ) {
     val launchRoutes = rememberSaveable { AppLaunchNavigation(uiState).launchRoutes }
@@ -296,14 +300,14 @@ private fun homeScreenWidgets(
     isSearchEnabled: Boolean,
     isRecentActivityEnabled: Boolean,
     isTopicsEnabled: Boolean,
-    onClick: (String) -> Unit
+    onClick: (String, Boolean) -> Unit
 ): List<@Composable (Modifier) -> Unit> {
     val widgets = mutableListOf<@Composable (Modifier) -> Unit>()
 
     widgets.add { modifier ->
         FeedbackPromptWidget(
             onClick = { text ->
-                onClick(text)
+                onClick(text, true)
                 navigateToHelpAndFeedback(context, BuildConfig.VERSION_NAME)
             },
             modifier = modifier
@@ -314,7 +318,7 @@ private fun homeScreenWidgets(
         widgets.add { modifier ->
             SearchWidget(
                 onClick = { text ->
-                    onClick(text)
+                    onClick(text, false)
                     navController.navigate(SEARCH_GRAPH_ROUTE)
                 },
                 modifier = modifier
@@ -326,7 +330,7 @@ private fun homeScreenWidgets(
         widgets.add { modifier ->
             VisitedWidget(
                 onClick = { text ->
-                    onClick(text)
+                    onClick(text, false)
                     navController.navigate(VISITED_GRAPH_ROUTE)
                 },
                 modifier = modifier
@@ -338,15 +342,15 @@ private fun homeScreenWidgets(
         widgets.add { modifier ->
             TopicsWidget(
                 onTopicClick = { ref, title ->
-                    onClick(title)
+                    onClick(title, false)
                     navController.navigateToTopic(ref)
                 },
                 onEditClick = { text ->
-                    onClick(text)
+                    onClick(text, false)
                     navController.navigateToTopicsEdit()
                 },
                 onAllClick = { text ->
-                    onClick(text)
+                    onClick(text, false)
                     navController.navigateToTopicsAll()
                 },
                 modifier = modifier
