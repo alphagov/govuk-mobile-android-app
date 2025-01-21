@@ -1,20 +1,19 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    alias(libs.plugins.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.kover)
     alias(libs.plugins.realm)
 }
 
 android {
-    namespace = "uk.govuk.app.visited"
+    namespace = "uk.govuk.app.data"
     compileSdk = Version.COMPILE_SDK
 
     defaultConfig {
         minSdk = Version.MIN_SDK
-        consumerProguardFiles("consumer-rules.pro")
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -31,36 +30,26 @@ sonar {
     properties {
         property(
             "sonar.coverage.exclusions",
-            properties["sonar.coverage.exclusions"].toString() + ",**/VisitedRealmProvider.*"
+            properties["sonar.coverage.exclusions"].toString() + ",**/RealmEncryptionHelper.*,**/RealmProvider.*,**/RealmDataStore.*"
         )
         property(
             "sonar.cpd.exclusions",
-            properties["sonar.cpd.exclusions"].toString() + ",**/VisitedRealmProvider.*"
+            properties["sonar.cpd.exclusions"].toString() + ",**/RealmEncryptionHelper.*,**/RealmProvider.*,**/RealmDataStore.*"
         )
     }
 }
 
 dependencies {
-    implementation(projects.design)
-    implementation(projects.analytics)
-    implementation(projects.data)
 
-    implementation(libs.androidx.navigation.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.material3)
-    implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.realm.base)
 
     ksp(libs.hilt.compiler)
 
+    implementation(libs.realm.base)
+
     testImplementation(libs.junit)
-    testImplementation(libs.mockk)
-    testImplementation(libs.coroutine.test)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    debugImplementation(libs.androidx.ui.tooling)
 }
