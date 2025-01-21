@@ -21,7 +21,6 @@ import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.networking.domain.ApiException
 import uk.govuk.app.networking.domain.DeviceOfflineException
 import uk.govuk.app.networking.domain.ServiceNotRespondingException
-import uk.govuk.app.search.data.AutocompleteRepo
 import uk.govuk.app.search.data.SearchRepo
 import uk.govuk.app.search.data.local.SearchLocalDataSource
 import uk.govuk.app.search.data.remote.AutocompleteApi
@@ -38,10 +37,9 @@ class SearchViewModelTest {
         private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
         private val visited = mockk<Visited>(relaxed = true)
         private val searchApi = mockk<SearchApi>(relaxed = true)
-        private val searchLocalDataSource = mockk<SearchLocalDataSource>(relaxed = true)
-        private val repository = SearchRepo(searchApi, searchLocalDataSource)
         private val autocompleteApi = mockk<AutocompleteApi>(relaxed = true)
-        private val autocompleteRepository = AutocompleteRepo(autocompleteApi)
+        private val searchLocalDataSource = mockk<SearchLocalDataSource>(relaxed = true)
+        private val repository = SearchRepo(searchApi, autocompleteApi, searchLocalDataSource)
         private val dispatcher = UnconfinedTestDispatcher()
         private val searchTerm = "search term"
 
@@ -50,7 +48,7 @@ class SearchViewModelTest {
         @Before
         fun setup() {
             Dispatchers.setMain(dispatcher)
-            viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+            viewModel = SearchViewModel(analyticsClient, visited, repository)
         }
 
         @After
@@ -121,7 +119,6 @@ class SearchViewModelTest {
         private val visited = mockk<Visited>(relaxed = true)
         private val dispatcher = UnconfinedTestDispatcher()
         private val repository = mockk<SearchRepo>(relaxed = true)
-        private val autocompleteRepository = mockk<AutocompleteRepo>(relaxed = true)
         private val searchTerm = "search term"
         private val resultWithNoSearchResponse = SearchResponse(total = 0, results = emptyList())
         private val resultWithOneResult = SearchResponse(
@@ -151,7 +148,7 @@ class SearchViewModelTest {
             coEvery { repository.fetchPreviousSearches() } returns previousSearches
 
             runTest {
-                val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+                val viewModel = SearchViewModel(analyticsClient, visited, repository)
                 val result = viewModel.uiState.value as SearchUiState.Default
 
                 assertEquals(previousSearches, result.previousSearches)
@@ -164,7 +161,7 @@ class SearchViewModelTest {
             coEvery { repository.fetchPreviousSearches() }returns listOf("dog") andThen previousSearches
 
             runTest {
-                val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+                val viewModel = SearchViewModel(analyticsClient, visited, repository)
                 viewModel.onClear()
                 val result = viewModel.uiState.value as SearchUiState.Default
 
@@ -178,7 +175,7 @@ class SearchViewModelTest {
             coEvery { repository.fetchPreviousSearches() }returns listOf("dog", "pig") andThen previousSearches
 
             runTest {
-                val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+                val viewModel = SearchViewModel(analyticsClient, visited, repository)
                 viewModel.onRemovePreviousSearch("dog")
                 val result = viewModel.uiState.value as SearchUiState.Default
 
@@ -195,7 +192,7 @@ class SearchViewModelTest {
             coEvery { repository.fetchPreviousSearches() }returns listOf("dog", "pig") andThen emptyList()
 
             runTest {
-                val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+                val viewModel = SearchViewModel(analyticsClient, visited, repository)
                 viewModel.onRemoveAllPreviousSearches()
                 val result = viewModel.uiState.value as SearchUiState.Default
 
@@ -211,7 +208,7 @@ class SearchViewModelTest {
         fun `Given a search with a result, then emit search results`() {
             coEvery { repository.performSearch(searchTerm) } returns Result.success(resultWithOneResult)
 
-            val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+            val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onSearch(searchTerm)
 
             runTest {
@@ -226,7 +223,7 @@ class SearchViewModelTest {
         fun `Given a search without any results, then emit empty state`() {
             coEvery { repository.performSearch(searchTerm) } returns Result.success(resultWithNoSearchResponse)
 
-            val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+            val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onSearch(searchTerm)
 
             runTest {
@@ -239,7 +236,7 @@ class SearchViewModelTest {
         fun `Given a search when the device is offline, then emit offline state`() {
             coEvery { repository.performSearch(searchTerm) } returns Result.failure(DeviceOfflineException())
 
-            val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+            val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onSearch(searchTerm)
 
             runTest {
@@ -252,7 +249,7 @@ class SearchViewModelTest {
         fun `Given a search when the Search API is unavailable, then emit service error state`() {
             coEvery { repository.performSearch(searchTerm) } returns Result.failure(ServiceNotRespondingException())
 
-            val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+            val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onSearch(searchTerm)
 
             runTest {
@@ -265,7 +262,7 @@ class SearchViewModelTest {
         fun `Given a search that returns an error, then emit service error state`() {
             coEvery { repository.performSearch(searchTerm) } returns Result.failure(ApiException())
 
-            val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+            val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onSearch(searchTerm)
 
             runTest {
@@ -276,9 +273,9 @@ class SearchViewModelTest {
 
         @Test
         fun `Given an autocomplete with one suggestion, then emit autocomplete suggestions`() {
-            coEvery { autocompleteRepository.performLookup(searchTerm) } returns Result.success(AutocompleteResponse(suggestions = listOf("dog")))
+            coEvery { repository.performLookup(searchTerm) } returns Result.success(AutocompleteResponse(suggestions = listOf("dog")))
 
-            val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+            val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onAutocomplete(searchTerm)
 
             runTest {
@@ -291,9 +288,9 @@ class SearchViewModelTest {
 
         @Test
         fun `Given an autocomplete with no suggestions, then emit no autocomplete suggestions`() {
-            coEvery { autocompleteRepository.performLookup(searchTerm) } returns Result.success(AutocompleteResponse(suggestions = emptyList()))
+            coEvery { repository.performLookup(searchTerm) } returns Result.success(AutocompleteResponse(suggestions = emptyList()))
 
-            val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+            val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onAutocomplete(searchTerm)
 
             runTest {
@@ -306,9 +303,9 @@ class SearchViewModelTest {
 
         @Test
         fun `Given an autocomplete lookup, when the device is offline, then emit offline state`() {
-            coEvery { autocompleteRepository.performLookup(searchTerm) } returns Result.failure(DeviceOfflineException())
+            coEvery { repository.performLookup(searchTerm) } returns Result.failure(DeviceOfflineException())
 
-            val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+            val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onAutocomplete(searchTerm)
 
             runTest {
@@ -319,9 +316,9 @@ class SearchViewModelTest {
 
         @Test
         fun `Given an autocomplete lookup, when the Autocomplete API is unavailable, then emit service error state`() {
-            coEvery { autocompleteRepository.performLookup(searchTerm) } returns Result.failure(ServiceNotRespondingException())
+            coEvery { repository.performLookup(searchTerm) } returns Result.failure(ServiceNotRespondingException())
 
-            val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+            val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onAutocomplete(searchTerm)
 
             runTest {
@@ -332,9 +329,9 @@ class SearchViewModelTest {
 
         @Test
         fun `Given an autocomplete lookup that returns an error, then emit service error state`() {
-            coEvery { autocompleteRepository.performLookup(searchTerm) } returns Result.failure(ApiException())
+            coEvery { repository.performLookup(searchTerm) } returns Result.failure(ApiException())
 
-            val viewModel = SearchViewModel(analyticsClient, visited, repository, autocompleteRepository)
+            val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onAutocomplete(searchTerm)
 
             runTest {

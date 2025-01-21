@@ -11,7 +11,6 @@ import uk.govuk.app.networking.domain.DeviceOfflineException
 import uk.govuk.app.search.SearchUiState.Default
 import uk.govuk.app.search.SearchUiState.Error
 import uk.govuk.app.search.SearchUiState.Results
-import uk.govuk.app.search.data.AutocompleteRepo
 import uk.govuk.app.search.data.SearchRepo
 import uk.govuk.app.visited.Visited
 import java.util.UUID
@@ -22,7 +21,6 @@ internal class SearchViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient,
     private val visited: Visited,
     private val searchRepo: SearchRepo,
-    private val autocompleteRepo: AutocompleteRepo
 ): ViewModel() {
 
     companion object {
@@ -78,7 +76,7 @@ internal class SearchViewModel @Inject constructor(
     private fun fetchAutocompleteSuggestions(searchTerm: String) {
         viewModelScope.launch {
             val id = UUID.randomUUID()
-            val autocompleteResult = autocompleteRepo.performLookup(searchTerm.trim())
+            val autocompleteResult = searchRepo.performLookup(searchTerm.trim())
             autocompleteResult.onSuccess { result ->
                 if (result.suggestions.isNotEmpty()) {
                     _uiState.value = SearchUiState.Autocomplete(
