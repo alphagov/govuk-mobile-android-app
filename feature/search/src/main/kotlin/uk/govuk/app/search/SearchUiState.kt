@@ -14,6 +14,11 @@ internal sealed class SearchUiState() {
         val searchResults: List<SearchResult>
     ) : SearchUiState()
 
+    internal class Autocomplete(
+        val searchTerm: String,
+        val suggestions: List<String>
+    ) : SearchUiState()
+
     internal sealed class Error(
         val uuid: UUID
     ) : SearchUiState() {

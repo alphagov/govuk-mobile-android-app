@@ -59,6 +59,9 @@ internal fun SearchRoute(
             },
             onRemovePreviousSearch = { searchTerm ->
                 viewModel.onRemovePreviousSearch(searchTerm)
+            },
+            onAutocomplete = { searchTerm ->
+                viewModel.onAutocomplete(searchTerm)
             }
         ),
         modifier = modifier
@@ -74,6 +77,7 @@ private class SearchScreenActions(
     val onRetry: (String) -> Unit,
     val onRemoveAllPreviousSearches: () -> Unit,
     val onRemovePreviousSearch: (String) -> Unit,
+    val onAutocomplete: (String) -> Unit,
 )
 
 @Composable
@@ -101,6 +105,8 @@ private fun SearchScreen(
                     searchTerm = it
                     if (searchTerm.isBlank()) {
                         actions.onClear()
+                    } else {
+                        actions.onAutocomplete(searchTerm)
                     }
                 },
                 onSearch = { actions.onSearch(searchTerm) },
@@ -128,6 +134,9 @@ private fun SearchScreen(
                         onRemoveAll = actions.onRemoveAllPreviousSearches,
                         onRemove = actions.onRemovePreviousSearch
                     )
+
+                is SearchUiState.Autocomplete ->
+                    SearchAutocomplete(it.searchTerm, it.suggestions, actions.onSearch)
 
                 is SearchUiState.Results ->
                     SearchResults(it.searchTerm, it.searchResults, actions.onResultClick)

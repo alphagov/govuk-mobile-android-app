@@ -73,12 +73,11 @@ class AnalyticsClient @Inject constructor(
     }
 
     fun search(searchTerm: String) {
-        firebaseAnalyticsClient.logEvent(
-            "Search",
-            mapOf(
-                "text" to searchTerm.redactPii()
-            )
-        )
+        redactedEvent(name = "Search", inputString = searchTerm)
+    }
+
+    fun autocomplete(searchTerm: String) {
+        redactedEvent(name = "Autocomplete", inputString = searchTerm)
     }
 
     fun searchResultClick(text: String, url: String) {
@@ -120,6 +119,15 @@ class AnalyticsClient @Inject constructor(
 
     fun topicsCustomised() {
         firebaseAnalyticsClient.setUserProperty("topics_customised", "true")
+    }
+
+    private fun redactedEvent(name: String, inputString: String) {
+        firebaseAnalyticsClient.logEvent(
+            name,
+            mapOf(
+                "text" to inputString.redactPii()
+            )
+        )
     }
 
     private fun navigation(

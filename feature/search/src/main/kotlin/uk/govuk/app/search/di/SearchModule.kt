@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import uk.govuk.app.search.data.remote.AutocompleteApi
 import uk.govuk.app.search.data.remote.SearchApi
 import uk.govuk.app.search.domain.SearchConfig
 import javax.inject.Singleton
@@ -22,5 +23,16 @@ class SearchModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(SearchApi::class.java)
+    }
+
+
+    @Provides
+    @Singleton
+    fun providesAutocompleteApi(): AutocompleteApi {
+        return Retrofit.Builder()
+            .baseUrl(SearchConfig.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(AutocompleteApi::class.java)
     }
 }

@@ -1,0 +1,13 @@
+package uk.govuk.app.search.data.remote
+
+import retrofit2.http.GET
+import retrofit2.http.Query
+import uk.govuk.app.search.data.remote.model.AutocompleteResponse
+import uk.govuk.app.search.domain.SearchConfig
+
+interface AutocompleteApi {
+    @GET(SearchConfig.AUTOCOMPLETE_PATH)
+    suspend fun getSuggestions(
+        @Query("q") searchTerm: String
+    ): AutocompleteResponse
+}

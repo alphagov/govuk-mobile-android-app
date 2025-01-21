@@ -8,8 +8,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.networking.domain.DeviceOfflineException
-import uk.govuk.app.search.SearchUiState.*
+import uk.govuk.app.search.SearchUiState.Default
+import uk.govuk.app.search.SearchUiState.Error
+import uk.govuk.app.search.SearchUiState.Results
 import uk.govuk.app.search.data.SearchRepo
+import uk.govuk.app.search.domain.SearchConfig
 import uk.govuk.app.visited.Visited
 import java.util.UUID
 import javax.inject.Inject
@@ -18,7 +21,7 @@ import javax.inject.Inject
 internal class SearchViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient,
     private val visited: Visited,
-    private val searchRepo: SearchRepo
+    private val searchRepo: SearchRepo,
 ): ViewModel() {
 
     companion object {
@@ -71,6 +74,32 @@ internal class SearchViewModel @Inject constructor(
         }
     }
 
+    private fun fetchAutocompleteSuggestions(searchTerm: String) {
+        viewModelScope.launch {
+            val id = UUID.randomUUID()
+            val autocompleteResult = searchRepo.performLookup(searchTerm.trim())
+            autocompleteResult.onSuccess { result ->
+                if (result.suggestions.isNotEmpty()) {
+                    _uiState.value = SearchUiState.Autocomplete(
+                        searchTerm = searchTerm,
+                        suggestions = result.suggestions,
+                    )
+                } else {
+                    _uiState.value = SearchUiState.Autocomplete(
+                        searchTerm = searchTerm,
+                        suggestions = emptyList(),
+                    )
+                }
+            }
+            autocompleteResult.onFailure { exception ->
+                _uiState.value = when (exception) {
+                    is DeviceOfflineException -> Error.Offline(id, searchTerm)
+                    else -> Error.ServiceError(id)
+                }
+            }
+        }
+    }
+
     fun onSearch(searchTerm: String) {
         fetchSearchResults(searchTerm)
         analyticsClient.search(searchTerm)
@@ -99,5 +128,14 @@ internal class SearchViewModel @Inject constructor(
             searchRepo.removePreviousSearch(searchTerm)
         }
         emitPreviousSearches()
+    }
+
+    fun onAutocomplete(searchTerm: String) {
+        if (searchTerm.length >= SearchConfig.AUTOCOMPLETE_MIN_LENGTH) {
+            fetchAutocompleteSuggestions(searchTerm)
+            analyticsClient.autocomplete(searchTerm)
+        } else {
+            onClear()
+        }
     }
 }
