@@ -235,7 +235,7 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a widget click, then log event`() {
-        analyticsClient.widgetClick("text")
+        analyticsClient.widgetClick("text", false, "section")
 
         verify {
             firebaseAnalyticClient.logEvent(
@@ -244,7 +244,8 @@ class AnalyticsClientTest {
                     "type" to "Widget",
                     "external" to false,
                     "language" to Locale.getDefault().language,
-                    "text" to "text"
+                    "text" to "text",
+                    "section" to "section"
                 )
             )
         }
