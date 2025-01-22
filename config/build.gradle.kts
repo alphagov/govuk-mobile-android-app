@@ -39,7 +39,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.networking)
+    implementation(projects.data)
 
     implementation(libs.hilt.android)
     implementation(libs.retrofit)

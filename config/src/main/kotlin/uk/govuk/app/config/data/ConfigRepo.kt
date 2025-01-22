@@ -5,7 +5,7 @@ import uk.govuk.app.config.SignatureValidator
 import uk.govuk.app.config.data.remote.ConfigApi
 import uk.govuk.app.config.data.remote.model.Config
 import uk.govuk.app.config.data.remote.model.ConfigResponse
-import uk.govuk.app.networking.domain.DeviceOfflineException
+import uk.govuk.app.data.remote.DeviceOfflineException
 import java.net.UnknownHostException
 import javax.inject.Inject
 import javax.inject.Singleton

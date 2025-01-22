@@ -11,7 +11,7 @@ import uk.govuk.app.config.data.ConfigRepo
 import uk.govuk.app.config.data.InvalidSignatureException
 import uk.govuk.app.config.data.flags.FlagRepo
 import uk.govuk.app.data.AppRepo
-import uk.govuk.app.networking.domain.DeviceOfflineException
+import uk.govuk.app.data.remote.DeviceOfflineException
 import uk.govuk.app.topics.TopicsFeature
 import javax.inject.Inject
 

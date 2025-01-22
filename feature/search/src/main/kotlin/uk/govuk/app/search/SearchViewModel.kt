@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.AnalyticsClient
-import uk.govuk.app.networking.domain.DeviceOfflineException
+import uk.govuk.app.data.remote.DeviceOfflineException
 import uk.govuk.app.search.SearchUiState.Default
 import uk.govuk.app.search.SearchUiState.Error
 import uk.govuk.app.search.SearchUiState.Results

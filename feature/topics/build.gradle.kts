@@ -56,7 +56,6 @@ dependencies {
     implementation(projects.analytics)
     implementation(projects.design)
     implementation(projects.feature.visited)
-    implementation(projects.networking)
     implementation(projects.data)
 
     implementation(platform(libs.androidx.compose.bom))
