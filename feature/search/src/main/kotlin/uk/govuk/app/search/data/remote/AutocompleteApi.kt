@@ -1,5 +1,6 @@
 package uk.govuk.app.search.data.remote
 
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 import uk.govuk.app.search.data.remote.model.AutocompleteResponse
@@ -9,5 +10,5 @@ interface AutocompleteApi {
     @GET(SearchConfig.AUTOCOMPLETE_PATH)
     suspend fun getSuggestions(
         @Query("q") searchTerm: String
-    ): AutocompleteResponse
+    ): Response<AutocompleteResponse>
 }

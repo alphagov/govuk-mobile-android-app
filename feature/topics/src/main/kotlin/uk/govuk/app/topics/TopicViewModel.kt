@@ -39,14 +39,14 @@ internal class TopicViewModel @Inject constructor(
 
     internal fun getTopic() {
         savedStateHandle.get<String>(TOPIC_REF_ARG)?.let { ref ->
-            val isSubtopic = savedStateHandle.get<Boolean>(TOPIC_SUBTOPIC_ARG) ?: false
+            val isSubtopic = savedStateHandle.get<Boolean>(TOPIC_SUBTOPIC_ARG) == true
             viewModelScope.launch {
-                val getTopicResult = topicsRepo.getTopic(ref)
-                getTopicResult.onSuccess { topic ->
+                val result = topicsRepo.getTopic(ref)
+                result.onSuccess { topic ->
                     _uiState.value =
                         TopicUiState.Default(topic.toTopicUi(MAX_STEP_BY_STEPS, isSubtopic))
                 }
-                getTopicResult.onFailure { exception ->
+                result.onFailure { exception ->
                     _uiState.value = when (exception) {
                         is DeviceOfflineException -> TopicUiState.Offline(ref)
                         else -> TopicUiState.ServiceError(ref)

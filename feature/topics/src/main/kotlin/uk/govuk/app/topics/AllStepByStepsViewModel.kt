@@ -37,6 +37,7 @@ internal class AllStepByStepsViewModel @Inject constructor(
                 getTopicResult.onSuccess {
                     _stepBySteps.value = it.toAllStepBySteps()
                 }
+                // Todo - should probably handle failure
             }
         }
     }

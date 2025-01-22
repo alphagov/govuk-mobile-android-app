@@ -46,6 +46,7 @@ dependencies {
 
     ksp(libs.hilt.compiler)
 
+    implementation(libs.retrofit)
     implementation(libs.realm.base)
 
     testImplementation(libs.junit)
