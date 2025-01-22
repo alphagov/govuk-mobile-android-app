@@ -18,9 +18,7 @@ import org.junit.Test
 import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
 import uk.govuk.app.analytics.AnalyticsClient
-import uk.govuk.app.networking.domain.ApiException
-import uk.govuk.app.networking.domain.DeviceOfflineException
-import uk.govuk.app.networking.domain.ServiceNotRespondingException
+import uk.govuk.app.data.model.Result.*
 import uk.govuk.app.search.data.SearchRepo
 import uk.govuk.app.search.data.local.SearchLocalDataSource
 import uk.govuk.app.search.data.remote.AutocompleteApi
@@ -206,7 +204,7 @@ class SearchViewModelTest {
 
         @Test
         fun `Given a search with a result, then emit search results`() {
-            coEvery { repository.performSearch(searchTerm) } returns Result.success(resultWithOneResult)
+            coEvery { repository.performSearch(searchTerm) } returns Success(resultWithOneResult)
 
             val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onSearch(searchTerm)
@@ -221,7 +219,7 @@ class SearchViewModelTest {
 
         @Test
         fun `Given a search without any results, then emit empty state`() {
-            coEvery { repository.performSearch(searchTerm) } returns Result.success(resultWithNoSearchResponse)
+            coEvery { repository.performSearch(searchTerm) } returns Success(resultWithNoSearchResponse)
 
             val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onSearch(searchTerm)
@@ -234,7 +232,7 @@ class SearchViewModelTest {
 
         @Test
         fun `Given a search when the device is offline, then emit offline state`() {
-            coEvery { repository.performSearch(searchTerm) } returns Result.failure(DeviceOfflineException())
+            coEvery { repository.performSearch(searchTerm) } returns DeviceOffline()
 
             val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onSearch(searchTerm)
@@ -247,7 +245,7 @@ class SearchViewModelTest {
 
         @Test
         fun `Given a search when the Search API is unavailable, then emit service error state`() {
-            coEvery { repository.performSearch(searchTerm) } returns Result.failure(ServiceNotRespondingException())
+            coEvery { repository.performSearch(searchTerm) } returns ServiceNotResponding()
 
             val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onSearch(searchTerm)
@@ -260,7 +258,7 @@ class SearchViewModelTest {
 
         @Test
         fun `Given a search that returns an error, then emit service error state`() {
-            coEvery { repository.performSearch(searchTerm) } returns Result.failure(ApiException())
+            coEvery { repository.performSearch(searchTerm) } returns Error()
 
             val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onSearch(searchTerm)
@@ -273,7 +271,7 @@ class SearchViewModelTest {
 
         @Test
         fun `Given an autocomplete with one suggestion, then emit autocomplete suggestions`() {
-            coEvery { repository.performLookup(searchTerm) } returns Result.success(AutocompleteResponse(suggestions = listOf("dog")))
+            coEvery { repository.performLookup(searchTerm) } returns Success(AutocompleteResponse(suggestions = listOf("dog")))
 
             val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onAutocomplete(searchTerm)
@@ -288,7 +286,7 @@ class SearchViewModelTest {
 
         @Test
         fun `Given an autocomplete with no suggestions, then emit no autocomplete suggestions`() {
-            coEvery { repository.performLookup(searchTerm) } returns Result.success(AutocompleteResponse(suggestions = emptyList()))
+            coEvery { repository.performLookup(searchTerm) } returns Success(AutocompleteResponse(suggestions = emptyList()))
 
             val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onAutocomplete(searchTerm)
@@ -318,7 +316,7 @@ class SearchViewModelTest {
 
         @Test
         fun `Given an autocomplete lookup, when the device is offline, then emit offline state`() {
-            coEvery { repository.performLookup(searchTerm) } returns Result.failure(DeviceOfflineException())
+            coEvery { repository.performLookup(searchTerm) } returns DeviceOffline()
 
             val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onAutocomplete(searchTerm)
@@ -331,7 +329,7 @@ class SearchViewModelTest {
 
         @Test
         fun `Given an autocomplete lookup, when the Autocomplete API is unavailable, then emit service error state`() {
-            coEvery { repository.performLookup(searchTerm) } returns Result.failure(ServiceNotRespondingException())
+            coEvery { repository.performLookup(searchTerm) } returns ServiceNotResponding()
 
             val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onAutocomplete(searchTerm)
@@ -344,7 +342,7 @@ class SearchViewModelTest {
 
         @Test
         fun `Given an autocomplete lookup that returns an error, then emit service error state`() {
-            coEvery { repository.performLookup(searchTerm) } returns Result.failure(ApiException())
+            coEvery { repository.performLookup(searchTerm) } returns Error()
 
             val viewModel = SearchViewModel(analyticsClient, visited, repository)
             viewModel.onAutocomplete(searchTerm)

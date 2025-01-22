@@ -2,6 +2,7 @@ package uk.govuk.app.search.data
 
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -11,6 +12,8 @@ import org.junit.Test
 import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
 import retrofit2.HttpException
+import retrofit2.Response
+import uk.govuk.app.data.model.Result.*
 import uk.govuk.app.search.data.local.SearchLocalDataSource
 import uk.govuk.app.search.data.local.model.LocalSearchItem
 import uk.govuk.app.search.data.remote.AutocompleteApi
@@ -28,6 +31,7 @@ class SearchRepoTest {
         private val autocompleteApi = mockk<AutocompleteApi>(relaxed = true)
         private val localDataSource = mockk<SearchLocalDataSource>(relaxed = true)
         private val searchTerm = "search term"
+        private val response = mockk<Response<SearchResponse>>()
         private val responseWithNoSearchResults = SearchResponse(total = 0, results = emptyList())
         private val responseWithOneSearchResult = SearchResponse(
             total = 1,
@@ -91,9 +95,11 @@ class SearchRepoTest {
                     searchTerm,
                     SearchConfig.DEFAULT_RESULTS_PER_PAGE
                 )
-            } returns responseWithOneSearchResult
+            } returns response
+            every {  response.isSuccessful } returns true
+            every { response.body() } returns responseWithOneSearchResult
 
-            val expected = Result.success(responseWithOneSearchResult)
+            val expected = Success(responseWithOneSearchResult)
 
             runTest {
                 val actual = searchRepo.performSearch(searchTerm, 10)
@@ -108,9 +114,11 @@ class SearchRepoTest {
                     searchTerm,
                     SearchConfig.DEFAULT_RESULTS_PER_PAGE
                 )
-            } returns responseWithNoSearchResults
+            } returns response
+            every {  response.isSuccessful } returns true
+            every { response.body() } returns responseWithNoSearchResults
 
-            val expected = Result.success(responseWithNoSearchResults)
+            val expected = Success(responseWithNoSearchResults)
 
             runTest {
                 val actual = searchRepo.performSearch(searchTerm, 10)
@@ -129,7 +137,7 @@ class SearchRepoTest {
 
             runTest {
                 val result = searchRepo.performSearch(searchTerm, 10)
-                assertTrue(result.isFailure)
+                assertTrue(result is DeviceOffline)
             }
         }
 
@@ -147,7 +155,7 @@ class SearchRepoTest {
 
             runTest {
                 val result = searchRepo.performSearch(searchTerm, 10)
-                assertTrue(result.isFailure)
+                assertTrue(result is ServiceNotResponding)
             }
         }
 
@@ -163,7 +171,7 @@ class SearchRepoTest {
 
             runTest {
                 val result = searchRepo.performSearch(searchTerm, 10)
-                assertTrue(result.isFailure)
+                assertTrue(result is Error)
             }
         }
 
@@ -178,7 +186,7 @@ class SearchRepoTest {
 
             runTest {
                 val result = searchRepo.performSearch(searchTerm, 10)
-                assertTrue(result.isFailure)
+                assertTrue(result is Error)
             }
         }
     }
@@ -188,6 +196,7 @@ class SearchRepoTest {
         private val autocompleteApi = mockk<AutocompleteApi>(relaxed = true)
         private val localDataSource = mockk<SearchLocalDataSource>(relaxed = true)
         private val searchTerm = "house"
+        private val response = mockk<Response<AutocompleteResponse>>(relaxed = true)
         private val responseWithNoSuggestions = AutocompleteResponse(suggestions = emptyList())
         private val responseWithOneSuggestion =
             AutocompleteResponse(suggestions = listOf("companies house"))
@@ -200,9 +209,11 @@ class SearchRepoTest {
 
         @Test
         fun `Perform autocomplete returns Success status when suggestions are found`() {
-            coEvery { autocompleteApi.getSuggestions(searchTerm) } returns responseWithOneSuggestion
+            coEvery { autocompleteApi.getSuggestions(searchTerm) } returns response
+            every { response.isSuccessful } returns true
+            every { response.body() } returns responseWithOneSuggestion
 
-            val expected = Result.success(responseWithOneSuggestion)
+            val expected = Success(responseWithOneSuggestion)
 
             runTest {
                 val actual = searchRepo.performLookup(searchTerm)
@@ -212,9 +223,11 @@ class SearchRepoTest {
 
         @Test
         fun `Perform autocomplete returns Empty status when no suggestions are found`() {
-            coEvery { autocompleteApi.getSuggestions(searchTerm) } returns responseWithNoSuggestions
+            coEvery { autocompleteApi.getSuggestions(searchTerm) } returns response
+            every { response.isSuccessful } returns true
+            every { response.body() } returns responseWithNoSuggestions
 
-            val expected = Result.success(responseWithNoSuggestions)
+            val expected = Success(responseWithNoSuggestions)
 
             runTest {
                 val actual = searchRepo.performLookup(searchTerm)
@@ -228,7 +241,7 @@ class SearchRepoTest {
 
             runTest {
                 val result = searchRepo.performLookup(searchTerm)
-                assertTrue(result.isFailure)
+                assertTrue(result is DeviceOffline)
             }
         }
 
@@ -241,7 +254,7 @@ class SearchRepoTest {
 
             runTest {
                 val result = searchRepo.performLookup(searchTerm)
-                assertTrue(result.isFailure)
+                assertTrue(result is ServiceNotResponding)
             }
         }
 
@@ -252,7 +265,7 @@ class SearchRepoTest {
 
             runTest {
                 val result = searchRepo.performLookup(searchTerm)
-                assertTrue(result.isFailure)
+                assertTrue(result is Error)
             }
         }
 
@@ -262,7 +275,7 @@ class SearchRepoTest {
 
             runTest {
                 val result = searchRepo.performLookup(searchTerm)
-                assertTrue(result.isFailure)
+                assertTrue(result is Error)
             }
         }
     }

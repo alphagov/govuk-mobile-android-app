@@ -13,7 +13,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import retrofit2.HttpException
 import retrofit2.Response
-import uk.govuk.app.networking.domain.ApiException
+import uk.govuk.app.data.model.Result.*
 import uk.govuk.app.topics.data.local.TopicsLocalDataSource
 import uk.govuk.app.topics.data.local.model.LocalTopicItem
 import uk.govuk.app.topics.data.remote.TopicsApi
@@ -121,7 +121,7 @@ class TopicsRepoTest{
 
         val repo = TopicsRepo(topicsApi, localDataSource)
 
-        val expected = Result.success(topic)
+        val expected = Success(topic)
 
         runTest {
             assertEquals(expected, repo.getTopic("ref"))
@@ -164,7 +164,7 @@ class TopicsRepoTest{
 
         runTest {
             val result = repo.getTopic("ref")
-            assertTrue(result.isFailure)
+            assertTrue(result is Error)
         }
     }
 
@@ -177,19 +177,7 @@ class TopicsRepoTest{
 
         runTest {
             val result = repo.getTopic("ref")
-            assertTrue(result.isFailure)
-        }
-    }
-
-    @Test
-    fun `Given an exception is thrown fetching the topics response, then return failure`() {
-        coEvery { topicsApi.getTopic("ref") } throws IOException()
-
-        val repo = TopicsRepo(topicsApi, localDataSource)
-
-        runTest {
-            val result = repo.getTopic("ref")
-            assertTrue(result.isFailure)
+            assertTrue(result is Error)
         }
     }
 
@@ -201,7 +189,7 @@ class TopicsRepoTest{
 
         runTest {
             val result = repo.getTopic("ref")
-            assertTrue(result.isFailure)
+            assertTrue(result is DeviceOffline)
         }
     }
 
@@ -214,19 +202,7 @@ class TopicsRepoTest{
 
         runTest {
             val result = repo.getTopic("ref")
-            assertTrue(result.isFailure)
-        }
-    }
-
-    @Test
-    fun `Get topic returns failure when an API error occurs`() {
-        coEvery { topicsApi.getTopic("ref") } throws ApiException()
-
-        val repo = TopicsRepo(topicsApi, localDataSource)
-
-        runTest {
-            val result = repo.getTopic("ref")
-            assertTrue(result.isFailure)
+            assertTrue(result is ServiceNotResponding)
         }
     }
 
@@ -238,7 +214,7 @@ class TopicsRepoTest{
 
         runTest {
             val result = repo.getTopic("ref")
-            assertTrue(result.isFailure)
+            assertTrue(result is Error)
         }
     }
 
