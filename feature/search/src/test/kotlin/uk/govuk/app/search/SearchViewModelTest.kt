@@ -81,12 +81,34 @@ class SearchViewModelTest {
         }
 
         @Test
-        fun `Given an autocomplete, then log analytics`() {
+        fun `Given an autocomplete API lookup, then we do not log analytics`() {
             viewModel.onAutocomplete(searchTerm)
+
+            runTest {
+                coVerify(exactly = 0) {
+                    analyticsClient.autocomplete(searchTerm)
+                }
+            }
+        }
+
+        @Test
+        fun `Given an autocomplete suggestion click, then log analytics`() {
+            viewModel.onAutocompleteResultClick(searchTerm)
 
             runTest {
                 coVerify {
                     analyticsClient.autocomplete(searchTerm)
+                }
+            }
+        }
+
+        @Test
+        fun `Given a previous search click, then log analytics`() {
+            viewModel.onPreviousSearchClick(searchTerm)
+
+            runTest {
+                coVerify {
+                    analyticsClient.history(searchTerm)
                 }
             }
         }

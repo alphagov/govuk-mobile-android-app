@@ -114,6 +114,7 @@ class AnalyticsClientTest {
             firebaseAnalyticClient.logEvent(
                 "Search",
                 mapOf(
+                    "type" to "typed",
                     "text" to "search term"
                 )
             )
@@ -128,6 +129,7 @@ class AnalyticsClientTest {
             firebaseAnalyticClient.logEvent(
                 "Search",
                 mapOf(
+                    "type" to "typed",
                     "text" to "search term [postcode]"
                 )
             )
@@ -142,6 +144,7 @@ class AnalyticsClientTest {
             firebaseAnalyticClient.logEvent(
                 "Search",
                 mapOf(
+                    "type" to "typed",
                     "text" to "search term [email]"
                 )
             )
@@ -156,6 +159,7 @@ class AnalyticsClientTest {
             firebaseAnalyticClient.logEvent(
                 "Search",
                 mapOf(
+                    "type" to "typed",
                     "text" to "search term [NI number]"
                 )
             )
@@ -168,8 +172,9 @@ class AnalyticsClientTest {
 
         verify {
             firebaseAnalyticClient.logEvent(
-                "Autocomplete",
+                "Search",
                 mapOf(
+                    "type" to "autocomplete",
                     "text" to "input"
                 )
             )
@@ -182,8 +187,9 @@ class AnalyticsClientTest {
 
         verify {
             firebaseAnalyticClient.logEvent(
-                "Autocomplete",
+                "Search",
                 mapOf(
+                    "type" to "autocomplete",
                     "text" to "input [postcode]"
                 )
             )
@@ -196,8 +202,9 @@ class AnalyticsClientTest {
 
         verify {
             firebaseAnalyticClient.logEvent(
-                "Autocomplete",
+                "Search",
                 mapOf(
+                    "type" to "autocomplete",
                     "text" to "input [email]"
                 )
             )
@@ -210,8 +217,69 @@ class AnalyticsClientTest {
 
         verify {
             firebaseAnalyticClient.logEvent(
-                "Autocomplete",
+                "Search",
                 mapOf(
+                    "type" to "autocomplete",
+                    "text" to "input [NI number]"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a history search, then log event`() {
+        analyticsClient.history("input")
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Search",
+                mapOf(
+                    "type" to "history",
+                    "text" to "input"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a history search with postcode, then redact and log event`() {
+        analyticsClient.history("input A1 1AA")
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Search",
+                mapOf(
+                    "type" to "history",
+                    "text" to "input [postcode]"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a history search with email address, then redact and log event`() {
+        analyticsClient.history("input test@email.com")
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Search",
+                mapOf(
+                    "type" to "history",
+                    "text" to "input [email]"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a history search with NI number, then redact and log event`() {
+        analyticsClient.history("input AA 00 00 00 A")
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Search",
+                mapOf(
+                    "type" to "history",
                     "text" to "input [NI number]"
                 )
             )
