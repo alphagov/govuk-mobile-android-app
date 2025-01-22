@@ -1,4 +1,4 @@
-package uk.govuk.app.design.ui.component
+package uk.govuk.app.design.ui.component.error
 
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
@@ -11,6 +11,10 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import uk.govuk.app.design.ui.component.BodyBoldLabel
+import uk.govuk.app.design.ui.component.BodyRegularLabel
+import uk.govuk.app.design.ui.component.SecondaryButton
+import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable

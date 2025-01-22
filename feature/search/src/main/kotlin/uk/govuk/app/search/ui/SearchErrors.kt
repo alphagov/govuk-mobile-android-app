@@ -17,8 +17,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
-import uk.govuk.app.networking.ui.component.OfflineMessage
-import uk.govuk.app.networking.ui.component.ProblemMessage
+import uk.govuk.app.design.ui.component.error.OfflineMessage
+import uk.govuk.app.design.ui.component.error.ProblemMessage
 import uk.govuk.app.search.R
 import uk.govuk.app.search.SearchUiState
 

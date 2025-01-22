@@ -16,8 +16,9 @@ import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
 import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SecondaryButton
+// Todo - this feels weird - we need a better way to share constants between modules
+import uk.govuk.app.design.ui.component.error.ErrorConstants.GOV_UK_URL
 import uk.govuk.app.design.ui.theme.GovUkTheme
-import uk.govuk.app.networking.domain.Constants.GOV_UK_URL
 
 @Composable
 internal fun AppUnavailableScreen(
