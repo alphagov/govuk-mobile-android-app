@@ -133,9 +133,18 @@ internal class SearchViewModel @Inject constructor(
     fun onAutocomplete(searchTerm: String) {
         if (searchTerm.length >= SearchConfig.AUTOCOMPLETE_MIN_LENGTH) {
             fetchAutocompleteSuggestions(searchTerm)
-            analyticsClient.autocomplete(searchTerm)
         } else {
             onClear()
         }
+    }
+
+    fun onAutocompleteResultClick(searchTerm: String) {
+        fetchSearchResults(searchTerm)
+        analyticsClient.autocomplete(searchTerm)
+    }
+
+    fun onPreviousSearchClick(searchTerm: String) {
+        fetchSearchResults(searchTerm)
+        analyticsClient.history(searchTerm)
     }
 }

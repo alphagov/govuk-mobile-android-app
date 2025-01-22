@@ -82,11 +82,15 @@ class AnalyticsClient @Inject constructor(
     }
 
     fun search(searchTerm: String) {
-        redactedEvent(name = "Search", inputString = searchTerm)
+        redactedEvent(name = "Search", type = "typed", inputString = searchTerm)
     }
 
     fun autocomplete(searchTerm: String) {
-        redactedEvent(name = "Autocomplete", inputString = searchTerm)
+        redactedEvent(name = "Search", type = "autocomplete", inputString = searchTerm)
+    }
+
+    fun history(searchTerm: String) {
+        redactedEvent(name = "Search", type = "history", inputString = searchTerm)
     }
 
     fun searchResultClick(text: String, url: String) {
@@ -130,10 +134,11 @@ class AnalyticsClient @Inject constructor(
         firebaseAnalyticsClient.setUserProperty("topics_customised", "true")
     }
 
-    private fun redactedEvent(name: String, inputString: String) {
+    private fun redactedEvent(name: String, type: String, inputString: String) {
         firebaseAnalyticsClient.logEvent(
             name,
             mapOf(
+                "type" to type,
                 "text" to inputString.redactPii()
             )
         )

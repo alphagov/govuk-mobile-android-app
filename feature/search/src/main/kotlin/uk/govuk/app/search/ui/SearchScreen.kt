@@ -60,8 +60,16 @@ internal fun SearchRoute(
             onRemovePreviousSearch = { searchTerm ->
                 viewModel.onRemovePreviousSearch(searchTerm)
             },
+            onPreviousSearchClick = { searchTerm ->
+                keyboardController?.hide()
+                viewModel.onPreviousSearchClick(searchTerm)
+            },
             onAutocomplete = { searchTerm ->
                 viewModel.onAutocomplete(searchTerm)
+            },
+            onAutocompleteResultClick = { searchTerm ->
+                keyboardController?.hide()
+                viewModel.onAutocompleteResultClick(searchTerm)
             }
         ),
         modifier = modifier
@@ -78,6 +86,8 @@ private class SearchScreenActions(
     val onRemoveAllPreviousSearches: () -> Unit,
     val onRemovePreviousSearch: (String) -> Unit,
     val onAutocomplete: (String) -> Unit,
+    val onPreviousSearchClick: (String) -> Unit,
+    val onAutocompleteResultClick: (String) -> Unit,
 )
 
 @Composable
@@ -129,7 +139,7 @@ private fun SearchScreen(
                         previousSearches = it.previousSearches,
                         onClick = {
                             searchTerm = it
-                            actions.onSearch(it)
+                            actions.onPreviousSearchClick(it)
                         },
                         onRemoveAll = actions.onRemoveAllPreviousSearches,
                         onRemove = actions.onRemovePreviousSearch
@@ -141,7 +151,7 @@ private fun SearchScreen(
                         suggestions = it.suggestions,
                         onSearch = {
                             searchTerm = it
-                            actions.onSearch(it)
+                            actions.onAutocompleteResultClick(it)
                         }
                     )
 
