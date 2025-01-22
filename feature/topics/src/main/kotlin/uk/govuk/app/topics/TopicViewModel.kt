@@ -8,7 +8,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.AnalyticsClient
-import uk.govuk.app.data.remote.DeviceOfflineException
+import uk.govuk.app.data.model.Result
+import uk.govuk.app.data.model.Result.*
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.extension.toTopicUi
 import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
@@ -42,15 +43,12 @@ internal class TopicViewModel @Inject constructor(
             val isSubtopic = savedStateHandle.get<Boolean>(TOPIC_SUBTOPIC_ARG) == true
             viewModelScope.launch {
                 val result = topicsRepo.getTopic(ref)
-                result.onSuccess { topic ->
-                    _uiState.value =
-                        TopicUiState.Default(topic.toTopicUi(MAX_STEP_BY_STEPS, isSubtopic))
-                }
-                result.onFailure { exception ->
-                    _uiState.value = when (exception) {
-                        is DeviceOfflineException -> TopicUiState.Offline(ref)
-                        else -> TopicUiState.ServiceError(ref)
+                _uiState.value = when (result) {
+                    is Success -> {
+                        TopicUiState.Default(result.value.toTopicUi(MAX_STEP_BY_STEPS, isSubtopic))
                     }
+                    is DeviceOffline -> TopicUiState.Offline(ref)
+                    else -> TopicUiState.ServiceError(ref)
                 }
             }
         }

@@ -1,6 +1,8 @@
 package uk.govuk.app.topics.data
 
 import kotlinx.coroutines.flow.map
+import uk.govuk.app.data.model.Result
+import uk.govuk.app.data.model.Result.Success
 import uk.govuk.app.data.remote.safeApiCall
 import uk.govuk.app.topics.data.local.TopicsLocalDataSource
 import uk.govuk.app.topics.data.remote.TopicsApi
@@ -18,8 +20,8 @@ internal class TopicsRepo @Inject constructor(
     suspend fun sync(): Boolean {
         var success = false
         val result = safeApiCall { topicsApi.getTopics() }
-        result.onSuccess { topics ->
-            localDataSource.sync(topics)
+        if (result is Success){
+            localDataSource.sync(result.value)
             success = true
         }
 

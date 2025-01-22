@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.AnalyticsClient
+import uk.govuk.app.data.model.Result.Success
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.extension.toAllStepBySteps
 import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
@@ -33,11 +34,13 @@ internal class AllStepByStepsViewModel @Inject constructor(
     init {
         savedStateHandle.get<String>(TOPIC_REF_ARG)?.let { ref ->
             viewModelScope.launch {
-                val getTopicResult = topicsRepo.getTopic(ref)
-                getTopicResult.onSuccess {
-                    _stepBySteps.value = it.toAllStepBySteps()
+                val result = topicsRepo.getTopic(ref)
+                when (result) {
+                    is Success -> {
+                        _stepBySteps.value = result.value.toAllStepBySteps()
+                    }
+                    else -> { } // Todo - should probably handle failure
                 }
-                // Todo - should probably handle failure
             }
         }
     }

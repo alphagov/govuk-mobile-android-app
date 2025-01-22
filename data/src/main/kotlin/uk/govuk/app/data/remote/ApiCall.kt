@@ -2,6 +2,8 @@ package uk.govuk.app.data.remote
 
 import retrofit2.HttpException
 import retrofit2.Response
+import uk.govuk.app.data.model.Result
+import uk.govuk.app.data.model.Result.*
 import java.net.UnknownHostException
 
 suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): Result<T> {
@@ -9,15 +11,15 @@ suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): Result<T> {
         val response = apiCall()
         val body = response.body()
         return if (response.isSuccessful && body != null) {
-            Result.success(body)
+            Success(body)
         } else {
-            Result.failure(Exception())
+            Error()
         }
     } catch (e: Exception) {
         when (e) {
-            is UnknownHostException -> Result.failure(DeviceOfflineException())
-            is HttpException -> Result.failure(ServiceNotRespondingException())
-            else -> Result.failure(e)
+            is UnknownHostException -> DeviceOffline()
+            is HttpException -> ServiceNotResponding()
+            else -> Error()
         }
     }
 }

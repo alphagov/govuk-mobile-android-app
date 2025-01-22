@@ -1,5 +1,6 @@
 package uk.govuk.app.search.data
 
+import uk.govuk.app.data.model.Result
 import uk.govuk.app.data.remote.safeApiCall
 import uk.govuk.app.search.data.local.SearchLocalDataSource
 import uk.govuk.app.search.data.remote.AutocompleteApi
