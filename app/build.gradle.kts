@@ -115,6 +115,7 @@ dependencies {
     implementation(projects.feature.topics)
     implementation(projects.feature.visited)
     implementation(projects.networking)
+    implementation(projects.notifications)
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))

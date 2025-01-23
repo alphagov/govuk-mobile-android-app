@@ -16,6 +16,7 @@ datastorePreferences = "1.1.1"
 googlePlayServices = "4.4.2"
 crashlytics = "3.0.2"
 
+oneSignal = "[5.0.0, 5.99.99]"
 ossLicenses = "0.10.6"
 retrofit = "2.11.0"
 
@@ -55,6 +56,7 @@ firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashly
 
 mockk = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutineTest" }
+oneSignal = { module = "com.onesignal:OneSignal", version.ref = "oneSignal" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
 retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
