@@ -9,7 +9,7 @@ import javax.inject.Inject
 class GovUkApplication: Application() {
 
     @Inject
-    val notificationsClient = NotificationsClient()
+    var notificationsClient = NotificationsClient()
 
     override fun onCreate() {
         super.onCreate()
