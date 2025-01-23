@@ -19,8 +19,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.analytics.AnalyticsClient
-import uk.govuk.app.networking.domain.DeviceOfflineException
-import uk.govuk.app.networking.domain.ServiceNotRespondingException
+import uk.govuk.app.data.model.Result.*
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.data.remote.model.RemoteTopic
 import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
@@ -62,7 +61,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a topic is returned, When init, then emit topic`() {
-        coEvery { topicsRepo.getTopic(REF) } returns Result.success(remoteTopic)
+        coEvery { topicsRepo.getTopic(REF) } returns Success(remoteTopic)
 
         val expected = TopicUi(
             title = "title",
@@ -88,7 +87,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a topic is returned, When init, then the results and status in the view model are correct`() {
-        coEvery { topicsRepo.getTopic(REF) } returns Result.success(remoteTopic)
+        coEvery { topicsRepo.getTopic(REF) } returns Success(remoteTopic)
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
@@ -100,7 +99,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given the device is offline, When init, then the results and status in the view model are correct`() {
-        coEvery { topicsRepo.getTopic(REF) } returns Result.failure(DeviceOfflineException())
+        coEvery { topicsRepo.getTopic(REF) } returns DeviceOffline()
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
@@ -112,7 +111,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given the topic API is unavailable, When init, then the results and status in the view model are correct`() {
-        coEvery { topicsRepo.getTopic(REF) } returns Result.failure(ServiceNotRespondingException())
+        coEvery { topicsRepo.getTopic(REF) } returns ServiceNotResponding()
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
@@ -124,7 +123,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given there is a general error when getting a topic, When init, then the results and status in the view model are correct`() {
-        coEvery { topicsRepo.getTopic(REF) } returns Result.failure(Exception())
+        coEvery { topicsRepo.getTopic(REF) } returns Error()
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
@@ -136,7 +135,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a page view, then log analytics`() {
-        coEvery { topicsRepo.getTopic(REF) } returns Result.success(remoteTopic)
+        coEvery { topicsRepo.getTopic(REF) } returns Success(remoteTopic)
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
@@ -153,7 +152,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a content click, then log analytics`() {
-        coEvery { topicsRepo.getTopic(REF) } returns Result.success(remoteTopic)
+        coEvery { topicsRepo.getTopic(REF) } returns Success(remoteTopic)
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
@@ -175,7 +174,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a content click, then log visited item`() {
-        coEvery { topicsRepo.getTopic(REF) } returns Result.success(remoteTopic)
+        coEvery { topicsRepo.getTopic(REF) } returns Success(remoteTopic)
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
@@ -192,7 +191,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a see all click, then log analytics`() {
-        coEvery { topicsRepo.getTopic(REF) } returns Result.success(remoteTopic)
+        coEvery { topicsRepo.getTopic(REF) } returns Success(remoteTopic)
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
@@ -212,7 +211,7 @@ class TopicViewModelTest {
 
     @Test
     fun `Given a subtopic click, then log analytics`() {
-        coEvery { topicsRepo.getTopic(REF) } returns Result.success(remoteTopic)
+        coEvery { topicsRepo.getTopic(REF) } returns Success(remoteTopic)
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 

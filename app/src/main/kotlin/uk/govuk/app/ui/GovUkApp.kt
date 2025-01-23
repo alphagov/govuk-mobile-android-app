@@ -44,6 +44,7 @@ import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
 import uk.govuk.app.R
 import uk.govuk.app.analytics.navigation.analyticsGraph
+import uk.govuk.app.design.ui.component.error.AppUnavailableScreen
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.navigation.homeGraph
 import uk.govuk.app.navigation.AppLaunchNavigation

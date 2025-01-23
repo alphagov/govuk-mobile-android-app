@@ -1,7 +1,7 @@
 package uk.govuk.app.search.data
 
-import uk.govuk.app.networking.domain.DeviceOfflineException
-import uk.govuk.app.networking.domain.ServiceNotRespondingException
+import uk.govuk.app.data.model.Result
+import uk.govuk.app.data.remote.safeApiCall
 import uk.govuk.app.search.data.local.SearchLocalDataSource
 import uk.govuk.app.search.data.remote.AutocompleteApi
 import uk.govuk.app.search.data.remote.SearchApi
@@ -34,30 +34,11 @@ internal class SearchRepo @Inject constructor(
         searchTerm: String, count: Int = SearchConfig.DEFAULT_RESULTS_PER_PAGE
     ): Result<SearchResponse> {
         localDataSource.insertOrUpdatePreviousSearch(searchTerm)
-
-        return try {
-            val response = searchApi.getSearchResults(searchTerm, count)
-            Result.success(response)
-        } catch (_: java.net.UnknownHostException) {
-            Result.failure(DeviceOfflineException())
-        } catch (_: retrofit2.HttpException) {
-            Result.failure(ServiceNotRespondingException())
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        return safeApiCall { searchApi.getSearchResults(searchTerm, count) }
     }
 
     suspend fun performLookup(searchTerm: String): Result<AutocompleteResponse> {
-        return try {
-            val response = autocompleteApi.getSuggestions(searchTerm)
-            return Result.success(response)
-        } catch (_: java.net.UnknownHostException) {
-            Result.failure(DeviceOfflineException())
-        } catch (_: retrofit2.HttpException) {
-            Result.failure(ServiceNotRespondingException())
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        return safeApiCall { autocompleteApi.getSuggestions(searchTerm) }
     }
 }
 

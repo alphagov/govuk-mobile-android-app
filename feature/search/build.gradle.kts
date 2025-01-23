@@ -47,7 +47,6 @@ sonar {
 dependencies {
     implementation(projects.design)
     implementation(projects.analytics)
-    implementation(projects.networking)
     implementation(projects.feature.visited)
     implementation(projects.feature.visited)
     implementation(projects.data)

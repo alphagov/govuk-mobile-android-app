@@ -12,7 +12,7 @@ import uk.govuk.app.config.SignatureValidator
 import uk.govuk.app.config.data.remote.ConfigApi
 import uk.govuk.app.config.data.remote.model.Config
 import uk.govuk.app.config.data.remote.model.ConfigResponse
-import uk.govuk.app.networking.domain.DeviceOfflineException
+import uk.govuk.app.data.model.Result.*
 import java.io.IOException
 import java.net.UnknownHostException
 
@@ -62,7 +62,7 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
-            assertTrue(repo.initConfig().isSuccess)
+            assertTrue(repo.initConfig() is Success)
         }
     }
 
@@ -75,7 +75,7 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
-            assertTrue(repo.initConfig().isFailure)
+            assertTrue(repo.initConfig() is Error)
         }
     }
 
@@ -87,7 +87,7 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
-            assertTrue(repo.initConfig().isFailure)
+            assertTrue(repo.initConfig() is Error)
         }
     }
 
@@ -98,8 +98,7 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
-            assertTrue(repo.initConfig().isFailure)
-            assertTrue(repo.initConfig().exceptionOrNull() is DeviceOfflineException)
+            assertTrue(repo.initConfig() is DeviceOffline)
         }
     }
 
@@ -110,7 +109,7 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
-            assertTrue(repo.initConfig().isFailure)
+            assertTrue(repo.initConfig() is Error)
         }
     }
 
@@ -123,7 +122,7 @@ class ConfigRepoTest {
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
-            assertTrue(repo.initConfig().isFailure)
+            assertTrue(repo.initConfig() is InvalidSignature)
         }
     }
 }

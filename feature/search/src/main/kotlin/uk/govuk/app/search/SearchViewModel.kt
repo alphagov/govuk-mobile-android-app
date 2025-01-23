@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.AnalyticsClient
-import uk.govuk.app.networking.domain.DeviceOfflineException
+import uk.govuk.app.data.model.Result.*
 import uk.govuk.app.search.SearchUiState.Default
 import uk.govuk.app.search.SearchUiState.Error
 import uk.govuk.app.search.SearchUiState.Results
@@ -54,22 +54,20 @@ internal class SearchViewModel @Inject constructor(
     private fun fetchSearchResults(searchTerm: String) {
         viewModelScope.launch {
             val id = UUID.randomUUID()
-            val searchResult = searchRepo.performSearch(searchTerm.trim())
-            searchResult.onSuccess { result ->
-                if (result.results.isNotEmpty()) {
-                    _uiState.value = Results(
-                        searchTerm = searchTerm,
-                        searchResults = result.results
-                    )
-                } else {
-                    _uiState.value = Error.Empty(id, searchTerm)
+            val result = searchRepo.performSearch(searchTerm.trim())
+            _uiState.value = when (result) {
+                is Success -> {
+                    if (result.value.results.isNotEmpty()) {
+                        Results(
+                            searchTerm = searchTerm,
+                            searchResults = result.value.results
+                        )
+                    } else {
+                        Error.Empty(id, searchTerm)
+                    }
                 }
-            }
-            searchResult.onFailure { exception ->
-                _uiState.value = when (exception) {
-                    is DeviceOfflineException -> Error.Offline(id, searchTerm)
-                    else -> Error.ServiceError(id)
-                }
+                is DeviceOffline -> Error.Offline(id, searchTerm)
+                else -> Error.ServiceError(id)
             }
         }
     }
@@ -77,25 +75,16 @@ internal class SearchViewModel @Inject constructor(
     private fun fetchAutocompleteSuggestions(searchTerm: String) {
         viewModelScope.launch {
             val id = UUID.randomUUID()
-            val autocompleteResult = searchRepo.performLookup(searchTerm.trim())
-            autocompleteResult.onSuccess { result ->
-                if (result.suggestions.isNotEmpty()) {
-                    _uiState.value = SearchUiState.Autocomplete(
+            val result = searchRepo.performLookup(searchTerm.trim())
+            _uiState.value = when (result) {
+                is Success -> {
+                    SearchUiState.Autocomplete(
                         searchTerm = searchTerm,
-                        suggestions = result.suggestions,
-                    )
-                } else {
-                    _uiState.value = SearchUiState.Autocomplete(
-                        searchTerm = searchTerm,
-                        suggestions = emptyList(),
+                        suggestions = result.value.suggestions,
                     )
                 }
-            }
-            autocompleteResult.onFailure { exception ->
-                _uiState.value = when (exception) {
-                    is DeviceOfflineException -> Error.Offline(id, searchTerm)
-                    else -> Error.ServiceError(id)
-                }
+                is DeviceOffline -> Error.Offline(id, searchTerm)
+                else -> Error.ServiceError(id)
             }
         }
     }

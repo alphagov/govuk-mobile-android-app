@@ -5,7 +5,7 @@ import uk.govuk.app.config.SignatureValidator
 import uk.govuk.app.config.data.remote.ConfigApi
 import uk.govuk.app.config.data.remote.model.Config
 import uk.govuk.app.config.data.remote.model.ConfigResponse
-import uk.govuk.app.networking.domain.DeviceOfflineException
+import uk.govuk.app.data.model.Result.*
 import java.net.UnknownHostException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -26,7 +26,7 @@ class ConfigRepo @Inject constructor(
             }
         }
 
-    suspend fun initConfig(): Result<Unit> {
+    suspend fun initConfig(): uk.govuk.app.data.model.Result<Unit> {
         return try {
             val response = configApi.getConfig()
             if (response.isSuccessful) {
@@ -34,21 +34,21 @@ class ConfigRepo @Inject constructor(
                     val signature = response.headers()["x-amz-meta-govuk-sig"] ?: ""
                     val valid = signatureValidator.isValidSignature(signature, it)
                     if (!valid) {
-                        return Result.failure(InvalidSignatureException())
+                        return InvalidSignature()
                     }
 
                     val configResponse = gson.fromJson(it, ConfigResponse::class.java)
 
                     _config = configResponse.config
-                    Result.success(Unit)
-                } ?: Result.failure(Exception())
+                    Success(Unit)
+                } ?: Error()
             } else {
-                Result.failure(Exception())
+                Error()
             }
         } catch (_: UnknownHostException) {
-            Result.failure(DeviceOfflineException())
-        } catch (e: Exception) {
-            Result.failure(e)
+            DeviceOffline()
+        } catch (_: Exception) {
+            Error()
         }
     }
 }

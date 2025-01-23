@@ -1,4 +1,4 @@
-package uk.govuk.app.ui
+package uk.govuk.app.design.ui.component.error
 
 import android.content.Intent
 import android.net.Uri
@@ -10,17 +10,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import uk.govuk.app.R
+import uk.govuk.app.design.R
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
 import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SecondaryButton
+import uk.govuk.app.design.ui.component.error.ErrorConstants.GOV_UK_URL
 import uk.govuk.app.design.ui.theme.GovUkTheme
-import uk.govuk.app.networking.domain.Constants.GOV_UK_URL
 
 @Composable
-internal fun AppUnavailableScreen(
+fun AppUnavailableScreen(
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -54,7 +54,7 @@ internal fun AppUnavailableScreen(
 private fun GoToGovUkButton(
     onGoToGovUkClick: () -> Unit
 ) {
-    val text = stringResource(R.string.app_unavailable_button_title)
+    val text = stringResource(R.string.go_to_the_gov_uk_website)
     SecondaryButton(
         text = text,
         onClick = { onGoToGovUkClick() },

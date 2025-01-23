@@ -18,6 +18,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.analytics.AnalyticsClient
+import uk.govuk.app.data.model.Result.*
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.data.remote.model.RemoteTopic
 import uk.govuk.app.topics.data.remote.model.RemoteTopic.RemoteTopicContent
@@ -65,7 +66,7 @@ class AllStepByStepsViewModelTest {
             subtopics = emptyList()
         )
 
-        coEvery { topicsRepo.getTopic(REF) } returns Result.success(topic)
+        coEvery { topicsRepo.getTopic(REF) } returns Success(topic)
 
         val expected = listOf(
             TopicContent(

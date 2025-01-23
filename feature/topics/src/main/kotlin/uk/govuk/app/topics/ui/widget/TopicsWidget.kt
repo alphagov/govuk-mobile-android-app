@@ -22,7 +22,7 @@ import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.CompactButton
 import uk.govuk.app.design.ui.component.Title3BoldLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
-import uk.govuk.app.networking.ui.component.ProblemMessage
+import uk.govuk.app.design.ui.component.error.ProblemMessage
 import uk.govuk.app.topics.R
 import uk.govuk.app.topics.TopicsWidgetUiState
 import uk.govuk.app.topics.TopicsWidgetViewModel
