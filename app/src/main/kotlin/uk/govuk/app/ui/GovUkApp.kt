@@ -2,7 +2,6 @@ package uk.govuk.app.ui
 
 import android.app.Activity
 import android.content.Context
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -74,8 +73,8 @@ internal fun GovUkApp() {
 
     if (isSplashDone && uiState != null) {
         SetStatusBarColour(
-            colour = GovUkTheme.colourScheme.surfaces.background,
-            isLight = !isSystemInDarkTheme()
+            colour = GovUkTheme.colourScheme.surfaces.homeHeader,
+            isLight = false
         )
         uiState?.let {
             when (it) {
