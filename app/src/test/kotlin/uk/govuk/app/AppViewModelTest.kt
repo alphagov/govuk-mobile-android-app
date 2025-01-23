@@ -21,9 +21,9 @@ import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.config.data.ConfigRepo
-import uk.govuk.app.config.data.InvalidSignatureException
 import uk.govuk.app.config.data.flags.FlagRepo
 import uk.govuk.app.data.AppRepo
+import uk.govuk.app.data.model.Result.*
 import uk.govuk.app.topics.TopicsFeature
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -48,7 +48,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given there is an error when retrieving the remote config, When init, then should display app unavailable`() {
-        coEvery { configRepo.initConfig() } returns Result.failure(Exception())
+        coEvery { configRepo.initConfig() } returns Error()
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
 
@@ -60,7 +60,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the config signature is invalid, When init, then should display forced update`() {
-        coEvery { configRepo.initConfig() } returns Result.failure(InvalidSignatureException())
+        coEvery { configRepo.initConfig() } returns InvalidSignature()
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
 
@@ -72,7 +72,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the app is unavailable, When init, then should display app unavailable`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
@@ -85,7 +85,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the app is available, When init, then should not display app unavailable`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
@@ -98,7 +98,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given forced update, When init, then should display forced update`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isForcedUpdate(any()) } returns true
 
@@ -112,7 +112,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given don't forced update, When init, then should not display forced update`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isForcedUpdate(any()) } returns false
 
@@ -126,7 +126,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given recommend update, When init, then should display recommend update`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isRecommendUpdate(any()) } returns true
 
@@ -140,7 +140,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given don't recommend update, When init, then should not display recommend update`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isRecommendUpdate(any()) } returns false
 
@@ -154,7 +154,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given analytics consent is required, When init, then should display analytics consent`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         coEvery { analyticsClient.isAnalyticsConsentRequired() } returns true
 
@@ -168,7 +168,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the analytics enabled state is enabled, When init, then should not display analytics consent`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         coEvery { analyticsClient.isAnalyticsConsentRequired() } returns false
 
@@ -182,7 +182,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the user has previously completed onboarding and onboarding is enabled, When init, then should not display onboarding`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         coEvery { appRepo.isOnboardingCompleted() } returns true
         every { flagRepo.isOnboardingEnabled() } returns true
@@ -197,7 +197,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the user has not previously completed onboarding and onboarding is enabled, When init, then should display onboarding`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         coEvery { appRepo.isOnboardingCompleted() } returns false
         every { flagRepo.isOnboardingEnabled() } returns true
@@ -212,7 +212,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the user has previously completed onboarding and onboarding is disabled, When init, then should not display onboarding`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         coEvery { appRepo.isOnboardingCompleted() } returns true
         every { flagRepo.isOnboardingEnabled() } returns false
@@ -227,7 +227,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the user has not previously completed onboarding and onboarding is disabled, When init, then should not display onboarding`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         coEvery { appRepo.isOnboardingCompleted() } returns false
         every { flagRepo.isOnboardingEnabled() } returns false
@@ -242,7 +242,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given topics are disabled, When init, then should not display topic selection`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isTopicsEnabled() } returns false
 
@@ -256,7 +256,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given topic selection has been completed, When init, then should not display topic selection`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isTopicsEnabled() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns true
@@ -271,7 +271,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given topic init was not successful, When init, then should not display topic selection`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isTopicsEnabled() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
@@ -287,7 +287,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given topics is enabled, selection has not been completed and init was successful, When init, then should display topic selection`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isTopicsEnabled() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
@@ -303,7 +303,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the search feature is enabled, When init, then emit search enabled state`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isSearchEnabled() } returns true
 
@@ -317,7 +317,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the search feature is disabled, When init, then emit search disabled state`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isSearchEnabled() } returns false
 
@@ -331,7 +331,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the recent activity feature is enabled, When init, then emit recent activity enabled state`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isRecentActivityEnabled() } returns true
 
@@ -345,7 +345,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the recent activity feature is disabled, When init, then emit recent activity disabled state`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isRecentActivityEnabled() } returns false
 
@@ -359,7 +359,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the topics feature is enabled, When init, then emit topics enabled state`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isTopicsEnabled() } returns true
 
@@ -373,7 +373,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the topics feature is disabled, When init, then emit topics disabled state`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isTopicsEnabled() } returns false
 
@@ -387,7 +387,7 @@ class AppViewModelTest {
 
     @Test
     fun `When onboarding completed, then call repo onboarding completed`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
@@ -401,7 +401,7 @@ class AppViewModelTest {
 
     @Test
     fun `When topic selection completed, then call repo topic selection completed`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
@@ -415,7 +415,7 @@ class AppViewModelTest {
 
     @Test
     fun `When tab is clicked, then log analytics`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
@@ -431,7 +431,7 @@ class AppViewModelTest {
 
     @Test
     fun `When an external widget is clicked, then log analytics`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
@@ -447,7 +447,7 @@ class AppViewModelTest {
 
     @Test
     fun `When an internal widget is clicked, then log analytics`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
@@ -463,7 +463,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the user tries again, then emit loading state and fetch config`() {
-        coEvery { configRepo.initConfig() } returns Result.success(Unit)
+        coEvery { configRepo.initConfig() } returns Success(Unit)
 
         runTest {
             val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
@@ -474,7 +474,7 @@ class AppViewModelTest {
             }
 
             clearMocks(configRepo)
-            coEvery { configRepo.initConfig() } returns Result.success(Unit)
+            coEvery { configRepo.initConfig() } returns Success(Unit)
 
             viewModel.onTryAgain()
             assertTrue(uiStates[1] is AppUiState.Loading)

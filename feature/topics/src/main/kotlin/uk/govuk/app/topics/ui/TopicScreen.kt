@@ -30,8 +30,8 @@ import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeader
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
-import uk.govuk.app.networking.ui.component.OfflineMessage
-import uk.govuk.app.networking.ui.component.ProblemMessage
+import uk.govuk.app.design.ui.component.error.OfflineMessage
+import uk.govuk.app.design.ui.component.error.ProblemMessage
 import uk.govuk.app.topics.R
 import uk.govuk.app.topics.TopicUiState
 import uk.govuk.app.topics.TopicViewModel

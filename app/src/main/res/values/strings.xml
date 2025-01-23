@@ -1,10 +1,6 @@
 <resources>
     <string name="app_name">GOV.UK</string>
 
-    <string name="app_unavailable_button_title">Go to the GOV.UK website</string>
-    <string name="app_unavailable_description">You cannot use the GOV.UK app at the moment. Try again later.</string>
-    <string name="app_unavailable_title">Sorry, the app is unavailable</string>
-
     <string name="device_offline_title">You are not connected to the internet</string>
     <string name="device_offline_description_1">You need to have an internet connection to use the GOV.UK app.</string>
     <string name="device_offline_description_2">Reconnect to the internet and try again.</string>
