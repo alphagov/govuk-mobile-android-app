@@ -9,6 +9,7 @@ import uk.govuk.app.topics.data.local.model.LocalTopicItem
 import uk.govuk.app.topics.data.remote.model.RemoteTopicItem
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.collections.forEach
 
 @Singleton
 internal class TopicsLocalDataSource @Inject constructor(
@@ -26,21 +27,15 @@ internal class TopicsLocalDataSource @Inject constructor(
 
         val isSelectedOnInsert = !isTopicsCustomised()
 
-        realmProvider.open().writeBlocking {
+        realmProvider.open().write {
             for (topic in topicsToDelete) {
                 val liveTopic = findLatest(topic)
                 if (liveTopic != null) {
                     delete(liveTopic)
                 }
             }
-        }
 
-        insertOrUpdate(remoteTopics, isSelectedOnInsert)
-    }
-
-    private suspend fun insertOrUpdate(topics: List<RemoteTopicItem>, isSelectedOnInsert: Boolean) {
-        realmProvider.open().writeBlocking {
-            topics.forEach { topic ->
+            remoteTopics.forEach { topic ->
                 val localTopic = query<LocalTopicItem>("ref = $0", topic.ref).first().find()
 
                 localTopic?.apply {
