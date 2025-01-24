@@ -21,7 +21,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
 import uk.govuk.app.search.R
 import uk.govuk.app.search.SearchUiState
-import uk.govuk.app.search.SearchUiState.Error
 import uk.govuk.app.search.SearchViewModel
 import uk.govuk.app.search.ui.component.SearchHeader
 import uk.govuk.app.search.ui.component.SearchHeaderActions
@@ -92,7 +91,7 @@ private class SearchScreenActions(
 
 @Composable
 private fun SearchScreen(
-    uiState: SearchUiState?,
+    uiState: SearchUiState,
     actions: SearchScreenActions,
     modifier: Modifier = Modifier
 ) {
@@ -132,33 +131,34 @@ private fun SearchScreen(
     ) {
         Spacer(modifier = Modifier.height(58.dp))
 
-        uiState?.let {
-            when (it) {
-                is SearchUiState.Default ->
-                    PreviousSearches(
-                        previousSearches = it.previousSearches,
-                        onClick = {
-                            searchTerm = it
-                            actions.onPreviousSearchClick(it)
-                        },
-                        onRemoveAll = actions.onRemoveAllPreviousSearches,
-                        onRemove = actions.onRemovePreviousSearch
-                    )
-
-                is SearchUiState.Autocomplete ->
-                    SearchAutocomplete(
-                        searchTerm = it.searchTerm,
-                        suggestions = it.suggestions,
-                        onSearch = {
-                            searchTerm = it
-                            actions.onAutocompleteResultClick(it)
-                        }
-                    )
-
-                is SearchUiState.Results ->
-                    SearchResults(it.searchTerm, it.searchResults, actions.onResultClick)
-
-                else -> SearchError(uiState as Error, actions.onRetry)
+        when {
+            uiState.error != null ->
+                SearchError(uiState.error, actions.onRetry)
+            uiState.searchResults != null ->
+                SearchResults(
+                    searchTerm = uiState.searchResults.searchTerm,
+                    searchResults = uiState.searchResults.values,
+                    onClick = actions.onResultClick
+                )
+            uiState.suggestions != null ->
+                SearchAutocomplete(
+                    searchTerm = uiState.suggestions.searchTerm,
+                    suggestions = uiState.suggestions.values,
+                    onSearch = {
+                        searchTerm = it
+                        actions.onAutocompleteResultClick(it)
+                    }
+                )
+            else -> {
+                PreviousSearches(
+                    previousSearches = uiState.previousSearches,
+                    onClick = {
+                        searchTerm = it
+                        actions.onPreviousSearchClick(it)
+                    },
+                    onRemoveAll = actions.onRemoveAllPreviousSearches,
+                    onRemove = actions.onRemovePreviousSearch
+                )
             }
         }
     }

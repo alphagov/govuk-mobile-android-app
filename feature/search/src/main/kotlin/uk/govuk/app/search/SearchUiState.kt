@@ -3,25 +3,26 @@ package uk.govuk.app.search
 import uk.govuk.app.search.data.remote.model.SearchResult
 import java.util.UUID
 
-internal sealed class SearchUiState() {
 
-    internal class Default(
-        val previousSearches: List<String>
-    ): SearchUiState()
-
-    internal class Results(
+internal data class SearchUiState(
+    val previousSearches: List<String> = emptyList(),
+    val suggestions: Suggestions? = null,
+    val searchResults: SearchResults? = null,
+    val error: Error? = null
+) {
+    data class Suggestions(
         val searchTerm: String,
-        val searchResults: List<SearchResult>
-    ) : SearchUiState()
+        val values: List<String>
+    )
 
-    internal class Autocomplete(
+    data class SearchResults(
         val searchTerm: String,
-        val suggestions: List<String>
-    ) : SearchUiState()
+        val values: List<SearchResult>
+    )
 
     internal sealed class Error(
         val uuid: UUID
-    ) : SearchUiState() {
+    ) {
         internal class Empty(uuid: UUID, val searchTerm: String) : Error(uuid)
 
         internal class Offline(uuid: UUID, val searchTerm: String) : Error(uuid)

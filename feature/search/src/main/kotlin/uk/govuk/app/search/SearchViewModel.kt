@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.data.model.Result.*
-import uk.govuk.app.search.SearchUiState.Default
 import uk.govuk.app.search.SearchUiState.Error
-import uk.govuk.app.search.SearchUiState.Results
+import uk.govuk.app.search.SearchUiState.SearchResults
+import uk.govuk.app.search.SearchUiState.Suggestions
 import uk.govuk.app.search.data.SearchRepo
 import uk.govuk.app.search.domain.SearchConfig
 import uk.govuk.app.visited.Visited
@@ -30,11 +30,15 @@ internal class SearchViewModel @Inject constructor(
         private const val TITLE = "Search"
     }
 
-    private val _uiState: MutableStateFlow<SearchUiState?> = MutableStateFlow(null)
+    private val _uiState: MutableStateFlow<SearchUiState> = MutableStateFlow(SearchUiState())
     val uiState = _uiState.asStateFlow()
 
     init {
-        emitPreviousSearches()
+        viewModelScope.launch {
+            searchRepo.previousSearches.collect { previousSearches ->
+                emitUiState(previousSearches = previousSearches)
+            }
+        }
     }
 
     fun onPageView() {
@@ -45,46 +49,31 @@ internal class SearchViewModel @Inject constructor(
         )
     }
 
-    private fun emitPreviousSearches() {
-        viewModelScope.launch {
-            _uiState.value = Default(searchRepo.fetchPreviousSearches())
-        }
-    }
-
     private fun fetchSearchResults(searchTerm: String) {
         viewModelScope.launch {
             val id = UUID.randomUUID()
-            val result = searchRepo.performSearch(searchTerm.trim())
-            _uiState.value = when (result) {
+            val result = searchRepo.performSearch(searchTerm)
+            when (result) {
                 is Success -> {
                     if (result.value.results.isNotEmpty()) {
-                        Results(
-                            searchTerm = searchTerm,
-                            searchResults = result.value.results
+                        emitUiState(
+                            searchResults = SearchResults(searchTerm, result.value.results)
                         )
                     } else {
-                        Error.Empty(id, searchTerm)
+                        emitUiState(error = Error.Empty(id, searchTerm))
                     }
                 }
-                is DeviceOffline -> Error.Offline(id, searchTerm)
-                else -> Error.ServiceError(id)
+                is DeviceOffline -> emitUiState(error = Error.Offline(id, searchTerm))
+                else -> emitUiState(error = Error.ServiceError(id))
             }
         }
     }
 
     private fun fetchAutocompleteSuggestions(searchTerm: String) {
         viewModelScope.launch {
-            val id = UUID.randomUUID()
-            val result = searchRepo.performLookup(searchTerm.trim())
-            _uiState.value = when (result) {
-                is Success -> {
-                    SearchUiState.Autocomplete(
-                        searchTerm = searchTerm,
-                        suggestions = result.value.suggestions,
-                    )
-                }
-                is DeviceOffline -> Error.Offline(id, searchTerm)
-                else -> Error.ServiceError(id)
+            val result = searchRepo.performLookup(searchTerm)
+            if (result is Success) {
+                emitUiState(suggestions = Suggestions(searchTerm, result.value.suggestions))
             }
         }
     }
@@ -102,28 +91,26 @@ internal class SearchViewModel @Inject constructor(
     }
 
     fun onClear() {
-        emitPreviousSearches()
+        emitUiState()
     }
 
     fun onRemoveAllPreviousSearches() {
         viewModelScope.launch {
             searchRepo.removeAllPreviousSearches()
         }
-        emitPreviousSearches()
     }
 
     fun onRemovePreviousSearch(searchTerm: String) {
         viewModelScope.launch {
             searchRepo.removePreviousSearch(searchTerm)
         }
-        emitPreviousSearches()
     }
 
     fun onAutocomplete(searchTerm: String) {
         if (searchTerm.length >= SearchConfig.AUTOCOMPLETE_MIN_LENGTH) {
             fetchAutocompleteSuggestions(searchTerm)
         } else {
-            onClear()
+            emitUiState()
         }
     }
 
@@ -135,5 +122,19 @@ internal class SearchViewModel @Inject constructor(
     fun onPreviousSearchClick(searchTerm: String) {
         fetchSearchResults(searchTerm)
         analyticsClient.history(searchTerm)
+    }
+
+    private fun emitUiState(
+        previousSearches: List<String> = uiState.value.previousSearches,
+        suggestions: Suggestions? = null,
+        searchResults: SearchResults? = null,
+        error: Error? = null
+    ) {
+        _uiState.value = SearchUiState(
+            previousSearches = previousSearches,
+            suggestions = suggestions,
+            searchResults = searchResults,
+            error = error
+        )
     }
 }

@@ -169,7 +169,7 @@ class SearchViewModelTest {
 
             runTest {
                 val viewModel = SearchViewModel(analyticsClient, visited, repository)
-                val result = viewModel.uiState.value as SearchUiState.Default
+                val result = viewModel.uiState.value as SearchUiState.PreviousSearches
 
                 assertEquals(previousSearches, result.previousSearches)
             }
@@ -183,7 +183,7 @@ class SearchViewModelTest {
             runTest {
                 val viewModel = SearchViewModel(analyticsClient, visited, repository)
                 viewModel.onClear()
-                val result = viewModel.uiState.value as SearchUiState.Default
+                val result = viewModel.uiState.value as SearchUiState.PreviousSearches
 
                 assertEquals(previousSearches, result.previousSearches)
             }
@@ -197,7 +197,7 @@ class SearchViewModelTest {
             runTest {
                 val viewModel = SearchViewModel(analyticsClient, visited, repository)
                 viewModel.onRemovePreviousSearch("dog")
-                val result = viewModel.uiState.value as SearchUiState.Default
+                val result = viewModel.uiState.value as SearchUiState.PreviousSearches
 
                 assertEquals(previousSearches, result.previousSearches)
             }
@@ -214,7 +214,7 @@ class SearchViewModelTest {
             runTest {
                 val viewModel = SearchViewModel(analyticsClient, visited, repository)
                 viewModel.onRemoveAllPreviousSearches()
-                val result = viewModel.uiState.value as SearchUiState.Default
+                val result = viewModel.uiState.value as SearchUiState.PreviousSearches
 
                 assertEquals(emptyList<String>(), result.previousSearches)
             }
@@ -330,7 +330,7 @@ class SearchViewModelTest {
                 val viewModel = SearchViewModel(analyticsClient, visited, repository)
                 viewModel.onAutocomplete("a")
 
-                val result = viewModel.uiState.value as SearchUiState.Default
+                val result = viewModel.uiState.value as SearchUiState.PreviousSearches
 
                 assertEquals(previousSearches, result.previousSearches)
             }
