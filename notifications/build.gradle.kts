@@ -25,6 +25,15 @@ android {
     }
 }
 
+sonar {
+    properties {
+        property(
+            "sonar.coverage.exclusions",
+            properties["sonar.coverage.exclusions"].toString() + ",**/OneSignal.*"
+        )
+    }
+}
+
 dependencies {
     implementation(libs.oneSignal)
     implementation(libs.hilt.android)

@@ -6,9 +6,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkObject
 import io.mockk.mockkStatic
-import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
@@ -29,14 +27,14 @@ class NotificationsClientTest {
     fun setup() {
         Dispatchers.setMain(dispatcher)
         mockkStatic(OneSignal::class)
-        mockkObject(OneSignal.Debug)
+        mockkStatic(OneSignal.Debug::class)
     }
 
     @After
     fun tearDown() {
         Dispatchers.resetMain()
         unmockkStatic(OneSignal::class)
-        unmockkObject(OneSignal.Debug)
+        unmockkStatic(OneSignal.Debug::class)
     }
 
     @Test
