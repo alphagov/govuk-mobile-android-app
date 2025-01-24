@@ -1,6 +1,7 @@
 package uk.govuk.app.home.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -80,6 +81,7 @@ private fun HomeScreen(
             scaleFactor = scaleFactor,
             modifier = Modifier
                 .fillMaxWidth()
+                .background(GovUkTheme.colourScheme.surfaces.homeHeader)
         )
 
         LazyColumn (

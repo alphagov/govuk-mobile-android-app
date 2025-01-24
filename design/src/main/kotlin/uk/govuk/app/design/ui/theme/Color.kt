@@ -8,7 +8,7 @@ import uk.govuk.app.design.ui.theme.GovUkColourScheme.TextAndIcons
 
 private val Blue1 = Color(0xFF1D70B8)
 private val Blue2 = Color(0xFF259AFF)
-private val Blue3 = Color(0xFF00D1FF)
+private val Blue3 = Color(0xFF00FFE0)
 private val Blue4 = Color(0xFF45F2FD)
 private val Blue5 = Color(0xFF193E61)
 private val Blue6 = Color(0xFF7AC2FF)
@@ -67,7 +67,9 @@ data class GovUkColourScheme(
         val trailingIcon: Color,
         val buttonRemove: Color,
         val buttonRemoveDisabled: Color,
-        val selectedTick: Color
+        val selectedTick: Color,
+        val logo: Color,
+        val logoDot: Color
     )
 
     data class Surfaces(
@@ -95,7 +97,8 @@ data class GovUkColourScheme(
         val toggleDisabled: Color,
         val toggleHandle: Color,
         val toggleBorder: Color,
-        val icon: Color
+        val icon: Color,
+        val homeHeader: Color
     )
 
     data class Strokes(
@@ -127,7 +130,9 @@ internal val LightColorScheme = GovUkColourScheme(
         trailingIcon = Grey300,
         buttonRemove = Red1,
         buttonRemoveDisabled = Grey700,
-        selectedTick = White
+        selectedTick = White,
+        logo = White,
+        logoDot = Blue3
     ),
     surfaces = Surfaces(
         background = Grey50,
@@ -154,7 +159,8 @@ internal val LightColorScheme = GovUkColourScheme(
         toggleDisabled = Grey300,
         toggleHandle = White,
         toggleBorder = White,
-        icon = Blue1
+        icon = Blue1,
+        homeHeader = Blue1
     ),
     strokes = Strokes(
         container = BlackAlpha30,
@@ -185,7 +191,9 @@ internal val DarkColorScheme = GovUkColourScheme(
         trailingIcon = Grey500,
         buttonRemove = Red1,
         buttonRemoveDisabled = Grey300,
-        selectedTick = White
+        selectedTick = White,
+        logo = White,
+        logoDot = Blue3
     ),
     surfaces = Surfaces(
         background = Black,
@@ -212,7 +220,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         toggleDisabled = Grey600,
         toggleHandle = White,
         toggleBorder = Grey800,
-        icon = Blue2
+        icon = Blue2,
+        homeHeader = Black
     ),
     strokes = Strokes(
         container = WhiteAlpha30,
@@ -244,7 +253,9 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             trailingIcon = Color.Unspecified,
             buttonRemove = Color.Unspecified,
             buttonRemoveDisabled = Color.Unspecified,
-            selectedTick = Color.Unspecified
+            selectedTick = Color.Unspecified,
+            logo = Color.Unspecified,
+            logoDot = Color.Unspecified
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,
@@ -271,7 +282,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             toggleDisabled = Color.Unspecified,
             toggleHandle = Color.Unspecified,
             toggleBorder = Color.Unspecified,
-            icon = Color.Unspecified
+            icon = Color.Unspecified,
+            homeHeader = Color.Unspecified
         ),
         strokes = Strokes(
             container = Color.Unspecified,
