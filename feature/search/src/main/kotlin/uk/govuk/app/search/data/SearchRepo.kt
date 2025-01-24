@@ -23,10 +23,6 @@ internal class SearchRepo @Inject constructor(
         localSearches.map { it.searchTerm }
     }
 
-    suspend fun fetchPreviousSearches(): List<String> {
-        return localDataSource.fetchPreviousSearches().map { it.searchTerm }
-    }
-
     suspend fun removePreviousSearch(searchTerm: String) {
         localDataSource.removePreviousSearch(searchTerm)
     }
