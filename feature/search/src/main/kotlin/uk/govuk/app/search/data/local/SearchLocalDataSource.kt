@@ -2,6 +2,10 @@ package uk.govuk.app.search.data.local
 
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.Sort
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import uk.govuk.app.search.data.local.model.LocalSearchItem
 import uk.govuk.app.search.domain.SearchConfig
 import java.util.Calendar
@@ -12,6 +16,16 @@ import javax.inject.Singleton
 internal class SearchLocalDataSource @Inject constructor(
     private val realmProvider: SearchRealmProvider,
 ) {
+
+    val previousSearches: Flow<List<LocalSearchItem>> = flow {
+        emitAll(
+            realmProvider.open()
+                .query<LocalSearchItem>()
+                .sort("timestamp", Sort.DESCENDING)
+                .asFlow()
+                .map { it.list }
+        )
+    }
 
     suspend fun fetchPreviousSearches(): List<LocalSearchItem> {
         return realmProvider.open()
