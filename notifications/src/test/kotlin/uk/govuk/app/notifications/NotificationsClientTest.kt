@@ -2,6 +2,7 @@ package uk.govuk.app.notifications
 
 import android.content.Context
 import com.onesignal.OneSignal
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -43,6 +44,7 @@ class NotificationsClientTest {
         val oneSignalAppId = "1234"
         every { OneSignal.initWithContext(context, oneSignalAppId) } returns Unit
         every { OneSignal.Notifications.canRequestPermission } returns true
+        coEvery { OneSignal.Notifications.requestPermission(false) } returns true
 
         val sut = NotificationsClient()
         sut.initialise(context, oneSignalAppId)
