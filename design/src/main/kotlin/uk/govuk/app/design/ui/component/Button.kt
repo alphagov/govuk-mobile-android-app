@@ -75,7 +75,8 @@ fun PrimaryButton(
         textStyle = GovUkTheme.typography.bodyBold,
         modifier = modifier.fillMaxWidth(),
         enabled = enabled,
-        externalLink = externalLink
+        externalLink = externalLink,
+        shape = RoundedCornerShape(15.dp)
     )
 }
 
@@ -106,7 +107,7 @@ fun SecondaryButton(
         modifier = modifier.fillMaxWidth(),
         enabled = enabled,
         externalLink = externalLink,
-        shape = RoundedCornerShape(4.dp)
+        shape = RoundedCornerShape(15.dp)
     )
 }
 
@@ -151,7 +152,7 @@ private fun BaseButton(
     modifier: Modifier = Modifier,
     externalLink: Boolean = false,
     enabled: Boolean = true,
-    shape: RoundedCornerShape = RoundedCornerShape(30.dp),
+    shape: RoundedCornerShape = RoundedCornerShape(15.dp),
 ) {
     val altText = text.replace(
         stringResource(R.string.gov_uk),
