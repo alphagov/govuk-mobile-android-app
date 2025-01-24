@@ -7,7 +7,7 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
+import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,6 +20,9 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NotificationsClientTest {
+
+    private lateinit var notificationsClient: NotificationsClient
+
     private val dispatcher = UnconfinedTestDispatcher()
     private val context = mockk<Context>(relaxed = true)
 
@@ -28,13 +31,14 @@ class NotificationsClientTest {
         Dispatchers.setMain(dispatcher)
         mockkStatic(OneSignal::class)
         mockkStatic(OneSignal.Debug::class)
+
+        notificationsClient = NotificationsClient()
     }
 
     @After
     fun tearDown() {
         Dispatchers.resetMain()
-        unmockkStatic(OneSignal::class)
-        unmockkStatic(OneSignal.Debug::class)
+        unmockkAll()
     }
 
     @Test
@@ -44,8 +48,7 @@ class NotificationsClientTest {
         every { OneSignal.Notifications.canRequestPermission } returns true
         coEvery { OneSignal.Notifications.requestPermission(false) } returns true
 
-        val sut = NotificationsClient()
-        sut.initialise(context, oneSignalAppId)
+        notificationsClient.initialise(context, oneSignalAppId)
 
         verify(exactly = 1) {
             OneSignal.initWithContext(context, oneSignalAppId)
