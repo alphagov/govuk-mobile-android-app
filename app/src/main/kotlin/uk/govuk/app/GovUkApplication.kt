@@ -8,12 +8,10 @@ import javax.inject.Inject
 @HiltAndroidApp
 class GovUkApplication: Application() {
 
-    @Inject
-    var notificationsClient = NotificationsClient()
+    @Inject lateinit var notificationsClient: NotificationsClient
 
     override fun onCreate() {
         super.onCreate()
-
-        notificationsClient.initialise(this)
+        notificationsClient.initialise(this, BuildConfig.ONE_SIGNAL_APP_ID)
     }
 }

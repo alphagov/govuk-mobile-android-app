@@ -31,6 +31,7 @@ android {
         }
 
         buildConfigField("String", "PLAY_STORE_URL", "\"https://play.google.com/store/apps/details?id=$applicationId\"")
+        buildConfigField("String", "ONE_SIGNAL_APP_ID", "\"4c235189-5c5f-4a71-8385-2549fc36419f\"")
     }
 
     signingConfigs {

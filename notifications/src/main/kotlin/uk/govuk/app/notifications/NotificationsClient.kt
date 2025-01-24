@@ -5,17 +5,14 @@ import com.onesignal.OneSignal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class NotificationsClient {
+class NotificationsClient @Inject constructor() {
 
-    private companion object {
-        const val ONE_SIGNAL_APP_ID = "4c235189-5c5f-4a71-8385-2549fc36419f"
-    }
-
-    fun initialise(context: Context) {
-        OneSignal.initWithContext(context, ONE_SIGNAL_APP_ID)
+    fun initialise(context: Context, oneSignalAppId: String) {
+        OneSignal.initWithContext(context, oneSignalAppId)
 
         CoroutineScope(Dispatchers.IO).launch {
             OneSignal.Notifications.requestPermission(false)

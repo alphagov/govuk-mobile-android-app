@@ -27,7 +27,6 @@ class NotificationsClientTest {
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-
         mockkStatic(OneSignal::class)
         mockkObject(OneSignal.Debug)
     }
@@ -35,24 +34,23 @@ class NotificationsClientTest {
     @After
     fun tearDown() {
         Dispatchers.resetMain()
-
         unmockkStatic(OneSignal::class)
         unmockkObject(OneSignal.Debug)
     }
 
     @Test
     fun `Given we have a notifications client, when initialise is called, One Signal setup functions are called`() {
-        val oneSignalAppId = "4c235189-5c5f-4a71-8385-2549fc36419f"
+        val oneSignalAppId = "1234"
         every { OneSignal.initWithContext(context, oneSignalAppId) } returns Unit
         every { OneSignal.Notifications.canRequestPermission } returns true
 
         val sut = NotificationsClient()
-        sut.initialise(context)
+        sut.initialise(context, oneSignalAppId)
 
-        verify {
+        verify(exactly = 1) {
             OneSignal.initWithContext(context, oneSignalAppId)
         }
-        coVerify {
+        coVerify(exactly = 1) {
             OneSignal.Notifications.requestPermission(false)
         }
     }
