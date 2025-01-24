@@ -220,7 +220,7 @@ private fun BottomNav(
                             .colors(
                                 selectedIconColor = GovUkTheme.colourScheme.textAndIcons.buttonPrimary,
                                 selectedTextColor = GovUkTheme.colourScheme.textAndIcons.link,
-                                indicatorColor = GovUkTheme.colourScheme.surfaces.buttonPrimary,
+                                indicatorColor = GovUkTheme.colourScheme.surfaces.primary,
                                 unselectedIconColor = GovUkTheme.colourScheme.textAndIcons.secondary,
                                 unselectedTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
                             )
