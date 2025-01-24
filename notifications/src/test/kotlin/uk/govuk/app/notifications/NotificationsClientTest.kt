@@ -20,9 +20,6 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NotificationsClientTest {
-
-    private lateinit var notificationsClient: NotificationsClient
-
     private val dispatcher = UnconfinedTestDispatcher()
     private val context = mockk<Context>(relaxed = true)
 
@@ -31,8 +28,6 @@ class NotificationsClientTest {
         Dispatchers.setMain(dispatcher)
         mockkStatic(OneSignal::class)
         mockkStatic(OneSignal.Debug::class)
-
-        notificationsClient = NotificationsClient()
     }
 
     @After
@@ -48,6 +43,7 @@ class NotificationsClientTest {
         every { OneSignal.Notifications.canRequestPermission } returns true
         coEvery { OneSignal.Notifications.requestPermission(false) } returns true
 
+        val notificationsClient = NotificationsClient()
         notificationsClient.initialise(context, oneSignalAppId)
 
         verify(exactly = 1) {

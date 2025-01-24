@@ -25,6 +25,12 @@ android {
     }
 }
 
+sonar {
+    properties {
+        property ("sonar.java.coveragePlugin", "jacoco")
+    }
+}
+
 dependencies {
     implementation(libs.oneSignal)
     implementation(libs.hilt.android)
