@@ -4,6 +4,8 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -51,17 +53,21 @@ class SearchRepoTest {
         }
 
         @Test
-        fun `Fetch previous searches returns previous searches`() {
-            coEvery { localDataSource.fetchPreviousSearches() } returns listOf(
-                LocalSearchItem().apply { searchTerm = "dog" },
-                LocalSearchItem().apply { searchTerm = "cat" },
-                LocalSearchItem().apply { searchTerm = "tax" }
+        fun `Previous searches returns previous searches`() {
+            every { localDataSource.previousSearches } returns flowOf(
+                listOf(
+                    LocalSearchItem().apply { searchTerm = "dog" },
+                    LocalSearchItem().apply { searchTerm = "cat" },
+                    LocalSearchItem().apply { searchTerm = "tax" }
+                )
             )
 
             val expected = listOf("dog", "cat", "tax")
 
+            searchRepo = SearchRepo(searchApi, autocompleteApi, localDataSource)
+
             runTest {
-                val actual = searchRepo.fetchPreviousSearches()
+                val actual = searchRepo.previousSearches.first()
                 assertEquals(expected, actual)
             }
         }
