@@ -11,6 +11,7 @@ import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -37,15 +38,17 @@ class NotificationsClientTest {
         every { OneSignal.Notifications.canRequestPermission } returns true
         coEvery { OneSignal.Notifications.requestPermission(false) } returns true
 
-        val dispatcher = UnconfinedTestDispatcher()
-        val notificationsClient = NotificationsClient()
-        notificationsClient.initialise(context, oneSignalAppId, dispatcher)
+        runTest {
+            val dispatcher = UnconfinedTestDispatcher()
+            val notificationsClient = NotificationsClient()
+            notificationsClient.initialise(context, oneSignalAppId, dispatcher)
 
-        verify(exactly = 1) {
-            OneSignal.initWithContext(context, oneSignalAppId)
-        }
-        coVerify(exactly = 1) {
-            OneSignal.Notifications.requestPermission(false)
+            verify(exactly = 1) {
+                OneSignal.initWithContext(context, oneSignalAppId)
+            }
+            coVerify(exactly = 1) {
+                OneSignal.Notifications.requestPermission(false)
+            }
         }
     }
 }
