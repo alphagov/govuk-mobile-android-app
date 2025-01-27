@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
-    jacoco
 }
 
 android {
@@ -23,12 +22,6 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
-    }
-}
-
-sonar {
-    properties {
-        property ("sonar.java.coveragePlugin", "jacoco")
     }
 }
 

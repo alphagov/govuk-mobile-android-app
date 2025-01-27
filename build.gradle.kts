@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.crashlytics) apply false
     alias(libs.plugins.firebaseAppDistribution) apply false
     alias(libs.plugins.sonarqube)
+    alias(libs.plugins.kover)
 }
 
 buildscript {
@@ -29,6 +30,10 @@ subprojects {
                 if (!projectDir.endsWith("design")) {
                     property("sonar.tests", "src/test,src/androidTest")
                 }
+                property (
+                    "sonar.java.coveragePlugin",
+                    "jacoco"
+                )
                 property(
                     "sonar.coverage.jacoco.xmlReportPaths",
                     "${projectDir}/build/reports/kover/reportDebug.xml"
