@@ -50,20 +50,22 @@ internal class SearchViewModel @Inject constructor(
     }
 
     private fun fetchSearchResults(searchTerm: String) {
+        val trimmedSearchTerm = searchTerm.trim()
+
         viewModelScope.launch {
             val id = UUID.randomUUID()
-            val result = searchRepo.performSearch(searchTerm)
+            val result = searchRepo.performSearch(trimmedSearchTerm)
             when (result) {
                 is Success -> {
                     if (result.value.results.isNotEmpty()) {
                         emitUiState(
-                            searchResults = SearchResults(searchTerm, result.value.results)
+                            searchResults = SearchResults(trimmedSearchTerm, result.value.results)
                         )
                     } else {
-                        emitUiState(error = Error.Empty(id, searchTerm))
+                        emitUiState(error = Error.Empty(id, trimmedSearchTerm))
                     }
                 }
-                is DeviceOffline -> emitUiState(error = Error.Offline(id, searchTerm))
+                is DeviceOffline -> emitUiState(error = Error.Offline(id, trimmedSearchTerm))
                 else -> emitUiState(error = Error.ServiceError(id))
             }
         }
