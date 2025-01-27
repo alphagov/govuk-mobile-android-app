@@ -1,6 +1,7 @@
 package uk.govuk.app.topics.data.local
 
 import io.realm.kotlin.ext.query
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
@@ -16,7 +17,8 @@ import kotlin.collections.forEach
 @Singleton
 internal class TopicsLocalDataSource @Inject constructor(
     private val realmProvider: TopicsRealmProvider,
-    private val topicsDataStore: TopicsDataStore
+    private val topicsDataStore: TopicsDataStore,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
 
     val topics: Flow<List<LocalTopicItem>> = flow {
@@ -24,7 +26,7 @@ internal class TopicsLocalDataSource @Inject constructor(
     }
 
     suspend fun sync(remoteTopics: List<RemoteTopicItem>) {
-        withContext(Dispatchers.IO) {
+        withContext(dispatcher) {
             val localTopics = realmProvider.open().query<LocalTopicItem>().find().toList()
             val topicsToDelete =
                 localTopics.filter { !remoteTopics.map { it.ref }.contains(it.ref) }

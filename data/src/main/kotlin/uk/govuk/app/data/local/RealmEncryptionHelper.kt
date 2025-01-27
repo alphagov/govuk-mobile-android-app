@@ -3,6 +3,7 @@ package uk.govuk.app.data.local
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.security.KeyStore
@@ -17,7 +18,8 @@ import javax.inject.Singleton
 
 @Singleton
 class RealmEncryptionHelper @Inject constructor(
-    private val dataStore: RealmDataStore
+    private val dataStore: RealmDataStore,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
 
     private companion object {
@@ -31,7 +33,7 @@ class RealmEncryptionHelper @Inject constructor(
     }
 
     suspend fun getRealmKey(): ByteArray {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcher) {
             val encryptedRealmKey = dataStore.getRealmKey()
             val realmIv = dataStore.getRealmIv()
 
