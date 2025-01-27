@@ -2,12 +2,12 @@ package uk.govuk.app.topics.data.local
 
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import uk.govuk.app.data.di.IoDispatcher
 import uk.govuk.app.topics.data.local.model.LocalTopicItem
 import uk.govuk.app.topics.data.remote.model.RemoteTopicItem
 import javax.inject.Inject
@@ -18,7 +18,7 @@ import kotlin.collections.forEach
 internal class TopicsLocalDataSource @Inject constructor(
     private val realmProvider: TopicsRealmProvider,
     private val topicsDataStore: TopicsDataStore,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) {
 
     val topics: Flow<List<LocalTopicItem>> = flow {

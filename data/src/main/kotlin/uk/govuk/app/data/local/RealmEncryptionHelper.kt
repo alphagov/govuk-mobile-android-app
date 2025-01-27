@@ -4,8 +4,8 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import uk.govuk.app.data.di.IoDispatcher
 import java.security.KeyStore
 import java.security.SecureRandom
 import javax.crypto.Cipher
@@ -19,7 +19,7 @@ import javax.inject.Singleton
 @Singleton
 class RealmEncryptionHelper @Inject constructor(
     private val dataStore: RealmDataStore,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) {
 
     private companion object {
