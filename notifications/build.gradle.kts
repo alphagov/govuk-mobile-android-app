@@ -27,7 +27,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.oneSignal)
+    implementation(libs.one.signal)
     implementation(libs.hilt.android)
 
     ksp(libs.hilt.compiler)
