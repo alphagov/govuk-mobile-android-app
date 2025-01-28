@@ -1,14 +1,13 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    alias(libs.plugins.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kover)
 }
 
 android {
-    namespace = "uk.govuk.app.onboarding"
+    namespace = "uk.govuk.app.notifications"
     compileSdk = Version.COMPILE_SDK
 
     defaultConfig {
@@ -25,26 +24,17 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
-    implementation(projects.design)
-    implementation(projects.analytics)
-
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.material3)
-    implementation(libs.androidx.adaptive.android)
-    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.one.signal)
     implementation(libs.hilt.android)
 
     ksp(libs.hilt.compiler)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
+    testImplementation(libs.coroutine.test)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

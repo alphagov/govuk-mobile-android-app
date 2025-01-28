@@ -1,4 +1,4 @@
-package uk.govuk.app
+package uk.govuk.app.notifications
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -11,6 +11,6 @@ class ExampleInstrumentedTest {
     @Test
     fun useAppContext() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("uk.govuk.app.dev", appContext.packageName)
+        assertEquals("uk.govuk.app.notifications.test", appContext.packageName)
     }
 }

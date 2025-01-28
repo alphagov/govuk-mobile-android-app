@@ -14,6 +14,9 @@ android {
 
     defaultConfig {
         minSdk = Version.MIN_SDK
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
         consumerProguardFiles("consumer-rules.pro")
 
         buildConfigField("String", "TOPICS_BASE_URL", "\"https://app.integration.publishing.service.gov.uk/static/topics/\"")
