@@ -104,7 +104,7 @@ private fun SearchResult(
     intent.data = Uri.parse(url)
 
     GovUkCard(
-        modifier = Modifier.padding(
+        modifier = modifier.padding(
             GovUkTheme.spacing.medium,
             GovUkTheme.spacing.medium,
             GovUkTheme.spacing.medium,

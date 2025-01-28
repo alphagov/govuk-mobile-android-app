@@ -23,11 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.onClick
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import uk.govuk.app.design.ui.component.BodyBoldLabel
@@ -48,7 +46,6 @@ internal fun PreviousSearches(
 ) {
     if (previousSearches.isNotEmpty()) {
         var showDialog by remember { mutableStateOf(false) }
-        val context = LocalContext.current
 
         LazyColumn(
             modifier
@@ -56,74 +53,18 @@ internal fun PreviousSearches(
                 .padding(horizontal = GovUkTheme.spacing.medium)
         ) {
             item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            top = GovUkTheme.spacing.small,
-                        ),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    BodyBoldLabel(
-                        text = stringResource(R.string.previous_searches_heading),
-                        modifier = Modifier
-                            .weight(1f)
-                            .semantics { heading() }
-                    )
-
-                    SmallHorizontalSpacer()
-
-                    TextButton(
-                        onClick = { showDialog = true }
-                    ) {
-                        BodyRegularLabel(
-                            text = stringResource(R.string.remove_all_button),
-                            modifier = Modifier
-                                .semantics {
-                                    contentDescription = context.getString(R.string.content_desc_delete_all)
-                                },
-                            color = GovUkTheme.colourScheme.textAndIcons.link,
-                        )
+                Header(
+                    onRemoveAll = {
+                        showDialog = true
                     }
-                }
+                )
             }
             items(previousSearches) { searchTerm ->
-                Column{
-                    ListDivider()
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onClick(searchTerm) }
-                            .semantics {
-                                role = Role.Button
-                                onClick(label = context.getString(R.string.content_desc_search)) { true }
-                            },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Search,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                            tint = GovUkTheme.colourScheme.textAndIcons.secondary
-                        )
-                        ExtraSmallHorizontalSpacer()
-                        BodyRegularLabel(
-                            text = searchTerm,
-                            modifier = Modifier.weight(1f)
-                        )
-                        ExtraSmallHorizontalSpacer()
-                        TextButton(
-                            onClick = { onRemove(searchTerm) }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Clear,
-                                contentDescription = stringResource(R.string.content_desc_remove),
-                                modifier = Modifier.size(18.dp),
-                                tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
-                            )
-                        }
-                    }
-                }
+                PreviousSearch(
+                    searchTerm = searchTerm,
+                    onClick = onClick,
+                    onRemove = onRemove
+                )
             }
             item {
                 ListDivider()
@@ -135,6 +76,91 @@ internal fun PreviousSearches(
                 onConfirm = onRemoveAll,
                 onDismiss = { showDialog = false }
             )
+        }
+    }
+}
+
+@Composable
+private fun Header(
+    onRemoveAll: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(
+                top = GovUkTheme.spacing.small,
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        BodyBoldLabel(
+            text = stringResource(R.string.previous_searches_heading),
+            modifier = Modifier
+                .weight(1f)
+                .semantics { heading() }
+        )
+
+        SmallHorizontalSpacer()
+
+        TextButton(
+            onClick = onRemoveAll
+        ) {
+            BodyRegularLabel(
+                text = stringResource(R.string.remove_all_button),
+                modifier = Modifier
+                    .semantics {
+                        contentDescription = context.getString(R.string.content_desc_delete_all)
+                    },
+                color = GovUkTheme.colourScheme.textAndIcons.link,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PreviousSearch(
+    searchTerm: String,
+    onClick: (String) -> Unit,
+    onRemove: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+
+    Column(modifier) {
+        ListDivider()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onClick(searchTerm) }
+                .semantics {
+                    onClick(label = context.getString(R.string.content_desc_search)) { true }
+                },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Search,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+                tint = GovUkTheme.colourScheme.textAndIcons.secondary
+            )
+            ExtraSmallHorizontalSpacer()
+            BodyRegularLabel(
+                text = searchTerm,
+                modifier = Modifier.weight(1f)
+            )
+            ExtraSmallHorizontalSpacer()
+            TextButton(
+                onClick = { onRemove(searchTerm) }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Clear,
+                    contentDescription = stringResource(R.string.content_desc_remove),
+                    modifier = Modifier.size(18.dp),
+                    tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
+                )
+            }
         }
     }
 }
