@@ -1,14 +1,18 @@
 package uk.govuk.app.topics.data.local
 
 import io.realm.kotlin.ext.query
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import uk.govuk.app.topics.data.local.model.LocalTopicItem
 import uk.govuk.app.topics.data.remote.model.RemoteTopicItem
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.collections.forEach
 
 @Singleton
 internal class TopicsLocalDataSource @Inject constructor(
@@ -20,40 +24,40 @@ internal class TopicsLocalDataSource @Inject constructor(
         emitAll(realmProvider.open().query<LocalTopicItem>().asFlow().map { it.list })
     }
 
-    suspend fun sync(remoteTopics: List<RemoteTopicItem>) {
-        val localTopics = realmProvider.open().query<LocalTopicItem>().find().toList()
-        val topicsToDelete = localTopics.filter { !remoteTopics.map { it.ref }.contains(it.ref) }
+    suspend fun sync(
+        remoteTopics: List<RemoteTopicItem>,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO
+    ) {
+        withContext(dispatcher) {
+            val localTopics = realmProvider.open().query<LocalTopicItem>().find().toList()
+            val topicsToDelete =
+                localTopics.filter { !remoteTopics.map { it.ref }.contains(it.ref) }
 
-        val isSelectedOnInsert = !isTopicsCustomised()
+            val isSelectedOnInsert = !isTopicsCustomised()
 
-        realmProvider.open().writeBlocking {
-            for (topic in topicsToDelete) {
-                val liveTopic = findLatest(topic)
-                if (liveTopic != null) {
-                    delete(liveTopic)
+            realmProvider.open().write {
+                for (topic in topicsToDelete) {
+                    val liveTopic = findLatest(topic)
+                    if (liveTopic != null) {
+                        delete(liveTopic)
+                    }
                 }
-            }
-        }
 
-        insertOrUpdate(remoteTopics, isSelectedOnInsert)
-    }
+                remoteTopics.forEach { topic ->
+                    val localTopic = query<LocalTopicItem>("ref = $0", topic.ref).first().find()
 
-    private suspend fun insertOrUpdate(topics: List<RemoteTopicItem>, isSelectedOnInsert: Boolean) {
-        realmProvider.open().writeBlocking {
-            topics.forEach { topic ->
-                val localTopic = query<LocalTopicItem>("ref = $0", topic.ref).first().find()
-
-                localTopic?.apply {
-                    this.title = topic.title
-                    this.description = topic.description
-                } ?: copyToRealm(
-                    LocalTopicItem().apply {
-                        this.ref = topic.ref
+                    localTopic?.apply {
                         this.title = topic.title
                         this.description = topic.description
-                        this.isSelected = isSelectedOnInsert
-                    }
-                )
+                    } ?: copyToRealm(
+                        LocalTopicItem().apply {
+                            this.ref = topic.ref
+                            this.title = topic.title
+                            this.description = topic.description
+                            this.isSelected = isSelectedOnInsert
+                        }
+                    )
+                }
             }
         }
     }

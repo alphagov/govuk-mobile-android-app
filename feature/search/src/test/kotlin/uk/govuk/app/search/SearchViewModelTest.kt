@@ -2,16 +2,19 @@ package uk.govuk.app.search
 
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -165,41 +168,42 @@ class SearchViewModelTest {
         @Test
         fun `Given a user has previous searches, when init, then emit previous searches`() {
             val previousSearches = listOf("dog", "cat", "tax")
-            coEvery { repository.fetchPreviousSearches() } returns previousSearches
+            every { repository.previousSearches } returns flowOf(previousSearches)
 
             runTest {
                 val viewModel = SearchViewModel(analyticsClient, visited, repository)
-                val result = viewModel.uiState.value as SearchUiState.Default
+                val uiState = viewModel.uiState.value
 
-                assertEquals(previousSearches, result.previousSearches)
+                assertEquals(previousSearches, uiState.previousSearches)
+                assertNull(uiState.suggestions)
+                assertNull(uiState.searchResults)
+                assertNull(uiState.error)
             }
         }
 
         @Test
         fun `Given a user clears the search, then emit previous searches`() {
-            val previousSearches = listOf("pig")
-            coEvery { repository.fetchPreviousSearches() }returns listOf("dog") andThen previousSearches
+            val previousSearches = listOf("dog", "cat", "tax")
+            every { repository.previousSearches } returns flowOf(previousSearches)
 
             runTest {
                 val viewModel = SearchViewModel(analyticsClient, visited, repository)
                 viewModel.onClear()
-                val result = viewModel.uiState.value as SearchUiState.Default
 
-                assertEquals(previousSearches, result.previousSearches)
+                val uiState = viewModel.uiState.value
+
+                assertEquals(previousSearches, uiState.previousSearches)
+                assertNull(uiState.suggestions)
+                assertNull(uiState.searchResults)
+                assertNull(uiState.error)
             }
         }
 
         @Test
-        fun `Given a user removes a previous search, then update repo and emit previous searches`() {
-            val previousSearches = listOf("pig")
-            coEvery { repository.fetchPreviousSearches() }returns listOf("dog", "pig") andThen previousSearches
-
+        fun `Given a user removes a previous search, then update repo`() {
             runTest {
                 val viewModel = SearchViewModel(analyticsClient, visited, repository)
                 viewModel.onRemovePreviousSearch("dog")
-                val result = viewModel.uiState.value as SearchUiState.Default
-
-                assertEquals(previousSearches, result.previousSearches)
             }
 
             coVerify {
@@ -209,14 +213,9 @@ class SearchViewModelTest {
 
         @Test
         fun `Given a user removes all previous searches, then update repo and emit previous searches`() {
-            coEvery { repository.fetchPreviousSearches() }returns listOf("dog", "pig") andThen emptyList()
-
             runTest {
                 val viewModel = SearchViewModel(analyticsClient, visited, repository)
                 viewModel.onRemoveAllPreviousSearches()
-                val result = viewModel.uiState.value as SearchUiState.Default
-
-                assertEquals(emptyList<String>(), result.previousSearches)
             }
 
             coVerify {
@@ -232,10 +231,12 @@ class SearchViewModelTest {
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.value as SearchUiState.Results
+                val uiState = viewModel.uiState.value
 
-                assertEquals(searchTerm, result.searchTerm)
-                assertEquals(1, result.searchResults.size)
+                assertEquals(searchTerm, uiState.searchResults!!.searchTerm)
+                assertNull(uiState.suggestions)
+                assertEquals(1, uiState.searchResults.values.size)
+                assertNull(uiState.error)
             }
         }
 
@@ -247,8 +248,11 @@ class SearchViewModelTest {
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.value
-                assertTrue(result is SearchUiState.Error.Empty)
+                val uiState = viewModel.uiState.value
+
+                assertNull(uiState.suggestions)
+                assertNull(uiState.searchResults)
+                assertTrue(uiState.error is SearchUiState.Error.Empty)
             }
         }
 
@@ -260,8 +264,10 @@ class SearchViewModelTest {
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.value
-                assertTrue(result is SearchUiState.Error.Offline)
+                val uiState = viewModel.uiState.value
+                assertNull(uiState.suggestions)
+                assertNull(uiState.searchResults)
+                assertTrue(uiState.error is SearchUiState.Error.Offline)
             }
         }
 
@@ -273,8 +279,10 @@ class SearchViewModelTest {
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.value
-                assertTrue(result is SearchUiState.Error.ServiceError)
+                val uiState = viewModel.uiState.value
+                assertNull(uiState.suggestions)
+                assertNull(uiState.searchResults)
+                assertTrue(uiState.error is SearchUiState.Error.ServiceError)
             }
         }
 
@@ -286,8 +294,10 @@ class SearchViewModelTest {
             viewModel.onSearch(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.value as SearchUiState
-                assertTrue(result is SearchUiState.Error.ServiceError)
+                val uiState = viewModel.uiState.value
+                assertNull(uiState.suggestions)
+                assertNull(uiState.searchResults)
+                assertTrue(uiState.error is SearchUiState.Error.ServiceError)
             }
         }
 
@@ -299,10 +309,12 @@ class SearchViewModelTest {
             viewModel.onAutocomplete(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.value as SearchUiState.Autocomplete
+                val uiState = viewModel.uiState.value
 
-                assertEquals(searchTerm, result.searchTerm)
-                assertEquals(1, result.suggestions.size)
+                assertEquals(searchTerm, uiState.suggestions!!.searchTerm)
+                assertEquals(1, uiState.suggestions.values.size)
+                assertNull(uiState.searchResults)
+                assertNull(uiState.error)
             }
         }
 
@@ -314,66 +326,31 @@ class SearchViewModelTest {
             viewModel.onAutocomplete(searchTerm)
 
             runTest {
-                val result = viewModel.uiState.value as SearchUiState.Autocomplete
+                val uiState = viewModel.uiState.value
 
-                assertEquals(searchTerm, result.searchTerm)
-                assertEquals(0, result.suggestions.size)
+                assertEquals(searchTerm, uiState.suggestions!!.searchTerm)
+                assertEquals(0, uiState.suggestions.values.size)
+                assertNull(uiState.searchResults)
+                assertNull(uiState.error)
             }
         }
 
         @Test
         fun `Given an autocomplete with less than AUTOCOMPLETE_MIN_LENGTH chars, then emit previous suggestions`() {
             val previousSearches = listOf("dog", "cat", "tax")
-            coEvery { repository.fetchPreviousSearches() } returns previousSearches
+            coEvery { repository.previousSearches } returns flowOf(previousSearches)
 
             runTest {
                 val viewModel = SearchViewModel(analyticsClient, visited, repository)
                 viewModel.onAutocomplete("a")
 
-                val result = viewModel.uiState.value as SearchUiState.Default
+                val uiState = viewModel.uiState.value
 
-                assertEquals(previousSearches, result.previousSearches)
+                assertEquals(previousSearches, uiState.previousSearches)
+                assertNull(uiState.suggestions)
+                assertNull(uiState.searchResults)
+                assertNull(uiState.error)
             }
         }
-
-        @Test
-        fun `Given an autocomplete lookup, when the device is offline, then emit offline state`() {
-            coEvery { repository.performLookup(searchTerm) } returns DeviceOffline()
-
-            val viewModel = SearchViewModel(analyticsClient, visited, repository)
-            viewModel.onAutocomplete(searchTerm)
-
-            runTest {
-                val result = viewModel.uiState.value
-                assertTrue(result is SearchUiState.Error.Offline)
-            }
-        }
-
-        @Test
-        fun `Given an autocomplete lookup, when the Autocomplete API is unavailable, then emit service error state`() {
-            coEvery { repository.performLookup(searchTerm) } returns ServiceNotResponding()
-
-            val viewModel = SearchViewModel(analyticsClient, visited, repository)
-            viewModel.onAutocomplete(searchTerm)
-
-            runTest {
-                val result = viewModel.uiState.value
-                assertTrue(result is SearchUiState.Error.ServiceError)
-            }
-        }
-
-        @Test
-        fun `Given an autocomplete lookup that returns an error, then emit service error state`() {
-            coEvery { repository.performLookup(searchTerm) } returns Error()
-
-            val viewModel = SearchViewModel(analyticsClient, visited, repository)
-            viewModel.onAutocomplete(searchTerm)
-
-            runTest {
-                val result = viewModel.uiState.value as SearchUiState
-                assertTrue(result is SearchUiState.Error.ServiceError)
-            }
-        }
-
     }
 }

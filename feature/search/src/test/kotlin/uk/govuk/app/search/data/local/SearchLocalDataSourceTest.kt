@@ -5,6 +5,7 @@ import io.mockk.mockk
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.ext.query
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -42,7 +43,7 @@ class SearchLocalDataSourceTest {
     }
 
     @Test
-    fun `Given previous searches in realm, when fetch previous searches, then return previous searches`() {
+    fun `Given previous searches in realm, when collect previous searches, then return previous searches`() {
         val expected = listOf(
             LocalSearchItem().apply {
                 searchTerm = "dog"
@@ -60,7 +61,7 @@ class SearchLocalDataSourceTest {
                 copyToRealm(expected[1])
             }
 
-            val previousSearches = localDataSource.fetchPreviousSearches()
+            val previousSearches = localDataSource.previousSearches.first()
 
             assertEquals(2, previousSearches.size)
             assertEquals("cat", previousSearches[0].searchTerm)
@@ -199,14 +200,14 @@ class SearchLocalDataSourceTest {
                 copyToRealm(expected[1])
             }
 
-            var previousSearches = localDataSource.fetchPreviousSearches()
+            var previousSearches = localDataSource.previousSearches.first()
             assertEquals(2, previousSearches.size)
             assertEquals("cat", previousSearches[0].searchTerm)
             assertEquals("dog", previousSearches[1].searchTerm)
 
             localDataSource.removePreviousSearch("cat")
 
-            previousSearches = localDataSource.fetchPreviousSearches()
+            previousSearches = localDataSource.previousSearches.first()
 
             assertEquals(1, previousSearches.size)
             assertEquals("dog", previousSearches[0].searchTerm)
@@ -232,14 +233,14 @@ class SearchLocalDataSourceTest {
                 copyToRealm(expected[1])
             }
 
-            var previousSearches = localDataSource.fetchPreviousSearches()
+            var previousSearches = localDataSource.previousSearches.first()
             assertEquals(2, previousSearches.size)
             assertEquals("cat", previousSearches[0].searchTerm)
             assertEquals("dog", previousSearches[1].searchTerm)
 
             localDataSource.removeAllPreviousSearches()
 
-            previousSearches = localDataSource.fetchPreviousSearches()
+            previousSearches = localDataSource.previousSearches.first()
             assertTrue(previousSearches.isEmpty())
         }
     }

@@ -1,5 +1,6 @@
 package uk.govuk.app.search.data
 
+import kotlinx.coroutines.flow.map
 import uk.govuk.app.data.model.Result
 import uk.govuk.app.data.remote.safeApiCall
 import uk.govuk.app.search.data.local.SearchLocalDataSource
@@ -18,8 +19,8 @@ internal class SearchRepo @Inject constructor(
     private val localDataSource: SearchLocalDataSource
 ) {
 
-    suspend fun fetchPreviousSearches(): List<String> {
-        return localDataSource.fetchPreviousSearches().map { it.searchTerm }
+    val previousSearches = localDataSource.previousSearches.map { localSearches ->
+        localSearches.map { it.searchTerm }
     }
 
     suspend fun removePreviousSearch(searchTerm: String) {

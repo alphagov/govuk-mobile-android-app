@@ -2,6 +2,10 @@ package uk.govuk.app.search.data.local
 
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.Sort
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import uk.govuk.app.search.data.local.model.LocalSearchItem
 import uk.govuk.app.search.domain.SearchConfig
 import java.util.Calendar
@@ -13,15 +17,18 @@ internal class SearchLocalDataSource @Inject constructor(
     private val realmProvider: SearchRealmProvider,
 ) {
 
-    suspend fun fetchPreviousSearches(): List<LocalSearchItem> {
-        return realmProvider.open()
-            .query<LocalSearchItem>()
-            .sort("timestamp", Sort.DESCENDING)
-            .find()
+    val previousSearches: Flow<List<LocalSearchItem>> = flow {
+        emitAll(
+            realmProvider.open()
+                .query<LocalSearchItem>()
+                .sort("timestamp", Sort.DESCENDING)
+                .asFlow()
+                .map { it.list }
+        )
     }
 
     suspend fun insertOrUpdatePreviousSearch(searchTerm: String) {
-        realmProvider.open().writeBlocking {
+        realmProvider.open().write {
             val localSearch = query<LocalSearchItem>("searchTerm = $0", searchTerm).first().find()
             val now = Calendar.getInstance().timeInMillis
 
@@ -48,7 +55,7 @@ internal class SearchLocalDataSource @Inject constructor(
     }
 
     suspend fun removePreviousSearch(searchTerm: String) {
-        realmProvider.open().writeBlocking {
+        realmProvider.open().write {
             val localSearch = query<LocalSearchItem>("searchTerm = $0", searchTerm).first().find()
 
             localSearch?.let {
@@ -60,7 +67,7 @@ internal class SearchLocalDataSource @Inject constructor(
     }
 
     suspend fun removeAllPreviousSearches() {
-        realmProvider.open().writeBlocking {
+        realmProvider.open().write {
             deleteAll()
         }
     }
