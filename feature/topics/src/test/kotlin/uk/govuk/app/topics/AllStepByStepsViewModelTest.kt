@@ -50,7 +50,7 @@ class AllStepByStepsViewModelTest {
 
     @Test
     fun `Given a topic with step by steps, When init, then emit step by steps`() {
-        coEvery { topicsRepo.getStepBySteps() } returns listOf(
+        coEvery { topicsRepo.stepBySteps } returns listOf(
             RemoteTopicContent(
                 url = "url",
                 title = "title",
