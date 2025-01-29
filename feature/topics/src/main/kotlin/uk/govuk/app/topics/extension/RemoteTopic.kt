@@ -45,11 +45,7 @@ internal fun RemoteTopic.toTopicUi(maxStepBySteps: Int, isSubtopic: Boolean): To
     )
 }
 
-internal fun RemoteTopic.toAllStepBySteps(): List<TopicContent> {
-    return content.filter { it.isStepByStep }.map { it.toTopicContent() }
-}
-
-private fun RemoteTopicContent.toTopicContent(): TopicContent {
+internal fun RemoteTopicContent.toTopicContent(): TopicContent {
     return TopicContent(
         url = this.url,
         title = this.title

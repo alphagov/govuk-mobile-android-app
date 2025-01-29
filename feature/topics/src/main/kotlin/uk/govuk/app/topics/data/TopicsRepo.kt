@@ -7,6 +7,7 @@ import uk.govuk.app.data.remote.safeApiCall
 import uk.govuk.app.topics.data.local.TopicsLocalDataSource
 import uk.govuk.app.topics.data.remote.TopicsApi
 import uk.govuk.app.topics.data.remote.model.RemoteTopic
+import uk.govuk.app.topics.data.remote.model.RemoteTopic.RemoteTopicContent
 import uk.govuk.app.topics.domain.model.TopicItem
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,6 +17,8 @@ internal class TopicsRepo @Inject constructor(
     private val topicsApi: TopicsApi,
     private val localDataSource: TopicsLocalDataSource,
 ) {
+
+    private lateinit var stepBySteps: List<RemoteTopicContent>
 
     suspend fun sync(): Boolean {
         var success = false
@@ -48,7 +51,15 @@ internal class TopicsRepo @Inject constructor(
     }
 
     suspend fun getTopic(ref: String): Result<RemoteTopic> {
-        return safeApiCall { topicsApi.getTopic(ref) }
+        val result = safeApiCall { topicsApi.getTopic(ref) }
+        if (result is Success) {
+            stepBySteps = result.value.content.filter { it.isStepByStep }
+        }
+        return result
+    }
+
+    fun getStepBySteps(): List<RemoteTopicContent> {
+        return stepBySteps
     }
 
     internal suspend fun isTopicsCustomised(): Boolean {
