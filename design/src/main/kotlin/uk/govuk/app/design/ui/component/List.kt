@@ -215,7 +215,8 @@ fun ToggleListItem(
 
             ToggleSwitch(
                 checked = checked,
-                onCheckedChange = onCheckedChange
+                onCheckedChange = onCheckedChange,
+                testDescription = title
             )
         }
     }
