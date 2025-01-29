@@ -48,7 +48,7 @@ fun NavGraphBuilder.topicsGraph(
                 navArgument(TOPIC_REF_ARG) { type = NavType.StringType },
                 navArgument(TOPIC_SUBTOPIC_ARG) { type = NavType.BoolType },
             )
-        ) { backStackEntry ->
+        ) {
             val context = LocalContext.current
 
             TopicRoute(
