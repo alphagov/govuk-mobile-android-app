@@ -18,6 +18,7 @@ import uk.govuk.app.topics.data.local.TopicsLocalDataSource
 import uk.govuk.app.topics.data.local.model.LocalTopicItem
 import uk.govuk.app.topics.data.remote.TopicsApi
 import uk.govuk.app.topics.data.remote.model.RemoteTopic
+import uk.govuk.app.topics.data.remote.model.RemoteTopic.RemoteTopicContent
 import uk.govuk.app.topics.data.remote.model.RemoteTopicItem
 import uk.govuk.app.topics.domain.model.TopicItem
 import java.io.IOException
@@ -114,10 +115,20 @@ class TopicsRepoTest{
     }
 
     @Test
-    fun `Given a successful topic response with a body, then return success with topic`() {
+    fun `Given a successful topic response with a body, then return success with topic and cache step by steps`() {
+        val stepBySteps = listOf(
+            RemoteTopicContent(
+                url = "url-1",
+                title = "title-1",
+                isStepByStep = true,
+                isPopular = false
+            )
+        )
+
         coEvery { topicsApi.getTopic("ref") } returns topicResponse
         coEvery { topicResponse.isSuccessful } returns true
         coEvery { topicResponse.body() } returns topic
+        coEvery { topic.content } returns stepBySteps
 
         val repo = TopicsRepo(topicsApi, localDataSource)
 
@@ -125,6 +136,7 @@ class TopicsRepoTest{
 
         runTest {
             assertEquals(expected, repo.getTopic("ref"))
+            assertEquals(stepBySteps, repo.stepBySteps)
         }
     }
 
