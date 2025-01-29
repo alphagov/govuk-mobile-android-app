@@ -18,7 +18,10 @@ internal class TopicsRepo @Inject constructor(
     private val localDataSource: TopicsLocalDataSource,
 ) {
 
-    private lateinit var stepBySteps: List<RemoteTopicContent>
+    private lateinit var _stepBySteps: List<RemoteTopicContent>
+
+    val stepBySteps
+        get() = _stepBySteps
 
     suspend fun sync(): Boolean {
         var success = false
@@ -53,13 +56,9 @@ internal class TopicsRepo @Inject constructor(
     suspend fun getTopic(ref: String): Result<RemoteTopic> {
         val result = safeApiCall { topicsApi.getTopic(ref) }
         if (result is Success) {
-            stepBySteps = result.value.content.filter { it.isStepByStep }
+            _stepBySteps = result.value.content.filter { it.isStepByStep }
         }
         return result
-    }
-
-    fun getStepBySteps(): List<RemoteTopicContent> {
-        return stepBySteps
     }
 
     internal suspend fun isTopicsCustomised(): Boolean {

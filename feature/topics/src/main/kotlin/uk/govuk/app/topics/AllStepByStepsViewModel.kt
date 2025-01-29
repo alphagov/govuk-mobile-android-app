@@ -28,7 +28,7 @@ internal class AllStepByStepsViewModel @Inject constructor(
     val stepBySteps = _stepBySteps.asStateFlow()
 
     init {
-        _stepBySteps.value = topicsRepo.getStepBySteps().map { it.toTopicContent() }
+        _stepBySteps.value = topicsRepo.stepBySteps.map { it.toTopicContent() }
     }
 
     fun onPageView(title: String) {
