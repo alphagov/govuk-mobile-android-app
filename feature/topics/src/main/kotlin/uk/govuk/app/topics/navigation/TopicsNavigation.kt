@@ -48,17 +48,13 @@ fun NavGraphBuilder.topicsGraph(
                 navArgument(TOPIC_REF_ARG) { type = NavType.StringType },
                 navArgument(TOPIC_SUBTOPIC_ARG) { type = NavType.BoolType },
             )
-        ) { backStackEntry ->
+        ) {
             val context = LocalContext.current
 
             TopicRoute(
                 onBack = { navController.popBackStack() },
                 onExternalLink = { url -> launchExternalLink(context, url) },
-                onStepByStepSeeAll = {
-                    backStackEntry.arguments?.getString(TOPIC_REF_ARG)?.let { ref ->
-                        navController.navigateToAllStepBySteps(ref)
-                    }
-                },
+                onStepByStepSeeAll = { navController.navigate(TOPICS_ALL_STEP_BY_STEPS_ROUTE) },
                 onSubtopic = { ref -> navController.navigateToTopic(ref, true) },
                 modifier = modifier
             )
@@ -76,10 +72,7 @@ fun NavGraphBuilder.topicsGraph(
             )
         }
         composable(
-            "$TOPICS_ALL_STEP_BY_STEPS_ROUTE/{$TOPIC_REF_ARG}",
-            arguments = listOf(
-                navArgument(TOPIC_REF_ARG) { type = NavType.StringType }
-            )
+            TOPICS_ALL_STEP_BY_STEPS_ROUTE
         ) {
             val context = LocalContext.current
 
@@ -100,10 +93,6 @@ private fun launchExternalLink(context: Context, url: String) {
 
 fun NavController.navigateToTopic(ref: String, isSubtopic: Boolean = false) {
     navigate("$TOPIC_ROUTE/$ref?$TOPIC_SUBTOPIC_ARG=$isSubtopic")
-}
-
-private fun NavController.navigateToAllStepBySteps(ref: String) {
-    navigate("$TOPICS_ALL_STEP_BY_STEPS_ROUTE/$ref")
 }
 
 fun NavController.navigateToTopicsEdit() {

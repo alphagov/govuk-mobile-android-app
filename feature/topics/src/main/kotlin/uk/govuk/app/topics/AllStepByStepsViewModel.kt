@@ -1,6 +1,5 @@
 package uk.govuk.app.topics
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -8,20 +7,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.AnalyticsClient
-import uk.govuk.app.data.model.Result.Success
 import uk.govuk.app.topics.data.TopicsRepo
-import uk.govuk.app.topics.extension.toAllStepBySteps
-import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
+import uk.govuk.app.topics.extension.toTopicContent
 import uk.govuk.app.topics.ui.model.TopicUi.TopicContent
 import uk.govuk.app.visited.Visited
 import javax.inject.Inject
 
 @HiltViewModel
 internal class AllStepByStepsViewModel @Inject constructor(
-    private val topicsRepo: TopicsRepo,
+    topicsRepo: TopicsRepo,
     private val analyticsClient: AnalyticsClient,
-    private val visited: Visited,
-    savedStateHandle: SavedStateHandle
+    private val visited: Visited
 ): ViewModel() {
 
     companion object {
@@ -32,17 +28,7 @@ internal class AllStepByStepsViewModel @Inject constructor(
     val stepBySteps = _stepBySteps.asStateFlow()
 
     init {
-        savedStateHandle.get<String>(TOPIC_REF_ARG)?.let { ref ->
-            viewModelScope.launch {
-                val result = topicsRepo.getTopic(ref)
-                when (result) {
-                    is Success -> {
-                        _stepBySteps.value = result.value.toAllStepBySteps()
-                    }
-                    else -> { } // Todo - should probably handle failure
-                }
-            }
-        }
+        _stepBySteps.value = topicsRepo.stepBySteps.map { it.toTopicContent() }
     }
 
     fun onPageView(title: String) {
