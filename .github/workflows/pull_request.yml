@@ -32,7 +32,7 @@ jobs:
         run: ./gradlew lint
 
       - name: Unit Test with Code Coverage
-        run: ./gradlew koverXmlReportDebug
+        run: ./gradlew codeCoverageReport
 
       - name: Analyze
         run: ./gradlew sonar --info

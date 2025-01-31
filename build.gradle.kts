@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.crashlytics) apply false
     alias(libs.plugins.firebaseAppDistribution) apply false
     alias(libs.plugins.sonarqube)
+    jacoco
 }
 
 buildscript {
@@ -35,12 +36,33 @@ subprojects {
                 )
                 property(
                     "sonar.coverage.exclusions",
-                    "**/di/**/*.*,**/ui/**/*.*, **/navigation/**/*.*,**/*Activity.*,**/*Application.*,**/model/**/*.*"
+                    "**/di/**/*.*,**/ui/**/*.*, **/navigation/**/*.*,**/*Activity.*,**/model/**/*.*"
                 )
                 property(
                     "sonar.androidLint.reportPaths",
                     "${projectDir}/build/reports/lint-results-debug.xml"
                 )
+            }
+        }
+
+        tasks.register<JacocoReport>("codeCoverageReport") {
+            if (projectDir.endsWith("app")) {
+                dependsOn(
+                    tasks.getByName("testDebugUnitTest"),
+                    tasks.getByName("connectedDebugAndroidTest")
+                )
+            } else {
+                dependsOn(tasks.getByName("testDebugUnitTest"))
+            }
+
+            group = "Reporting"
+            description = "Execute UI and unit tests, generate and combine Jacoco coverage report"
+
+            reports {
+                xml.required = true
+                xml.outputLocation = File("${projectDir}/build/reports/kover/reportDebug.xml")
+                html.required = false
+                csv.required = false
             }
         }
     }

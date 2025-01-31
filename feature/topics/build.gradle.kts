@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.realm)
-    alias(libs.plugins.kover)
+    jacoco
 }
 
 android {
