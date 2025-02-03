@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import uk.govuk.app.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
@@ -29,15 +28,7 @@ fun NavGraphBuilder.settingsGraph(
         route = SETTINGS_GRAPH_ROUTE,
         startDestination = SETTINGS_ROUTE
     ) {
-        composable(
-            SETTINGS_ROUTE,
-            deepLinks = listOf(
-                navDeepLink {
-                    uriPattern = "/settings"
-                    action = Intent.ACTION_VIEW
-                }
-            )
-        ) {
+        composable(SETTINGS_ROUTE) {
             val context = LocalContext.current
 
             SettingsRoute(

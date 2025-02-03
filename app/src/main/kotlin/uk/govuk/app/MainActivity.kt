@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize(),
                     color = GovUkTheme.colourScheme.surfaces.background
                 ) {
-                    GovUkApp()
+                    GovUkApp(intent)
                 }
             }
         }
