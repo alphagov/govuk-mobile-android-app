@@ -50,7 +50,7 @@ internal fun NotificationsPermissionRoute(
 
     NotificationsPermissionScreen(
         onContinue = {
-            viewModel.onImInClick(it)
+            viewModel.onContinueClick(it)
             notificationsPermissionCompleted()
         },
         onSkip = {
@@ -159,7 +159,7 @@ private fun Footer(
     ) {
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-        val continueButtonText = stringResource(R.string.im_in_button)
+        val continueButtonText = stringResource(R.string.continue_button)
         val skipButtonText = stringResource(R.string.skip_button)
 
         if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {

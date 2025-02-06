@@ -24,7 +24,7 @@ class NotificationsPermissionViewModel @Inject constructor(
         )
     }
 
-    internal fun onImInClick(text: String) {
+    internal fun onContinueClick(text: String) {
         notificationsClient.requestPermission()
         analyticsClient.buttonClick(
             text = text

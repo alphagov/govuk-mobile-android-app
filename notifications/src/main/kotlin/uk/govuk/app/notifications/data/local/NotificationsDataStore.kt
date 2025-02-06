@@ -25,14 +25,20 @@ class NotificationsDataStore @Inject constructor(
     }
 
     internal suspend fun getNotificationsPermissionState(): NotificationsPermissionState {
-        return dataStore.data.firstOrNull()?.get(booleanPreferencesKey(NOTIFICATIONS_PERMISSION_KEY))?.let { enabled ->
-            if (enabled) GRANTED else DENIED
+        return dataStore.data.firstOrNull()?.get(booleanPreferencesKey(NOTIFICATIONS_PERMISSION_KEY))?.let { granted ->
+            if (granted) GRANTED else DENIED
         } ?: NOT_SET
     }
 
-    internal suspend fun setNotificationsPermission(granted: Boolean) {
+    internal suspend fun setNotificationsPermissionGranted() {
         dataStore.edit { preferences ->
-            preferences[booleanPreferencesKey(NOTIFICATIONS_PERMISSION_KEY)] = granted
+            preferences[booleanPreferencesKey(NOTIFICATIONS_PERMISSION_KEY)] = true
+        }
+    }
+
+    internal suspend fun setNotificationsPermissionDenied() {
+        dataStore.edit { preferences ->
+            preferences[booleanPreferencesKey(NOTIFICATIONS_PERMISSION_KEY)] = false
         }
     }
 }

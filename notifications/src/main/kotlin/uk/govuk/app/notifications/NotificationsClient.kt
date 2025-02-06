@@ -21,7 +21,11 @@ class NotificationsClient @Inject constructor(private val dataStore: Notificatio
     fun requestPermission(dispatcher: CoroutineDispatcher = Dispatchers.IO) {
         CoroutineScope(dispatcher).launch {
             val granted = OneSignal.Notifications.requestPermission(false)
-            dataStore.setNotificationsPermission(granted)
+            if (granted) {
+                dataStore.setNotificationsPermissionGranted()
+            } else {
+                dataStore.setNotificationsPermissionDenied()
+            }
         }
     }
 

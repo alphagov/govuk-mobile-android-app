@@ -55,7 +55,7 @@ class NotificationsClientTest {
     }
 
     @Test
-    fun `Given we have a notifications client, when request permission is called, One Signal request permission function is called`() {
+    fun `Given we have a notifications client, when request permission is called and permissions denied, One Signal request permission function is called`() {
         every { OneSignal.Notifications.canRequestPermission } returns true
         coEvery { OneSignal.Notifications.requestPermission(false) } returns true
 
@@ -65,6 +65,23 @@ class NotificationsClientTest {
 
             coVerify(exactly = 1) {
                 OneSignal.Notifications.requestPermission(false)
+                dataStore.setNotificationsPermissionGranted()
+            }
+        }
+    }
+
+    @Test
+    fun `Given we have a notifications client, when request permission is called and permissions granted, One Signal request permission function is called`() {
+        every { OneSignal.Notifications.canRequestPermission } returns true
+        coEvery { OneSignal.Notifications.requestPermission(false) } returns false
+
+        runTest {
+            val dispatcher = UnconfinedTestDispatcher()
+            notificationsClient.requestPermission(dispatcher)
+
+            coVerify(exactly = 1) {
+                OneSignal.Notifications.requestPermission(false)
+                dataStore.setNotificationsPermissionDenied()
             }
         }
     }
