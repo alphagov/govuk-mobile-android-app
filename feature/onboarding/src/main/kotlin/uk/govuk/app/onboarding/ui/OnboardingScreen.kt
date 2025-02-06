@@ -56,6 +56,7 @@ import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.PrimaryButton
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.VerticalButtonGroup
+import uk.govuk.app.design.ui.extension.areAnimationsEnabled
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.onboarding.OnboardingPage
 import uk.govuk.app.onboarding.OnboardingViewModel
@@ -177,7 +178,7 @@ private fun Page(
                     LottieCompositionSpec.RawRes(animation)
                 )
 
-                val animationsEnabled = !areAnimationsDisabled(LocalContext.current)
+                val animationsEnabled = LocalContext.current.areAnimationsEnabled()
 
                 val state = animateLottieCompositionAsState(
                     composition = composition,
@@ -336,14 +337,4 @@ private fun FilledCircle(modifier: Modifier = Modifier) {
             .clip(CircleShape)
             .background(GovUkTheme.colourScheme.surfaces.primary)
     )
-}
-
-// Todo - extract into design lib
-fun areAnimationsDisabled(context: Context): Boolean {
-    val animatorDurationScale = Settings.Global.getFloat(
-        context.contentResolver,
-        Settings.Global.ANIMATOR_DURATION_SCALE,
-        1f
-    )
-    return animatorDurationScale == 0f
 }
