@@ -1,5 +1,7 @@
 package uk.govuk.app.onboarding.ui
 
+import android.content.Context
+import android.provider.Settings
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -38,6 +41,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowHeightSizeClass
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import uk.govuk.app.design.ui.component.BodyRegularLabel
@@ -53,7 +60,6 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.onboarding.OnboardingPage
 import uk.govuk.app.onboarding.OnboardingViewModel
 import uk.govuk.app.onboarding.R
-
 
 @Composable
 internal fun OnboardingRoute(
@@ -95,7 +101,7 @@ private fun OnboardingScreen(
     modifier: Modifier = Modifier
 ) {
     val pagerState = rememberPagerState(pageCount = {
-        pages.count()
+        pages.size
     })
 
     LaunchedEffect(pagerState.currentPage) {
@@ -130,7 +136,7 @@ private fun OnboardingScreen(
         val currentPage = pagerState.currentPage
         Footer(
             currentPageIndex = currentPage,
-            pageCount = pagerState.pageCount,
+            pageCount = pages.size,
             onContinue = { text ->
                 onContinue(text)
                 changePage(pagerState.currentPage + 1)
@@ -166,12 +172,30 @@ private fun Page(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (windowSizeClass.windowHeightSizeClass != WindowHeightSizeClass.COMPACT) {
-            Image(
-                painter = painterResource(id = page.image),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(horizontal = GovUkTheme.spacing.extraLarge)
-            )
+            page.animation?.let { animation ->
+                val composition by rememberLottieComposition(
+                    LottieCompositionSpec.RawRes(animation)
+                )
+
+                val animationsEnabled = !areAnimationsDisabled(LocalContext.current)
+
+                val state = animateLottieCompositionAsState(
+                    composition = composition,
+                    isPlaying = animationsEnabled && isCurrentPage
+                )
+
+                LottieAnimation(
+                    composition = composition,
+                    progress = { if (animationsEnabled) state.progress else 1f }
+                )
+            } ?: page.image?.let { image ->
+                Image(
+                    painter = painterResource(id = image),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(horizontal = GovUkTheme.spacing.extraLarge)
+                )
+            }
 
             ExtraLargeVerticalSpacer()
         }
@@ -312,4 +336,14 @@ private fun FilledCircle(modifier: Modifier = Modifier) {
             .clip(CircleShape)
             .background(GovUkTheme.colourScheme.surfaces.primary)
     )
+}
+
+// Todo - extract into design lib
+fun areAnimationsDisabled(context: Context): Boolean {
+    val animatorDurationScale = Settings.Global.getFloat(
+        context.contentResolver,
+        Settings.Global.ANIMATOR_DURATION_SCALE,
+        1f
+    )
+    return animatorDurationScale == 0f
 }
