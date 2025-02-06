@@ -11,6 +11,7 @@ import uk.govuk.app.config.data.ConfigRepo
 import uk.govuk.app.config.data.flags.FlagRepo
 import uk.govuk.app.data.AppRepo
 import uk.govuk.app.data.model.Result.*
+import uk.govuk.app.notifications.NotificationsClient
 import uk.govuk.app.topics.TopicsFeature
 import javax.inject.Inject
 
@@ -20,7 +21,8 @@ internal class AppViewModel @Inject constructor(
     private val configRepo: ConfigRepo,
     private val flagRepo: FlagRepo,
     private val topicsFeature: TopicsFeature,
-    private val analyticsClient: AnalyticsClient
+    private val analyticsClient: AnalyticsClient,
+    private val notificationsClient: NotificationsClient
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<AppUiState?> = MutableStateFlow(null)
@@ -54,6 +56,8 @@ internal class AppViewModel @Inject constructor(
                             shouldDisplayTopicSelection = flagRepo.isTopicsEnabled()
                                     && !appRepo.isTopicSelectionCompleted()
                                     && topicsInitSuccess,
+                            shouldDisplayNotificationsPermission = flagRepo.isNotificationsEnabled()
+                                    && !notificationsClient.permissionDetermined(),
                             isSearchEnabled = flagRepo.isSearchEnabled(),
                             isRecentActivityEnabled = flagRepo.isRecentActivityEnabled(),
                             isTopicsEnabled = flagRepo.isTopicsEnabled()

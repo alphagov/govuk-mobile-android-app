@@ -3,6 +3,7 @@ package uk.govuk.app.navigation
 import uk.govuk.app.AppUiState
 import uk.govuk.app.analytics.navigation.ANALYTICS_GRAPH_ROUTE
 import uk.govuk.app.home.navigation.HOME_GRAPH_ROUTE
+import uk.govuk.app.notifications.navigation.NOTIFICATIONS_GRAPH_ROUTE
 import uk.govuk.app.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.govuk.app.topics.navigation.TOPICS_GRAPH_ROUTE
 import java.util.Stack
@@ -18,6 +19,10 @@ internal class AppLaunchNavigation(
 
     private fun setLaunchRoutes() {
         launchRoutes.push(HOME_GRAPH_ROUTE)
+
+        if (uiState.shouldDisplayNotificationsPermission) {
+            launchRoutes.push(NOTIFICATIONS_GRAPH_ROUTE)
+        }
 
         if (uiState.shouldDisplayTopicSelection) {
             launchRoutes.push(TOPICS_GRAPH_ROUTE)

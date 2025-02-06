@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="im_in_button">I\'m in</string>
+    <string name="skip_button">Skip</string>
+    <string name="permission_screen_title">Get notified!</string>
+    <string name="permission_screen_body">Stay on top of Government services and announcements</string>
+</resources>

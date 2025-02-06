@@ -5,6 +5,7 @@ import org.junit.Test
 import uk.govuk.app.AppUiState
 import uk.govuk.app.analytics.navigation.ANALYTICS_GRAPH_ROUTE
 import uk.govuk.app.home.navigation.HOME_GRAPH_ROUTE
+import uk.govuk.app.notifications.navigation.NOTIFICATIONS_GRAPH_ROUTE
 import uk.govuk.app.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.govuk.app.topics.navigation.TOPICS_GRAPH_ROUTE
 import java.util.Stack
@@ -19,6 +20,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = true,
+                shouldDisplayNotificationsPermission = true,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
@@ -27,6 +29,7 @@ class AppLaunchNavigationTest {
 
         val expected = Stack<String>()
         expected.push(HOME_GRAPH_ROUTE)
+        expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
@@ -42,6 +45,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = true,
+                shouldDisplayNotificationsPermission = true,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
@@ -50,6 +54,7 @@ class AppLaunchNavigationTest {
 
         val expected = Stack<String>()
         expected.push(HOME_GRAPH_ROUTE)
+        expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
@@ -65,6 +70,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = false,
+                shouldDisplayNotificationsPermission = true,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
@@ -73,6 +79,7 @@ class AppLaunchNavigationTest {
 
         val expected = Stack<String>()
         expected.push(HOME_GRAPH_ROUTE)
+        expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
@@ -87,6 +94,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = true,
+                shouldDisplayNotificationsPermission = true,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
@@ -95,6 +103,7 @@ class AppLaunchNavigationTest {
 
         val expected = Stack<String>()
         expected.push(HOME_GRAPH_ROUTE)
+        expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
@@ -109,6 +118,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = false,
+                shouldDisplayNotificationsPermission = false,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
@@ -130,6 +140,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = true,
+                shouldDisplayNotificationsPermission = true,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
@@ -138,6 +149,7 @@ class AppLaunchNavigationTest {
 
         val expected = Stack<String>()
         expected.push(HOME_GRAPH_ROUTE)
+        expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
 
@@ -152,6 +164,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = false,
+                shouldDisplayNotificationsPermission = false,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
@@ -173,6 +186,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = true,
+                shouldDisplayNotificationsPermission = false,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
@@ -187,6 +201,28 @@ class AppLaunchNavigationTest {
     }
 
     @Test
+    fun `Given notifications permission should be displayed, then return correct launch routes`() {
+        val appLaunchNavigation = AppLaunchNavigation(
+            AppUiState.Default(
+                shouldDisplayRecommendUpdate = false,
+                shouldDisplayAnalyticsConsent = false,
+                shouldDisplayOnboarding = false,
+                shouldDisplayTopicSelection = false,
+                shouldDisplayNotificationsPermission = true,
+                isSearchEnabled = true,
+                isRecentActivityEnabled = true,
+                isTopicsEnabled = true
+            )
+        )
+
+        val expected = Stack<String>()
+        expected.push(HOME_GRAPH_ROUTE)
+        expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+
+        assertEquals(expected, appLaunchNavigation.launchRoutes)
+    }
+
+    @Test
     fun `Given analytics, onboarding and topic selection should not be displayed, then return home as start destination`() {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState.Default(
@@ -194,6 +230,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = false,
+                shouldDisplayNotificationsPermission = false,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
