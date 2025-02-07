@@ -1,5 +1,6 @@
 package uk.govuk.app.analytics
 
+import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -15,6 +16,7 @@ import uk.govuk.app.analytics.data.AnalyticsRepo
 import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.DISABLED
 import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.ENABLED
 import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.NOT_SET
+import uk.govuk.app.analytics.data.local.model.EcommerceEvent
 import java.util.Locale
 
 class AnalyticsClientTest {
@@ -539,4 +541,91 @@ class AnalyticsClientTest {
         }
     }
 
+    @Test
+    fun `Given a topic has been selected, then log an event`() {
+        val topicItems = listOf(
+            EcommerceEvent.Item(
+                itemName = "Universal Credit",
+                itemCategory = "Popular pages in this topic",
+                locationId = "/universal-credit"
+            )
+        )
+
+        val ecommerceEvent = EcommerceEvent(
+            itemListName = "Topics",
+            itemListId = "Benefits",
+            items = topicItems
+        )
+
+        analyticsClient.selectItemEvent(
+            ecommerceEvent = ecommerceEvent
+        )
+
+        verify {
+            firebaseAnalyticClient.logEcommerceEvent(
+                event = FirebaseAnalytics.Event.SELECT_ITEM,
+                ecommerceEvent = ecommerceEvent
+            )
+        }
+    }
+
+    @Test
+    fun `Given a topic has been viewed and it has items, then log an event`() {
+        val topicItems = listOf(
+            EcommerceEvent.Item(
+                itemName = "Universal Credit",
+                itemCategory = "Popular pages in this topic",
+                locationId = "/universal-credit"
+            ),
+            EcommerceEvent.Item(
+                itemName = "How to claim Universal Credit",
+                itemCategory = "Step by Step guides",
+                locationId = "/how-to-claim-universal-credit"
+            ),
+            EcommerceEvent.Item(
+                itemName = "Managing your benefits",
+                itemCategory = "Browse",
+                locationId = ""
+            )
+        )
+
+        val ecommerceEvent = EcommerceEvent(
+            itemListName = "Topics",
+            itemListId = "Benefits",
+            items = topicItems
+        )
+
+        analyticsClient.viewItemListEvent(
+            ecommerceEvent = ecommerceEvent
+        )
+
+        verify {
+            firebaseAnalyticClient.logEcommerceEvent(
+                event = FirebaseAnalytics.Event.VIEW_ITEM_LIST,
+                ecommerceEvent = ecommerceEvent
+            )
+        }
+    }
+
+    @Test
+    fun `Given a topic has been viewed and it has no items, then log an event`() {
+        val topicItems = emptyList<EcommerceEvent.Item>()
+
+        val ecommerceEvent = EcommerceEvent(
+            itemListName = "Topics",
+            itemListId = "Benefits",
+            items = topicItems
+        )
+
+        analyticsClient.viewItemListEvent(
+            ecommerceEvent = ecommerceEvent
+        )
+
+        verify {
+            firebaseAnalyticClient.logEcommerceEvent(
+                event = FirebaseAnalytics.Event.VIEW_ITEM_LIST,
+                ecommerceEvent = ecommerceEvent
+            )
+        }
+    }
 }

@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.firebase.analytics.FirebaseAnalytics
 import uk.govuk.app.analytics.data.AnalyticsRepo
 import uk.govuk.app.analytics.data.local.AnalyticsEnabledState
+import uk.govuk.app.analytics.data.local.model.EcommerceEvent
 import uk.govuk.app.analytics.extension.redactPii
 import java.util.Locale
 import javax.inject.Inject
@@ -133,6 +134,20 @@ class AnalyticsClient @Inject constructor(
 
     fun topicsCustomised() {
         firebaseAnalyticsClient.setUserProperty("topics_customised", "true")
+    }
+
+    fun selectItemEvent(ecommerceEvent: EcommerceEvent) {
+        firebaseAnalyticsClient.logEcommerceEvent(
+            event = FirebaseAnalytics.Event.SELECT_ITEM,
+            ecommerceEvent = ecommerceEvent
+        )
+    }
+
+    fun viewItemListEvent(ecommerceEvent: EcommerceEvent) {
+        firebaseAnalyticsClient.logEcommerceEvent(
+            event = FirebaseAnalytics.Event.VIEW_ITEM_LIST,
+            ecommerceEvent = ecommerceEvent
+        )
     }
 
     private fun redactedEvent(name: String, type: String, inputString: String) {
