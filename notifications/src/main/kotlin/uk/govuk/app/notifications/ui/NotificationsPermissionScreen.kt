@@ -22,6 +22,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -33,9 +34,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ExtraLargeVerticalSpacer
 import uk.govuk.app.design.ui.component.HorizontalButtonGroup
@@ -44,6 +43,7 @@ import uk.govuk.app.design.ui.component.ListDivider
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.VerticalButtonGroup
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.notifications.NotificationsPermissionUiState
 import uk.govuk.app.notifications.NotificationsPermissionViewModel
 import uk.govuk.app.notifications.R
 
@@ -59,32 +59,40 @@ internal fun NotificationsPermissionRoute(
     }
 
     val viewModel: NotificationsPermissionViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
 
     val permission = rememberPermissionState(
         Manifest.permission.POST_NOTIFICATIONS
     )
 
-    if (permission.status.shouldShowRationale) {
-        NotificationsPermissionScreen(
-            onContinue = {
-                viewModel.onContinueClick(it)
+    viewModel.updatePermission(permission.status)
+
+    uiState?.let { state ->
+        when (state) {
+            NotificationsPermissionUiState.Default -> {
+                NotificationsPermissionScreen(
+                    onContinue = {
+                        viewModel.onContinueClick(it)
+                        notificationsPermissionCompleted()
+                    },
+                    onSkip = {
+                        viewModel.onSkipClick(it)
+                        notificationsPermissionCompleted()
+                    },
+                    onPageView = { viewModel.onPageView() },
+                    modifier = modifier
+                )
+            }
+
+            NotificationsPermissionUiState.Finish -> {
                 notificationsPermissionCompleted()
-            },
-            onSkip = {
-                viewModel.onSkipClick(it)
-                notificationsPermissionCompleted()
-            },
-            onPageView = { viewModel.onPageView() },
-            modifier = modifier
-        )
-    } else if (!permission.status.isGranted) {
-        viewModel.requestPermission()
-        notificationsPermissionCompleted()
+            }
+        }
     }
 }
 
 @Composable
-internal fun NotificationsPermissionScreen(
+private fun NotificationsPermissionScreen(
     onContinue: (String) -> Unit,
     onSkip: (String) -> Unit,
     onPageView: () -> Unit,
@@ -201,7 +209,7 @@ private fun Footer(
     }
 }
 
-fun areAnimationsDisabled(context: Context): Boolean {
+private fun areAnimationsDisabled(context: Context): Boolean {
     val animatorDurationScale = Settings.Global.getFloat(
         context.contentResolver,
         Settings.Global.ANIMATOR_DURATION_SCALE,

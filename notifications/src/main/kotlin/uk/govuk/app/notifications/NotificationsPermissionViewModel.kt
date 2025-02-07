@@ -1,12 +1,19 @@
 package uk.govuk.app.notifications
 
 import androidx.lifecycle.ViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.shouldShowRationale
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import uk.govuk.app.analytics.AnalyticsClient
 import javax.inject.Inject
 
+@OptIn(ExperimentalPermissionsApi::class)
 @HiltViewModel
-class NotificationsPermissionViewModel @Inject constructor(
+internal class NotificationsPermissionViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient,
     private val notificationsClient: NotificationsClient
 ) : ViewModel() {
@@ -16,8 +23,18 @@ class NotificationsPermissionViewModel @Inject constructor(
         private const val TITLE = "NotificationsPermissionScreen"
     }
 
-    internal fun requestPermission() {
-        notificationsClient.requestPermission()
+    private val _uiState: MutableStateFlow<NotificationsPermissionUiState?> = MutableStateFlow(null)
+    val uiState = _uiState.asStateFlow()
+
+    internal fun updatePermission(status: PermissionStatus) {
+        if (status.isGranted) {
+            _uiState.value = NotificationsPermissionUiState.Finish
+        } else if (status.shouldShowRationale) {
+            _uiState.value = NotificationsPermissionUiState.Default
+        } else {
+            notificationsClient.requestPermission()
+            _uiState.value = NotificationsPermissionUiState.Finish
+        }
     }
 
     internal fun onPageView() {
