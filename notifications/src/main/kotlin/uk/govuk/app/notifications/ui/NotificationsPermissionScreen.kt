@@ -162,14 +162,14 @@ private fun AnimatedBell() {
 
     var state = animateLottieCompositionAsState(composition = composition)
 
-    // Handle cases where animation is disabled...
-    if (areAnimationsDisabled(LocalContext.current)) {
-        state = animateLottieCompositionAsState(composition = composition)
+    val animationsDisabled = areAnimationsDisabled(LocalContext.current)
+    if (animationsDisabled) {
+        state = animateLottieCompositionAsState(composition = composition, isPlaying = false)
     }
 
     LottieAnimation(
         composition = composition,
-        progress = { state.progress }
+        progress = { if (animationsDisabled) 1.0F else state.progress }
     )
 }
 
