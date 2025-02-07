@@ -43,7 +43,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
     implementation(libs.lottie.compose)
-    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.google.accompanist)
 
     ksp(libs.hilt.compiler)
 

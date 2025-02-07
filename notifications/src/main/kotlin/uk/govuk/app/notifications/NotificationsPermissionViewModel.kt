@@ -16,6 +16,10 @@ class NotificationsPermissionViewModel @Inject constructor(
         private const val TITLE = "NotificationsPermissionScreen"
     }
 
+    internal fun requestPermission() {
+        notificationsClient.requestPermission()
+    }
+
     internal fun onPageView() {
         analyticsClient.screenView(
             screenClass = SCREEN_CLASS,

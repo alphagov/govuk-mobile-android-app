@@ -1,6 +1,8 @@
 package uk.govuk.app.notifications.ui
 
+import android.Manifest
 import android.content.Context
+import android.os.Build
 import android.provider.Settings
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
@@ -30,6 +32,10 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ExtraLargeVerticalSpacer
 import uk.govuk.app.design.ui.component.HorizontalButtonGroup
@@ -41,25 +47,40 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.notifications.NotificationsPermissionViewModel
 import uk.govuk.app.notifications.R
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun NotificationsPermissionRoute(
     notificationsPermissionCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    if (Build.VERSION.SDK_INT < 33) {
+        notificationsPermissionCompleted()
+        return
+    }
+
     val viewModel: NotificationsPermissionViewModel = hiltViewModel()
 
-    NotificationsPermissionScreen(
-        onContinue = {
-            viewModel.onContinueClick(it)
-            notificationsPermissionCompleted()
-        },
-        onSkip = {
-            viewModel.onSkipClick(it)
-            notificationsPermissionCompleted()
-        },
-        onPageView = { viewModel.onPageView() },
-        modifier = modifier
+    val permission = rememberPermissionState(
+        Manifest.permission.POST_NOTIFICATIONS
     )
+
+    if (permission.status.shouldShowRationale) {
+        NotificationsPermissionScreen(
+            onContinue = {
+                viewModel.onContinueClick(it)
+                notificationsPermissionCompleted()
+            },
+            onSkip = {
+                viewModel.onSkipClick(it)
+                notificationsPermissionCompleted()
+            },
+            onPageView = { viewModel.onPageView() },
+            modifier = modifier
+        )
+    } else if (!permission.status.isGranted) {
+        viewModel.requestPermission()
+        notificationsPermissionCompleted()
+    }
 }
 
 @Composable
