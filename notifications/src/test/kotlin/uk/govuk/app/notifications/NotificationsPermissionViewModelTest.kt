@@ -43,7 +43,7 @@ class NotificationsPermissionViewModelTest {
     }
 
     @Test
-    fun `Given Im In button click, then request permission and log analytics`() {
+    fun `Given continue button click, then request permission and log analytics`() {
         every { notificationsClient.requestPermission() } returns Unit
 
         viewModel.onContinueClick("Title")
