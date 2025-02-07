@@ -1,7 +1,5 @@
 package uk.govuk.app.ui
 
-import android.content.Context
-import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +19,7 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.delay
 import uk.govuk.app.R
+import uk.govuk.app.design.ui.extension.areAnimationsEnabled
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
@@ -40,19 +39,18 @@ internal fun SplashScreen(
 
         var state = animateLottieCompositionAsState(composition = composition)
 
-        // Handle cases where animation is disabled...
-        if (areAnimationsDisabled(LocalContext.current)) {
-            state = animateLottieCompositionAsState(composition = composition, isPlaying = false)
-            LaunchedEffect(true) {
-                delay(6000) // wait for 6 seconds
-                onSplashDone()
-            }
-            // Animations are enabled...
-        } else {
+        if (LocalContext.current.areAnimationsEnabled()) {
             LaunchedEffect(state.progress) {
                 if (state.progress == 1f) {
                     onSplashDone()
                 }
+            }
+        } else {
+            // Handle cases where animations are disabled...
+            state = animateLottieCompositionAsState(composition = composition, isPlaying = false)
+            LaunchedEffect(true) {
+                delay(6000) // wait for 6 seconds
+                onSplashDone()
             }
         }
 
@@ -66,13 +64,4 @@ internal fun SplashScreen(
             }
         )
     }
-}
-
-fun areAnimationsDisabled(context: Context): Boolean {
-    val animatorDurationScale = Settings.Global.getFloat(
-        context.contentResolver,
-        Settings.Global.ANIMATOR_DURATION_SCALE,
-        1f
-    )
-    return animatorDurationScale == 0f
 }
