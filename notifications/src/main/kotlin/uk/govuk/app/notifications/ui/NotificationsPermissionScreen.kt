@@ -34,6 +34,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ExtraLargeVerticalSpacer
@@ -53,19 +54,17 @@ internal fun NotificationsPermissionRoute(
     notificationsPermissionCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (Build.VERSION.SDK_INT < 33) {
-        notificationsPermissionCompleted()
-        return
-    }
-
     val viewModel: NotificationsPermissionViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
-    val permission = rememberPermissionState(
-        Manifest.permission.POST_NOTIFICATIONS
-    )
-
-    viewModel.updatePermission(permission.status)
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        viewModel.updatePermission(PermissionStatus.Granted)
+    } else {
+        val permission = rememberPermissionState(
+            Manifest.permission.POST_NOTIFICATIONS
+        )
+        viewModel.updatePermission(permission.status)
+    }
 
     uiState?.let { state ->
         when (state) {

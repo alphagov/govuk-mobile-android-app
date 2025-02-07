@@ -92,7 +92,7 @@ class NotificationsPermissionViewModelTest {
             val result = viewModel.uiState.first()
             assertTrue(result is NotificationsPermissionUiState.Finish)
 
-            verify {
+            verify(exactly = 1) {
                 notificationsClient.requestPermission()
             }
         }
