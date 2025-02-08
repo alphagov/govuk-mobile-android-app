@@ -1,5 +1,6 @@
 package uk.govuk.app.notifications
 
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
@@ -15,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 internal class NotificationsPermissionViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient,
-    private val notificationsClient: NotificationsClient
+    private val notificationsClient: NotificationsClient,
 ) : ViewModel() {
 
     companion object {
@@ -24,9 +25,9 @@ internal class NotificationsPermissionViewModel @Inject constructor(
     }
 
     private val _uiState: MutableStateFlow<NotificationsPermissionUiState?> = MutableStateFlow(null)
-    val uiState = _uiState.asStateFlow()
+    internal val uiState = _uiState.asStateFlow()
 
-    internal fun updatePermission(status: PermissionStatus) {
+    internal fun updateUiState(status: PermissionStatus) {
         if (status.isGranted) {
             _uiState.value = NotificationsPermissionUiState.Finish
         } else if (status.shouldShowRationale) {
@@ -36,6 +37,9 @@ internal class NotificationsPermissionViewModel @Inject constructor(
             _uiState.value = NotificationsPermissionUiState.Finish
         }
     }
+
+    internal fun permissionRequired(androidVersion: Int = Build.VERSION.SDK_INT) =
+        androidVersion >= Build.VERSION_CODES.TIRAMISU
 
     internal fun onPageView() {
         analyticsClient.screenView(

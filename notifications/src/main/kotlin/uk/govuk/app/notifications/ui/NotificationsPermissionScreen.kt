@@ -2,7 +2,6 @@ package uk.govuk.app.notifications.ui
 
 import android.Manifest
 import android.content.Context
-import android.os.Build
 import android.provider.Settings
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
@@ -57,13 +56,13 @@ internal fun NotificationsPermissionRoute(
     val viewModel: NotificationsPermissionViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-        viewModel.updatePermission(PermissionStatus.Granted)
-    } else {
+    if (viewModel.permissionRequired()) {
         val permission = rememberPermissionState(
             Manifest.permission.POST_NOTIFICATIONS
         )
-        viewModel.updatePermission(permission.status)
+        viewModel.updateUiState(permission.status)
+    } else {
+        viewModel.updateUiState(PermissionStatus.Granted)
     }
 
     uiState?.let { state ->

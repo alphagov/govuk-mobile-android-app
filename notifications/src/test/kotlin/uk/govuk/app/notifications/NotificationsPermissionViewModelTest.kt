@@ -1,5 +1,6 @@
 package uk.govuk.app.notifications
 
+import android.os.Build
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
@@ -9,6 +10,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -72,7 +74,7 @@ class NotificationsPermissionViewModelTest {
     fun `Given the permission status is granted, When init, then ui state should be finish`() {
         every { permissionStatus.isGranted } returns true
 
-        viewModel.updatePermission(permissionStatus)
+        viewModel.updateUiState(permissionStatus)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -86,7 +88,7 @@ class NotificationsPermissionViewModelTest {
         every { permissionStatus.shouldShowRationale } returns false
         every { notificationsClient.requestPermission() } returns Unit
 
-        viewModel.updatePermission(permissionStatus)
+        viewModel.updateUiState(permissionStatus)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -102,11 +104,25 @@ class NotificationsPermissionViewModelTest {
     fun `Given the permission status is should show rationale, When init, then ui state should be default`() {
         every { permissionStatus.shouldShowRationale } returns true
 
-        viewModel.updatePermission(permissionStatus)
+        viewModel.updateUiState(permissionStatus)
 
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is NotificationsPermissionUiState.Default)
+        }
+    }
+
+    @Test
+    fun `Given the Android version is Tiramisu (33), When permission required called, then should return true`() {
+        runTest {
+            assertTrue(viewModel.permissionRequired(Build.VERSION_CODES.TIRAMISU))
+        }
+    }
+
+    @Test
+    fun `Given the Android version is Snow Cone (32), When permission required called, then should return false`() {
+        runTest {
+            assertFalse(viewModel.permissionRequired(Build.VERSION_CODES.S_V2))
         }
     }
 }
