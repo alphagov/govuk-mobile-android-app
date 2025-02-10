@@ -42,11 +42,13 @@ internal class SearchViewModel @Inject constructor(
     }
 
     fun onPageView() {
-        analyticsClient.screenView(
-            screenClass = SCREEN_CLASS,
-            screenName = SCREEN_NAME,
-            title = TITLE
-        )
+        viewModelScope.launch {
+            analyticsClient.screenView(
+                screenClass = SCREEN_CLASS,
+                screenName = SCREEN_NAME,
+                title = TITLE
+            )
+        }
     }
 
     private fun fetchSearchResults(searchTerm: String) {
@@ -82,12 +84,14 @@ internal class SearchViewModel @Inject constructor(
 
     fun onSearch(searchTerm: String) {
         fetchSearchResults(searchTerm)
-        analyticsClient.search(searchTerm)
+        viewModelScope.launch {
+            analyticsClient.search(searchTerm)
+        }
     }
 
     fun onSearchResultClicked(title: String, url: String) {
-        analyticsClient.searchResultClick(text = title, url = url)
         viewModelScope.launch {
+            analyticsClient.searchResultClick(text = title, url = url)
             visited.visitableItemClick(title = title, url = url)
         }
     }
@@ -118,12 +122,16 @@ internal class SearchViewModel @Inject constructor(
 
     fun onAutocompleteResultClick(searchTerm: String) {
         fetchSearchResults(searchTerm)
-        analyticsClient.autocomplete(searchTerm)
+        viewModelScope.launch {
+            analyticsClient.autocomplete(searchTerm)
+        }
     }
 
     fun onPreviousSearchClick(searchTerm: String) {
         fetchSearchResults(searchTerm)
-        analyticsClient.history(searchTerm)
+        viewModelScope.launch {
+            analyticsClient.history(searchTerm)
+        }
     }
 
     private fun emitUiState(

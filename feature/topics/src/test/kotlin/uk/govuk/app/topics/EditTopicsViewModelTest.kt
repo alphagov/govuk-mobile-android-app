@@ -111,7 +111,7 @@ class EditTopicsViewModelTest {
 
         viewModel.onPageView("title")
 
-        verify {
+        coVerify {
             analyticsClient.screenView(
                 screenClass = "EditTopicsScreen",
                 screenName = "Topic Selection",

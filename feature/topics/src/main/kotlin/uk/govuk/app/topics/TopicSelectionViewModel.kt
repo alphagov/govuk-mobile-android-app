@@ -49,11 +49,13 @@ internal class TopicSelectionViewModel @Inject constructor(
     }
 
     fun onPageView(title: String) {
-        analyticsClient.screenView(
-            screenClass = SCREEN_CLASS,
-            screenName = SCREEN_NAME,
-            title = title
-        )
+        viewModelScope.launch {
+            analyticsClient.screenView(
+                screenClass = SCREEN_CLASS,
+                screenName = SCREEN_NAME,
+                title = title
+            )
+        }
     }
 
     fun onClick(ref: String, title: String) {
@@ -65,11 +67,13 @@ internal class TopicSelectionViewModel @Inject constructor(
             ANALYTICS_TOGGLE_FUNCTION_ACTION_SELECTED
         }
 
-        analyticsClient.buttonFunction(
-            text = title,
-            section = ANALYTICS_TOGGLE_FUNCTION_SECTION,
-            action = action
-        )
+        viewModelScope.launch {
+            analyticsClient.buttonFunction(
+                text = title,
+                section = ANALYTICS_TOGGLE_FUNCTION_SECTION,
+                action = action
+            )
+        }
 
         _uiState.value?.let {
             val topics = it.topics.map { topic ->
@@ -84,9 +88,9 @@ internal class TopicSelectionViewModel @Inject constructor(
     }
 
     fun onDone(text: String) {
-        analyticsClient.buttonClick(text)
         analyticsClient.topicsCustomised()
         viewModelScope.launch {
+            analyticsClient.buttonClick(text)
             topicsRepo.topicsCustomised()
             uiState.value?.topics?.let { topics ->
                 val topicsToDeselect = topics.filter { !selectedTopicRefs.contains(it.ref) }.map { it.ref }
@@ -96,7 +100,9 @@ internal class TopicSelectionViewModel @Inject constructor(
     }
 
     fun onSkip(text: String) {
-        analyticsClient.buttonClick(text)
+        viewModelScope.launch {
+            analyticsClient.buttonClick(text)
+        }
     }
 
 }

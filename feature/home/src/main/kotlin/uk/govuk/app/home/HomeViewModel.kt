@@ -1,7 +1,9 @@
 package uk.govuk.app.home
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.AnalyticsClient
 import javax.inject.Inject
 
@@ -17,10 +19,12 @@ internal class HomeViewModel @Inject constructor(
     }
 
     fun onPageView() {
-        analyticsClient.screenView(
-            screenClass = SCREEN_CLASS,
-            screenName = SCREEN_NAME,
-            title = TITLE
-        )
+        viewModelScope.launch {
+            analyticsClient.screenView(
+                screenClass = SCREEN_CLASS,
+                screenName = SCREEN_NAME,
+                title = TITLE
+            )
+        }
     }
 }

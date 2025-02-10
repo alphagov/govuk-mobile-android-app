@@ -54,11 +54,13 @@ internal class TopicViewModel @Inject constructor(
     }
 
     fun onPageView(title: String) {
-        analyticsClient.screenView(
-            screenClass = SCREEN_CLASS,
-            screenName = title,
-            title = title
-        )
+        viewModelScope.launch {
+            analyticsClient.screenView(
+                screenClass = SCREEN_CLASS,
+                screenName = title,
+                title = title
+            )
+        }
     }
 
     fun onContentClick(
@@ -66,13 +68,13 @@ internal class TopicViewModel @Inject constructor(
         text: String,
         url: String
     ) {
-        analyticsClient.buttonClick(
-            text = text,
-            url = url,
-            external = true,
-            section = section
-        )
         viewModelScope.launch {
+            analyticsClient.buttonClick(
+                text = text,
+                url = url,
+                external = true,
+                section = section
+            )
             visited.visitableItemClick(title = text, url = url)
         }
     }
@@ -81,20 +83,24 @@ internal class TopicViewModel @Inject constructor(
         section: String,
         text: String,
     ) {
-        analyticsClient.buttonClick(
-            text = text,
-            external = false,
-            section = section
-        )
+        viewModelScope.launch {
+            analyticsClient.buttonClick(
+                text = text,
+                external = false,
+                section = section
+            )
+        }
     }
 
     fun onSubtopicClick(
         text: String
     ) {
-        analyticsClient.buttonClick(
-            text = text,
-            external = false,
-            section = SUBTOPIC_SECTION
-        )
+        viewModelScope.launch {
+            analyticsClient.buttonClick(
+                text = text,
+                external = false,
+                section = SUBTOPIC_SECTION
+            )
+        }
     }
 }

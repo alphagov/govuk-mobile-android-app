@@ -141,7 +141,7 @@ class TopicViewModelTest {
 
         viewModel.onPageView("title")
 
-        verify {
+        coVerify {
             analyticsClient.screenView(
                 screenClass = "TopicScreen",
                 screenName = "title",
@@ -162,7 +162,7 @@ class TopicViewModelTest {
             url = "url"
         )
 
-        verify {
+        coVerify {
             analyticsClient.buttonClick(
                 text = "text",
                 url = "url",
@@ -200,7 +200,7 @@ class TopicViewModelTest {
             text = "text",
         )
 
-        verify {
+        coVerify {
             analyticsClient.buttonClick(
                 text = "text",
                 external = false,
@@ -217,7 +217,7 @@ class TopicViewModelTest {
 
         viewModel.onSubtopicClick("text")
 
-        verify {
+        coVerify {
             analyticsClient.buttonClick(
                 text = "text",
                 external = false,

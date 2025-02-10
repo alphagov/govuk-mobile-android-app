@@ -1,16 +1,36 @@
 package uk.govuk.app.onboarding
 
 import android.content.Context
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.analytics.AnalyticsClient
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class OnboardingViewModelTest {
 
     private val context = mockk<Context>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
+    private val dispatcher = UnconfinedTestDispatcher()
+
+    @Before
+    fun setup() {
+        Dispatchers.setMain(dispatcher)
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     @Test
     fun `Given a page view, then log analytics`() {
@@ -20,7 +40,7 @@ class OnboardingViewModelTest {
 
         viewModel.onPageView(0)
 
-        verify {
+        coVerify {
             analyticsClient.screenView(
                 screenClass = "OnboardingScreen",
                 screenName = "Onboarding_A",
@@ -35,7 +55,7 @@ class OnboardingViewModelTest {
 
         viewModel.onButtonClick("text")
 
-        verify {
+        coVerify {
             analyticsClient.buttonClick("text")
         }
     }
@@ -46,7 +66,7 @@ class OnboardingViewModelTest {
 
         viewModel.onPagerIndicatorClick()
 
-        verify {
+        coVerify {
             analyticsClient.pageIndicatorClick()
         }
     }

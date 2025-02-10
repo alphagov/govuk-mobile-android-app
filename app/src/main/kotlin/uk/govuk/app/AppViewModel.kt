@@ -84,14 +84,18 @@ internal class AppViewModel @Inject constructor(
         external: Boolean,
         section: String
     ) {
-        analyticsClient.widgetClick(
-            text,
-            external,
-            section
-        )
+        viewModelScope.launch {
+            analyticsClient.widgetClick(
+                text,
+                external,
+                section
+            )
+        }
     }
 
     fun onTabClick(text: String) {
-        analyticsClient.tabClick(text)
+        viewModelScope.launch {
+            analyticsClient.tabClick(text)
+        }
     }
 }

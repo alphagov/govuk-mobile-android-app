@@ -35,11 +35,13 @@ internal class EditTopicsViewModel @Inject constructor(
     }
 
     fun onPageView(title: String) {
-        analyticsClient.screenView(
-            screenClass = SCREEN_CLASS,
-            screenName = SCREEN_NAME,
-            title = title
-        )
+        viewModelScope.launch {
+            analyticsClient.screenView(
+                screenClass = SCREEN_CLASS,
+                screenName = SCREEN_NAME,
+                title = title
+            )
+        }
     }
 
     fun onTopicSelectedChanged(ref: String, title: String, isSelected: Boolean) {
@@ -57,11 +59,13 @@ internal class EditTopicsViewModel @Inject constructor(
             ANALYTICS_TOGGLE_FUNCTION_ACTION_DESELECTED
         }
 
-        analyticsClient.toggleFunction(
-            text = text,
-            section = ANALYTICS_TOGGLE_FUNCTION_SECTION,
-            action = action
-        )
+        viewModelScope.launch {
+            analyticsClient.toggleFunction(
+                text = text,
+                section = ANALYTICS_TOGGLE_FUNCTION_SECTION,
+                action = action
+            )
+        }
 
         analyticsClient.topicsCustomised()
     }

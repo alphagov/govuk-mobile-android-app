@@ -2,10 +2,12 @@ package uk.govuk.app.onboarding
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.AnalyticsClient
 import javax.inject.Inject
 
@@ -57,19 +59,24 @@ internal class OnboardingViewModel @Inject constructor(
 
     fun onPageView(pageIndex: Int) {
         val page = uiState.value.pages[pageIndex]
-        analyticsClient.screenView(
-            screenClass = SCREEN_CLASS,
-            screenName = page.screenName,
-            title = context.getString(page.title)
-        )
+        viewModelScope.launch {
+            analyticsClient.screenView(
+                screenClass = SCREEN_CLASS,
+                screenName = page.screenName,
+                title = context.getString(page.title)
+            )
+        }
     }
 
     fun onButtonClick(text: String) {
-        analyticsClient.buttonClick(text)
+        viewModelScope.launch {
+            analyticsClient.buttonClick(text)
+        }
     }
 
     fun onPagerIndicatorClick() {
-        analyticsClient.pageIndicatorClick()
+        viewModelScope.launch {
+            analyticsClient.pageIndicatorClick()
+        }
     }
-
 }

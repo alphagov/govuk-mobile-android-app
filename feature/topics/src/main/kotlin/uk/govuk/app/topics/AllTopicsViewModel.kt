@@ -35,14 +35,18 @@ internal class AllTopicsViewModel @Inject constructor(
     }
 
     fun onPageView(title: String) {
-        analyticsClient.screenView(
-            screenClass = SCREEN_CLASS,
-            screenName = SCREEN_NAME,
-            title = title
-        )
+        viewModelScope.launch {
+            analyticsClient.screenView(
+                screenClass = SCREEN_CLASS,
+                screenName = SCREEN_NAME,
+                title = title
+            )
+        }
     }
 
     fun onClick(title: String) {
-        analyticsClient.buttonClick(title)
+        viewModelScope.launch {
+            analyticsClient.buttonClick(title)
+        }
     }
 }

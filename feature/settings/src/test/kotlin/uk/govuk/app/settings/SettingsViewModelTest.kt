@@ -73,7 +73,7 @@ class SettingsViewModelTest {
 
         viewModel.onPageView()
 
-        verify {
+        coVerify {
             analyticsClient.screenView(
                 screenClass = "SettingsScreen",
                 screenName = "Settings",
@@ -120,7 +120,7 @@ class SettingsViewModelTest {
 
         viewModel.onLicenseView()
 
-        verify {
+        coVerify {
             analyticsClient.screenView(
                 screenClass = OPEN_SOURCE_LICENCE_EVENT,
                 screenName = OPEN_SOURCE_LICENCE_EVENT,
@@ -135,7 +135,7 @@ class SettingsViewModelTest {
 
         viewModel.onHelpAndFeedbackView()
 
-        verify {
+        coVerify {
             analyticsClient.settingsItemClick(
                 text = HELP_AND_FEEDBACK_EVENT,
                 url = HELP_AND_FEEDBACK_URL
@@ -149,7 +149,7 @@ class SettingsViewModelTest {
 
         viewModel.onPrivacyPolicyView()
 
-        verify {
+        coVerify {
             analyticsClient.settingsItemClick(
                 text = PRIVACY_POLICY_EVENT,
                 url = PRIVACY_POLICY_URL
@@ -163,10 +163,12 @@ class SettingsViewModelTest {
 
         viewModel.onAccessibilityStatementView()
 
-        analyticsClient.settingsItemClick(
-            text = ACCESSIBILITY_STATEMENT_EVENT,
-            url = ACCESSIBILITY_STATEMENT_URL
-        )
+        coVerify {
+            analyticsClient.settingsItemClick(
+                text = ACCESSIBILITY_STATEMENT_EVENT,
+                url = ACCESSIBILITY_STATEMENT_URL
+            )
+        }
     }
 
     @Test
@@ -175,9 +177,11 @@ class SettingsViewModelTest {
 
         viewModel.onTermsAndConditionsView()
 
-        analyticsClient.settingsItemClick(
-            text = TERMS_AND_CONDITIONS_EVENT,
-            url = TERMS_AND_CONDITIONS_URL
-        )
+        coVerify {
+            analyticsClient.settingsItemClick(
+                text = TERMS_AND_CONDITIONS_EVENT,
+                url = TERMS_AND_CONDITIONS_URL
+            )
+        }
     }
 }

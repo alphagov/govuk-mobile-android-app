@@ -80,7 +80,7 @@ class AllStepByStepsViewModelTest {
 
         viewModel.onPageView("title")
 
-        verify {
+        coVerify {
             analyticsClient.screenView(
                 screenClass = "AllStepByStepsScreen",
                 screenName = "title",
@@ -99,7 +99,7 @@ class AllStepByStepsViewModelTest {
             url = "url"
         )
 
-        verify {
+        coVerify {
             analyticsClient.buttonClick(
                 text = "text",
                 url = "url",

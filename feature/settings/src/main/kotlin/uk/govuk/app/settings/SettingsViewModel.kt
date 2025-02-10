@@ -45,47 +45,59 @@ internal class SettingsViewModel @Inject constructor(
     }
 
     fun onPageView() {
-        analyticsClient.screenView(
-            screenClass = SCREEN_CLASS,
-            screenName = SCREEN_NAME,
-            title = TITLE
-        )
+        viewModelScope.launch {
+            analyticsClient.screenView(
+                screenClass = SCREEN_CLASS,
+                screenName = SCREEN_NAME,
+                title = TITLE
+            )
+        }
     }
 
     fun onLicenseView() {
-        analyticsClient.screenView(
-            screenClass = OPEN_SOURCE_LICENCE_EVENT,
-            screenName = OPEN_SOURCE_LICENCE_EVENT,
-            title = OPEN_SOURCE_LICENCE_EVENT
-        )
+        viewModelScope.launch {
+            analyticsClient.screenView(
+                screenClass = OPEN_SOURCE_LICENCE_EVENT,
+                screenName = OPEN_SOURCE_LICENCE_EVENT,
+                title = OPEN_SOURCE_LICENCE_EVENT
+            )
+        }
     }
 
     fun onHelpAndFeedbackView() {
-        analyticsClient.settingsItemClick(
-            text = HELP_AND_FEEDBACK_EVENT,
-            url = HELP_AND_FEEDBACK_URL
-        )
+        viewModelScope.launch {
+            analyticsClient.settingsItemClick(
+                text = HELP_AND_FEEDBACK_EVENT,
+                url = HELP_AND_FEEDBACK_URL
+            )
+        }
     }
 
     fun onPrivacyPolicyView() {
-        analyticsClient.settingsItemClick(
-            text = PRIVACY_POLICY_EVENT,
-            url = PRIVACY_POLICY_URL
-        )
+        viewModelScope.launch {
+            analyticsClient.settingsItemClick(
+                text = PRIVACY_POLICY_EVENT,
+                url = PRIVACY_POLICY_URL
+            )
+        }
     }
 
     fun onAccessibilityStatementView() {
-        analyticsClient.settingsItemClick(
-            text = ACCESSIBILITY_STATEMENT_EVENT,
-            url = ACCESSIBILITY_STATEMENT_URL
-        )
+        viewModelScope.launch {
+            analyticsClient.settingsItemClick(
+                text = ACCESSIBILITY_STATEMENT_EVENT,
+                url = ACCESSIBILITY_STATEMENT_URL
+            )
+        }
     }
 
     fun onTermsAndConditionsView() {
-        analyticsClient.settingsItemClick(
-            text = TERMS_AND_CONDITIONS_EVENT,
-            url = TERMS_AND_CONDITIONS_URL
-        )
+        viewModelScope.launch {
+            analyticsClient.settingsItemClick(
+                text = TERMS_AND_CONDITIONS_EVENT,
+                url = TERMS_AND_CONDITIONS_URL
+            )
+        }
     }
 
     fun onAnalyticsConsentChanged(enabled: Boolean) {

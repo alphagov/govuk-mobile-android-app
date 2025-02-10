@@ -12,6 +12,7 @@ import uk.govuk.app.visited.data.store.VisitedLocalDataSource
 import uk.govuk.app.visited.data.transformVisitedItems
 import uk.govuk.app.visited.ui.model.VisitedUi
 import java.time.LocalDate
+import java.util.Arrays.setAll
 import javax.inject.Inject
 
 internal data class VisitedUiState(
@@ -58,74 +59,90 @@ internal class VisitedViewModel @Inject constructor(
     }
 
     fun onPageView() {
-        analyticsClient.screenView(
-            screenClass = VIEW_SCREEN_CLASS,
-            screenName = SCREEN_NAME,
-            title = SCREEN_TITLE
-        )
+        viewModelScope.launch {
+            analyticsClient.screenView(
+                screenClass = VIEW_SCREEN_CLASS,
+                screenName = SCREEN_NAME,
+                title = SCREEN_TITLE
+            )
+        }
     }
 
     fun onEditPageView() {
-        analyticsClient.screenView(
-            screenClass = EDIT_SCREEN_CLASS,
-            screenName = SCREEN_NAME,
-            title = SCREEN_TITLE
-        )
+        viewModelScope.launch {
+            analyticsClient.screenView(
+                screenClass = EDIT_SCREEN_CLASS,
+                screenName = SCREEN_NAME,
+                title = SCREEN_TITLE
+            )
+        }
     }
 
     fun onRemoveVisitedItem(title: String) {
-        analyticsClient.buttonFunction(
-            text = title,
-            section = SCREEN_NAME,
-            action = REMOVE_ACTION
-        )
+        viewModelScope.launch {
+            analyticsClient.buttonFunction(
+                text = title,
+                section = SCREEN_NAME,
+                action = REMOVE_ACTION
+            )
+        }
     }
 
     fun onEditClick() {
-        analyticsClient.buttonFunction(
-            text = "",
-            section = SCREEN_NAME,
-            action = EDIT_BUTTON
-        )
+        viewModelScope.launch {
+            analyticsClient.buttonFunction(
+                text = "",
+                section = SCREEN_NAME,
+                action = EDIT_BUTTON
+            )
+        }
     }
 
     fun onRemoveClick() {
-        analyticsClient.buttonFunction(
-            text = "",
-            section = SCREEN_NAME,
-            action = REMOVE_BUTTON
-        )
+        viewModelScope.launch {
+            analyticsClient.buttonFunction(
+                text = "",
+                section = SCREEN_NAME,
+                action = REMOVE_BUTTON
+            )
+        }
     }
 
     fun onSelectAllClick() {
-        analyticsClient.buttonFunction(
-            text = "",
-            section = SCREEN_NAME,
-            action = SELECT_ALL_BUTTON
-        )
+        viewModelScope.launch {
+            analyticsClient.buttonFunction(
+                text = "",
+                section = SCREEN_NAME,
+                action = SELECT_ALL_BUTTON
+            )
+        }
     }
 
     fun onDeselectAllClick() {
-        analyticsClient.buttonFunction(
-            text = "",
-            section = SCREEN_NAME,
-            action = DESELECT_ALL_BUTTON
-        )
+        viewModelScope.launch {
+            analyticsClient.buttonFunction(
+                text = "",
+                section = SCREEN_NAME,
+                action = DESELECT_ALL_BUTTON
+            )
+        }
     }
 
     fun onDoneClick() {
-        analyticsClient.buttonFunction(
-            text = "",
-            section = SCREEN_NAME,
-            action = DONE_BUTTON
-        )
+        viewModelScope.launch {
+            analyticsClient.buttonFunction(
+                text = "",
+                section = SCREEN_NAME,
+                action = DONE_BUTTON
+            )
+        }
     }
 
     fun onVisitedItemClicked(title: String, url: String) {
         viewModelScope.launch {
             visited.visitableItemClick(title = title, url = url)
+            analyticsClient.visitedItemClick(text = title, url = url)
         }
-        analyticsClient.visitedItemClick(text = title, url = url)
     }
 
     fun onRemove() {

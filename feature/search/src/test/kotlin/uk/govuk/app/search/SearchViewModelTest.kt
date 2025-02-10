@@ -61,7 +61,7 @@ class SearchViewModelTest {
         fun `Given a page view, then log analytics`() {
             viewModel.onPageView()
 
-            verify {
+            coVerify {
                 analyticsClient.screenView(
                     screenClass = "SearchScreen",
                     screenName = "Search",

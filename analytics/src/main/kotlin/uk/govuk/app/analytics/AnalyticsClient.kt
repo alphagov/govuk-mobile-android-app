@@ -32,8 +32,8 @@ class AnalyticsClient @Inject constructor(
         firebaseAnalyticsClient.disable()
     }
 
-    fun screenView(screenClass: String, screenName: String, title: String) {
-        firebaseAnalyticsClient.logEvent(
+    suspend fun screenView(screenClass: String, screenName: String, title: String) {
+        logEvent(
             FirebaseAnalytics.Event.SCREEN_VIEW,
             parametersWithLanguage(
                 mapOf(
@@ -45,11 +45,11 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    fun pageIndicatorClick() {
+    suspend fun pageIndicatorClick() {
         navigation(type = "Dot")
     }
 
-    fun buttonClick(
+    suspend fun buttonClick(
         text: String,
         url: String? = null,
         external: Boolean = false,
@@ -64,11 +64,11 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    fun tabClick(text: String) {
+    suspend fun tabClick(text: String) {
         navigation(text = text, type = "Tab")
     }
 
-    fun widgetClick(
+    suspend fun widgetClick(
         text: String,
         external: Boolean,
         section: String
@@ -81,34 +81,34 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    fun search(searchTerm: String) {
+    suspend fun search(searchTerm: String) {
         redactedEvent(name = "Search", type = "typed", inputString = searchTerm)
     }
 
-    fun autocomplete(searchTerm: String) {
+    suspend fun autocomplete(searchTerm: String) {
         redactedEvent(name = "Search", type = "autocomplete", inputString = searchTerm)
     }
 
-    fun history(searchTerm: String) {
+    suspend fun history(searchTerm: String) {
         redactedEvent(name = "Search", type = "history", inputString = searchTerm)
     }
 
-    fun searchResultClick(text: String, url: String) {
+    suspend fun searchResultClick(text: String, url: String) {
         // external as these links will be opened in the device browser
         navigation(text = text, type = "SearchResult", url = url, external = true)
     }
 
-    fun visitedItemClick(text: String, url: String) {
+    suspend fun visitedItemClick(text: String, url: String) {
         // external as these links will be opened in the device browser
         navigation(text = text, type = "VisitedItem", url = url, external = true)
     }
 
-    fun settingsItemClick(text: String, url: String) {
+    suspend fun settingsItemClick(text: String, url: String) {
         // external as these links will be opened in the device browser
         navigation(text = text, type = "SettingsItem", url = url, external = true)
     }
 
-    fun toggleFunction(text: String, section: String, action: String) {
+    suspend fun toggleFunction(text: String, section: String, action: String) {
         function(
             text = text,
             type = "Toggle",
@@ -117,7 +117,7 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    fun buttonFunction(
+    suspend fun buttonFunction(
         text: String,
         section: String,
         action: String
@@ -134,8 +134,8 @@ class AnalyticsClient @Inject constructor(
         firebaseAnalyticsClient.setUserProperty("topics_customised", "true")
     }
 
-    private fun redactedEvent(name: String, type: String, inputString: String) {
-        firebaseAnalyticsClient.logEvent(
+    private suspend fun redactedEvent(name: String, type: String, inputString: String) {
+        logEvent(
             name,
             mapOf(
                 "type" to type,
@@ -144,7 +144,7 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    private fun navigation(
+    private suspend fun navigation(
         text: String? = null,
         type: String,
         url: String? = null,
@@ -168,10 +168,10 @@ class AnalyticsClient @Inject constructor(
             parameters["section"] = it
         }
 
-        firebaseAnalyticsClient.logEvent("Navigation", parametersWithLanguage(parameters))
+        logEvent("Navigation", parametersWithLanguage(parameters))
     }
 
-    private fun function(text: String, type: String, section: String, action: String) {
+    private suspend fun function(text: String, type: String, section: String, action: String) {
         val parameters = mapOf(
             "text" to text,
             "type" to type,
@@ -179,10 +179,16 @@ class AnalyticsClient @Inject constructor(
             "action" to action
         )
 
-        firebaseAnalyticsClient.logEvent("Function", parametersWithLanguage(parameters))
+        logEvent("Function", parametersWithLanguage(parameters))
     }
 
     private fun parametersWithLanguage(parameters: Map<String, Any>): Map<String, Any> {
         return parameters + Pair("language", Locale.getDefault().language)
+    }
+
+    private suspend fun logEvent(name: String, parameters: Map<String, Any>) {
+        if (analyticsRepo.getAnalyticsEnabledState() == AnalyticsEnabledState.ENABLED) {
+            firebaseAnalyticsClient.logEvent(name, parameters)
+        }
     }
 }

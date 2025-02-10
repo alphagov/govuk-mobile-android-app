@@ -52,7 +52,7 @@ class VisitedViewModelTest {
 
         viewModel.onPageView()
 
-        verify {
+        coVerify {
             analyticsClient.screenView(
                 screenClass = "VisitedScreen",
                 screenName = "Pages you've visited",
@@ -68,7 +68,7 @@ class VisitedViewModelTest {
 
         viewModel.onEditPageView()
 
-        verify {
+        coVerify {
             analyticsClient.screenView(
                 screenClass = "EditVisitedScreen",
                 screenName = "Pages you've visited",
@@ -84,7 +84,7 @@ class VisitedViewModelTest {
 
         viewModel.onRemoveVisitedItem("Title")
 
-        verify {
+        coVerify {
             analyticsClient.buttonFunction(
                 text = "Title",
                 section = "Pages you've visited",
@@ -100,7 +100,7 @@ class VisitedViewModelTest {
 
         viewModel.onEditClick()
 
-        verify {
+        coVerify {
             analyticsClient.buttonFunction(
                 text = "",
                 section = "Pages you've visited",
@@ -116,7 +116,7 @@ class VisitedViewModelTest {
 
         viewModel.onRemoveClick()
 
-        verify {
+        coVerify {
             analyticsClient.buttonFunction(
                 text = "",
                 section = "Pages you've visited",
@@ -132,7 +132,7 @@ class VisitedViewModelTest {
 
         viewModel.onSelectAllClick()
 
-        verify {
+        coVerify {
             analyticsClient.buttonFunction(
                 text = "",
                 section = "Pages you've visited",
@@ -148,7 +148,7 @@ class VisitedViewModelTest {
 
         viewModel.onDeselectAllClick()
 
-        verify {
+        coVerify {
             analyticsClient.buttonFunction(
                 text = "",
                 section = "Pages you've visited",
@@ -164,7 +164,7 @@ class VisitedViewModelTest {
 
         viewModel.onDoneClick()
 
-        verify {
+        coVerify {
             analyticsClient.buttonFunction(
                 text = "",
                 section = "Pages you've visited",

@@ -32,11 +32,13 @@ internal class AllStepByStepsViewModel @Inject constructor(
     }
 
     fun onPageView(title: String) {
-        analyticsClient.screenView(
-            screenClass = SCREEN_CLASS,
-            screenName = title,
-            title = title
-        )
+        viewModelScope.launch {
+            analyticsClient.screenView(
+                screenClass = SCREEN_CLASS,
+                screenName = title,
+                title = title
+            )
+        }
     }
 
     fun onStepByStepClick(
@@ -44,13 +46,13 @@ internal class AllStepByStepsViewModel @Inject constructor(
         text: String,
         url: String
     ) {
-        analyticsClient.buttonClick(
-            text = text,
-            url = url,
-            external = true,
-            section = section
-        )
         viewModelScope.launch {
+            analyticsClient.buttonClick(
+                text = text,
+                url = url,
+                external = true,
+                section = section
+            )
             visited.visitableItemClick(title = text, url = url)
         }
     }

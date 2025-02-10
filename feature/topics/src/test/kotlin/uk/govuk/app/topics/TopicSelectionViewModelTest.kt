@@ -117,7 +117,7 @@ class TopicSelectionViewModelTest {
             assertFalse(result.topics[1].isSelected)
             assertTrue(result.isDoneEnabled)
 
-            verify{
+            coVerify {
                 analyticsClient.buttonFunction(
                     text = "Benefits",
                     section = "Topics",
@@ -160,7 +160,7 @@ class TopicSelectionViewModelTest {
             assertFalse(result.topics[1].isSelected)
             assertFalse(result.isDoneEnabled)
 
-            verify{
+            coVerify {
                 analyticsClient.buttonFunction(
                     text = "Benefits",
                     section = "Topics",
@@ -176,7 +176,7 @@ class TopicSelectionViewModelTest {
 
         viewModel.onPageView("title")
 
-        verify {
+        coVerify {
             analyticsClient.screenView(
                 screenClass = "TopicSelectionScreen",
                 screenName = "Topic Selection",
@@ -238,7 +238,7 @@ class TopicSelectionViewModelTest {
 
         viewModel.onSkip("Skip")
 
-        verify {
+        coVerify {
             analyticsClient.buttonClick(
                 text = "Skip"
             )

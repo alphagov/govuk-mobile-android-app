@@ -1,5 +1,6 @@
 package uk.govuk.app.topics
 
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -74,7 +75,7 @@ class AllTopicsViewModelTest {
 
         viewModel.onPageView("title")
 
-        verify {
+        coVerify {
             analyticsClient.screenView(
                 screenClass = "AllTopicsScreen",
                 screenName = "All Topics",
@@ -89,7 +90,7 @@ class AllTopicsViewModelTest {
 
         viewModel.onClick("title")
 
-        verify {
+        coVerify {
             analyticsClient.buttonClick("title")
         }
     }
