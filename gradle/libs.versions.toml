@@ -65,6 +65,8 @@ realm-base = { group = "io.realm.kotlin", name = "library-base", version.ref = "
 play-services-measurement-api = { group = "com.google.android.gms", name = "play-services-measurement-api", version.ref = "playServicesMeasurementApi" }
 play-services-oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-licenses", version.ref = "playServicesOssLicenses" }
 oss-licenses = { group = "com.google.android.gms", name = "oss-licenses-plugin", version.ref = "ossLicenses" }
+
+# A library that provides Android runtime permissions support for Jetpack Compose
 google-accompanist = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "googleAccompanist" }
 
 [plugins]

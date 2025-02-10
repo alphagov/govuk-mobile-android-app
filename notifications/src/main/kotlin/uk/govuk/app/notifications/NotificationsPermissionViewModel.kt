@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 internal class NotificationsPermissionViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient,
-    private val notificationsClient: NotificationsClient,
+    private val notificationsClient: NotificationsClient
 ) : ViewModel() {
 
     companion object {

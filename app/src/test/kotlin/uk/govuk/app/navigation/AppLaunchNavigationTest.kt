@@ -20,7 +20,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = true,
-                shouldRequestNotificationsPermission = true,
+                isNotificationsEnabled = true,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
@@ -45,7 +45,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = true,
-                shouldRequestNotificationsPermission = true,
+                isNotificationsEnabled = true,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
@@ -70,7 +70,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = false,
-                shouldRequestNotificationsPermission = true,
+                isNotificationsEnabled = true,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
@@ -94,7 +94,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = true,
-                shouldRequestNotificationsPermission = true,
+                isNotificationsEnabled = true,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
@@ -118,7 +118,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = false,
-                shouldRequestNotificationsPermission = false,
+                isNotificationsEnabled = false,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
@@ -140,7 +140,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = true,
-                shouldRequestNotificationsPermission = true,
+                isNotificationsEnabled = true,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
@@ -164,7 +164,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = false,
-                shouldRequestNotificationsPermission = false,
+                isNotificationsEnabled = false,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
@@ -186,7 +186,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = true,
-                shouldRequestNotificationsPermission = false,
+                isNotificationsEnabled = false,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
@@ -208,7 +208,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = false,
-                shouldRequestNotificationsPermission = true,
+                isNotificationsEnabled = true,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
@@ -230,7 +230,7 @@ class AppLaunchNavigationTest {
                 shouldDisplayAnalyticsConsent = false,
                 shouldDisplayOnboarding = false,
                 shouldDisplayTopicSelection = false,
-                shouldRequestNotificationsPermission = false,
+                isNotificationsEnabled = false,
                 isSearchEnabled = true,
                 isRecentActivityEnabled = true,
                 isTopicsEnabled = true
