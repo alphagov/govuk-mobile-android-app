@@ -302,7 +302,7 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given notifications is enabled, when init, then should display notifications permission`() {
+    fun `Given notifications are enabled, When init, then emit notifications enabled state`() {
         coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isNotificationsEnabled() } returns true
@@ -316,7 +316,7 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given notifications is disabled, when init, then should not display notifications permission`() {
+    fun `Given notifications are disabled, When init, then emit notifications disabled state`() {
         coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isNotificationsEnabled() } returns false
