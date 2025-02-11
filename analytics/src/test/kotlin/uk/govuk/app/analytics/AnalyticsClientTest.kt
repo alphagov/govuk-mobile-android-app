@@ -3,6 +3,7 @@ package uk.govuk.app.analytics
 import com.google.firebase.analytics.FirebaseAnalytics
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
@@ -26,6 +27,38 @@ class AnalyticsClientTest {
     @Before
     fun setup() {
         analyticsClient = AnalyticsClient(analyticsRepo, firebaseAnalyticClient)
+
+        every { analyticsRepo.analyticsEnabledState } returns ENABLED
+    }
+
+    @Test
+    fun `Given analytics are disabled, when an event is logged, then do not log to firebase`() = runTest {
+        coEvery { analyticsRepo.analyticsEnabledState } returns DISABLED
+
+        analyticsClient.screenView(
+            screenClass = "screenClass",
+            screenName = "screenName",
+            title = "title"
+        )
+
+        verify(exactly = 0) {
+            firebaseAnalyticClient.logEvent(any(), any())
+        }
+    }
+
+    @Test
+    fun `Given analytics are not set, when an event is logged, then do not log to firebase`() = runTest {
+        coEvery { analyticsRepo.analyticsEnabledState } returns NOT_SET
+
+        analyticsClient.screenView(
+            screenClass = "screenClass",
+            screenName = "screenName",
+            title = "title"
+        )
+
+        verify(exactly = 0) {
+            firebaseAnalyticClient.logEvent(any(), any())
+        }
     }
 
     @Test
@@ -421,7 +454,7 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given analytics are not set, when is analytics consent required, then return true`() {
-        coEvery { analyticsRepo.getAnalyticsEnabledState() } returns NOT_SET
+        coEvery { analyticsRepo.analyticsEnabledState } returns NOT_SET
 
         runTest {
             assertTrue(analyticsClient.isAnalyticsConsentRequired())
@@ -430,7 +463,7 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given analytics are enabled, when is analytics consent required, then return false`() {
-        coEvery { analyticsRepo.getAnalyticsEnabledState() } returns ENABLED
+        coEvery { analyticsRepo.analyticsEnabledState } returns ENABLED
 
         runTest {
             assertFalse(analyticsClient.isAnalyticsConsentRequired())
@@ -439,7 +472,7 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given analytics are disabled, when is analytics consent required, then return false`() {
-        coEvery { analyticsRepo.getAnalyticsEnabledState() } returns DISABLED
+        coEvery { analyticsRepo.analyticsEnabledState } returns DISABLED
 
         runTest {
             assertFalse(analyticsClient.isAnalyticsConsentRequired())
@@ -448,7 +481,7 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given analytics are not set, when is analytics enabled, then return false`() {
-        coEvery { analyticsRepo.getAnalyticsEnabledState() } returns NOT_SET
+        coEvery { analyticsRepo.analyticsEnabledState } returns NOT_SET
 
         runTest {
             assertFalse(analyticsClient.isAnalyticsEnabled())
@@ -457,7 +490,7 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given analytics are enabled, when is analytics enabled, then return true`() {
-        coEvery { analyticsRepo.getAnalyticsEnabledState() } returns ENABLED
+        coEvery { analyticsRepo.analyticsEnabledState } returns ENABLED
 
         runTest {
             assertTrue(analyticsClient.isAnalyticsEnabled())
@@ -466,7 +499,7 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given analytics are disabled, when is analytics enabled, then return false`() {
-        coEvery { analyticsRepo.getAnalyticsEnabledState() } returns DISABLED
+        coEvery { analyticsRepo.analyticsEnabledState } returns DISABLED
 
         runTest {
             assertFalse(analyticsClient.isAnalyticsEnabled())

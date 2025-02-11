@@ -16,53 +16,77 @@ import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.NOT_SET
 
 class AnalyticsDataStoreTest {
 
-    private val dataStore = mockk<DataStore<Preferences>>()
+    private val dataStore = mockk<DataStore<Preferences>>(relaxed = true)
     private val preferences = mockk<Preferences>()
 
     @Test
     fun `Given the data store is empty, then return not set`() {
-        val datastore = AnalyticsDataStore(dataStore)
-
         every { dataStore.data } returns emptyFlow()
 
-        runTest {
-            assertEquals(NOT_SET, datastore.getAnalyticsEnabledState())
-        }
+        val datastore = AnalyticsDataStore(dataStore)
+
+        assertEquals(NOT_SET, datastore.analyticsEnabledState)
     }
 
     @Test
     fun `Given analytics enabled preference is null, then return not set`() {
-        val datastore = AnalyticsDataStore(dataStore)
-
         every { dataStore.data } returns flowOf(preferences)
         every { preferences[booleanPreferencesKey(AnalyticsDataStore.ANALYTICS_ENABLED_KEY)] } returns null
 
-        runTest {
-            assertEquals(NOT_SET, datastore.getAnalyticsEnabledState())
-        }
+        val datastore = AnalyticsDataStore(dataStore)
+
+        assertEquals(NOT_SET, datastore.analyticsEnabledState)
     }
 
     @Test
     fun `Given analytics are enabled, then return enabled`() {
-        val datastore = AnalyticsDataStore(dataStore)
-
         every { dataStore.data } returns flowOf(preferences)
         every { preferences[booleanPreferencesKey(AnalyticsDataStore.ANALYTICS_ENABLED_KEY)] } returns true
 
-        runTest {
-            assertEquals(ENABLED, datastore.getAnalyticsEnabledState())
-        }
+        val datastore = AnalyticsDataStore(dataStore)
+
+        assertEquals(ENABLED, datastore.analyticsEnabledState)
     }
 
     @Test
     fun `Given analytics are disabled, then return disabled`() {
-        val datastore = AnalyticsDataStore(dataStore)
-
         every { dataStore.data } returns flowOf(preferences)
         every { preferences[booleanPreferencesKey(AnalyticsDataStore.ANALYTICS_ENABLED_KEY)] } returns false
 
+        val datastore = AnalyticsDataStore(dataStore)
+
+        assertEquals(DISABLED, datastore.analyticsEnabledState )
+    }
+
+    @Test
+    fun `Given the user enables analytics, then return enabled`() {
+        every { dataStore.data } returns flowOf(preferences)
+        every { preferences[booleanPreferencesKey(AnalyticsDataStore.ANALYTICS_ENABLED_KEY)] } returns false
+
+        val datastore = AnalyticsDataStore(dataStore)
+
         runTest {
-            assertEquals(DISABLED, datastore.getAnalyticsEnabledState())
+            assertEquals(DISABLED, datastore.analyticsEnabledState)
+
+            datastore.analyticsEnabled()
+
+            assertEquals(ENABLED, datastore.analyticsEnabledState)
+        }
+    }
+
+    @Test
+    fun `Given the user disables analytics, then return disabled`() {
+        every { dataStore.data } returns flowOf(preferences)
+        every { preferences[booleanPreferencesKey(AnalyticsDataStore.ANALYTICS_ENABLED_KEY)] } returns true
+
+        val datastore = AnalyticsDataStore(dataStore)
+
+        runTest {
+            assertEquals(ENABLED, datastore.analyticsEnabledState)
+
+            datastore.analyticsDisabled()
+
+            assertEquals(DISABLED, datastore.analyticsEnabledState)
         }
     }
 }
