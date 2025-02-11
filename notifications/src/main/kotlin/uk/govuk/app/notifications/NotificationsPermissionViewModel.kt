@@ -31,7 +31,7 @@ internal class NotificationsPermissionViewModel @Inject constructor(
         if (status.isGranted) {
             _uiState.value = NotificationsPermissionUiState.Finish
         } else if (status.shouldShowRationale) {
-            _uiState.value = NotificationsPermissionUiState.Default
+            _uiState.value = NotificationsPermissionUiState.OptIn
         } else {
             notificationsClient.requestPermission()
             _uiState.value = NotificationsPermissionUiState.Finish

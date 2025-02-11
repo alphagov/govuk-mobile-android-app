@@ -67,8 +67,8 @@ internal fun NotificationsPermissionRoute(
 
     uiState?.let { state ->
         when (state) {
-            NotificationsPermissionUiState.Default -> {
-                NotificationsPermissionScreen(
+            NotificationsPermissionUiState.OptIn -> {
+                OptInScreen(
                     onContinue = {
                         viewModel.onContinueClick(it)
                         notificationsPermissionCompleted()
@@ -90,7 +90,7 @@ internal fun NotificationsPermissionRoute(
 }
 
 @Composable
-private fun NotificationsPermissionScreen(
+private fun OptInScreen(
     onContinue: (String) -> Unit,
     onSkip: (String) -> Unit,
     onPageView: () -> Unit,
@@ -101,13 +101,13 @@ private fun NotificationsPermissionScreen(
     }
 
     Column(modifier.fillMaxWidth()) {
-        Page()
+        OptInPage()
 
         Spacer(modifier = Modifier.weight(1f))
 
         ListDivider()
 
-        Footer(
+        OptInFooter(
             onContinue = onContinue,
             onSkip = onSkip
         )
@@ -115,7 +115,7 @@ private fun NotificationsPermissionScreen(
 }
 
 @Composable
-private fun Page(
+private fun OptInPage(
     modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -129,7 +129,7 @@ private fun Page(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (windowSizeClass.windowHeightSizeClass != WindowHeightSizeClass.COMPACT) {
-            AnimatedBell()
+            AnimatedOptInImage()
             ExtraLargeVerticalSpacer()
         }
 
@@ -154,7 +154,7 @@ private fun Page(
 }
 
 @Composable
-private fun AnimatedBell() {
+private fun AnimatedOptInImage() {
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(R.raw.bell)
     )
@@ -173,7 +173,7 @@ private fun AnimatedBell() {
 }
 
 @Composable
-private fun Footer(
+private fun OptInFooter(
     onContinue: (String) -> Unit,
     onSkip: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -218,6 +218,6 @@ private fun areAnimationsDisabled(context: Context): Boolean {
 
 @Preview
 @Composable
-private fun NotificationsPermissionScreenPreview() {
-    NotificationsPermissionScreen({}, {}, {})
+private fun OptInScreenPreview() {
+    OptInScreen({}, {}, {})
 }

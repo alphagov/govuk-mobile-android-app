@@ -101,14 +101,14 @@ class NotificationsPermissionViewModelTest {
     }
 
     @Test
-    fun `Given the permission status is should show rationale, When init, then ui state should be default`() {
+    fun `Given the permission status is should show rationale, When init, then ui state should be opt in`() {
         every { permissionStatus.shouldShowRationale } returns true
 
         viewModel.updateUiState(permissionStatus)
 
         runTest {
             val result = viewModel.uiState.first()
-            assertTrue(result is NotificationsPermissionUiState.Default)
+            assertTrue(result is NotificationsPermissionUiState.OptIn)
         }
     }
 
