@@ -31,6 +31,7 @@ internal class AppViewModel @Inject constructor(
     }
 
     fun onTryAgain() {
+        // Adding a comment to trigger sonar check
         _uiState.value = AppUiState.Loading
         fetchConfig()
     }
