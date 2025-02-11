@@ -4,7 +4,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,9 +26,13 @@ internal class AppDataStore @Inject constructor(
             ?.get(booleanPreferencesKey(ONBOARDING_COMPLETED_KEY)) == true
     }
 
-    internal suspend fun onboardingCompleted() {
-        dataStore.edit { prefs ->
-            prefs[booleanPreferencesKey(ONBOARDING_COMPLETED_KEY)] = true
+    internal suspend fun onboardingCompleted(
+        dispatcher: CoroutineDispatcher = Dispatchers.IO
+    ) {
+        withContext(dispatcher) {
+            dataStore.edit { prefs ->
+                prefs[booleanPreferencesKey(ONBOARDING_COMPLETED_KEY)] = true
+            }
         }
     }
 
