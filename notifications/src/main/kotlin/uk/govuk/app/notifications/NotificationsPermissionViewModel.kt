@@ -28,13 +28,13 @@ internal class NotificationsPermissionViewModel @Inject constructor(
     internal val uiState = _uiState.asStateFlow()
 
     internal fun updateUiState(status: PermissionStatus) {
-        if (status.isGranted) {
-            _uiState.value = NotificationsPermissionUiState.Finish
+        _uiState.value = if (status.isGranted) {
+            NotificationsPermissionUiState.Finish
         } else if (status.shouldShowRationale) {
-            _uiState.value = NotificationsPermissionUiState.OptIn
+            NotificationsPermissionUiState.OptIn
         } else {
             notificationsClient.requestPermission()
-            _uiState.value = NotificationsPermissionUiState.Finish
+            NotificationsPermissionUiState.Finish
         }
     }
 
