@@ -34,6 +34,7 @@ internal class SearchViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
+        // Adding a comment to trigger sonar check
         viewModelScope.launch {
             searchRepo.previousSearches.collect { previousSearches ->
                 emitUiState(previousSearches = previousSearches)
