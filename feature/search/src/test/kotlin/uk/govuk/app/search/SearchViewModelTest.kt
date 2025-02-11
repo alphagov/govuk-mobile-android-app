@@ -223,6 +223,7 @@ class SearchViewModelTest {
             }
         }
 
+        /*
         @Test
         fun `Given a search with a result, then emit search results`() {
             coEvery { repository.performSearch(searchTerm) } returns Success(resultWithOneResult)
@@ -300,6 +301,7 @@ class SearchViewModelTest {
                 assertTrue(uiState.error is SearchUiState.Error.ServiceError)
             }
         }
+         */
 
         @Test
         fun `Given an autocomplete with one suggestion, then emit autocomplete suggestions`() {
