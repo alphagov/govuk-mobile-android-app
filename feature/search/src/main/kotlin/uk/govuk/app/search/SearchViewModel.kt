@@ -54,21 +54,7 @@ internal class SearchViewModel @Inject constructor(
         val trimmedSearchTerm = searchTerm.trim()
 
         viewModelScope.launch {
-            val id = UUID.randomUUID()
-            val result = searchRepo.performSearch(trimmedSearchTerm)
-            when (result) {
-                is Success -> {
-                    if (result.value.results.isNotEmpty()) {
-                        emitUiState(
-                            searchResults = SearchResults(trimmedSearchTerm, result.value.results)
-                        )
-                    } else {
-                        emitUiState(error = Error.Empty(id, trimmedSearchTerm))
-                    }
-                }
-                is DeviceOffline -> emitUiState(error = Error.Offline(id, trimmedSearchTerm))
-                else -> emitUiState(error = Error.ServiceError(id))
-            }
+            searchRepo.performSearch(trimmedSearchTerm)
         }
     }
 
