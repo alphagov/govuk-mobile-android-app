@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.runBlocking
 import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.DISABLED
 import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.ENABLED
 import uk.govuk.app.analytics.data.local.AnalyticsEnabledState.NOT_SET
@@ -24,19 +25,27 @@ class AnalyticsDataStore @Inject constructor(
         internal const val ANALYTICS_ENABLED_KEY = "analytics_enabled"
     }
 
-    internal suspend fun getAnalyticsEnabledState(): AnalyticsEnabledState {
-        return dataStore.data.firstOrNull()?.get(booleanPreferencesKey(ANALYTICS_ENABLED_KEY))?.let { enabled ->
-            if (enabled) ENABLED else DISABLED
-        } ?: NOT_SET
+    private var _analyticsEnabledState: AnalyticsEnabledState
+    val analyticsEnabledState: AnalyticsEnabledState
+        get() = _analyticsEnabledState
+
+    init {
+        runBlocking {
+            _analyticsEnabledState = dataStore.data.firstOrNull()?.get(booleanPreferencesKey(ANALYTICS_ENABLED_KEY))?.let { enabled ->
+                if (enabled) ENABLED else DISABLED
+            } ?: NOT_SET
+        }
     }
 
     internal suspend fun analyticsEnabled() {
+        _analyticsEnabledState = ENABLED
         dataStore.edit { preferences ->
             preferences[booleanPreferencesKey(ANALYTICS_ENABLED_KEY)] = true
         }
     }
 
     internal suspend fun analyticsDisabled() {
+        _analyticsEnabledState = DISABLED
         dataStore.edit { preferences ->
             preferences[booleanPreferencesKey(ANALYTICS_ENABLED_KEY)] = false
         }

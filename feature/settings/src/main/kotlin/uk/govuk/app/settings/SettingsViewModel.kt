@@ -37,11 +37,9 @@ internal class SettingsViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            _uiState.value = SettingsUiState(
-                isAnalyticsEnabled = analyticsClient.isAnalyticsEnabled(),
-            )
-        }
+        _uiState.value = SettingsUiState(
+            isAnalyticsEnabled = analyticsClient.isAnalyticsEnabled(),
+        )
     }
 
     fun onPageView() {

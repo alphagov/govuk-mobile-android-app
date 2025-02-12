@@ -1,6 +1,7 @@
 package uk.govuk.app.analytics.data
 
 import uk.govuk.app.analytics.data.local.AnalyticsDataStore
+import uk.govuk.app.analytics.data.local.AnalyticsEnabledState
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -8,7 +9,8 @@ import javax.inject.Singleton
 class AnalyticsRepo @Inject constructor(
     private val dataStore: AnalyticsDataStore
 ) {
-    internal suspend fun getAnalyticsEnabledState() = dataStore.getAnalyticsEnabledState()
+    internal val analyticsEnabledState: AnalyticsEnabledState
+        get() = dataStore.analyticsEnabledState
 
     internal suspend fun analyticsEnabled() = dataStore.analyticsEnabled()
 
