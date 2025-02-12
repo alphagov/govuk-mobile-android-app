@@ -139,7 +139,10 @@ class TopicViewModelTest {
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
-        viewModel.onPageView("title")
+        viewModel.onPageView(
+            topicUi = null,
+            title = "title"
+        )
 
         verify {
             analyticsClient.screenView(
@@ -159,7 +162,8 @@ class TopicViewModelTest {
         viewModel.onContentClick(
             section = "section",
             text = "text",
-            url = "url"
+            url = "url",
+            title = "title"
         )
 
         verify {
@@ -181,7 +185,8 @@ class TopicViewModelTest {
         viewModel.onContentClick(
             section = "section",
             text = "text",
-            url = "url"
+            url = "url",
+            title = "title"
         )
 
         coVerify {
