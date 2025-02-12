@@ -32,7 +32,7 @@ fun GovUkCard(
     val cardColour = if (isSelected) {
         GovUkTheme.colourScheme.surfaces.cardSelected
     } else {
-        GovUkTheme.colourScheme.surfaces.card
+        GovUkTheme.colourScheme.surfaces.cardDefault
     }
 
     OutlinedCard(

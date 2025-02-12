@@ -44,7 +44,7 @@ fun ListHeader(
     modifier: Modifier = Modifier
 ) {
     val borderColor = GovUkTheme.colourScheme.strokes.listDivider
-    val backgroundColor = GovUkTheme.colourScheme.surfaces.card
+    val backgroundColor = GovUkTheme.colourScheme.surfaces.cardDefault
 
     Box(
         modifier = modifier
@@ -231,7 +231,7 @@ fun CardListItem(
     content: @Composable () -> Unit,
 ) {
     val borderColor = GovUkTheme.colourScheme.strokes.listDivider
-    val backgroundColor = GovUkTheme.colourScheme.surfaces.card
+    val backgroundColor = GovUkTheme.colourScheme.surfaces.cardDefault
     val backgroundColorHighlight = GovUkTheme.colourScheme.surfaces.cardHighlight
 
     val interactionSource = remember { MutableInteractionSource() }
