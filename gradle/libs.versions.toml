@@ -31,6 +31,7 @@ kover = "0.9.1"
 sonarqube = "5.0.0.4638"
 playServicesMeasurementApi = "22.0.2"
 playServicesOssLicenses = "17.1.0"
+googleAccompanist = "0.37.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -64,6 +65,9 @@ realm-base = { group = "io.realm.kotlin", name = "library-base", version.ref = "
 play-services-measurement-api = { group = "com.google.android.gms", name = "play-services-measurement-api", version.ref = "playServicesMeasurementApi" }
 play-services-oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-licenses", version.ref = "playServicesOssLicenses" }
 oss-licenses = { group = "com.google.android.gms", name = "oss-licenses-plugin", version.ref = "ossLicenses" }
+
+# A library that provides Android runtime permissions support for Jetpack Compose
+google-accompanist = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "googleAccompanist" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

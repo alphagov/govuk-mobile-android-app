@@ -20,8 +20,12 @@ import org.junit.Test
 class NotificationsClientTest {
     private val context = mockk<Context>(relaxed = true)
 
+    private lateinit var notificationsClient: NotificationsClient
+
     @Before
     fun setup() {
+        notificationsClient = NotificationsClient()
+
         mockkStatic(OneSignal::class)
         mockkStatic(OneSignal.Debug::class)
     }
@@ -32,22 +36,51 @@ class NotificationsClientTest {
     }
 
     @Test
-    fun `Given we have a notifications client, when initialise is called, One Signal setup functions are called`() {
+    fun `Given we have a notifications client, when initialise is called, One Signal initialise function is called`() {
         val oneSignalAppId = "1234"
         every { OneSignal.initWithContext(context, oneSignalAppId) } returns Unit
+
+        runTest {
+            notificationsClient.initialise(context, oneSignalAppId)
+
+            verify(exactly = 1) {
+                OneSignal.initWithContext(context, oneSignalAppId)
+            }
+        }
+    }
+
+    @Test
+    fun `Given we have a notifications client, when request permission is called and permissions denied, One Signal request permission function is called`() {
         every { OneSignal.Notifications.canRequestPermission } returns true
         coEvery { OneSignal.Notifications.requestPermission(false) } returns true
 
         runTest {
             val dispatcher = UnconfinedTestDispatcher()
-            val notificationsClient = NotificationsClient()
-            notificationsClient.initialise(context, oneSignalAppId, dispatcher)
+            notificationsClient.requestPermission(dispatcher)
 
-            verify(exactly = 1) {
-                OneSignal.initWithContext(context, oneSignalAppId)
-            }
             coVerify(exactly = 1) {
                 OneSignal.Notifications.requestPermission(false)
+            }
+            verify(exactly = 1) {
+                OneSignal.consentGiven = true
+            }
+        }
+    }
+
+    @Test
+    fun `Given we have a notifications client, when request permission is called and permissions granted, One Signal request permission function is called`() {
+        every { OneSignal.Notifications.canRequestPermission } returns true
+        coEvery { OneSignal.Notifications.requestPermission(false) } returns false
+
+        runTest {
+            val dispatcher = UnconfinedTestDispatcher()
+            notificationsClient.requestPermission(dispatcher)
+
+            coVerify(exactly = 1) {
+                OneSignal.Notifications.requestPermission(false)
+            }
+            verify(exactly = 1) {
+                OneSignal.consentGiven = false
             }
         }
     }

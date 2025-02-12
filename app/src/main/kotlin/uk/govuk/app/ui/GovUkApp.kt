@@ -50,6 +50,7 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.navigation.homeGraph
 import uk.govuk.app.navigation.AppLaunchNavigation
 import uk.govuk.app.navigation.TopLevelDestination
+import uk.govuk.app.notifications.navigation.notificationsGraph
 import uk.govuk.app.onboarding.navigation.onboardingGraph
 import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
@@ -285,6 +286,12 @@ private fun GovUkNavHost(
                 navController.navigate(launchRoutes.pop())
             },
             modifier = Modifier.padding(paddingValues)
+        )
+        notificationsGraph(
+            notificationsPermissionCompleted = {
+                navController.popBackStack()
+                navController.navigate(launchRoutes.pop())
+            }
         )
         homeGraph(
             widgets = homeScreenWidgets(

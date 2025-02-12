@@ -54,6 +54,7 @@ internal class AppViewModel @Inject constructor(
                             shouldDisplayTopicSelection = flagRepo.isTopicsEnabled()
                                     && !appRepo.isTopicSelectionCompleted()
                                     && topicsInitSuccess,
+                            shouldDisplayNotificationsPermission = flagRepo.isNotificationsEnabled(),
                             isSearchEnabled = flagRepo.isSearchEnabled(),
                             isRecentActivityEnabled = flagRepo.isRecentActivityEnabled(),
                             isTopicsEnabled = flagRepo.isTopicsEnabled()

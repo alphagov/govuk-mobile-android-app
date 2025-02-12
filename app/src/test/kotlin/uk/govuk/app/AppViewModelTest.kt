@@ -302,6 +302,34 @@ class AppViewModelTest {
     }
 
     @Test
+    fun `Given notifications are enabled, When init, then emit notifications enabled state`() {
+        coEvery { configRepo.initConfig() } returns Success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
+        every { flagRepo.isNotificationsEnabled() } returns true
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+
+        runTest {
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertTrue(result.shouldDisplayNotificationsPermission)
+        }
+    }
+
+    @Test
+    fun `Given notifications are disabled, When init, then emit notifications disabled state`() {
+        coEvery { configRepo.initConfig() } returns Success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
+        every { flagRepo.isNotificationsEnabled() } returns false
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+
+        runTest {
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertFalse(result.shouldDisplayNotificationsPermission)
+        }
+    }
+
+    @Test
     fun `Given the search feature is enabled, When init, then emit search enabled state`() {
         coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
