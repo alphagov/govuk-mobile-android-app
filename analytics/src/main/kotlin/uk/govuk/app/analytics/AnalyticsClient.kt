@@ -1,5 +1,6 @@
 package uk.govuk.app.analytics
 
+import android.util.Log
 import com.google.firebase.analytics.FirebaseAnalytics
 import uk.govuk.app.analytics.data.AnalyticsRepo
 import uk.govuk.app.analytics.data.local.AnalyticsEnabledState
@@ -14,12 +15,12 @@ class AnalyticsClient @Inject constructor(
     private val firebaseAnalyticsClient: FirebaseAnalyticsClient
 ) {
 
-    suspend fun isAnalyticsConsentRequired(): Boolean {
-        return analyticsRepo.getAnalyticsEnabledState() == AnalyticsEnabledState.NOT_SET
+    fun isAnalyticsConsentRequired(): Boolean {
+        return analyticsRepo.analyticsEnabledState == AnalyticsEnabledState.NOT_SET
     }
 
-    suspend fun isAnalyticsEnabled(): Boolean {
-        return analyticsRepo.getAnalyticsEnabledState() == AnalyticsEnabledState.ENABLED
+    fun isAnalyticsEnabled(): Boolean {
+        return analyticsRepo.analyticsEnabledState == AnalyticsEnabledState.ENABLED
     }
 
     suspend fun enable() {
@@ -33,7 +34,7 @@ class AnalyticsClient @Inject constructor(
     }
 
     fun screenView(screenClass: String, screenName: String, title: String) {
-        firebaseAnalyticsClient.logEvent(
+        logEvent(
             FirebaseAnalytics.Event.SCREEN_VIEW,
             parametersWithLanguage(
                 mapOf(
@@ -135,7 +136,7 @@ class AnalyticsClient @Inject constructor(
     }
 
     private fun redactedEvent(name: String, type: String, inputString: String) {
-        firebaseAnalyticsClient.logEvent(
+        logEvent(
             name,
             mapOf(
                 "type" to type,
@@ -168,7 +169,7 @@ class AnalyticsClient @Inject constructor(
             parameters["section"] = it
         }
 
-        firebaseAnalyticsClient.logEvent("Navigation", parametersWithLanguage(parameters))
+        logEvent("Navigation", parametersWithLanguage(parameters))
     }
 
     private fun function(text: String, type: String, section: String, action: String) {
@@ -179,10 +180,16 @@ class AnalyticsClient @Inject constructor(
             "action" to action
         )
 
-        firebaseAnalyticsClient.logEvent("Function", parametersWithLanguage(parameters))
+        logEvent("Function", parametersWithLanguage(parameters))
     }
 
     private fun parametersWithLanguage(parameters: Map<String, Any>): Map<String, Any> {
         return parameters + Pair("language", Locale.getDefault().language)
+    }
+
+    private fun logEvent(name: String, parameters: Map<String, Any>) {
+        if (isAnalyticsEnabled()) {
+            firebaseAnalyticsClient.logEvent(name, parameters)
+        }
     }
 }

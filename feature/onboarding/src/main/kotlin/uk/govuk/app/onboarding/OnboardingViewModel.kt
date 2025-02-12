@@ -35,7 +35,7 @@ internal class OnboardingViewModel @Inject constructor(
                     screenName = ONBOARDING_SCREEN_1_NAME,
                     title = R.string.getThingsDoneScreenTitle,
                     body = R.string.getThingsDoneScreenBody,
-                    image = R.drawable.image_1
+                    image = R.drawable.image_1,
                 ),
                 OnboardingPage(
                     screenName = ONBOARDING_SCREEN_2_NAME,
@@ -47,7 +47,8 @@ internal class OnboardingViewModel @Inject constructor(
                     screenName = ONBOARDING_SCREEN_3_NAME,
                     title = R.string.tailoredToYouScreenTitle,
                     body = R.string.tailoredToYouScreenBody,
-                    image = R.drawable.image_3
+                    image = R.drawable.image_3,
+                    animation = R.raw.onboarding_personalisation
                 ),
             )
         )
