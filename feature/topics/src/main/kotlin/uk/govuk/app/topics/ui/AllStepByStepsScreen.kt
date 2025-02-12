@@ -33,7 +33,7 @@ internal fun AllStepByStepRoute(
 
     AllStepByStepsScreen(
         stepBySteps = stepBySteps,
-        onPageView = { title -> viewModel.onPageView(title) },
+        onPageView = { title -> viewModel.onPageView(stepBySteps, title) },
         onBack = onBack,
         onExternalLink = { section, text, url ->
             viewModel.onStepByStepClick(
