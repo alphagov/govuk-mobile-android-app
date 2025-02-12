@@ -6,13 +6,14 @@ import uk.govuk.app.design.ui.theme.GovUkColourScheme.Strokes
 import uk.govuk.app.design.ui.theme.GovUkColourScheme.Surfaces
 import uk.govuk.app.design.ui.theme.GovUkColourScheme.TextAndIcons
 
-private val Blue1 = Color(0xFF1D70B8)
+private val PrimaryBlue = Color(0xFF1D70B8)
 private val Blue2 = Color(0xFF259AFF)
 private val Blue3 = Color(0xFF00FFE0)
 private val Blue4 = Color(0xFF45F2FD)
 private val Blue5 = Color(0xFF193E61)
 private val Blue6 = Color(0xFF7AC2FF)
 private val Blue7 = Color(0xFFE8F1F8)
+private val BlueLighter95 = Color(0xFFF4F8FB)
 
 private val Yellow = Color(0xFFFFDD00)
 
@@ -68,6 +69,7 @@ data class GovUkColourScheme(
         val buttonCompactDisabled: Color,
         val buttonCompactFocused: Color,
         val buttonSuccess: Color,
+        val icon: Color,
         val trailingIcon: Color,
         val buttonRemove: Color,
         val buttonRemoveDisabled: Color,
@@ -117,20 +119,21 @@ internal val LightColorScheme = GovUkColourScheme(
     textAndIcons = TextAndIcons(
         primary = Black,
         secondary = Grey700,
-        link = Blue1,
+        link = PrimaryBlue,
         buttonPrimary = White,
         buttonPrimaryHighlight = White,
         buttonPrimaryDisabled = Grey600,
         buttonPrimaryFocused = Black,
-        buttonSecondary = Blue1,
+        buttonSecondary = PrimaryBlue,
         buttonSecondaryHighlight = Blue5,
         buttonSecondaryDisabled = Grey700,
         buttonSecondaryFocused = Black,
-        buttonCompact = Blue1,
+        buttonCompact = PrimaryBlue,
         buttonCompactHighlight = Blue5,
         buttonCompactDisabled = Grey600,
         buttonCompactFocused = Black,
         buttonSuccess = Green1,
+        icon = PrimaryBlue,
         trailingIcon = Grey300,
         buttonRemove = Red1,
         buttonRemoveDisabled = Grey700,
@@ -140,7 +143,7 @@ internal val LightColorScheme = GovUkColourScheme(
     ),
     surfaces = Surfaces(
         background = White,
-        primary = Blue1,
+        primary = PrimaryBlue,
         cardDefault = White,
         cardHighlight = Grey400,
         cardSelected = GreenLighter95,
@@ -159,12 +162,12 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonCompactDisabled = Grey100,
         buttonCompactFocused = Yellow,
         searchBox = Grey60,
-        toggleEnabled = Blue1,
+        toggleEnabled = PrimaryBlue,
         toggleDisabled = Grey300,
         toggleHandle = White,
         toggleBorder = White,
-        icon = Blue1,
-        homeHeader = Blue1
+        icon = PrimaryBlue,
+        homeHeader = PrimaryBlue
     ),
     strokes = Strokes(
         container = BlackAlpha30,
@@ -192,6 +195,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonCompactDisabled = Black,
         buttonCompactFocused = Black,
         buttonSuccess = Green2,
+        icon = BlueLighter95,
         trailingIcon = Grey500,
         buttonRemove = Red1,
         buttonRemoveDisabled = Grey300,
@@ -254,6 +258,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             buttonCompactDisabled = Color.Unspecified,
             buttonCompactFocused = Color.Unspecified,
             buttonSuccess = Color.Unspecified,
+            icon = Color.Unspecified,
             trailingIcon = Color.Unspecified,
             buttonRemove = Color.Unspecified,
             buttonRemoveDisabled = Color.Unspecified,

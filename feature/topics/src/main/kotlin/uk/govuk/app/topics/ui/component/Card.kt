@@ -163,7 +163,7 @@ fun TopicVerticalCard(
                 modifier = Modifier
                     .align(Alignment.Bottom)
                     .padding(bottom = baselinePadding),
-                tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
+                tint = GovUkTheme.colourScheme.textAndIcons.icon
             )
         }
     }
@@ -202,7 +202,7 @@ fun TopicHorizontalCard(
             Icon(
                 painterResource(uk.govuk.app.design.R.drawable.ic_chevron),
                 contentDescription = null,
-                tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
+                tint = GovUkTheme.colourScheme.textAndIcons.icon
             )
         }
     }

@@ -96,7 +96,7 @@ fun HomeNavigationCard(
             Icon(
                 painterResource(R.drawable.ic_chevron),
                 contentDescription = null,
-                tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
+                tint = GovUkTheme.colourScheme.textAndIcons.icon
             )
         }
     }
