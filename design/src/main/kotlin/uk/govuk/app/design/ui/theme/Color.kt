@@ -137,7 +137,7 @@ internal val LightColorScheme = GovUkColourScheme(
         logoDot = Blue3
     ),
     surfaces = Surfaces(
-        background = Grey50,
+        background = White,
         primary = Blue1,
         card = White,
         cardHighlight = Grey400,
