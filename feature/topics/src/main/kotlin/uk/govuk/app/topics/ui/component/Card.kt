@@ -61,7 +61,7 @@ fun TopicSelectionCard(
                 painterResource(icon),
                 contentDescription = null,
                 modifier = Modifier.size(40.dp),
-                tint = GovUkTheme.colourScheme.surfaces.icon
+                tint = GovUkTheme.colourScheme.textAndIcons.icon
             )
             Title3BoldLabel(
                 text = title,
@@ -140,7 +140,7 @@ fun TopicVerticalCard(
             painterResource(icon),
             contentDescription = null,
             modifier = Modifier.size(40.dp),
-            tint = GovUkTheme.colourScheme.surfaces.icon
+            tint = GovUkTheme.colourScheme.textAndIcons.icon
         )
         MediumVerticalSpacer()
         Spacer(Modifier.weight(1f))
@@ -187,7 +187,7 @@ fun TopicHorizontalCard(
                 painterResource(icon),
                 contentDescription = null,
                 modifier = Modifier.size(40.dp),
-                tint = GovUkTheme.colourScheme.surfaces.icon
+                tint = GovUkTheme.colourScheme.textAndIcons.icon
             )
 
             MediumHorizontalSpacer()
