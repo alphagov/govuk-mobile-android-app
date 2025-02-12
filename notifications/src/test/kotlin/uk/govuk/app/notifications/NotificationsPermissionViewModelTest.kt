@@ -73,12 +73,17 @@ class NotificationsPermissionViewModelTest {
     @Test
     fun `Given the permission status is granted, When init, then ui state should be finish`() {
         every { permissionStatus.isGranted } returns true
+        every { notificationsClient.giveConsent() } returns Unit
 
         viewModel.updateUiState(permissionStatus)
 
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is NotificationsPermissionUiState.Finish)
+
+            verify(exactly = 1) {
+                notificationsClient.giveConsent()
+            }
         }
     }
 

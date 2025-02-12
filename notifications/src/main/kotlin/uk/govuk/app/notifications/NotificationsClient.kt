@@ -13,12 +13,18 @@ import javax.inject.Singleton
 class NotificationsClient @Inject constructor() {
 
     fun initialise(context: Context, oneSignalAppId: String) {
+        OneSignal.consentRequired = true
         OneSignal.initWithContext(context, oneSignalAppId)
+    }
+
+    fun giveConsent() {
+        OneSignal.consentGiven = true
     }
 
     fun requestPermission(dispatcher: CoroutineDispatcher = Dispatchers.IO) {
         CoroutineScope(dispatcher).launch {
-            OneSignal.Notifications.requestPermission(false)
+            val permissionGranted = OneSignal.Notifications.requestPermission(false)
+            OneSignal.consentGiven = permissionGranted
         }
     }
 }

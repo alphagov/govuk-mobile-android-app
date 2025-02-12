@@ -61,6 +61,9 @@ class NotificationsClientTest {
             coVerify(exactly = 1) {
                 OneSignal.Notifications.requestPermission(false)
             }
+            verify(exactly = 1) {
+                OneSignal.consentGiven = true
+            }
         }
     }
 
@@ -75,6 +78,9 @@ class NotificationsClientTest {
 
             coVerify(exactly = 1) {
                 OneSignal.Notifications.requestPermission(false)
+            }
+            verify(exactly = 1) {
+                OneSignal.consentGiven = false
             }
         }
     }
