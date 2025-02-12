@@ -52,7 +52,9 @@ fun TopicSelectionCard(
         modifier = modifier,
         isSelected = isSelected,
         onClick = onClick,
-        backgroundColour = GovUkTheme.colourScheme.surfaces.cardBlue
+        backgroundColour = GovUkTheme.colourScheme.surfaces.cardBlue,
+        defaultBorderColour = GovUkTheme.colourScheme.strokes.cardBlue,
+        selectedBorderColour = GovUkTheme.colourScheme.strokes.cardSelected
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -136,7 +138,9 @@ fun TopicVerticalCard(
     GovUkCard(
         modifier,
         onClick = onClick,
-        backgroundColour = GovUkTheme.colourScheme.surfaces.cardBlue
+        backgroundColour = GovUkTheme.colourScheme.surfaces.cardBlue,
+        defaultBorderColour = GovUkTheme.colourScheme.strokes.cardBlue,
+        selectedBorderColour = GovUkTheme.colourScheme.strokes.cardSelected
     ) {
         Icon(
             painterResource(icon),
@@ -181,7 +185,9 @@ fun TopicHorizontalCard(
     GovUkCard(
         modifier,
         onClick = { onClick() },
-        backgroundColour = GovUkTheme.colourScheme.surfaces.cardBlue
+        backgroundColour = GovUkTheme.colourScheme.surfaces.cardBlue,
+        defaultBorderColour = GovUkTheme.colourScheme.strokes.cardBlue,
+        selectedBorderColour = GovUkTheme.colourScheme.strokes.cardSelected
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically

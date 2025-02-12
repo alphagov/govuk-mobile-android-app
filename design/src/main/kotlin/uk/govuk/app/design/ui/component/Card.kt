@@ -30,6 +30,8 @@ fun GovUkCard(
     isSelected: Boolean = false,
     onClick: (() -> Unit)? = null,
     backgroundColour: Color = GovUkTheme.colourScheme.surfaces.cardDefault,
+    defaultBorderColour: Color = GovUkTheme.colourScheme.strokes.listDivider,
+    selectedBorderColour: Color = GovUkTheme.colourScheme.strokes.listDivider,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val cardColour = if (isSelected) {
@@ -38,12 +40,18 @@ fun GovUkCard(
         backgroundColour
     }
 
+    val strokeColour = if (isSelected) {
+        selectedBorderColour
+    } else {
+        defaultBorderColour
+    }
+
     OutlinedCard(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = cardColour),
         border = BorderStroke(
             width = 1.dp,
-            color = GovUkTheme.colourScheme.strokes.listDivider
+            color = strokeColour
         )
     ) {
         Column(
@@ -72,7 +80,9 @@ fun HomeNavigationCard(
         modifier = modifier,
         isSelected = isSelected,
         onClick = onClick,
-        backgroundColour = GovUkTheme.colourScheme.surfaces.cardBlue
+        backgroundColour = GovUkTheme.colourScheme.surfaces.cardBlue,
+        defaultBorderColour = GovUkTheme.colourScheme.strokes.cardBlue,
+        selectedBorderColour = GovUkTheme.colourScheme.strokes.cardSelected
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

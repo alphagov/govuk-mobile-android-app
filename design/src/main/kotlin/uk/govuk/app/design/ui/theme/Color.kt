@@ -14,14 +14,15 @@ private val Blue5 = Color(0xFF193E61)
 private val Blue6 = Color(0xFF7AC2FF)
 private val Blue7 = Color(0xFFE8F1F8)
 private val BlueLighter95 = Color(0xFFF4F8FB)
+private val BlueLighter50 = Color(0xFF8EB8DC)
 private val BlueDarker50 = Color(0xFF0F385C)
 
 private val Yellow = Color(0xFFFFDD00)
 
 private val Red1 = Color(0xFFD4351C)
 
-private val Green1 = Color(0xFF11875A)
-private val Green2 = Color(0xFF66F39E)
+private val GreenPrimary = Color(0xFF11875A)
+private val GreenAccent = Color(0xFF66F39E)
 private val Green3 = Color(0xFF0E6C48)
 private val Green4 = Color(0xFF52C27E)
 private val GreenLighter95 = Color(0xFFF3F9F7)
@@ -113,7 +114,9 @@ data class GovUkColourScheme(
         val container: Color,
         val listDivider: Color,
         val buttonCompactBorder: Color,
-        val pageControlsInactive: Color
+        val pageControlsInactive: Color,
+        val cardBlue: Color,
+        val cardSelected: Color
     )
 }
 
@@ -134,7 +137,7 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonCompactHighlight = Blue5,
         buttonCompactDisabled = Grey600,
         buttonCompactFocused = Black,
-        buttonSuccess = Green1,
+        buttonSuccess = GreenPrimary,
         icon = BluePrimary,
         trailingIcon = Grey300,
         buttonRemove = Red1,
@@ -152,7 +155,7 @@ internal val LightColorScheme = GovUkColourScheme(
         cardSelected = GreenLighter95,
         fixedContainer = WhiteAlpha75,
         alert = Grey100,
-        buttonPrimary = Green1,
+        buttonPrimary = GreenPrimary,
         buttonPrimaryHighlight = Green3,
         buttonPrimaryDisabled = Grey100,
         buttonPrimaryFocused = Yellow,
@@ -176,7 +179,9 @@ internal val LightColorScheme = GovUkColourScheme(
         container = BlackAlpha30,
         listDivider = Grey300,
         buttonCompactBorder = Grey300,
-        pageControlsInactive = Grey500
+        pageControlsInactive = Grey500,
+        cardBlue = BlueLighter50,
+        cardSelected = GreenPrimary
     )
 )
 
@@ -197,7 +202,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonCompactHighlight = Blue6,
         buttonCompactDisabled = Black,
         buttonCompactFocused = Black,
-        buttonSuccess = Green2,
+        buttonSuccess = GreenAccent,
         icon = BlueLighter95,
         trailingIcon = Grey500,
         buttonRemove = Red1,
@@ -215,7 +220,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         cardSelected = GreenDarker50,
         fixedContainer = BlackAlpha75,
         alert = Grey800,
-        buttonPrimary = Green2,
+        buttonPrimary = GreenAccent,
         buttonPrimaryHighlight = Green4,
         buttonPrimaryDisabled = Grey400,
         buttonPrimaryFocused = Yellow,
@@ -239,7 +244,9 @@ internal val DarkColorScheme = GovUkColourScheme(
         container = WhiteAlpha30,
         listDivider = Grey500,
         buttonCompactBorder = Grey500,
-        pageControlsInactive = Grey300
+        pageControlsInactive = Grey300,
+        cardBlue = BluePrimary,
+        cardSelected = GreenAccent
     )
 )
 
@@ -303,7 +310,9 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             container = Color.Unspecified,
             listDivider = Color.Unspecified,
             buttonCompactBorder = Color.Unspecified,
-            pageControlsInactive = Color.Unspecified
+            pageControlsInactive = Color.Unspecified,
+            cardBlue = Color.Unspecified,
+            cardSelected = Color.Unspecified
         )
     )
 }
