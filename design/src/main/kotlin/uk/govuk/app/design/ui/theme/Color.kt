@@ -14,6 +14,7 @@ private val Blue5 = Color(0xFF193E61)
 private val Blue6 = Color(0xFF7AC2FF)
 private val Blue7 = Color(0xFFE8F1F8)
 private val BlueLighter95 = Color(0xFFF4F8FB)
+private val BlueDarker50 = Color(0xFF0F385C)
 
 private val Yellow = Color(0xFFFFDD00)
 
@@ -82,6 +83,7 @@ data class GovUkColourScheme(
         val background: Color,
         val primary: Color,
         val cardDefault: Color,
+        val cardBlue: Color,
         val cardHighlight: Color,
         val cardSelected: Color,
         val fixedContainer: Color,
@@ -145,6 +147,7 @@ internal val LightColorScheme = GovUkColourScheme(
         background = White,
         primary = BluePrimary,
         cardDefault = White,
+        cardBlue = BlueLighter95,
         cardHighlight = Grey400,
         cardSelected = GreenLighter95,
         fixedContainer = WhiteAlpha75,
@@ -207,6 +210,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         background = Black,
         primary = BlueAccent,
         cardDefault = Grey800,
+        cardBlue = BlueDarker50,
         cardHighlight = Grey850,
         cardSelected = GreenDarker50,
         fixedContainer = BlackAlpha75,
@@ -270,6 +274,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             background = Color.Unspecified,
             primary = Color.Unspecified,
             cardDefault = Color.Unspecified,
+            cardBlue = Color.Unspecified,
             cardHighlight = Color.Unspecified,
             cardSelected = Color.Unspecified,
             fixedContainer = Color.Unspecified,

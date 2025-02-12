@@ -16,10 +16,12 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.govuk.app.design.R
+import uk.govuk.app.design.ui.theme.GovUkColourScheme
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
@@ -27,12 +29,13 @@ fun GovUkCard(
     modifier: Modifier = Modifier,
     isSelected: Boolean = false,
     onClick: (() -> Unit)? = null,
+    backgroundColour: Color = GovUkTheme.colourScheme.surfaces.cardDefault,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val cardColour = if (isSelected) {
         GovUkTheme.colourScheme.surfaces.cardSelected
     } else {
-        GovUkTheme.colourScheme.surfaces.cardDefault
+        backgroundColour
     }
 
     OutlinedCard(
@@ -68,7 +71,8 @@ fun HomeNavigationCard(
     GovUkCard(
         modifier = modifier,
         isSelected = isSelected,
-        onClick = onClick
+        onClick = onClick,
+        backgroundColour = GovUkTheme.colourScheme.surfaces.cardBlue
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
