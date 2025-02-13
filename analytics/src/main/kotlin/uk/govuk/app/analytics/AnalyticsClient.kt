@@ -1,6 +1,5 @@
 package uk.govuk.app.analytics
 
-import android.util.Log
 import com.google.firebase.analytics.FirebaseAnalytics
 import uk.govuk.app.analytics.data.AnalyticsRepo
 import uk.govuk.app.analytics.data.local.AnalyticsEnabledState
