@@ -8,8 +8,7 @@ import uk.govuk.app.design.ui.theme.GovUkColourScheme.TextAndIcons
 
 private val BluePrimary = Color(0xFF1D70B8)
 private val BlueAccent = Color(0xFF11E0F1)
-private val Blue4 = Color(0xFF45F2FD)
-private val Blue6 = Color(0xFF7AC2FF) // Todo - should've been replace by green???
+private val Blue6 = Color(0xFF7AC2FF) // Todo - should've been replaced by green???
 private val BlueLighter50 = Color(0xFF8EB8DC)
 private val BlueLighter95 = Color(0xFFF4F8FB)
 private val BlueDarker50 = Color(0xFF0F385C)
