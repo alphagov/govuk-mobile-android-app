@@ -64,6 +64,74 @@ class AnalyticsClientTest {
     }
 
     @Test
+    fun `Given analytics are disabled, when a select item ecommerce event is logged, then do not log to firebase`() = runTest {
+        coEvery { analyticsRepo.analyticsEnabledState } returns DISABLED
+
+        analyticsClient.selectItemEvent(
+            ecommerceEvent = EcommerceEvent(
+                itemListName = "Topics",
+                itemListId = "Benefits",
+                items = emptyList()
+            )
+        )
+
+        verify(exactly = 0) {
+            firebaseAnalyticClient.logEcommerceEvent(any(), any())
+        }
+    }
+
+    @Test
+    fun `Given analytics are not set, when a select item ecommerce event is logged, then do not log to firebase`() = runTest {
+        coEvery { analyticsRepo.analyticsEnabledState } returns NOT_SET
+
+        analyticsClient.selectItemEvent(
+            ecommerceEvent = EcommerceEvent(
+                itemListName = "Topics",
+                itemListId = "Benefits",
+                items = emptyList()
+            )
+        )
+
+        verify(exactly = 0) {
+            firebaseAnalyticClient.logEcommerceEvent(any(), any())
+        }
+    }
+
+    @Test
+    fun `Given analytics are disabled, when a view list item ecommerce event is logged, then do not log to firebase`() = runTest {
+        coEvery { analyticsRepo.analyticsEnabledState } returns DISABLED
+
+        analyticsClient.viewItemListEvent(
+            ecommerceEvent = EcommerceEvent(
+                itemListName = "Topics",
+                itemListId = "Benefits",
+                items = emptyList()
+            )
+        )
+
+        verify(exactly = 0) {
+            firebaseAnalyticClient.logEcommerceEvent(any(), any())
+        }
+    }
+
+    @Test
+    fun `Given analytics are not set, when a view list item ecommerce event is logged, then do not log to firebase`() = runTest {
+        coEvery { analyticsRepo.analyticsEnabledState } returns NOT_SET
+
+        analyticsClient.viewItemListEvent(
+            ecommerceEvent = EcommerceEvent(
+                itemListName = "Topics",
+                itemListId = "Benefits",
+                items = emptyList()
+            )
+        )
+
+        verify(exactly = 0) {
+            firebaseAnalyticClient.logEcommerceEvent(any(), any())
+        }
+    }
+
+    @Test
     fun `Given a screen view, then log event`() {
         analyticsClient.screenView(
             screenClass = "screenClass",

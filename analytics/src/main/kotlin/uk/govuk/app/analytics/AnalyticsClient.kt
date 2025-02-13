@@ -137,14 +137,14 @@ class AnalyticsClient @Inject constructor(
     }
 
     fun selectItemEvent(ecommerceEvent: EcommerceEvent) {
-        firebaseAnalyticsClient.logEcommerceEvent(
+        logEcommerceEvent(
             event = FirebaseAnalytics.Event.SELECT_ITEM,
             ecommerceEvent = ecommerceEvent
         )
     }
 
     fun viewItemListEvent(ecommerceEvent: EcommerceEvent) {
-        firebaseAnalyticsClient.logEcommerceEvent(
+        logEcommerceEvent(
             event = FirebaseAnalytics.Event.VIEW_ITEM_LIST,
             ecommerceEvent = ecommerceEvent
         )
@@ -205,6 +205,12 @@ class AnalyticsClient @Inject constructor(
     private fun logEvent(name: String, parameters: Map<String, Any>) {
         if (isAnalyticsEnabled()) {
             firebaseAnalyticsClient.logEvent(name, parameters)
+        }
+    }
+
+    private fun logEcommerceEvent(event: String, ecommerceEvent: EcommerceEvent) {
+        if (isAnalyticsEnabled()) {
+            firebaseAnalyticsClient.logEcommerceEvent(event, ecommerceEvent)
         }
     }
 }
