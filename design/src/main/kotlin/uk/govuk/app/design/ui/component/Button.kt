@@ -122,12 +122,12 @@ fun CompactButton(
     val colours = GovUkButtonColours(
         defaultContainerColour = GovUkTheme.colourScheme.surfaces.buttonCompact,
         defaultContentColour = GovUkTheme.colourScheme.textAndIcons.buttonCompact,
-        defaultBorderColour = GovUkTheme.colourScheme.strokes.buttonCompactBorder,
+        defaultBorderColour = GovUkTheme.colourScheme.strokes.cardBlue,
         focussedContainerColour = GovUkTheme.colourScheme.surfaces.buttonCompactFocused,
         focussedContentColour = GovUkTheme.colourScheme.textAndIcons.buttonCompactFocused,
         pressedContainerColour = GovUkTheme.colourScheme.surfaces.buttonCompactHighlight,
         pressedContentColour = GovUkTheme.colourScheme.textAndIcons.buttonCompactHighlight,
-        pressedBorderColour = GovUkTheme.colourScheme.strokes.buttonCompactBorder,
+        pressedBorderColour = GovUkTheme.colourScheme.strokes.cardBlue,
         disabledContainerColour = GovUkTheme.colourScheme.surfaces.buttonCompactDisabled,
         disabledContentColour = GovUkTheme.colourScheme.textAndIcons.buttonCompactDisabled
     )

@@ -8,7 +8,7 @@ import uk.govuk.app.design.ui.theme.GovUkColourScheme.TextAndIcons
 
 private val BluePrimary = Color(0xFF1D70B8)
 private val BlueAccent = Color(0xFF11E0F1)
-private val Blue6 = Color(0xFF7AC2FF) // Todo - should've been replaced by green???
+private val Blue2 = Color(0xFF259AFF)
 private val BlueLighter25 = Color(0xFF5694CA)
 private val BlueLighter50 = Color(0xFF8EB8DC)
 private val BlueLighter95 = Color(0xFFF4F8FB)
@@ -110,7 +110,6 @@ data class GovUkColourScheme(
     data class Strokes(
         val container: Color,
         val listDivider: Color,
-        val buttonCompactBorder: Color,
         val pageControlsInactive: Color,
         val cardBlue: Color,
         val cardSelected: Color
@@ -175,7 +174,6 @@ internal val LightColorScheme = GovUkColourScheme(
     strokes = Strokes(
         container = BlackAlpha30,
         listDivider = Grey300,
-        buttonCompactBorder = Grey300,
         pageControlsInactive = Grey500,
         cardBlue = BlueLighter50,
         cardSelected = GreenPrimary
@@ -196,7 +194,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonSecondaryDisabled = Grey300,
         buttonSecondaryFocused = Black,
         buttonCompact = BlueAccent,
-        buttonCompactHighlight = Blue6,
+        buttonCompactHighlight = Blue2,
         buttonCompactDisabled = Black,
         buttonCompactFocused = Black,
         buttonSuccess = GreenAccent,
@@ -240,7 +238,6 @@ internal val DarkColorScheme = GovUkColourScheme(
     strokes = Strokes(
         container = WhiteAlpha30,
         listDivider = Grey500,
-        buttonCompactBorder = Grey500,
         pageControlsInactive = Grey300,
         cardBlue = BluePrimary,
         cardSelected = GreenAccent
@@ -306,7 +303,6 @@ internal val LocalColourScheme = staticCompositionLocalOf {
         strokes = Strokes(
             container = Color.Unspecified,
             listDivider = Color.Unspecified,
-            buttonCompactBorder = Color.Unspecified,
             pageControlsInactive = Color.Unspecified,
             cardBlue = Color.Unspecified,
             cardSelected = Color.Unspecified
