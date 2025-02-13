@@ -18,6 +18,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.analytics.AnalyticsClient
+import uk.govuk.app.analytics.data.local.model.EcommerceEvent
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.data.remote.model.RemoteTopic.RemoteTopicContent
 import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
@@ -90,6 +91,23 @@ class AllStepByStepsViewModelTest {
     }
 
     @Test
+    fun `Given a page view, then log ecommerce analytics`() {
+        val viewModel = AllStepByStepsViewModel(topicsRepo, analyticsClient, visited)
+
+        viewModel.onPageView(emptyList(), "title")
+
+        verify {
+            analyticsClient.viewItemListEvent(
+                ecommerceEvent = EcommerceEvent(
+                    itemListName = "Topics",
+                    itemListId = "title",
+                    items = emptyList()
+                )
+            )
+        }
+    }
+
+    @Test
     fun `Given a step by step click, then log analytics`() {
         val viewModel = AllStepByStepsViewModel(topicsRepo, analyticsClient, visited)
 
@@ -105,6 +123,33 @@ class AllStepByStepsViewModelTest {
                 url = "url",
                 external = true,
                 section = "section"
+            )
+        }
+    }
+
+    @Test
+    fun `Given a step by step click, then log ecommerce analytics`() {
+        val viewModel = AllStepByStepsViewModel(topicsRepo, analyticsClient, visited)
+
+        viewModel.onStepByStepClick(
+            section = "section",
+            text = "text",
+            url = "url"
+        )
+
+        verify {
+            analyticsClient.selectItemEvent(
+                ecommerceEvent = EcommerceEvent(
+                    itemListName = "Topics",
+                    itemListId = "text",
+                    items = listOf(
+                        EcommerceEvent.Item(
+                            itemName = "text",
+                            itemCategory = "section",
+                            locationId = "url"
+                        )
+                    )
+                )
             )
         }
     }
