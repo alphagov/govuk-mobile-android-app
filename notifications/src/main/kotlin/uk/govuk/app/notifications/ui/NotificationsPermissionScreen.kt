@@ -1,6 +1,5 @@
 package uk.govuk.app.notifications.ui
 
-import android.Manifest
 import android.content.Context
 import android.provider.Settings
 import androidx.compose.foundation.focusable
@@ -33,8 +32,6 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.rememberPermissionState
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.ExtraLargeVerticalSpacer
 import uk.govuk.app.design.ui.component.HorizontalButtonGroup
@@ -46,6 +43,7 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.notifications.NotificationsPermissionUiState
 import uk.govuk.app.notifications.NotificationsPermissionViewModel
 import uk.govuk.app.notifications.R
+import uk.govuk.app.notifications.getNotificationsPermissionStatus
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -56,13 +54,9 @@ internal fun NotificationsPermissionRoute(
     val viewModel: NotificationsPermissionViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
-    if (viewModel.permissionRequired()) {
-        val permission = rememberPermissionState(
-            Manifest.permission.POST_NOTIFICATIONS
-        )
-        viewModel.updateUiState(permission.status)
-    } else {
-        viewModel.updateUiState(PermissionStatus.Granted)
+    val permissionStatus = getNotificationsPermissionStatus()
+    LaunchedEffect(permissionStatus) {
+        viewModel.updateUiState(permissionStatus)
     }
 
     uiState?.let { state ->

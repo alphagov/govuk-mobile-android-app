@@ -1,6 +1,5 @@
 package uk.govuk.app.notifications
 
-import android.os.Build
 import androidx.lifecycle.ViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
@@ -38,9 +37,6 @@ internal class NotificationsPermissionViewModel @Inject constructor(
             NotificationsPermissionUiState.Finish
         }
     }
-
-    internal fun permissionRequired(androidVersion: Int = Build.VERSION.SDK_INT) =
-        androidVersion >= Build.VERSION_CODES.TIRAMISU
 
     internal fun onPageView() {
         analyticsClient.screenView(

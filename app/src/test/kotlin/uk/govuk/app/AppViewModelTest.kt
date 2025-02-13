@@ -23,6 +23,7 @@ import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.config.data.ConfigRepo
 import uk.govuk.app.config.data.flags.FlagRepo
 import uk.govuk.app.data.AppRepo
+import uk.govuk.app.data.local.AppDataStore
 import uk.govuk.app.data.model.Result.*
 import uk.govuk.app.topics.TopicsFeature
 
@@ -35,6 +36,7 @@ class AppViewModelTest {
     private val flagRepo = mockk<FlagRepo>(relaxed = true)
     private val topicsFeature = mockk<TopicsFeature>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
+    private val appDataStore = mockk<AppDataStore>(relaxed = true)
 
     @Before
     fun setup() {
@@ -50,7 +52,7 @@ class AppViewModelTest {
     fun `Given there is an error when retrieving the remote config, When init, then should display app unavailable`() {
         coEvery { configRepo.initConfig() } returns Error()
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -62,7 +64,7 @@ class AppViewModelTest {
     fun `Given the config signature is invalid, When init, then should display forced update`() {
         coEvery { configRepo.initConfig() } returns InvalidSignature()
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -75,7 +77,7 @@ class AppViewModelTest {
         coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns false
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -88,7 +90,7 @@ class AppViewModelTest {
         coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -102,7 +104,7 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isForcedUpdate(any()) } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -116,7 +118,7 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isForcedUpdate(any()) } returns false
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -130,7 +132,7 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isRecommendUpdate(any()) } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -144,7 +146,7 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isRecommendUpdate(any()) } returns false
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -158,7 +160,7 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
         coEvery { analyticsClient.isAnalyticsConsentRequired() } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -172,7 +174,7 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
         coEvery { analyticsClient.isAnalyticsConsentRequired() } returns false
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -187,7 +189,7 @@ class AppViewModelTest {
         coEvery { appRepo.isOnboardingCompleted() } returns true
         every { flagRepo.isOnboardingEnabled() } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -202,7 +204,7 @@ class AppViewModelTest {
         coEvery { appRepo.isOnboardingCompleted() } returns false
         every { flagRepo.isOnboardingEnabled() } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -217,7 +219,7 @@ class AppViewModelTest {
         coEvery { appRepo.isOnboardingCompleted() } returns true
         every { flagRepo.isOnboardingEnabled() } returns false
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -232,7 +234,7 @@ class AppViewModelTest {
         coEvery { appRepo.isOnboardingCompleted() } returns false
         every { flagRepo.isOnboardingEnabled() } returns false
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -246,7 +248,7 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isTopicsEnabled() } returns false
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -261,7 +263,7 @@ class AppViewModelTest {
         every { flagRepo.isTopicsEnabled() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -277,7 +279,7 @@ class AppViewModelTest {
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
         coEvery { topicsFeature.init() } returns false
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -293,7 +295,7 @@ class AppViewModelTest {
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
         coEvery { topicsFeature.init() } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -307,7 +309,7 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isNotificationsEnabled() } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -321,7 +323,7 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isNotificationsEnabled() } returns false
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -335,13 +337,14 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isSearchEnabled() } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            val result = viewModel.uiState.first() as AppUiState.Default
-            assertTrue(result.isSearchEnabled)
+            viewModel.homeScreenWidgets.first()
+                ?.let { assertTrue(it.contains(HomeScreenWidget.SEARCH)) }
         }
     }
+
 
     @Test
     fun `Given the search feature is disabled, When init, then emit search disabled state`() {
@@ -349,11 +352,11 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isSearchEnabled() } returns false
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            val result = viewModel.uiState.first() as AppUiState.Default
-            assertFalse(result.isSearchEnabled)
+            viewModel.homeScreenWidgets.first()
+                ?.let { assertFalse(it.contains(HomeScreenWidget.SEARCH)) }
         }
     }
 
@@ -363,11 +366,11 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isRecentActivityEnabled() } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            val result = viewModel.uiState.first() as AppUiState.Default
-            assertTrue(result.isRecentActivityEnabled)
+            viewModel.homeScreenWidgets.first()
+                ?.let { assertTrue(it.contains(HomeScreenWidget.RECENT_ACTIVITY)) }
         }
     }
 
@@ -377,11 +380,11 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isRecentActivityEnabled() } returns false
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            val result = viewModel.uiState.first() as AppUiState.Default
-            assertFalse(result.isRecentActivityEnabled)
+            viewModel.homeScreenWidgets.first()
+                ?.let { assertFalse(it.contains(HomeScreenWidget.RECENT_ACTIVITY)) }
         }
     }
 
@@ -391,11 +394,11 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isTopicsEnabled() } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            val result = viewModel.uiState.first() as AppUiState.Default
-            assertTrue(result.isTopicsEnabled)
+            viewModel.homeScreenWidgets.first()
+                ?.let { assertTrue(it.contains(HomeScreenWidget.TOPICS)) }
         }
     }
 
@@ -405,11 +408,69 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isTopicsEnabled() } returns false
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            val result = viewModel.uiState.first() as AppUiState.Default
-            assertFalse(result.isTopicsEnabled)
+            viewModel.homeScreenWidgets.first()
+                ?.let { assertFalse(it.contains(HomeScreenWidget.TOPICS)) }
+        }
+    }
+
+    @Test
+    fun `Given the notifications widget is enabled, When init, then emit notifications widget enabled state`() {
+        coEvery { configRepo.initConfig() } returns Success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
+        coEvery { flagRepo.isNotificationsEnabled() } returns true
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
+
+        runTest {
+            viewModel.homeScreenWidgets.first()
+                ?.let { assertTrue(it.contains(HomeScreenWidget.NOTIFICATIONS)) }
+        }
+    }
+
+    @Test
+    fun `Given the notifications widget is disabled, When init, then emit notifications widget disabled state`() {
+        coEvery { configRepo.initConfig() } returns Success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
+        coEvery { flagRepo.isNotificationsEnabled() } returns false
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
+
+        runTest {
+            viewModel.homeScreenWidgets.first()
+                ?.let { assertFalse(it.contains(HomeScreenWidget.NOTIFICATIONS)) }
+        }
+    }
+
+    @Test
+    fun `Given the notifications widget is not suppressed, When init, then emit notifications widget enabled state`() {
+        coEvery { configRepo.initConfig() } returns Success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
+        coEvery { flagRepo.isNotificationsEnabled() } returns true
+        coEvery { appDataStore.isWidgetSuppressed(HomeScreenWidget.NOTIFICATIONS) } returns false
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
+
+        runTest {
+            viewModel.homeScreenWidgets.first()
+                ?.let { assertTrue(it.contains(HomeScreenWidget.NOTIFICATIONS)) }
+        }
+    }
+
+    @Test
+    fun `Given the notifications widget is suppressed, When init, then emit notifications widget disabled state`() {
+        coEvery { configRepo.initConfig() } returns Success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
+        coEvery { flagRepo.isNotificationsEnabled() } returns true
+        coEvery { appDataStore.isWidgetSuppressed(HomeScreenWidget.NOTIFICATIONS) } returns true
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
+
+        runTest {
+            viewModel.homeScreenWidgets.first()
+                ?.let { assertFalse(it.contains(HomeScreenWidget.NOTIFICATIONS)) }
         }
     }
 
@@ -418,7 +479,7 @@ class AppViewModelTest {
         coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             viewModel.onboardingCompleted()
@@ -432,7 +493,7 @@ class AppViewModelTest {
         coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             viewModel.topicSelectionCompleted()
@@ -446,7 +507,7 @@ class AppViewModelTest {
         coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             viewModel.onTabClick("text")
@@ -462,7 +523,7 @@ class AppViewModelTest {
         coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             viewModel.onWidgetClick("text", true, "section")
@@ -478,13 +539,31 @@ class AppViewModelTest {
         coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
 
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
             viewModel.onWidgetClick("text", false, "section")
 
-            coVerify {
+            coVerify(exactly = 1) {
                 analyticsClient.widgetClick("text", false, "section")
+            }
+        }
+    }
+
+    @Test
+    fun `When an suppress widget is clicked, then log analytics`() {
+        coEvery { configRepo.initConfig() } returns Success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
+
+        runTest {
+            viewModel.onSuppressWidgetClick("text", "section", HomeScreenWidget.NOTIFICATIONS)
+
+            coVerify {
+                appDataStore.suppressWidget(HomeScreenWidget.NOTIFICATIONS)
+                viewModel.updateHomeScreenWidgets()
+                analyticsClient.suppressWidgetClick("text", "section")
             }
         }
     }
@@ -494,7 +573,7 @@ class AppViewModelTest {
         coEvery { configRepo.initConfig() } returns Success(Unit)
 
         runTest {
-            val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient)
+            val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
             val uiStates = mutableListOf<AppUiState?>()
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {

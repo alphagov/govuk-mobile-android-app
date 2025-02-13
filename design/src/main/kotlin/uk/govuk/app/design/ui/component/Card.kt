@@ -4,19 +4,27 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.govuk.app.design.R
@@ -60,6 +68,7 @@ fun GovUkCard(
 fun HomeNavigationCard(
     title: String,
     onClick: () -> Unit,
+    onSuppressClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     isSelected: Boolean = false,
     @DrawableRes icon: Int? = null,
@@ -71,7 +80,9 @@ fun HomeNavigationCard(
         onClick = onClick
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically
         ) {
             icon?.let {
@@ -93,11 +104,27 @@ fun HomeNavigationCard(
                     BodyRegularLabel(it)
                 }
             }
-            Icon(
-                painterResource(R.drawable.ic_chevron),
-                contentDescription = null,
-                tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
-            )
+            Column(
+                horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxHeight()
+            ) {
+                onSuppressClick?.let {
+                    Icon(
+                        painterResource(R.drawable.ic_cancel),
+                        contentDescription = null,
+                        tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon,
+                        modifier = Modifier.clickable { onSuppressClick() }
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+
+                Icon(
+                    painterResource(R.drawable.ic_chevron),
+                    contentDescription = null,
+                    tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
+                )
+            }
         }
     }
 }
@@ -109,6 +136,20 @@ private fun HomeNavigationCardPreview() {
         HomeNavigationCard(
             title = "Card title",
             onClick = { },
+            icon = R.drawable.ic_visited,
+            description = "Card description that may go over multiple lines"
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun HomeNavigationCardSuppressiblePreview() {
+    GovUkTheme {
+        HomeNavigationCard(
+            title = "Card title",
+            onClick = { },
+            onSuppressClick = { },
             icon = R.drawable.ic_visited,
             description = "Card description that may go over multiple lines"
         )

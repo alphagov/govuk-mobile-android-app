@@ -82,6 +82,18 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
+    fun suppressWidgetClick(
+        text: String,
+        section: String
+    ) {
+        function(
+            text = text,
+            type = "Widget",
+            section = section,
+            action = "Remove"
+        )
+    }
+
     fun search(searchTerm: String) {
         redactedEvent(name = "Search", type = "typed", inputString = searchTerm)
     }

@@ -67,7 +67,7 @@ class FlagRepo @Inject constructor(
     fun isNotificationsEnabled(): Boolean {
         return isEnabled(
             debugFlag = debugFlags.isNotificationsEnabled,
-            remoteFlag = configRepo.config.releaseFlags.notifications
+            remoteFlag = false // TODO - GOVUKAPP-1095 requires this is hardcoded 'off' for now
         )
     }
 }

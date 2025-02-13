@@ -89,12 +89,11 @@ private fun HomeScreen(
                 .padding(horizontal = GovUkTheme.spacing.medium),
             state = listState
         ) {
-            items(widgets) { widget ->
-                LargeVerticalSpacer()
-                widget(Modifier.fillMaxWidth())
-            }
             item{
                 LargeVerticalSpacer()
+            }
+            items(widgets) { widget ->
+                widget(Modifier.fillMaxWidth())
             }
         }
     }

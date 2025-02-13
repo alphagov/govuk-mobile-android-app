@@ -1,6 +1,5 @@
 package uk.govuk.app.notifications
 
-import android.os.Build
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
@@ -10,7 +9,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -114,20 +112,6 @@ class NotificationsPermissionViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is NotificationsPermissionUiState.OptIn)
-        }
-    }
-
-    @Test
-    fun `Given the Android version is Tiramisu (33), When permission required called, then should return true`() {
-        runTest {
-            assertTrue(viewModel.permissionRequired(Build.VERSION_CODES.TIRAMISU))
-        }
-    }
-
-    @Test
-    fun `Given the Android version is Snow Cone (32), When permission required called, then should return false`() {
-        runTest {
-            assertFalse(viewModel.permissionRequired(Build.VERSION_CODES.S_V2))
         }
     }
 }

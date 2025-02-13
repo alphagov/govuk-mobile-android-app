@@ -10,6 +10,7 @@ import uk.govuk.app.analytics.AnalyticsClient
 import uk.govuk.app.config.data.ConfigRepo
 import uk.govuk.app.config.data.flags.FlagRepo
 import uk.govuk.app.data.AppRepo
+import uk.govuk.app.data.local.AppDataStore
 import uk.govuk.app.data.model.Result.*
 import uk.govuk.app.topics.TopicsFeature
 import javax.inject.Inject
@@ -20,11 +21,15 @@ internal class AppViewModel @Inject constructor(
     private val configRepo: ConfigRepo,
     private val flagRepo: FlagRepo,
     private val topicsFeature: TopicsFeature,
-    private val analyticsClient: AnalyticsClient
+    private val analyticsClient: AnalyticsClient,
+    private val appDataStore: AppDataStore
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<AppUiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
+
+    private val _homeScreenWidgets: MutableStateFlow<List<HomeScreenWidget>?> = MutableStateFlow(null)
+    internal val homeScreenWidgets = _homeScreenWidgets.asStateFlow()
 
     init {
         fetchConfig()
@@ -45,6 +50,8 @@ internal class AppViewModel @Inject constructor(
                     } else if (flagRepo.isForcedUpdate(BuildConfig.VERSION_NAME)) {
                         AppUiState.ForcedUpdate
                     } else {
+                        updateHomeScreenWidgets()
+
                         val topicsInitSuccess = topicsFeature.init()
 
                         AppUiState.Default(
@@ -54,10 +61,7 @@ internal class AppViewModel @Inject constructor(
                             shouldDisplayTopicSelection = flagRepo.isTopicsEnabled()
                                     && !appRepo.isTopicSelectionCompleted()
                                     && topicsInitSuccess,
-                            shouldDisplayNotificationsPermission = flagRepo.isNotificationsEnabled(),
-                            isSearchEnabled = flagRepo.isSearchEnabled(),
-                            isRecentActivityEnabled = flagRepo.isRecentActivityEnabled(),
-                            isTopicsEnabled = flagRepo.isTopicsEnabled()
+                            shouldDisplayNotificationsPermission = flagRepo.isNotificationsEnabled()
                         )
                     }
                 }
@@ -80,6 +84,30 @@ internal class AppViewModel @Inject constructor(
         }
     }
 
+    fun updateHomeScreenWidgets() {
+        viewModelScope.launch {
+            with(flagRepo) {
+                val homeScreenWidgets = mutableListOf<HomeScreenWidget>()
+                if (isNotificationsEnabled()
+                    && !appDataStore.isWidgetSuppressed(HomeScreenWidget.NOTIFICATIONS)
+                ) {
+                    homeScreenWidgets.add(HomeScreenWidget.NOTIFICATIONS)
+                }
+                homeScreenWidgets.add(HomeScreenWidget.FEEDBACK_PROMPT)
+                if (isSearchEnabled()) {
+                    homeScreenWidgets.add(HomeScreenWidget.SEARCH)
+                }
+                if (isRecentActivityEnabled()) {
+                    homeScreenWidgets.add(HomeScreenWidget.RECENT_ACTIVITY)
+                }
+                if (isTopicsEnabled()) {
+                    homeScreenWidgets.add(HomeScreenWidget.TOPICS)
+                }
+                _homeScreenWidgets.value = homeScreenWidgets
+            }
+        }
+    }
+
     fun onWidgetClick(
         text: String,
         external: Boolean,
@@ -88,6 +116,21 @@ internal class AppViewModel @Inject constructor(
         analyticsClient.widgetClick(
             text,
             external,
+            section
+        )
+    }
+
+    fun onSuppressWidgetClick(
+        text: String,
+        section: String,
+        widget: HomeScreenWidget
+    ) {
+        viewModelScope.launch {
+            appDataStore.suppressWidget(widget)
+            updateHomeScreenWidgets()
+        }
+        analyticsClient.suppressWidgetClick(
+            text,
             section
         )
     }

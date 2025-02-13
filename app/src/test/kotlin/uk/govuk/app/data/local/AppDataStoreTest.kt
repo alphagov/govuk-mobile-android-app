@@ -3,6 +3,7 @@ package uk.govuk.app.data.local
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.emptyFlow
@@ -11,6 +12,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import uk.govuk.app.HomeScreenWidget
 
 class AppDataStoreTest {
 
@@ -84,6 +86,41 @@ class AppDataStoreTest {
 
         runTest {
             assertTrue(datastore.isTopicSelectionCompleted())
+        }
+    }
+
+    @Test
+    fun `Given the data store is empty, When is widget suppressed, then return false`() {
+        val datastore = AppDataStore(dataStore)
+
+        every { dataStore.data } returns emptyFlow()
+
+        runTest {
+            assertFalse(datastore.isWidgetSuppressed(HomeScreenWidget.NOTIFICATIONS))
+        }
+    }
+
+    @Test
+    fun `Given the suppressed widgets is empty, When is widget suppressed, then return false`() {
+        val datastore = AppDataStore(dataStore)
+
+        every { dataStore.data } returns flowOf(preferences)
+        every { preferences[stringSetPreferencesKey(AppDataStore.SUPPRESSED_WIDGETS)] } returns setOf()
+
+        runTest {
+            assertFalse(datastore.isWidgetSuppressed(HomeScreenWidget.NOTIFICATIONS))
+        }
+    }
+
+    @Test
+    fun `Given the suppressed widgets has notifications, When is widget suppressed, then return true`() {
+        val datastore = AppDataStore(dataStore)
+
+        every { dataStore.data } returns flowOf(preferences)
+        every { preferences[stringSetPreferencesKey(AppDataStore.SUPPRESSED_WIDGETS)] } returns setOf("NOTIFICATIONS")
+
+        runTest {
+            assertTrue(datastore.isWidgetSuppressed(HomeScreenWidget.NOTIFICATIONS))
         }
     }
 }
