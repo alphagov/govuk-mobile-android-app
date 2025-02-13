@@ -33,6 +33,7 @@ import uk.govuk.app.design.ui.component.GovUkCard
 import uk.govuk.app.design.ui.component.MediumHorizontalSpacer
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
+import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.SubheadlineRegularLabel
 import uk.govuk.app.design.ui.component.Title3BoldLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -148,7 +149,7 @@ fun TopicVerticalCard(
             modifier = Modifier.size(40.dp),
             tint = GovUkTheme.colourScheme.textAndIcons.icon
         )
-        MediumVerticalSpacer()
+        SmallVerticalSpacer()
         Spacer(Modifier.weight(1f))
         Row {
             var baseline by remember { mutableFloatStateOf(0f) }
