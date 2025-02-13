@@ -43,7 +43,7 @@ import androidx.navigation.compose.rememberNavController
 import uk.govuk.app.AppUiState
 import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
-import uk.govuk.app.HomeScreenWidget
+import uk.govuk.app.home.HomeScreenWidget
 import uk.govuk.app.R
 import uk.govuk.app.analytics.navigation.analyticsGraph
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
@@ -309,7 +309,7 @@ private fun GovUkNavHost(
             }
         )
         homeGraph(
-            widgets = homeScreenWidgetsWidgets(
+            widgets = homeScreenWidgets(
                 context = context,
                 navController = navController,
                 homeScreenWidgets = homeScreenWidgets,
@@ -329,7 +329,7 @@ private fun GovUkNavHost(
     }
 }
 
-private fun homeScreenWidgetsWidgets(
+private fun homeScreenWidgets(
     context: Context,
     navController: NavHostController,
     homeScreenWidgets: List<HomeScreenWidget>,

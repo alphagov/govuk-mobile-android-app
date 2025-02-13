@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import kotlinx.coroutines.flow.firstOrNull
-import uk.govuk.app.HomeScreenWidget
+import uk.govuk.app.home.HomeScreenWidget
 import javax.inject.Inject
 import javax.inject.Singleton
 

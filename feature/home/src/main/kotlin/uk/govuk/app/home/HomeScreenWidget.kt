@@ -1,4 +1,4 @@
-package uk.govuk.app
+package uk.govuk.app.home
 
 internal enum class HomeScreenWidget {
     NOTIFICATIONS,

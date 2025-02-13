@@ -12,6 +12,7 @@ import uk.govuk.app.config.data.flags.FlagRepo
 import uk.govuk.app.data.AppRepo
 import uk.govuk.app.data.local.AppDataStore
 import uk.govuk.app.data.model.Result.*
+import uk.govuk.app.home.HomeScreenWidget
 import uk.govuk.app.topics.TopicsFeature
 import javax.inject.Inject
 
@@ -87,23 +88,23 @@ internal class AppViewModel @Inject constructor(
     fun updateHomeScreenWidgets() {
         viewModelScope.launch {
             with(flagRepo) {
-                val homeScreenWidgets = mutableListOf<HomeScreenWidget>()
+                val widgets = mutableListOf<HomeScreenWidget>()
                 if (isNotificationsEnabled()
                     && !appDataStore.isWidgetSuppressed(HomeScreenWidget.NOTIFICATIONS)
                 ) {
-                    homeScreenWidgets.add(HomeScreenWidget.NOTIFICATIONS)
+                    widgets.add(HomeScreenWidget.NOTIFICATIONS)
                 }
-                homeScreenWidgets.add(HomeScreenWidget.FEEDBACK_PROMPT)
+                widgets.add(HomeScreenWidget.FEEDBACK_PROMPT)
                 if (isSearchEnabled()) {
-                    homeScreenWidgets.add(HomeScreenWidget.SEARCH)
+                    widgets.add(HomeScreenWidget.SEARCH)
                 }
                 if (isRecentActivityEnabled()) {
-                    homeScreenWidgets.add(HomeScreenWidget.RECENT_ACTIVITY)
+                    widgets.add(HomeScreenWidget.RECENT_ACTIVITY)
                 }
                 if (isTopicsEnabled()) {
-                    homeScreenWidgets.add(HomeScreenWidget.TOPICS)
+                    widgets.add(HomeScreenWidget.TOPICS)
                 }
-                _homeScreenWidgets.value = homeScreenWidgets
+                _homeScreenWidgets.value = widgets
             }
         }
     }
