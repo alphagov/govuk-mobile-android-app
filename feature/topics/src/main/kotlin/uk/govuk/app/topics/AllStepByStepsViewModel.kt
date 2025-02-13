@@ -32,7 +32,7 @@ internal class AllStepByStepsViewModel @Inject constructor(
         _stepBySteps.value = topicsRepo.stepBySteps.map { it.toTopicContent() }
     }
 
-    fun onPageView(stepBySteps: List<TopicContent>?, title: String) {
+    fun onPageView(stepBySteps: List<TopicContent>? = emptyList(), title: String) {
         analyticsClient.screenView(
             screenClass = SCREEN_CLASS,
             screenName = title,

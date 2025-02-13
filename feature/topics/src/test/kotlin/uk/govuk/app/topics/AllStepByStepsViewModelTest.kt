@@ -79,7 +79,7 @@ class AllStepByStepsViewModelTest {
     fun `Given a page view, then log analytics`() {
         val viewModel = AllStepByStepsViewModel(topicsRepo, analyticsClient, visited)
 
-        viewModel.onPageView(emptyList(), "title")
+        viewModel.onPageView(title = "title")
 
         verify {
             analyticsClient.screenView(
@@ -94,7 +94,7 @@ class AllStepByStepsViewModelTest {
     fun `Given a page view, then log ecommerce analytics`() {
         val viewModel = AllStepByStepsViewModel(topicsRepo, analyticsClient, visited)
 
-        viewModel.onPageView(emptyList(), "title")
+        viewModel.onPageView(title = "title")
 
         verify {
             analyticsClient.viewItemListEvent(
