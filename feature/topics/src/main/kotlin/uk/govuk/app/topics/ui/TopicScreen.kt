@@ -85,9 +85,7 @@ internal fun TopicRoute(
 
                 is TopicUiState.Offline -> ErrorScreen(
                     topicReference = it.topicReference,
-                    onPageView = { title -> viewModel.onPageView(
-                        topicUi = null,
-                        title = title) },
+                    onPageView = { title -> viewModel.onPageView(title = title) },
                     onBack = onBack,
                     content = { OfflineMessage({ viewModel.getTopic() }) }
                 )
@@ -95,9 +93,7 @@ internal fun TopicRoute(
 
                 is TopicUiState.ServiceError -> ErrorScreen(
                     topicReference = it.topicReference,
-                    onPageView = { title -> viewModel.onPageView(
-                        topicUi = null,
-                        title = title) },
+                    onPageView = { title -> viewModel.onPageView(title = title) },
                     onBack = onBack,
                     content = { ProblemMessage() }
                 )

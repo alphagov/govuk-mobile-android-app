@@ -57,7 +57,7 @@ internal class TopicViewModel @Inject constructor(
     }
 
     fun onPageView(
-        topicUi: TopicUi?,
+        topicUi: TopicUi? = null,
         title: String
     ) {
         analyticsClient.screenView(

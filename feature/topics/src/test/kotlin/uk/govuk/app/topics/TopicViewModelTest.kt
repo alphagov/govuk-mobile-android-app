@@ -140,10 +140,7 @@ class TopicViewModelTest {
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
-        viewModel.onPageView(
-            topicUi = null,
-            title = "title"
-        )
+        viewModel.onPageView(title = "title")
 
         verify {
             analyticsClient.screenView(
@@ -160,10 +157,7 @@ class TopicViewModelTest {
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
-        viewModel.onPageView(
-            topicUi = null,
-            title = "title"
-        )
+        viewModel.onPageView(title = "title")
 
         verify(exactly = 0) {
             analyticsClient.viewItemListEvent(
