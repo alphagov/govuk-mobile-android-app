@@ -28,8 +28,7 @@ fun FeedbackPromptWidget(
             .clearAndSetSemantics {
                 contentDescription = altText
                 onClick(label = null, action = null)
-            },
-        isSelected = true
+            }
     )
 }
 

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -27,12 +26,13 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import uk.govuk.app.design.ui.component.BlueCard
 import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
-import uk.govuk.app.design.ui.component.GovUkCard
 import uk.govuk.app.design.ui.component.MediumHorizontalSpacer
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
+import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.SubheadlineRegularLabel
 import uk.govuk.app.design.ui.component.Title3BoldLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -48,7 +48,7 @@ fun TopicSelectionCard(
     modifier: Modifier = Modifier
 ) {
 
-    GovUkCard (
+    BlueCard(
         modifier = modifier,
         isSelected = isSelected,
         onClick = onClick
@@ -60,9 +60,9 @@ fun TopicSelectionCard(
             Icon(
                 painterResource(icon),
                 contentDescription = null,
-                modifier = Modifier.size(40.dp),
-                tint = GovUkTheme.colourScheme.surfaces.icon
+                tint = GovUkTheme.colourScheme.textAndIcons.icon
             )
+            SmallVerticalSpacer()
             Title3BoldLabel(
                 text = title,
                 textAlign = TextAlign.Center
@@ -132,17 +132,16 @@ fun TopicVerticalCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    GovUkCard(
+    BlueCard(
         modifier,
         onClick = onClick
     ) {
         Icon(
             painterResource(icon),
             contentDescription = null,
-            modifier = Modifier.size(40.dp),
-            tint = GovUkTheme.colourScheme.surfaces.icon
+            tint = GovUkTheme.colourScheme.textAndIcons.icon
         )
-        MediumVerticalSpacer()
+        SmallVerticalSpacer()
         Spacer(Modifier.weight(1f))
         Row {
             var baseline by remember { mutableFloatStateOf(0f) }
@@ -163,7 +162,7 @@ fun TopicVerticalCard(
                 modifier = Modifier
                     .align(Alignment.Bottom)
                     .padding(bottom = baselinePadding),
-                tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
+                tint = GovUkTheme.colourScheme.textAndIcons.icon
             )
         }
     }
@@ -176,7 +175,7 @@ fun TopicHorizontalCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    GovUkCard(
+    BlueCard(
         modifier,
         onClick = { onClick() }
     ) {
@@ -186,8 +185,7 @@ fun TopicHorizontalCard(
             Icon(
                 painterResource(icon),
                 contentDescription = null,
-                modifier = Modifier.size(40.dp),
-                tint = GovUkTheme.colourScheme.surfaces.icon
+                tint = GovUkTheme.colourScheme.textAndIcons.icon
             )
 
             MediumHorizontalSpacer()
@@ -202,7 +200,7 @@ fun TopicHorizontalCard(
             Icon(
                 painterResource(uk.govuk.app.design.R.drawable.ic_chevron),
                 contentDescription = null,
-                tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
+                tint = GovUkTheme.colourScheme.textAndIcons.icon
             )
         }
     }
