@@ -409,6 +409,24 @@ class AnalyticsClientTest {
     }
 
     @Test
+    fun `Given a suppress widget click, then log event`() {
+        analyticsClient.suppressWidgetClick("text", "section")
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Function",
+                mapOf(
+                    "type" to "Widget",
+                    "language" to Locale.getDefault().language,
+                    "text" to "text",
+                    "section" to "section",
+                    "action" to "Remove"
+                )
+            )
+        }
+    }
+
+    @Test
     fun `Given a toggle function, then log event`() {
         analyticsClient.toggleFunction(
             text = "text",
