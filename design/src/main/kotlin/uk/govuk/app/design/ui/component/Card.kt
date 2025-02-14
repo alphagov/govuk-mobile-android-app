@@ -66,8 +66,8 @@ fun GovUkCard(
 fun HomeNavigationCard(
     title: String,
     onClick: () -> Unit,
-    onSuppressClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
+    onSuppressClick: (() -> Unit)? = null,
     isSelected: Boolean = false,
     @DrawableRes icon: Int? = null,
     description: String? = null
