@@ -33,7 +33,7 @@ internal fun AllStepByStepRoute(
 
     AllStepByStepsScreen(
         stepBySteps = stepBySteps,
-        onPageView = { title -> viewModel.onPageView(title) },
+        onPageView = { title -> viewModel.onPageView(stepBySteps, title) },
         onBack = onBack,
         onExternalLink = { section, text, url ->
             viewModel.onStepByStepClick(
@@ -49,7 +49,7 @@ internal fun AllStepByStepRoute(
 
 @Composable
 private fun AllStepByStepsScreen(
-    stepBySteps: List<TopicContent>?,
+    stepBySteps: List<TopicContent>,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
     onExternalLink: (section: String, text: String, url: String) -> Unit,
@@ -58,7 +58,7 @@ private fun AllStepByStepsScreen(
     Column(modifier.fillMaxSize()) {
         val title = stringResource(R.string.stepByStepGuidesTitle)
 
-        LaunchedEffect(Unit) {
+        LaunchedEffect(stepBySteps) {
             onPageView(title)
         }
 
@@ -67,19 +67,17 @@ private fun AllStepByStepsScreen(
             onBack = onBack
         )
 
-        if (stepBySteps != null) {
-            LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
-                item {
-                    MediumVerticalSpacer()
-                }
-
-                stepBySteps(
-                    stepBySteps = stepBySteps,
-                    onClick = { text, url ->
-                        onExternalLink(title, text, url)
-                    }
-                )
+        LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
+            item {
+                MediumVerticalSpacer()
             }
+
+            stepBySteps(
+                stepBySteps = stepBySteps,
+                onClick = { text, url ->
+                    onExternalLink(title, text, url)
+                }
+            )
         }
     }
 }
