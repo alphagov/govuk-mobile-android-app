@@ -206,7 +206,7 @@ private fun CheckableExternalLinkListItem(
                     onCheckedChange = { onSelect(item.title, item.url) },
                     colors = CheckboxDefaults.colors(
                         checkedColor = GovUkTheme.colourScheme.surfaces.primary,
-                        uncheckedColor = GovUkTheme.colourScheme.strokes.buttonCompactBorder,
+                        uncheckedColor = GovUkTheme.colourScheme.strokes.listDivider,
                         checkmarkColor = GovUkTheme.colourScheme.textAndIcons.selectedTick,
                     )
                 )

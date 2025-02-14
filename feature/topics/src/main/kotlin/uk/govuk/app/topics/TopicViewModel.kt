@@ -8,11 +8,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.AnalyticsClient
-import uk.govuk.app.data.model.Result.*
+import uk.govuk.app.analytics.data.local.model.EcommerceEvent
+import uk.govuk.app.data.model.Result.DeviceOffline
+import uk.govuk.app.data.model.Result.Success
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.extension.toTopicUi
 import uk.govuk.app.topics.navigation.TOPIC_REF_ARG
 import uk.govuk.app.topics.navigation.TOPIC_SUBTOPIC_ARG
+import uk.govuk.app.topics.ui.model.TopicUi
 import uk.govuk.app.visited.Visited
 import javax.inject.Inject
 
@@ -53,15 +56,23 @@ internal class TopicViewModel @Inject constructor(
         }
     }
 
-    fun onPageView(title: String) {
+    fun onPageView(
+        topicUi: TopicUi? = null,
+        title: String
+    ) {
         analyticsClient.screenView(
             screenClass = SCREEN_CLASS,
             screenName = title,
             title = title
         )
+
+        if (topicUi != null) {
+            sendViewItemListEvent(topicUi = topicUi, title = title)
+        }
     }
 
     fun onContentClick(
+        title: String,
         section: String,
         text: String,
         url: String
@@ -72,6 +83,14 @@ internal class TopicViewModel @Inject constructor(
             external = true,
             section = section
         )
+
+        sendSelectItemEvent(
+            title = title,
+            section = section,
+            text = text,
+            url = url
+        )
+
         viewModelScope.launch {
             visited.visitableItemClick(title = text, url = url)
         }
@@ -86,6 +105,13 @@ internal class TopicViewModel @Inject constructor(
             external = false,
             section = section
         )
+
+        sendSelectItemEvent(
+            title = text,
+            section = section,
+            text = text,
+            url = null
+        )
     }
 
     fun onSubtopicClick(
@@ -95,6 +121,80 @@ internal class TopicViewModel @Inject constructor(
             text = text,
             external = false,
             section = SUBTOPIC_SECTION
+        )
+
+        sendSelectItemEvent(
+            title = null,
+            section = SUBTOPIC_SECTION,
+            text = text,
+            url = null
+        )
+    }
+
+    private fun sendSelectItemEvent(
+        section: String,
+        text: String,
+        title: String?,
+        url: String?
+    ) {
+        analyticsClient.selectItemEvent(
+            ecommerceEvent = EcommerceEvent(
+                itemListName = "Topics",
+                itemListId = title ?: "",
+                items = listOf(
+                    EcommerceEvent.Item(
+                        itemName = text,
+                        itemCategory = section,
+                        locationId = url ?: ""
+                    )
+                )
+            )
+        )
+    }
+
+    private fun sendViewItemListEvent(
+        topicUi: TopicUi,
+        title: String
+    ) {
+        /*
+         * Tried to get these from the resource strings file, but
+         * that doesn't work as it's not a Composable and needs a Context.
+         * Passing in the context is a memory leak.
+         * So, not sure if that's possible!
+         */
+        val popularPagesTitle = "Popular pages in this topic"
+        val stepByStepsTitle = "Step by step guides"
+        val browseTitle = "Browse"
+        val servicesTitle = "Services and information"
+
+        var topicItems = listOf(
+            topicUi.popularPages to popularPagesTitle,
+            topicUi.stepBySteps to stepByStepsTitle,
+            topicUi.services to servicesTitle,
+        ).flatMap { (items, category) ->
+            items.map { item ->
+                EcommerceEvent.Item(
+                    itemName = item.title,
+                    itemCategory = category,
+                    locationId = item.url
+                )
+            }
+        }.toMutableList()
+
+        topicUi.subtopics.forEach { subtopic ->
+            topicItems += EcommerceEvent.Item(
+                itemName = subtopic.title,
+                itemCategory = browseTitle,
+                locationId = subtopic.ref
+            )
+        }
+
+        analyticsClient.viewItemListEvent(
+            ecommerceEvent = EcommerceEvent(
+                itemListName = "Topics",
+                itemListId = title,
+                items = topicItems
+            )
         )
     }
 }

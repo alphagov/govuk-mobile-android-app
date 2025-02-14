@@ -3,6 +3,7 @@ package uk.govuk.app.analytics
 import com.google.firebase.analytics.FirebaseAnalytics
 import uk.govuk.app.analytics.data.AnalyticsRepo
 import uk.govuk.app.analytics.data.local.AnalyticsEnabledState
+import uk.govuk.app.analytics.data.local.model.EcommerceEvent
 import uk.govuk.app.analytics.extension.redactPii
 import java.util.Locale
 import javax.inject.Inject
@@ -146,6 +147,20 @@ class AnalyticsClient @Inject constructor(
         firebaseAnalyticsClient.setUserProperty("topics_customised", "true")
     }
 
+    fun selectItemEvent(ecommerceEvent: EcommerceEvent) {
+        logEcommerceEvent(
+            event = FirebaseAnalytics.Event.SELECT_ITEM,
+            ecommerceEvent = ecommerceEvent
+        )
+    }
+
+    fun viewItemListEvent(ecommerceEvent: EcommerceEvent) {
+        logEcommerceEvent(
+            event = FirebaseAnalytics.Event.VIEW_ITEM_LIST,
+            ecommerceEvent = ecommerceEvent
+        )
+    }
+
     private fun redactedEvent(name: String, type: String, inputString: String) {
         logEvent(
             name,
@@ -201,6 +216,12 @@ class AnalyticsClient @Inject constructor(
     private fun logEvent(name: String, parameters: Map<String, Any>) {
         if (isAnalyticsEnabled()) {
             firebaseAnalyticsClient.logEvent(name, parameters)
+        }
+    }
+
+    private fun logEcommerceEvent(event: String, ecommerceEvent: EcommerceEvent) {
+        if (isAnalyticsEnabled()) {
+            firebaseAnalyticsClient.logEcommerceEvent(event, ecommerceEvent)
         }
     }
 }

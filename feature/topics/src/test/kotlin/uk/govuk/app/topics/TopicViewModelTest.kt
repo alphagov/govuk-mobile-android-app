@@ -19,6 +19,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.analytics.AnalyticsClient
+import uk.govuk.app.analytics.data.local.model.EcommerceEvent
 import uk.govuk.app.data.model.Result.*
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.data.remote.model.RemoteTopic
@@ -139,13 +140,79 @@ class TopicViewModelTest {
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
-        viewModel.onPageView("title")
+        viewModel.onPageView(title = "title")
 
         verify {
             analyticsClient.screenView(
                 screenClass = "TopicScreen",
                 screenName = "title",
                 title = "title"
+            )
+        }
+    }
+
+    @Test
+    fun `Given an error page view, then don't log ecommerce analytics`() {
+        coEvery { topicsRepo.getTopic(REF) } returns Success(remoteTopic)
+
+        val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
+
+        viewModel.onPageView(title = "title")
+
+        verify(exactly = 0) {
+            analyticsClient.viewItemListEvent(
+                ecommerceEvent = EcommerceEvent(
+                    itemListName = "Topics",
+                    itemListId = "title",
+                    items = emptyList()
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a page view, then log ecommerce analytics`() {
+        coEvery { topicsRepo.getTopic(REF) } returns Success(remoteTopic)
+
+        val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
+        val popularPagesSection = listOf(
+            TopicUi.TopicContent(
+                title = "title",
+                url = "url"
+            )
+        )
+        val topicUi = TopicUi(
+            title = "title",
+            description = "description",
+            popularPages = popularPagesSection,
+            stepBySteps = emptyList(),
+            displayStepByStepSeeAll = false,
+            services = emptyList(),
+            subtopics = emptyList(),
+            subtopicsSection = TopicUi.Section(
+                title = R.string.browseTitle,
+                icon = R.drawable.ic_topic_browse
+            )
+        )
+
+        viewModel.onPageView(
+            topicUi = topicUi,
+            title = "title"
+        )
+
+        verify {
+            analyticsClient.viewItemListEvent(
+                ecommerceEvent = EcommerceEvent(
+                    itemListName = "Topics",
+                    itemListId = "title",
+                    items = popularPagesSection.map {
+                        EcommerceEvent.Item(
+                            itemName = it.title,
+                            itemCategory = "Popular pages in this topic",
+                            locationId = it.url
+                        )
+                    }
+                )
             )
         }
     }
@@ -159,7 +226,8 @@ class TopicViewModelTest {
         viewModel.onContentClick(
             section = "section",
             text = "text",
-            url = "url"
+            url = "url",
+            title = "title"
         )
 
         verify {
@@ -173,6 +241,36 @@ class TopicViewModelTest {
     }
 
     @Test
+    fun `Given a content click, then log ecommerce analytics`() {
+        coEvery { topicsRepo.getTopic(REF) } returns Success(remoteTopic)
+
+        val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
+
+        viewModel.onContentClick(
+            section = "section",
+            text = "text",
+            url = "url",
+            title = "title"
+        )
+
+        verify {
+            analyticsClient.selectItemEvent(
+                ecommerceEvent = EcommerceEvent(
+                    itemListName = "Topics",
+                    itemListId = "title",
+                    items = listOf(
+                        EcommerceEvent.Item(
+                            itemName = "text",
+                            itemCategory = "section",
+                            locationId = "url"
+                        )
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
     fun `Given a content click, then log visited item`() {
         coEvery { topicsRepo.getTopic(REF) } returns Success(remoteTopic)
 
@@ -181,7 +279,8 @@ class TopicViewModelTest {
         viewModel.onContentClick(
             section = "section",
             text = "text",
-            url = "url"
+            url = "url",
+            title = "title"
         )
 
         coVerify {
@@ -222,6 +321,31 @@ class TopicViewModelTest {
                 text = "text",
                 external = false,
                 section = "Sub topics"
+            )
+        }
+    }
+
+    @Test
+    fun `Given a subtopic click, then log ecommerce analytics`() {
+        coEvery { topicsRepo.getTopic(REF) } returns Success(remoteTopic)
+
+        val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
+
+        viewModel.onSubtopicClick("text")
+
+        verify {
+            analyticsClient.selectItemEvent(
+                ecommerceEvent = EcommerceEvent(
+                    itemListName = "Topics",
+                    itemListId = "",
+                    items = listOf(
+                        EcommerceEvent.Item(
+                            itemName = "text",
+                            itemCategory = "Sub topics",
+                            locationId = ""
+                        )
+                    )
+                )
             )
         }
     }

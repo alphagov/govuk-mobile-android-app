@@ -24,9 +24,7 @@ fun NotificationsPromptWidget(
             viewModel.onClick()
             onClick(title)
         },
-        modifier = modifier
-            .focusable(),
-        onSuppressClick = { onSuppressClick(title) },
-        isSelected = true
+        modifier = modifier,
+        onSuppressClick = { onSuppressClick(title) }
     )
 }

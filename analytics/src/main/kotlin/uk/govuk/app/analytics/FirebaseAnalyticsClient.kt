@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import uk.govuk.app.analytics.data.local.model.EcommerceEvent
 import java.io.Serializable
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -26,6 +27,30 @@ class FirebaseAnalyticsClient @Inject constructor(
 
     fun logEvent(name: String, parameters: Map<String, Any>) {
         firebaseAnalytics.logEvent(name, mapToBundle(parameters))
+    }
+
+    fun logEcommerceEvent(
+        event: String,
+        ecommerceEvent: EcommerceEvent
+    ) {
+        val bundle = Bundle()
+
+        bundle.putString(FirebaseAnalytics.Param.ITEM_LIST_NAME, ecommerceEvent.itemListName)
+        bundle.putString(FirebaseAnalytics.Param.ITEM_LIST_ID, ecommerceEvent.itemListId)
+        bundle.putInt("results", ecommerceEvent.items.size)
+
+        val itemsArrayList = ArrayList<Bundle>()
+        ecommerceEvent.items.forEachIndexed { index, item ->
+            val itemsBundle = Bundle()
+            itemsBundle.putInt("index", index + 1)
+            itemsBundle.putString(FirebaseAnalytics.Param.ITEM_NAME, item.itemName)
+            itemsBundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, item.itemCategory)
+            itemsBundle.putString(FirebaseAnalytics.Param.LOCATION_ID, item.locationId)
+            itemsArrayList.add(itemsBundle)
+        }
+        bundle.putParcelableArrayList(FirebaseAnalytics.Param.ITEMS, itemsArrayList)
+
+        firebaseAnalytics.logEvent(event, bundle)
     }
 
     fun setUserProperty(name: String, value: String) {
