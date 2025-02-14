@@ -26,9 +26,9 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import uk.govuk.app.design.ui.component.BlueCard
 import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
-import uk.govuk.app.design.ui.component.GovUkCard
 import uk.govuk.app.design.ui.component.MediumHorizontalSpacer
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
@@ -48,13 +48,10 @@ fun TopicSelectionCard(
     modifier: Modifier = Modifier
 ) {
 
-    GovUkCard (
+    BlueCard(
         modifier = modifier,
         isSelected = isSelected,
-        onClick = onClick,
-        backgroundColour = GovUkTheme.colourScheme.surfaces.cardBlue,
-        defaultBorderColour = GovUkTheme.colourScheme.strokes.cardBlue,
-        selectedBorderColour = GovUkTheme.colourScheme.strokes.cardSelected
+        onClick = onClick
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -135,12 +132,9 @@ fun TopicVerticalCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    GovUkCard(
+    BlueCard(
         modifier,
-        onClick = onClick,
-        backgroundColour = GovUkTheme.colourScheme.surfaces.cardBlue,
-        defaultBorderColour = GovUkTheme.colourScheme.strokes.cardBlue,
-        selectedBorderColour = GovUkTheme.colourScheme.strokes.cardSelected
+        onClick = onClick
     ) {
         Icon(
             painterResource(icon),
@@ -181,12 +175,9 @@ fun TopicHorizontalCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    GovUkCard(
+    BlueCard(
         modifier,
-        onClick = { onClick() },
-        backgroundColour = GovUkTheme.colourScheme.surfaces.cardBlue,
-        defaultBorderColour = GovUkTheme.colourScheme.strokes.cardBlue,
-        selectedBorderColour = GovUkTheme.colourScheme.strokes.cardSelected
+        onClick = { onClick() }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically

@@ -2,7 +2,6 @@ package uk.govuk.app.design.ui.component
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -21,7 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.govuk.app.design.R
-import uk.govuk.app.design.ui.theme.GovUkColourScheme
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
@@ -31,7 +29,6 @@ fun GovUkCard(
     onClick: (() -> Unit)? = null,
     backgroundColour: Color = GovUkTheme.colourScheme.surfaces.cardDefault,
     defaultBorderColour: Color = GovUkTheme.colourScheme.strokes.listDivider,
-    selectedBorderColour: Color = GovUkTheme.colourScheme.strokes.listDivider,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val cardColour = if (isSelected) {
@@ -41,7 +38,7 @@ fun GovUkCard(
     }
 
     val strokeColour = if (isSelected) {
-        selectedBorderColour
+        GovUkTheme.colourScheme.strokes.cardSelected
     } else {
         defaultBorderColour
     }
@@ -68,6 +65,24 @@ fun GovUkCard(
 }
 
 @Composable
+fun BlueCard(
+    modifier: Modifier = Modifier,
+    isSelected: Boolean = false,
+    onClick: (() -> Unit)? = null,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    GovUkCard(
+        modifier = modifier,
+        isSelected = isSelected,
+        onClick = onClick,
+        backgroundColour = GovUkTheme.colourScheme.surfaces.cardBlue,
+        defaultBorderColour = GovUkTheme.colourScheme.strokes.cardBlue
+    ) {
+        content()
+    }
+}
+
+@Composable
 fun HomeNavigationCard(
     title: String,
     onClick: () -> Unit,
@@ -76,13 +91,10 @@ fun HomeNavigationCard(
     @DrawableRes icon: Int? = null,
     description: String? = null
 ) {
-    GovUkCard(
+    BlueCard(
         modifier = modifier,
         isSelected = isSelected,
-        onClick = onClick,
-        backgroundColour = GovUkTheme.colourScheme.surfaces.cardBlue,
-        defaultBorderColour = GovUkTheme.colourScheme.strokes.cardBlue,
-        selectedBorderColour = GovUkTheme.colourScheme.strokes.cardSelected
+        onClick = onClick
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -127,6 +139,16 @@ private fun HomeNavigationCardPreview() {
             icon = R.drawable.ic_settings,
             description = "Card description that may go over multiple lines"
         )
+    }
+}
+
+@Preview
+@Composable
+private fun BlueCardPreview() {
+    GovUkTheme {
+        BlueCard {
+            Title3BoldLabel("Title")
+        }
     }
 }
 
