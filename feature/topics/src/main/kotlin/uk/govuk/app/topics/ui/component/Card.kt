@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -64,9 +63,9 @@ fun TopicSelectionCard(
             Icon(
                 painterResource(icon),
                 contentDescription = null,
-                modifier = Modifier.size(40.dp),
                 tint = GovUkTheme.colourScheme.textAndIcons.icon
             )
+            SmallVerticalSpacer()
             Title3BoldLabel(
                 text = title,
                 textAlign = TextAlign.Center
@@ -146,7 +145,6 @@ fun TopicVerticalCard(
         Icon(
             painterResource(icon),
             contentDescription = null,
-            modifier = Modifier.size(40.dp),
             tint = GovUkTheme.colourScheme.textAndIcons.icon
         )
         SmallVerticalSpacer()
@@ -196,7 +194,6 @@ fun TopicHorizontalCard(
             Icon(
                 painterResource(icon),
                 contentDescription = null,
-                modifier = Modifier.size(40.dp),
                 tint = GovUkTheme.colourScheme.textAndIcons.icon
             )
 

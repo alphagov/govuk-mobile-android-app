@@ -6,16 +6,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import uk.govuk.app.design.R
 import uk.govuk.app.design.ui.component.HomeNavigationCard
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.visited.R
 
 @Composable
 fun VisitedWidget(
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val title = stringResource(uk.govuk.app.visited.R.string.visited_items_title)
+    val title = stringResource(R.string.visited_items_title)
     HomeNavigationCard(
         title = title,
         onClick = { onClick(title) },

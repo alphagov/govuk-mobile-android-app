@@ -89,12 +89,13 @@ fun HomeNavigationCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             icon?.let {
-                Image(
+                Icon(
                     painterResource(it),
                     contentDescription = null,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(40.dp),
+                    tint = GovUkTheme.colourScheme.textAndIcons.icon
                 )
-                MediumHorizontalSpacer()
+                SmallHorizontalSpacer()
             }
             Column(
                 modifier = Modifier
@@ -123,7 +124,7 @@ private fun HomeNavigationCardPreview() {
         HomeNavigationCard(
             title = "Card title",
             onClick = { },
-            icon = R.drawable.ic_visited,
+            icon = R.drawable.ic_settings,
             description = "Card description that may go over multiple lines"
         )
     }
@@ -136,7 +137,7 @@ private fun HomeNavigationCardNoDescriptionPreview() {
         HomeNavigationCard(
             title = "Card title",
             onClick = { },
-            icon = R.drawable.ic_visited,
+            icon = R.drawable.ic_settings,
         )
     }
 }
