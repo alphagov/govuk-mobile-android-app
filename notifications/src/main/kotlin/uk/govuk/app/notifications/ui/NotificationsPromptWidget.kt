@@ -4,8 +4,6 @@ import androidx.compose.foundation.focusable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.onClick
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.govuk.app.design.ui.component.HomeNavigationCard
 import uk.govuk.app.notifications.NotificationsPromptWidgetViewModel
@@ -28,10 +26,7 @@ fun NotificationsPromptWidget(
         },
         onSuppressClick = { onSuppressClick(title) },
         modifier = modifier
-            .focusable()
-            .clearAndSetSemantics {
-                onClick(label = null, action = null)
-            },
+            .focusable(),
         isSelected = true
     )
 }
