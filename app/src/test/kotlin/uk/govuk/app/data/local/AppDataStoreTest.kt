@@ -12,7 +12,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import uk.govuk.app.home.HomeScreenWidget
+import uk.govuk.app.home.HomeWidget
 
 class AppDataStoreTest {
 
@@ -96,7 +96,7 @@ class AppDataStoreTest {
         every { dataStore.data } returns emptyFlow()
 
         runTest {
-            assertFalse(datastore.isWidgetSuppressed(HomeScreenWidget.NOTIFICATIONS))
+            assertFalse(datastore.isHomeWidgetInSuppressedList(HomeWidget.NOTIFICATIONS))
         }
     }
 
@@ -105,10 +105,10 @@ class AppDataStoreTest {
         val datastore = AppDataStore(dataStore)
 
         every { dataStore.data } returns flowOf(preferences)
-        every { preferences[stringSetPreferencesKey(AppDataStore.SUPPRESSED_WIDGETS)] } returns setOf()
+        every { preferences[stringSetPreferencesKey(AppDataStore.SUPPRESSED_HOME_WIDGETS)] } returns setOf()
 
         runTest {
-            assertFalse(datastore.isWidgetSuppressed(HomeScreenWidget.NOTIFICATIONS))
+            assertFalse(datastore.isHomeWidgetInSuppressedList(HomeWidget.NOTIFICATIONS))
         }
     }
 
@@ -117,10 +117,10 @@ class AppDataStoreTest {
         val datastore = AppDataStore(dataStore)
 
         every { dataStore.data } returns flowOf(preferences)
-        every { preferences[stringSetPreferencesKey(AppDataStore.SUPPRESSED_WIDGETS)] } returns setOf("NOTIFICATIONS")
+        every { preferences[stringSetPreferencesKey(AppDataStore.SUPPRESSED_HOME_WIDGETS)] } returns setOf("NOTIFICATIONS")
 
         runTest {
-            assertTrue(datastore.isWidgetSuppressed(HomeScreenWidget.NOTIFICATIONS))
+            assertTrue(datastore.isHomeWidgetInSuppressedList(HomeWidget.NOTIFICATIONS))
         }
     }
 }

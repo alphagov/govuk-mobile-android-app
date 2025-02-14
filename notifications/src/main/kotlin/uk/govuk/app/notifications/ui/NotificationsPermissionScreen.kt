@@ -43,7 +43,6 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.notifications.NotificationsPermissionUiState
 import uk.govuk.app.notifications.NotificationsPermissionViewModel
 import uk.govuk.app.notifications.R
-import uk.govuk.app.notifications.getNotificationsPermissionStatus
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable

@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import kotlinx.coroutines.flow.firstOrNull
-import uk.govuk.app.home.HomeScreenWidget
+import uk.govuk.app.home.HomeWidget
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,7 +17,7 @@ internal class AppDataStore @Inject constructor(
     companion object {
         internal const val ONBOARDING_COMPLETED_KEY = "onboarding_completed"
         internal const val TOPIC_SELECTION_COMPLETED_KEY = "topic_selection_completed"
-        internal const val SUPPRESSED_WIDGETS = "suppressed_widgets"
+        internal const val SUPPRESSED_HOME_WIDGETS = "suppressed_home_widgets"
     }
 
     internal suspend fun isOnboardingCompleted(): Boolean {
@@ -42,19 +42,19 @@ internal class AppDataStore @Inject constructor(
         }
     }
 
-    internal suspend fun isWidgetSuppressed(widget: HomeScreenWidget): Boolean {
+    internal suspend fun isHomeWidgetInSuppressedList(widget: HomeWidget): Boolean {
         val widgets = dataStore.data.firstOrNull()
-            ?.get(stringSetPreferencesKey(SUPPRESSED_WIDGETS))
+            ?.get(stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS))
         return widgets?.contains(widget.name) ?: false
     }
 
-    internal suspend fun suppressWidget(widget: HomeScreenWidget) {
+    internal suspend fun addHomeWidgetToSuppressedList(widget: HomeWidget) {
         val widgets = dataStore.data.firstOrNull()
-            ?.get(stringSetPreferencesKey(SUPPRESSED_WIDGETS))
+            ?.get(stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS))
         val mutableWidgets = widgets?.toMutableSet() ?: mutableSetOf()
         mutableWidgets.add(widget.name)
         dataStore.edit { prefs ->
-            prefs[stringSetPreferencesKey(SUPPRESSED_WIDGETS)] = mutableWidgets.toSet()
+            prefs[stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS)] = mutableWidgets.toSet()
         }
     }
 }

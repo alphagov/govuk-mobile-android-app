@@ -12,7 +12,7 @@ import uk.govuk.app.config.data.flags.FlagRepo
 import uk.govuk.app.data.AppRepo
 import uk.govuk.app.data.local.AppDataStore
 import uk.govuk.app.data.model.Result.*
-import uk.govuk.app.home.HomeScreenWidget
+import uk.govuk.app.home.HomeWidget
 import uk.govuk.app.topics.TopicsFeature
 import javax.inject.Inject
 
@@ -29,8 +29,8 @@ internal class AppViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<AppUiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
 
-    private val _homeScreenWidgets: MutableStateFlow<List<HomeScreenWidget>?> = MutableStateFlow(null)
-    internal val homeScreenWidgets = _homeScreenWidgets.asStateFlow()
+    private val _homeWidgets: MutableStateFlow<List<HomeWidget>?> = MutableStateFlow(null)
+    internal val homeWidgets = _homeWidgets.asStateFlow()
 
     init {
         fetchConfig()
@@ -51,7 +51,7 @@ internal class AppViewModel @Inject constructor(
                     } else if (flagRepo.isForcedUpdate(BuildConfig.VERSION_NAME)) {
                         AppUiState.ForcedUpdate
                     } else {
-                        updateHomeScreenWidgets()
+                        updateHomeWidgets()
 
                         val topicsInitSuccess = topicsFeature.init()
 
@@ -85,26 +85,26 @@ internal class AppViewModel @Inject constructor(
         }
     }
 
-    fun updateHomeScreenWidgets() {
+    fun updateHomeWidgets() {
         viewModelScope.launch {
             with(flagRepo) {
-                val widgets = mutableListOf<HomeScreenWidget>()
+                val widgets = mutableListOf<HomeWidget>()
                 if (isNotificationsEnabled()
-                    && !appDataStore.isWidgetSuppressed(HomeScreenWidget.NOTIFICATIONS)
+                    && !appDataStore.isHomeWidgetInSuppressedList(HomeWidget.NOTIFICATIONS)
                 ) {
-                    widgets.add(HomeScreenWidget.NOTIFICATIONS)
+                    widgets.add(HomeWidget.NOTIFICATIONS)
                 }
-                widgets.add(HomeScreenWidget.FEEDBACK_PROMPT)
+                widgets.add(HomeWidget.FEEDBACK_PROMPT)
                 if (isSearchEnabled()) {
-                    widgets.add(HomeScreenWidget.SEARCH)
+                    widgets.add(HomeWidget.SEARCH)
                 }
                 if (isRecentActivityEnabled()) {
-                    widgets.add(HomeScreenWidget.RECENT_ACTIVITY)
+                    widgets.add(HomeWidget.RECENT_ACTIVITY)
                 }
                 if (isTopicsEnabled()) {
-                    widgets.add(HomeScreenWidget.TOPICS)
+                    widgets.add(HomeWidget.TOPICS)
                 }
-                _homeScreenWidgets.value = widgets
+                _homeWidgets.value = widgets
             }
         }
     }
@@ -124,11 +124,11 @@ internal class AppViewModel @Inject constructor(
     fun onSuppressWidgetClick(
         text: String,
         section: String,
-        widget: HomeScreenWidget
+        widget: HomeWidget
     ) {
         viewModelScope.launch {
-            appDataStore.suppressWidget(widget)
-            updateHomeScreenWidgets()
+            appDataStore.addHomeWidgetToSuppressedList(widget)
+            updateHomeWidgets()
         }
         analyticsClient.suppressWidgetClick(
             text,

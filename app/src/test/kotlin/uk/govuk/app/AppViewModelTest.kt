@@ -25,7 +25,7 @@ import uk.govuk.app.config.data.flags.FlagRepo
 import uk.govuk.app.data.AppRepo
 import uk.govuk.app.data.local.AppDataStore
 import uk.govuk.app.data.model.Result.*
-import uk.govuk.app.home.HomeScreenWidget
+import uk.govuk.app.home.HomeWidget
 import uk.govuk.app.topics.TopicsFeature
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -341,8 +341,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            viewModel.homeScreenWidgets.first()
-                ?.let { assertTrue(it.contains(HomeScreenWidget.SEARCH)) }
+            viewModel.homeWidgets.first()
+                ?.let { assertTrue(it.contains(HomeWidget.SEARCH)) }
         }
     }
 
@@ -356,8 +356,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            viewModel.homeScreenWidgets.first()
-                ?.let { assertFalse(it.contains(HomeScreenWidget.SEARCH)) }
+            viewModel.homeWidgets.first()
+                ?.let { assertFalse(it.contains(HomeWidget.SEARCH)) }
         }
     }
 
@@ -370,8 +370,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            viewModel.homeScreenWidgets.first()
-                ?.let { assertTrue(it.contains(HomeScreenWidget.RECENT_ACTIVITY)) }
+            viewModel.homeWidgets.first()
+                ?.let { assertTrue(it.contains(HomeWidget.RECENT_ACTIVITY)) }
         }
     }
 
@@ -384,8 +384,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            viewModel.homeScreenWidgets.first()
-                ?.let { assertFalse(it.contains(HomeScreenWidget.RECENT_ACTIVITY)) }
+            viewModel.homeWidgets.first()
+                ?.let { assertFalse(it.contains(HomeWidget.RECENT_ACTIVITY)) }
         }
     }
 
@@ -398,8 +398,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            viewModel.homeScreenWidgets.first()
-                ?.let { assertTrue(it.contains(HomeScreenWidget.TOPICS)) }
+            viewModel.homeWidgets.first()
+                ?.let { assertTrue(it.contains(HomeWidget.TOPICS)) }
         }
     }
 
@@ -412,8 +412,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            viewModel.homeScreenWidgets.first()
-                ?.let { assertFalse(it.contains(HomeScreenWidget.TOPICS)) }
+            viewModel.homeWidgets.first()
+                ?.let { assertFalse(it.contains(HomeWidget.TOPICS)) }
         }
     }
 
@@ -426,8 +426,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            viewModel.homeScreenWidgets.first()
-                ?.let { assertTrue(it.contains(HomeScreenWidget.NOTIFICATIONS)) }
+            viewModel.homeWidgets.first()
+                ?.let { assertTrue(it.contains(HomeWidget.NOTIFICATIONS)) }
         }
     }
 
@@ -440,8 +440,8 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            viewModel.homeScreenWidgets.first()
-                ?.let { assertFalse(it.contains(HomeScreenWidget.NOTIFICATIONS)) }
+            viewModel.homeWidgets.first()
+                ?.let { assertFalse(it.contains(HomeWidget.NOTIFICATIONS)) }
         }
     }
 
@@ -450,13 +450,13 @@ class AppViewModelTest {
         coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isNotificationsEnabled() } returns true
-        coEvery { appDataStore.isWidgetSuppressed(HomeScreenWidget.NOTIFICATIONS) } returns false
+        coEvery { appDataStore.isHomeWidgetInSuppressedList(HomeWidget.NOTIFICATIONS) } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            viewModel.homeScreenWidgets.first()
-                ?.let { assertTrue(it.contains(HomeScreenWidget.NOTIFICATIONS)) }
+            viewModel.homeWidgets.first()
+                ?.let { assertTrue(it.contains(HomeWidget.NOTIFICATIONS)) }
         }
     }
 
@@ -465,13 +465,13 @@ class AppViewModelTest {
         coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isNotificationsEnabled() } returns true
-        coEvery { appDataStore.isWidgetSuppressed(HomeScreenWidget.NOTIFICATIONS) } returns true
+        coEvery { appDataStore.isHomeWidgetInSuppressedList(HomeWidget.NOTIFICATIONS) } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            viewModel.homeScreenWidgets.first()
-                ?.let { assertFalse(it.contains(HomeScreenWidget.NOTIFICATIONS)) }
+            viewModel.homeWidgets.first()
+                ?.let { assertFalse(it.contains(HomeWidget.NOTIFICATIONS)) }
         }
     }
 
@@ -559,11 +559,11 @@ class AppViewModelTest {
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            viewModel.onSuppressWidgetClick("text", "section", HomeScreenWidget.NOTIFICATIONS)
+            viewModel.onSuppressWidgetClick("text", "section", HomeWidget.NOTIFICATIONS)
 
             coVerify {
-                appDataStore.suppressWidget(HomeScreenWidget.NOTIFICATIONS)
-                viewModel.updateHomeScreenWidgets()
+                appDataStore.addHomeWidgetToSuppressedList(HomeWidget.NOTIFICATIONS)
+                viewModel.updateHomeWidgets()
                 analyticsClient.suppressWidgetClick("text", "section")
             }
         }

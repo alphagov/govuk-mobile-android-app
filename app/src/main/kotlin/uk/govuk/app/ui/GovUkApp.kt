@@ -43,7 +43,7 @@ import androidx.navigation.compose.rememberNavController
 import uk.govuk.app.AppUiState
 import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
-import uk.govuk.app.home.HomeScreenWidget
+import uk.govuk.app.home.HomeWidget
 import uk.govuk.app.R
 import uk.govuk.app.analytics.navigation.analyticsGraph
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
@@ -53,7 +53,7 @@ import uk.govuk.app.home.navigation.homeGraph
 import uk.govuk.app.navigation.AppLaunchNavigation
 import uk.govuk.app.navigation.TopLevelDestination
 import uk.govuk.app.notifications.navigation.notificationsGraph
-import uk.govuk.app.notifications.notificationsPermissionShouldShowRationale
+import uk.govuk.app.notifications.ui.notificationsPermissionShouldShowRationale
 import uk.govuk.app.notifications.ui.NotificationsPromptWidget
 import uk.govuk.app.onboarding.navigation.onboardingGraph
 import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
@@ -76,7 +76,7 @@ import uk.govuk.app.visited.ui.widget.VisitedWidget
 internal fun GovUkApp(intent: Intent) {
     val viewModel: AppViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
-    val homeScreenWidgets by viewModel.homeScreenWidgets.collectAsState()
+    val homeWidgets by viewModel.homeWidgets.collectAsState()
     var isSplashDone by rememberSaveable { mutableStateOf(false) }
     var isRecommendUpdateSkipped by rememberSaveable { mutableStateOf(false) }
 
@@ -106,7 +106,7 @@ internal fun GovUkApp(intent: Intent) {
                             onboardingCompleted = { viewModel.onboardingCompleted() },
                             topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
                             onTabClick = { tabText -> viewModel.onTabClick(tabText) },
-                            homeScreenWidgets = homeScreenWidgets ?: listOf(),
+                            homeWidgets = homeWidgets ?: listOf(),
                             onWidgetClick = { text, external ->
                                 viewModel.onWidgetClick(text, external, section)
                             },
@@ -146,9 +146,9 @@ private fun BottomNavScaffold(
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
-    homeScreenWidgets: List<HomeScreenWidget>,
+    homeWidgets: List<HomeWidget>,
     onWidgetClick: (String, Boolean) -> Unit,
-    onSuppressWidgetClick: (String, HomeScreenWidget) -> Unit
+    onSuppressWidgetClick: (String, HomeWidget) -> Unit
 ) {
     val navController = rememberNavController()
 
@@ -167,7 +167,7 @@ private fun BottomNavScaffold(
                 deeplink = deeplink,
                 onboardingCompleted = onboardingCompleted,
                 topicSelectionCompleted = topicSelectionCompleted,
-                homeScreenWidgets = homeScreenWidgets,
+                homeWidgets = homeWidgets,
                 onWidgetClick = onWidgetClick,
                 onSuppressWidgetClick = onSuppressWidgetClick,
                 paddingValues = paddingValues
@@ -257,9 +257,9 @@ private fun GovUkNavHost(
     deeplink: Uri?,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
-    homeScreenWidgets: List<HomeScreenWidget>,
+    homeWidgets: List<HomeWidget>,
     onWidgetClick: (String, Boolean) -> Unit,
-    onSuppressWidgetClick: (String, HomeScreenWidget) -> Unit,
+    onSuppressWidgetClick: (String, HomeWidget) -> Unit,
     paddingValues: PaddingValues
 ) {
     deeplink?.let {
@@ -312,7 +312,7 @@ private fun GovUkNavHost(
             widgets = homeScreenWidgets(
                 context = context,
                 navController = navController,
-                homeScreenWidgets = homeScreenWidgets,
+                homeWidgets = homeWidgets,
                 onClick = onWidgetClick,
                 onSuppressClick = onSuppressWidgetClick
             ),
@@ -332,14 +332,14 @@ private fun GovUkNavHost(
 private fun homeScreenWidgets(
     context: Context,
     navController: NavHostController,
-    homeScreenWidgets: List<HomeScreenWidget>,
+    homeWidgets: List<HomeWidget>,
     onClick: (String, Boolean) -> Unit,
-    onSuppressClick: (String, HomeScreenWidget) -> Unit
+    onSuppressClick: (String, HomeWidget) -> Unit
 ): List<@Composable (Modifier) -> Unit> {
     val widgets = mutableListOf<@Composable (Modifier) -> Unit>()
-    homeScreenWidgets.forEach {
+    homeWidgets.forEach {
         when (it) {
-            HomeScreenWidget.NOTIFICATIONS -> {
+            HomeWidget.NOTIFICATIONS -> {
                 widgets.add { modifier ->
                     if (notificationsPermissionShouldShowRationale()) {
                         NotificationsPromptWidget(
@@ -347,7 +347,7 @@ private fun homeScreenWidgets(
                                 onClick(text, true)
                             },
                             onSuppressClick = { text ->
-                                onSuppressClick(text, HomeScreenWidget.NOTIFICATIONS)
+                                onSuppressClick(text, HomeWidget.NOTIFICATIONS)
                             },
                             modifier = modifier
                         )
@@ -356,7 +356,7 @@ private fun homeScreenWidgets(
                 }
             }
 
-            HomeScreenWidget.FEEDBACK_PROMPT -> {
+            HomeWidget.FEEDBACK_PROMPT -> {
                 widgets.add { modifier ->
                     FeedbackPromptWidget(
                         onClick = { text ->
@@ -369,7 +369,7 @@ private fun homeScreenWidgets(
                 }
             }
 
-            HomeScreenWidget.SEARCH -> {
+            HomeWidget.SEARCH -> {
                 widgets.add { modifier ->
                     SearchWidget(
                         onClick = { text ->
@@ -382,7 +382,7 @@ private fun homeScreenWidgets(
                 }
             }
 
-            HomeScreenWidget.RECENT_ACTIVITY -> {
+            HomeWidget.RECENT_ACTIVITY -> {
                 widgets.add { modifier ->
                     VisitedWidget(
                         onClick = { text ->
@@ -395,7 +395,7 @@ private fun homeScreenWidgets(
                 }
             }
 
-            HomeScreenWidget.TOPICS -> {
+            HomeWidget.TOPICS -> {
                 widgets.add { modifier ->
                     TopicsWidget(
                         onTopicClick = { ref, title ->

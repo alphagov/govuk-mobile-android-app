@@ -1,4 +1,4 @@
-package uk.govuk.app.notifications
+package uk.govuk.app.notifications.ui
 
 import android.Manifest
 import android.os.Build
@@ -15,8 +15,8 @@ fun notificationsPermissionShouldShowRationale(): Boolean =
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun getNotificationsPermissionStatus(): PermissionStatus =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+fun getNotificationsPermissionStatus(androidVersion: Int = Build.VERSION.SDK_INT): PermissionStatus =
+    if (androidVersion >= Build.VERSION_CODES.TIRAMISU) {
         rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS).status
     } else {
         PermissionStatus.Granted

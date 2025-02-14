@@ -1,6 +1,6 @@
 package uk.govuk.app.home
 
-enum class HomeScreenWidget {
+enum class HomeWidget {
     NOTIFICATIONS,
     FEEDBACK_PROMPT,
     SEARCH,
