@@ -43,18 +43,17 @@ internal class AppDataStore @Inject constructor(
     }
 
     internal suspend fun isHomeWidgetInSuppressedList(widget: HomeWidget): Boolean {
-        val widgets = dataStore.data.firstOrNull()
-            ?.get(stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS))
-        return widgets?.contains(widget.name) ?: false
+        return getSuppressedHomeWidgets()?.contains(widget.name) ?: false
     }
 
     internal suspend fun addHomeWidgetToSuppressedList(widget: HomeWidget) {
-        val widgets = dataStore.data.firstOrNull()
-            ?.get(stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS))
-        val mutableWidgets = widgets?.toMutableSet() ?: mutableSetOf()
+        val mutableWidgets = getSuppressedHomeWidgets()?.toMutableSet() ?: mutableSetOf()
         mutableWidgets.add(widget.name)
         dataStore.edit { prefs ->
             prefs[stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS)] = mutableWidgets.toSet()
         }
     }
+
+    private suspend fun getSuppressedHomeWidgets() = dataStore.data.firstOrNull()
+        ?.get(stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS))
 }
