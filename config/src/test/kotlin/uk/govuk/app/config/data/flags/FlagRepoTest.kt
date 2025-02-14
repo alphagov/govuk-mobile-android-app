@@ -366,4 +366,24 @@ class FlagRepoTest {
 
         assertFalse(flagRepo.isTopicsEnabled())
     }
+
+    @Test
+    fun `Given notifications is enabled, When is notifications enabled, then return true`() {
+        mockkStatic(::isEnabled)
+        every { isEnabled(any(), any(), any()) } returns true
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertTrue(flagRepo.isNotificationsEnabled())
+    }
+
+    @Test
+    fun `Given notifications is disabled, When is notifications enabled, then return false`() {
+        mockkStatic(::isEnabled)
+        every { isEnabled(any(), any(), any()) } returns false
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertFalse(flagRepo.isNotificationsEnabled())
+    }
 }
