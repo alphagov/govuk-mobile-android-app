@@ -25,14 +25,12 @@ internal class AllStepByStepsViewModel @Inject constructor(
         private const val SCREEN_CLASS = "AllStepByStepsScreen"
     }
 
-    private val _stepBySteps: MutableStateFlow<List<TopicContent>?> = MutableStateFlow(null)
+    private val _stepBySteps: MutableStateFlow<List<TopicContent>> = MutableStateFlow(
+        topicsRepo.stepBySteps.map { it.toTopicContent() }
+    )
     val stepBySteps = _stepBySteps.asStateFlow()
 
-    init {
-        _stepBySteps.value = topicsRepo.stepBySteps.map { it.toTopicContent() }
-    }
-
-    fun onPageView(stepBySteps: List<TopicContent>? = emptyList(), title: String) {
+    fun onPageView(stepBySteps: List<TopicContent>, title: String) {
         analyticsClient.screenView(
             screenClass = SCREEN_CLASS,
             screenName = title,
@@ -88,12 +86,12 @@ internal class AllStepByStepsViewModel @Inject constructor(
     }
 
     private fun sendViewItemListEvent(
-        stepBySteps: List<TopicContent>?,
+        stepBySteps: List<TopicContent>,
         title: String
     ) {
         var topicItems = mutableListOf<EcommerceEvent.Item>()
 
-        if (!stepBySteps.isNullOrEmpty()) {
+        if (stepBySteps.isNotEmpty()) {
             val stepByStepsTitle = "Step by step guides"
 
             topicItems = listOf(
