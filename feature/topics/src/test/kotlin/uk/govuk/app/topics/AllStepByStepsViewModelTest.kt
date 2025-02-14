@@ -79,7 +79,15 @@ class AllStepByStepsViewModelTest {
     fun `Given a page view, then log analytics`() {
         val viewModel = AllStepByStepsViewModel(topicsRepo, analyticsClient, visited)
 
-        viewModel.onPageView(title = "title")
+        viewModel.onPageView(
+            title = "title",
+            stepBySteps = listOf(
+                TopicContent(
+                    url = "url",
+                    title = "title"
+                )
+            )
+        )
 
         verify {
             analyticsClient.screenView(
@@ -94,14 +102,28 @@ class AllStepByStepsViewModelTest {
     fun `Given a page view, then log ecommerce analytics`() {
         val viewModel = AllStepByStepsViewModel(topicsRepo, analyticsClient, visited)
 
-        viewModel.onPageView(title = "title")
+        viewModel.onPageView(
+            title = "title",
+            stepBySteps = listOf(
+                TopicContent(
+                    url = "url",
+                    title = "title"
+                )
+            )
+        )
 
         verify {
             analyticsClient.viewItemListEvent(
                 ecommerceEvent = EcommerceEvent(
                     itemListName = "Topics",
                     itemListId = "title",
-                    items = emptyList()
+                    items = listOf(
+                        EcommerceEvent.Item(
+                            itemName = "title",
+                            itemCategory = "Step by step guides",
+                            locationId = "url"
+                        )
+                    )
                 )
             )
         }
