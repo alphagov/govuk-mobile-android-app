@@ -106,7 +106,7 @@ internal fun GovUkApp(intent: Intent) {
                             onboardingCompleted = { viewModel.onboardingCompleted() },
                             topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
                             onTabClick = { tabText -> viewModel.onTabClick(tabText) },
-                            homeWidgets = homeWidgets ?: listOf(),
+                            homeWidgets = homeWidgets,
                             onWidgetClick = { text, external ->
                                 viewModel.onWidgetClick(text, external, section)
                             },
@@ -146,7 +146,7 @@ private fun BottomNavScaffold(
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
-    homeWidgets: List<HomeWidget>,
+    homeWidgets: List<HomeWidget>?,
     onWidgetClick: (String, Boolean) -> Unit,
     onSuppressWidgetClick: (String, HomeWidget) -> Unit
 ) {
@@ -257,7 +257,7 @@ private fun GovUkNavHost(
     deeplink: Uri?,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
-    homeWidgets: List<HomeWidget>,
+    homeWidgets: List<HomeWidget>?,
     onWidgetClick: (String, Boolean) -> Unit,
     onSuppressWidgetClick: (String, HomeWidget) -> Unit,
     paddingValues: PaddingValues
@@ -332,12 +332,12 @@ private fun GovUkNavHost(
 private fun homeScreenWidgets(
     context: Context,
     navController: NavHostController,
-    homeWidgets: List<HomeWidget>,
+    homeWidgets: List<HomeWidget>?,
     onClick: (String, Boolean) -> Unit,
     onSuppressClick: (String, HomeWidget) -> Unit
 ): List<@Composable (Modifier) -> Unit> {
     val widgets = mutableListOf<@Composable (Modifier) -> Unit>()
-    homeWidgets.forEach {
+    homeWidgets?.forEach {
         when (it) {
             HomeWidget.NOTIFICATIONS -> {
                 widgets.add { modifier ->
