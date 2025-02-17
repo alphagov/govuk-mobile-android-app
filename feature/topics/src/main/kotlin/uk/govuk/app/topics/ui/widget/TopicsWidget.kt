@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -21,8 +22,8 @@ import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.CompactButton
 import uk.govuk.app.design.ui.component.Title3BoldLabel
-import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.design.ui.component.error.ProblemMessage
+import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.R
 import uk.govuk.app.topics.TopicsWidgetUiState
 import uk.govuk.app.topics.TopicsWidgetViewModel
@@ -43,7 +44,11 @@ fun TopicsWidget(
     uiState?.let {
         TopicsWidgetContent(
             uiState = it,
-            onTopicClick = onTopicClick,
+            onPageView = { topics -> viewModel.onPageView(topics) },
+            onTopicClick = { ref, title, index ->
+                viewModel.onTopicSelectClick(ref, title, index)
+                onTopicClick(ref, title)
+            },
             onEditClick = onEditClick,
             onAllClick = onAllClick,
             modifier = modifier
@@ -54,11 +59,16 @@ fun TopicsWidget(
 @Composable
 private fun TopicsWidgetContent(
     uiState: TopicsWidgetUiState,
-    onTopicClick: (String, String) -> Unit,
+    onPageView: (List<TopicItemUi>) -> Unit,
+    onTopicClick: (String, String, Int) -> Unit,
     onEditClick: (String) -> Unit,
     onAllClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(Unit) {
+        onPageView(uiState.topics)
+    }
+
     Column(modifier = modifier) {
         Row(
             modifier = Modifier
@@ -116,7 +126,13 @@ private fun TopicsWidgetContent(
                     TopicVerticalCard(
                         icon = topic.icon,
                         title = topic.title,
-                        onClick = { onTopicClick(topic.ref, topic.title) },
+                        onClick = {
+                            onTopicClick(
+                                topic.ref,
+                                topic.title,
+                                uiState.topics.indexOf(topic) + 1
+                             )
+                        },
                         modifier = modifier
                     )
                 }
@@ -181,7 +197,8 @@ private fun TopicsWidgetPreview() {
                 isCustomised = true,
                 displayShowAll = true
             ),
-            onTopicClick = { _, _ -> },
+            onPageView = { },
+            onTopicClick = { _, _, _ -> },
             onEditClick = { },
             onAllClick = { }
         )
@@ -199,7 +216,8 @@ private fun TopicsWidgetEmptyTopicsPreview() {
                 isCustomised = true,
                 displayShowAll = true
             ),
-            onTopicClick = { _, _ -> },
+            onPageView = { },
+            onTopicClick = { _, _, _ -> },
             onEditClick = { },
             onAllClick = { }
         )
@@ -217,7 +235,8 @@ private fun TopicsWidgetErrorPreview() {
                 isCustomised = false,
                 displayShowAll = false
             ),
-            onTopicClick = { _, _ -> },
+            onPageView = { },
+            onTopicClick = { _, _, _ -> },
             onEditClick = { },
             onAllClick = { }
         )

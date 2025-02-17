@@ -6,6 +6,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import uk.govuk.app.analytics.AnalyticsClient
+import uk.govuk.app.analytics.data.local.model.EcommerceEvent
 import uk.govuk.app.topics.data.TopicsRepo
 import uk.govuk.app.topics.extension.toTopicItemUi
 import uk.govuk.app.topics.ui.model.TopicItemUi
@@ -20,7 +22,8 @@ internal data class TopicsWidgetUiState(
 
 @HiltViewModel
 internal class TopicsWidgetViewModel @Inject constructor(
-    private val topicsRepo: TopicsRepo
+    private val topicsRepo: TopicsRepo,
+    private val analyticsClient: AnalyticsClient
 ): ViewModel() {
 
     private val _uiState: MutableStateFlow<TopicsWidgetUiState?> = MutableStateFlow(null)
@@ -41,5 +44,62 @@ internal class TopicsWidgetViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun onTopicSelectClick(
+        ref: String,
+        title: String,
+        selectedItemIndex: Int
+    ) {
+        sendSelectItemEvent(
+            title = title,
+            section = ref,
+            selectedItemIndex = selectedItemIndex
+        )
+    }
+
+    fun onPageView(topics: List<TopicItemUi>) {
+        sendViewItemListEvent(topics)
+    }
+
+    private fun sendSelectItemEvent(
+        section: String,
+        title: String,
+        selectedItemIndex: Int
+    ) {
+        analyticsClient.selectItemEvent(
+            ecommerceEvent = EcommerceEvent(
+                itemListName = "HomeScreen",
+                itemListId = "Homepage",
+                items = listOf(
+                    EcommerceEvent.Item(
+                        itemName = title,
+                        itemCategory = "Topics",
+                        locationId = section
+                    )
+                )
+            ),
+            selectedItemIndex = selectedItemIndex
+        )
+    }
+
+    private fun sendViewItemListEvent(topics: List<TopicItemUi>) {
+        val items = mutableListOf<EcommerceEvent.Item>()
+
+        topics.forEach { topic ->
+            items += EcommerceEvent.Item(
+                itemName = topic.title,
+                itemCategory = "Topics",
+                locationId = topic.ref
+            )
+        }
+
+        analyticsClient.viewItemListEvent(
+            ecommerceEvent = EcommerceEvent(
+                itemListName = "HomeScreen",
+                itemListId = "Homepage",
+                items = items
+            )
+        )
     }
 }
