@@ -43,7 +43,8 @@ internal class AllStepByStepsViewModel @Inject constructor(
     fun onStepByStepClick(
         section: String,
         text: String,
-        url: String
+        url: String,
+        selectedItemIndex: Int
     ) {
         analyticsClient.buttonClick(
             text = text,
@@ -56,7 +57,8 @@ internal class AllStepByStepsViewModel @Inject constructor(
             title = text,
             section = section,
             text = text,
-            url = url
+            url = url,
+            selectedItemIndex = selectedItemIndex
         )
 
         viewModelScope.launch {
@@ -68,7 +70,8 @@ internal class AllStepByStepsViewModel @Inject constructor(
         section: String,
         text: String,
         title: String?,
-        url: String?
+        url: String?,
+        selectedItemIndex: Int
     ) {
         analyticsClient.selectItemEvent(
             ecommerceEvent = EcommerceEvent(
@@ -81,7 +84,8 @@ internal class AllStepByStepsViewModel @Inject constructor(
                         locationId = url ?: ""
                     )
                 )
-            )
+            ),
+            selectedItemIndex = selectedItemIndex
         )
     }
 

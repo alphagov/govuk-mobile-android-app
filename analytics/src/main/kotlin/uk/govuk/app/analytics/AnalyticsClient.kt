@@ -135,10 +135,11 @@ class AnalyticsClient @Inject constructor(
         firebaseAnalyticsClient.setUserProperty("topics_customised", "true")
     }
 
-    fun selectItemEvent(ecommerceEvent: EcommerceEvent) {
+    fun selectItemEvent(ecommerceEvent: EcommerceEvent, selectedItemIndex: Int) {
         logEcommerceEvent(
             event = FirebaseAnalytics.Event.SELECT_ITEM,
-            ecommerceEvent = ecommerceEvent
+            ecommerceEvent = ecommerceEvent,
+            selectedItemIndex = selectedItemIndex
         )
     }
 
@@ -207,9 +208,9 @@ class AnalyticsClient @Inject constructor(
         }
     }
 
-    private fun logEcommerceEvent(event: String, ecommerceEvent: EcommerceEvent) {
+    private fun logEcommerceEvent(event: String, ecommerceEvent: EcommerceEvent, selectedItemIndex: Int? = null) {
         if (isAnalyticsEnabled()) {
-            firebaseAnalyticsClient.logEcommerceEvent(event, ecommerceEvent)
+            firebaseAnalyticsClient.logEcommerceEvent(event, ecommerceEvent, selectedItemIndex)
         }
     }
 }

@@ -53,7 +53,7 @@ fun NavGraphBuilder.topicsGraph(
 
             TopicRoute(
                 onBack = { navController.popBackStack() },
-                onExternalLink = { url -> launchExternalLink(context, url) },
+                onExternalLink = { url, _ -> launchExternalLink(context, url) },
                 onStepByStepSeeAll = { navController.navigate(TOPICS_ALL_STEP_BY_STEPS_ROUTE) },
                 onSubtopic = { ref -> navController.navigateToTopic(ref, true) },
                 modifier = modifier

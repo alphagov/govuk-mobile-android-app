@@ -31,7 +31,8 @@ class FirebaseAnalyticsClient @Inject constructor(
 
     fun logEcommerceEvent(
         event: String,
-        ecommerceEvent: EcommerceEvent
+        ecommerceEvent: EcommerceEvent,
+        selectedItemIndex: Int? = null
     ) {
         val bundle = Bundle()
 
@@ -42,7 +43,7 @@ class FirebaseAnalyticsClient @Inject constructor(
         val itemsArrayList = ArrayList<Bundle>()
         ecommerceEvent.items.forEachIndexed { index, item ->
             val itemsBundle = Bundle()
-            itemsBundle.putInt("index", index + 1)
+            itemsBundle.putInt("index", selectedItemIndex ?: index + 1)
             itemsBundle.putString(FirebaseAnalytics.Param.ITEM_NAME, item.itemName)
             itemsBundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, item.itemCategory)
             itemsBundle.putString(FirebaseAnalytics.Param.LOCATION_ID, item.locationId)

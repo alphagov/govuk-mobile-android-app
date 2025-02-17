@@ -227,7 +227,8 @@ class TopicViewModelTest {
             section = "section",
             text = "text",
             url = "url",
-            title = "title"
+            title = "title",
+            selectedItemIndex = 42
         )
 
         verify {
@@ -250,7 +251,8 @@ class TopicViewModelTest {
             section = "section",
             text = "text",
             url = "url",
-            title = "title"
+            title = "title",
+            selectedItemIndex = 42
         )
 
         verify {
@@ -265,7 +267,8 @@ class TopicViewModelTest {
                             locationId = "url"
                         )
                     )
-                )
+                ),
+                selectedItemIndex = 42
             )
         }
     }
@@ -280,7 +283,8 @@ class TopicViewModelTest {
             section = "section",
             text = "text",
             url = "url",
-            title = "title"
+            title = "title",
+            selectedItemIndex = 42
         )
 
         coVerify {
@@ -297,6 +301,7 @@ class TopicViewModelTest {
         viewModel.onSeeAllClick(
             section = "section",
             text = "text",
+            selectedItemIndex = 42
         )
 
         verify {
@@ -314,7 +319,7 @@ class TopicViewModelTest {
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
-        viewModel.onSubtopicClick("text")
+        viewModel.onSubtopicClick("text", selectedItemIndex = 42)
 
         verify {
             analyticsClient.buttonClick(
@@ -331,7 +336,7 @@ class TopicViewModelTest {
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
-        viewModel.onSubtopicClick("text")
+        viewModel.onSubtopicClick("text", selectedItemIndex = 42)
 
         verify {
             analyticsClient.selectItemEvent(
@@ -345,7 +350,8 @@ class TopicViewModelTest {
                             locationId = ""
                         )
                     )
-                )
+                ),
+                selectedItemIndex = 42
             )
         }
     }
