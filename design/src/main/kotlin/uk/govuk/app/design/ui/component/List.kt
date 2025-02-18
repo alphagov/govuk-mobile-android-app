@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -62,19 +63,23 @@ fun ListHeader(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .padding(all = GovUkTheme.spacing.medium)
+                    .padding(
+                        horizontal = GovUkTheme.spacing.medium,
+                        vertical = GovUkTheme.spacing.small
+                    )
             ) {
+                Title3BoldLabel(
+                    text = stringResource(title),
+                    modifier = Modifier
+                        .padding(end = GovUkTheme.spacing.medium)
+                        .semantics { heading() }
+                )
+                Spacer(Modifier.weight(1f))
                 Icon(
                     painter = painterResource(icon),
                     contentDescription = null,
                     modifier = Modifier.size(40.dp),
                     tint = GovUkTheme.colourScheme.textAndIcons.icon
-                )
-                Title3BoldLabel(
-                    text = stringResource(title),
-                    modifier = Modifier
-                        .padding(start = GovUkTheme.spacing.medium)
-                        .semantics { heading() }
                 )
             }
             ListDivider()
