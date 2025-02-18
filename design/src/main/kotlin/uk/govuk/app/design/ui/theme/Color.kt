@@ -14,6 +14,7 @@ private val BlueLighter50 = Color(0xFF8EB8DC)
 private val BlueLighter95 = Color(0xFFF4F8FB)
 private val BlueDarker25 = Color(0xFF16548A)
 private val BlueDarker50 = Color(0xFF0F385C)
+private val BlueDarker80 = Color(0xFF061625)
 
 private val TealAccent = Color(0xFF00FFE0)
 
@@ -39,6 +40,7 @@ private val Grey100 = Color(0xFFE5E5E5)
 private val Grey60 = Color(0xFFF0F0F0)
 
 private val Black = Color(0xFF000000)
+private val BlackLighter50 = Color(0xFF858686)
 private val BlackAlpha30 = Color(0x4D000000)
 private val BlackAlpha75 = Color(0x4B000000)
 
@@ -84,6 +86,8 @@ data class GovUkColourScheme(
         val cardBlue: Color,
         val cardHighlight: Color,
         val cardSelected: Color,
+        val listBlue: Color,
+        val listHeadingBlue: Color,
         val fixedContainer: Color,
         val alert: Color,
         val buttonPrimary: Color,
@@ -99,20 +103,22 @@ data class GovUkColourScheme(
         val buttonCompactDisabled: Color,
         val buttonCompactFocused: Color,
         val searchBox: Color,
-        val toggleEnabled: Color,
-        val toggleDisabled: Color,
+        val switchOn: Color,
+        val switchOff: Color,
         val toggleHandle: Color,
-        val toggleBorder: Color,
         val icon: Color,
         val homeHeader: Color
     )
 
     data class Strokes(
-        val container: Color,
+        val fixedContainer: Color,
         val listDivider: Color,
         val pageControlsInactive: Color,
         val cardBlue: Color,
-        val cardSelected: Color
+        val cardSelected: Color,
+        val listBlue: Color,
+        val switchOn: Color,
+        val switchOff: Color
     )
 }
 
@@ -149,6 +155,8 @@ internal val LightColorScheme = GovUkColourScheme(
         cardBlue = BlueLighter95,
         cardHighlight = Grey400,
         cardSelected = GreenLighter95,
+        listBlue = BlueLighter95,
+        listHeadingBlue = BlueLighter95,
         fixedContainer = WhiteAlpha75,
         alert = Grey100,
         buttonPrimary = GreenPrimary,
@@ -164,19 +172,21 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonCompactDisabled = Grey100,
         buttonCompactFocused = YellowPrimary,
         searchBox = Grey60,
-        toggleEnabled = BluePrimary,
-        toggleDisabled = Grey300,
+        switchOn = GreenPrimary,
+        switchOff = BlackLighter50,
         toggleHandle = White,
-        toggleBorder = White,
         icon = BluePrimary,
         homeHeader = BluePrimary
     ),
     strokes = Strokes(
-        container = BlackAlpha30,
+        fixedContainer = BlackAlpha30,
         listDivider = Grey300,
         pageControlsInactive = Grey500,
         cardBlue = BlueLighter50,
-        cardSelected = GreenPrimary
+        cardSelected = GreenPrimary,
+        listBlue = BlueLighter50,
+        switchOn = GreenPrimary,
+        switchOff = BlackLighter50
     )
 )
 
@@ -213,6 +223,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         cardBlue = BlueDarker50,
         cardHighlight = Grey850,
         cardSelected = GreenDarker50,
+        listBlue = BlueDarker80,
+        listHeadingBlue = BlueDarker50,
         fixedContainer = BlackAlpha75,
         alert = Grey800,
         buttonPrimary = GreenAccent,
@@ -228,19 +240,21 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonCompactDisabled = Grey400,
         buttonCompactFocused = YellowPrimary,
         searchBox = Grey700,
-        toggleEnabled = BlueAccent,
-        toggleDisabled = Grey600,
+        switchOn = GreenPrimary,
+        switchOff = BlackLighter50,
         toggleHandle = White,
-        toggleBorder = Grey800,
         icon = BlueAccent,
         homeHeader = Black
     ),
     strokes = Strokes(
-        container = WhiteAlpha30,
+        fixedContainer = WhiteAlpha30,
         listDivider = Grey500,
         pageControlsInactive = Grey300,
         cardBlue = BluePrimary,
-        cardSelected = GreenAccent
+        cardSelected = GreenAccent,
+        listBlue = BluePrimary,
+        switchOn = GreenPrimary,
+        switchOff = BlackLighter50
     )
 )
 
@@ -278,6 +292,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             cardBlue = Color.Unspecified,
             cardHighlight = Color.Unspecified,
             cardSelected = Color.Unspecified,
+            listBlue = Color.Unspecified,
+            listHeadingBlue = Color.Unspecified,
             fixedContainer = Color.Unspecified,
             alert = Color.Unspecified,
             buttonPrimary = Color.Unspecified,
@@ -293,19 +309,21 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             buttonCompactDisabled = Color.Unspecified,
             buttonCompactFocused = Color.Unspecified,
             searchBox = Color.Unspecified,
-            toggleEnabled = Color.Unspecified,
-            toggleDisabled = Color.Unspecified,
+            switchOn = Color.Unspecified,
+            switchOff = Color.Unspecified,
             toggleHandle = Color.Unspecified,
-            toggleBorder = Color.Unspecified,
             icon = Color.Unspecified,
             homeHeader = Color.Unspecified
         ),
         strokes = Strokes(
-            container = Color.Unspecified,
+            fixedContainer = Color.Unspecified,
             listDivider = Color.Unspecified,
             pageControlsInactive = Color.Unspecified,
             cardBlue = Color.Unspecified,
-            cardSelected = Color.Unspecified
+            cardSelected = Color.Unspecified,
+            listBlue = Color.Unspecified,
+            switchOn = Color.Unspecified,
+            switchOff = Color.Unspecified
         )
     )
 }

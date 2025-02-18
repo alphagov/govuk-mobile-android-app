@@ -192,7 +192,7 @@ private fun BottomNav(
         Column {
             HorizontalDivider(
                 thickness = 1.dp,
-                color = GovUkTheme.colourScheme.strokes.container
+                color = GovUkTheme.colourScheme.strokes.fixedContainer
             )
             NavigationBar(
                 containerColor = GovUkTheme.colourScheme.surfaces.background
