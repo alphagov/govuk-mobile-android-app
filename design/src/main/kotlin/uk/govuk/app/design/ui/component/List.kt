@@ -2,7 +2,6 @@ package uk.govuk.app.design.ui.component
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -65,10 +64,11 @@ fun ListHeader(
                 modifier = Modifier
                     .padding(all = GovUkTheme.spacing.medium)
             ) {
-                Image(
+                Icon(
                     painter = painterResource(icon),
                     contentDescription = null,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(40.dp),
+                    tint = GovUkTheme.colourScheme.textAndIcons.icon
                 )
                 Title3BoldLabel(
                     text = stringResource(title),
@@ -110,7 +110,7 @@ fun InternalLinkListItem(
             Icon(
                 painter = painterResource(R.drawable.ic_chevron),
                 contentDescription = null,
-                tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
+                tint = GovUkTheme.colourScheme.textAndIcons.icon
             )
         }
     }
