@@ -93,7 +93,7 @@ internal class AllStepByStepsViewModel @Inject constructor(
         stepBySteps: List<TopicContent>,
         title: String
     ) {
-        var topicItems = mutableListOf<EcommerceEvent.Item>()
+        var topicItems = listOf<EcommerceEvent.Item>()
 
         if (stepBySteps.isNotEmpty()) {
             val stepByStepsTitle = "Step by step guides"
@@ -108,7 +108,7 @@ internal class AllStepByStepsViewModel @Inject constructor(
                         locationId = item.url
                     )
                 }
-            }.toMutableList()
+            }
         }
 
         analyticsClient.viewItemListEvent(
