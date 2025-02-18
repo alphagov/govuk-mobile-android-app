@@ -136,7 +136,8 @@ class AllStepByStepsViewModelTest {
         viewModel.onStepByStepClick(
             section = "section",
             text = "text",
-            url = "url"
+            url = "url",
+            selectedItemIndex = 42
         )
 
         verify {
@@ -156,7 +157,8 @@ class AllStepByStepsViewModelTest {
         viewModel.onStepByStepClick(
             section = "section",
             text = "text",
-            url = "url"
+            url = "url",
+            selectedItemIndex = 42
         )
 
         verify {
@@ -171,7 +173,8 @@ class AllStepByStepsViewModelTest {
                             locationId = "url"
                         )
                     )
-                )
+                ),
+                selectedItemIndex = 42
             )
         }
     }
@@ -183,7 +186,8 @@ class AllStepByStepsViewModelTest {
         viewModel.onStepByStepClick(
             section = "section",
             text = "text",
-            url = "url"
+            url = "url",
+            selectedItemIndex = 42
         )
 
         coVerify {
