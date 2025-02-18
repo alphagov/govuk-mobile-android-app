@@ -27,10 +27,10 @@ fun ToggleSwitch(
         colors = SwitchDefaults.colors(
             checkedThumbColor = GovUkTheme.colourScheme.surfaces.toggleHandle,
             checkedTrackColor = GovUkTheme.colourScheme.surfaces.switchOn,
-            checkedBorderColor = GovUkTheme.colourScheme.surfaces.switchOn,
+            checkedBorderColor = GovUkTheme.colourScheme.strokes.switchOn,
             uncheckedThumbColor = GovUkTheme.colourScheme.surfaces.toggleHandle,
             uncheckedTrackColor = GovUkTheme.colourScheme.surfaces.switchOff,
-            uncheckedBorderColor = GovUkTheme.colourScheme.surfaces.switchOff
+            uncheckedBorderColor = GovUkTheme.colourScheme.strokes.switchOff
         ),
         modifier = modifier.semantics {
             testTagsAsResourceId = true

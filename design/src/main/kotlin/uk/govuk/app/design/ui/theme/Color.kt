@@ -117,7 +117,8 @@ data class GovUkColourScheme(
         val cardBlue: Color,
         val cardSelected: Color,
         val listBlue: Color,
-        val checkBoxUnchecked: Color
+        val switchOn: Color,
+        val switchOff: Color
     )
 }
 
@@ -184,7 +185,8 @@ internal val LightColorScheme = GovUkColourScheme(
         cardBlue = BlueLighter50,
         cardSelected = GreenPrimary,
         listBlue = BlueLighter50,
-        checkBoxUnchecked = Grey300
+        switchOn = GreenPrimary,
+        switchOff = BlackLighter50
     )
 )
 
@@ -251,7 +253,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         cardBlue = BluePrimary,
         cardSelected = GreenAccent,
         listBlue = BluePrimary,
-        checkBoxUnchecked = Grey300
+        switchOn = GreenPrimary,
+        switchOff = BlackLighter50
     )
 )
 
@@ -319,7 +322,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             cardBlue = Color.Unspecified,
             cardSelected = Color.Unspecified,
             listBlue = Color.Unspecified,
-            checkBoxUnchecked = Color.Unspecified
+            switchOn = Color.Unspecified,
+            switchOff = Color.Unspecified
         )
     )
 }
