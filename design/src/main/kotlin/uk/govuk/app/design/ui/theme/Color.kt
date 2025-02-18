@@ -82,6 +82,7 @@ data class GovUkColourScheme(
     data class Surfaces(
         val background: Color,
         val primary: Color,
+        val splash: Color,
         val cardDefault: Color,
         val cardBlue: Color,
         val cardHighlight: Color,
@@ -151,6 +152,7 @@ internal val LightColorScheme = GovUkColourScheme(
     surfaces = Surfaces(
         background = White,
         primary = BluePrimary,
+        splash = BluePrimary,
         cardDefault = White,
         cardBlue = BlueLighter95,
         cardHighlight = Grey400,
@@ -219,6 +221,7 @@ internal val DarkColorScheme = GovUkColourScheme(
     surfaces = Surfaces(
         background = Black,
         primary = BlueAccent,
+        splash = BluePrimary,
         cardDefault = Grey800,
         cardBlue = BlueDarker50,
         cardHighlight = Grey850,
@@ -288,6 +291,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
         surfaces = Surfaces(
             background = Color.Unspecified,
             primary = Color.Unspecified,
+            splash = Color.Unspecified,
             cardDefault = Color.Unspecified,
             cardBlue = Color.Unspecified,
             cardHighlight = Color.Unspecified,

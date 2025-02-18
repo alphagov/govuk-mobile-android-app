@@ -111,7 +111,7 @@ internal fun GovUkApp(intent: Intent) {
         }
     } else {
         SetStatusBarColour(
-            colour = GovUkTheme.colourScheme.surfaces.primary,
+            colour = GovUkTheme.colourScheme.surfaces.splash,
             isLight = false
         )
         SplashScreen { isSplashDone = true }
