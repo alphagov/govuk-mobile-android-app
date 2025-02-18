@@ -39,6 +39,7 @@ private val Grey100 = Color(0xFFE5E5E5)
 private val Grey60 = Color(0xFFF0F0F0)
 
 private val Black = Color(0xFF000000)
+private val BlackLighter50 = Color(0xFF858686)
 private val BlackAlpha30 = Color(0x4D000000)
 private val BlackAlpha75 = Color(0x4B000000)
 
@@ -99,10 +100,9 @@ data class GovUkColourScheme(
         val buttonCompactDisabled: Color,
         val buttonCompactFocused: Color,
         val searchBox: Color,
-        val toggleEnabled: Color,
-        val toggleDisabled: Color,
+        val switchOn: Color,
+        val switchOff: Color,
         val toggleHandle: Color,
-        val toggleBorder: Color,
         val icon: Color,
         val homeHeader: Color
     )
@@ -164,10 +164,9 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonCompactDisabled = Grey100,
         buttonCompactFocused = YellowPrimary,
         searchBox = Grey60,
-        toggleEnabled = BluePrimary,
-        toggleDisabled = Grey300,
+        switchOn = GreenPrimary,
+        switchOff = BlackLighter50,
         toggleHandle = White,
-        toggleBorder = White,
         icon = BluePrimary,
         homeHeader = BluePrimary
     ),
@@ -228,10 +227,9 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonCompactDisabled = Grey400,
         buttonCompactFocused = YellowPrimary,
         searchBox = Grey700,
-        toggleEnabled = BlueAccent,
-        toggleDisabled = Grey600,
+        switchOn = GreenPrimary,
+        switchOff = BlackLighter50,
         toggleHandle = White,
-        toggleBorder = Grey800,
         icon = BlueAccent,
         homeHeader = Black
     ),
@@ -293,10 +291,9 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             buttonCompactDisabled = Color.Unspecified,
             buttonCompactFocused = Color.Unspecified,
             searchBox = Color.Unspecified,
-            toggleEnabled = Color.Unspecified,
-            toggleDisabled = Color.Unspecified,
+            switchOn = Color.Unspecified,
+            switchOff = Color.Unspecified,
             toggleHandle = Color.Unspecified,
-            toggleBorder = Color.Unspecified,
             icon = Color.Unspecified,
             homeHeader = Color.Unspecified
         ),
