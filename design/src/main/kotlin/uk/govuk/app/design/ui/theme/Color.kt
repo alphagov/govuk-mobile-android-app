@@ -115,6 +115,7 @@ data class GovUkColourScheme(
         val pageControlsInactive: Color,
         val cardBlue: Color,
         val cardSelected: Color,
+        val listBlue: Color,
         val checkBoxUnchecked: Color
     )
 }
@@ -180,6 +181,7 @@ internal val LightColorScheme = GovUkColourScheme(
         pageControlsInactive = Grey500,
         cardBlue = BlueLighter50,
         cardSelected = GreenPrimary,
+        listBlue = BlueLighter50,
         checkBoxUnchecked = Grey300
     )
 )
@@ -245,6 +247,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         pageControlsInactive = Grey300,
         cardBlue = BluePrimary,
         cardSelected = GreenAccent,
+        listBlue = BluePrimary,
         checkBoxUnchecked = Grey300
     )
 )
@@ -311,6 +314,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             pageControlsInactive = Color.Unspecified,
             cardBlue = Color.Unspecified,
             cardSelected = Color.Unspecified,
+            listBlue = Color.Unspecified,
             checkBoxUnchecked = Color.Unspecified
         )
     )

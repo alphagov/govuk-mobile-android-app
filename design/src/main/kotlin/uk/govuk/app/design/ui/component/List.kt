@@ -42,7 +42,7 @@ fun ListHeader(
     @DrawableRes icon: Int,
     modifier: Modifier = Modifier
 ) {
-    val borderColor = GovUkTheme.colourScheme.strokes.listDivider
+    val borderColor = GovUkTheme.colourScheme.strokes.listBlue
     val backgroundColor = GovUkTheme.colourScheme.surfaces.listBlue
 
     Box(
@@ -230,7 +230,7 @@ fun CardListItem(
     isLast: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-    val borderColor = GovUkTheme.colourScheme.strokes.listDivider
+    val borderColor = GovUkTheme.colourScheme.strokes.listBlue
     val backgroundColor = GovUkTheme.colourScheme.surfaces.listBlue
     val backgroundColorHighlight = GovUkTheme.colourScheme.surfaces.cardHighlight
 
