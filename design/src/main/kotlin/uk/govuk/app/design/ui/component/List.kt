@@ -43,7 +43,7 @@ fun ListHeader(
     modifier: Modifier = Modifier
 ) {
     val borderColor = GovUkTheme.colourScheme.strokes.listBlue
-    val backgroundColor = GovUkTheme.colourScheme.surfaces.listBlue
+    val backgroundColor = GovUkTheme.colourScheme.surfaces.listHeadingBlue
 
     Box(
         modifier = modifier
