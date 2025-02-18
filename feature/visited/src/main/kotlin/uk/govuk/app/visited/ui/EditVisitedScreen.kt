@@ -259,7 +259,7 @@ private fun BottomNavBar(
     val selectText = stringResource(R.string.visited_items_select_all_button)
     val deselectText = stringResource(R.string.visited_items_deselect_all_button)
     val removeText = stringResource(R.string.visited_items_remove_button)
-    val borderColor = GovUkTheme.colourScheme.strokes.listDivider
+    val borderColor = GovUkTheme.colourScheme.strokes.fixedContainer
 
     NavigationBar(
         containerColor = GovUkTheme.colourScheme.surfaces.background,

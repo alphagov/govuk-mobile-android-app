@@ -111,7 +111,7 @@ data class GovUkColourScheme(
     )
 
     data class Strokes(
-        val container: Color,
+        val fixedContainer: Color,
         val listDivider: Color,
         val pageControlsInactive: Color,
         val cardBlue: Color,
@@ -178,7 +178,7 @@ internal val LightColorScheme = GovUkColourScheme(
         homeHeader = BluePrimary
     ),
     strokes = Strokes(
-        container = BlackAlpha30,
+        fixedContainer = BlackAlpha30,
         listDivider = Grey300,
         pageControlsInactive = Grey500,
         cardBlue = BlueLighter50,
@@ -245,7 +245,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         homeHeader = Black
     ),
     strokes = Strokes(
-        container = WhiteAlpha30,
+        fixedContainer = WhiteAlpha30,
         listDivider = Grey500,
         pageControlsInactive = Grey300,
         cardBlue = BluePrimary,
@@ -313,7 +313,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             homeHeader = Color.Unspecified
         ),
         strokes = Strokes(
-            container = Color.Unspecified,
+            fixedContainer = Color.Unspecified,
             listDivider = Color.Unspecified,
             pageControlsInactive = Color.Unspecified,
             cardBlue = Color.Unspecified,

@@ -152,7 +152,7 @@ private fun ScalingHeader(
         HorizontalDivider(
             modifier = Modifier.alpha(dividerAlpha),
             thickness = 1.dp,
-            color = GovUkTheme.colourScheme.strokes.container
+            color = GovUkTheme.colourScheme.strokes.fixedContainer
         )
     }
 }
