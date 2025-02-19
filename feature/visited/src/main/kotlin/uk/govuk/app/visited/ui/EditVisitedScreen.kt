@@ -296,7 +296,7 @@ private fun BottomNavBar(
                 onClick = onRemove,
                 enabled = uiState?.hasSelectedItems == true,
                 colors = ButtonDefaults.textButtonColors(
-                    contentColor = GovUkTheme.colourScheme.textAndIcons.buttonRemove,
+                    contentColor = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
                     disabledContentColor = GovUkTheme.colourScheme.textAndIcons.buttonRemoveDisabled
                 )
             ) {

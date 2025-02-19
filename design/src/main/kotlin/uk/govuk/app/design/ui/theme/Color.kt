@@ -21,6 +21,8 @@ private val TealAccent = Color(0xFF00FFE0)
 private val YellowPrimary = Color(0xFFFFDD00)
 
 private val Red1 = Color(0xFFD4351C)
+private val RedPrimary = Color(0xFFCA3535)
+private val RedAccent = Color(0xFFFF5E5E)
 
 private val GreenPrimary = Color(0xFF11875A)
 private val GreenAccent = Color(0xFF66F39E)
@@ -70,6 +72,7 @@ data class GovUkColourScheme(
         val buttonCompactDisabled: Color,
         val buttonCompactFocused: Color,
         val buttonSuccess: Color,
+        val buttonDestructive: Color,
         val icon: Color,
         val trailingIcon: Color,
         val buttonRemove: Color,
@@ -139,10 +142,11 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonSecondaryDisabled = Grey700,
         buttonSecondaryFocused = Black,
         buttonCompact = BluePrimary,
-        buttonCompactHighlight = BlueDarker50,
+        buttonCompactHighlight = BlueDarker25,
         buttonCompactDisabled = Grey600,
         buttonCompactFocused = Black,
         buttonSuccess = GreenPrimary,
+        buttonDestructive = RedPrimary,
         icon = BluePrimary,
         trailingIcon = Grey300,
         buttonRemove = Red1,
@@ -210,10 +214,11 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonSecondaryDisabled = Grey300,
         buttonSecondaryFocused = Black,
         buttonCompact = BlueAccent,
-        buttonCompactHighlight = Blue2,
+        buttonCompactHighlight = BlueLighter25,
         buttonCompactDisabled = Black,
         buttonCompactFocused = Black,
         buttonSuccess = GreenAccent,
+        buttonDestructive = RedAccent,
         icon = BlueLighter95,
         trailingIcon = Grey500,
         buttonRemove = Red1,
@@ -286,6 +291,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             buttonCompactDisabled = Color.Unspecified,
             buttonCompactFocused = Color.Unspecified,
             buttonSuccess = Color.Unspecified,
+            buttonDestructive = Color.Unspecified,
             icon = Color.Unspecified,
             trailingIcon = Color.Unspecified,
             buttonRemove = Color.Unspecified,
