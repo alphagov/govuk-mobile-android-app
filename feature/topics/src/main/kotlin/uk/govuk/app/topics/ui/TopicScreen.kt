@@ -1,5 +1,6 @@
 package uk.govuk.app.topics.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,9 +30,9 @@ import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeader
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
-import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.design.ui.component.error.OfflineMessage
 import uk.govuk.app.design.ui.component.error.ProblemMessage
+import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.topics.R
 import uk.govuk.app.topics.TopicUiState
 import uk.govuk.app.topics.TopicViewModel
@@ -138,16 +139,25 @@ private fun TopicScreen(
 
         var currentItemIndex = 1
 
-        LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
+        LazyColumn {
             item {
-                Column {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .background(GovUkTheme.colourScheme.surfaces.homeHeader)
+                        .padding(horizontal = GovUkTheme.spacing.medium)
+                ) {
                     LargeTitleBoldLabel(
                         text = topic.title,
-                        modifier = Modifier.semantics { heading() }
+                        modifier = Modifier.semantics { heading() },
+                        color = GovUkTheme.colourScheme.textAndIcons.header
                     )
                     MediumVerticalSpacer()
                     topic.description?.let { description ->
-                        BodyRegularLabel(description)
+                        BodyRegularLabel(
+                            text = description,
+                            color = GovUkTheme.colourScheme.textAndIcons.header
+                        )
                         MediumVerticalSpacer()
                     }
                 }
@@ -205,7 +215,8 @@ private fun LazyListScope.contentItems(
         item {
             ListHeader(
                 title = section.title,
-                icon = section.icon
+                icon = section.icon,
+                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
             )
         }
 
@@ -217,6 +228,7 @@ private fun LazyListScope.contentItems(
             ExternalLinkListItem(
                 title = content.title,
                 onClick = { onClick(sectionTitle, content.title, content.url, currentItemIndex + index) },
+                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
                 isFirst = false,
                 isLast = index == lastIndex
             )
@@ -229,6 +241,7 @@ private fun LazyListScope.contentItems(
                 InternalLinkListItem(
                     title = title,
                     onClick = { onSeeAll(sectionTitle, title, currentItemIndex + contentItems.size) },
+                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
                     isFirst = lastIndex == 0,
                     isLast = true
                 )
@@ -251,7 +264,8 @@ private fun LazyListScope.subtopics(
         item {
             ListHeader(
                 title = section.title,
-                icon = section.icon
+                icon = section.icon,
+                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
             )
         }
 
@@ -259,6 +273,7 @@ private fun LazyListScope.subtopics(
             InternalLinkListItem(
                 title = subtopic.title,
                 onClick = { onClick(subtopic.title, subtopic.ref, currentItemIndex + index) },
+                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
                 isFirst = false,
                 isLast = index == subtopics.lastIndex
             )
