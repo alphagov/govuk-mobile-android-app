@@ -250,7 +250,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         switchOff = BlackLighter50,
         toggleHandle = White,
         icon = BlueAccent,
-        homeHeader = Black
+        homeHeader = BlueDarker50
     ),
     strokes = Strokes(
         fixedContainer = WhiteAlpha30,

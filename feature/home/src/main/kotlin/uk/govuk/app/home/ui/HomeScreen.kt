@@ -11,19 +11,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -35,7 +32,6 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.HomeViewModel
 import uk.govuk.app.home.R
 import kotlin.math.max
-import kotlin.math.min
 
 @Composable
 internal fun HomeRoute(
@@ -138,14 +134,9 @@ private fun ScalingHeader(
         mutableIntStateOf(initialPadding)
     }
 
-    var dividerAlpha by remember {
-        mutableFloatStateOf(0f)
-    }
-
     if (scaleFactor == -1) {
         logoHeight = minLogoHeight
         padding = minPadding
-        dividerAlpha = 1f
     } else {
         logoHeight = max(
             minLogoHeight,
@@ -155,7 +146,6 @@ private fun ScalingHeader(
             minPadding,
             (initialPadding - (scaleFactor / 5f)).toInt()
         )
-        dividerAlpha = min(1f, scaleFactor / 100f)
     }
 
     Column(modifier = modifier) {
@@ -167,11 +157,6 @@ private fun ScalingHeader(
                 .align(Alignment.CenterHorizontally)
                 .height(logoHeight.dp)
                 .semantics { heading() }
-        )
-        HorizontalDivider(
-            modifier = Modifier.alpha(dividerAlpha),
-            thickness = 1.dp,
-            color = GovUkTheme.colourScheme.strokes.fixedContainer
         )
     }
 }
