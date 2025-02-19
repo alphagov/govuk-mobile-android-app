@@ -97,13 +97,13 @@ private fun SettingsScreen(
         modifier = modifier
     ) {
         TabHeader(stringResource(R.string.screen_title))
-        SmallVerticalSpacer()
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = GovUkTheme.spacing.medium)
                 .padding(bottom = GovUkTheme.spacing.extraLarge)
         ) {
+            SmallVerticalSpacer()
             AboutTheApp(
                 appVersion = appVersion,
                 onHelpClick = onHelpClick
