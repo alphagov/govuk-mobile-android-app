@@ -163,6 +163,10 @@ private fun TopicScreen(
                 }
             }
 
+            item {
+                MediumVerticalSpacer()
+            }
+
             contentItems(
                 currentItemIndex = currentItemIndex,
                 contentItems = topic.popularPages,

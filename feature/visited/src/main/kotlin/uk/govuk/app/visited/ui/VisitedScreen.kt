@@ -34,6 +34,7 @@ import uk.govuk.app.design.ui.component.ExternalLinkListItem
 import uk.govuk.app.design.ui.component.ExtraLargeVerticalSpacer
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeadingLabel
+import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.visited.R
@@ -104,8 +105,10 @@ private fun VisitedScreen(
         LazyColumn(
             Modifier
                 .padding(horizontal = GovUkTheme.spacing.medium)
-                .padding(top = GovUkTheme.spacing.small)
         ) {
+            item {
+                MediumVerticalSpacer()
+            }
             item {
                 if (visitedItems.isNullOrEmpty()) {
                     NoVisitedItems(modifier)
