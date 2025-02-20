@@ -43,14 +43,18 @@ import androidx.navigation.compose.rememberNavController
 import uk.govuk.app.AppUiState
 import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
+import uk.govuk.app.home.HomeWidget
 import uk.govuk.app.R
 import uk.govuk.app.analytics.navigation.analyticsGraph
+import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.error.AppUnavailableScreen
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.navigation.homeGraph
 import uk.govuk.app.navigation.AppLaunchNavigation
 import uk.govuk.app.navigation.TopLevelDestination
 import uk.govuk.app.notifications.navigation.notificationsGraph
+import uk.govuk.app.notifications.ui.notificationsPermissionShouldShowRationale
+import uk.govuk.app.notifications.ui.NotificationsPromptWidget
 import uk.govuk.app.onboarding.navigation.onboardingGraph
 import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
@@ -72,6 +76,7 @@ import uk.govuk.app.visited.ui.widget.VisitedWidget
 internal fun GovUkApp(intent: Intent) {
     val viewModel: AppViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
+    val homeWidgets by viewModel.homeWidgets.collectAsState()
     var isSplashDone by rememberSaveable { mutableStateOf(false) }
     var isRecommendUpdateSkipped by rememberSaveable { mutableStateOf(false) }
 
@@ -101,8 +106,12 @@ internal fun GovUkApp(intent: Intent) {
                             onboardingCompleted = { viewModel.onboardingCompleted() },
                             topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
                             onTabClick = { tabText -> viewModel.onTabClick(tabText) },
+                            homeWidgets = homeWidgets,
                             onWidgetClick = { text, external ->
                                 viewModel.onWidgetClick(text, external, section)
+                            },
+                            onSuppressWidgetClick = { text, widget ->
+                                viewModel.onSuppressWidgetClick(text, section, widget)
                             }
                         )
                     }
@@ -137,7 +146,9 @@ private fun BottomNavScaffold(
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
-    onWidgetClick: (String, Boolean) -> Unit
+    homeWidgets: List<HomeWidget>?,
+    onWidgetClick: (String, Boolean) -> Unit,
+    onSuppressWidgetClick: (String, HomeWidget) -> Unit
 ) {
     val navController = rememberNavController()
 
@@ -156,7 +167,9 @@ private fun BottomNavScaffold(
                 deeplink = deeplink,
                 onboardingCompleted = onboardingCompleted,
                 topicSelectionCompleted = topicSelectionCompleted,
+                homeWidgets = homeWidgets,
                 onWidgetClick = onWidgetClick,
+                onSuppressWidgetClick = onSuppressWidgetClick,
                 paddingValues = paddingValues
             )
         }
@@ -244,7 +257,9 @@ private fun GovUkNavHost(
     deeplink: Uri?,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
+    homeWidgets: List<HomeWidget>?,
     onWidgetClick: (String, Boolean) -> Unit,
+    onSuppressWidgetClick: (String, HomeWidget) -> Unit,
     paddingValues: PaddingValues
 ) {
     deeplink?.let {
@@ -297,10 +312,9 @@ private fun GovUkNavHost(
             widgets = homeScreenWidgets(
                 context = context,
                 navController = navController,
-                isSearchEnabled = uiState.isSearchEnabled,
-                isTopicsEnabled = uiState.isTopicsEnabled,
-                isRecentActivityEnabled = uiState.isRecentActivityEnabled,
-                onClick = onWidgetClick
+                homeWidgets = homeWidgets,
+                onClick = onWidgetClick,
+                onSuppressClick = onSuppressWidgetClick
             ),
             modifier = Modifier.padding(paddingValues)
         )
@@ -318,64 +332,89 @@ private fun GovUkNavHost(
 private fun homeScreenWidgets(
     context: Context,
     navController: NavHostController,
-    isSearchEnabled: Boolean,
-    isRecentActivityEnabled: Boolean,
-    isTopicsEnabled: Boolean,
-    onClick: (String, Boolean) -> Unit
+    homeWidgets: List<HomeWidget>?,
+    onClick: (String, Boolean) -> Unit,
+    onSuppressClick: (String, HomeWidget) -> Unit
 ): List<@Composable (Modifier) -> Unit> {
     val widgets = mutableListOf<@Composable (Modifier) -> Unit>()
+    homeWidgets?.forEach {
+        when (it) {
+            HomeWidget.NOTIFICATIONS -> {
+                widgets.add { modifier ->
+                    if (notificationsPermissionShouldShowRationale()) {
+                        NotificationsPromptWidget(
+                            onClick = { text ->
+                                onClick(text, true)
+                            },
+                            onSuppressClick = { text ->
+                                onSuppressClick(text, HomeWidget.NOTIFICATIONS)
+                            },
+                            modifier = modifier
+                        )
+                        LargeVerticalSpacer()
+                    }
+                }
+            }
 
-    widgets.add { modifier ->
-        FeedbackPromptWidget(
-            onClick = { text ->
-                onClick(text, true)
-                navigateToHelpAndFeedback(context, BuildConfig.VERSION_NAME)
-            },
-            modifier = modifier
-        )
-    }
+            HomeWidget.FEEDBACK_PROMPT -> {
+                widgets.add { modifier ->
+                    FeedbackPromptWidget(
+                        onClick = { text ->
+                            onClick(text, true)
+                            navigateToHelpAndFeedback(context, BuildConfig.VERSION_NAME)
+                        },
+                        modifier = modifier
+                    )
+                    LargeVerticalSpacer()
+                }
+            }
 
-    if (isSearchEnabled) {
-        widgets.add { modifier ->
-            SearchWidget(
-                onClick = { text ->
-                    onClick(text, false)
-                    navController.navigate(SEARCH_GRAPH_ROUTE)
-                },
-                modifier = modifier
-            )
-        }
-    }
+            HomeWidget.SEARCH -> {
+                widgets.add { modifier ->
+                    SearchWidget(
+                        onClick = { text ->
+                            onClick(text, false)
+                            navController.navigate(SEARCH_GRAPH_ROUTE)
+                        },
+                        modifier = modifier
+                    )
+                    LargeVerticalSpacer()
+                }
+            }
 
-    if (isRecentActivityEnabled) {
-        widgets.add { modifier ->
-            VisitedWidget(
-                onClick = { text ->
-                    onClick(text, false)
-                    navController.navigate(VISITED_GRAPH_ROUTE)
-                },
-                modifier = modifier
-            )
-        }
-    }
+            HomeWidget.RECENT_ACTIVITY -> {
+                widgets.add { modifier ->
+                    VisitedWidget(
+                        onClick = { text ->
+                            onClick(text, false)
+                            navController.navigate(VISITED_GRAPH_ROUTE)
+                        },
+                        modifier = modifier
+                    )
+                    LargeVerticalSpacer()
+                }
+            }
 
-    if (isTopicsEnabled) {
-        widgets.add { modifier ->
-            TopicsWidget(
-                onTopicClick = { ref, title ->
-                    onClick(title, false)
-                    navController.navigateToTopic(ref)
-                },
-                onEditClick = { text ->
-                    onClick(text, false)
-                    navController.navigateToTopicsEdit()
-                },
-                onAllClick = { text ->
-                    onClick(text, false)
-                    navController.navigateToTopicsAll()
-                },
-                modifier = modifier
-            )
+            HomeWidget.TOPICS -> {
+                widgets.add { modifier ->
+                    TopicsWidget(
+                        onTopicClick = { ref, title ->
+                            onClick(title, false)
+                            navController.navigateToTopic(ref)
+                        },
+                        onEditClick = { text ->
+                            onClick(text, false)
+                            navController.navigateToTopicsEdit()
+                        },
+                        onAllClick = { text ->
+                            onClick(text, false)
+                            navController.navigateToTopicsAll()
+                        },
+                        modifier = modifier
+                    )
+                    LargeVerticalSpacer()
+                }
+            }
         }
     }
     return widgets

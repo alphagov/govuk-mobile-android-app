@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="content_desc_back">Back</string>
+    <string name="content_desc_remove">Remove</string>
     <string name="gov_uk">GOV.UK</string>
     <string name="gov_uk_alt_text">GOV dot UK</string>
     <string name="crown_alt_text">Crown</string>
