@@ -1,5 +1,6 @@
 package uk.govuk.app.design.ui.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,15 +36,17 @@ fun TabHeader(
         modifier = modifier
             .fillMaxWidth()
             .height(64.dp)
+            .background(GovUkTheme.colourScheme.surfaces.homeHeader)
             .padding(horizontal = GovUkTheme.spacing.medium),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Title2BoldLabel(
             text = text,
-            textAlign = TextAlign.Center,
             modifier = Modifier
                 .weight(1f)
-                .semantics { heading() }
+                .semantics { heading() },
+            color = GovUkTheme.colourScheme.textAndIcons.header,
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -58,7 +61,11 @@ fun ChildPageHeader(
     actionText: String? = null,
     actionAltText: String? = null
 ) {
-    Column(modifier.semantics { this.invisibleToUser() }) {
+    Column(
+        modifier
+            .background(GovUkTheme.colourScheme.surfaces.homeHeader)
+            .semantics { this.invisibleToUser() }
+    ) {
         if (onBack != null || onAction != null) {
             Row(
                 modifier = Modifier
@@ -73,7 +80,7 @@ fun ChildPageHeader(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.content_desc_back),
-                            tint = GovUkTheme.colourScheme.textAndIcons.link
+                            tint = GovUkTheme.colourScheme.textAndIcons.linkHeader
                         )
                     }
                 }
@@ -86,7 +93,7 @@ fun ChildPageHeader(
                     ) {
                         BodyRegularLabel(
                             text = actionText,
-                            color = GovUkTheme.colourScheme.textAndIcons.link,
+                            color = GovUkTheme.colourScheme.textAndIcons.linkHeader,
                             textAlign = TextAlign.End,
                             modifier = Modifier.semantics {
                                 contentDescription = actionAltText ?: actionText
@@ -104,7 +111,8 @@ fun ChildPageHeader(
                     .fillMaxWidth()
                     .padding(horizontal = GovUkTheme.spacing.medium)
                     .focusable()
-                    .semantics { heading() }
+                    .semantics { heading() },
+                color = GovUkTheme.colourScheme.textAndIcons.header
             )
         }
     }

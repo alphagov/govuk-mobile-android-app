@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -72,9 +71,9 @@ fun ListHeader(
                     text = stringResource(title),
                     modifier = Modifier
                         .padding(end = GovUkTheme.spacing.medium)
+                        .weight(1f)
                         .semantics { heading() }
                 )
-                Spacer(Modifier.weight(1f))
                 Icon(
                     painter = painterResource(icon),
                     contentDescription = null,
