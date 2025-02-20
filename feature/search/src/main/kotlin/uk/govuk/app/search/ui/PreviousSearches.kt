@@ -156,7 +156,7 @@ private fun PreviousSearch(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Clear,
-                    contentDescription = stringResource(R.string.content_desc_remove),
+                    contentDescription = stringResource(R.string.content_desc_remove_from_search_history),
                     modifier = Modifier.size(18.dp),
                     tint = GovUkTheme.colourScheme.textAndIcons.trailingIcon
                 )
