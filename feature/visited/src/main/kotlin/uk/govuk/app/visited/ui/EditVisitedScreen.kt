@@ -13,7 +13,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -26,8 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -205,8 +203,8 @@ private fun CheckableExternalLinkListItem(
                     checked = item.isSelected,
                     onCheckedChange = { onSelect(item.title, item.url) },
                     colors = CheckboxDefaults.colors(
-                        checkedColor = GovUkTheme.colourScheme.surfaces.primary,
-                        uncheckedColor = GovUkTheme.colourScheme.strokes.listDivider,
+                        checkedColor = GovUkTheme.colourScheme.surfaces.switchOn,
+                        uncheckedColor = GovUkTheme.colourScheme.strokes.switchOff,
                         checkmarkColor = GovUkTheme.colourScheme.textAndIcons.selectedTick,
                     )
                 )
@@ -259,26 +257,14 @@ private fun BottomNavBar(
     val selectText = stringResource(R.string.visited_items_select_all_button)
     val deselectText = stringResource(R.string.visited_items_deselect_all_button)
     val removeText = stringResource(R.string.visited_items_remove_button)
-    val borderColor = GovUkTheme.colourScheme.strokes.listDivider
 
-    NavigationBar(
-        containerColor = GovUkTheme.colourScheme.surfaces.background,
-        contentColor = GovUkTheme.colourScheme.textAndIcons.primary,
-        modifier = modifier
-            .fillMaxWidth()
-            .drawBehind {
-                val borderSize = 1.dp
-                val topEdge = 0f
-                drawLine(
-                    color = borderColor,
-                    start = Offset(0f, topEdge),
-                    end = Offset(size.width, topEdge),
-                    strokeWidth = borderSize.toPx()
-                )
-            }
-    ) {
+    Column(modifier = modifier) {
+        HorizontalDivider(
+            thickness = 1.dp,
+            color = GovUkTheme.colourScheme.strokes.fixedContainer
+        )
         Row(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .defaultMinSize(minHeight = 64.dp)
                 .padding(horizontal = GovUkTheme.spacing.large),

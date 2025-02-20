@@ -75,7 +75,8 @@ internal class TopicViewModel @Inject constructor(
         title: String,
         section: String,
         text: String,
-        url: String
+        url: String,
+        selectedItemIndex: Int
     ) {
         analyticsClient.buttonClick(
             text = text,
@@ -88,7 +89,8 @@ internal class TopicViewModel @Inject constructor(
             title = title,
             section = section,
             text = text,
-            url = url
+            url = url,
+            selectedItemIndex = selectedItemIndex
         )
 
         viewModelScope.launch {
@@ -99,6 +101,7 @@ internal class TopicViewModel @Inject constructor(
     fun onSeeAllClick(
         section: String,
         text: String,
+        selectedItemIndex: Int
     ) {
         analyticsClient.buttonClick(
             text = text,
@@ -110,12 +113,14 @@ internal class TopicViewModel @Inject constructor(
             title = text,
             section = section,
             text = text,
-            url = null
+            url = null,
+            selectedItemIndex = selectedItemIndex
         )
     }
 
     fun onSubtopicClick(
-        text: String
+        text: String,
+        selectedItemIndex: Int
     ) {
         analyticsClient.buttonClick(
             text = text,
@@ -127,7 +132,8 @@ internal class TopicViewModel @Inject constructor(
             title = null,
             section = SUBTOPIC_SECTION,
             text = text,
-            url = null
+            url = null,
+            selectedItemIndex = selectedItemIndex
         )
     }
 
@@ -135,7 +141,8 @@ internal class TopicViewModel @Inject constructor(
         section: String,
         text: String,
         title: String?,
-        url: String?
+        url: String?,
+        selectedItemIndex: Int
     ) {
         analyticsClient.selectItemEvent(
             ecommerceEvent = EcommerceEvent(
@@ -148,7 +155,8 @@ internal class TopicViewModel @Inject constructor(
                         locationId = url ?: ""
                     )
                 )
-            )
+            ),
+            selectedItemIndex = selectedItemIndex
         )
     }
 

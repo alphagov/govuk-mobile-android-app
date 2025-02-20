@@ -41,7 +41,7 @@ import uk.govuk.app.topics.ui.model.TopicUi
 @Composable
 internal fun TopicRoute(
     onBack: () -> Unit,
-    onExternalLink: (url: String) -> Unit,
+    onExternalLink: (url: String, onExternalLink: Int) -> Unit,
     onStepByStepSeeAll: () -> Unit,
     onSubtopic: (ref: String) -> Unit,
     modifier: Modifier = Modifier
@@ -60,24 +60,26 @@ internal fun TopicRoute(
                             title = title
                         ) },
                         onBack = onBack,
-                        onExternalLink = { section, text, url ->
+                        onExternalLink = { section, text, url, selectedItemIndex ->
                             viewModel.onContentClick(
                                 title = it.topicUi.title,
                                 section = section,
                                 text = text,
-                                url = url
+                                url = url,
+                                selectedItemIndex = selectedItemIndex
                             )
-                            onExternalLink(url)
+                            onExternalLink(url, selectedItemIndex)
                         },
-                        onStepByStepSeeAll = { section, text ->
+                        onStepByStepSeeAll = { section, text, selectedItemIndex ->
                             onStepByStepSeeAll()
                             viewModel.onSeeAllClick(
                                 section = section,
-                                text = text
+                                text = text,
+                                selectedItemIndex = selectedItemIndex
                             )
                         },
-                        onSubtopic = { text, ref ->
-                            viewModel.onSubtopicClick(text)
+                        onSubtopic = { text, ref, selectedItemIndex ->
+                            viewModel.onSubtopicClick(text, selectedItemIndex)
                             onSubtopic(ref)
                         }
                     )
@@ -107,9 +109,9 @@ private fun TopicScreen(
     topic: TopicUi,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
-    onExternalLink: (section: String, text: String, url: String) -> Unit,
-    onStepByStepSeeAll: (section: String, text: String) -> Unit,
-    onSubtopic: (text: String, ref: String) -> Unit,
+    onExternalLink: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit,
+    onStepByStepSeeAll: (section: String, text: String, selectedItemIndex: Int) -> Unit,
+    onSubtopic: (text: String, ref: String, selectedItemIndex: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier.fillMaxWidth()) {
@@ -134,6 +136,8 @@ private fun TopicScreen(
             icon = R.drawable.ic_topic_services_and_info
         )
 
+        var currentItemIndex = 1
+
         LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
             item {
                 Column {
@@ -150,12 +154,16 @@ private fun TopicScreen(
             }
 
             contentItems(
+                currentItemIndex = currentItemIndex,
                 contentItems = topic.popularPages,
                 section = popularPagesSection,
                 onClick = onExternalLink
             )
 
+            if (topic.popularPages.isNotEmpty()) currentItemIndex += topic.popularPages.size
+
             contentItems(
+                currentItemIndex = currentItemIndex,
                 contentItems = topic.stepBySteps,
                 section = stepByStepSection,
                 onClick = onExternalLink,
@@ -163,13 +171,20 @@ private fun TopicScreen(
                 onSeeAll = onStepByStepSeeAll
             )
 
+            if (topic.stepBySteps.isNotEmpty()) currentItemIndex += topic.stepBySteps.size
+            if (topic.displayStepByStepSeeAll) { currentItemIndex += 1 }
+
             contentItems(
+                currentItemIndex = currentItemIndex,
                 contentItems = topic.services,
                 section = servicesSection,
                 onClick = onExternalLink
             )
 
+            if (topic.services.isNotEmpty()) currentItemIndex += topic.services.size
+
             subtopics(
+                currentItemIndex = currentItemIndex,
                 subtopics = topic.subtopics,
                 section = topic.subtopicsSection,
                 onClick = onSubtopic
@@ -179,11 +194,12 @@ private fun TopicScreen(
 }
 
 private fun LazyListScope.contentItems(
+    currentItemIndex: Int,
     contentItems: List<TopicUi.TopicContent>,
     section: TopicUi.Section,
-    onClick: (section: String, text: String, url: String) -> Unit,
+    onClick: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit,
     displaySeeAll: Boolean = false,
-    onSeeAll: (section: String, text: String) -> Unit = { _, _ -> }
+    onSeeAll: (section: String, text: String, selectedItemIndex: Int) -> Unit = { _, _, _ -> }
 ) {
     if (contentItems.isNotEmpty()) {
         item {
@@ -200,7 +216,7 @@ private fun LazyListScope.contentItems(
             val sectionTitle = stringResource(section.title)
             ExternalLinkListItem(
                 title = content.title,
-                onClick = { onClick(sectionTitle, content.title, content.url) },
+                onClick = { onClick(sectionTitle, content.title, content.url, currentItemIndex + index) },
                 isFirst = false,
                 isLast = index == lastIndex
             )
@@ -212,7 +228,7 @@ private fun LazyListScope.contentItems(
                 val title = stringResource(R.string.seeAllButton)
                 InternalLinkListItem(
                     title = title,
-                    onClick = { onSeeAll(sectionTitle, title) },
+                    onClick = { onSeeAll(sectionTitle, title, currentItemIndex + contentItems.size) },
                     isFirst = lastIndex == 0,
                     isLast = true
                 )
@@ -226,9 +242,10 @@ private fun LazyListScope.contentItems(
 }
 
 private fun LazyListScope.subtopics(
+    currentItemIndex: Int,
     subtopics: List<TopicUi.Subtopic>,
     section: TopicUi.Section,
-    onClick: (text: String, ref: String) -> Unit,
+    onClick: (text: String, ref: String, selectedItemIndex: Int) -> Unit,
 ) {
     if (subtopics.isNotEmpty()) {
         item {
@@ -241,7 +258,7 @@ private fun LazyListScope.subtopics(
         itemsIndexed(subtopics) { index, subtopic ->
             InternalLinkListItem(
                 title = subtopic.title,
-                onClick = { onClick(subtopic.title, subtopic.ref) },
+                onClick = { onClick(subtopic.title, subtopic.ref, currentItemIndex + index) },
                 isFirst = false,
                 isLast = index == subtopics.lastIndex
             )

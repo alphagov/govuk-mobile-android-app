@@ -35,11 +35,12 @@ internal fun AllStepByStepRoute(
         stepBySteps = stepBySteps,
         onPageView = { title -> viewModel.onPageView(stepBySteps, title) },
         onBack = onBack,
-        onExternalLink = { section, text, url ->
+        onExternalLink = { section, text, url, selectedItemIndex ->
             viewModel.onStepByStepClick(
                 section = section,
                 text = text,
-                url = url
+                url = url,
+                selectedItemIndex = selectedItemIndex
             )
             onClick(url)
         },
@@ -52,7 +53,7 @@ private fun AllStepByStepsScreen(
     stepBySteps: List<TopicContent>,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
-    onExternalLink: (section: String, text: String, url: String) -> Unit,
+    onExternalLink: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier.fillMaxSize()) {
@@ -73,9 +74,10 @@ private fun AllStepByStepsScreen(
             }
 
             stepBySteps(
+                selectedItemIndex = 1,
                 stepBySteps = stepBySteps,
-                onClick = { text, url ->
-                    onExternalLink(title, text, url)
+                onClick = { text, url, selectedItemIndex ->
+                    onExternalLink(title, text, url, selectedItemIndex)
                 }
             )
         }
@@ -83,13 +85,14 @@ private fun AllStepByStepsScreen(
 }
 
 private fun LazyListScope.stepBySteps(
+    selectedItemIndex: Int,
     stepBySteps: List<TopicContent>,
-    onClick: (text:String, url:String) -> Unit
+    onClick: (text: String, url: String, selectedItemIndex: Int) -> Unit
 ) {
     itemsIndexed(stepBySteps) { index, content ->
         ExternalLinkListItem(
             title = content.title,
-            onClick = { onClick(content.title, content.url) },
+            onClick = { onClick(content.title, content.url, selectedItemIndex + index) },
             isFirst = index == 0,
             isLast = index == stepBySteps.lastIndex
         )

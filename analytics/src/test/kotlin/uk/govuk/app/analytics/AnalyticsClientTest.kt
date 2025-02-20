@@ -72,7 +72,8 @@ class AnalyticsClientTest {
                 itemListName = "Topics",
                 itemListId = "Benefits",
                 items = emptyList()
-            )
+            ),
+            selectedItemIndex = 42
         )
 
         verify(exactly = 0) {
@@ -89,7 +90,8 @@ class AnalyticsClientTest {
                 itemListName = "Topics",
                 itemListId = "Benefits",
                 items = emptyList()
-            )
+            ),
+            selectedItemIndex = 42
         )
 
         verify(exactly = 0) {
@@ -643,14 +645,18 @@ class AnalyticsClientTest {
             items = topicItems
         )
 
+        println(ecommerceEvent)
+
         analyticsClient.selectItemEvent(
-            ecommerceEvent = ecommerceEvent
+            ecommerceEvent = ecommerceEvent,
+            selectedItemIndex = 42
         )
 
         verify {
             firebaseAnalyticClient.logEcommerceEvent(
                 event = FirebaseAnalytics.Event.SELECT_ITEM,
-                ecommerceEvent = ecommerceEvent
+                ecommerceEvent = ecommerceEvent,
+                selectedItemIndex = 42
             )
         }
     }

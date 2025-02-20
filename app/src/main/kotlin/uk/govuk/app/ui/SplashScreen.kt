@@ -29,7 +29,7 @@ internal fun SplashScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(GovUkTheme.colourScheme.surfaces.primary),
+            .background(GovUkTheme.colourScheme.surfaces.splash),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

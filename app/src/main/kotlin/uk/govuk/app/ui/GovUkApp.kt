@@ -120,7 +120,7 @@ internal fun GovUkApp(intent: Intent) {
         }
     } else {
         SetStatusBarColour(
-            colour = GovUkTheme.colourScheme.surfaces.primary,
+            colour = GovUkTheme.colourScheme.surfaces.splash,
             isLight = false
         )
         SplashScreen { isSplashDone = true }
@@ -205,7 +205,7 @@ private fun BottomNav(
         Column {
             HorizontalDivider(
                 thickness = 1.dp,
-                color = GovUkTheme.colourScheme.strokes.container
+                color = GovUkTheme.colourScheme.strokes.fixedContainer
             )
             NavigationBar(
                 containerColor = GovUkTheme.colourScheme.surfaces.background

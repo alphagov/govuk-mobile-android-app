@@ -26,11 +26,11 @@ fun ToggleSwitch(
         },
         colors = SwitchDefaults.colors(
             checkedThumbColor = GovUkTheme.colourScheme.surfaces.toggleHandle,
-            checkedTrackColor = GovUkTheme.colourScheme.surfaces.toggleEnabled,
-            checkedBorderColor = GovUkTheme.colourScheme.surfaces.toggleBorder,
+            checkedTrackColor = GovUkTheme.colourScheme.surfaces.switchOn,
+            checkedBorderColor = GovUkTheme.colourScheme.strokes.switchOn,
             uncheckedThumbColor = GovUkTheme.colourScheme.surfaces.toggleHandle,
-            uncheckedTrackColor = GovUkTheme.colourScheme.surfaces.toggleDisabled,
-            uncheckedBorderColor = GovUkTheme.colourScheme.surfaces.toggleBorder,
+            uncheckedTrackColor = GovUkTheme.colourScheme.surfaces.switchOff,
+            uncheckedBorderColor = GovUkTheme.colourScheme.strokes.switchOff
         ),
         modifier = modifier.semantics {
             testTagsAsResourceId = true
@@ -40,10 +40,22 @@ fun ToggleSwitch(
 
 @Preview(showBackground = true)
 @Composable
-private fun ToggleSwitchPreview() {
+private fun ToggleSwitchOnPreview() {
     GovUkTheme {
         ToggleSwitch(
             checked = true,
+            onCheckedChange = {},
+            testDescription = "toggle"
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ToggleSwitchOffPreview() {
+    GovUkTheme {
+        ToggleSwitch(
+            checked = false,
             onCheckedChange = {},
             testDescription = "toggle"
         )
