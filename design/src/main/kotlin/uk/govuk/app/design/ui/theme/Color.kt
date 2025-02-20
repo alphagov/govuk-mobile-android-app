@@ -21,6 +21,8 @@ private val TealAccent = Color(0xFF00FFE0)
 private val YellowPrimary = Color(0xFFFFDD00)
 
 private val Red1 = Color(0xFFD4351C)
+private val RedPrimary = Color(0xFFCA3535)
+private val RedAccent = Color(0xFFFF5E5E)
 
 private val GreenPrimary = Color(0xFF11875A)
 private val GreenAccent = Color(0xFF66F39E)
@@ -70,6 +72,7 @@ data class GovUkColourScheme(
         val buttonCompactDisabled: Color,
         val buttonCompactFocused: Color,
         val buttonSuccess: Color,
+        val buttonDestructive: Color,
         val icon: Color,
         val trailingIcon: Color,
         val buttonRemove: Color,
@@ -120,7 +123,8 @@ data class GovUkColourScheme(
         val cardSelected: Color,
         val listBlue: Color,
         val switchOn: Color,
-        val switchOff: Color
+        val switchOff: Color,
+        val buttonCompactHighlight: Color
     )
 }
 
@@ -138,10 +142,11 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonSecondaryDisabled = Grey700,
         buttonSecondaryFocused = Black,
         buttonCompact = BluePrimary,
-        buttonCompactHighlight = BlueDarker50,
+        buttonCompactHighlight = BlueDarker25,
         buttonCompactDisabled = Grey600,
         buttonCompactFocused = Black,
         buttonSuccess = GreenPrimary,
+        buttonDestructive = RedPrimary,
         icon = BluePrimary,
         trailingIcon = Grey300,
         buttonRemove = Red1,
@@ -171,7 +176,7 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonSecondaryHighlight = Color.Transparent,
         buttonSecondaryDisabled = Color.Transparent,
         buttonSecondaryFocused = YellowPrimary,
-        buttonCompact = White,
+        buttonCompact = BlueLighter95,
         buttonCompactHighlight = BlueLighter95,
         buttonCompactDisabled = Grey100,
         buttonCompactFocused = YellowPrimary,
@@ -190,7 +195,8 @@ internal val LightColorScheme = GovUkColourScheme(
         cardSelected = GreenPrimary,
         listBlue = BlueLighter50,
         switchOn = GreenPrimary,
-        switchOff = BlackLighter50
+        switchOff = BlackLighter50,
+        buttonCompactHighlight = BlueLighter25
     )
 )
 
@@ -208,10 +214,11 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonSecondaryDisabled = Grey300,
         buttonSecondaryFocused = Black,
         buttonCompact = BlueAccent,
-        buttonCompactHighlight = Blue2,
+        buttonCompactHighlight = BlueLighter25,
         buttonCompactDisabled = Black,
         buttonCompactFocused = Black,
         buttonSuccess = GreenAccent,
+        buttonDestructive = RedAccent,
         icon = BlueLighter95,
         trailingIcon = Grey500,
         buttonRemove = Red1,
@@ -241,8 +248,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonSecondaryHighlight = Color.Transparent,
         buttonSecondaryDisabled = Color.Transparent,
         buttonSecondaryFocused = YellowPrimary,
-        buttonCompact = Grey850,
-        buttonCompactHighlight = BlueDarker50,
+        buttonCompact = BlueDarker80,
+        buttonCompactHighlight = BlueDarker80,
         buttonCompactDisabled = Grey400,
         buttonCompactFocused = YellowPrimary,
         searchBox = Grey700,
@@ -260,7 +267,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         cardSelected = GreenAccent,
         listBlue = BluePrimary,
         switchOn = GreenPrimary,
-        switchOff = BlackLighter50
+        switchOff = BlackLighter50,
+        buttonCompactHighlight = BlueDarker25
     )
 )
 
@@ -283,6 +291,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             buttonCompactDisabled = Color.Unspecified,
             buttonCompactFocused = Color.Unspecified,
             buttonSuccess = Color.Unspecified,
+            buttonDestructive = Color.Unspecified,
             icon = Color.Unspecified,
             trailingIcon = Color.Unspecified,
             buttonRemove = Color.Unspecified,
@@ -331,7 +340,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             cardSelected = Color.Unspecified,
             listBlue = Color.Unspecified,
             switchOn = Color.Unspecified,
-            switchOff = Color.Unspecified
+            switchOff = Color.Unspecified,
+            buttonCompactHighlight = Color.Unspecified
         )
     )
 }

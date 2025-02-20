@@ -127,7 +127,7 @@ fun CompactButton(
         focussedContentColour = GovUkTheme.colourScheme.textAndIcons.buttonCompactFocused,
         pressedContainerColour = GovUkTheme.colourScheme.surfaces.buttonCompactHighlight,
         pressedContentColour = GovUkTheme.colourScheme.textAndIcons.buttonCompactHighlight,
-        pressedBorderColour = GovUkTheme.colourScheme.strokes.cardBlue,
+        pressedBorderColour = GovUkTheme.colourScheme.strokes.buttonCompactHighlight,
         disabledContainerColour = GovUkTheme.colourScheme.surfaces.buttonCompactDisabled,
         disabledContentColour = GovUkTheme.colourScheme.textAndIcons.buttonCompactDisabled
     )
