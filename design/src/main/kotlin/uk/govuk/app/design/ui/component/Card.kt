@@ -142,13 +142,13 @@ fun HomeNavigationCard(
                         modifier = Modifier.clickable { onSuppressClick() }
                     )
                     Spacer(modifier = Modifier.weight(1f))
+                } ?: run {
+                    Icon(
+                        painterResource(R.drawable.ic_chevron),
+                        contentDescription = null,
+                        tint = GovUkTheme.colourScheme.textAndIcons.icon
+                    )
                 }
-
-                Icon(
-                    painterResource(R.drawable.ic_chevron),
-                    contentDescription = null,
-                    tint = GovUkTheme.colourScheme.textAndIcons.icon
-                )
             }
         }
     }
