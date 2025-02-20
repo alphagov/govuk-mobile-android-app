@@ -179,7 +179,7 @@ private fun RemoveAllConfirmationDialog(
             ) {
                 BodyRegularLabel(
                     text = stringResource(R.string.remove_confirmation_dialog_button),
-                    color = GovUkTheme.colourScheme.textAndIcons.buttonRemove
+                    color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
                 )
             }
         },
