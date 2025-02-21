@@ -50,6 +50,9 @@ import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.error.AppUnavailableScreen
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.navigation.homeGraph
+import uk.govuk.app.local.navigation.LOCAL_GRAPH_ROUTE
+import uk.govuk.app.local.navigation.localGraph
+import uk.govuk.app.local.ui.widget.LocalWidget
 import uk.govuk.app.navigation.AppLaunchNavigation
 import uk.govuk.app.navigation.TopLevelDestination
 import uk.govuk.app.notifications.navigation.notificationsGraph
@@ -325,7 +328,12 @@ private fun GovUkNavHost(
         searchGraph(navController)
         visitedGraph(
             navController = navController,
-            modifier = Modifier.padding(paddingValues))
+            modifier = Modifier.padding(paddingValues)
+        )
+        localGraph(
+            navController = navController,
+            modifier = Modifier.padding(paddingValues)
+        )
     }
 }
 
@@ -353,6 +361,19 @@ private fun homeScreenWidgets(
                         )
                         LargeVerticalSpacer()
                     }
+                }
+            }
+
+            HomeWidget.LOCAL -> {
+                widgets.add { modifier ->
+                    LocalWidget(
+                        onClick = {
+                            onClick
+                            navController.navigate(LOCAL_GRAPH_ROUTE)
+                        },
+                        modifier = modifier
+                    )
+                    LargeVerticalSpacer()
                 }
             }
 
