@@ -18,7 +18,21 @@
   <string name="accessibility_title">Accessibility statement</string>
   <string name="terms_and_conditions_title">Terms and conditions</string>
   <string name="privacy_policy_title">Privacy notice</string>
+  <string name="notifications_title">Notifications</string>
 
   <string name="feedback_prompt_widget_title">Give feedback to help improve this app</string>
+
+  <string name="notifications_alert_dialog_title">Notifications</string>
+  <string name="notifications_denied_alert_dialog_body">
+    Notifications are currently disabled.\nEnabling notifications
+    permission in your device settings will mean you receive
+    notifications of government services and announcements.
+  </string>
+  <string name="notifications_granted_alert_dialog_body">
+    Notifications are currently enabled.\nDisabling notifications
+    permission in your device settings will mean you no longer receive
+    notifications of government services and announcements.
+  </string>
+  <string name="open_settings">Open settings</string>
 
 </resources>

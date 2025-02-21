@@ -29,6 +29,7 @@ import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.TabHeader
 import uk.govuk.app.design.ui.component.ToggleListItem
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.notifications.ui.notificationsPermissionShouldShowRationale
 import uk.govuk.app.settings.R
 import uk.govuk.app.settings.SettingsViewModel
 
@@ -40,6 +41,7 @@ internal fun SettingsRoute(
     onAccessibilityStatementClick: () -> Unit,
     onTermsAndConditionsClick: () -> Unit,
     onOpenSourceLicenseClick: () -> Unit,
+    onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: SettingsViewModel = hiltViewModel()
@@ -71,6 +73,10 @@ internal fun SettingsRoute(
                 viewModel.onTermsAndConditionsView()
                 onTermsAndConditionsClick()
             },
+            onNotificationsClick = {
+                viewModel.onNotificationsClick()
+                onNotificationsClick()
+            },
             modifier = modifier
         )
     }
@@ -87,6 +93,7 @@ private fun SettingsScreen(
     onPrivacyPolicyClick: () -> Unit,
     onAccessibilityStatementClick: () -> Unit,
     onTermsAndConditionsClick: () -> Unit,
+    onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -121,6 +128,7 @@ private fun SettingsScreen(
             AccessibilityStatement(onAccessibilityStatementClick)
             OpenSourceLicenses(onLicenseClick)
             TermsAndConditions(onTermsAndConditionsClick)
+            Notifications(onNotificationsClick)
         }
     }
 }
@@ -260,6 +268,20 @@ private fun TermsAndConditions(
     ExternalLinkListItem(
         title = stringResource(R.string.terms_and_conditions_title),
         onClick = onLicenseClick,
+        modifier = modifier,
+        isFirst = false,
+        isLast = false,
+    )
+}
+
+@Composable
+private fun Notifications(
+    onNotificationsClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ExternalLinkListItem(
+        title = stringResource(R.string.notifications_title),
+        onClick = onNotificationsClick,
         modifier = modifier,
         isFirst = false,
         isLast = true,

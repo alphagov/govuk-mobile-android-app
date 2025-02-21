@@ -15,16 +15,16 @@ import org.junit.Test
 import uk.govuk.app.analytics.AnalyticsClient
 
 @OptIn(ExperimentalPermissionsApi::class)
-class NotificationsPermissionViewModelTest {
+class NotificationsOnboardingViewModelTest {
     private val permissionStatus = mockk<PermissionStatus>()
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val notificationsClient = mockk<NotificationsClient>()
 
-    private lateinit var viewModel: NotificationsPermissionViewModel
+    private lateinit var viewModel: NotificationsOnboardingViewModel
 
     @Before
     fun setup() {
-        viewModel = NotificationsPermissionViewModel(analyticsClient, notificationsClient)
+        viewModel = NotificationsOnboardingViewModel(analyticsClient, notificationsClient)
     }
 
     @Test
@@ -34,9 +34,9 @@ class NotificationsPermissionViewModelTest {
         runTest {
             verify(exactly = 1) {
                 analyticsClient.screenView(
-                    screenClass = "NotificationsPermissionScreen",
-                    screenName = "NotificationsPermissionScreen",
-                    title = "NotificationsPermissionScreen"
+                    screenClass = "NotificationsOnboardingScreen",
+                    screenName = "NotificationsOnboardingScreen",
+                    title = "NotificationsOnboardingScreen"
                 )
             }
         }
@@ -77,7 +77,7 @@ class NotificationsPermissionViewModelTest {
 
         runTest {
             val result = viewModel.uiState.first()
-            assertTrue(result is NotificationsPermissionUiState.Finish)
+            assertTrue(result is NotificationsOnboardingUiState.Finish)
 
             verify(exactly = 1) {
                 notificationsClient.giveConsent()
@@ -95,7 +95,7 @@ class NotificationsPermissionViewModelTest {
 
         runTest {
             val result = viewModel.uiState.first()
-            assertTrue(result is NotificationsPermissionUiState.Finish)
+            assertTrue(result is NotificationsOnboardingUiState.Finish)
 
             verify(exactly = 1) {
                 notificationsClient.requestPermission()
@@ -111,7 +111,7 @@ class NotificationsPermissionViewModelTest {
 
         runTest {
             val result = viewModel.uiState.first()
-            assertTrue(result is NotificationsPermissionUiState.OptIn)
+            assertTrue(result is NotificationsOnboardingUiState.Default)
         }
     }
 }

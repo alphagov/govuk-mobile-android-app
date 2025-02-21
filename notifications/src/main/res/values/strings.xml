@@ -2,7 +2,7 @@
 <resources>
     <string name="continue_button">I\'m in</string>
     <string name="skip_button">Skip</string>
-    <string name="permission_screen_title">Get notified!</string>
-    <string name="permission_screen_body">Stay on top of Government services and announcements</string>
+    <string name="onboarding_screen_title">Get notified!</string>
+    <string name="onboarding_screen_body">Stay on top of Government services and announcements</string>
     <string name="prompt_widget_title">Stay on top of Government services and announcements</string>
 </resources>

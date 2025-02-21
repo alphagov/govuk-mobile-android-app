@@ -20,7 +20,7 @@ internal class AppLaunchNavigation(
     private fun setLaunchRoutes() {
         launchRoutes.push(HOME_GRAPH_ROUTE)
 
-        if (uiState.shouldDisplayNotificationsPermission) {
+        if (uiState.shouldDisplayNotificationsOnboarding) {
             launchRoutes.push(NOTIFICATIONS_GRAPH_ROUTE)
         }
 

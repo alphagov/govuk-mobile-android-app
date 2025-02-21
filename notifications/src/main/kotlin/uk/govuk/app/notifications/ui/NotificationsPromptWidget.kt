@@ -1,6 +1,5 @@
 package uk.govuk.app.notifications.ui
 
-import androidx.compose.foundation.focusable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource

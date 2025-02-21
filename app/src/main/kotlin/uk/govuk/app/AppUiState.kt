@@ -6,7 +6,7 @@ internal sealed class AppUiState {
         val shouldDisplayAnalyticsConsent: Boolean = false,
         val shouldDisplayOnboarding: Boolean = false,
         val shouldDisplayTopicSelection: Boolean = false,
-        val shouldDisplayNotificationsPermission: Boolean = false
+        val shouldDisplayNotificationsOnboarding: Boolean = false
     ) : AppUiState()
 
     internal data object Loading : AppUiState()

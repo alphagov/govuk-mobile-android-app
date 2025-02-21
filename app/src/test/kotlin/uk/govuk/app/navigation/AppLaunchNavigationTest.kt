@@ -13,14 +13,14 @@ import java.util.Stack
 class AppLaunchNavigationTest {
 
     @Test
-    fun `Given recommend update, analytics consent, onboarding, topic selection and notifications permission should be displayed, then return correct start destination and navigate through routes`() {
+    fun `Given recommend update, analytics consent, onboarding, topic selection and notifications onboarding should be displayed, then return correct start destination and navigate through routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState.Default(
                 shouldDisplayRecommendUpdate = true,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = true,
-                shouldDisplayNotificationsPermission = true
+                shouldDisplayNotificationsOnboarding = true
             )
         )
 
@@ -150,11 +150,11 @@ class AppLaunchNavigationTest {
     }
 
     @Test
-    fun `Given analytics consent and notifications permission should be displayed, then return correct launch routes`() {
+    fun `Given analytics consent and notifications onboarding should be displayed, then return correct launch routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState.Default(
                 shouldDisplayAnalyticsConsent = true,
-                shouldDisplayNotificationsPermission = true
+                shouldDisplayNotificationsOnboarding = true
             )
         )
 
@@ -167,11 +167,11 @@ class AppLaunchNavigationTest {
     }
 
     @Test
-    fun `Given topic selection and notifications permission should be displayed, then return correct launch routes`() {
+    fun `Given topic selection and notifications onboarding should be displayed, then return correct launch routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState.Default(
                 shouldDisplayTopicSelection = true,
-                shouldDisplayNotificationsPermission = true
+                shouldDisplayNotificationsOnboarding = true
             )
         )
 
@@ -184,11 +184,11 @@ class AppLaunchNavigationTest {
     }
 
     @Test
-    fun `Given onboarding and notifications permission should be displayed, then return correct launch routes`() {
+    fun `Given onboarding and notifications onboarding should be displayed, then return correct launch routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState.Default(
                 shouldDisplayOnboarding = true,
-                shouldDisplayNotificationsPermission = true
+                shouldDisplayNotificationsOnboarding = true
             )
         )
 
@@ -201,10 +201,10 @@ class AppLaunchNavigationTest {
     }
 
     @Test
-    fun `Given notifications permission should be displayed, then return correct launch routes`() {
+    fun `Given notifications onboarding should be displayed, then return correct launch routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState.Default(
-                shouldDisplayNotificationsPermission = true
+                shouldDisplayNotificationsOnboarding = true
             )
         )
 

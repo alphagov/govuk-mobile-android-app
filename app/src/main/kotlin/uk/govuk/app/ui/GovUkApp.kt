@@ -303,8 +303,10 @@ private fun GovUkNavHost(
             modifier = Modifier.padding(paddingValues)
         )
         notificationsGraph(
-            notificationsPermissionCompleted = {
+            canSkip = !launchRoutes.empty(),
+            notificationsOnboardingCompleted = {
                 navController.popBackStack()
+                if (launchRoutes.empty()) return@notificationsGraph
                 navController.navigate(launchRoutes.pop())
             }
         )
@@ -319,6 +321,7 @@ private fun GovUkNavHost(
             modifier = Modifier.padding(paddingValues)
         )
         settingsGraph(
+            navController = navController,
             appVersion = BuildConfig.VERSION_NAME,
             modifier = Modifier.padding(paddingValues)
         )

@@ -41,7 +41,6 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.adaptive.android)
     implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.lottie.compose)
     implementation(libs.google.accompanist)
 
     ksp(libs.hilt.compiler)

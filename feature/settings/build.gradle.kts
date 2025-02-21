@@ -24,6 +24,8 @@ android {
 
         buildConfigField("String", "OPEN_SOURCE_LICENCE_EVENT", "\"OpenSourceLicenses\"")
 
+        buildConfigField("String", "NOTIFICATIONS_PERMISSION_EVENT", "\"NotificationsPermission\"")
+
         buildConfigField("String", "PRIVACY_POLICY_EVENT", "\"PrivacyPolicy\"")
         buildConfigField("String", "PRIVACY_POLICY_URL", "\"https://www.gov.uk/government/publications/govuk-app-privacy-notice-how-we-use-your-data\"")
 
@@ -49,6 +51,7 @@ android {
 dependencies {
     implementation(projects.analytics)
     implementation(projects.design)
+    implementation(projects.notifications)
 
     implementation(libs.androidx.navigation.compose)
     implementation(platform(libs.androidx.compose.bom))
