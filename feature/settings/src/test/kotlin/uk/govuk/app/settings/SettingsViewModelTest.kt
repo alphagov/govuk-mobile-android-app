@@ -17,6 +17,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.analytics.AnalyticsClient
+import uk.govuk.app.config.data.flags.FlagRepo
 import uk.govuk.app.settings.BuildConfig.ACCESSIBILITY_STATEMENT_EVENT
 import uk.govuk.app.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
 import uk.govuk.app.settings.BuildConfig.HELP_AND_FEEDBACK_EVENT
@@ -33,6 +34,7 @@ class SettingsViewModelTest {
 
     private val dispatcher = UnconfinedTestDispatcher()
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
+    private val flagRepo = mockk<FlagRepo>(relaxed = true)
 
     @Before
     fun setup() {
@@ -48,7 +50,7 @@ class SettingsViewModelTest {
     fun `Given analytics are enabled, When init, then return analytics enabled`() {
         coEvery { analyticsClient.isAnalyticsEnabled() } returns true
 
-        val viewModel = SettingsViewModel(analyticsClient)
+        val viewModel = SettingsViewModel(analyticsClient, flagRepo)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -60,7 +62,7 @@ class SettingsViewModelTest {
     fun `Given analytics are disabled, When init, then return analytics disabled`() {
         coEvery { analyticsClient.isAnalyticsEnabled() } returns false
 
-        val viewModel = SettingsViewModel(analyticsClient)
+        val viewModel = SettingsViewModel(analyticsClient, flagRepo)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -69,8 +71,32 @@ class SettingsViewModelTest {
     }
 
     @Test
+    fun `Given notifications are enabled, When init, then return notifications enabled`() {
+        coEvery { flagRepo.isNotificationsEnabled() } returns true
+
+        val viewModel = SettingsViewModel(analyticsClient, flagRepo)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertTrue(result!!.isNotificationsEnabled)
+        }
+    }
+
+    @Test
+    fun `Given notifications are disabled, When init, then return notifications disabled`() {
+        coEvery { flagRepo.isNotificationsEnabled() } returns false
+
+        val viewModel = SettingsViewModel(analyticsClient, flagRepo)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.isNotificationsEnabled)
+        }
+    }
+
+    @Test
     fun `Given a page view, then log analytics`() {
-        val viewModel = SettingsViewModel(analyticsClient)
+        val viewModel = SettingsViewModel(analyticsClient, flagRepo)
 
         viewModel.onPageView()
 
@@ -85,7 +111,7 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given analytics have been enabled, then update and emit ui state`() {
-        val viewModel = SettingsViewModel(analyticsClient)
+        val viewModel = SettingsViewModel(analyticsClient, flagRepo)
 
         viewModel.onAnalyticsConsentChanged(true)
 
@@ -101,7 +127,7 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given analytics have been disabled, then update and emit ui state`() {
-        val viewModel = SettingsViewModel(analyticsClient)
+        val viewModel = SettingsViewModel(analyticsClient, flagRepo)
 
         viewModel.onAnalyticsConsentChanged(false)
 
@@ -117,7 +143,7 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given a license page view, then log analytics`() {
-        val viewModel = SettingsViewModel(analyticsClient)
+        val viewModel = SettingsViewModel(analyticsClient, flagRepo)
 
         viewModel.onLicenseView()
 
@@ -132,7 +158,7 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given a help and feedback page view, then log analytics`() {
-        val viewModel = SettingsViewModel(analyticsClient)
+        val viewModel = SettingsViewModel(analyticsClient, flagRepo)
 
         viewModel.onHelpAndFeedbackView()
 
@@ -146,7 +172,7 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given a privacy policy page view, then log analytics`() {
-        val viewModel = SettingsViewModel(analyticsClient)
+        val viewModel = SettingsViewModel(analyticsClient, flagRepo)
 
         viewModel.onPrivacyPolicyView()
 
@@ -160,7 +186,7 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given a accessibility statement page view, then log analytics`() {
-        val viewModel = SettingsViewModel(analyticsClient)
+        val viewModel = SettingsViewModel(analyticsClient, flagRepo)
 
         viewModel.onAccessibilityStatementView()
 
@@ -172,7 +198,7 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given a terms and conditions page view, then log analytics`() {
-        val viewModel = SettingsViewModel(analyticsClient)
+        val viewModel = SettingsViewModel(analyticsClient, flagRepo)
 
         viewModel.onTermsAndConditionsView()
 
@@ -184,7 +210,7 @@ class SettingsViewModelTest {
 
     @Test
     fun `Given a notifications click, then log analytics`() {
-        val viewModel = SettingsViewModel(analyticsClient)
+        val viewModel = SettingsViewModel(analyticsClient, flagRepo)
 
         viewModel.onNotificationsClick()
 

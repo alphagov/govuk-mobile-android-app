@@ -50,6 +50,7 @@ internal fun SettingsRoute(
         SettingsScreen(
             appVersion = appVersion,
             isAnalyticsEnabled = it.isAnalyticsEnabled,
+            isNotificationsEnabled = it.isNotificationsEnabled,
             onPageView = { viewModel.onPageView() },
             onLicenseClick = {
                 viewModel.onLicenseView()
@@ -85,6 +86,7 @@ internal fun SettingsRoute(
 private fun SettingsScreen(
     appVersion: String,
     isAnalyticsEnabled: Boolean,
+    isNotificationsEnabled: Boolean,
     onPageView: () -> Unit,
     onLicenseClick: () -> Unit,
     onHelpClick: () -> Unit,
@@ -126,8 +128,10 @@ private fun SettingsScreen(
             PrivacyPolicy(onPrivacyPolicyClick)
             AccessibilityStatement(onAccessibilityStatementClick)
             OpenSourceLicenses(onLicenseClick)
+            if (isNotificationsEnabled) {
+                Notifications(onNotificationsClick)
+            }
             TermsAndConditions(onTermsAndConditionsClick)
-            Notifications(onNotificationsClick)
         }
     }
 }
@@ -260,20 +264,6 @@ private fun OpenSourceLicenses(
 }
 
 @Composable
-private fun TermsAndConditions(
-    onLicenseClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    ExternalLinkListItem(
-        title = stringResource(R.string.terms_and_conditions_title),
-        onClick = onLicenseClick,
-        modifier = modifier,
-        isFirst = false,
-        isLast = false,
-    )
-}
-
-@Composable
 private fun Notifications(
     onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -283,7 +273,20 @@ private fun Notifications(
         onClick = onNotificationsClick,
         modifier = modifier,
         isFirst = false,
-        isLast = true,
+        isLast = false,
     )
 }
 
+@Composable
+private fun TermsAndConditions(
+    onLicenseClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ExternalLinkListItem(
+        title = stringResource(R.string.terms_and_conditions_title),
+        onClick = onLicenseClick,
+        modifier = modifier,
+        isFirst = false,
+        isLast = true,
+    )
+}

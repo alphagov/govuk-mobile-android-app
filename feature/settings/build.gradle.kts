@@ -51,6 +51,7 @@ android {
 dependencies {
     implementation(projects.analytics)
     implementation(projects.design)
+    implementation(projects.config)
     implementation(projects.notifications)
 
     implementation(libs.androidx.navigation.compose)

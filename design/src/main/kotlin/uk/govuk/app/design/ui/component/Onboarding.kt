@@ -85,7 +85,7 @@ fun OnboardingPage(
 }
 
 @Composable
-private fun AnimatedImage(image: Int) {
+private fun AnimatedImage(@RawRes image: Int) {
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(image)
     )
