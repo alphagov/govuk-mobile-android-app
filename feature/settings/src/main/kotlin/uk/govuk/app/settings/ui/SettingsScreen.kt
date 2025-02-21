@@ -29,7 +29,6 @@ import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.TabHeader
 import uk.govuk.app.design.ui.component.ToggleListItem
 import uk.govuk.app.design.ui.theme.GovUkTheme
-import uk.govuk.app.notifications.ui.notificationsPermissionShouldShowRationale
 import uk.govuk.app.settings.R
 import uk.govuk.app.settings.SettingsViewModel
 
