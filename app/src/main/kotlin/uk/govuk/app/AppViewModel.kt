@@ -11,7 +11,9 @@ import uk.govuk.app.config.data.ConfigRepo
 import uk.govuk.app.config.data.flags.FlagRepo
 import uk.govuk.app.data.AppRepo
 import uk.govuk.app.data.local.AppDataStore
-import uk.govuk.app.data.model.Result.*
+import uk.govuk.app.data.model.Result.DeviceOffline
+import uk.govuk.app.data.model.Result.InvalidSignature
+import uk.govuk.app.data.model.Result.Success
 import uk.govuk.app.home.HomeWidget
 import uk.govuk.app.topics.TopicsFeature
 import javax.inject.Inject
@@ -94,7 +96,6 @@ internal class AppViewModel @Inject constructor(
                 ) {
                     widgets.add(HomeWidget.NOTIFICATIONS)
                 }
-                widgets.add(HomeWidget.FEEDBACK_PROMPT)
                 if (isSearchEnabled()) {
                     widgets.add(HomeWidget.SEARCH)
                 }
