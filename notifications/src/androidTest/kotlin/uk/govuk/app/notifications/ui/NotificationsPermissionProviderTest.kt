@@ -1,4 +1,4 @@
-package uk.govuk.app.notifications
+package uk.govuk.app.notifications.ui
 
 import android.os.Build
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -10,8 +10,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import uk.govuk.app.notifications.ui.getNotificationsPermissionStatus
-import uk.govuk.app.notifications.ui.notificationsPermissionShouldShowRationale
 
 @OptIn(ExperimentalPermissionsApi::class)
 @RunWith(AndroidJUnit4::class)

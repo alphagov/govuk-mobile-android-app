@@ -11,13 +11,13 @@ import android.os.Build
 import android.provider.Settings
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import uk.govuk.app.notifications.navigation.NOTIFICATIONS_GRAPH_ROUTE
+import uk.govuk.app.notifications.notificationsPermissionShouldShowRationale
 import uk.govuk.app.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
 import uk.govuk.app.settings.BuildConfig.HELP_AND_FEEDBACK_URL
 import uk.govuk.app.settings.BuildConfig.PRIVACY_POLICY_URL
@@ -113,11 +113,7 @@ private fun showAlertDialog(
 }
 
 private fun handleNotificationsClick(context: Context, navController: NavController) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && ActivityCompat.shouldShowRequestPermissionRationale(
-            context as Activity,
-            Manifest.permission.POST_NOTIFICATIONS
-        )
-    ) {
+    if (notificationsPermissionShouldShowRationale(context as Activity)) {
         navController.navigate(NOTIFICATIONS_GRAPH_ROUTE)
         return
     }
