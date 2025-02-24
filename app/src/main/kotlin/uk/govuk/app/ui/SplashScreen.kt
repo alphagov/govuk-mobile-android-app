@@ -49,7 +49,7 @@ internal fun SplashScreen(
             // Handle cases where animations are disabled...
             state = animateLottieCompositionAsState(composition = composition, isPlaying = false)
             LaunchedEffect(true) {
-                delay(6000) // wait for 6 seconds
+                delay(1000)
                 onSplashDone()
             }
         }
