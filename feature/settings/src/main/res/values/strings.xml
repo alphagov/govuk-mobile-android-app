@@ -23,12 +23,12 @@
   <string name="feedback_prompt_widget_title">Give feedback to help improve this app</string>
 
   <string name="notifications_alert_dialog_title">Notifications</string>
-  <string name="notifications_denied_alert_dialog_body">
+  <string name="notifications_permission_currently_denied">
     Notifications are currently disabled.\nEnabling notifications
     permission in your device settings will mean you receive
     notifications of government services and announcements.
   </string>
-  <string name="notifications_granted_alert_dialog_body">
+  <string name="notifications_permission_currently_granted">
     Notifications are currently enabled.\nDisabling notifications
     permission in your device settings will mean you no longer receive
     notifications of government services and announcements.

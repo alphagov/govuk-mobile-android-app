@@ -1,16 +1,15 @@
 package uk.govuk.app.settings.navigation
 
-import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.NotificationManagerCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -61,7 +60,7 @@ fun NavGraphBuilder.settingsGraph(
                     context.startActivity(intent)
                 },
                 onNotificationsClick = {
-                    handleNotificationsClick(context, navController)
+                    navigateNotifications(context, navController)
                 },
                 modifier = modifier
             )
@@ -93,45 +92,24 @@ private fun openDeviceSettings(context: Context, setting: String) {
     context.startActivity(intent)
 }
 
-private fun showAlertDialog(
-    context: Context,
-    title: String,
-    message: String,
-    positiveTitle: String,
-    onPositiveClick: (() -> Unit)? = null
-) {
-    val builder = AlertDialog.Builder(context)
-    builder.setTitle(title)
-    builder.setMessage(message)
-    onPositiveClick?.let { positiveClicked ->
-        builder.setPositiveButton(positiveTitle) { dialog, _ ->
-            positiveClicked()
-            dialog.dismiss()
-        }
-    }
-    builder.show()
-}
-
-private fun handleNotificationsClick(context: Context, navController: NavController) {
+private fun navigateNotifications(context: Context, navController: NavController) {
     if (notificationsPermissionShouldShowRationale(context as Activity)) {
         navController.navigate(NOTIFICATIONS_GRAPH_ROUTE)
         return
     }
 
-    val alertBody =
-        if (context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            R.string.notifications_granted_alert_dialog_body
+    val notificationsAlert = AlertDialog.Builder(context)
+    notificationsAlert.setTitle(context.getString(R.string.notifications_alert_dialog_title))
+    notificationsAlert.setMessage(
+        if (NotificationManagerCompat.from(context).areNotificationsEnabled()) {
+            context.getString(R.string.notifications_permission_currently_granted)
         } else {
-            R.string.notifications_denied_alert_dialog_body
+            context.getString(R.string.notifications_permission_currently_denied)
         }
-    showAlertDialog(
-        context,
-        context.getString(R.string.notifications_title),
-        context.getString(alertBody),
-        context.getString(R.string.open_settings)
-    ) {
+    )
+    notificationsAlert.setPositiveButton(context.getString(R.string.open_settings)) { dialog, _ ->
         openDeviceSettings(context, Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+        dialog.dismiss()
     }
+    notificationsAlert.show()
 }
