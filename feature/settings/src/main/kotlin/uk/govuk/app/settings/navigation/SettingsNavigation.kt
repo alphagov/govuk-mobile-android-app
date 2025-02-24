@@ -98,18 +98,20 @@ private fun navigateNotifications(context: Context, navController: NavController
         return
     }
 
-    val notificationsAlert = AlertDialog.Builder(context)
-    notificationsAlert.setTitle(context.getString(R.string.notifications_alert_dialog_title))
-    notificationsAlert.setMessage(
-        if (NotificationManagerCompat.from(context).areNotificationsEnabled()) {
-            context.getString(R.string.notifications_permission_currently_granted)
-        } else {
-            context.getString(R.string.notifications_permission_currently_denied)
+    AlertDialog.Builder(context).apply {
+        setTitle(context.getString(R.string.notifications_alert_dialog_title))
+        setMessage(
+            if (NotificationManagerCompat.from(context).areNotificationsEnabled()) {
+                context.getString(R.string.notifications_permission_currently_granted)
+            } else {
+                context.getString(R.string.notifications_permission_currently_denied)
+            }
+        )
+        setPositiveButton(context.getString(R.string.open_settings)) { dialog, _ ->
+            openDeviceSettings(context, Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+            dialog.dismiss()
+        }.also { notificationsAlert ->
+            notificationsAlert.show()
         }
-    )
-    notificationsAlert.setPositiveButton(context.getString(R.string.open_settings)) { dialog, _ ->
-        openDeviceSettings(context, Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-        dialog.dismiss()
     }
-    notificationsAlert.show()
 }
