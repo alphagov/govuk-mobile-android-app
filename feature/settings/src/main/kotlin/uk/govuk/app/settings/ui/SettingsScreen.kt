@@ -22,6 +22,7 @@ import uk.govuk.app.design.ui.component.CaptionRegularLabel
 import uk.govuk.app.design.ui.component.CardListItem
 import uk.govuk.app.design.ui.component.ExternalLinkListItem
 import uk.govuk.app.design.ui.component.InternalLinkListItem
+import uk.govuk.app.design.ui.component.InternalLinkStatusListItem
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeadingLabel
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
@@ -29,6 +30,7 @@ import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.TabHeader
 import uk.govuk.app.design.ui.component.ToggleListItem
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.notifications.ui.notificationsPermissionIsGranted
 import uk.govuk.app.settings.R
 import uk.govuk.app.settings.SettingsViewModel
 
@@ -268,8 +270,11 @@ private fun Notifications(
     onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ExternalLinkListItem(
+    val status =
+        stringResource(if (notificationsPermissionIsGranted()) R.string.enabled else R.string.disabled)
+    InternalLinkStatusListItem(
         title = stringResource(R.string.notifications_title),
+        status = status,
         onClick = onNotificationsClick,
         modifier = modifier,
         isFirst = false,

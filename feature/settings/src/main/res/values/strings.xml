@@ -18,21 +18,17 @@
   <string name="accessibility_title">Accessibility statement</string>
   <string name="terms_and_conditions_title">Terms and conditions</string>
   <string name="privacy_policy_title">Privacy notice</string>
-  <string name="notifications_title">Notifications</string>
+  <string name="notifications_title">Push notifications</string>
 
   <string name="feedback_prompt_widget_title">Give feedback to help improve this app</string>
 
-  <string name="notifications_alert_dialog_title">Notifications</string>
-  <string name="notifications_permission_currently_denied">
-    Notifications are currently disabled.\nEnabling notifications
-    permission in your device settings will mean you receive
-    notifications of government services and announcements.
+  <string name="notifications_alert_title">Push notifications</string>
+  <string name="notifications_alert_body">
+    Push notifications are used to provide updates.\nYou can change this in the settings.
   </string>
-  <string name="notifications_permission_currently_granted">
-    Notifications are currently enabled.\nDisabling notifications
-    permission in your device settings will mean you no longer receive
-    notifications of government services and announcements.
-  </string>
-  <string name="open_settings">Open settings</string>
+  <string name="update_settings">Update settings</string>
+  <string name="enabled">Enabled</string>
+  <string name="disabled">Disabled</string>
+  <string name="cancel">Cancel</string>
 
 </resources>

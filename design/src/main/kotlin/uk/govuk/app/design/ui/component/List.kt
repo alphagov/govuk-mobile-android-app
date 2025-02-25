@@ -121,6 +121,46 @@ fun InternalLinkListItem(
 }
 
 @Composable
+fun InternalLinkStatusListItem(
+title: String,
+status: String,
+onClick: () -> Unit,
+modifier: Modifier = Modifier,
+isFirst: Boolean = true,
+isLast: Boolean = true
+) {
+    CardListItem(
+        modifier = modifier,
+        onClick = onClick,
+        isFirst = isFirst,
+        isLast = isLast
+    ) {
+        Row(
+            modifier = Modifier.padding(all = GovUkTheme.spacing.medium),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BodyRegularLabel(
+                text = title,
+                modifier = Modifier.weight(1f)
+            )
+
+            MediumHorizontalSpacer()
+
+            FootnoteRegularLabel(
+                text = status,
+                Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+            )
+
+            Icon(
+                painter = painterResource(R.drawable.ic_chevron),
+                contentDescription = null,
+                tint = GovUkTheme.colourScheme.textAndIcons.icon
+            )
+        }
+    }
+}
+
+@Composable
 fun ExternalLinkListItem(
     title: String,
     onClick: () -> Unit,

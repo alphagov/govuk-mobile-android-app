@@ -35,10 +35,18 @@ class NotificationsPermissionProviderTest {
     }
 
     @Test
-    fun given_the_app_is_run_for_the_first_time_When_get_notifications_permission_should_show_rationale_called_Then_should_return_false() {
+    fun given_the_app_is_run_for_the_first_time_When_notifications_permission_should_show_rationale_called_Then_should_return_false() {
         composeTestRule.setContent {
             val shouldShowRationale = notificationsPermissionShouldShowRationale()
             assertFalse(shouldShowRationale)
+        }
+    }
+
+    @Test
+    fun given_the_app_is_run_for_the_first_time_When_notifications_permission_is_granted_called_Then_should_return_false() {
+        composeTestRule.setContent {
+            val isGranted = notificationsPermissionIsGranted()
+            assertFalse(isGranted)
         }
     }
 }

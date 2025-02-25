@@ -9,7 +9,6 @@ import android.os.Build
 import android.provider.Settings
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.app.NotificationManagerCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -99,19 +98,16 @@ private fun navigateNotifications(context: Context, navController: NavController
     }
 
     AlertDialog.Builder(context).apply {
-        setTitle(context.getString(R.string.notifications_alert_dialog_title))
-        setMessage(
-            if (NotificationManagerCompat.from(context).areNotificationsEnabled()) {
-                context.getString(R.string.notifications_permission_currently_granted)
-            } else {
-                context.getString(R.string.notifications_permission_currently_denied)
-            }
-        )
-        setPositiveButton(context.getString(R.string.open_settings)) { dialog, _ ->
+        setTitle(context.getString(R.string.notifications_alert_title))
+        setMessage(context.getString(R.string.notifications_alert_body))
+        setNeutralButton(context.getString(R.string.cancel)) { dialog, _ ->
+            dialog.dismiss()
+        }
+        setPositiveButton(context.getString(R.string.update_settings)) { dialog, _ ->
             openDeviceSettings(context, Settings.ACTION_APP_NOTIFICATION_SETTINGS)
             dialog.dismiss()
-        }.also { notificationsAlert ->
-            notificationsAlert.show()
         }
+    }.also { notificationsAlert ->
+        notificationsAlert.show()
     }
 }
