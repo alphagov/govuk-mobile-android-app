@@ -6,73 +6,57 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import uk.govuk.app.analytics.AnalyticsClient
+import uk.govuk.app.data.model.Result.Success
+import uk.govuk.app.local.data.LocalRepo
 import javax.inject.Inject
 
 internal data class LocalUiState(
-    var postcode: String,
-    val localAuthorityName: String,
-    val localAuthorityUrl: String,
+    var postcode: String = "",
+    var localAuthorityName: String = "",
+    var localAuthorityUrl: String = "",
+    var localCustodianCode: Int = 0,
 )
 
 @HiltViewModel
 internal class LocalViewModel @Inject constructor(
-    private val analyticsClient: AnalyticsClient,
+    private val localRepo: LocalRepo
 ): ViewModel() {
 
-    companion object {
-        private const val EDIT_BUTTON = "Edit"
-        private const val EDIT_SCREEN_CLASS = "EditLocalScreen"
-        private const val SCREEN_CLASS = "LocalScreen"
-        private const val SCREEN_NAME = "Local"
-        private const val TITLE = "Local"
-    }
-
-    private val _uiState: MutableStateFlow<LocalUiState> = MutableStateFlow(
-        LocalUiState(
-            postcode = "E1 8QS",
-            localAuthorityName = "London Borough of Tower Hamlets",
-            localAuthorityUrl = "https://www.towerhamlets.gov.uk",
-        )
-    )
+    private val _uiState: MutableStateFlow<LocalUiState> = MutableStateFlow(LocalUiState())
     val uiState = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            _uiState.value = LocalUiState(
-                postcode = "E1 8QS",
-                localAuthorityName = "London Borough of Tower Hamlets",
-                localAuthorityUrl = "https://www.towerhamlets.gov.uk",
-            )
+            _uiState.value = LocalUiState()
         }
     }
 
-    fun onPageView() {
-        analyticsClient.screenView(
-            screenClass = SCREEN_CLASS,
-            screenName = SCREEN_NAME,
-            title = TITLE
-        )
+    fun updatePostcode(postcode: String) {
+        _uiState.value.postcode = postcode
+
+        viewModelScope.launch {
+            val result = localRepo.performLocationsApiCall(postcode)
+            if (result is Success) {
+                _uiState.value = LocalUiState(
+                    postcode = postcode,
+                    localCustodianCode = result.value.localCustodianCode,
+                )
+            }
+        }
     }
 
-    fun onEditClick() {
-        analyticsClient.buttonFunction(
-            text = "",
-            section = SCREEN_NAME,
-            action = EDIT_BUTTON
-        )
-    }
-
-    fun onEditPageView() {
-        analyticsClient.screenView(
-            screenClass = EDIT_SCREEN_CLASS,
-            screenName = SCREEN_NAME,
-            title = TITLE
-        )
-    }
-
-    fun onLocalAuthorityClicked(name: String, url: String) {
-//        TODO:...
-//        analyticsClient.localAuthorityClick(text = title, url = url)
+    fun updateLocalAuthority() {
+        viewModelScope.launch {
+            val result =
+                localRepo.performLocalAuthorityApiCall(_uiState.value.localCustodianCode.toString())
+            if (result is Success) {
+                _uiState.value = LocalUiState(
+                    postcode = _uiState.value.postcode,
+                    localCustodianCode = _uiState.value.localCustodianCode,
+                    localAuthorityName = result.value.name,
+                    localAuthorityUrl = result.value.homepageUrl,
+                )
+            }
+        }
     }
 }

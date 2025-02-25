@@ -7,9 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,19 +20,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import uk.govuk.app.design.ui.component.BodyBoldLabel
 import uk.govuk.app.design.ui.component.BodyRegularLabel
+import uk.govuk.app.design.ui.component.PrimaryButton
 import uk.govuk.app.design.ui.component.SecondaryButton
-import uk.govuk.app.design.ui.component.SmallHorizontalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.local.LocalUiState
 import uk.govuk.app.local.LocalViewModel
-import uk.govuk.app.local.navigation.navigateToEditLocal
 
 @Composable
 internal fun LocalRoute(
-    navController: NavController,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -40,12 +37,8 @@ internal fun LocalRoute(
 
     LocalScreen(
         uiState = uiState,
-        onPageView = { viewModel.onPageView() },
-        onLocalAuthorityClick = { name, url -> viewModel.onLocalAuthorityClicked(name, url) },
-        onEditClick = {
-            viewModel.onEditClick()
-            navController.navigateToEditLocal()
-        },
+        onPostcodeSubmit = { postcode -> viewModel.updatePostcode(postcode) },
+        onLocalAuthoritySubmit = { viewModel.updateLocalAuthority() },
         onBack = onBack,
         modifier = modifier
     )
@@ -54,24 +47,12 @@ internal fun LocalRoute(
 @Composable
 private fun LocalScreen(
     uiState: LocalUiState,
-    onPageView: () -> Unit,
-    onLocalAuthorityClick: (String, String) -> Unit,
-    onEditClick: () -> Unit,
+    onPostcodeSubmit: (String) -> Unit,
+    onLocalAuthoritySubmit: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val name = uiState.localAuthorityName
-    val url = uiState.localAuthorityUrl
-
-    val context = LocalContext.current
-    val intent = Intent(Intent.ACTION_VIEW)
-    intent.data = Uri.parse(url)
-
-    var postcode by remember { mutableStateOf("") }
-
-    LaunchedEffect(Unit) {
-        onPageView()
-    }
+    var postcode by remember { mutableStateOf(uiState.postcode) }
 
     Column(modifier) {
         Row(
@@ -80,17 +61,11 @@ private fun LocalScreen(
             modifier = modifier.fillMaxWidth()
                 .padding(GovUkTheme.spacing.medium)
         ) {
-            BodyRegularLabel(text = uiState.postcode)
-            SmallHorizontalSpacer()
-            TextButton(
-                onClick = onEditClick
-            ) {
-                BodyRegularLabel(
-                    text = "Edit",
-                    color = GovUkTheme.colourScheme.textAndIcons.link,
-                    modifier = Modifier
-                )
-            }
+            OutlinedTextField(
+                value = postcode,
+                onValueChange = { postcode = it },
+                label = { Text(text = "Postcode") }
+            )
         }
 
         Row(
@@ -99,11 +74,50 @@ private fun LocalScreen(
             modifier = modifier.fillMaxWidth()
                 .padding(GovUkTheme.spacing.medium)
         ) {
+            PrimaryButton(
+                text = "Get Local Custodian Code",
+                onClick = { onPostcodeSubmit(postcode) },
+                modifier = modifier
+            )
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier.fillMaxWidth()
+                .padding(GovUkTheme.spacing.medium)
+        ) {
+            BodyRegularLabel(
+                text = uiState.localCustodianCode.toString(),
+                modifier = Modifier
+            )
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier.fillMaxWidth()
+                .padding(GovUkTheme.spacing.medium)
+        ) {
+            PrimaryButton(
+                text = "Get Local Authority",
+                onClick = { onLocalAuthoritySubmit() },
+                modifier = modifier
+            )
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier.fillMaxWidth()
+                .padding(GovUkTheme.spacing.medium)
+        ) {
+            val context = LocalContext.current
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(uiState.localAuthorityUrl)
+
             TextButton(
-                onClick = {
-                    onLocalAuthorityClick(name, url)
-                    context.startActivity(intent)
-                }
+                onClick = { context.startActivity(intent) }
             ) {
                 BodyRegularLabel(
                     text = uiState.localAuthorityName,
