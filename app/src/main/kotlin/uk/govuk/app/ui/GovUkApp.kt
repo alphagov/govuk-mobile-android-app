@@ -303,10 +303,10 @@ private fun GovUkNavHost(
             modifier = Modifier.padding(paddingValues)
         )
         notificationsGraph(
-            canSkip = !launchRoutes.empty(),
+            canSkip = !launchRoutes.isEmpty(),
             notificationsOnboardingCompleted = {
                 navController.popBackStack()
-                if (launchRoutes.empty()) return@notificationsGraph
+                if (launchRoutes.isEmpty()) return@notificationsGraph
                 navController.navigate(launchRoutes.pop())
             }
         )

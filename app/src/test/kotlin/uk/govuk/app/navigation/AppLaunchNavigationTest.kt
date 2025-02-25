@@ -1,6 +1,6 @@
 package uk.govuk.app.navigation
 
-import org.junit.Assert.assertEquals
+import org.junit.Assert.assertArrayEquals
 import org.junit.Test
 import uk.govuk.app.AppUiState
 import uk.govuk.app.analytics.navigation.ANALYTICS_GRAPH_ROUTE
@@ -8,7 +8,7 @@ import uk.govuk.app.home.navigation.HOME_GRAPH_ROUTE
 import uk.govuk.app.notifications.navigation.NOTIFICATIONS_GRAPH_ROUTE
 import uk.govuk.app.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.govuk.app.topics.navigation.TOPICS_GRAPH_ROUTE
-import java.util.Stack
+import java.util.ArrayDeque
 
 class AppLaunchNavigationTest {
 
@@ -24,14 +24,14 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
     }
 
     @Test
@@ -44,13 +44,13 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
     }
 
     @Test
@@ -62,12 +62,12 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
     }
 
     @Test
@@ -79,12 +79,12 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
     }
 
     @Test
@@ -95,11 +95,11 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
     }
 
     @Test
@@ -111,12 +111,12 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
     }
 
     @Test
@@ -127,11 +127,11 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
     }
 
     @Test
@@ -142,11 +142,11 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
     }
 
     @Test
@@ -158,12 +158,12 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
     }
 
     @Test
@@ -175,12 +175,12 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
     }
 
     @Test
@@ -192,12 +192,12 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
     }
 
     @Test
@@ -208,11 +208,11 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
     }
 
     @Test
@@ -221,9 +221,9 @@ class AppLaunchNavigationTest {
             AppUiState.Default()
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
     }
 }
