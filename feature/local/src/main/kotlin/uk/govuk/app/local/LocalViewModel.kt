@@ -15,6 +15,8 @@ internal data class LocalUiState(
     var localAuthorityName: String = "",
     var localAuthorityUrl: String = "",
     var localCustodianCode: Int = 0,
+    var binsUrl: String = "",
+    var taxUrl: String = ""
 )
 
 @HiltViewModel
@@ -55,6 +57,55 @@ internal class LocalViewModel @Inject constructor(
                     localCustodianCode = _uiState.value.localCustodianCode,
                     localAuthorityName = result.value.name,
                     localAuthorityUrl = result.value.homepageUrl,
+                )
+            }
+        }
+    }
+
+    fun updateServices() {
+        viewModelScope.launch {
+            updateBinService()
+            updateTaxService()
+        }
+    }
+
+    private fun updateBinService() {
+        viewModelScope.launch {
+            val bins = localRepo.performLinkApiCall(
+                _uiState.value.localCustodianCode.toString(), 524.toString(), 8.toString()
+            )
+
+            println(bins.toString())
+
+            if (bins is Success) {
+                _uiState.value = LocalUiState(
+                    postcode = _uiState.value.postcode,
+                    localCustodianCode = _uiState.value.localCustodianCode,
+                    localAuthorityName = _uiState.value.localAuthorityName,
+                    localAuthorityUrl = _uiState.value.localAuthorityUrl,
+                    binsUrl = bins.value.url,
+                    taxUrl = _uiState.value.taxUrl,
+                )
+            }
+        }
+    }
+
+    private fun updateTaxService() {
+        viewModelScope.launch {
+            val tax = localRepo.performLinkApiCall(
+                _uiState.value.localCustodianCode.toString(), 58.toString(), 8.toString()
+            )
+
+            println(tax.toString())
+
+            if (tax is Success) {
+                _uiState.value = LocalUiState(
+                    postcode = _uiState.value.postcode,
+                    localCustodianCode = _uiState.value.localCustodianCode,
+                    localAuthorityName = _uiState.value.localAuthorityName,
+                    localAuthorityUrl = _uiState.value.localAuthorityUrl,
+                    binsUrl = _uiState.value.binsUrl,
+                    taxUrl = tax.value.url,
                 )
             }
         }

@@ -18,7 +18,7 @@ fun LocalWidget(
         title = title,
         onClick = { onClick(title) },
         modifier = modifier,
-        icon = R.drawable.baseline_map_24
+        icon = R.drawable.baseline_pin_drop_24
     )
 }
 

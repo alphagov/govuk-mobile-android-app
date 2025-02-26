@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="local_widget_title">Local</string>
+  <string name="local_widget_title">Access local services</string>
+  <string name="local_description">Enter your postcode so you can use the app to access services for your local area.</string>
+  <string name="local_postcode_usage">How we use your postcode</string>
+  <string name="local_custodian_button">1. Get your local custodian code</string>
+  <string name="local_authority_button">2. Get your local authority</string>
+  <string name="local_services_button">3. Get your local services</string>
+  <string name="local_postcode">Postcode</string>
 </resources>

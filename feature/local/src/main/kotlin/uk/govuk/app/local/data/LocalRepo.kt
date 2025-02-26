@@ -3,6 +3,7 @@ package uk.govuk.app.local.data
 import uk.govuk.app.data.model.Result
 import uk.govuk.app.data.remote.safeApiCall
 import uk.govuk.app.local.data.remote.LocalApi
+import uk.govuk.app.local.data.remote.model.LinkApiResponse
 import uk.govuk.app.local.data.remote.model.LocalLinksManagerApiResponse
 import uk.govuk.app.local.data.remote.model.LocationsApiResponse
 import javax.inject.Inject
@@ -22,5 +23,13 @@ internal class LocalRepo @Inject constructor(
         localCustodianCode: String
     ): Result<LocalLinksManagerApiResponse> {
         return safeApiCall { localApi.getLocalAuthority(localCustodianCode) }
+    }
+
+    suspend fun performLinkApiCall(
+        localCustodianCode: String,
+        lgslCode: String,
+        lgilCode: String
+    ): Result<LinkApiResponse> {
+        return safeApiCall { localApi.getLink(localCustodianCode, lgslCode, lgilCode) }
     }
 }
