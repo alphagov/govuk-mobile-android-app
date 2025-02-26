@@ -11,12 +11,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.CaptionRegularLabel
 import uk.govuk.app.design.ui.component.CardListItem
@@ -30,7 +36,6 @@ import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.TabHeader
 import uk.govuk.app.design.ui.component.ToggleListItem
 import uk.govuk.app.design.ui.theme.GovUkTheme
-import uk.govuk.app.notifications.ui.notificationsPermissionIsGranted
 import uk.govuk.app.settings.R
 import uk.govuk.app.settings.SettingsViewModel
 
@@ -270,11 +275,24 @@ private fun Notifications(
     onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val status =
-        stringResource(if (notificationsPermissionIsGranted()) R.string.enabled else R.string.disabled)
+    val context = LocalContext.current
+
+    fun getStatus() = if (NotificationManagerCompat.from(context)
+            .areNotificationsEnabled()
+    ) R.string.enabled else R.string.disabled
+
+    var status by remember { mutableIntStateOf(getStatus()) }
+
+    LifecycleResumeEffect(Unit) {
+        status = getStatus()
+        onPauseOrDispose {
+            // Do nothing
+        }
+    }
+
     InternalLinkStatusListItem(
         title = stringResource(R.string.notifications_title),
-        status = status,
+        status = stringResource(status),
         onClick = onNotificationsClick,
         modifier = modifier,
         isFirst = false,
