@@ -220,4 +220,14 @@ class SettingsViewModelTest {
             title = NOTIFICATIONS_PERMISSION_EVENT
         )
     }
+
+    @Test
+    fun `Given a button click, then log analytics`() {
+        val viewModel = SettingsViewModel(analyticsClient, flagRepo)
+
+        viewModel.onButtonClick("Text")
+        verify {
+            analyticsClient.buttonClick("Text")
+        }
+    }
 }

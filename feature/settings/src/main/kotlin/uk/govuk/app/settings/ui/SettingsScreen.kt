@@ -1,5 +1,10 @@
 package uk.govuk.app.settings.ui
 
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,6 +41,7 @@ import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.TabHeader
 import uk.govuk.app.design.ui.component.ToggleListItem
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.notifications.notificationsPermissionShouldShowRationale
 import uk.govuk.app.settings.R
 import uk.govuk.app.settings.SettingsViewModel
 
@@ -52,7 +58,7 @@ internal fun SettingsRoute(
 ) {
     val viewModel: SettingsViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
-
+    val context = LocalContext.current
     uiState?.let {
         SettingsScreen(
             appVersion = appVersion,
@@ -82,7 +88,11 @@ internal fun SettingsRoute(
             },
             onNotificationsClick = {
                 viewModel.onNotificationsClick()
-                onNotificationsClick()
+                if (notificationsPermissionShouldShowRationale(context as Activity)) {
+                    onNotificationsClick()
+                } else {
+                    showNotificationsAlert(context, viewModel)
+                }
             },
             modifier = modifier
         )
@@ -312,4 +322,34 @@ private fun TermsAndConditions(
         isFirst = false,
         isLast = true,
     )
+}
+
+private fun showNotificationsAlert(context: Context, viewModel: SettingsViewModel) {
+    val neutralButton = context.getString(R.string.cancel)
+    val positiveButton = context.getString(R.string.update_settings)
+
+    AlertDialog.Builder(context).apply {
+        setTitle(context.getString(R.string.notifications_alert_title))
+        setMessage(context.getString(R.string.notifications_alert_body))
+        setNeutralButton(neutralButton) { dialog, _ ->
+            viewModel.onButtonClick(neutralButton)
+            dialog.dismiss()
+        }
+        setPositiveButton(positiveButton) { dialog, _ ->
+            viewModel.onButtonClick(positiveButton)
+            openDeviceSettings(context)
+            dialog.dismiss()
+        }
+    }.also { notificationsAlert ->
+        notificationsAlert.show()
+    }
+}
+
+private fun openDeviceSettings(context: Context) {
+    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+        .also { intent ->
+            context.startActivity(intent)
+        }
 }

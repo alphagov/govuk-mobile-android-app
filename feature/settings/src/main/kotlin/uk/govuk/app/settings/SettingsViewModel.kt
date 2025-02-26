@@ -112,4 +112,8 @@ internal class SettingsViewModel @Inject constructor(
             )
         }
     }
+
+    fun onButtonClick(text: String) {
+        analyticsClient.buttonClick(text)
+    }
 }
