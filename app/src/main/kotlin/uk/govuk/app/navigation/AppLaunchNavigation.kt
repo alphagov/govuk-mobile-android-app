@@ -7,11 +7,12 @@ import uk.govuk.app.notifications.navigation.NOTIFICATIONS_GRAPH_ROUTE
 import uk.govuk.app.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.govuk.app.topics.navigation.TOPICS_GRAPH_ROUTE
 import java.util.ArrayDeque
+import java.util.Deque
 
 internal class AppLaunchNavigation(
     private val uiState: AppUiState.Default
 ) {
-    val launchRoutes: ArrayDeque<String> = ArrayDeque()
+    val launchRoutes: Deque<String> = ArrayDeque()
 
     init {
         setLaunchRoutes()
