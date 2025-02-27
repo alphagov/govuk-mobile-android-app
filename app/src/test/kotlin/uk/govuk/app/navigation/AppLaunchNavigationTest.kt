@@ -31,7 +31,7 @@ class AppLaunchNavigationTest {
         expected.push(ONBOARDING_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -50,7 +50,7 @@ class AppLaunchNavigationTest {
         expected.push(ONBOARDING_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -67,7 +67,7 @@ class AppLaunchNavigationTest {
         expected.push(ONBOARDING_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -84,7 +84,7 @@ class AppLaunchNavigationTest {
         expected.push(TOPICS_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -99,7 +99,7 @@ class AppLaunchNavigationTest {
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -116,7 +116,7 @@ class AppLaunchNavigationTest {
         expected.push(TOPICS_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
 
-        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -131,7 +131,7 @@ class AppLaunchNavigationTest {
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
 
-        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -146,7 +146,7 @@ class AppLaunchNavigationTest {
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
 
-        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -163,7 +163,7 @@ class AppLaunchNavigationTest {
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -180,7 +180,7 @@ class AppLaunchNavigationTest {
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
 
-        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -197,7 +197,7 @@ class AppLaunchNavigationTest {
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
 
-        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -212,7 +212,7 @@ class AppLaunchNavigationTest {
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
 
-        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -224,6 +224,6 @@ class AppLaunchNavigationTest {
         val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
 
-        assertArrayEquals(expected.toArray(), appLaunchNavigation.launchRoutes.toArray())
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 }
