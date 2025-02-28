@@ -52,7 +52,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            matchingFallbacks += listOf("release")
+            matchingFallbacks += listOf("debug")
 
             signingConfig = if (System.getenv("ALPHA_KEYSTORE") != null) {
                 println("Signing with Alpha Keystore!!!")
