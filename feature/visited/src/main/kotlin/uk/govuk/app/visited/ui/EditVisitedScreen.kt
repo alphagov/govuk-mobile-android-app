@@ -137,9 +137,12 @@ private fun EditVisitedScreen(
             modifier = modifier
                 .padding(innerPadding)
                 .padding(horizontal = GovUkTheme.spacing.medium)
-                .padding(top = GovUkTheme.spacing.small)
                 .fillMaxWidth()
         ) {
+            item {
+                SmallVerticalSpacer()
+            }
+
             item {
                 visitedItems?.let { items ->
                     val lastVisitedText = stringResource(R.string.visited_items_last_visited)

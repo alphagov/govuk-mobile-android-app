@@ -243,7 +243,7 @@ private fun highlightVariants(
 
 @Preview(showBackground = true)
 @Composable
-fun HighlightSingleSearchTerm1Preview() {
+private fun HighlightSingleSearchTerm1Preview() {
     GovUkTheme {
         Text(text = highlightSearchTerms(
                 suggestion = "pay employers PAYE",
@@ -255,7 +255,7 @@ fun HighlightSingleSearchTerm1Preview() {
 
 @Preview(showBackground = true)
 @Composable
-fun HighlightSingleSearchTerm2Preview() {
+private fun HighlightSingleSearchTerm2Preview() {
     GovUkTheme {
         Text(text = highlightSearchTerms(
                 suggestion = "payroll",
@@ -267,7 +267,7 @@ fun HighlightSingleSearchTerm2Preview() {
 
 @Preview(showBackground = true)
 @Composable
-fun HighlightSingleSearchTerm3Preview() {
+private fun HighlightSingleSearchTerm3Preview() {
     GovUkTheme {
         Text(text = highlightSearchTerms(
                 suggestion = "pay self assessment",
@@ -279,7 +279,7 @@ fun HighlightSingleSearchTerm3Preview() {
 
 @Preview(showBackground = true)
 @Composable
-fun HighlightSingleSearchTerm4Preview() {
+private fun HighlightSingleSearchTerm4Preview() {
     GovUkTheme {
         Text(text = highlightSearchTerms(
                 suggestion = "check your pay",
@@ -291,7 +291,7 @@ fun HighlightSingleSearchTerm4Preview() {
 
 @Preview(showBackground = true)
 @Composable
-fun HighlightSingleSearchTerm5Preview() {
+private fun HighlightSingleSearchTerm5Preview() {
     GovUkTheme {
         Text(text = highlightSearchTerms(
                 suggestion = "understanding your pay",
@@ -303,7 +303,7 @@ fun HighlightSingleSearchTerm5Preview() {
 
 @Preview(showBackground = true)
 @Composable
-fun HighlightDoubleSearchTerm1Preview() {
+private fun HighlightDoubleSearchTerm1Preview() {
     GovUkTheme {
         Text(text = highlightSearchTerms(
                 suggestion = "pay your corporation tax bill",
@@ -315,7 +315,7 @@ fun HighlightDoubleSearchTerm1Preview() {
 
 @Preview(showBackground = true)
 @Composable
-fun HighlightDoubleSearchTerm2Preview() {
+private fun HighlightDoubleSearchTerm2Preview() {
     GovUkTheme {
         Text(text = highlightSearchTerms(
                 suggestion = "pay capital gain tax uk property",
@@ -327,7 +327,7 @@ fun HighlightDoubleSearchTerm2Preview() {
 
 @Preview(showBackground = true)
 @Composable
-fun HighlightDoubleSearchTerm3Preview() {
+private fun HighlightDoubleSearchTerm3Preview() {
     GovUkTheme {
         Text(text = highlightSearchTerms(
                 suggestion = "pay corporation tax",
@@ -339,7 +339,7 @@ fun HighlightDoubleSearchTerm3Preview() {
 
 @Preview(showBackground = true)
 @Composable
-fun HighlightDoubleSearchTerm4Preview() {
+private fun HighlightDoubleSearchTerm4Preview() {
     GovUkTheme {
         Text(text = highlightSearchTerms(
                 suggestion = "pay your corporation tax",
@@ -351,7 +351,7 @@ fun HighlightDoubleSearchTerm4Preview() {
 
 @Preview(showBackground = true)
 @Composable
-fun HighlightDoubleSearchTerm5Preview() {
+private fun HighlightDoubleSearchTerm5Preview() {
     GovUkTheme {
         Text(text = highlightSearchTerms(
                 suggestion = "pay tax",
@@ -363,7 +363,7 @@ fun HighlightDoubleSearchTerm5Preview() {
 
 @Preview(showBackground = true)
 @Composable
-fun HighlightMultipleSearchTerms1Preview() {
+private fun HighlightMultipleSearchTerms1Preview() {
     GovUkTheme {
         Text(text = highlightSearchTerms(
                 suggestion = "mouse house housey mousey",
@@ -375,7 +375,7 @@ fun HighlightMultipleSearchTerms1Preview() {
 
 @Preview(showBackground = true)
 @Composable
-fun HighlightMultipleSearchTerms2Preview() {
+private fun HighlightMultipleSearchTerms2Preview() {
     GovUkTheme {
         Text(text = highlightSearchTerms(
                 suggestion = "Android Android android",
@@ -387,7 +387,7 @@ fun HighlightMultipleSearchTerms2Preview() {
 
 @Preview(showBackground = true)
 @Composable
-fun HighlightMultipleSearchTerms3Preview() {
+private fun HighlightMultipleSearchTerms3Preview() {
     GovUkTheme {
         Text(text = highlightSearchTerms(
                 suggestion = "Ho! Ho! Ho! said the mouse as it moved into a new house",
@@ -399,7 +399,7 @@ fun HighlightMultipleSearchTerms3Preview() {
 
 @Preview(showBackground = true)
 @Composable
-fun HighlightMultipleSearchTerms4Preview() {
+private fun HighlightMultipleSearchTerms4Preview() {
     GovUkTheme {
         Text(text = highlightSearchTerms(
                 suggestion = "mouse house housey mousey mousehouse",
