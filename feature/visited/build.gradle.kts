@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.ui.tooling)
     implementation(libs.realm.base)
 
     ksp(libs.hilt.compiler)
@@ -64,6 +65,4 @@ dependencies {
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    implementation(libs.androidx.ui.tooling)
 }

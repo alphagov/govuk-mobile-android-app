@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.ui.tooling)
 
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
@@ -73,6 +74,4 @@ dependencies {
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    implementation(libs.androidx.ui.tooling)
 }
