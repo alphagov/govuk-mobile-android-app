@@ -116,22 +116,22 @@ private fun OnboardingScreenFooter(
     ) {
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-        val continueButtonText = stringResource(R.string.continue_button)
-        val skipButtonText = stringResource(R.string.skip_button)
+        val allowButtonText = stringResource(R.string.allow_button)
+        val notNowButtonText = stringResource(R.string.not_now_button)
 
             if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
                 HorizontalButtonGroup(
-                    primaryText = continueButtonText,
-                    onPrimary = { onContinue(continueButtonText) },
-                    secondaryText = skipButtonText,
-                    onSecondary = { onSkip(skipButtonText) }
+                    primaryText = allowButtonText,
+                    onPrimary = { onContinue(allowButtonText) },
+                    secondaryText = notNowButtonText,
+                    onSecondary = { onSkip(notNowButtonText) }
                 )
             } else {
                 VerticalButtonGroup(
-                    primaryText = continueButtonText,
-                    onPrimary = { onContinue(continueButtonText) },
-                    secondaryText = skipButtonText,
-                    onSecondary = { onSkip(skipButtonText) }
+                    primaryText = allowButtonText,
+                    onPrimary = { onContinue(allowButtonText) },
+                    secondaryText = notNowButtonText,
+                    onSecondary = { onSkip(notNowButtonText) }
                 )
             }
     }
@@ -148,11 +148,11 @@ private fun OnboardingScreenFooterNoSkip(
             .padding(horizontal = GovUkTheme.spacing.small),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        val continueButtonText = stringResource(R.string.continue_button)
+        val allowButtonText = stringResource(R.string.allow_button)
 
         PrimaryButton(
-            text = continueButtonText,
-            onClick = { onContinue(continueButtonText) },
+            text = allowButtonText,
+            onClick = { onContinue(allowButtonText) },
             modifier = modifier
         )
     }

@@ -133,6 +133,12 @@ private fun SettingsScreen(
                 appVersion = appVersion,
                 onHelpClick = onHelpClick
             )
+            if (isNotificationsEnabled) {
+                LargeVerticalSpacer()
+                Notifications(
+                    onNotificationsClick = onNotificationsClick
+                )
+            }
             LargeVerticalSpacer()
             PrivacyAndLegal(
                 isAnalyticsEnabled = isAnalyticsEnabled,
@@ -145,9 +151,6 @@ private fun SettingsScreen(
             PrivacyPolicy(onPrivacyPolicyClick)
             AccessibilityStatement(onAccessibilityStatementClick)
             OpenSourceLicenses(onLicenseClick)
-            if (isNotificationsEnabled) {
-                Notifications(onNotificationsClick)
-            }
             TermsAndConditions(onTermsAndConditionsClick)
         }
     }
@@ -285,29 +288,36 @@ private fun Notifications(
     onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
+    Column(
+        modifier = modifier
+    ) {
+        ListHeadingLabel(stringResource(R.string.notifications_title))
 
-    fun getStatus() = if (NotificationManagerCompat.from(context)
-            .areNotificationsEnabled()
-    ) R.string.enabled else R.string.disabled
+        SmallVerticalSpacer()
 
-    var status by remember { mutableIntStateOf(getStatus()) }
+        val context = LocalContext.current
+        fun getStatus() = if (NotificationManagerCompat.from(context)
+                .areNotificationsEnabled()
+        ) R.string.on_button else R.string.off_button
 
-    LifecycleResumeEffect(Unit) {
-        status = getStatus()
-        onPauseOrDispose {
-            // Do nothing
+        var status by remember { mutableIntStateOf(getStatus()) }
+
+        LifecycleResumeEffect(Unit) {
+            status = getStatus()
+            onPauseOrDispose {
+                // Do nothing
+            }
         }
-    }
 
-    InternalLinkStatusListItem(
-        title = stringResource(R.string.notifications_title),
-        status = stringResource(status),
-        onClick = onNotificationsClick,
-        modifier = modifier,
-        isFirst = false,
-        isLast = false,
-    )
+        InternalLinkStatusListItem(
+            title = stringResource(R.string.notifications_title),
+            status = stringResource(status),
+            onClick = onNotificationsClick,
+            modifier = modifier,
+            isFirst = true,
+            isLast = true,
+        )
+    }
 }
 
 @Composable
@@ -325,12 +335,17 @@ private fun TermsAndConditions(
 }
 
 private fun showNotificationsAlert(context: Context, viewModel: SettingsViewModel) {
-    val neutralButton = context.getString(R.string.cancel)
-    val positiveButton = context.getString(R.string.update_settings)
+    val isNotificationsOn = NotificationManagerCompat.from(context).areNotificationsEnabled()
+    val alertTitle =
+        if (isNotificationsOn) R.string.notifications_alert_title_off else R.string.notifications_alert_title_on
+    val alertMessage =
+        if (isNotificationsOn) R.string.notifications_alert_message_off else R.string.notifications_alert_message_on
+    val neutralButton = context.getString(R.string.cancel_button)
+    val positiveButton = context.getString(R.string.continue_button)
 
     AlertDialog.Builder(context).apply {
-        setTitle(context.getString(R.string.notifications_alert_title))
-        setMessage(context.getString(R.string.notifications_alert_body))
+        setTitle(context.getString(alertTitle))
+        setMessage(context.getString(alertMessage))
         setNeutralButton(neutralButton) { dialog, _ ->
             viewModel.onButtonClick(neutralButton)
             dialog.dismiss()
