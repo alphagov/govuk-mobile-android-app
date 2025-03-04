@@ -58,10 +58,10 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material3)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.ui.tooling)
     implementation(libs.hilt.android)
     implementation(libs.play.services.oss.licenses)
     implementation(libs.play.services.measurement.api)
-    implementation(libs.androidx.ui.tooling)
 
     ksp(libs.hilt.compiler)
 
