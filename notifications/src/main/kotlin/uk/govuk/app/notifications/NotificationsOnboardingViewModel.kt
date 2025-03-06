@@ -47,7 +47,9 @@ internal class NotificationsOnboardingViewModel @Inject constructor(
     }
 
     internal fun onContinueClick(text: String) {
-        notificationsClient.requestPermission()
+        notificationsClient.requestPermission {
+            _uiState.value = NotificationsOnboardingUiState.Finish
+        }
         analyticsClient.buttonClick(
             text = text
         )

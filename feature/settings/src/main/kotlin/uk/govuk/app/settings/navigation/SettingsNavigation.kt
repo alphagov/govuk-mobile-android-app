@@ -6,12 +6,11 @@ import android.net.Uri
 import android.os.Build
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import uk.govuk.app.notifications.navigation.NOTIFICATIONS_GRAPH_ROUTE
+import uk.govuk.app.notifications.navigation.NOTIFICATIONS_ONBOARDING_NO_SKIP_ROUTE
 import uk.govuk.app.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
 import uk.govuk.app.settings.BuildConfig.HELP_AND_FEEDBACK_URL
 import uk.govuk.app.settings.BuildConfig.PRIVACY_POLICY_URL
@@ -24,7 +23,7 @@ const val SETTINGS_GRAPH_ROUTE = "settings_graph_route"
 private const val SETTINGS_ROUTE = "settings_route"
 
 fun NavGraphBuilder.settingsGraph(
-    navController: NavController,
+    navigateTo: (String) -> Unit,
     appVersion: String,
     modifier: Modifier = Modifier
 ) {
@@ -54,7 +53,7 @@ fun NavGraphBuilder.settingsGraph(
                     context.startActivity(intent)
                 },
                 onNotificationsClick = {
-                    navController.navigate(NOTIFICATIONS_GRAPH_ROUTE)
+                    navigateTo(NOTIFICATIONS_ONBOARDING_NO_SKIP_ROUTE)
                 },
                 modifier = modifier
             )

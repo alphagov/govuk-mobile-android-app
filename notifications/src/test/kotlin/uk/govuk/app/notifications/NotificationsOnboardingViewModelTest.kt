@@ -6,6 +6,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -44,16 +45,23 @@ class NotificationsOnboardingViewModelTest {
 
     @Test
     fun `Given continue button click, then request permission and log analytics`() {
-        every { notificationsClient.requestPermission() } returns Unit
+        val onCompleted = slot<() -> Unit>()
+        every {
+            notificationsClient.requestPermission(onCompleted = capture(onCompleted))
+        } answers {
+            onCompleted.captured.invoke()
+        }
 
         viewModel.onContinueClick("Title")
 
         runTest {
             verify(exactly = 1) {
-                notificationsClient.requestPermission()
+                notificationsClient.requestPermission(onCompleted = any())
 
                 analyticsClient.buttonClick("Title")
             }
+            val result = viewModel.uiState.first()
+            assertTrue(result is NotificationsOnboardingUiState.Finish)
         }
     }
 

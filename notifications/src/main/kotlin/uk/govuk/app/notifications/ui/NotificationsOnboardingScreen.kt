@@ -29,7 +29,6 @@ import uk.govuk.app.notifications.R
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun NotificationsOnboardingRoute(
-    canSkip: Boolean,
     notificationsOnboardingCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -45,17 +44,56 @@ internal fun NotificationsOnboardingRoute(
         when (state) {
             NotificationsOnboardingUiState.Default -> {
                 OnboardingScreen(
-                    canSkip = canSkip,
-                    onContinue = {
-                        viewModel.onContinueClick(it)
-                        notificationsOnboardingCompleted()
-                    },
-                    onSkip = {
-                        viewModel.onSkipClick(it)
-                        notificationsOnboardingCompleted()
-                    },
                     onPageView = { viewModel.onPageView() },
-                    modifier = modifier
+                    modifier = modifier,
+                    footer = {
+                        OnboardingScreenFooter(
+                            onContinue = {
+                                viewModel.onContinueClick(it)
+                            },
+                            onSkip = {
+                                viewModel.onSkipClick(it)
+                                notificationsOnboardingCompleted()
+                            }
+                        )
+                    }
+                )
+            }
+
+            NotificationsOnboardingUiState.Finish -> {
+                notificationsOnboardingCompleted()
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+internal fun NotificationsOnboardingNoSkipRoute(
+    notificationsOnboardingCompleted: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val viewModel: NotificationsOnboardingViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
+
+    val permissionStatus = getNotificationsPermissionStatus()
+    LaunchedEffect(permissionStatus) {
+        viewModel.updateUiState(permissionStatus)
+    }
+
+    uiState?.let { state ->
+        when (state) {
+            NotificationsOnboardingUiState.Default -> {
+                OnboardingScreen(
+                    onPageView = { viewModel.onPageView() },
+                    modifier = modifier,
+                    footer = {
+                        OnboardingScreenFooterNoSkip(
+                            onContinue = {
+                                viewModel.onContinueClick(it)
+                            }
+                        )
+                    }
                 )
             }
 
@@ -68,11 +106,9 @@ internal fun NotificationsOnboardingRoute(
 
 @Composable
 private fun OnboardingScreen(
-    canSkip: Boolean,
-    onContinue: (String) -> Unit,
-    onSkip: ((String) -> Unit),
     onPageView: () -> Unit,
     modifier: Modifier = Modifier,
+    footer: @Composable () -> Unit
 ) {
     LaunchedEffect(Unit) {
         onPageView()
@@ -89,16 +125,7 @@ private fun OnboardingScreen(
 
         ListDivider()
 
-        if (canSkip) {
-            OnboardingScreenFooter(
-                onContinue = onContinue,
-                onSkip = onSkip
-            )
-        } else {
-            OnboardingScreenFooterNoSkip(
-                onContinue = onContinue
-            )
-        }
+        footer()
     }
 }
 
@@ -119,21 +146,21 @@ private fun OnboardingScreenFooter(
         val allowButtonText = stringResource(R.string.allow_button)
         val notNowButtonText = stringResource(R.string.not_now_button)
 
-            if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
-                HorizontalButtonGroup(
-                    primaryText = allowButtonText,
-                    onPrimary = { onContinue(allowButtonText) },
-                    secondaryText = notNowButtonText,
-                    onSecondary = { onSkip(notNowButtonText) }
-                )
-            } else {
-                VerticalButtonGroup(
-                    primaryText = allowButtonText,
-                    onPrimary = { onContinue(allowButtonText) },
-                    secondaryText = notNowButtonText,
-                    onSecondary = { onSkip(notNowButtonText) }
-                )
-            }
+        if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
+            HorizontalButtonGroup(
+                primaryText = allowButtonText,
+                onPrimary = { onContinue(allowButtonText) },
+                secondaryText = notNowButtonText,
+                onSecondary = { onSkip(notNowButtonText) }
+            )
+        } else {
+            VerticalButtonGroup(
+                primaryText = allowButtonText,
+                onPrimary = { onContinue(allowButtonText) },
+                secondaryText = notNowButtonText,
+                onSecondary = { onSkip(notNowButtonText) }
+            )
+        }
     }
 }
 
@@ -144,7 +171,7 @@ private fun OnboardingScreenFooterNoSkip(
 ) {
     Column(
         modifier = modifier
-            .padding(top = GovUkTheme.spacing.medium, bottom = GovUkTheme.spacing.small)
+            .padding(vertical = GovUkTheme.spacing.medium)
             .padding(horizontal = GovUkTheme.spacing.small),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -161,11 +188,11 @@ private fun OnboardingScreenFooterNoSkip(
 @Preview
 @Composable
 private fun OnboardingScreenPreview() {
-    OnboardingScreen(true, {}, {}, {})
+    OnboardingScreen({}, footer = { OnboardingScreenFooter({}, {}) })
 }
 
 @Preview
 @Composable
 private fun OnboardingScreenNoSkipPreview() {
-    OnboardingScreen(false, {}, {}, {})
+    OnboardingScreen({}, footer = { OnboardingScreenFooterNoSkip({}) })
 }

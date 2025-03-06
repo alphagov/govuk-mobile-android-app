@@ -33,7 +33,6 @@ import uk.govuk.app.design.ui.component.CaptionRegularLabel
 import uk.govuk.app.design.ui.component.CardListItem
 import uk.govuk.app.design.ui.component.ExternalLinkListItem
 import uk.govuk.app.design.ui.component.InternalLinkListItem
-import uk.govuk.app.design.ui.component.InternalLinkStatusListItem
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.ListHeadingLabel
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
@@ -309,7 +308,7 @@ private fun Notifications(
             }
         }
 
-        InternalLinkStatusListItem(
+        InternalLinkListItem(
             title = stringResource(R.string.notifications_title),
             status = stringResource(status),
             onClick = onNotificationsClick,

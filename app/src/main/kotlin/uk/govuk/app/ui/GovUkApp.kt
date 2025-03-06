@@ -43,18 +43,18 @@ import androidx.navigation.compose.rememberNavController
 import uk.govuk.app.AppUiState
 import uk.govuk.app.AppViewModel
 import uk.govuk.app.BuildConfig
-import uk.govuk.app.home.HomeWidget
 import uk.govuk.app.R
 import uk.govuk.app.analytics.navigation.analyticsGraph
 import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.error.AppUnavailableScreen
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.home.HomeWidget
 import uk.govuk.app.home.navigation.homeGraph
 import uk.govuk.app.navigation.AppLaunchNavigation
 import uk.govuk.app.navigation.TopLevelDestination
 import uk.govuk.app.notifications.navigation.notificationsGraph
-import uk.govuk.app.notifications.ui.notificationsPermissionShouldShowRationale
 import uk.govuk.app.notifications.ui.NotificationsPromptWidget
+import uk.govuk.app.notifications.ui.notificationsPermissionShouldShowRationale
 import uk.govuk.app.onboarding.navigation.onboardingGraph
 import uk.govuk.app.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.govuk.app.search.navigation.searchGraph
@@ -303,7 +303,6 @@ private fun GovUkNavHost(
             modifier = Modifier.padding(paddingValues)
         )
         notificationsGraph(
-            canSkip = launchRoutes.isNotEmpty(),
             notificationsOnboardingCompleted = {
                 navController.popBackStack()
                 if (launchRoutes.isEmpty()) return@notificationsGraph
@@ -321,7 +320,7 @@ private fun GovUkNavHost(
             modifier = Modifier.padding(paddingValues)
         )
         settingsGraph(
-            navController = navController,
+            navigateTo = { route -> navController.navigate(route) },
             appVersion = BuildConfig.VERSION_NAME,
             modifier = Modifier.padding(paddingValues)
         )
