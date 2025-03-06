@@ -11,21 +11,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import uk.govuk.app.design.ui.component.BodyRegularLabel
-import uk.govuk.app.design.ui.component.MediumHorizontalSpacer
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.HomeViewModel
@@ -34,14 +28,16 @@ import uk.govuk.app.home.R
 @Composable
 internal fun HomeRoute(
     widgets: List<@Composable (Modifier) -> Unit>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    headerWidget: (@Composable (Modifier) -> Unit)? = null,
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
 
     HomeScreen(
         widgets = widgets,
         onPageView = { viewModel.onPageView() },
-        modifier = modifier
+        modifier = modifier,
+        headerWidget = headerWidget
     )
 }
 
@@ -49,7 +45,8 @@ internal fun HomeRoute(
 private fun HomeScreen(
     widgets: List<@Composable (Modifier) -> Unit>,
     onPageView: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    headerWidget: (@Composable (Modifier) -> Unit)? = null,
 ) {
     LaunchedEffect(Unit) {
         onPageView()
@@ -73,29 +70,10 @@ private fun HomeScreen(
 
             MediumVerticalSpacer()
 
-            Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(28.dp))
-                    .background(GovUkTheme.colourScheme.surfaces.searchBox)
-                    .padding(GovUkTheme.spacing.medium),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = null,
-                    tint = GovUkTheme.colourScheme.textAndIcons.secondary
-                )
-
-                MediumHorizontalSpacer()
-
-                BodyRegularLabel(
-                    text = "Search",
-                    modifier = Modifier.fillMaxWidth(),
-                    color = GovUkTheme.colourScheme.textAndIcons.secondary
-                )
+            if (headerWidget != null) {
+                headerWidget(Modifier.fillMaxWidth())
+                MediumVerticalSpacer()
             }
-
-            MediumVerticalSpacer()
         }
 
         LazyColumn (

@@ -16,6 +16,7 @@ const val HOME_GRAPH_START_DESTINATION = HOME_ROUTE
 fun NavGraphBuilder.homeGraph(
     widgets: List<@Composable (Modifier) -> Unit>,
     modifier: Modifier = Modifier,
+    headerWidget: (@Composable (Modifier) -> Unit)? = null,
     transitionOverrideRoutes: List<String> = emptyList()
 ) {
     navigation(
@@ -41,7 +42,8 @@ fun NavGraphBuilder.homeGraph(
         ) {
             HomeRoute(
                 widgets = widgets,
-                modifier = modifier
+                modifier = modifier,
+                headerWidget = headerWidget
             )
         }
     }
