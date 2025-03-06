@@ -10,6 +10,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import uk.govuk.app.notifications.navigation.NOTIFICATIONS_ONBOARDING_NO_SKIP_ROUTE
 import uk.govuk.app.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
 import uk.govuk.app.settings.BuildConfig.HELP_AND_FEEDBACK_URL
 import uk.govuk.app.settings.BuildConfig.PRIVACY_POLICY_URL
@@ -17,10 +18,12 @@ import uk.govuk.app.settings.BuildConfig.TERMS_AND_CONDITIONS_URL
 import uk.govuk.app.settings.ui.SettingsRoute
 import java.net.URLEncoder
 
+
 const val SETTINGS_GRAPH_ROUTE = "settings_graph_route"
 private const val SETTINGS_ROUTE = "settings_route"
 
 fun NavGraphBuilder.settingsGraph(
+    navigateTo: (String) -> Unit,
     appVersion: String,
     modifier: Modifier = Modifier
 ) {
@@ -48,6 +51,9 @@ fun NavGraphBuilder.settingsGraph(
                 onOpenSourceLicenseClick = {
                     val intent = Intent(context, OssLicensesMenuActivity::class.java)
                     context.startActivity(intent)
+                },
+                onNotificationsClick = {
+                    navigateTo(NOTIFICATIONS_ONBOARDING_NO_SKIP_ROUTE)
                 },
                 modifier = modifier
             )

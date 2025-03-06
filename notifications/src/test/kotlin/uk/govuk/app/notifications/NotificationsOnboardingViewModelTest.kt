@@ -6,6 +6,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -15,16 +16,16 @@ import org.junit.Test
 import uk.govuk.app.analytics.AnalyticsClient
 
 @OptIn(ExperimentalPermissionsApi::class)
-class NotificationsPermissionViewModelTest {
+class NotificationsOnboardingViewModelTest {
     private val permissionStatus = mockk<PermissionStatus>()
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val notificationsClient = mockk<NotificationsClient>()
 
-    private lateinit var viewModel: NotificationsPermissionViewModel
+    private lateinit var viewModel: NotificationsOnboardingViewModel
 
     @Before
     fun setup() {
-        viewModel = NotificationsPermissionViewModel(analyticsClient, notificationsClient)
+        viewModel = NotificationsOnboardingViewModel(analyticsClient, notificationsClient)
     }
 
     @Test
@@ -34,9 +35,9 @@ class NotificationsPermissionViewModelTest {
         runTest {
             verify(exactly = 1) {
                 analyticsClient.screenView(
-                    screenClass = "NotificationsPermissionScreen",
-                    screenName = "NotificationsPermissionScreen",
-                    title = "NotificationsPermissionScreen"
+                    screenClass = "NotificationsOnboardingScreen",
+                    screenName = "NotificationsOnboardingScreen",
+                    title = "NotificationsOnboardingScreen"
                 )
             }
         }
@@ -44,16 +45,23 @@ class NotificationsPermissionViewModelTest {
 
     @Test
     fun `Given continue button click, then request permission and log analytics`() {
-        every { notificationsClient.requestPermission() } returns Unit
+        val onCompleted = slot<() -> Unit>()
+        every {
+            notificationsClient.requestPermission(onCompleted = capture(onCompleted))
+        } answers {
+            onCompleted.captured.invoke()
+        }
 
         viewModel.onContinueClick("Title")
 
         runTest {
             verify(exactly = 1) {
-                notificationsClient.requestPermission()
+                notificationsClient.requestPermission(onCompleted = any())
 
                 analyticsClient.buttonClick("Title")
             }
+            val result = viewModel.uiState.first()
+            assertTrue(result is NotificationsOnboardingUiState.Finish)
         }
     }
 
@@ -77,7 +85,7 @@ class NotificationsPermissionViewModelTest {
 
         runTest {
             val result = viewModel.uiState.first()
-            assertTrue(result is NotificationsPermissionUiState.Finish)
+            assertTrue(result is NotificationsOnboardingUiState.Finish)
 
             verify(exactly = 1) {
                 notificationsClient.giveConsent()
@@ -95,7 +103,7 @@ class NotificationsPermissionViewModelTest {
 
         runTest {
             val result = viewModel.uiState.first()
-            assertTrue(result is NotificationsPermissionUiState.Finish)
+            assertTrue(result is NotificationsOnboardingUiState.Finish)
 
             verify(exactly = 1) {
                 notificationsClient.requestPermission()
@@ -111,7 +119,7 @@ class NotificationsPermissionViewModelTest {
 
         runTest {
             val result = viewModel.uiState.first()
-            assertTrue(result is NotificationsPermissionUiState.OptIn)
+            assertTrue(result is NotificationsOnboardingUiState.Default)
         }
     }
 }

@@ -1,6 +1,6 @@
 package uk.govuk.app.navigation
 
-import org.junit.Assert.assertEquals
+import org.junit.Assert.assertArrayEquals
 import org.junit.Test
 import uk.govuk.app.AppUiState
 import uk.govuk.app.analytics.navigation.ANALYTICS_GRAPH_ROUTE
@@ -8,30 +8,30 @@ import uk.govuk.app.home.navigation.HOME_GRAPH_ROUTE
 import uk.govuk.app.notifications.navigation.NOTIFICATIONS_GRAPH_ROUTE
 import uk.govuk.app.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.govuk.app.topics.navigation.TOPICS_GRAPH_ROUTE
-import java.util.Stack
+import java.util.ArrayDeque
 
 class AppLaunchNavigationTest {
 
     @Test
-    fun `Given recommend update, analytics consent, onboarding, topic selection and notifications permission should be displayed, then return correct start destination and navigate through routes`() {
+    fun `Given recommend update, analytics consent, onboarding, topic selection and notifications onboarding should be displayed, then return correct start destination and navigate through routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState.Default(
                 shouldDisplayRecommendUpdate = true,
                 shouldDisplayAnalyticsConsent = true,
                 shouldDisplayOnboarding = true,
                 shouldDisplayTopicSelection = true,
-                shouldDisplayNotificationsPermission = true
+                shouldDisplayNotificationsOnboarding = true
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -44,13 +44,13 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -62,12 +62,12 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -79,12 +79,12 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -95,11 +95,11 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -111,12 +111,12 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -127,11 +127,11 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -142,77 +142,77 @@ class AppLaunchNavigationTest {
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
-    fun `Given analytics consent and notifications permission should be displayed, then return correct launch routes`() {
+    fun `Given analytics consent and notifications onboarding should be displayed, then return correct launch routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState.Default(
                 shouldDisplayAnalyticsConsent = true,
-                shouldDisplayNotificationsPermission = true
+                shouldDisplayNotificationsOnboarding = true
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
-    fun `Given topic selection and notifications permission should be displayed, then return correct launch routes`() {
+    fun `Given topic selection and notifications onboarding should be displayed, then return correct launch routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState.Default(
                 shouldDisplayTopicSelection = true,
-                shouldDisplayNotificationsPermission = true
+                shouldDisplayNotificationsOnboarding = true
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(TOPICS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
-    fun `Given onboarding and notifications permission should be displayed, then return correct launch routes`() {
+    fun `Given onboarding and notifications onboarding should be displayed, then return correct launch routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState.Default(
                 shouldDisplayOnboarding = true,
-                shouldDisplayNotificationsPermission = true
+                shouldDisplayNotificationsOnboarding = true
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
-    fun `Given notifications permission should be displayed, then return correct launch routes`() {
+    fun `Given notifications onboarding should be displayed, then return correct launch routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState.Default(
-                shouldDisplayNotificationsPermission = true
+                shouldDisplayNotificationsOnboarding = true
             )
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
@@ -221,9 +221,9 @@ class AppLaunchNavigationTest {
             AppUiState.Default()
         )
 
-        val expected = Stack<String>()
+        val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
 
-        assertEquals(expected, appLaunchNavigation.launchRoutes)
+        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 }

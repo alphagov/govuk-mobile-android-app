@@ -6,12 +6,13 @@ import uk.govuk.app.home.navigation.HOME_GRAPH_ROUTE
 import uk.govuk.app.notifications.navigation.NOTIFICATIONS_GRAPH_ROUTE
 import uk.govuk.app.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.govuk.app.topics.navigation.TOPICS_GRAPH_ROUTE
-import java.util.Stack
+import java.util.ArrayDeque
+import java.util.Deque
 
 internal class AppLaunchNavigation(
     private val uiState: AppUiState.Default
 ) {
-    val launchRoutes: Stack<String> = Stack()
+    val launchRoutes: Deque<String> = ArrayDeque()
 
     init {
         setLaunchRoutes()
@@ -20,7 +21,7 @@ internal class AppLaunchNavigation(
     private fun setLaunchRoutes() {
         launchRoutes.push(HOME_GRAPH_ROUTE)
 
-        if (uiState.shouldDisplayNotificationsPermission) {
+        if (uiState.shouldDisplayNotificationsOnboarding) {
             launchRoutes.push(NOTIFICATIONS_GRAPH_ROUTE)
         }
 

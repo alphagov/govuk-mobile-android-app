@@ -42,7 +42,6 @@ dependencies {
     implementation(libs.androidx.adaptive.android)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.ui.tooling)
-    implementation(libs.lottie.compose)
     implementation(libs.google.accompanist)
 
     ksp(libs.hilt.compiler)
@@ -54,6 +53,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.androidx.test.rules)
 
     debugImplementation(libs.androidx.ui.test.manifest)
 }

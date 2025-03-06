@@ -1,9 +1,7 @@
 package uk.govuk.app.onboarding.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,9 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
@@ -28,33 +24,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowHeightSizeClass
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import uk.govuk.app.design.ui.component.BodyRegularLabel
-import uk.govuk.app.design.ui.component.ExtraLargeVerticalSpacer
 import uk.govuk.app.design.ui.component.HorizontalButtonGroup
-import uk.govuk.app.design.ui.component.LargeTitleBoldLabel
 import uk.govuk.app.design.ui.component.ListDivider
-import uk.govuk.app.design.ui.component.MediumVerticalSpacer
+import uk.govuk.app.design.ui.component.OnboardingSlide
 import uk.govuk.app.design.ui.component.PrimaryButton
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.VerticalButtonGroup
-import uk.govuk.app.design.ui.extension.areAnimationsEnabled
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.onboarding.OnboardingPage
 import uk.govuk.app.onboarding.OnboardingViewModel
@@ -161,62 +144,15 @@ private fun Page(
     modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState())
-            .fillMaxWidth()
-            .padding(top = GovUkTheme.spacing.extraLarge),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (windowSizeClass.windowHeightSizeClass != WindowHeightSizeClass.COMPACT) {
-            page.animation?.let { animation ->
-                val composition by rememberLottieComposition(
-                    LottieCompositionSpec.RawRes(animation)
-                )
-
-                val animationsEnabled = LocalContext.current.areAnimationsEnabled()
-
-                val state = animateLottieCompositionAsState(
-                    composition = composition,
-                    isPlaying = animationsEnabled && isCurrentPage
-                )
-
-                LottieAnimation(
-                    composition = composition,
-                    progress = { if (animationsEnabled) state.progress else 1f }
-                )
-            } ?: page.image?.let { image ->
-                Image(
-                    painter = painterResource(id = image),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(horizontal = GovUkTheme.spacing.extraLarge)
-                )
-            }
-
-            ExtraLargeVerticalSpacer()
-        }
-
-        LargeTitleBoldLabel(
-            text = stringResource(page.title),
-            modifier = Modifier
-                .focusRequester(focusRequester)
-                .focusable()
-                .padding(horizontal = GovUkTheme.spacing.extraLarge)
-                .semantics { heading() },
-            textAlign = TextAlign.Center
-        )
-        MediumVerticalSpacer()
-        BodyRegularLabel(
-            stringResource(page.body),
-            modifier = Modifier
-                .focusable()
-                .padding(horizontal = GovUkTheme.spacing.extraLarge),
-            textAlign = TextAlign.Center
-        )
-    }
+    OnboardingSlide(
+        title = page.title,
+        body = page.body,
+        modifier = modifier,
+        image = page.image,
+        animation = page.animation,
+        focusRequester = focusRequester
+    )
 
     LaunchedEffect(page.title) {
         if (isCurrentPage) {

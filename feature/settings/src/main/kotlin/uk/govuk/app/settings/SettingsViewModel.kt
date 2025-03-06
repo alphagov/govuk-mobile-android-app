@@ -7,10 +7,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.AnalyticsClient
+import uk.govuk.app.config.data.flags.FlagRepo
 import uk.govuk.app.settings.BuildConfig.ACCESSIBILITY_STATEMENT_EVENT
 import uk.govuk.app.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
 import uk.govuk.app.settings.BuildConfig.HELP_AND_FEEDBACK_EVENT
 import uk.govuk.app.settings.BuildConfig.HELP_AND_FEEDBACK_URL
+import uk.govuk.app.settings.BuildConfig.NOTIFICATIONS_PERMISSION_EVENT
 import uk.govuk.app.settings.BuildConfig.OPEN_SOURCE_LICENCE_EVENT
 import uk.govuk.app.settings.BuildConfig.PRIVACY_POLICY_EVENT
 import uk.govuk.app.settings.BuildConfig.PRIVACY_POLICY_URL
@@ -20,11 +22,13 @@ import javax.inject.Inject
 
 internal data class SettingsUiState(
     val isAnalyticsEnabled: Boolean,
+    val isNotificationsEnabled: Boolean
 )
 
 @HiltViewModel
 internal class SettingsViewModel @Inject constructor(
-    private val analyticsClient: AnalyticsClient
+    private val analyticsClient: AnalyticsClient,
+    private val flagRepo: FlagRepo
 ): ViewModel() {
 
     companion object {
@@ -39,6 +43,7 @@ internal class SettingsViewModel @Inject constructor(
     init {
         _uiState.value = SettingsUiState(
             isAnalyticsEnabled = analyticsClient.isAnalyticsEnabled(),
+            isNotificationsEnabled = flagRepo.isNotificationsEnabled()
         )
     }
 
@@ -79,6 +84,14 @@ internal class SettingsViewModel @Inject constructor(
         )
     }
 
+    fun onNotificationsClick() {
+        analyticsClient.screenView(
+            screenClass = NOTIFICATIONS_PERMISSION_EVENT,
+            screenName = NOTIFICATIONS_PERMISSION_EVENT,
+            title = NOTIFICATIONS_PERMISSION_EVENT
+        )
+    }
+
     fun onTermsAndConditionsView() {
         analyticsClient.settingsItemClick(
             text = TERMS_AND_CONDITIONS_EVENT,
@@ -94,8 +107,13 @@ internal class SettingsViewModel @Inject constructor(
                 analyticsClient.disable()
             }
             _uiState.value = SettingsUiState(
-                isAnalyticsEnabled = enabled
+                isAnalyticsEnabled = enabled,
+                isNotificationsEnabled = flagRepo.isNotificationsEnabled()
             )
         }
+    }
+
+    fun onButtonClick(text: String) {
+        analyticsClient.buttonClick(text)
     }
 }

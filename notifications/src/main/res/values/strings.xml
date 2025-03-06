@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="continue_button">I\'m in</string>
-    <string name="skip_button">Skip</string>
-    <string name="permission_screen_title">Get notified!</string>
-    <string name="permission_screen_body">Stay on top of Government services and announcements</string>
-    <string name="prompt_widget_title">Stay on top of Government services and announcements</string>
+    <string name="allow_button">Allow</string>
+    <string name="not_now_button">Not now</string>
+    <string name="onboarding_screen_title">Allow notifications?</string>
+    <string name="onboarding_screen_body">
+        Find out about things like important dates and deadlines,
+        services you might find useful and new features that have
+        been added to the app.\n\nYou can change your preferences
+        at any time in the app settings.
+    </string>
+    <string name="prompt_widget_title">Turn on notifications</string>
 </resources>
