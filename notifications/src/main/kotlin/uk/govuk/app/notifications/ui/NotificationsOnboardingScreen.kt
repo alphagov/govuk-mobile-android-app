@@ -22,7 +22,7 @@ import androidx.window.core.layout.WindowHeightSizeClass
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import uk.govuk.app.design.ui.component.HorizontalButtonGroup
 import uk.govuk.app.design.ui.component.ListDivider
-import uk.govuk.app.design.ui.component.OnboardingPage
+import uk.govuk.app.design.ui.component.OnboardingSlide
 import uk.govuk.app.design.ui.component.PrimaryButton
 import uk.govuk.app.design.ui.component.VerticalButtonGroup
 import uk.govuk.app.design.ui.theme.GovUkTheme
@@ -130,7 +130,7 @@ private fun OnboardingScreen(
     }
 
     Column(modifier.fillMaxWidth()) {
-        OnboardingPage(
+        OnboardingSlide(
             title = R.string.onboarding_screen_title,
             body = R.string.onboarding_screen_body,
             animation = R.raw.bell

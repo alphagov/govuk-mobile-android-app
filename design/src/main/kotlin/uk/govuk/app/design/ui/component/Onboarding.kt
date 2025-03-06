@@ -34,7 +34,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 @Composable
-fun OnboardingPage(
+fun OnboardingSlide(
     @StringRes title: Int,
     @StringRes body: Int,
     modifier: Modifier = Modifier,

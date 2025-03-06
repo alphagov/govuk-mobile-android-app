@@ -34,6 +34,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import uk.govuk.app.design.ui.component.HorizontalButtonGroup
 import uk.govuk.app.design.ui.component.ListDivider
+import uk.govuk.app.design.ui.component.OnboardingSlide
 import uk.govuk.app.design.ui.component.PrimaryButton
 import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.VerticalButtonGroup
@@ -144,7 +145,7 @@ private fun Page(
 ) {
     val focusRequester = remember { FocusRequester() }
 
-    uk.govuk.app.design.ui.component.OnboardingPage(
+    OnboardingSlide(
         title = page.title,
         body = page.body,
         modifier = modifier,
