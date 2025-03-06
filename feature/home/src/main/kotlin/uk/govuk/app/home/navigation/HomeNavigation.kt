@@ -1,5 +1,7 @@
 package uk.govuk.app.home.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
@@ -13,13 +15,30 @@ const val HOME_GRAPH_START_DESTINATION = HOME_ROUTE
 
 fun NavGraphBuilder.homeGraph(
     widgets: List<@Composable (Modifier) -> Unit>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    transitionOverrideRoutes: List<String> = emptyList()
 ) {
     navigation(
         route = HOME_GRAPH_ROUTE,
         startDestination = HOME_GRAPH_START_DESTINATION
     ) {
-        composable(HOME_ROUTE) {
+        composable(
+            HOME_ROUTE,
+            exitTransition = {
+                if (transitionOverrideRoutes.contains(this.targetState.destination.parent?.route)) {
+                    ExitTransition.None
+                } else {
+                    null
+                }
+            },
+            popEnterTransition = {
+                if (transitionOverrideRoutes.contains(this.initialState.destination.parent?.route)) {
+                    EnterTransition.None
+                } else {
+                    null
+                }
+            },
+        ) {
             HomeRoute(
                 widgets = widgets,
                 modifier = modifier

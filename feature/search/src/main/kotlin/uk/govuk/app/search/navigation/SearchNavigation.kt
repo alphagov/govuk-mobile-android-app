@@ -1,5 +1,7 @@
 package uk.govuk.app.search.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -20,6 +22,10 @@ fun NavGraphBuilder.searchGraph(
     ) {
         composable(
             SEARCH_ROUTE,
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
+            popEnterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None }
         ) {
             SearchRoute(
                 onBack = { navController.popBackStack() },

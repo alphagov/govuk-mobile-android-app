@@ -11,27 +11,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import uk.govuk.app.design.ui.component.LargeVerticalSpacer
+import uk.govuk.app.design.ui.component.BodyRegularLabel
+import uk.govuk.app.design.ui.component.MediumHorizontalSpacer
+import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.HomeViewModel
 import uk.govuk.app.home.R
-import kotlin.math.max
 
 @Composable
 internal fun HomeRoute(
@@ -57,39 +55,56 @@ private fun HomeScreen(
         onPageView()
     }
 
-    var scaleFactor by remember {
-        mutableIntStateOf(0)
-    }
-
-    val listState = rememberLazyListState()
-
-    LaunchedEffect(listState) {
-        snapshotFlow {
-            if (listState.firstVisibleItemIndex > 0) {
-                -1
-            } else {
-                listState.firstVisibleItemScrollOffset
-            }
-        }.collect { offset ->
-            scaleFactor = offset
-        }
-    }
-
     Column(modifier) {
-        ScalingHeader(
-            scaleFactor = scaleFactor,
-            modifier = Modifier
+        Column(
+            Modifier
                 .fillMaxWidth()
                 .background(GovUkTheme.colourScheme.surfaces.homeHeader)
-        )
+                .padding(horizontal = GovUkTheme.spacing.medium)
+        ) {
+            MediumVerticalSpacer()
+
+            Image(
+                painter = painterResource(id = uk.govuk.app.design.R.drawable.logo),
+                contentDescription = stringResource(id = R.string.logoAltText),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+
+            MediumVerticalSpacer()
+
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(28.dp))
+                    .background(GovUkTheme.colourScheme.surfaces.searchBox)
+                    .padding(GovUkTheme.spacing.medium),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = null,
+                    tint = GovUkTheme.colourScheme.textAndIcons.secondary
+                )
+
+                MediumHorizontalSpacer()
+
+                BodyRegularLabel(
+                    text = "Search",
+                    modifier = Modifier.fillMaxWidth(),
+                    color = GovUkTheme.colourScheme.textAndIcons.secondary
+                )
+            }
+
+            MediumVerticalSpacer()
+        }
 
         LazyColumn (
             modifier = Modifier
                 .padding(horizontal = GovUkTheme.spacing.medium),
-            state = listState
+            state = rememberLazyListState()
         ) {
             item{
-                LargeVerticalSpacer()
+                MediumVerticalSpacer()
             }
             items(widgets) { widget ->
                 widget(Modifier.fillMaxWidth())
@@ -114,51 +129,5 @@ private fun HomeScreen(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun ScalingHeader(
-    scaleFactor: Int,
-    modifier: Modifier = Modifier
-) {
-    val initialLogoHeight = 28
-    val minLogoHeight = 22
-
-    val initialPadding = 16
-    val minPadding = 8
-
-    var logoHeight by remember {
-        mutableIntStateOf(initialLogoHeight)
-    }
-
-    var padding by remember {
-        mutableIntStateOf(initialPadding)
-    }
-
-    if (scaleFactor == -1) {
-        logoHeight = minLogoHeight
-        padding = minPadding
-    } else {
-        logoHeight = max(
-            minLogoHeight,
-            (initialLogoHeight - (scaleFactor / 5f)).toInt()
-        )
-        padding = max(
-            minPadding,
-            (initialPadding - (scaleFactor / 5f)).toInt()
-        )
-    }
-
-    Column(modifier = modifier) {
-        Image(
-            painter = painterResource(id = uk.govuk.app.design.R.drawable.logo),
-            contentDescription = stringResource(id = R.string.logoAltText),
-            modifier = Modifier
-                .padding(vertical = padding.dp)
-                .align(Alignment.CenterHorizontally)
-                .height(logoHeight.dp)
-                .semantics { heading() }
-        )
     }
 }
