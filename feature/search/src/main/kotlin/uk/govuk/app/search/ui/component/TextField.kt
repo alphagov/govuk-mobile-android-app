@@ -2,15 +2,16 @@ package uk.govuk.app.search.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.govuk.app.design.R
+import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.theme.GovUkTheme
 
 class SearchFieldActions(
@@ -41,20 +43,28 @@ fun SearchField(
     modifier: Modifier = Modifier,
     focusRequester: FocusRequester = FocusRequester()
 ) {
-    Column(modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(28.dp))
-                .background(GovUkTheme.colourScheme.surfaces.search),
-            verticalAlignment = Alignment.CenterVertically
+    Row(
+        modifier = modifier
+            .height(48.dp)
+            .clip(RoundedCornerShape(28.dp))
+            .background(GovUkTheme.colourScheme.surfaces.search),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TextButton(
+            onClick = actions.onBack
         ) {
-            TextButton(
-                onClick = actions.onBack
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.content_desc_back),
-                    tint = GovUkTheme.colourScheme.textAndIcons.link
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.content_desc_back),
+                tint = GovUkTheme.colourScheme.textAndIcons.link
+            )
+        }
+
+        Box(Modifier.weight(1f)) {
+            if (searchTerm.isEmpty()) {
+                BodyRegularLabel(
+                    text = placeholder,
+                    color = GovUkTheme.colourScheme.textAndIcons.secondary
                 )
             }
 
@@ -64,7 +74,7 @@ fun SearchField(
                     actions.onSearchTermChange(it)
                 },
                 modifier = Modifier
-                    .weight(1f)
+                    .fillMaxWidth()
                     .focusRequester(focusRequester),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { actions.onSearch() }),
@@ -73,6 +83,21 @@ fun SearchField(
                     color = GovUkTheme.colourScheme.textAndIcons.primary
                 )
             )
+        }
+
+        if (searchTerm.isNotEmpty()) {
+            TextButton(
+                onClick = {
+                    actions.onSearchTermChange("")
+                    actions.onClear()
+                },
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Clear,
+                    contentDescription = stringResource(uk.govuk.app.search.R.string.content_desc_clear),
+                    tint = GovUkTheme.colourScheme.textAndIcons.primary
+                )
+            }
         }
     }
 }
