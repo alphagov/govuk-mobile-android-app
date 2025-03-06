@@ -3,13 +3,8 @@ package uk.govuk.app.search.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -19,21 +14,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import uk.govuk.app.design.ui.component.BodyRegularLabel
-import uk.govuk.app.design.ui.component.MediumHorizontalSpacer
+import kotlinx.coroutines.delay
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.search.R
 import uk.govuk.app.search.SearchUiState
 import uk.govuk.app.search.SearchViewModel
-import uk.govuk.app.search.ui.component.SearchHeader
-import uk.govuk.app.search.ui.component.SearchHeaderActions
+import uk.govuk.app.search.ui.component.SearchField
+import uk.govuk.app.search.ui.component.SearchFieldActions
 
 @Composable
 internal fun SearchRoute(
@@ -109,7 +102,7 @@ private fun SearchScreen(
         actions.onPageView()
     }
 
-//    val focusRequester = remember { FocusRequester() }
+    val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
 
     var searchTerm by remember { mutableStateOf("") }
@@ -132,51 +125,27 @@ private fun SearchScreen(
 
             MediumVerticalSpacer()
 
-            Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(28.dp))
-                    .background(GovUkTheme.colourScheme.surfaces.searchBox)
-                    .padding(GovUkTheme.spacing.medium),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = null,
-                    tint = GovUkTheme.colourScheme.textAndIcons.secondary
-                )
-
-                MediumHorizontalSpacer()
-
-                BodyRegularLabel(
-                    text = "Search",
-                    modifier = Modifier.fillMaxWidth(),
-                    color = GovUkTheme.colourScheme.textAndIcons.secondary
-                )
-            }
+            SearchField(
+                searchTerm = searchTerm,
+                placeholder = stringResource(R.string.search_placeholder),
+                actions = SearchFieldActions(
+                    onBack = actions.onBack,
+                    onSearchTermChange = {
+                        searchTerm = it
+                        if (searchTerm.isBlank()) {
+                            actions.onClear()
+                        } else {
+                            actions.onAutocomplete(searchTerm)
+                        }
+                    },
+                    onSearch = { actions.onSearch(searchTerm) },
+                    onClear = actions.onClear
+                ),
+                focusRequester = focusRequester
+            )
 
             MediumVerticalSpacer()
         }
-
-        /*
-        SearchHeader(
-            searchTerm = searchTerm,
-            placeholder = stringResource(R.string.search_placeholder),
-            actions = SearchHeaderActions(
-                onBack = actions.onBack,
-                onSearchTermChange = {
-                    searchTerm = it
-                    if (searchTerm.isBlank()) {
-                        actions.onClear()
-                    } else {
-                        actions.onAutocomplete(searchTerm)
-                    }
-                },
-                onSearch = { actions.onSearch(searchTerm) },
-                onClear = actions.onClear
-            ),
-            focusRequester = focusRequester
-        )
-         */
 
         when {
             uiState.error != null ->
@@ -210,9 +179,9 @@ private fun SearchScreen(
         }
     }
 
-//    LaunchedEffect(focusRequester) {
-//        focusRequester.requestFocus()
-//        delay(100)
-//        keyboard?.show()
-//    }
+    LaunchedEffect(focusRequester) {
+        focusRequester.requestFocus()
+        delay(100)
+        keyboard?.show()
+    }
 }

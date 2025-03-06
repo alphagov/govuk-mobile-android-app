@@ -31,7 +31,7 @@ fun SearchWidget(
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(28.dp))
-            .background(GovUkTheme.colourScheme.surfaces.searchBox)
+            .background(GovUkTheme.colourScheme.surfaces.search)
             .clickable {
                 onClick(searchBarText)
             }
