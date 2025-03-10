@@ -3,6 +3,8 @@ package uk.govuk.app.search.ui
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -109,7 +111,16 @@ private fun SearchScreen(
 
     var searchTerm by remember { mutableStateOf("") }
 
-    Column(modifier) {
+    val interactionSource = remember { MutableInteractionSource() }
+
+    Column(
+        modifier.clickable(
+            indication = null,
+            interactionSource = interactionSource
+        ){
+            keyboard?.hide()
+        }
+    ) {
         Column(
             Modifier
                 .fillMaxWidth()
