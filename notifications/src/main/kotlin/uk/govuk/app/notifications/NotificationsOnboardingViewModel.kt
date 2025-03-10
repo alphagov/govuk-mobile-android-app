@@ -13,28 +13,28 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalPermissionsApi::class)
 @HiltViewModel
-internal class NotificationsPermissionViewModel @Inject constructor(
+internal class NotificationsOnboardingViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient,
     private val notificationsClient: NotificationsClient
 ) : ViewModel() {
 
     companion object {
-        private const val SCREEN_CLASS = "NotificationsPermissionScreen"
-        private const val TITLE = "NotificationsPermissionScreen"
+        private const val SCREEN_CLASS = "NotificationsOnboardingScreen"
+        private const val TITLE = "NotificationsOnboardingScreen"
     }
 
-    private val _uiState: MutableStateFlow<NotificationsPermissionUiState?> = MutableStateFlow(null)
+    private val _uiState: MutableStateFlow<NotificationsOnboardingUiState?> = MutableStateFlow(null)
     internal val uiState = _uiState.asStateFlow()
 
     internal fun updateUiState(status: PermissionStatus) {
         _uiState.value = if (status.isGranted) {
             notificationsClient.giveConsent()
-            NotificationsPermissionUiState.Finish
+            NotificationsOnboardingUiState.Finish
         } else if (status.shouldShowRationale) {
-            NotificationsPermissionUiState.OptIn
+            NotificationsOnboardingUiState.Default
         } else {
             notificationsClient.requestPermission()
-            NotificationsPermissionUiState.Finish
+            NotificationsOnboardingUiState.Finish
         }
     }
 
@@ -47,7 +47,9 @@ internal class NotificationsPermissionViewModel @Inject constructor(
     }
 
     internal fun onContinueClick(text: String) {
-        notificationsClient.requestPermission()
+        notificationsClient.requestPermission {
+            _uiState.value = NotificationsOnboardingUiState.Finish
+        }
         analyticsClient.buttonClick(
             text = text
         )

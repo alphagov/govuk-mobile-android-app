@@ -314,7 +314,7 @@ class AppViewModelTest {
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
-            assertTrue(result.shouldDisplayNotificationsPermission)
+            assertTrue(result.shouldDisplayNotificationsOnboarding)
         }
     }
 
@@ -328,7 +328,7 @@ class AppViewModelTest {
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
-            assertFalse(result.shouldDisplayNotificationsPermission)
+            assertFalse(result.shouldDisplayNotificationsOnboarding)
         }
     }
 

@@ -64,7 +64,7 @@ internal class AppViewModel @Inject constructor(
                             shouldDisplayTopicSelection = flagRepo.isTopicsEnabled()
                                     && !appRepo.isTopicSelectionCompleted()
                                     && topicsInitSuccess,
-                            shouldDisplayNotificationsPermission = flagRepo.isNotificationsEnabled()
+                            shouldDisplayNotificationsOnboarding = flagRepo.isNotificationsEnabled()
                         )
                     }
                 }

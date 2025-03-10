@@ -18,7 +18,21 @@
   <string name="accessibility_title">Accessibility statement</string>
   <string name="terms_and_conditions_title">Terms and conditions</string>
   <string name="privacy_policy_title">Privacy notice</string>
+  <string name="notifications_title">Notifications</string>
 
   <string name="feedback_prompt_widget_title">Give feedback to help improve this app</string>
+
+  <string name="notifications_alert_title_on">Turn on notifications</string>
+  <string name="notifications_alert_title_off">Turn off notifications</string>
+  <string name="notifications_alert_message_on">
+    Continue to your phone’s notifications settings to turn on notifications from GOV.UK
+  </string>
+  <string name="notifications_alert_message_off">
+    Continue to your phone’s notifications settings to turn off notifications from GOV.UK
+  </string>
+  <string name="continue_button">Continue</string>
+  <string name="on_button">On</string>
+  <string name="off_button">Off</string>
+  <string name="cancel_button">Cancel</string>
 
 </resources>

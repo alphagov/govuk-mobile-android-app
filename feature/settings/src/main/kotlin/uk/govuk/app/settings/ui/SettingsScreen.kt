@@ -1,5 +1,10 @@
 package uk.govuk.app.settings.ui
 
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,12 +16,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import uk.govuk.app.design.ui.component.BodyRegularLabel
 import uk.govuk.app.design.ui.component.CaptionRegularLabel
 import uk.govuk.app.design.ui.component.CardListItem
@@ -29,6 +40,7 @@ import uk.govuk.app.design.ui.component.SmallVerticalSpacer
 import uk.govuk.app.design.ui.component.TabHeader
 import uk.govuk.app.design.ui.component.ToggleListItem
 import uk.govuk.app.design.ui.theme.GovUkTheme
+import uk.govuk.app.notifications.notificationsPermissionShouldShowRationale
 import uk.govuk.app.settings.R
 import uk.govuk.app.settings.SettingsViewModel
 
@@ -40,15 +52,17 @@ internal fun SettingsRoute(
     onAccessibilityStatementClick: () -> Unit,
     onTermsAndConditionsClick: () -> Unit,
     onOpenSourceLicenseClick: () -> Unit,
+    onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: SettingsViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
-
+    val context = LocalContext.current
     uiState?.let {
         SettingsScreen(
             appVersion = appVersion,
             isAnalyticsEnabled = it.isAnalyticsEnabled,
+            isNotificationsEnabled = it.isNotificationsEnabled,
             onPageView = { viewModel.onPageView() },
             onLicenseClick = {
                 viewModel.onLicenseView()
@@ -71,6 +85,14 @@ internal fun SettingsRoute(
                 viewModel.onTermsAndConditionsView()
                 onTermsAndConditionsClick()
             },
+            onNotificationsClick = {
+                viewModel.onNotificationsClick()
+                if (notificationsPermissionShouldShowRationale(context as Activity)) {
+                    onNotificationsClick()
+                } else {
+                    showNotificationsAlert(context, viewModel)
+                }
+            },
             modifier = modifier
         )
     }
@@ -80,6 +102,7 @@ internal fun SettingsRoute(
 private fun SettingsScreen(
     appVersion: String,
     isAnalyticsEnabled: Boolean,
+    isNotificationsEnabled: Boolean,
     onPageView: () -> Unit,
     onLicenseClick: () -> Unit,
     onHelpClick: () -> Unit,
@@ -87,6 +110,7 @@ private fun SettingsScreen(
     onPrivacyPolicyClick: () -> Unit,
     onAccessibilityStatementClick: () -> Unit,
     onTermsAndConditionsClick: () -> Unit,
+    onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -108,6 +132,12 @@ private fun SettingsScreen(
                 appVersion = appVersion,
                 onHelpClick = onHelpClick
             )
+            if (isNotificationsEnabled) {
+                LargeVerticalSpacer()
+                Notifications(
+                    onNotificationsClick = onNotificationsClick
+                )
+            }
             LargeVerticalSpacer()
             PrivacyAndLegal(
                 isAnalyticsEnabled = isAnalyticsEnabled,
@@ -253,6 +283,43 @@ private fun OpenSourceLicenses(
 }
 
 @Composable
+private fun Notifications(
+    onNotificationsClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        ListHeadingLabel(stringResource(R.string.notifications_title))
+
+        SmallVerticalSpacer()
+
+        val context = LocalContext.current
+        fun getStatus() = if (NotificationManagerCompat.from(context)
+                .areNotificationsEnabled()
+        ) R.string.on_button else R.string.off_button
+
+        var status by remember { mutableIntStateOf(getStatus()) }
+
+        LifecycleResumeEffect(Unit) {
+            status = getStatus()
+            onPauseOrDispose {
+                // Do nothing
+            }
+        }
+
+        InternalLinkListItem(
+            title = stringResource(R.string.notifications_title),
+            status = stringResource(status),
+            onClick = onNotificationsClick,
+            modifier = modifier,
+            isFirst = true,
+            isLast = true,
+        )
+    }
+}
+
+@Composable
 private fun TermsAndConditions(
     onLicenseClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -266,3 +333,37 @@ private fun TermsAndConditions(
     )
 }
 
+private fun showNotificationsAlert(context: Context, viewModel: SettingsViewModel) {
+    val isNotificationsOn = NotificationManagerCompat.from(context).areNotificationsEnabled()
+    val alertTitle =
+        if (isNotificationsOn) R.string.notifications_alert_title_off else R.string.notifications_alert_title_on
+    val alertMessage =
+        if (isNotificationsOn) R.string.notifications_alert_message_off else R.string.notifications_alert_message_on
+    val neutralButton = context.getString(R.string.cancel_button)
+    val positiveButton = context.getString(R.string.continue_button)
+
+    AlertDialog.Builder(context).apply {
+        setTitle(context.getString(alertTitle))
+        setMessage(context.getString(alertMessage))
+        setNeutralButton(neutralButton) { dialog, _ ->
+            viewModel.onButtonClick(neutralButton)
+            dialog.dismiss()
+        }
+        setPositiveButton(positiveButton) { dialog, _ ->
+            viewModel.onButtonClick(positiveButton)
+            openDeviceSettings(context)
+            dialog.dismiss()
+        }
+    }.also { notificationsAlert ->
+        notificationsAlert.show()
+    }
+}
+
+private fun openDeviceSettings(context: Context) {
+    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+        .also { intent ->
+            context.startActivity(intent)
+        }
+}

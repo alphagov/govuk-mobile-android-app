@@ -91,6 +91,7 @@ fun InternalLinkListItem(
     title: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    status: String? = null,
     isFirst: Boolean = true,
     isLast: Boolean = true
 ) {
@@ -110,6 +111,13 @@ fun InternalLinkListItem(
             )
 
             MediumHorizontalSpacer()
+
+            status?.let {
+                FootnoteRegularLabel(
+                    text = it,
+                    Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+                )
+            }
 
             Icon(
                 painter = painterResource(R.drawable.ic_chevron),

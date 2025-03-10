@@ -21,10 +21,14 @@ class NotificationsClient @Inject constructor() {
         OneSignal.consentGiven = true
     }
 
-    fun requestPermission(dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+    fun requestPermission(
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        onCompleted: (() -> Unit)? = null
+    ) {
         CoroutineScope(dispatcher).launch {
             val permissionGranted = OneSignal.Notifications.requestPermission(false)
             OneSignal.consentGiven = permissionGranted
+            onCompleted?.invoke()
         }
     }
 }
