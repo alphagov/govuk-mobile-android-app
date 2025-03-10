@@ -99,17 +99,15 @@ private fun HomeScreen(
             targetState = isLogoVisible,
             label = "LogoTransition",
             transitionSpec = {
-                if (targetState) {
-                    slideInHorizontally(initialOffsetX = { it }
-                        ) + fadeIn() togetherWith
-                        slideOutHorizontally(targetOffsetX = { -it }
-                        ) + fadeOut()
-                } else {
-                    slideInHorizontally(initialOffsetX = { -it }
-                        ) + fadeIn() togetherWith
-                        slideOutHorizontally(targetOffsetX = { it }
-                        ) + fadeOut()
-                }
+                val slideIn = slideInHorizontally(initialOffsetX = { fullWidth ->
+                    if (targetState) fullWidth else -fullWidth
+                }) + fadeIn()
+
+                val slideOut = slideOutHorizontally(targetOffsetX = { fullWidth ->
+                    if (targetState) -fullWidth else fullWidth
+                }) + fadeOut()
+
+                slideIn togetherWith slideOut
             }
         ) { isVisible ->
             if (isVisible) {
