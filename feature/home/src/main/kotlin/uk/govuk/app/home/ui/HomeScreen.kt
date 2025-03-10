@@ -1,5 +1,12 @@
 package uk.govuk.app.home.ui
 
+import android.content.res.Configuration
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,11 +23,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -43,6 +53,7 @@ internal fun HomeRoute(
     HomeScreen(
         widgets = widgets,
         onPageView = { viewModel.onPageView() },
+        isSearchEnabled = viewModel.isSearchEnabled(),
         modifier = modifier
     )
 }
@@ -51,6 +62,7 @@ internal fun HomeRoute(
 private fun HomeScreen(
     widgets: List<@Composable (Modifier) -> Unit>,
     onPageView: () -> Unit,
+    isSearchEnabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -75,20 +87,53 @@ private fun HomeScreen(
         }
     }
 
-    Column(modifier) {
-        ScalingHeader(
-            scaleFactor = scaleFactor,
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(GovUkTheme.colourScheme.surfaces.homeHeader)
-        )
+    var isLogoVisible by remember { mutableStateOf(true) }
+    val currentOrientation by rememberUpdatedState(newValue = LocalConfiguration.current.orientation)
 
-        LazyColumn (
+    LaunchedEffect(currentOrientation) {
+        isLogoVisible = currentOrientation == Configuration.ORIENTATION_PORTRAIT
+    }
+
+    Column(modifier) {
+        AnimatedContent(
+            targetState = isLogoVisible,
+            label = "LogoTransition",
+            transitionSpec = {
+                val slideIn = slideInHorizontally(initialOffsetX = { fullWidth ->
+                    if (targetState) fullWidth else -fullWidth
+                }) + fadeIn()
+
+                val slideOut = slideOutHorizontally(targetOffsetX = { fullWidth ->
+                    if (targetState) -fullWidth else fullWidth
+                }) + fadeOut()
+
+                slideIn togetherWith slideOut
+            }
+        ) { isVisible ->
+            if (isVisible) {
+                ScalingHeader(
+                    scaleFactor = scaleFactor,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(GovUkTheme.colourScheme.surfaces.homeHeader)
+                )
+            } else {
+                if (isSearchEnabled) {
+                    StaticHeader(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(GovUkTheme.colourScheme.surfaces.homeHeader)
+                    )
+                }
+            }
+        }
+
+        LazyColumn(
             modifier = Modifier
                 .padding(horizontal = GovUkTheme.spacing.medium),
             state = listState
         ) {
-            item{
+            item {
                 LargeVerticalSpacer()
             }
             items(widgets) { widget ->
@@ -115,6 +160,17 @@ private fun HomeScreen(
             }
         }
     }
+}
+
+@Composable
+private fun StaticHeader(
+    modifier: Modifier = Modifier
+) {
+    DisplayLogo(
+        padding = 16,
+        logoHeight = 28,
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -150,6 +206,19 @@ private fun ScalingHeader(
         )
     }
 
+    DisplayLogo(
+        padding = padding,
+        logoHeight = logoHeight,
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun DisplayLogo(
+    padding: Int,
+    logoHeight: Int,
+    modifier: Modifier = Modifier
+) {
     Column(modifier = modifier) {
         Image(
             painter = painterResource(id = uk.govuk.app.design.R.drawable.logo),
