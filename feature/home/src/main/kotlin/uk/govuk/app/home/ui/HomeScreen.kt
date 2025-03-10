@@ -120,12 +120,13 @@ private fun HomeScreen(
                         .background(GovUkTheme.colourScheme.surfaces.homeHeader)
                 )
             } else {
-                StaticHeader(
-                    isSearchEnabled = isSearchEnabled,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(GovUkTheme.colourScheme.surfaces.homeHeader)
-                )
+                if (isSearchEnabled) {
+                    StaticHeader(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(GovUkTheme.colourScheme.surfaces.homeHeader)
+                    )
+                }
             }
         }
 
@@ -165,16 +166,13 @@ private fun HomeScreen(
 
 @Composable
 private fun StaticHeader(
-    isSearchEnabled: Boolean,
     modifier: Modifier = Modifier
 ) {
-    if (!isSearchEnabled) {
-        DisplayLogo(
-            padding = 16,
-            logoHeight = 28,
-            modifier = modifier
-        )
-    }
+    DisplayLogo(
+        padding = 16,
+        logoHeight = 28,
+        modifier = modifier
+    )
 }
 
 @Composable
