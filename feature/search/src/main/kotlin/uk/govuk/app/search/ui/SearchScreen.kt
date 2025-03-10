@@ -1,5 +1,6 @@
 package uk.govuk.app.search.ui
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -116,14 +118,18 @@ private fun SearchScreen(
         ) {
             MediumVerticalSpacer()
 
-            Image(
-                painter = painterResource(id = uk.govuk.app.design.R.drawable.logo),
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-            )
+            val isLogoVisible = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
 
-            MediumVerticalSpacer()
+            if (isLogoVisible) {
+                Image(
+                    painter = painterResource(id = uk.govuk.app.design.R.drawable.logo),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
+
+                MediumVerticalSpacer()
+            }
 
             SearchField(
                 searchTerm = searchTerm,
