@@ -33,8 +33,8 @@ fun GovUkCard(
     modifier: Modifier = Modifier,
     isSelected: Boolean = false,
     onClick: (() -> Unit)? = null,
-    backgroundColour: Color = GovUkTheme.colourScheme.surfaces.cardDefault,
-    defaultBorderColour: Color = GovUkTheme.colourScheme.strokes.listDivider,
+    backgroundColour: Color = GovUkTheme.colourScheme.surfaces.cardBlue,
+    defaultBorderColour: Color = GovUkTheme.colourScheme.strokes.cardBlue,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val cardColour = if (isSelected) {
