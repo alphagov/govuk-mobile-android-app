@@ -22,6 +22,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.govuk.app.design.R
@@ -30,14 +31,14 @@ import uk.govuk.app.design.ui.theme.GovUkTheme
 
 class SearchFieldActions(
     val onBack: () -> Unit,
-    val onSearchTermChange: (String) -> Unit,
+    val onSearchTermChange: (TextFieldValue) -> Unit,
     val onSearch: () -> Unit,
     val onClear: () -> Unit
 )
 
 @Composable
 fun SearchField(
-    searchTerm: String,
+    searchTerm: TextFieldValue,
     placeholder: String,
     actions: SearchFieldActions,
     modifier: Modifier = Modifier,
@@ -61,7 +62,7 @@ fun SearchField(
         }
 
         Box(Modifier.weight(1f)) {
-            if (searchTerm.isEmpty()) {
+            if (searchTerm.text.isEmpty()) {
                 BodyRegularLabel(
                     text = placeholder,
                     color = GovUkTheme.colourScheme.textAndIcons.secondary
@@ -85,10 +86,10 @@ fun SearchField(
             )
         }
 
-        if (searchTerm.isNotEmpty()) {
+        if (searchTerm.text.isNotEmpty()) {
             TextButton(
                 onClick = {
-                    actions.onSearchTermChange("")
+                    actions.onSearchTermChange(TextFieldValue(""))
                     actions.onClear()
                 },
             ) {
@@ -108,7 +109,7 @@ private fun SearchHeaderPreview() {
     GovUkTheme {
         Box(Modifier.background(GovUkTheme.colourScheme.surfaces.homeHeader)) {
             SearchField(
-                searchTerm = "",
+                searchTerm = TextFieldValue(""),
                 placeholder = "Search",
                 actions = SearchFieldActions(
                     onBack = { },

@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
@@ -109,8 +110,9 @@ private fun SearchScreen(
 
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
+    var displayKeyboard by remember { mutableStateOf(false) }
 
-    var searchTerm by rememberSaveable { mutableStateOf("") }
+    var searchTerm by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
 
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -150,13 +152,13 @@ private fun SearchScreen(
                     onBack = actions.onBack,
                     onSearchTermChange = {
                         searchTerm = it
-                        if (searchTerm.isBlank()) {
+                        if (searchTerm.text.isBlank()) {
                             actions.onClear()
                         } else {
-                            actions.onAutocomplete(searchTerm)
+                            actions.onAutocomplete(searchTerm.text)
                         }
                     },
-                    onSearch = { actions.onSearch(searchTerm) },
+                    onSearch = { actions.onSearch(searchTerm.text) },
                     onClear = actions.onClear
                 ),
                 focusRequester = focusRequester
@@ -174,32 +176,37 @@ private fun SearchScreen(
                     searchResults = uiState.searchResults.values,
                     onClick = actions.onResultClick
                 )
-            uiState.suggestions != null ->
+            uiState.suggestions != null -> {
                 SearchAutocomplete(
                     searchTerm = uiState.suggestions.searchTerm,
                     suggestions = uiState.suggestions.values,
                     onSearch = {
-                        searchTerm = it
+                        searchTerm = TextFieldValue(it)
                         actions.onAutocompleteResultClick(it)
                     }
                 )
+                displayKeyboard = true
+            }
             else -> {
                 PreviousSearches(
                     previousSearches = uiState.previousSearches,
                     onClick = {
-                        searchTerm = it
+                        searchTerm = TextFieldValue(it)
                         actions.onPreviousSearchClick(it)
                     },
                     onRemoveAll = actions.onRemoveAllPreviousSearches,
                     onRemove = actions.onRemovePreviousSearch
                 )
+                displayKeyboard = true
             }
         }
     }
 
-    LaunchedEffect(focusRequester) {
-        focusRequester.requestFocus()
-        delay(100)
-        keyboard?.show()
+    LaunchedEffect(displayKeyboard) {
+        if (displayKeyboard) {
+            focusRequester.requestFocus()
+            delay(100)
+            keyboard?.show()
+        }
     }
 }
