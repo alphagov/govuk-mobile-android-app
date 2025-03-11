@@ -8,6 +8,8 @@ import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -21,7 +23,10 @@ import org.junit.Test
 import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
 import uk.govuk.app.analytics.AnalyticsClient
-import uk.govuk.app.data.model.Result.*
+import uk.govuk.app.data.model.Result.DeviceOffline
+import uk.govuk.app.data.model.Result.Error
+import uk.govuk.app.data.model.Result.ServiceNotResponding
+import uk.govuk.app.data.model.Result.Success
 import uk.govuk.app.search.data.SearchRepo
 import uk.govuk.app.search.data.local.SearchLocalDataSource
 import uk.govuk.app.search.data.remote.AutocompleteApi
@@ -220,6 +225,26 @@ class SearchViewModelTest {
 
             coVerify {
                 repository.removeAllPreviousSearches()
+            }
+        }
+
+        @Test
+        fun `Given a search with a blank search term, then do nothing`() {
+            val viewModel = SearchViewModel(analyticsClient, visited, repository)
+            viewModel.onSearch(" ")
+
+            runTest {
+                val uiStates = mutableListOf<SearchUiState>()
+                backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                    viewModel.uiState.toList(uiStates)
+                }
+                assertEquals(1, uiStates.size)
+                assertNull(uiStates[0].searchResults)
+                assertNull(uiStates[0].error)
+            }
+
+            coVerify(exactly = 0) {
+                repository.performSearch(any())
             }
         }
 

@@ -1,24 +1,38 @@
 package uk.govuk.app.search.ui
 
+import android.content.res.Configuration
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
+import uk.govuk.app.design.ui.component.MediumVerticalSpacer
+import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.search.R
 import uk.govuk.app.search.SearchUiState
 import uk.govuk.app.search.SearchViewModel
-import uk.govuk.app.search.ui.component.SearchHeader
-import uk.govuk.app.search.ui.component.SearchHeaderActions
+import uk.govuk.app.search.ui.component.SearchField
+import uk.govuk.app.search.ui.component.SearchFieldActions
 
 @Composable
 internal fun SearchRoute(
@@ -96,28 +110,62 @@ private fun SearchScreen(
 
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
+    var displayKeyboard by remember { mutableStateOf(false) }
 
-    var searchTerm by remember { mutableStateOf("") }
+    var searchTerm by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
 
-    Column(modifier) {
-        SearchHeader(
-            searchTerm = searchTerm,
-            placeholder = stringResource(R.string.search_placeholder),
-            actions = SearchHeaderActions(
-                onBack = actions.onBack,
-                onSearchTermChange = {
-                    searchTerm = it
-                    if (searchTerm.isBlank()) {
-                        actions.onClear()
-                    } else {
-                        actions.onAutocomplete(searchTerm)
-                    }
-                },
-                onSearch = { actions.onSearch(searchTerm) },
-                onClear = actions.onClear
-            ),
-            focusRequester = focusRequester
-        )
+    val interactionSource = remember { MutableInteractionSource() }
+
+    Column(
+        modifier.clickable(
+            indication = null,
+            interactionSource = interactionSource
+        ){
+            keyboard?.hide()
+        }
+    ) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .background(GovUkTheme.colourScheme.surfaces.homeHeader)
+                .padding(horizontal = GovUkTheme.spacing.medium)
+        ) {
+            MediumVerticalSpacer()
+
+            val isLogoVisible = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
+
+            if (isLogoVisible) {
+                Image(
+                    painter = painterResource(id = uk.govuk.app.design.R.drawable.logo),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
+
+                MediumVerticalSpacer()
+            }
+
+            SearchField(
+                searchTerm = searchTerm,
+                placeholder = stringResource(R.string.search_placeholder),
+                actions = SearchFieldActions(
+                    onBack = actions.onBack,
+                    onSearchTermChange = {
+                        searchTerm = it
+                        if (searchTerm.text.isBlank()) {
+                            actions.onClear()
+                        } else {
+                            actions.onAutocomplete(searchTerm.text)
+                        }
+                    },
+                    onSearch = { actions.onSearch(searchTerm.text) },
+                    onClear = actions.onClear
+                ),
+                focusRequester = focusRequester
+            )
+
+            MediumVerticalSpacer()
+        }
 
         when {
             uiState.error != null ->
@@ -128,32 +176,37 @@ private fun SearchScreen(
                     searchResults = uiState.searchResults.values,
                     onClick = actions.onResultClick
                 )
-            uiState.suggestions != null ->
+            uiState.suggestions != null -> {
                 SearchAutocomplete(
                     searchTerm = uiState.suggestions.searchTerm,
                     suggestions = uiState.suggestions.values,
                     onSearch = {
-                        searchTerm = it
+                        searchTerm = TextFieldValue(it)
                         actions.onAutocompleteResultClick(it)
                     }
                 )
+                displayKeyboard = true
+            }
             else -> {
                 PreviousSearches(
                     previousSearches = uiState.previousSearches,
                     onClick = {
-                        searchTerm = it
+                        searchTerm = TextFieldValue(it)
                         actions.onPreviousSearchClick(it)
                     },
                     onRemoveAll = actions.onRemoveAllPreviousSearches,
                     onRemove = actions.onRemovePreviousSearch
                 )
+                displayKeyboard = true
             }
         }
     }
 
-    LaunchedEffect(focusRequester) {
-        focusRequester.requestFocus()
-        delay(100)
-        keyboard?.show()
+    LaunchedEffect(displayKeyboard) {
+        if (displayKeyboard) {
+            focusRequester.requestFocus()
+            delay(100)
+            keyboard?.show()
+        }
     }
 }

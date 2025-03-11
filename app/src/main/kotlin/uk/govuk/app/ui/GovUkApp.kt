@@ -317,7 +317,19 @@ private fun GovUkNavHost(
                 onClick = onWidgetClick,
                 onSuppressClick = onSuppressWidgetClick
             ),
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier.padding(paddingValues),
+            headerWidget = if (homeWidgets?.contains(HomeWidget.SEARCH) == true) {
+                { modifier ->
+                    SearchWidget(
+                        onClick = { text ->
+                            onWidgetClick(text, false)
+                            navController.navigate(SEARCH_GRAPH_ROUTE)
+                        },
+                        modifier = modifier
+                    )
+                }
+            } else null,
+            transitionOverrideRoutes = listOf(SEARCH_GRAPH_ROUTE)
         )
         settingsGraph(
             navigateTo = { route -> navController.navigate(route) },
@@ -371,19 +383,6 @@ private fun homeScreenWidgets(
                 }
             }
 
-            HomeWidget.SEARCH -> {
-                widgets.add { modifier ->
-                    SearchWidget(
-                        onClick = { text ->
-                            onClick(text, false)
-                            navController.navigate(SEARCH_GRAPH_ROUTE)
-                        },
-                        modifier = modifier
-                    )
-                    LargeVerticalSpacer()
-                }
-            }
-
             HomeWidget.RECENT_ACTIVITY -> {
                 widgets.add { modifier ->
                     VisitedWidget(
@@ -417,6 +416,8 @@ private fun homeScreenWidgets(
                     LargeVerticalSpacer()
                 }
             }
+
+            else -> { } // Do nothing
         }
     }
     return widgets

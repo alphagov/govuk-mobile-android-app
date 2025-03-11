@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.govuk.app.analytics.AnalyticsClient
-import uk.govuk.app.data.model.Result.*
+import uk.govuk.app.data.model.Result.DeviceOffline
+import uk.govuk.app.data.model.Result.Success
 import uk.govuk.app.search.SearchUiState.Error
 import uk.govuk.app.search.SearchUiState.SearchResults
 import uk.govuk.app.search.SearchUiState.Suggestions
@@ -52,21 +53,26 @@ internal class SearchViewModel @Inject constructor(
     private fun fetchSearchResults(searchTerm: String) {
         val trimmedSearchTerm = searchTerm.trim()
 
-        viewModelScope.launch {
-            val id = UUID.randomUUID()
-            val result = searchRepo.performSearch(trimmedSearchTerm)
-            when (result) {
-                is Success -> {
-                    if (result.value.results.isNotEmpty()) {
-                        emitUiState(
-                            searchResults = SearchResults(trimmedSearchTerm, result.value.results)
-                        )
-                    } else {
-                        emitUiState(error = Error.Empty(id, trimmedSearchTerm))
+        if (trimmedSearchTerm.isNotEmpty()) {
+            viewModelScope.launch {
+                val id = UUID.randomUUID()
+                when (val result = searchRepo.performSearch(trimmedSearchTerm)) {
+                    is Success -> {
+                        if (result.value.results.isNotEmpty()) {
+                            emitUiState(
+                                searchResults = SearchResults(
+                                    trimmedSearchTerm,
+                                    result.value.results
+                                )
+                            )
+                        } else {
+                            emitUiState(error = Error.Empty(id, trimmedSearchTerm))
+                        }
                     }
+
+                    is DeviceOffline -> emitUiState(error = Error.Offline(id, trimmedSearchTerm))
+                    else -> emitUiState(error = Error.ServiceError(id))
                 }
-                is DeviceOffline -> emitUiState(error = Error.Offline(id, trimmedSearchTerm))
-                else -> emitUiState(error = Error.ServiceError(id))
             }
         }
     }

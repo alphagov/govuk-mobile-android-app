@@ -3,13 +3,11 @@ package uk.govuk.app.home
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import uk.govuk.app.analytics.AnalyticsClient
-import uk.govuk.app.config.data.flags.FlagRepo
 import javax.inject.Inject
 
 @HiltViewModel
 internal class HomeViewModel @Inject constructor(
-    private val analyticsClient: AnalyticsClient,
-    private val flagRepo: FlagRepo
+    private val analyticsClient: AnalyticsClient
 ): ViewModel() {
 
     companion object {
@@ -24,9 +22,5 @@ internal class HomeViewModel @Inject constructor(
             screenName = SCREEN_NAME,
             title = TITLE
         )
-    }
-
-    fun isSearchEnabled(): Boolean {
-        return flagRepo.isSearchEnabled()
     }
 }
