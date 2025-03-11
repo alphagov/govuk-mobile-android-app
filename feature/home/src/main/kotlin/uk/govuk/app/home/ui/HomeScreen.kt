@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import uk.govuk.app.design.ui.component.LargeVerticalSpacer
 import uk.govuk.app.design.ui.component.MediumVerticalSpacer
 import uk.govuk.app.design.ui.theme.GovUkTheme
 import uk.govuk.app.home.HomeViewModel
@@ -82,7 +83,7 @@ private fun HomeScreen(
             state = rememberLazyListState()
         ) {
             item{
-                MediumVerticalSpacer()
+                LargeVerticalSpacer()
             }
             items(widgets) { widget ->
                 widget(Modifier.fillMaxWidth())
