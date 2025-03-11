@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "uk.govuk.app.analytics"
+    namespace = "uk.gov.govuk.analytics"
     compileSdk = Version.COMPILE_SDK
 
     defaultConfig {

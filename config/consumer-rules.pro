@@ -3,6 +3,6 @@
   @com.google.gson.annotations.SerializedName <fields>;
 }
 
--keep class uk.govuk.app.config.data.remote.model.Config
--keep class uk.govuk.app.config.data.remote.model.ConfigResponse
--keep class uk.govuk.app.config.data.remote.model.ReleaseFlags
+-keep class uk.gov.govuk.config.data.remote.model.Config
+-keep class uk.gov.govuk.config.data.remote.model.ConfigResponse
+-keep class uk.gov.govuk.config.data.remote.model.ReleaseFlags
