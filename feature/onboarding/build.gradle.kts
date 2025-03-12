@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "uk.govuk.app.onboarding"
+    namespace = "uk.gov.govuk.onboarding"
     compileSdk = Version.COMPILE_SDK
 
     defaultConfig {

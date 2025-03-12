@@ -1,0 +1,369 @@
+package uk.gov.govuk.settings.ui
+
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
+import android.provider.Settings
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.core.app.NotificationManagerCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import uk.gov.govuk.design.ui.component.BodyRegularLabel
+import uk.gov.govuk.design.ui.component.CaptionRegularLabel
+import uk.gov.govuk.design.ui.component.CardListItem
+import uk.gov.govuk.design.ui.component.ExternalLinkListItem
+import uk.gov.govuk.design.ui.component.InternalLinkListItem
+import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
+import uk.gov.govuk.design.ui.component.ListHeadingLabel
+import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
+import uk.gov.govuk.design.ui.component.TabHeader
+import uk.gov.govuk.design.ui.component.ToggleListItem
+import uk.gov.govuk.design.ui.theme.GovUkTheme
+import uk.gov.govuk.notifications.notificationsPermissionShouldShowRationale
+import uk.gov.govuk.settings.R
+import uk.gov.govuk.settings.SettingsViewModel
+
+@Composable
+internal fun SettingsRoute(
+    appVersion: String,
+    onHelpClick: () -> Unit,
+    onPrivacyPolicyClick: () -> Unit,
+    onAccessibilityStatementClick: () -> Unit,
+    onTermsAndConditionsClick: () -> Unit,
+    onOpenSourceLicenseClick: () -> Unit,
+    onNotificationsClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val viewModel: SettingsViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    uiState?.let {
+        SettingsScreen(
+            appVersion = appVersion,
+            isAnalyticsEnabled = it.isAnalyticsEnabled,
+            isNotificationsEnabled = it.isNotificationsEnabled,
+            onPageView = { viewModel.onPageView() },
+            onLicenseClick = {
+                viewModel.onLicenseView()
+                onOpenSourceLicenseClick()
+            },
+            onHelpClick = {
+                viewModel.onHelpAndFeedbackView()
+                onHelpClick()
+            },
+            onAnalyticsConsentChange = { enabled -> viewModel.onAnalyticsConsentChanged(enabled) },
+            onPrivacyPolicyClick = {
+                viewModel.onPrivacyPolicyView()
+                onPrivacyPolicyClick()
+            },
+            onAccessibilityStatementClick = {
+                viewModel.onAccessibilityStatementView()
+                onAccessibilityStatementClick()
+            },
+            onTermsAndConditionsClick = {
+                viewModel.onTermsAndConditionsView()
+                onTermsAndConditionsClick()
+            },
+            onNotificationsClick = {
+                viewModel.onNotificationsClick()
+                if (notificationsPermissionShouldShowRationale(context as Activity)) {
+                    onNotificationsClick()
+                } else {
+                    showNotificationsAlert(context, viewModel)
+                }
+            },
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+private fun SettingsScreen(
+    appVersion: String,
+    isAnalyticsEnabled: Boolean,
+    isNotificationsEnabled: Boolean,
+    onPageView: () -> Unit,
+    onLicenseClick: () -> Unit,
+    onHelpClick: () -> Unit,
+    onAnalyticsConsentChange: (Boolean) -> Unit,
+    onPrivacyPolicyClick: () -> Unit,
+    onAccessibilityStatementClick: () -> Unit,
+    onTermsAndConditionsClick: () -> Unit,
+    onNotificationsClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LaunchedEffect(Unit) {
+        onPageView()
+    }
+
+    Column(
+        modifier = modifier
+    ) {
+        TabHeader(stringResource(R.string.screen_title))
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = GovUkTheme.spacing.medium)
+                .padding(bottom = GovUkTheme.spacing.extraLarge)
+        ) {
+            SmallVerticalSpacer()
+            AboutTheApp(
+                appVersion = appVersion,
+                onHelpClick = onHelpClick
+            )
+            if (isNotificationsEnabled) {
+                LargeVerticalSpacer()
+                Notifications(
+                    onNotificationsClick = onNotificationsClick
+                )
+            }
+            LargeVerticalSpacer()
+            PrivacyAndLegal(
+                isAnalyticsEnabled = isAnalyticsEnabled,
+                onAnalyticsConsentChange = onAnalyticsConsentChange,
+                onPrivacyPolicyClick = onPrivacyPolicyClick
+            )
+
+            MediumVerticalSpacer()
+
+            PrivacyPolicy(onPrivacyPolicyClick)
+            AccessibilityStatement(onAccessibilityStatementClick)
+            OpenSourceLicenses(onLicenseClick)
+            TermsAndConditions(onTermsAndConditionsClick)
+        }
+    }
+}
+
+@Composable
+private fun AboutTheApp(
+    appVersion: String,
+    onHelpClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        ListHeadingLabel(stringResource(R.string.about_title))
+
+        SmallVerticalSpacer()
+
+        ExternalLinkListItem(
+            title = stringResource(R.string.help_and_feedback_title),
+            onClick = onHelpClick,
+            isFirst = true,
+            isLast = false
+        )
+
+        CardListItem(
+            isFirst = false,
+            isLast = true
+        ) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(GovUkTheme.spacing.medium),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                BodyRegularLabel(
+                    text = stringResource(R.string.version_setting),
+                    modifier = Modifier.weight(1f)
+                )
+
+                BodyRegularLabel(text = appVersion)
+            }
+        }
+    }
+}
+
+@Composable
+private fun PrivacyAndLegal(
+    isAnalyticsEnabled: Boolean,
+    onAnalyticsConsentChange: (Boolean) -> Unit,
+    onPrivacyPolicyClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        ListHeadingLabel(stringResource(R.string.privacy_title))
+
+        SmallVerticalSpacer()
+
+        ToggleListItem(
+            title = stringResource(R.string.share_setting),
+            checked = isAnalyticsEnabled,
+            onCheckedChange = onAnalyticsConsentChange
+        )
+
+        SmallVerticalSpacer()
+
+        CaptionRegularLabel(
+            text = stringResource(R.string.privacy_description),
+            modifier = Modifier
+                .padding(horizontal = GovUkTheme.spacing.medium)
+        )
+
+        val altText = "${stringResource(R.string.privacy_read_more)} " +
+                stringResource(id = R.string.link_opens_in)
+
+        CaptionRegularLabel(
+            text = stringResource(R.string.privacy_read_more),
+            modifier = Modifier
+                .semantics {
+                    contentDescription = altText
+                }
+                .padding(horizontal = GovUkTheme.spacing.medium)
+                .clickable(onClick = onPrivacyPolicyClick),
+            color = GovUkTheme.colourScheme.textAndIcons.link,
+        )
+    }
+}
+
+@Composable
+private fun PrivacyPolicy(
+    onPrivacyPolicyClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ExternalLinkListItem(
+        title = stringResource(R.string.privacy_policy_title),
+        onClick = onPrivacyPolicyClick,
+        modifier = modifier,
+        isFirst = true,
+        isLast = false,
+    )
+}
+
+@Composable
+private fun AccessibilityStatement(
+    onAccessibilityStatementClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ExternalLinkListItem(
+        title = stringResource(R.string.accessibility_title),
+        onClick = onAccessibilityStatementClick,
+        modifier = modifier,
+        isFirst = false,
+        isLast = false,
+    )
+}
+
+@Composable
+private fun OpenSourceLicenses(
+    onLicenseClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    InternalLinkListItem(
+        title = stringResource(R.string.oss_licenses_title),
+        onClick = onLicenseClick,
+        modifier = modifier,
+        isFirst = false,
+        isLast = false,
+    )
+}
+
+@Composable
+private fun Notifications(
+    onNotificationsClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        ListHeadingLabel(stringResource(R.string.notifications_title))
+
+        SmallVerticalSpacer()
+
+        val context = LocalContext.current
+        fun getStatus() = if (NotificationManagerCompat.from(context)
+                .areNotificationsEnabled()
+        ) R.string.on_button else R.string.off_button
+
+        var status by remember { mutableIntStateOf(getStatus()) }
+
+        LifecycleResumeEffect(Unit) {
+            status = getStatus()
+            onPauseOrDispose {
+                // Do nothing
+            }
+        }
+
+        InternalLinkListItem(
+            title = stringResource(R.string.notifications_title),
+            status = stringResource(status),
+            onClick = onNotificationsClick,
+            modifier = modifier,
+            isFirst = true,
+            isLast = true,
+        )
+    }
+}
+
+@Composable
+private fun TermsAndConditions(
+    onLicenseClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ExternalLinkListItem(
+        title = stringResource(R.string.terms_and_conditions_title),
+        onClick = onLicenseClick,
+        modifier = modifier,
+        isFirst = false,
+        isLast = true,
+    )
+}
+
+private fun showNotificationsAlert(context: Context, viewModel: SettingsViewModel) {
+    val isNotificationsOn = NotificationManagerCompat.from(context).areNotificationsEnabled()
+    val alertTitle =
+        if (isNotificationsOn) R.string.notifications_alert_title_off else R.string.notifications_alert_title_on
+    val alertMessage =
+        if (isNotificationsOn) R.string.notifications_alert_message_off else R.string.notifications_alert_message_on
+    val neutralButton = context.getString(R.string.cancel_button)
+    val positiveButton = context.getString(R.string.continue_button)
+
+    AlertDialog.Builder(context).apply {
+        setTitle(context.getString(alertTitle))
+        setMessage(context.getString(alertMessage))
+        setNeutralButton(neutralButton) { dialog, _ ->
+            viewModel.onButtonClick(neutralButton)
+            dialog.dismiss()
+        }
+        setPositiveButton(positiveButton) { dialog, _ ->
+            viewModel.onButtonClick(positiveButton)
+            openDeviceSettings(context)
+            dialog.dismiss()
+        }
+    }.also { notificationsAlert ->
+        notificationsAlert.show()
+    }
+}
+
+private fun openDeviceSettings(context: Context) {
+    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+        .also { intent ->
+            context.startActivity(intent)
+        }
+}

@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "uk.govuk.config"
+    namespace = "uk.gov.govuk.config"
     compileSdk = Version.COMPILE_SDK
 
     defaultConfig {

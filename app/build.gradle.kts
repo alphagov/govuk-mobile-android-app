@@ -12,14 +12,14 @@ plugins {
 }
 
 android {
-    namespace = "uk.govuk.app"
+    namespace = "uk.gov.govuk"
     compileSdk = Version.COMPILE_SDK
 
     // Todo - replace with Google Play auto increment mechanism for play store builds
     val buildNumber = System.getenv("GITHUB_RUN_NUMBER")?.toInt() ?: 1
 
     defaultConfig {
-        applicationId = "uk.govuk.app"
+        applicationId = "uk.gov.govuk"
         minSdk = Version.MIN_SDK
         targetSdk = Version.TARGET_SDK
         versionCode = buildNumber

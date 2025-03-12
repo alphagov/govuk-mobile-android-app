@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "uk.govuk.app.notifications"
+    namespace = "uk.gov.govuk.notifications"
     compileSdk = Version.COMPILE_SDK
 
     defaultConfig {

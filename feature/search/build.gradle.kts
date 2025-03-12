@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "uk.govuk.app.search"
+    namespace = "uk.gov.govuk.search"
     compileSdk = Version.COMPILE_SDK
 
     defaultConfig {
