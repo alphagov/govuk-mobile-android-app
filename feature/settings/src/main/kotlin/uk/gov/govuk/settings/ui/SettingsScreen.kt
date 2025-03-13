@@ -53,6 +53,7 @@ internal fun SettingsRoute(
     onTermsAndConditionsClick: () -> Unit,
     onOpenSourceLicenseClick: () -> Unit,
     onNotificationsClick: () -> Unit,
+    onBiometricsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: SettingsViewModel = hiltViewModel()
@@ -93,6 +94,9 @@ internal fun SettingsRoute(
                     showNotificationsAlert(context, viewModel)
                 }
             },
+            onBiometricsClick = {
+                onBiometricsClick()
+            },
             modifier = modifier
         )
     }
@@ -111,6 +115,7 @@ private fun SettingsScreen(
     onAccessibilityStatementClick: () -> Unit,
     onTermsAndConditionsClick: () -> Unit,
     onNotificationsClick: () -> Unit,
+    onBiometricsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -150,6 +155,7 @@ private fun SettingsScreen(
             PrivacyPolicy(onPrivacyPolicyClick)
             AccessibilityStatement(onAccessibilityStatementClick)
             OpenSourceLicenses(onLicenseClick)
+            SetupBiometrics(onBiometricsClick)
             TermsAndConditions(onTermsAndConditionsClick)
         }
     }
@@ -276,6 +282,20 @@ private fun OpenSourceLicenses(
     InternalLinkListItem(
         title = stringResource(R.string.oss_licenses_title),
         onClick = onLicenseClick,
+        modifier = modifier,
+        isFirst = false,
+        isLast = false,
+    )
+}
+
+@Composable
+private fun SetupBiometrics(
+    onBiometricsClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    InternalLinkListItem(
+        title = "Setup Biometrics",
+        onClick = onBiometricsClick,
         modifier = modifier,
         isFirst = false,
         isLast = false,

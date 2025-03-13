@@ -16,6 +16,7 @@ import uk.gov.govuk.settings.BuildConfig.HELP_AND_FEEDBACK_URL
 import uk.gov.govuk.settings.BuildConfig.PRIVACY_POLICY_URL
 import uk.gov.govuk.settings.BuildConfig.TERMS_AND_CONDITIONS_URL
 import uk.gov.govuk.settings.ui.SettingsRoute
+import uk.govuk.app.biometrics.ui.BiometricsActivity
 import java.net.URLEncoder
 
 
@@ -54,6 +55,10 @@ fun NavGraphBuilder.settingsGraph(
                 },
                 onNotificationsClick = {
                     navigateTo(NOTIFICATIONS_ONBOARDING_NO_SKIP_ROUTE)
+                },
+                onBiometricsClick = {
+                    val intent = Intent(context, BiometricsActivity::class.java)
+                    context.startActivity(intent)
                 },
                 modifier = modifier
             )

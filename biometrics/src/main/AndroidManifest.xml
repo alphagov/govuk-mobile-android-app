@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="uk.govuk.app.biometrics">
+
+  <application>
+    <activity
+      android:name="uk.govuk.app.biometrics.ui.BiometricsActivity"
+      android:exported="false"
+      android:theme="@style/Theme.Biometrics" />
+  </application>
+</manifest>

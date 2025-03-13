@@ -50,6 +50,7 @@ android {
 
 dependencies {
     implementation(projects.analytics)
+    implementation(projects.biometrics)
     implementation(projects.design)
     implementation(projects.config)
     implementation(projects.notifications)
