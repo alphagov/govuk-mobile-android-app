@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import uk.gov.govuk.search.ui.SearchRoute
 
@@ -21,7 +22,11 @@ fun NavGraphBuilder.searchGraph(
         startDestination = SEARCH_ROUTE
     ) {
         composable(
-            SEARCH_ROUTE,
+            SEARCH_ROUTE, deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "govuk://app/search"
+                }
+            ),
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
             popEnterTransition = { EnterTransition.None },

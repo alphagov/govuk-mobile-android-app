@@ -3,7 +3,7 @@ package uk.gov.govuk.ui
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -77,7 +77,8 @@ internal fun GovUkApp(intent: Intent) {
     val viewModel: AppViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val homeWidgets by viewModel.homeWidgets.collectAsState()
-    var isSplashDone by rememberSaveable { mutableStateOf(false) }
+    val isFromDeeplink = intent.data != null && intent.flags != FLAG_ACTIVITY_NEW_TASK
+    var isSplashDone by rememberSaveable { mutableStateOf(isFromDeeplink) }
     var isRecommendUpdateSkipped by rememberSaveable { mutableStateOf(false) }
 
     if (isSplashDone && uiState != null) {
@@ -102,7 +103,6 @@ internal fun GovUkApp(intent: Intent) {
                         val section = stringResource(R.string.homepage)
                         BottomNavScaffold(
                             uiState = it,
-                            deeplink = intent.data,
                             onboardingCompleted = { viewModel.onboardingCompleted() },
                             topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
                             onTabClick = { tabText -> viewModel.onTabClick(tabText) },
@@ -123,7 +123,11 @@ internal fun GovUkApp(intent: Intent) {
             colour = GovUkTheme.colourScheme.surfaces.splash,
             isLight = false
         )
-        SplashScreen { isSplashDone = true }
+        if (isFromDeeplink) {
+            LoadingScreen()
+        } else {
+            SplashScreen { isSplashDone = true }
+        }
     }
 }
 
@@ -142,7 +146,6 @@ private fun LoadingScreen(
 @Composable
 private fun BottomNavScaffold(
     uiState: AppUiState.Default,
-    deeplink: Uri?,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
@@ -164,7 +167,6 @@ private fun BottomNavScaffold(
             GovUkNavHost(
                 navController = navController,
                 uiState = uiState,
-                deeplink = deeplink,
                 onboardingCompleted = onboardingCompleted,
                 topicSelectionCompleted = topicSelectionCompleted,
                 homeWidgets = homeWidgets,
@@ -254,7 +256,6 @@ private fun BottomNav(
 private fun GovUkNavHost(
     navController: NavHostController,
     uiState: AppUiState.Default,
-    deeplink: Uri?,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     homeWidgets: List<HomeWidget>?,
@@ -262,14 +263,6 @@ private fun GovUkNavHost(
     onSuppressWidgetClick: (String, HomeWidget) -> Unit,
     paddingValues: PaddingValues
 ) {
-    deeplink?.let {
-        // Todo - handle deeplink, might make sense to pass to AppLaunchNavigation. Either way we
-        //  will probably want to pass the deeplink to all modules (via their navigation object)
-        //  that are set up to handle them and give them the opportunity to satisfy it. Not sure if
-        //  we will want to display the splash screen, consent, onboarding etc in the event of a
-        //  deeplink, probably a product decision
-    }
-
     val launchRoutes = rememberSaveable { AppLaunchNavigation(uiState).launchRoutes }
     val startDestination = rememberSaveable { launchRoutes.pop() }
 

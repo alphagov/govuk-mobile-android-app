@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import uk.gov.govuk.visited.ui.EditVisitedRoute
 import uk.gov.govuk.visited.ui.VisitedRoute
@@ -21,14 +22,22 @@ fun NavGraphBuilder.visitedGraph(
         route = VISITED_GRAPH_ROUTE,
         startDestination = VISITED_ROUTE
     ) {
-        composable(VISITED_ROUTE) {
+        composable(VISITED_ROUTE, deepLinks = listOf(
+            navDeepLink {
+                uriPattern = "govuk://app/visited"
+            }
+        )) {
             VisitedRoute(
                 navController = navController,
                 onBack = { navController.popBackStack() },
                 modifier = modifier
             )
         }
-        composable(EDIT_VISITED_ROUTE) {
+        composable(EDIT_VISITED_ROUTE, deepLinks = listOf(
+            navDeepLink {
+                uriPattern = "govuk://app/visited/edit"
+            }
+        )) {
             EditVisitedRoute(
                 onBack = { navController.popBackStack() },
                 modifier = modifier
