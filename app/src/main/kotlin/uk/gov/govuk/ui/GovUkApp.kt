@@ -3,7 +3,6 @@ package uk.gov.govuk.ui
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -37,9 +37,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import uk.gov.govuk.AppUiState
 import uk.gov.govuk.AppViewModel
 import uk.gov.govuk.BuildConfig
@@ -73,12 +77,11 @@ import uk.gov.govuk.visited.navigation.visitedGraph
 import uk.gov.govuk.visited.ui.widget.VisitedWidget
 
 @Composable
-internal fun GovUkApp(intent: Intent) {
+internal fun GovUkApp(intentFlow: Flow<Intent>) {
     val viewModel: AppViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val homeWidgets by viewModel.homeWidgets.collectAsState()
-    val isFromDeeplink = intent.data != null && intent.flags != FLAG_ACTIVITY_NEW_TASK
-    var isSplashDone by rememberSaveable { mutableStateOf(isFromDeeplink) }
+    var isSplashDone by rememberSaveable { mutableStateOf(false) }
     var isRecommendUpdateSkipped by rememberSaveable { mutableStateOf(false) }
 
     if (isSplashDone && uiState != null) {
@@ -103,6 +106,7 @@ internal fun GovUkApp(intent: Intent) {
                         val section = stringResource(R.string.homepage)
                         BottomNavScaffold(
                             uiState = it,
+                            intentFlow = intentFlow,
                             onboardingCompleted = { viewModel.onboardingCompleted() },
                             topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
                             onTabClick = { tabText -> viewModel.onTabClick(tabText) },
@@ -123,11 +127,7 @@ internal fun GovUkApp(intent: Intent) {
             colour = GovUkTheme.colourScheme.surfaces.splash,
             isLight = false
         )
-        if (isFromDeeplink) {
-            LoadingScreen()
-        } else {
-            SplashScreen { isSplashDone = true }
-        }
+        SplashScreen { isSplashDone = true }
     }
 }
 
@@ -146,6 +146,7 @@ private fun LoadingScreen(
 @Composable
 private fun BottomNavScaffold(
     uiState: AppUiState.Default,
+    intentFlow: Flow<Intent>,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
@@ -154,6 +155,21 @@ private fun BottomNavScaffold(
     onSuppressWidgetClick: (String, HomeWidget) -> Unit
 ) {
     val navController = rememberNavController()
+
+    LaunchedEffect(intentFlow) {
+        intentFlow.collectLatest {
+            it.data?.let { uri ->
+                val request = NavDeepLinkRequest.Builder
+                    .fromUri(uri)
+                    .build()
+
+                navController.navigate(
+                    request,
+                    navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
+                )
+            }
+        }
+    }
 
     Scaffold(
         bottomBar = {

@@ -16,7 +16,8 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.GovUkMobileApp">
+            android:theme="@style/Theme.GovUkMobileApp"
+            android:launchMode="singleTop">
             <intent-filter>
                 <data android:scheme="govuk" android:host="app" />
                 <category android:name="android.intent.category.DEFAULT" />
