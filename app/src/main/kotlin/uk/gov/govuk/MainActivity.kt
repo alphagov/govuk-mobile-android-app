@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
+        setIntentFlags()
 
         setContent {
             GovUkTheme {
@@ -41,5 +41,11 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         intentFlow.tryEmit(intent)
+    }
+
+    private fun setIntentFlags() {
+        // FLAG_ACTIVITY_CLEAR_TASK prevents activity recreation when app is started from a deeplink.
+        // It must be used in conjunction with FLAG_ACTIVITY_NEW_TASK.
+        intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
     }
 }

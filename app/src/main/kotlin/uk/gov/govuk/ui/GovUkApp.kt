@@ -156,6 +156,7 @@ private fun BottomNavScaffold(
 ) {
     val navController = rememberNavController()
 
+    // Collect and handle intent data sent with deeplinks
     LaunchedEffect(intentFlow) {
         intentFlow.collectLatest {
             it.data?.let { uri ->
