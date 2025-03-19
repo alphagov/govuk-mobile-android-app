@@ -17,6 +17,15 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://maven.pkg.github.com/govuk-one-login/mobile-android-logging") {
+            val ghUser = ""
+            val ghToken = ""
+
+            credentials {
+                username = ghUser
+                password = ghToken
+            }
+        }
     }
 }
 

@@ -1,12 +1,13 @@
 package uk.gov.govuk
 
 internal sealed class AppUiState {
-    internal class Default(
+    internal data class Default(
         val shouldDisplayRecommendUpdate: Boolean = false,
         val shouldDisplayAnalyticsConsent: Boolean = false,
         val shouldDisplayOnboarding: Boolean = false,
         val shouldDisplayTopicSelection: Boolean = false,
-        val shouldDisplayNotificationsOnboarding: Boolean = false
+        val shouldDisplayNotificationsOnboarding: Boolean = false,
+        val storedValue: String = ""
     ) : AppUiState()
 
     internal data object Loading : AppUiState()

@@ -12,6 +12,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import uk.gov.android.securestore.AccessControlLevel
+import uk.gov.android.securestore.SecureStorageConfiguration
+import uk.gov.android.securestore.SecureStore
+import uk.gov.android.securestore.SharedPrefsStore
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -27,5 +31,16 @@ internal class AppModule {
             ),
             produceFile = { context.preferencesDataStoreFile("app_preferences") }
         )
+    }
+
+    @Singleton
+    @Provides
+    fun provideSecureStore(@ApplicationContext context: Context): SecureStore {
+        val secureStore = SharedPrefsStore()
+        secureStore.init(
+            context,
+            SecureStorageConfiguration("blah", AccessControlLevel.PASSCODE_AND_CURRENT_BIOMETRICS)
+        )
+        return secureStore
     }
 }

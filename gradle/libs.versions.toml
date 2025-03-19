@@ -21,6 +21,7 @@ oneSignal = "[5.0.0, 5.99.99]"
 ossLicenses = "0.10.6"
 retrofit = "2.11.0"
 
+gov-secure-store = "0.9.1"
 firebaseBom = "33.1.2"
 
 realm = "2.0.0"
@@ -53,6 +54,7 @@ lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "
 androidx-adaptive-android = { group = "androidx.compose.material3.adaptive", name = "adaptive-android", version.ref = "adaptiveAndroid" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
 
+gov-securestore = { group = "uk.gov.securestore", name = "app", version.ref = "gov-secure-store"}
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }

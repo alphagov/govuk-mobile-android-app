@@ -1,11 +1,17 @@
 package uk.gov.govuk
 
+import android.util.Log
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import uk.gov.android.securestore.RetrievalEvent
+import uk.gov.android.securestore.SecureStore
+import uk.gov.android.securestore.authentication.AuthenticatorPromptConfiguration
+import uk.gov.android.securestore.error.SecureStorageError
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.flags.FlagRepo
@@ -25,7 +31,8 @@ internal class AppViewModel @Inject constructor(
     private val flagRepo: FlagRepo,
     private val topicsFeature: TopicsFeature,
     private val analyticsClient: AnalyticsClient,
-    private val appDataStore: AppDataStore
+    private val appDataStore: AppDataStore,
+    private val secureStore: SecureStore
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<AppUiState?> = MutableStateFlow(null)
@@ -139,5 +146,40 @@ internal class AppViewModel @Inject constructor(
 
     fun onTabClick(text: String) {
         analyticsClient.tabClick(text)
+    }
+
+    fun onSave(value: String) {
+        viewModelScope.launch {
+            try {
+                secureStore.upsert("blah", value)
+            } catch (e: SecureStorageError) {
+                Log.e("Blah", e.message, e)
+            }
+        }
+    }
+
+    fun onRetrieve(
+        activity: FragmentActivity
+    ) {
+        viewModelScope.launch {
+            try {
+                when (
+                    val retrievalEvent = secureStore.retrieveWithAuthentication(
+                        "blah",
+                        authPromptConfig = AuthenticatorPromptConfiguration("Title", "Subtitle", "Description"),
+                        context = activity
+                    )
+                ) {
+                    is RetrievalEvent.Failed -> Log.e("Blah", "ERROR!!!")
+                    is RetrievalEvent.Success -> {
+                        (_uiState.value as? AppUiState.Default)?.let {
+                            _uiState.value = it.copy(storedValue = retrievalEvent.value["blah"] ?: "")
+                        }
+                    }
+                }
+            } catch (e: SecureStorageError) {
+                Log.e("Blah", e.message, e)
+            }
+        }
     }
 }
