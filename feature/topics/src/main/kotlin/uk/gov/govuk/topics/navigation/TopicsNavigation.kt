@@ -10,6 +10,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import uk.gov.govuk.topics.ui.AllStepByStepRoute
 import uk.gov.govuk.topics.ui.AllTopicsRoute
@@ -18,7 +19,7 @@ import uk.gov.govuk.topics.ui.TopicRoute
 import uk.gov.govuk.topics.ui.TopicSelectionRoute
 
 const val TOPICS_GRAPH_ROUTE = "topics_graph_route"
-private const val TOPIC_SELECTION_ROUTE = "topic_selection_route"
+const val TOPIC_SELECTION_ROUTE = "topic_selection_route"
 const val TOPIC_ROUTE = "topic_route"
 internal const val TOPIC_REF_ARG = "ref"
 internal const val TOPIC_SUBTOPIC_ARG = "isSubtopic"
@@ -33,7 +34,7 @@ fun NavGraphBuilder.topicsGraph(
 ) {
     navigation(
         route = TOPICS_GRAPH_ROUTE,
-        startDestination = TOPIC_SELECTION_ROUTE
+        startDestination = TOPICS_ALL_ROUTE
     ) {
         composable(TOPIC_SELECTION_ROUTE) {
             TopicSelectionRoute(
@@ -59,12 +60,22 @@ fun NavGraphBuilder.topicsGraph(
                 modifier = modifier
             )
         }
-        composable(TOPICS_EDIT_ROUTE) {
+        composable(
+            TOPICS_EDIT_ROUTE, deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "govuk://app/topics/edit"
+                }
+            )) {
             EditTopicsRoute(
                 onBack = { navController.popBackStack() }
             )
         }
-        composable(TOPICS_ALL_ROUTE) {
+        composable(
+            TOPICS_ALL_ROUTE, deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "govuk://app/topics/all"
+                }
+            )) {
             AllTopicsRoute(
                 onBack = { navController.popBackStack() },
                 onClick = { title -> navController.navigateToTopic(title) },

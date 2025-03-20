@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_NO_SKIP_ROUTE
@@ -31,7 +32,13 @@ fun NavGraphBuilder.settingsGraph(
         route = SETTINGS_GRAPH_ROUTE,
         startDestination = SETTINGS_ROUTE
     ) {
-        composable(SETTINGS_ROUTE) {
+        composable(
+            SETTINGS_ROUTE, deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "govuk://app/settings"
+                }
+            )
+        ) {
             val context = LocalContext.current
 
             SettingsRoute(

@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import uk.gov.govuk.home.ui.HomeRoute
 
@@ -24,7 +25,11 @@ fun NavGraphBuilder.homeGraph(
         startDestination = HOME_GRAPH_START_DESTINATION
     ) {
         composable(
-            HOME_ROUTE,
+            HOME_ROUTE, deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "govuk://app/home"
+                }
+            ),
             exitTransition = {
                 if (transitionOverrideRoutes.contains(this.targetState.destination.parent?.route)) {
                     ExitTransition.None

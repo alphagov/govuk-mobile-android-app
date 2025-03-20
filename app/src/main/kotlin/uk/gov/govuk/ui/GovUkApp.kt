@@ -3,7 +3,6 @@ package uk.gov.govuk.ui
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -37,9 +37,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import uk.gov.govuk.AppUiState
 import uk.gov.govuk.AppViewModel
 import uk.gov.govuk.BuildConfig
@@ -73,7 +77,7 @@ import uk.gov.govuk.visited.navigation.visitedGraph
 import uk.gov.govuk.visited.ui.widget.VisitedWidget
 
 @Composable
-internal fun GovUkApp(intent: Intent) {
+internal fun GovUkApp(intentFlow: Flow<Intent>) {
     val viewModel: AppViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val homeWidgets by viewModel.homeWidgets.collectAsState()
@@ -102,7 +106,7 @@ internal fun GovUkApp(intent: Intent) {
                         val section = stringResource(R.string.homepage)
                         BottomNavScaffold(
                             uiState = it,
-                            deeplink = intent.data,
+                            intentFlow = intentFlow,
                             onboardingCompleted = { viewModel.onboardingCompleted() },
                             topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
                             onTabClick = { tabText -> viewModel.onTabClick(tabText) },
@@ -142,7 +146,7 @@ private fun LoadingScreen(
 @Composable
 private fun BottomNavScaffold(
     uiState: AppUiState.Default,
-    deeplink: Uri?,
+    intentFlow: Flow<Intent>,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
@@ -151,6 +155,22 @@ private fun BottomNavScaffold(
     onSuppressWidgetClick: (String, HomeWidget) -> Unit
 ) {
     val navController = rememberNavController()
+
+    // Collect and handle intent data sent with deeplinks
+    LaunchedEffect(intentFlow) {
+        intentFlow.collectLatest {
+            it.data?.let { uri ->
+                val request = NavDeepLinkRequest.Builder
+                    .fromUri(uri)
+                    .build()
+
+                navController.navigate(
+                    request,
+                    navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
+                )
+            }
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -164,7 +184,6 @@ private fun BottomNavScaffold(
             GovUkNavHost(
                 navController = navController,
                 uiState = uiState,
-                deeplink = deeplink,
                 onboardingCompleted = onboardingCompleted,
                 topicSelectionCompleted = topicSelectionCompleted,
                 homeWidgets = homeWidgets,
@@ -254,7 +273,6 @@ private fun BottomNav(
 private fun GovUkNavHost(
     navController: NavHostController,
     uiState: AppUiState.Default,
-    deeplink: Uri?,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     homeWidgets: List<HomeWidget>?,
@@ -262,14 +280,6 @@ private fun GovUkNavHost(
     onSuppressWidgetClick: (String, HomeWidget) -> Unit,
     paddingValues: PaddingValues
 ) {
-    deeplink?.let {
-        // Todo - handle deeplink, might make sense to pass to AppLaunchNavigation. Either way we
-        //  will probably want to pass the deeplink to all modules (via their navigation object)
-        //  that are set up to handle them and give them the opportunity to satisfy it. Not sure if
-        //  we will want to display the splash screen, consent, onboarding etc in the event of a
-        //  deeplink, probably a product decision
-    }
-
     val launchRoutes = rememberSaveable { AppLaunchNavigation(uiState).launchRoutes }
     val startDestination = rememberSaveable { launchRoutes.pop() }
 
