@@ -570,14 +570,14 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given there is a deeplink event, When the app has the deeplink, then log analytics`() {
+    fun `Given a deeplink is received, When the app has the deeplink, then log analytics`() {
         coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            viewModel.onDeeplinkEvent(true, "url")
+            viewModel.onDeeplinkReceived(true, "url")
 
             coVerify {
                 analyticsClient.deeplinkEvent(true, "url")
@@ -586,14 +586,14 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given there is a deeplink event, When the app doesn't have the deeplink, then log analytics`() {
+    fun `Given a deeplink is received, When the app doesn't have the deeplink, then log analytics`() {
         coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
         runTest {
-            viewModel.onDeeplinkEvent(false, "url")
+            viewModel.onDeeplinkReceived(false, "url")
 
             coVerify {
                 analyticsClient.deeplinkEvent(false, "url")

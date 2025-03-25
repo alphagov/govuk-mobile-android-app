@@ -118,8 +118,8 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                             onSuppressWidgetClick = { text, widget ->
                                 viewModel.onSuppressWidgetClick(text, section, widget)
                             },
-                            onDeeplinkEvent = { hasDeeplink, url ->
-                                viewModel.onDeeplinkEvent(hasDeeplink, url)
+                            onDeeplinkReceived = { hasDeeplink, url ->
+                                viewModel.onDeeplinkReceived(hasDeeplink, url)
                             }
                         )
                     }
@@ -157,7 +157,7 @@ private fun BottomNavScaffold(
     homeWidgets: List<HomeWidget>?,
     onWidgetClick: (String, Boolean) -> Unit,
     onSuppressWidgetClick: (String, HomeWidget) -> Unit,
-    onDeeplinkEvent: (Boolean, String) -> Unit
+    onDeeplinkReceived: (Boolean, String) -> Unit
 ) {
     val navController = rememberNavController()
 
@@ -189,7 +189,7 @@ private fun BottomNavScaffold(
         intentFlow.collectLatest { intent ->
             intent.data?.let { uri ->
                 if (navController.graph.hasDeepLink(uri)) {
-                    onDeeplinkEvent(true, uri.toString())
+                    onDeeplinkReceived(true, uri.toString())
                     val request = NavDeepLinkRequest.Builder
                         .fromUri(uri)
                         .build()
@@ -198,7 +198,7 @@ private fun BottomNavScaffold(
                         navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
                     )
                 } else {
-                    onDeeplinkEvent(false, uri.toString())
+                    onDeeplinkReceived(false, uri.toString())
                     showDeeplinkNotFoundAlert(context = context)
                 }
             }
@@ -459,7 +459,7 @@ private fun homeScreenWidgets(
                 }
             }
 
-            else -> { } // Do nothing
+            else -> { /* Do nothing */ }
         }
     }
     return widgets
