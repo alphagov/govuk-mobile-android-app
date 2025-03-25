@@ -1,6 +1,7 @@
 package uk.gov.govuk.ui
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.layout.Box
@@ -116,6 +117,9 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                             },
                             onSuppressWidgetClick = { text, widget ->
                                 viewModel.onSuppressWidgetClick(text, section, widget)
+                            },
+                            onDeeplinkEvent = { hasDeeplink, url ->
+                                viewModel.onDeeplinkEvent(hasDeeplink, url)
                             }
                         )
                     }
@@ -152,25 +156,10 @@ private fun BottomNavScaffold(
     onTabClick: (String) -> Unit,
     homeWidgets: List<HomeWidget>?,
     onWidgetClick: (String, Boolean) -> Unit,
-    onSuppressWidgetClick: (String, HomeWidget) -> Unit
+    onSuppressWidgetClick: (String, HomeWidget) -> Unit,
+    onDeeplinkEvent: (Boolean, String) -> Unit
 ) {
     val navController = rememberNavController()
-
-    // Collect and handle intent data sent with deeplinks
-    LaunchedEffect(intentFlow) {
-        intentFlow.collectLatest {
-            it.data?.let { uri ->
-                val request = NavDeepLinkRequest.Builder
-                    .fromUri(uri)
-                    .build()
-
-                navController.navigate(
-                    request,
-                    navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
-                )
-            }
-        }
-    }
 
     Scaffold(
         bottomBar = {
@@ -192,6 +181,40 @@ private fun BottomNavScaffold(
                 paddingValues = paddingValues
             )
         }
+    }
+    val context = LocalContext.current
+
+    // Collect and handle intent data sent with deeplinks
+    LaunchedEffect(intentFlow) {
+        intentFlow.collectLatest { intent ->
+            intent.data?.let { uri ->
+                if (navController.graph.hasDeepLink(uri)) {
+                    onDeeplinkEvent(true, uri.toString())
+                    val request = NavDeepLinkRequest.Builder
+                        .fromUri(uri)
+                        .build()
+                    navController.navigate(
+                        request,
+                        navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
+                    )
+                } else {
+                    onDeeplinkEvent(false, uri.toString())
+                    showDeeplinkNotFoundAlert(context = context)
+                }
+            }
+        }
+    }
+}
+
+private fun showDeeplinkNotFoundAlert(context: Context) {
+    AlertDialog.Builder(context).apply {
+        setTitle(context.getString(R.string.deeplink_not_found_alert_title))
+        setMessage(context.getString(R.string.deeplink_not_found_alert_message))
+        setPositiveButton(context.getString(R.string.deeplink_not_found_alert_button)) { dialog, _ ->
+            dialog.dismiss()
+        }
+    }.also { deeplinkNotFoundAlert ->
+        deeplinkNotFoundAlert.show()
     }
 }
 
@@ -303,15 +326,17 @@ private fun GovUkNavHost(
                 navController.navigate(launchRoutes.pop())
             }
         )
-        topicsGraph(
-            navController = navController,
-            topicSelectionCompleted = {
-                topicSelectionCompleted()
-                navController.popBackStack()
-                navController.navigate(launchRoutes.pop())
-            },
-            modifier = Modifier.padding(paddingValues)
-        )
+        if (homeWidgets.contains(HomeWidget.TOPICS)) {
+            topicsGraph(
+                navController = navController,
+                topicSelectionCompleted = {
+                    topicSelectionCompleted()
+                    navController.popBackStack()
+                    navController.navigate(launchRoutes.pop())
+                },
+                modifier = Modifier.padding(paddingValues)
+            )
+        }
         notificationsGraph(
             notificationsOnboardingCompleted = {
                 navController.popBackStack()
@@ -328,7 +353,7 @@ private fun GovUkNavHost(
                 onSuppressClick = onSuppressWidgetClick
             ),
             modifier = Modifier.padding(paddingValues),
-            headerWidget = if (homeWidgets?.contains(HomeWidget.SEARCH) == true) {
+            headerWidget = if (homeWidgets.contains(HomeWidget.SEARCH)) {
                 { modifier ->
                     SearchWidget(
                         onClick = { text ->
@@ -346,12 +371,19 @@ private fun GovUkNavHost(
             appVersion = BuildConfig.VERSION_NAME,
             modifier = Modifier.padding(paddingValues)
         )
-        searchGraph(navController)
-        visitedGraph(
-            navController = navController,
-            modifier = Modifier.padding(paddingValues))
+        if (homeWidgets.contains(HomeWidget.SEARCH)) {
+            searchGraph(navController)
+        }
+        if (homeWidgets.contains(HomeWidget.RECENT_ACTIVITY)) {
+            visitedGraph(
+                navController = navController,
+                modifier = Modifier.padding(paddingValues)
+            )
+        }
     }
 }
+
+private fun List<HomeWidget>?.contains(widget: HomeWidget) = this?.contains(widget) == true
 
 private fun homeScreenWidgets(
     context: Context,

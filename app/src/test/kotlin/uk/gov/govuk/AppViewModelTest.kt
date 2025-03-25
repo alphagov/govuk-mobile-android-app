@@ -570,6 +570,38 @@ class AppViewModelTest {
     }
 
     @Test
+    fun `Given there is a deeplink event, When the app has the deeplink, then log analytics`() {
+        coEvery { configRepo.initConfig() } returns Success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
+
+        runTest {
+            viewModel.onDeeplinkEvent(true, "url")
+
+            coVerify {
+                analyticsClient.deeplinkEvent(true, "url")
+            }
+        }
+    }
+
+    @Test
+    fun `Given there is a deeplink event, When the app doesn't have the deeplink, then log analytics`() {
+        coEvery { configRepo.initConfig() } returns Success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
+
+        runTest {
+            viewModel.onDeeplinkEvent(false, "url")
+
+            coVerify {
+                analyticsClient.deeplinkEvent(false, "url")
+            }
+        }
+    }
+
+    @Test
     fun `Given the user tries again, then emit loading state and fetch config`() {
         coEvery { configRepo.initConfig() } returns Success(Unit)
 

@@ -6,6 +6,7 @@ import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
@@ -17,12 +18,16 @@ import uk.gov.govuk.ui.GovUkApp
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val intentFlow = MutableSharedFlow<Intent>(extraBufferCapacity = 1)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    val intentFlow: MutableSharedFlow<Intent> =
+        MutableSharedFlow(replay = 1, extraBufferCapacity = 1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setIntentFlags()
+
+        emitIntent(savedInstanceState)
 
         setContent {
             GovUkTheme {
@@ -47,5 +52,12 @@ class MainActivity : ComponentActivity() {
         // FLAG_ACTIVITY_CLEAR_TASK prevents activity recreation when app is started from a deeplink.
         // It must be used in conjunction with FLAG_ACTIVITY_NEW_TASK.
         intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
+    }
+
+    private fun emitIntent(savedInstanceState: Bundle?) {
+        // Only emit intent when app launched from cold so deeplinks only ever run once
+        savedInstanceState ?: run {
+            intentFlow.tryEmit(intent)
+        }
     }
 }

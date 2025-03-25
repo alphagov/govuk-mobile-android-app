@@ -42,12 +42,16 @@ fun NavGraphBuilder.topicsGraph(
                 onSkip = topicSelectionCompleted
             )
         }
-
+        val topicPath = "/{$TOPIC_REF_ARG}?$TOPIC_SUBTOPIC_ARG={$TOPIC_SUBTOPIC_ARG}"
         composable(
-            "$TOPIC_ROUTE/{$TOPIC_REF_ARG}?$TOPIC_SUBTOPIC_ARG={$TOPIC_SUBTOPIC_ARG}",
+            "$TOPIC_ROUTE$topicPath",
             arguments = listOf(
                 navArgument(TOPIC_REF_ARG) { type = NavType.StringType },
                 navArgument(TOPIC_SUBTOPIC_ARG) { type = NavType.BoolType },
+            ), deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "govuk://app/topic$topicPath"
+                }
             )
         ) {
             val context = LocalContext.current

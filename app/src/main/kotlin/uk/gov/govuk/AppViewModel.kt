@@ -140,4 +140,11 @@ internal class AppViewModel @Inject constructor(
     fun onTabClick(text: String) {
         analyticsClient.tabClick(text)
     }
+
+    fun onDeeplinkEvent(hasDeeplink: Boolean, url: String) {
+        analyticsClient.deeplinkEvent(
+            hasDeeplink,
+            url
+        )
+    }
 }

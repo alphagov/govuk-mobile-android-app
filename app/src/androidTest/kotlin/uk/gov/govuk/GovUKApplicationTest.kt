@@ -14,7 +14,7 @@ class GovUKApplicationTest {
     private val notificationsClient = mockk<NotificationsClient>(relaxed = true)
 
     @Test
-    fun govUkApplicationOnCreate() {
+    fun given_the_GovUKApplication_is_launched_When_onCreate_is_called_then_the_notifications_client_is_initialised_once() {
         val govUkApplication: GovUkApplication =
             InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as GovUkApplication
         govUkApplication.notificationsClient = notificationsClient

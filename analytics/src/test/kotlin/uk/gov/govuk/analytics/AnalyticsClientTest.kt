@@ -498,6 +498,42 @@ class AnalyticsClientTest {
     }
 
     @Test
+    fun `Given a deeplink event, When the app has the deeplink, then log event`() {
+        analyticsClient.deeplinkEvent(true, "url")
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "Deeplink",
+                    "external" to false,
+                    "language" to Locale.getDefault().language,
+                    "text" to "Opened",
+                    "url" to "url"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a deeplink event, When the app doesn't have the deeplink, then log event`() {
+        analyticsClient.deeplinkEvent(false, "url")
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "Deeplink",
+                    "external" to false,
+                    "language" to Locale.getDefault().language,
+                    "text" to "Failed",
+                    "url" to "url"
+                )
+            )
+        }
+    }
+
+    @Test
     fun `Given a toggle function, then log event`() {
         analyticsClient.toggleFunction(
             text = "text",
