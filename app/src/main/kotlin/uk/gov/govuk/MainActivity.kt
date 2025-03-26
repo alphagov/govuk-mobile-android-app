@@ -6,21 +6,21 @@ import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.ui.GovUkApp
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    val intentFlow: MutableSharedFlow<Intent> =
+    private val _intentFlow: MutableSharedFlow<Intent> =
         MutableSharedFlow(replay = 1, extraBufferCapacity = 1)
+    internal val intentFlow = _intentFlow.asSharedFlow()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize(),
                     color = GovUkTheme.colourScheme.surfaces.background
                 ) {
-                    GovUkApp(intentFlow)
+                    GovUkApp(_intentFlow)
                 }
             }
         }
@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        intentFlow.tryEmit(intent)
+        _intentFlow.tryEmit(intent)
     }
 
     private fun setIntentFlags() {
@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
     private fun emitIntent(savedInstanceState: Bundle?) {
         // Only emit intent when app launched from cold so deeplinks only ever run once
         savedInstanceState ?: run {
-            intentFlow.tryEmit(intent)
+            _intentFlow.tryEmit(intent)
         }
     }
 }
