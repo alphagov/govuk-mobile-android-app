@@ -71,6 +71,7 @@ import uk.gov.govuk.topics.ui.widget.TopicsWidget
 import uk.gov.govuk.visited.navigation.VISITED_GRAPH_ROUTE
 import uk.gov.govuk.visited.navigation.visitedGraph
 import uk.gov.govuk.visited.ui.widget.VisitedWidget
+import uk.govuk.app.biometrics.navigation.biometricsGraph
 
 @Composable
 internal fun GovUkApp(intent: Intent) {
@@ -293,6 +294,7 @@ private fun GovUkNavHost(
                 navController.navigate(launchRoutes.pop())
             }
         )
+        biometricsGraph()
         topicsGraph(
             navController = navController,
             topicSelectionCompleted = {

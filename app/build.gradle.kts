@@ -117,6 +117,7 @@ android {
 
 dependencies {
     implementation(projects.analytics)
+    implementation(projects.biometrics)
     implementation(projects.config)
     implementation(projects.design)
     implementation(projects.data)
