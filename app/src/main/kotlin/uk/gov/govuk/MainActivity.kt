@@ -11,18 +11,23 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.ui.GovUkApp
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val intentFlow = MutableSharedFlow<Intent>(extraBufferCapacity = 1)
+    private val _intentFlow: MutableSharedFlow<Intent> =
+        MutableSharedFlow(replay = 1, extraBufferCapacity = 1)
+    internal val intentFlow = _intentFlow.asSharedFlow()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setIntentFlags()
+
+        emitIntent(savedInstanceState)
 
         setContent {
             GovUkTheme {
@@ -32,7 +37,7 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize(),
                     color = GovUkTheme.colourScheme.surfaces.background
                 ) {
-                    GovUkApp(intentFlow)
+                    GovUkApp(_intentFlow)
                 }
             }
         }
@@ -40,12 +45,19 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        intentFlow.tryEmit(intent)
+        _intentFlow.tryEmit(intent)
     }
 
     private fun setIntentFlags() {
-        // FLAG_ACTIVITY_CLEAR_TASK prevents activity recreation when app is started from a deeplink.
+        // FLAG_ACTIVITY_CLEAR_TASK prevents activity recreation when app is started from a deep link.
         // It must be used in conjunction with FLAG_ACTIVITY_NEW_TASK.
         intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
+    }
+
+    private fun emitIntent(savedInstanceState: Bundle?) {
+        // Only emit intent when app launched from cold so deep links only ever run once
+        savedInstanceState ?: run {
+            _intentFlow.tryEmit(intent)
+        }
     }
 }

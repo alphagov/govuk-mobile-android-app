@@ -162,6 +162,14 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
+    fun deepLinkEvent(hasDeepLink: Boolean, url: String) {
+        navigation(
+            text = if (hasDeepLink) "Opened" else "Failed",
+            type = "DeepLink",
+            url = url
+        )
+    }
+
     private fun redactedEvent(name: String, type: String, inputString: String) {
         logEvent(
             name,

@@ -20,4 +20,8 @@
 
     <string name="settings">Settings</string>
 
+    <string name="deep_link_not_found_alert_title">Page not found</string>
+    <string name="deep_link_not_found_alert_message">Update the app to the latest version.\n\nIf you’re already using the latest version, try again later.</string>
+    <string name="deep_link_not_found_alert_button">Close</string>
+
 </resources>

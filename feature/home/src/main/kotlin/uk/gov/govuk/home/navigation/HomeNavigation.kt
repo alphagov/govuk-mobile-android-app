@@ -4,9 +4,9 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import uk.gov.govuk.home.ui.HomeRoute
 
@@ -16,6 +16,7 @@ const val HOME_GRAPH_START_DESTINATION = HOME_ROUTE
 
 fun NavGraphBuilder.homeGraph(
     widgets: List<@Composable (Modifier) -> Unit>,
+    deepLinks: (path: String) -> List<NavDeepLink>,
     modifier: Modifier = Modifier,
     headerWidget: (@Composable (Modifier) -> Unit)? = null,
     transitionOverrideRoutes: List<String> = emptyList()
@@ -25,11 +26,7 @@ fun NavGraphBuilder.homeGraph(
         startDestination = HOME_GRAPH_START_DESTINATION
     ) {
         composable(
-            HOME_ROUTE, deepLinks = listOf(
-                navDeepLink {
-                    uriPattern = "govuk://app/home"
-                }
-            ),
+            HOME_ROUTE, deepLinks = deepLinks("/home"),
             exitTransition = {
                 if (transitionOverrideRoutes.contains(this.targetState.destination.parent?.route)) {
                     ExitTransition.None
