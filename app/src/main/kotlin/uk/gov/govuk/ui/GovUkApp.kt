@@ -294,7 +294,12 @@ private fun GovUkNavHost(
                 navController.navigate(launchRoutes.pop())
             }
         )
-        biometricsGraph()
+
+        biometricsGraph {
+            navController.popBackStack()
+            navController.navigate(launchRoutes.pop())
+        }
+
         topicsGraph(
             navController = navController,
             topicSelectionCompleted = {
