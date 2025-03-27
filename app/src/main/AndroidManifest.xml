@@ -19,9 +19,22 @@
             android:theme="@style/Theme.GovUkMobileApp"
             android:launchMode="singleTop">
             <intent-filter>
-                <data android:scheme="govuk" android:host="app" />
+                <data android:scheme="govuk" />
+                <data android:host="gov.uk" />
+                <data android:host="app.gov.uk" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <data android:scheme="https" />
+                <data android:host="app.gov.uk" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
             <intent-filter>

@@ -49,13 +49,13 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun setIntentFlags() {
-        // FLAG_ACTIVITY_CLEAR_TASK prevents activity recreation when app is started from a deeplink.
+        // FLAG_ACTIVITY_CLEAR_TASK prevents activity recreation when app is started from a deep link.
         // It must be used in conjunction with FLAG_ACTIVITY_NEW_TASK.
         intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
     }
 
     private fun emitIntent(savedInstanceState: Bundle?) {
-        // Only emit intent when app launched from cold so deeplinks only ever run once
+        // Only emit intent when app launched from cold so deep links only ever run once
         savedInstanceState ?: run {
             _intentFlow.tryEmit(intent)
         }

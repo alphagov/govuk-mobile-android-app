@@ -6,11 +6,11 @@ import android.net.Uri
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import uk.gov.govuk.topics.ui.AllStepByStepRoute
 import uk.gov.govuk.topics.ui.AllTopicsRoute
@@ -30,6 +30,7 @@ const val TOPICS_ALL_STEP_BY_STEPS_ROUTE = "topics_all_step_by_steps_route"
 fun NavGraphBuilder.topicsGraph(
     navController: NavController,
     topicSelectionCompleted: () -> Unit,
+    getDeepLinks: (path: String) -> List<NavDeepLink>,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -48,11 +49,7 @@ fun NavGraphBuilder.topicsGraph(
             arguments = listOf(
                 navArgument(TOPIC_REF_ARG) { type = NavType.StringType },
                 navArgument(TOPIC_SUBTOPIC_ARG) { type = NavType.BoolType },
-            ), deepLinks = listOf(
-                navDeepLink {
-                    uriPattern = "govuk://app/topic$topicPath"
-                }
-            )
+            ), deepLinks = getDeepLinks("/topics$topicPath")
         ) {
             val context = LocalContext.current
 
@@ -65,21 +62,15 @@ fun NavGraphBuilder.topicsGraph(
             )
         }
         composable(
-            TOPICS_EDIT_ROUTE, deepLinks = listOf(
-                navDeepLink {
-                    uriPattern = "govuk://app/topics/edit"
-                }
-            )) {
+            TOPICS_EDIT_ROUTE, deepLinks = getDeepLinks("/topics/edit")
+        ) {
             EditTopicsRoute(
                 onBack = { navController.popBackStack() }
             )
         }
         composable(
-            TOPICS_ALL_ROUTE, deepLinks = listOf(
-                navDeepLink {
-                    uriPattern = "govuk://app/topics/all"
-                }
-            )) {
+            TOPICS_ALL_ROUTE, deepLinks = getDeepLinks("/topics/all")
+        ) {
             AllTopicsRoute(
                 onBack = { navController.popBackStack() },
                 onClick = { title -> navController.navigateToTopic(title) },

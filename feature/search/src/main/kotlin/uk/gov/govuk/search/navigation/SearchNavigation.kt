@@ -3,10 +3,10 @@ package uk.gov.govuk.search.navigation
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import uk.gov.govuk.search.ui.SearchRoute
 
@@ -15,6 +15,7 @@ private const val SEARCH_ROUTE = "search_route"
 
 fun NavGraphBuilder.searchGraph(
     navController: NavHostController,
+    getDeepLinks: (path: String) -> List<NavDeepLink>,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -22,11 +23,7 @@ fun NavGraphBuilder.searchGraph(
         startDestination = SEARCH_ROUTE
     ) {
         composable(
-            SEARCH_ROUTE, deepLinks = listOf(
-                navDeepLink {
-                    uriPattern = "govuk://app/search"
-                }
-            ),
+            SEARCH_ROUTE, deepLinks = getDeepLinks("/search"),
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
             popEnterTransition = { EnterTransition.None },
