@@ -16,7 +16,7 @@ const val EDIT_VISITED_ROUTE = "edit_visited_route"
 
 fun NavGraphBuilder.visitedGraph(
     navController: NavHostController,
-    getDeepLinks: (path: String) -> List<NavDeepLink>,
+    deepLinks: (path: String) -> List<NavDeepLink>,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -24,7 +24,7 @@ fun NavGraphBuilder.visitedGraph(
         startDestination = VISITED_ROUTE
     ) {
         composable(
-            VISITED_ROUTE, deepLinks = getDeepLinks("/visited")
+            VISITED_ROUTE, deepLinks = deepLinks("/visited")
         ) {
             VisitedRoute(
                 navController = navController,
@@ -33,7 +33,7 @@ fun NavGraphBuilder.visitedGraph(
             )
         }
         composable(
-            EDIT_VISITED_ROUTE, deepLinks = getDeepLinks("/visited/edit")
+            EDIT_VISITED_ROUTE, deepLinks = deepLinks("/visited/edit")
         ) {
             EditVisitedRoute(
                 onBack = { navController.popBackStack() },

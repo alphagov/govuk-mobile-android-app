@@ -26,7 +26,7 @@ private const val SETTINGS_ROUTE = "settings_route"
 fun NavGraphBuilder.settingsGraph(
     navigateTo: (String) -> Unit,
     appVersion: String,
-    getDeepLinks: (path: String) -> List<NavDeepLink>,
+    deepLinks: (path: String) -> List<NavDeepLink>,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -34,7 +34,7 @@ fun NavGraphBuilder.settingsGraph(
         startDestination = SETTINGS_ROUTE
     ) {
         composable(
-            SETTINGS_ROUTE, deepLinks = getDeepLinks("/settings")
+            SETTINGS_ROUTE, deepLinks = deepLinks("/settings")
         ) {
             val context = LocalContext.current
 

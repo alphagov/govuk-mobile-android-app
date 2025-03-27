@@ -30,7 +30,7 @@ const val TOPICS_ALL_STEP_BY_STEPS_ROUTE = "topics_all_step_by_steps_route"
 fun NavGraphBuilder.topicsGraph(
     navController: NavController,
     topicSelectionCompleted: () -> Unit,
-    getDeepLinks: (path: String) -> List<NavDeepLink>,
+    deepLinks: (path: String) -> List<NavDeepLink>,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -49,7 +49,7 @@ fun NavGraphBuilder.topicsGraph(
             arguments = listOf(
                 navArgument(TOPIC_REF_ARG) { type = NavType.StringType },
                 navArgument(TOPIC_SUBTOPIC_ARG) { type = NavType.BoolType },
-            ), deepLinks = getDeepLinks("/topics$topicPath")
+            ), deepLinks = deepLinks("/topics$topicPath")
         ) {
             val context = LocalContext.current
 
@@ -62,14 +62,14 @@ fun NavGraphBuilder.topicsGraph(
             )
         }
         composable(
-            TOPICS_EDIT_ROUTE, deepLinks = getDeepLinks("/topics/edit")
+            TOPICS_EDIT_ROUTE, deepLinks = deepLinks("/topics/edit")
         ) {
             EditTopicsRoute(
                 onBack = { navController.popBackStack() }
             )
         }
         composable(
-            TOPICS_ALL_ROUTE, deepLinks = getDeepLinks("/topics/all")
+            TOPICS_ALL_ROUTE, deepLinks = deepLinks("/topics/all")
         ) {
             AllTopicsRoute(
                 onBack = { navController.popBackStack() },

@@ -16,7 +16,7 @@ const val HOME_GRAPH_START_DESTINATION = HOME_ROUTE
 
 fun NavGraphBuilder.homeGraph(
     widgets: List<@Composable (Modifier) -> Unit>,
-    getDeepLinks: (path: String) -> List<NavDeepLink>,
+    deepLinks: (path: String) -> List<NavDeepLink>,
     modifier: Modifier = Modifier,
     headerWidget: (@Composable (Modifier) -> Unit)? = null,
     transitionOverrideRoutes: List<String> = emptyList()
@@ -26,7 +26,7 @@ fun NavGraphBuilder.homeGraph(
         startDestination = HOME_GRAPH_START_DESTINATION
     ) {
         composable(
-            HOME_ROUTE, deepLinks = getDeepLinks("/home"),
+            HOME_ROUTE, deepLinks = deepLinks("/home"),
             exitTransition = {
                 if (transitionOverrideRoutes.contains(this.targetState.destination.parent?.route)) {
                     ExitTransition.None

@@ -335,7 +335,7 @@ private fun GovUkNavHost(
                     navController.popBackStack()
                     navController.navigate(launchRoutes.pop())
                 },
-                getDeepLinks = { it.asDeepLinks() },
+                deepLinks = { it.asDeepLinks() },
                 modifier = Modifier.padding(paddingValues)
             )
         }
@@ -354,7 +354,7 @@ private fun GovUkNavHost(
                 onClick = onWidgetClick,
                 onSuppressClick = onSuppressWidgetClick
             ),
-            getDeepLinks = { it.asDeepLinks() },
+            deepLinks = { it.asDeepLinks() },
             modifier = Modifier.padding(paddingValues),
             headerWidget = if (homeWidgets.contains(HomeWidget.SEARCH)) {
                 { modifier ->
@@ -372,16 +372,16 @@ private fun GovUkNavHost(
         settingsGraph(
             navigateTo = { route -> navController.navigate(route) },
             appVersion = BuildConfig.VERSION_NAME,
-            getDeepLinks = { it.asDeepLinks() },
+            deepLinks = { it.asDeepLinks() },
             modifier = Modifier.padding(paddingValues)
         )
         if (homeWidgets.contains(HomeWidget.SEARCH)) {
-            searchGraph(navController, getDeepLinks = { it.asDeepLinks() })
+            searchGraph(navController, deepLinks = { it.asDeepLinks() })
         }
         if (homeWidgets.contains(HomeWidget.RECENT_ACTIVITY)) {
             visitedGraph(
                 navController = navController,
-                getDeepLinks = { it.asDeepLinks() },
+                deepLinks = { it.asDeepLinks() },
                 modifier = Modifier.padding(paddingValues)
             )
         }

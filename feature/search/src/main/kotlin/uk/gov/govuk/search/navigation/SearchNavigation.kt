@@ -15,7 +15,7 @@ private const val SEARCH_ROUTE = "search_route"
 
 fun NavGraphBuilder.searchGraph(
     navController: NavHostController,
-    getDeepLinks: (path: String) -> List<NavDeepLink>,
+    deepLinks: (path: String) -> List<NavDeepLink>,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -23,7 +23,7 @@ fun NavGraphBuilder.searchGraph(
         startDestination = SEARCH_ROUTE
     ) {
         composable(
-            SEARCH_ROUTE, deepLinks = getDeepLinks("/search"),
+            SEARCH_ROUTE, deepLinks = deepLinks("/search"),
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
             popEnterTransition = { EnterTransition.None },
