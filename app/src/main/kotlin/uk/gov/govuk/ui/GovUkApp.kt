@@ -473,6 +473,7 @@ private fun homeScreenWidgets(
     return widgets
 }
 
+@Suppress("DEPRECATION")
 @Composable
 private fun SetStatusBarColour(
     colour: Color,
