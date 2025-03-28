@@ -150,13 +150,16 @@ private fun SearchScreen(
                 placeholder = stringResource(R.string.search_placeholder),
                 actions = SearchFieldActions(
                     onBack = actions.onBack,
-                    onSearchTermChange = {
-                        searchTerm = it
-                        if (searchTerm.text.isBlank()) {
-                            actions.onClear()
-                        } else {
-                            actions.onAutocomplete(searchTerm.text)
+                    onSearchTermChange = { newValue ->
+                        if (searchTerm.text != newValue.text) {
+                            if (newValue.text.isBlank()) {
+                                actions.onClear()
+                            } else {
+                                actions.onAutocomplete(newValue.text)
+                            }
                         }
+                        searchTerm = newValue
+
                     },
                     onSearch = { actions.onSearch(searchTerm.text) },
                     onClear = actions.onClear
