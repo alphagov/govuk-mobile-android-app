@@ -8,6 +8,7 @@ internal data class SearchUiState(
     val previousSearches: List<String> = emptyList(),
     val suggestions: Suggestions? = null,
     val searchResults: SearchResults? = null,
+    val performingSearch: Boolean = false,
     val error: Error? = null
 ) {
     data class Suggestions(
