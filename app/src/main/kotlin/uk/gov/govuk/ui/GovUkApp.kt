@@ -4,9 +4,11 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -163,6 +165,7 @@ private fun BottomNavScaffold(
     val navController = rememberNavController()
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
         bottomBar = {
             BottomNav(navController, onTabClick)
         }
@@ -475,8 +478,19 @@ private fun SetStatusBarColour(
     colour: Color,
     isLight: Boolean
 ) {
-    val view = LocalView.current
-    val window = (view.context as Activity).window
-    window.statusBarColor = colour.toArgb()
-    WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = isLight
+    val localView = LocalView.current
+    val window = (localView.context as Activity).window
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        window.decorView.setOnApplyWindowInsetsListener { view, insets ->
+            val statusBarInsets = insets.getInsets(android.view.WindowInsets.Type.statusBars())
+            view.setBackgroundColor(colour.toArgb())
+            view.setPadding(0, statusBarInsets.top, 0, 0)
+            insets
+        }
+    } else {
+        window.statusBarColor = colour.toArgb()
+    }
+
+    WindowCompat.getInsetsController(window, localView).isAppearanceLightStatusBars = isLight
 }
