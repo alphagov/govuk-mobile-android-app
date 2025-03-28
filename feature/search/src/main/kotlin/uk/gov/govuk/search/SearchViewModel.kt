@@ -34,6 +34,8 @@ internal class SearchViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<SearchUiState> = MutableStateFlow(SearchUiState())
     val uiState = _uiState.asStateFlow()
 
+    private var performingSearch: Boolean = false
+
     init {
         viewModelScope.launch {
             searchRepo.previousSearches.collect { previousSearches ->
@@ -55,8 +57,12 @@ internal class SearchViewModel @Inject constructor(
 
         if (trimmedSearchTerm.isNotEmpty()) {
             viewModelScope.launch {
+                performingSearch = true
+                emitUiState()
+                val result = searchRepo.performSearch(trimmedSearchTerm)
+                performingSearch = false
                 val id = UUID.randomUUID()
-                when (val result = searchRepo.performSearch(trimmedSearchTerm)) {
+                when (result) {
                     is Success -> {
                         if (result.value.results.isNotEmpty()) {
                             emitUiState(
@@ -142,6 +148,7 @@ internal class SearchViewModel @Inject constructor(
             previousSearches = previousSearches,
             suggestions = suggestions,
             searchResults = searchResults,
+            performingSearch = performingSearch,
             error = error
         )
     }

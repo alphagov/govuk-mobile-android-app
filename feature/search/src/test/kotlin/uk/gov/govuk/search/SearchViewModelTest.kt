@@ -10,12 +10,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -182,6 +184,7 @@ class SearchViewModelTest {
                 assertEquals(previousSearches, uiState.previousSearches)
                 assertNull(uiState.suggestions)
                 assertNull(uiState.searchResults)
+                assertFalse(uiState.performingSearch)
                 assertNull(uiState.error)
             }
         }
@@ -200,6 +203,7 @@ class SearchViewModelTest {
                 assertEquals(previousSearches, uiState.previousSearches)
                 assertNull(uiState.suggestions)
                 assertNull(uiState.searchResults)
+                assertFalse(uiState.performingSearch)
                 assertNull(uiState.error)
             }
         }
@@ -249,6 +253,25 @@ class SearchViewModelTest {
         }
 
         @Test
+        fun `Given a search with a result, then emit performing search state`() {
+            coEvery { repository.performSearch(searchTerm) } coAnswers {
+                suspendCancellableCoroutine {  }
+            }
+
+            val viewModel = SearchViewModel(analyticsClient, visited, repository)
+            viewModel.onSearch(searchTerm)
+
+            runTest {
+                val uiState = viewModel.uiState.value
+
+                assertNull(uiState.suggestions)
+                assertNull(uiState.searchResults)
+                assertTrue(uiState.performingSearch)
+                assertNull(uiState.error)
+            }
+        }
+
+        @Test
         fun `Given a search with a result, then emit search results`() {
             coEvery { repository.performSearch(searchTerm) } returns Success(resultWithOneResult)
 
@@ -261,6 +284,7 @@ class SearchViewModelTest {
                 assertEquals(searchTerm, uiState.searchResults!!.searchTerm)
                 assertNull(uiState.suggestions)
                 assertEquals(1, uiState.searchResults.values.size)
+                assertFalse(uiState.performingSearch)
                 assertNull(uiState.error)
             }
         }
@@ -277,6 +301,7 @@ class SearchViewModelTest {
 
                 assertNull(uiState.suggestions)
                 assertNull(uiState.searchResults)
+                assertFalse(uiState.performingSearch)
                 assertTrue(uiState.error is SearchUiState.Error.Empty)
             }
         }
@@ -292,6 +317,7 @@ class SearchViewModelTest {
                 val uiState = viewModel.uiState.value
                 assertNull(uiState.suggestions)
                 assertNull(uiState.searchResults)
+                assertFalse(uiState.performingSearch)
                 assertTrue(uiState.error is SearchUiState.Error.Offline)
             }
         }
@@ -307,6 +333,7 @@ class SearchViewModelTest {
                 val uiState = viewModel.uiState.value
                 assertNull(uiState.suggestions)
                 assertNull(uiState.searchResults)
+                assertFalse(uiState.performingSearch)
                 assertTrue(uiState.error is SearchUiState.Error.ServiceError)
             }
         }
@@ -322,6 +349,7 @@ class SearchViewModelTest {
                 val uiState = viewModel.uiState.value
                 assertNull(uiState.suggestions)
                 assertNull(uiState.searchResults)
+                assertFalse(uiState.performingSearch)
                 assertTrue(uiState.error is SearchUiState.Error.ServiceError)
             }
         }
@@ -339,6 +367,7 @@ class SearchViewModelTest {
                 assertEquals(searchTerm, uiState.suggestions!!.searchTerm)
                 assertEquals(1, uiState.suggestions.values.size)
                 assertNull(uiState.searchResults)
+                assertFalse(uiState.performingSearch)
                 assertNull(uiState.error)
             }
         }
@@ -356,6 +385,7 @@ class SearchViewModelTest {
                 assertEquals(searchTerm, uiState.suggestions!!.searchTerm)
                 assertEquals(0, uiState.suggestions.values.size)
                 assertNull(uiState.searchResults)
+                assertFalse(uiState.performingSearch)
                 assertNull(uiState.error)
             }
         }
@@ -374,6 +404,7 @@ class SearchViewModelTest {
                 assertEquals(previousSearches, uiState.previousSearches)
                 assertNull(uiState.suggestions)
                 assertNull(uiState.searchResults)
+                assertFalse(uiState.performingSearch)
                 assertNull(uiState.error)
             }
         }
