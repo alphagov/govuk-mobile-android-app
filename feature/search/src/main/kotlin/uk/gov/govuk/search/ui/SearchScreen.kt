@@ -191,16 +191,18 @@ private fun SearchScreen(
                 displayKeyboard = true
             }
             else -> {
-                PreviousSearches(
-                    previousSearches = uiState.previousSearches,
-                    onClick = {
-                        searchTerm = TextFieldValue(it)
-                        actions.onPreviousSearchClick(it)
-                    },
-                    onRemoveAll = actions.onRemoveAllPreviousSearches,
-                    onRemove = actions.onRemovePreviousSearch
-                )
-                displayKeyboard = true
+                if (!uiState.performingSearch) {
+                    PreviousSearches(
+                        previousSearches = uiState.previousSearches,
+                        onClick = {
+                            searchTerm = TextFieldValue(it)
+                            actions.onPreviousSearchClick(it)
+                        },
+                        onRemoveAll = actions.onRemoveAllPreviousSearches,
+                        onRemove = actions.onRemovePreviousSearch
+                    )
+                    displayKeyboard = true
+                }
             }
         }
     }
