@@ -31,3 +31,5 @@ render.experimental.xml
 
 *.DS_Store
 /.kotlin/
+/fastlane/README.md
+/fastlane/report.xml

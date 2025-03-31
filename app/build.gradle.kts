@@ -11,19 +11,22 @@ plugins {
     alias(libs.plugins.kover)
 }
 
+val majorVersion = "0"
+val minorVersion = "0"
+
 android {
     namespace = "uk.gov.govuk"
     compileSdk = Version.COMPILE_SDK
 
-    // Todo - replace with Google Play auto increment mechanism for play store builds
-    val buildNumber = System.getenv("GITHUB_RUN_NUMBER")?.toInt() ?: 1
+    val buildNumber = System.getenv("VERSION_CODE")?.toInt()
+        ?: System.getenv("GITHUB_RUN_NUMBER")?.toInt() ?: 1
 
     defaultConfig {
         applicationId = "uk.gov.govuk"
         minSdk = Version.MIN_SDK
         targetSdk = Version.TARGET_SDK
         versionCode = buildNumber
-        versionName = "0.0.$buildNumber"
+        versionName = "$majorVersion.$minorVersion.$versionCode"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -42,6 +45,13 @@ android {
             keyAlias = System.getenv("ALPHA_KEY_ALIAS")
             keyPassword = System.getenv("ALPHA_KEY_PASSWORD")
         }
+
+        create("release") {
+            storeFile = file("${project.rootDir}/release.jks")
+            storePassword = System.getenv("RELEASE_KEY_PASSWORD")
+            keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+            keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+        }
     }
 
     buildTypes {
@@ -55,7 +65,6 @@ android {
             matchingFallbacks += listOf("debug")
 
             signingConfig = if (System.getenv("ALPHA_KEYSTORE") != null) {
-                println("Signing with Alpha Keystore!!!")
                 signingConfigs.getByName("alpha")
             } else {
                 signingConfigs.getByName("debug")
@@ -82,7 +91,6 @@ android {
             )
 
             signingConfig = if (System.getenv("RELEASE_KEYSTORE") != null) {
-                println("Signing with Release Keystore!!!")
                 signingConfigs.getByName("release")
             } else {
                 signingConfigs.getByName("debug")
