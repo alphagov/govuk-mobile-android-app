@@ -258,7 +258,8 @@ private fun BottomNav(
                 color = GovUkTheme.colourScheme.strokes.fixedContainer
             )
             NavigationBar(
-                containerColor = GovUkTheme.colourScheme.surfaces.background
+                containerColor = GovUkTheme.colourScheme.surfaces.background,
+                windowInsets = WindowInsets(0.dp)
             ) {
                 topLevelDestinations.forEachIndexed { index, destination ->
                     val tabText = stringResource(destination.stringResId)
