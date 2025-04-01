@@ -4,10 +4,14 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
@@ -161,11 +165,14 @@ private fun BottomNavScaffold(
     onDeepLinkReceived: (Boolean, String) -> Unit
 ) {
     val navController = rememberNavController()
+    val navBarPadding = WindowInsets.navigationBars.asPaddingValues()
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
         bottomBar = {
             BottomNav(navController, onTabClick)
-        }
+        },
+        modifier = Modifier.padding(bottom = navBarPadding.calculateBottomPadding())
     ) { paddingValues ->
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -251,7 +258,8 @@ private fun BottomNav(
                 color = GovUkTheme.colourScheme.strokes.fixedContainer
             )
             NavigationBar(
-                containerColor = GovUkTheme.colourScheme.surfaces.background
+                containerColor = GovUkTheme.colourScheme.surfaces.background,
+                windowInsets = WindowInsets(0.dp)
             ) {
                 topLevelDestinations.forEachIndexed { index, destination ->
                     val tabText = stringResource(destination.stringResId)
@@ -470,13 +478,25 @@ private fun homeScreenWidgets(
     return widgets
 }
 
+@Suppress("DEPRECATION")
 @Composable
 private fun SetStatusBarColour(
     colour: Color,
     isLight: Boolean
 ) {
-    val view = LocalView.current
-    val window = (view.context as Activity).window
-    window.statusBarColor = colour.toArgb()
-    WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = isLight
+    val localView = LocalView.current
+    val window = (localView.context as Activity).window
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        window.decorView.setOnApplyWindowInsetsListener { view, insets ->
+            val statusBarInsets = insets.getInsets(android.view.WindowInsets.Type.statusBars())
+            view.setBackgroundColor(colour.toArgb())
+            view.setPadding(0, statusBarInsets.top, 0, 0)
+            insets
+        }
+    } else {
+        window.statusBarColor = colour.toArgb()
+    }
+
+    WindowCompat.getInsetsController(window, localView).isAppearanceLightStatusBars = isLight
 }
