@@ -137,51 +137,35 @@ private fun LocalEntryScreen(
                     colors = TextFieldDefaults.colors(
 //                        TODO: we'll need more colours for error states, so leaving these colours here for now
                         cursorColor = GovUkTheme.colourScheme.strokes.textFieldCursor,
-//                        disabledContainerColor = Color.Gray,
-//                        disabledIndicatorColor = Color.LightGray,
-//                        disabledLabelColor = Color.LightGray,
-//                        disabledLeadingIconColor = Color.Gray,
-//                        disabledPlaceholderColor = Color.Gray,
-//                        disabledPrefixColor = Color.LightGray,
-//                        disabledSuffixColor = Color.LightGray,
-//                        disabledSupportingTextColor = Color.LightGray,
-//                        disabledTextColor = Color.LightGray,
-//                        disabledTrailingIconColor = Color.Gray,
 //                        errorContainerColor = Color.Red,
 //                        errorCursorColor = Color.Red,
 //                        errorIndicatorColor = Color.Yellow,
 //                        errorLabelColor = Color.Red,
-//                        errorLeadingIconColor = Color.Gray,
 //                        errorPrefixColor = Color.Red,
 //                        errorPlaceholderColor = Color.Red,
 //                        errorSuffixColor = Color.Red
 //                        errorSupportingTextColor = Color.Red,
 //                        errorTextColor = Color.Red,
-//                        errorTrailingIconColor = Color.Red,
                         focusedContainerColor = GovUkTheme.colourScheme.surfaces.textFieldBackground,
                         focusedIndicatorColor = GovUkTheme.colourScheme.textAndIcons.secondary,
                         focusedLabelColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-//                        focusedLeadingIconColor = Color.Magenta,
                         focusedPlaceholderColor = GovUkTheme.colourScheme.textAndIcons.secondary,
 //                        focusedPrefixColor = GovUkTheme.colourScheme.textAndIcons.secondary,
 //                        focusedSuffixColor = Color.Blue,
 //                        focusedSupportingTextColor = Color.Green,
                         focusedTextColor = GovUkTheme.colourScheme.textAndIcons.primary,
-//                        focusedTrailingIconColor = Color.Magenta,
                         selectionColors = TextSelectionColors(
-                            handleColor = GovUkTheme.colourScheme.textAndIcons.primary,
-                            backgroundColor = GovUkTheme.colourScheme.textAndIcons.secondary
+                            handleColor = GovUkTheme.colourScheme.surfaces.highlightedTextField,
+                            backgroundColor = GovUkTheme.colourScheme.surfaces.highlightedTextField
                         ),
                         unfocusedContainerColor = GovUkTheme.colourScheme.surfaces.textFieldBackground,
                         unfocusedIndicatorColor = GovUkTheme.colourScheme.textAndIcons.secondary,
                         unfocusedLabelColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-//                        unfocusedLeadingIconColor = Color.Cyan,
                         unfocusedPlaceholderColor = GovUkTheme.colourScheme.textAndIcons.secondary,
 //                        unfocusedPrefixColor = Color.Gray,
 //                        unfocusedSuffixColor = Color.Gray,
 //                        unfocusedSupportingTextColor = Color.Gray,
                         unfocusedTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-//                        unfocusedTrailingIconColor = Color.Cyan,
                     )
                 )
             }

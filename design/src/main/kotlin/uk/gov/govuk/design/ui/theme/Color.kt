@@ -118,7 +118,8 @@ data class GovUkColourScheme(
         val icon: Color,
         val homeHeader: Color,
         val localBackground: Color,
-        val textFieldBackground: Color
+        val textFieldBackground: Color,
+        val highlightedTextField: Color
     )
 
     data class Strokes(
@@ -198,7 +199,8 @@ internal val LightColorScheme = GovUkColourScheme(
         icon = BluePrimary,
         homeHeader = BluePrimary,
         localBackground = GreenLighter95,
-        textFieldBackground = Grey60
+        textFieldBackground = Grey60,
+        highlightedTextField = BlueLighter50
     ),
     strokes = Strokes(
         fixedContainer = BlackAlpha30,
@@ -277,7 +279,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         icon = BlueAccent,
         homeHeader = BlueDarker50,
         localBackground = GreenDarker50,
-        textFieldBackground = Grey800
+        textFieldBackground = Grey800,
+        highlightedTextField = BlueDarker25
     ),
     strokes = Strokes(
         fixedContainer = WhiteAlpha30,
@@ -357,7 +360,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             icon = Color.Unspecified,
             homeHeader = Color.Unspecified,
             localBackground = Color.Unspecified,
-            textFieldBackground = Color.Unspecified
+            textFieldBackground = Color.Unspecified,
+            highlightedTextField = Color.Unspecified
         ),
         strokes = Strokes(
             fixedContainer = Color.Unspecified,
