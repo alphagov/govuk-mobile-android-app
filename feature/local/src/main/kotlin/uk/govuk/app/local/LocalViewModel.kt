@@ -39,7 +39,7 @@ internal class LocalViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<LocalUiState> = MutableStateFlow(
         LocalUiState()
     )
-    val uiState = _uiState.asStateFlow()
+    internal val uiState = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
