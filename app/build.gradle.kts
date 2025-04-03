@@ -36,6 +36,7 @@ android {
 
         buildConfigField("String", "PLAY_STORE_URL", "\"https://play.google.com/store/apps/details?id=$applicationId\"")
         buildConfigField("String", "ONE_SIGNAL_APP_ID", "\"4c235189-5c5f-4a71-8385-2549fc36419f\"")
+        manifestPlaceholders["appAuthRedirectScheme"] = "govuk"
     }
 
     signingConfigs {
@@ -119,6 +120,7 @@ android {
             excludes += "META-INF/LICENSE.md"
             excludes += "META-INF/LICENSE-notice.md"
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
         }
     }
 }
@@ -144,9 +146,14 @@ dependencies {
     implementation(libs.androidx.ui.tooling)
     implementation(libs.hilt.android)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.retrofit.scalars)
 
     implementation(libs.lottie.compose)
     implementation(libs.play.services.oss.licenses)
+
+    implementation(libs.openid)
 
     ksp(libs.hilt.compiler)
 
