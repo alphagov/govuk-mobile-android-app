@@ -494,7 +494,7 @@ private fun homeScreenWidgets(
                 }
             }
 
-            else -> { } // Do nothing
+            else -> { /* Do nothing */ }
         }
     }
     return widgets
