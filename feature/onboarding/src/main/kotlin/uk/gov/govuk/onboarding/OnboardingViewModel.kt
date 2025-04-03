@@ -47,8 +47,7 @@ internal class OnboardingViewModel @Inject constructor(
                     screenName = ONBOARDING_SCREEN_3_NAME,
                     title = R.string.tailoredToYouScreenTitle,
                     body = R.string.tailoredToYouScreenBody,
-                    image = R.drawable.image_3,
-                    animation = R.raw.onboarding_personalisation
+                    image = R.drawable.image_3
                 ),
             )
         )
