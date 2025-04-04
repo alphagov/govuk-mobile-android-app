@@ -12,6 +12,7 @@ import uk.govuk.app.local.data.remote.LocalApi
 import uk.govuk.app.local.data.remote.model.ApiResponse
 import uk.govuk.app.local.data.remote.model.ApiResponseAdapter
 import javax.inject.Singleton
+import uk.govuk.app.local.BuildConfig
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -24,7 +25,7 @@ class LocalModule {
             .create()
 
         return Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:4567")
+            .baseUrl(BuildConfig.LOCAL_SERVICES_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(LocalApi::class.java)

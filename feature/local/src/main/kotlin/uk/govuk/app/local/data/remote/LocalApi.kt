@@ -7,12 +7,12 @@ import retrofit2.http.Query
 import uk.govuk.app.local.data.remote.model.ApiResponse
 
 interface LocalApi {
-    @GET("/find-local-council/query.json")
+    @GET("query.json")
     suspend fun getLocalPostcode(
         @Query("postcode") postcode: String
     ) : Response<ApiResponse>
 
-    @GET("/find-local-council/{slug}.json")
+    @GET("{slug}.json")
     suspend fun getLocalAuthority(
         @Path("slug") slug: String
     ) : Response<ApiResponse.LocalAuthorityResponse>

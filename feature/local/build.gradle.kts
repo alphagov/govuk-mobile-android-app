@@ -14,6 +14,18 @@ android {
 
     defaultConfig {
         minSdk = Version.MIN_SDK
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        consumerProguardFiles("consumer-rules.pro")
+
+        buildConfigField("String", "LOCAL_SERVICES_BASE_URL", "\"https://development-local-api-05fe62f9622c.herokuapp.com/find-local-council/\"")
+    }
+
+    buildTypes {
+        release {
+            buildConfigField("String", "LOCAL_SERVICES_BASE_URL", "\"https://development-local-api-05fe62f9622c.herokuapp.com/find-local-council/\"")
+        }
     }
 
     compileOptions {
@@ -23,6 +35,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 }
 
