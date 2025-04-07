@@ -18,26 +18,27 @@ suspend fun safeLocalApiCall(
         val body = response.body()
         val code = response.code()
 
+
         if (response.isSuccessful && body != null) {
             Success(body)
-        } else if (code == 400) {
-            Success(
-                ApiResponse(
-                    localAuthority = null,
-                    addresses = null,
-                    message = "Invalid postcode"
-                )
-            )
-        } else if (code == 404) {
-            Success(
-                ApiResponse(
-                    localAuthority = null,
-                    addresses = null,
-                    message = "Postcode not found"
-                )
-            )
         } else {
-            Error()
+            when (code) {
+                400 -> Success(
+                    ApiResponse(
+                        localAuthority = null,
+                        addresses = null,
+                        message = "Invalid postcode"
+                    )
+                )
+                404 -> Success(
+                    ApiResponse(
+                        localAuthority = null,
+                        addresses = null,
+                        message = "Postcode not found"
+                    )
+                )
+                else -> Error()
+            }
         }
     } catch (e: Exception) {
         when (e) {
