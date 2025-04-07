@@ -41,16 +41,21 @@ class NotificationsClient @Inject constructor() {
     fun addClickListener(context: Context) {
         OneSignal.Notifications.addClickListener(object : INotificationClickListener {
             override fun onClick(event: INotificationClickEvent) {
-                val additionalData =
-                    event.notification.additionalData.toString().asAdditionalData()
-
-                Intent(Intent.ACTION_VIEW).apply {
-                    data = additionalData.deepLink.toUri()
-                    flags = FLAG_ACTIVITY_NEW_TASK
-                }.also { intent ->
-                    context.startActivity(intent)
-                }
+                handleAdditionalData(context, event.notification.additionalData.toString())
             }
         })
+    }
+
+    internal fun handleAdditionalData(
+        context: Context,
+        additionalDataStr: String,
+        intent: Intent = Intent(Intent.ACTION_VIEW)
+    ) {
+        val additionalData = additionalDataStr.asAdditionalData()
+        intent.apply {
+            data = additionalData.deepLink.toUri()
+            flags = FLAG_ACTIVITY_NEW_TASK
+        }
+        context.startActivity(intent)
     }
 }
