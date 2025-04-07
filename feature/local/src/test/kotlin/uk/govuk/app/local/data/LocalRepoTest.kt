@@ -7,6 +7,8 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.junit.experimental.runners.Enclosed
+import org.junit.runner.RunWith
 import retrofit2.Response
 import uk.gov.govuk.data.model.Result.Success
 import uk.govuk.app.local.data.remote.LocalApi
@@ -14,174 +16,224 @@ import uk.govuk.app.local.data.remote.model.Address
 import uk.govuk.app.local.data.remote.model.ApiResponse
 import uk.govuk.app.local.data.remote.model.LocalAuthority
 
+@RunWith(Enclosed::class)
 class LocalRepoTest {
-    private val localApi = mockk<LocalApi>(relaxed = true)
-    private val apiResponse = mockk<Response<ApiResponse>>()
-    private val localAuthorityResponse = mockk<Response<ApiResponse.LocalAuthorityResponse>>()
-    private lateinit var localRepo: LocalRepo
-    private val responseWithInvalid = ApiResponse.MessageResponse(
-        message = "Invalid postcode"
-    )
-    private val responseWithNotKnown = ApiResponse.MessageResponse(
-        message = "Postcode not found"
-    )
-    private val responseWithUnitaryResult = ApiResponse.LocalAuthorityResponse(
-        localAuthority = LocalAuthority(
-            name = "name",
-            homePageUrl = "homePageUrl",
-            tier = "unitary",
-            slug = "slug"
-        )
-    )
-    private val responseWithTwoTierResult = ApiResponse.LocalAuthorityResponse(
-        localAuthority = LocalAuthority(
-            name = "name",
-            homePageUrl = "homePageUrl",
-            tier = "district",
-            slug = "slug",
-            parent = LocalAuthority(
-                name = "parent name",
-                homePageUrl = "parentHomePageUrl",
-                tier = "county",
-                slug = "slug"
+    class GetLocalPostcodeTest {
+        private val localApi = mockk<LocalApi>(relaxed = true)
+        private val apiResponse = mockk<Response<ApiResponse>>()
+        private lateinit var localRepo: LocalRepo
+
+        @Before
+        fun setup() {
+            localRepo = LocalRepo(localApi)
+        }
+
+        @Test
+        fun `Perform postcode lookup returns a unitary local authority when postcode is valid and known`() {
+            val unitaryResponse = ApiResponse(
+                localAuthority = LocalAuthority(
+                    name = "name",
+                    homePageUrl = "homePageUrl",
+                    tier = "unitary",
+                    slug = "slug"
+                ),
+                addresses = null,
+                message = null
             )
-        )
-    )
-    private val responseWithAddressListResult = ApiResponse.AddressListResponse(
-        addresses = listOf(
-            Address(
-                address = "address1",
-                slug = "slug1",
-                name = "name1"
-            ),
-            Address(
-                address = "address2",
-                slug = "slug2",
-                name = "name2"
+
+            coEvery {
+                localApi.getLocalPostcode("E18QS")
+            } returns apiResponse
+
+            every { apiResponse.code() } returns 200
+            every { apiResponse.isSuccessful } returns true
+            every { apiResponse.body() } returns unitaryResponse
+
+            runTest {
+                val actual = localRepo.performGetLocalPostcode("E18QS")
+                assertEquals(Success(unitaryResponse), actual)
+            }
+        }
+
+        @Test
+        fun `Perform postcode lookup returns a two-tier local authority when postcode is valid and known`() {
+            val twoTierResponse = ApiResponse(
+                localAuthority = LocalAuthority(
+                    name = "name",
+                    homePageUrl = "homePageUrl",
+                    tier = "district",
+                    slug = "slug",
+                    parent = LocalAuthority(
+                        name = "parent name",
+                        homePageUrl = "parentHomePageUrl",
+                        tier = "county",
+                        slug = "slug"
+                    )
+                ),
+                addresses = null,
+                message = null
             )
-        )
-    )
 
-    @Before
-    fun setup() {
-        localRepo = LocalRepo(localApi)
-    }
+            coEvery {
+                localApi.getLocalPostcode("E18QS")
+            } returns apiResponse
 
-    @Test
-    fun `Perform postcode lookup returns a unitary local authority when postcode is valid and known`() {
-        coEvery {
-            localApi.getLocalPostcode("E18QS")
-        } returns apiResponse
+            every { apiResponse.code() } returns 200
+            every { apiResponse.isSuccessful } returns true
+            every { apiResponse.body() } returns twoTierResponse
 
-        every { apiResponse.code() } returns 200
-        every { apiResponse.body() } returns responseWithUnitaryResult
+            runTest {
+                val actual = localRepo.performGetLocalPostcode("E18QS")
+                assertEquals(Success(twoTierResponse), actual)
+            }
+        }
 
-        val expected = Success(responseWithUnitaryResult)
+        @Test
+        fun `Perform postcode lookup returns an address list when postcode is valid and known but ambiguous`() {
+            val addressListResponse = ApiResponse(
+                localAuthority = null,
+                addresses = listOf(
+                    Address(
+                        address = "address1",
+                        slug = "slug1",
+                        name = "name1"
+                    ),
+                    Address(
+                        address = "address2",
+                        slug = "slug2",
+                        name = "name2"
+                    )
+                ),
+                message = null
+            )
 
-        runTest {
-            val actual = localRepo.performGetLocalPostcode("E18QS")
-            assertEquals(expected, actual)
+            coEvery {
+                localApi.getLocalPostcode("E18QS")
+            } returns apiResponse
+
+            every { apiResponse.code() } returns 200
+            every { apiResponse.isSuccessful } returns true
+            every { apiResponse.body() } returns addressListResponse
+
+            runTest {
+                val actual = localRepo.performGetLocalPostcode("E18QS")
+                assertEquals(Success(addressListResponse), actual)
+            }
+        }
+
+        @Test
+        fun `Perform postcode lookup returns a message when postcode is valid but not found`() {
+            val notFoundResponse = ApiResponse(
+                localAuthority = null,
+                addresses = null,
+                message = "Postcode not found"
+            )
+
+            coEvery {
+                localApi.getLocalPostcode("SW1A1AA")
+            } returns apiResponse
+
+            every { apiResponse.code() } returns 404
+            every { apiResponse.isSuccessful } returns true
+            every { apiResponse.body() } returns notFoundResponse
+
+            runTest {
+                val actual = localRepo.performGetLocalPostcode("SW1A1AA")
+                assertEquals(Success(notFoundResponse), actual)
+            }
+        }
+
+        @Test
+        fun `Perform postcode lookup returns a message when postcode is invalid`() {
+            val postcodeInvalidResponse = ApiResponse(
+                localAuthority = null,
+                addresses = null,
+                message = "Invalid postcode"
+            )
+
+            coEvery {
+                localApi.getLocalPostcode("SW1")
+            } returns apiResponse
+
+            every { apiResponse.code() } returns 400
+            every { apiResponse.isSuccessful } returns true
+            every { apiResponse.body() } returns postcodeInvalidResponse
+
+            runTest {
+                val actual = localRepo.performGetLocalPostcode("SW1")
+                assertEquals(Success(postcodeInvalidResponse), actual)
+            }
         }
     }
 
-    @Test
-    fun `Perform postcode lookup returns a two-tier local authority when postcode is valid and known`() {
-        coEvery {
-            localApi.getLocalPostcode("E18QS")
-        } returns apiResponse
+    class GetLocalAuthorityTest {
+        private val localApi = mockk<LocalApi>(relaxed = true)
+        private val apiResponse = mockk<Response<ApiResponse>>()
+        private lateinit var localRepo: LocalRepo
 
-        every { apiResponse.code() } returns 200
-        every { apiResponse.body() } returns responseWithTwoTierResult
-
-        val expected = Success(responseWithTwoTierResult)
-
-        runTest {
-            val actual = localRepo.performGetLocalPostcode("E18QS")
-            assertEquals(expected, actual)
+        @Before
+        fun setup() {
+            localRepo = LocalRepo(localApi)
         }
-    }
 
-    @Test
-    fun `Perform postcode lookup returns an address list when postcode is valid and known but ambiguous`() {
-        coEvery {
-            localApi.getLocalPostcode("E18QS")
-        } returns apiResponse
+        @Test
+        fun `Perform get local authority returns a unitary local authority`() {
+            val unitaryResponse = ApiResponse(
+                localAuthority = LocalAuthority(
+                    name = "name",
+                    homePageUrl = "homePageUrl",
+                    tier = "unitary",
+                    slug = "slug"
+                ),
+                addresses = null,
+                message = null
+            )
 
-        every { apiResponse.code() } returns 200
-        every { apiResponse.body() } returns responseWithAddressListResult
+            coEvery {
+                localApi.getLocalAuthority("slug")
+            } returns apiResponse
 
-        val expected = Success(responseWithAddressListResult)
+            every { apiResponse.code() } returns 200
+            every { apiResponse.isSuccessful } returns true
+            every { apiResponse.body() } returns unitaryResponse
 
-        runTest {
-            val actual = localRepo.performGetLocalPostcode("E18QS")
-            assertEquals(expected, actual)
+            runTest {
+                val actual = localRepo.performGetLocalAuthority("slug")
+                assertEquals(Success(unitaryResponse), actual)
+            }
         }
-    }
 
-    @Test
-    fun `Perform postcode lookup returns a message when postcode is valid but not known`() {
-        coEvery {
-            localApi.getLocalPostcode("SW1A1AA")
-        } returns apiResponse
+        @Test
+        fun `Perform get local authority returns a two-tier local authority`() {
+            val twoTierResponse = ApiResponse(
+                localAuthority = LocalAuthority(
+                    name = "name",
+                    homePageUrl = "homePageUrl",
+                    tier = "district",
+                    slug = "slug",
+                    parent = LocalAuthority(
+                        name = "parent name",
+                        homePageUrl = "parentHomePageUrl",
+                        tier = "county",
+                        slug = "slug"
+                    )
+                ),
+                addresses = null,
+                message = null
+            )
 
-        every { apiResponse.code() } returns 404
-        every { apiResponse.body() } returns responseWithNotKnown
+            coEvery {
+                localApi.getLocalAuthority("slug")
+            } returns apiResponse
 
-        val expected = Success(responseWithNotKnown)
+            every { apiResponse.code() } returns 200
+            every { apiResponse.isSuccessful } returns true
+            every { apiResponse.body() } returns twoTierResponse
 
-        runTest {
-            val actual = localRepo.performGetLocalPostcode("SW1A1AA")
-            assertEquals(expected, actual)
-        }
-    }
-
-    @Test
-    fun `Perform postcode lookup returns a message when postcode is invalid`() {
-        coEvery {
-            localApi.getLocalPostcode("SW1")
-        } returns apiResponse
-        every {  apiResponse.isSuccessful } returns true
-
-        every { apiResponse.code() } returns 404
-        every { apiResponse.body() } returns responseWithInvalid
-
-        val expected = Success(responseWithInvalid)
-
-        runTest {
-            val actual = localRepo.performGetLocalPostcode("SW1")
-            assertEquals(expected, actual)
-        }
-    }
-
-    @Test
-    fun `Perform get local authority returns a unitary local authority`() {
-        coEvery {
-            localApi.getLocalAuthority("slug")
-        } returns localAuthorityResponse
-        every {  localAuthorityResponse.isSuccessful } returns true
-        every { localAuthorityResponse.body() } returns responseWithUnitaryResult
-
-        val expected = Success(responseWithUnitaryResult)
-
-        runTest {
-            val actual = localRepo.performGetLocalAuthority("slug")
-            assertEquals(expected, actual)
-        }
-    }
-
-    @Test
-    fun `Perform get local authority returns a two-tier local authority`() {
-        coEvery {
-            localApi.getLocalAuthority("slug")
-        } returns localAuthorityResponse
-        every {  localAuthorityResponse.isSuccessful } returns true
-        every { localAuthorityResponse.body() } returns responseWithTwoTierResult
-
-        val expected = Success(responseWithTwoTierResult)
-
-        runTest {
-            val actual = localRepo.performGetLocalAuthority("slug")
-            assertEquals(expected, actual)
+            runTest {
+                val actual = localRepo.performGetLocalAuthority("slug")
+                assertEquals(Success(twoTierResponse), actual)
+            }
         }
     }
 }

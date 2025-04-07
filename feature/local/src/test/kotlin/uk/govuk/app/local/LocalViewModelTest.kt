@@ -92,11 +92,15 @@ class LocalViewModelTest {
                 slug = "slug"
             )
         )
-        private val responseWithUnitaryResult = ApiResponse.LocalAuthorityResponse(
-            localAuthority = unitaryLocalAuthority
+        private val responseWithUnitaryResult = ApiResponse(
+            localAuthority = unitaryLocalAuthority,
+            addresses = listOf(),
+            message = null
         )
-        private val responseWithTwoTierResult = ApiResponse.LocalAuthorityResponse(
-            localAuthority = twoTierLocalAuthority
+        private val responseWithTwoTierResult = ApiResponse(
+            localAuthority = twoTierLocalAuthority,
+            addresses = listOf(),
+            message = null
         )
         private val addresses = listOf(
             Address(
@@ -110,8 +114,10 @@ class LocalViewModelTest {
                 name = "name2"
             )
         )
-        private val responseWithAddressResult = ApiResponse.AddressListResponse(
-            addresses = addresses
+        private val responseWithAddressResult = ApiResponse(
+            localAuthority = null,
+            addresses = addresses,
+            message = null
         )
 
         @Before
@@ -227,7 +233,9 @@ class LocalViewModelTest {
             coEvery {
                 localRepo.performGetLocalPostcode(postcode)
             } returns Success(
-                ApiResponse.MessageResponse(
+                ApiResponse(
+                    localAuthority = null,
+                    addresses = null,
                     message = message
                 )
             )
@@ -251,7 +259,9 @@ class LocalViewModelTest {
             coEvery {
                 localRepo.performGetLocalPostcode(postcode)
             } returns Success(
-                ApiResponse.MessageResponse(
+                ApiResponse(
+                    localAuthority = null,
+                    addresses = null,
                     message = message
                 )
             )

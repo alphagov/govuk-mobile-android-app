@@ -1,7 +1,6 @@
 package uk.govuk.app.local.data
 
 import uk.gov.govuk.data.model.Result
-import uk.gov.govuk.data.remote.safeApiCall
 import uk.govuk.app.local.data.remote.LocalApi
 import uk.govuk.app.local.data.remote.model.ApiResponse
 import uk.govuk.app.local.data.remote.safeLocalApiCall
@@ -15,15 +14,12 @@ internal class LocalRepo @Inject constructor(
     suspend fun performGetLocalPostcode(
         postcode: String
     ): Result<ApiResponse> {
-        return safeLocalApiCall(
-            { localApi.getLocalPostcode(postcode) },
-            intArrayOf(404)
-        )
+        return safeLocalApiCall { localApi.getLocalPostcode(postcode) }
     }
 
     suspend fun performGetLocalAuthority(
         slug: String
-    ): Result<ApiResponse.LocalAuthorityResponse> {
-        return safeApiCall { localApi.getLocalAuthority(slug) }
+    ): Result<ApiResponse> {
+        return safeLocalApiCall { localApi.getLocalAuthority(slug) }
     }
 }

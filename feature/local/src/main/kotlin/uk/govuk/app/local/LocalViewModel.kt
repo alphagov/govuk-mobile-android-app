@@ -8,19 +8,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
-import uk.gov.govuk.data.model.Result
+import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.Success
 import uk.govuk.app.local.data.LocalRepo
 import uk.govuk.app.local.data.remote.model.Address
-import uk.govuk.app.local.data.remote.model.ApiResponse
 import uk.govuk.app.local.data.remote.model.LocalAuthority
 import javax.inject.Inject
 
 internal data class LocalUiState(
     var postcode: String = "",
-    var slug: String = "",
-    var message: String = "",
-    var addresses: List<Address> = emptyList(),
+    var slug: String? = "",
+    var message: String? = "",
+    var addresses: List<Address>? = emptyList(),
     var localAuthority: LocalAuthority? = null
 )
 
@@ -97,35 +96,20 @@ internal class LocalViewModel @Inject constructor(
         viewModelScope.launch {
             when (val response = localRepo.performGetLocalPostcode(postcode)) {
                 is Success -> {
-                    when (val result = response.value) {
-                        is ApiResponse.LocalAuthorityResponse -> {
-                            _uiState.update { current ->
-                                current.copy(
-                                    localAuthority = result.localAuthority
-                                )
-                            }
-                        }
-                        is ApiResponse.AddressListResponse -> {
-                            _uiState.update { current ->
-                                current.copy(
-                                    addresses = result.addresses
-                                )
-                            }
-                       }
-                        is ApiResponse.MessageResponse -> {
-                            _uiState.update { current ->
-                                current.copy(
-                                    message = result.message
-                                )
-                            }
-                        }
+                    _uiState.update { current ->
+                        current.copy(
+                            localAuthority = response.value.localAuthority,
+                            addresses = response.value.addresses,
+                            message = response.value.message
+                        )
                     }
                 }
 
-                is Result.DeviceOffline -> {
-                    println(response)
+                is DeviceOffline -> {
+                    println("Device offline: $response")
                 }
-                else -> println(response)
+
+                else -> println("Another Error: $response")
             }
         }
     }
@@ -141,9 +125,10 @@ internal class LocalViewModel @Inject constructor(
                     }
                 }
 
-                is Result.DeviceOffline -> {
+                is DeviceOffline -> {
                     println(response)
                 }
+
                 else -> println(response)
             }
         }

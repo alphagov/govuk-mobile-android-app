@@ -1,161 +1,115 @@
 package uk.govuk.app.local.data.remote
 
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import okhttp3.ResponseBody.Companion.toResponseBody
+import okhttp3.mockwebserver.MockWebServer
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
 import uk.gov.govuk.data.model.Result.Success
-import uk.govuk.app.local.data.LocalRepo
 import uk.govuk.app.local.data.remote.model.ApiResponse
 import uk.govuk.app.local.data.remote.model.LocalAuthority
 import java.net.UnknownHostException
 
 class LocalApiCallTest {
     private val localApi = mockk<LocalApi>(relaxed = true)
-    private val apiResponse = mockk<Response<ApiResponse>>()
-    private lateinit var localRepo: LocalRepo
-
-    private val responseWithUnitaryResult = ApiResponse.LocalAuthorityResponse(
-        localAuthority = LocalAuthority(
-            name = "name",
-            homePageUrl = "homePageUrl",
-            tier = "unitary",
-            slug = "slug"
-        )
-    )
+    private lateinit var mockWebServer: MockWebServer
 
     @Before
     fun setup() {
-        localRepo = LocalRepo(localApi)
+        mockWebServer = MockWebServer()
+        mockWebServer.start()
+    }
+
+    @After
+    fun tearDown() {
+        mockWebServer.shutdown()
     }
 
     @Test
-    fun `Successful API call with 200 status code and non null body`() {
-        coEvery {
-            localApi.getLocalPostcode("E18QS")
-        } returns Response.success(responseWithUnitaryResult)
-        every { apiResponse.code() } returns 200
-        every { apiResponse.body() } returns responseWithUnitaryResult
-
-        runTest {
-            val actual = safeLocalApiCall(
-                { localApi.getLocalPostcode("E18QS") }
-            )
-            println(actual)
-            assertEquals(Success(responseWithUnitaryResult), actual)
-        }
-    }
-
-    @Test
-    fun `Successful API call with custom safe status code and non null body`() {
-        coEvery {
-            localApi.getLocalPostcode("E18QS")
-        } returns Response.success(responseWithUnitaryResult)
-        every { apiResponse.code() } returns 500
-        every { apiResponse.body() } returns responseWithUnitaryResult
-
-        runTest {
-            val actual = safeLocalApiCall(
-                { localApi.getLocalPostcode("E18QS") },
-                intArrayOf(500)
-            )
-            assertEquals(Success(responseWithUnitaryResult), actual)
-        }
-    }
-
-    @Test
-    fun `Successful API call with 200 status code and null body`() {
-        coEvery {
-            localApi.getLocalPostcode("E18QS")
-        } returns Response.success(
-            ApiResponse.MessageResponse(message = "message")
+    fun `API call returns 200`() = runTest {
+        val apiResponse = ApiResponse(
+            localAuthority = LocalAuthority(
+                name = "name",
+                homePageUrl = "homePageUrl",
+                tier = "unitary",
+                slug = "slug"
+            ),
+            addresses = null,
+            message = null
         )
-        every { apiResponse.code() } returns 200
-        every { apiResponse.body() } returns null
 
-        runTest {
-            val actual = safeLocalApiCall(
-                { localApi.getLocalPostcode("E18QS") }
-            )
+        coEvery {
+            localApi.getLocalPostcode("E18QS")
+        } returns Response.success(apiResponse)
 
-            assertEquals(
-                Success(ApiResponse.MessageResponse(message = "message")),
-                actual
-            )
-        }
+        val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
+        assertEquals(Success(apiResponse), actual)
     }
 
     @Test
-    fun `Successful API call with custom safe status code and null body`() {
-        coEvery {
-            localApi.getLocalPostcode("E18QS")
-        } returns Response.success(
-            ApiResponse.MessageResponse(message = "message")
+    fun `API call returns 400`() = runTest {
+        val apiResponse = ApiResponse(
+            localAuthority = null,
+            addresses = null,
+            message = "Invalid postcode"
         )
-        every { apiResponse.code() } returns 500
-        every { apiResponse.body() } returns null
 
-        runTest {
-            val actual = safeLocalApiCall(
-                { localApi.getLocalPostcode("E18QS") },
-                intArrayOf(500)
-            )
-            assertEquals(
-                Success(ApiResponse.MessageResponse(message = "message")),
-                actual
-            )
-        }
-    }
-
-    @Test
-    fun `API call returns a non safe status code`() {
         coEvery {
             localApi.getLocalPostcode("E18QS")
-        }
-        every { apiResponse.code() } returns 500
+        } returns Response.error(400, "Error".toResponseBody(null))
 
-        runTest {
-            val actual = safeLocalApiCall(
-                { localApi.getLocalPostcode("E18QS") }
-            )
-
-            assertEquals("Error", actual.javaClass.kotlin.simpleName)
-        }
+        val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
+        assertEquals(Success(apiResponse), actual)
     }
 
     @Test
-    fun `API call throws UnknownHostException`() {
-        val localApi = mockk<LocalApi>(relaxed = true)
+    fun `API call returns 404`() = runTest {
+        val apiResponse = ApiResponse(
+            localAuthority = null,
+            addresses = null,
+            message = "Postcode not found"
+        )
 
+        coEvery {
+            localApi.getLocalPostcode("E18QS")
+        } returns Response.error(404, "Error".toResponseBody(null))
+
+        val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
+        assertEquals(Success(apiResponse), actual)
+    }
+
+    @Test
+    fun `API call returns 500`() = runTest {
+        coEvery {
+            localApi.getLocalPostcode("E18QS")
+        } returns Response.error(500, "Error".toResponseBody(null))
+
+        val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
+        assertEquals("Error", actual.javaClass.kotlin.simpleName)
+    }
+
+    @Test
+    fun `API call throws UnknownHostException`() = runTest {
         coEvery {
             localApi.getLocalPostcode("E18QS")
         } throws UnknownHostException()
 
-        runTest {
-            val actual = safeLocalApiCall(
-                { localApi.getLocalPostcode("E18QS") }
-            )
-
-            assertEquals("DeviceOffline", actual.javaClass.kotlin.simpleName)
-        }
+        val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
+        assertEquals("DeviceOffline", actual.javaClass.kotlin.simpleName)
     }
 
     @Test
-    fun `API call throws a generic Exception`() {
+    fun `API call throws Exception`() = runTest {
         coEvery {
             localApi.getLocalPostcode("E18QS")
         } throws Exception()
 
-        runTest {
-            val actual = safeLocalApiCall(
-                { localApi.getLocalPostcode("E18QS") }
-            )
-
-            assertEquals("Error", actual.javaClass.kotlin.simpleName)
-        }
+        val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
+        assertEquals("Error", actual.javaClass.kotlin.simpleName)
     }
 }

@@ -15,5 +15,5 @@ interface LocalApi {
     @GET("{slug}.json")
     suspend fun getLocalAuthority(
         @Path("slug") slug: String
-    ) : Response<ApiResponse.LocalAuthorityResponse>
+    ) : Response<ApiResponse>
 }

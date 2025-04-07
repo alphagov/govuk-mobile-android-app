@@ -10,28 +10,32 @@ import uk.gov.govuk.data.model.Result.Success
 import uk.govuk.app.local.data.remote.model.ApiResponse
 import java.net.UnknownHostException
 
-suspend fun <T> safeLocalApiCall(
-    apiCall: suspend () -> Response<T>,
-    safeStatusCodes: IntArray = intArrayOf()
-): Result<T> {
-    var treatAsSuccess: IntArray = (200..299).toList().toIntArray()
-    if (safeStatusCodes.isNotEmpty()) {
-        treatAsSuccess = treatAsSuccess.plus(safeStatusCodes)
-    }
-
+suspend fun safeLocalApiCall(
+    apiCall: suspend () -> Response<ApiResponse>
+): Result<ApiResponse> {
     return try {
         val response = apiCall()
-        var body = response.body()
-        return if (response.code() in treatAsSuccess) {
-            if (body == null) {
-                Success(
-                    ApiResponse.MessageResponse(
-                        response.errorBody()?.string() ?: "Unknown Error"
-                    )
-                ) as Result<T>
-            } else {
-                Success(body)
-            }
+        val body = response.body()
+        val code = response.code()
+
+        if (response.isSuccessful && body != null) {
+            Success(body)
+        } else if (code == 400) {
+            Success(
+                ApiResponse(
+                    localAuthority = null,
+                    addresses = null,
+                    message = "Invalid postcode"
+                )
+            )
+        } else if (code == 404) {
+            Success(
+                ApiResponse(
+                    localAuthority = null,
+                    addresses = null,
+                    message = "Postcode not found"
+                )
+            )
         } else {
             Error()
         }
