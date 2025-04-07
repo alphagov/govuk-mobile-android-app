@@ -70,10 +70,21 @@ class UriExtensionTest {
     }
 
     @Test
-    fun `Given a Uri, When getUrlParam() is called on it with no url param, should return null`() {
+    fun `Given a Uri, When getUrlParam() is called on it with no a url that cannot be parsed, should return null`() {
         every { uri.scheme } returns "scheme"
         every { uri.host } returns "host"
         every { uri.getQueryParameter("url")?.toUri() } returns null
+
+        runTest {
+            assertNull(uri.getUrlParam(allowedUrls, allowedUrlParams))
+        }
+    }
+
+    @Test
+    fun `Given a Uri, When getUrlParam() is called on it with no url param, should return null`() {
+        every { uri.scheme } returns "scheme"
+        every { uri.host } returns "host"
+        every { uri.getQueryParameter("url") } returns null
 
         runTest {
             assertNull(uri.getUrlParam(allowedUrls, allowedUrlParams))
