@@ -5,5 +5,6 @@ enum class HomeWidget {
     FEEDBACK_PROMPT,
     SEARCH,
     RECENT_ACTIVITY,
-    TOPICS
+    TOPICS,
+    LOCAL
 }

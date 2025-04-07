@@ -81,6 +81,9 @@ import uk.gov.govuk.topics.ui.widget.TopicsWidget
 import uk.gov.govuk.visited.navigation.VISITED_GRAPH_ROUTE
 import uk.gov.govuk.visited.navigation.visitedGraph
 import uk.gov.govuk.visited.ui.widget.VisitedWidget
+import uk.govuk.app.local.navigation.LOCAL_GRAPH_ROUTE
+import uk.govuk.app.local.ui.LocalWidget
+import uk.govuk.app.local.navigation.localGraph
 
 @Composable
 internal fun GovUkApp(intentFlow: Flow<Intent>) {
@@ -393,6 +396,12 @@ private fun GovUkNavHost(
                 modifier = Modifier.padding(paddingValues)
             )
         }
+        if (homeWidgets.contains(HomeWidget.LOCAL)) {
+            localGraph(
+                navController = navController,
+                modifier = Modifier.padding(paddingValues)
+            )
+        }
     }
 }
 
@@ -465,6 +474,19 @@ private fun homeScreenWidgets(
                         onAllClick = { text ->
                             onClick(text, false)
                             navController.navigateToTopicsAll()
+                        },
+                        modifier = modifier
+                    )
+                    LargeVerticalSpacer()
+                }
+            }
+
+            HomeWidget.LOCAL -> {
+                widgets.add { modifier ->
+                    LocalWidget(
+                        onClick = {
+                            onClick
+                            navController.navigate(LOCAL_GRAPH_ROUTE)
                         },
                         modifier = modifier
                     )

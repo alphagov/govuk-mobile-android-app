@@ -623,4 +623,33 @@ class AppViewModelTest {
             }
         }
     }
+
+    @Test
+    fun `Given the local feature is enabled, When init, then emit local enabled state`() {
+        coEvery { configRepo.initConfig() } returns Success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
+        coEvery { flagRepo.isLocalEnabled() } returns true
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
+
+        runTest {
+            viewModel.homeWidgets.first()
+                ?.let { assertTrue(it.contains(HomeWidget.LOCAL)) }
+        }
+    }
+
+
+    @Test
+    fun `Given the local feature is disabled, When init, then emit local disabled state`() {
+        coEvery { configRepo.initConfig() } returns Success(Unit)
+        every { flagRepo.isAppAvailable() } returns true
+        coEvery { flagRepo.isLocalEnabled() } returns false
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
+
+        runTest {
+            viewModel.homeWidgets.first()
+                ?.let { assertFalse(it.contains(HomeWidget.LOCAL)) }
+        }
+    }
 }

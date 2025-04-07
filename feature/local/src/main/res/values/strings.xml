@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="local_section_title">For you</string>
+  <string name="local_title">Your local services</string>
+  <string name="local_description">Enter your postcode to see services for your area</string>
+  <string name="local_explainer">We’ll use your postcode to add a link from the app home page to your local council’s website</string>
+  <string name="local_continue_button">Continue</string>
+  <string name="local_confirm_button">Confirm postcode</string>
+  <string name="local_whats_your_postcode">What is your postcode?</string>
+  <string name="local_postcode_example">For example SW1A 2AA</string>
+  <string name="local_postcode_default_text">Postcode</string>
+</resources>

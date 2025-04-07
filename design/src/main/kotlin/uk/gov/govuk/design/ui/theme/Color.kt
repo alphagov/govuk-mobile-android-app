@@ -27,6 +27,7 @@ private val RedAccent = Color(0xFFFF5E5E)
 private val GreenPrimary = Color(0xFF11875A)
 private val GreenAccent = Color(0xFF66F39E)
 private val GreenLighter25 = Color(0xFF4DA583)
+private val GreenLighter50 = Color(0xFF88C3AD)
 private val GreenLighter95 = Color(0xFFF3F9F7)
 private val GreenDarker25 = Color(0xFF0D6544)
 private val GreenDarker50 = Color(0xFF09442D)
@@ -82,7 +83,8 @@ data class GovUkColourScheme(
         val selectedTick: Color,
         val logo: Color,
         val logoDot: Color,
-        val logoCrown: Color
+        val logoCrown: Color,
+        val localIcon: Color
     )
 
     data class Surfaces(
@@ -114,7 +116,10 @@ data class GovUkColourScheme(
         val switchOff: Color,
         val toggleHandle: Color,
         val icon: Color,
-        val homeHeader: Color
+        val homeHeader: Color,
+        val localBackground: Color,
+        val textFieldBackground: Color,
+        val highlightedTextField: Color
     )
 
     data class Strokes(
@@ -126,7 +131,9 @@ data class GovUkColourScheme(
         val listBlue: Color,
         val switchOn: Color,
         val switchOff: Color,
-        val buttonCompactHighlight: Color
+        val buttonCompactHighlight: Color,
+        val localBorder: Color,
+        val textFieldCursor: Color
     )
 }
 
@@ -158,7 +165,8 @@ internal val LightColorScheme = GovUkColourScheme(
         selectedTick = White,
         logo = White,
         logoDot = TealAccent,
-        logoCrown = BlackLighter50
+        logoCrown = BlackLighter50,
+        localIcon = GreenDarker25
     ),
     surfaces = Surfaces(
         background = White,
@@ -189,7 +197,10 @@ internal val LightColorScheme = GovUkColourScheme(
         switchOff = BlackLighter50,
         toggleHandle = White,
         icon = BluePrimary,
-        homeHeader = BluePrimary
+        homeHeader = BluePrimary,
+        localBackground = GreenLighter95,
+        textFieldBackground = Grey60,
+        highlightedTextField = BlueLighter50
     ),
     strokes = Strokes(
         fixedContainer = BlackAlpha30,
@@ -200,7 +211,9 @@ internal val LightColorScheme = GovUkColourScheme(
         listBlue = BlueLighter50,
         switchOn = GreenPrimary,
         switchOff = BlackLighter50,
-        buttonCompactHighlight = BlueLighter25
+        buttonCompactHighlight = BlueLighter25,
+        localBorder = GreenLighter50,
+        textFieldCursor = Grey700
     )
 )
 
@@ -232,7 +245,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         selectedTick = White,
         logo = White,
         logoDot = TealAccent,
-        logoCrown = BlackLighter50
+        logoCrown = BlackLighter50,
+        localIcon = White
     ),
     surfaces = Surfaces(
         background = Black,
@@ -263,7 +277,10 @@ internal val DarkColorScheme = GovUkColourScheme(
         switchOff = BlackLighter50,
         toggleHandle = White,
         icon = BlueAccent,
-        homeHeader = BlueDarker50
+        homeHeader = BlueDarker50,
+        localBackground = GreenDarker50,
+        textFieldBackground = Grey800,
+        highlightedTextField = BlueDarker25
     ),
     strokes = Strokes(
         fixedContainer = WhiteAlpha30,
@@ -274,7 +291,9 @@ internal val DarkColorScheme = GovUkColourScheme(
         listBlue = BluePrimary,
         switchOn = GreenPrimary,
         switchOff = BlackLighter50,
-        buttonCompactHighlight = BlueDarker25
+        buttonCompactHighlight = BlueDarker25,
+        localBorder = GreenLighter25,
+        textFieldCursor = Grey300
     )
 )
 
@@ -307,7 +326,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             selectedTick = Color.Unspecified,
             logo = Color.Unspecified,
             logoDot = Color.Unspecified,
-            logoCrown = Color.Unspecified
+            logoCrown = Color.Unspecified,
+            localIcon = Color.Unspecified
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,
@@ -338,7 +358,10 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             switchOff = Color.Unspecified,
             toggleHandle = Color.Unspecified,
             icon = Color.Unspecified,
-            homeHeader = Color.Unspecified
+            homeHeader = Color.Unspecified,
+            localBackground = Color.Unspecified,
+            textFieldBackground = Color.Unspecified,
+            highlightedTextField = Color.Unspecified
         ),
         strokes = Strokes(
             fixedContainer = Color.Unspecified,
@@ -349,7 +372,9 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             listBlue = Color.Unspecified,
             switchOn = Color.Unspecified,
             switchOff = Color.Unspecified,
-            buttonCompactHighlight = Color.Unspecified
+            buttonCompactHighlight = Color.Unspecified,
+            localBorder = Color.Unspecified,
+            textFieldCursor = Color.Unspecified
         )
     )
 }
