@@ -84,4 +84,17 @@ class NotificationsClientTest {
             }
         }
     }
+
+    @Test
+    fun `Given we have a notifications client, when add click listener is called, One Signal add click listener function is called`() {
+        every { OneSignal.Notifications.addClickListener(any())} returns Unit
+
+        runTest {
+            notificationsClient.addClickListener(context)
+
+            verify(exactly = 1) {
+                OneSignal.Notifications.addClickListener(any())
+            }
+        }
+    }
 }

@@ -33,6 +33,7 @@ sonarqube = "5.0.0.4638"
 playServicesMeasurementApi = "22.4.0"
 playServicesOssLicenses = "17.1.0"
 googleAccompanist = "0.37.0"
+browser = "1.8.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -70,6 +71,7 @@ oss-licenses = { group = "com.google.android.gms", name = "oss-licenses-plugin",
 
 # A library that provides Android runtime permissions support for Jetpack Compose
 google-accompanist = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "googleAccompanist" }
+androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
