@@ -1,14 +1,8 @@
 package uk.govuk.app.local.ui
 
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,49 +28,25 @@ fun LocalWidget(
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val title = stringResource(R.string.local_title)
 
     LocalNavigationCard(
-        title = title,
-        onClick = { onClick(title) },
-        modifier = modifier,
-        icon = R.drawable.outline_pin_drop_24,
-        description = stringResource(R.string.local_description)
+        onClick = onClick,
+        modifier = modifier
     )
 }
 
 @Composable
-fun GreenCard(
+fun LocalNavigationCard(
+    onClick: (String) -> Unit,
     modifier: Modifier = Modifier,
-    isSelected: Boolean = false,
-    onClick: (() -> Unit)? = null,
-    content: @Composable ColumnScope.() -> Unit
 ) {
+    val title = stringResource(R.string.local_title)
+
     GovUkCard(
         modifier = modifier,
-        isSelected = isSelected,
-        onClick = onClick,
+        onClick = { onClick(title) },
         backgroundColour = GovUkTheme.colourScheme.surfaces.localBackground,
         borderColour = GovUkTheme.colourScheme.strokes.localBorder
-    ) {
-        content()
-    }
-}
-
-@Composable
-fun LocalNavigationCard(
-    title: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    onSuppressClick: (() -> Unit)? = null,
-    isSelected: Boolean = false,
-    @DrawableRes icon: Int? = null,
-    description: String? = null
-) {
-    GreenCard(
-        modifier = modifier,
-        isSelected = isSelected,
-        onClick = onClick
     ) {
         Row(
             modifier = Modifier
@@ -84,54 +54,33 @@ fun LocalNavigationCard(
                 .height(IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            icon?.let {
-                Icon(
-                    painterResource(it),
-                    contentDescription = null,
-                    modifier = Modifier.size(40.dp),
-                    tint = GovUkTheme.colourScheme.textAndIcons.localIcon
-                )
-                SmallHorizontalSpacer()
-            }
+            Icon(
+                painterResource(R.drawable.outline_pin_drop_24),
+                contentDescription = null,
+                modifier = Modifier.size(40.dp),
+                tint = GovUkTheme.colourScheme.textAndIcons.localIcon
+            )
+            SmallHorizontalSpacer()
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = GovUkTheme.spacing.medium)
             ) {
                 BodyBoldLabel(title)
-                description?.let {
-                    ExtraSmallVerticalSpacer()
-                    BodyRegularLabel(
-                        it,
-                        color = GovUkTheme.colourScheme.textAndIcons.secondary
-                    )
-                }
+                ExtraSmallVerticalSpacer()
+                BodyRegularLabel(
+                    stringResource(R.string.local_description),
+                    color = GovUkTheme.colourScheme.textAndIcons.secondary
+                )
             }
-            Column(
-                horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxHeight()
-            ) {
-                onSuppressClick?.let {
-                    Icon(
-                        painterResource(uk.gov.govuk.design.R.drawable.ic_cancel),
-                        contentDescription = "${stringResource(uk.gov.govuk.design.R.string.content_desc_remove)} $title",
-                        tint = GovUkTheme.colourScheme.textAndIcons.localIcon,
-                        modifier = Modifier.clickable { onSuppressClick() }
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                } ?: run {
-                    Icon(
-                        painterResource(uk.gov.govuk.design.R.drawable.ic_chevron),
-                        contentDescription = null,
-                        tint = GovUkTheme.colourScheme.textAndIcons.localIcon
-                    )
-                }
-            }
+            Icon(
+                painterResource(uk.gov.govuk.design.R.drawable.ic_chevron),
+                contentDescription = null,
+                tint = GovUkTheme.colourScheme.textAndIcons.localIcon
+            )
         }
     }
 }
-
 
 @Preview
 @Composable
