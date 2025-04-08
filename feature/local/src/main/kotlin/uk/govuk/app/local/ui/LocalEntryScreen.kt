@@ -44,6 +44,7 @@ import uk.govuk.app.local.R
 @Composable
 internal fun LocalEntryRoute(
     onBack: () -> Unit,
+    onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: LocalViewModel = hiltViewModel()
@@ -52,6 +53,7 @@ internal fun LocalEntryRoute(
     LocalEntryScreen(
         uiState = uiState,
         onBack = onBack,
+        onCancel = onCancel,
         onPageView = { viewModel.onEditPageView() },
         onPostcodeLookup = { postcode ->
             viewModel.onSearchPostcode(postcode)
@@ -64,6 +66,7 @@ internal fun LocalEntryRoute(
 private fun LocalEntryScreen(
     uiState: LocalUiState,
     onBack: () -> Unit,
+    onCancel: () -> Unit,
     onPageView: () -> Unit,
     onPostcodeLookup: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -79,7 +82,11 @@ private fun LocalEntryScreen(
         modifier = modifier.fillMaxWidth(),
 
         topBar = {
-            FullScreenHeader(onBack = { onBack() })
+            FullScreenHeader(
+                onBack = { onBack() },
+                actionText = "Cancel",
+                onAction = onCancel
+            )
         },
         bottomBar = {
             BottomNavBar(
