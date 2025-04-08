@@ -99,8 +99,8 @@ internal fun homeWidgets(
             HomeWidget.LOCAL -> {
                 widgets.add { modifier ->
                     LocalWidget(
-                        onClick = {
-                            onClick
+                        onClick = { text ->
+                            onClick(text, false)
                             navController.navigate(LOCAL_GRAPH_ROUTE)
                         },
                         modifier = modifier
