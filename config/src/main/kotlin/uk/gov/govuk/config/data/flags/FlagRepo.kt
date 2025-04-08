@@ -70,6 +70,15 @@ class FlagRepo @Inject constructor(
             remoteFlag = false // TODO - GOVUKAPP-1095 requires this is hardcoded 'off' for now
         )
     }
+
+    fun isLocalEnabled(): Boolean {
+        return true
+//        TODO: add feature flag for local
+//        return isEnabled(
+//            debugFlag = debugFlags.isLocalEnabled,
+//            remoteFlag = configRepo.config.releaseFlags.local
+//        )
+    }
 }
 
 internal fun isEnabled(
