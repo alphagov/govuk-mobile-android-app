@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
+import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.PrimaryButton
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
@@ -79,10 +79,7 @@ private fun LocalEntryScreen(
         modifier = modifier.fillMaxWidth(),
 
         topBar = {
-            ChildPageHeader(
-                onBack = { onBack() },
-                modifier = modifier.padding(bottom = GovUkTheme.spacing.large)
-            )
+            FullScreenHeader(onBack = { onBack() })
         },
         bottomBar = {
             BottomNavBar(
