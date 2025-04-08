@@ -1,13 +1,15 @@
 package uk.govuk.app.local.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -78,51 +80,35 @@ private fun LocalScreen(
             )
         }
     ) { innerPadding ->
-        LazyColumn(
+        Column(
             modifier = modifier
+                .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
                 .padding(horizontal = GovUkTheme.spacing.medium)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            item {
-                SmallVerticalSpacer()
-            }
-
-            item {
-                Image(
-                    painter = painterResource(id = R.drawable.local_icon),
-                    contentDescription = "",
-                    modifier = Modifier
-                )
-            }
-
-            item {
-                MediumVerticalSpacer()
-            }
-
-            item {
-                LargeTitleBoldLabel(
-                    text = stringResource(R.string.local_title),
-                    color = GovUkTheme.colourScheme.textAndIcons.primary,
-                    modifier = Modifier,
-                    textAlign = TextAlign.Center
-                )
-            }
-
-            item {
-                SmallVerticalSpacer()
-            }
-
-            item {
-                BodyRegularLabel(
-                    text = stringResource(R.string.local_explainer),
-                    color = GovUkTheme.colourScheme.textAndIcons.primary,
-                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.extraLarge),
-                    textAlign = TextAlign.Center
-                )
-            }
+            SmallVerticalSpacer()
+            Image(
+                painter = painterResource(id = R.drawable.local_icon),
+                contentDescription = "",
+                modifier = Modifier
+            )
+            MediumVerticalSpacer()
+            LargeTitleBoldLabel(
+                text = stringResource(R.string.local_title),
+                color = GovUkTheme.colourScheme.textAndIcons.primary,
+                modifier = Modifier,
+                textAlign = TextAlign.Center
+            )
+            SmallVerticalSpacer()
+            BodyRegularLabel(
+                text = stringResource(R.string.local_explainer),
+                color = GovUkTheme.colourScheme.textAndIcons.primary,
+                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.extraLarge),
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
@@ -132,7 +118,7 @@ private fun BottomNavBar(
     onEditClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.background(GovUkTheme.colourScheme.surfaces.background)) {
         HorizontalDivider(
             thickness = 1.dp,
             color = GovUkTheme.colourScheme.strokes.fixedContainer
