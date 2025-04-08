@@ -28,9 +28,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
+import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.PrimaryButton
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title1BoldLabel
@@ -155,7 +157,15 @@ private fun LocalEntryScreen(
                     unfocusedTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
                 )
             )
+            LargeVerticalSpacer()
+            BodyBoldLabel(stringResource(R.string.local_postcode_use_title))
+            LargeVerticalSpacer()
+            BodyRegularLabel(stringResource(R.string.local_postcode_use_description_1))
+            LargeVerticalSpacer()
+            BodyRegularLabel(stringResource(R.string.local_postcode_use_description_2))
+
             ExtraLargeVerticalSpacer()
+
             BodyRegularLabel(
                 text = uiState.toString(),
                 modifier = modifier
