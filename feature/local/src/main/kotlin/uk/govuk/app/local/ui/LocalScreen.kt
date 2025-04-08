@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.ChildPageHeader
+import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.PrimaryButton
@@ -66,7 +66,7 @@ private fun LocalScreen(
         modifier = modifier.fillMaxWidth(),
 
         topBar = {
-            ChildPageHeader(
+            FullScreenHeader(
                 onBack = { onBack() },
                 modifier = modifier.padding(bottom = GovUkTheme.spacing.large)
             )

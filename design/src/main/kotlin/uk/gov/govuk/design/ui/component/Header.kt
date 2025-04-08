@@ -14,8 +14,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -51,19 +51,21 @@ fun TabHeader(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ChildPageHeader(
+private fun Header(
     modifier: Modifier = Modifier,
     text: String? = null,
     onBack: (() -> Unit)? = null,
     onAction: (() -> Unit)? = null,
     actionText: String? = null,
-    actionAltText: String? = null
+    actionAltText: String? = null,
+    backgroundColour: Color = GovUkTheme.colourScheme.surfaces.background,
+    actionColour: Color = GovUkTheme.colourScheme.textAndIcons.link,
+    titleColour: Color = GovUkTheme.colourScheme.textAndIcons.primary
 ) {
     Column(
         modifier
-            .background(GovUkTheme.colourScheme.surfaces.homeHeader)
+            .background(backgroundColour)
             .semantics { this.invisibleToUser() }
     ) {
         if (onBack != null || onAction != null) {
@@ -80,7 +82,7 @@ fun ChildPageHeader(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.content_desc_back),
-                            tint = GovUkTheme.colourScheme.textAndIcons.linkHeader
+                            tint = actionColour
                         )
                     }
                 }
@@ -93,7 +95,7 @@ fun ChildPageHeader(
                     ) {
                         BodyRegularLabel(
                             text = actionText,
-                            color = GovUkTheme.colourScheme.textAndIcons.linkHeader,
+                            color = actionColour,
                             textAlign = TextAlign.End,
                             modifier = Modifier.semantics {
                                 contentDescription = actionAltText ?: actionText
@@ -112,10 +114,51 @@ fun ChildPageHeader(
                     .padding(horizontal = GovUkTheme.spacing.medium)
                     .focusable()
                     .semantics { heading() },
-                color = GovUkTheme.colourScheme.textAndIcons.header
+                color = titleColour
             )
         }
     }
+}
+
+@Composable
+fun FullScreenHeader(
+    modifier: Modifier = Modifier,
+    text: String? = null,
+    onBack: (() -> Unit)? = null,
+    onAction: (() -> Unit)? = null,
+    actionText: String? = null,
+    actionAltText: String? = null
+) {
+    Header(
+        modifier = modifier,
+        text = text,
+        onBack = onBack,
+        onAction = onAction,
+        actionText = actionText,
+        actionAltText = actionAltText
+    )
+}
+
+@Composable
+fun ChildPageHeader(
+    modifier: Modifier = Modifier,
+    text: String? = null,
+    onBack: (() -> Unit)? = null,
+    onAction: (() -> Unit)? = null,
+    actionText: String? = null,
+    actionAltText: String? = null
+) {
+    Header(
+        modifier = modifier,
+        text = text,
+        onBack = onBack,
+        onAction = onAction,
+        actionText = actionText,
+        actionAltText = actionAltText,
+        backgroundColour = GovUkTheme.colourScheme.surfaces.homeHeader,
+        actionColour = GovUkTheme.colourScheme.textAndIcons.linkHeader,
+        titleColour = GovUkTheme.colourScheme.textAndIcons.linkHeader
+    )
 }
 
 @Preview(showBackground = true)
@@ -189,6 +232,74 @@ private fun ChildPageHeaderNoActionOrBackPreview() {
 private fun ChildPageHeaderLongTextNoActionOrBackPreview() {
     GovUkTheme {
         ChildPageHeader(
+            text = "This is a very long child page title that goes on and on"
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FullScreenHeaderNoTextWithBackAndActionPreview() {
+    GovUkTheme {
+        FullScreenHeader(
+            onBack = {},
+            onAction = {},
+            actionText = "Done"
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FullScreenHeaderBackAndActionPreview() {
+    GovUkTheme {
+        FullScreenHeader(
+            text = "Child page title",
+            onBack = {},
+            onAction = {},
+            actionText = "Done"
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FullScreenHeaderActionNoBackPreview() {
+    GovUkTheme {
+        FullScreenHeader(
+            text = "Child page title",
+            onAction = {},
+            actionText = "Done"
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FullScreenHeaderBackNoActionPreview() {
+    GovUkTheme {
+        FullScreenHeader(
+            text = "Child page title",
+            onBack = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FullScreenHeaderNoActionOrBackPreview() {
+    GovUkTheme {
+        FullScreenHeader(
+            text = "Child page title"
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FullScreenHeaderLongTextNoActionOrBackPreview() {
+    GovUkTheme {
+        FullScreenHeader(
             text = "This is a very long child page title that goes on and on"
         )
     }
