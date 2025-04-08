@@ -57,7 +57,7 @@ fun GreenCard(
         isSelected = isSelected,
         onClick = onClick,
         backgroundColour = GovUkTheme.colourScheme.surfaces.localBackground,
-        defaultBorderColour = GovUkTheme.colourScheme.strokes.localBorder
+        borderColour = GovUkTheme.colourScheme.strokes.localBorder
     ) {
         content()
     }

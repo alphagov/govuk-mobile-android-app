@@ -26,9 +26,9 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import uk.gov.govuk.design.ui.component.BlueCard
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
+import uk.gov.govuk.design.ui.component.GovUkCard
 import uk.gov.govuk.design.ui.component.MediumHorizontalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
@@ -48,7 +48,7 @@ fun TopicSelectionCard(
     modifier: Modifier = Modifier
 ) {
 
-    BlueCard(
+    GovUkCard(
         modifier = modifier,
         isSelected = isSelected,
         onClick = onClick
@@ -132,7 +132,7 @@ fun TopicVerticalCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    BlueCard(
+    GovUkCard(
         modifier,
         onClick = onClick
     ) {
@@ -175,7 +175,7 @@ fun TopicHorizontalCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    BlueCard(
+    GovUkCard(
         modifier,
         onClick = { onClick() }
     ) {
