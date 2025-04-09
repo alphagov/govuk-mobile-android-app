@@ -54,9 +54,12 @@ internal fun LocalEntryRoute(
         uiState = uiState,
         onBack = onBack,
         onCancel = onCancel,
-        onPageView = { viewModel.onEditPageView() },
-        onPostcodeLookup = { postcode ->
-            viewModel.onSearchPostcode(postcode)
+        onPageView = { viewModel.onLookupPageView() },
+        onPostcodeLookup = { buttonText, postcode ->
+            viewModel.onSearchPostcode(
+                buttonText = buttonText,
+                postcode = postcode
+            )
         },
         modifier = modifier
     )
@@ -68,7 +71,7 @@ private fun LocalEntryScreen(
     onBack: () -> Unit,
     onCancel: () -> Unit,
     onPageView: () -> Unit,
-    onPostcodeLookup: (String) -> Unit,
+    onPostcodeLookup: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var postcode by remember { mutableStateOf(uiState.postcode) }
@@ -181,7 +184,7 @@ private fun LocalEntryScreen(
 @Composable
 private fun BottomNavBar(
     postcode: String,
-    onPostcodeLookup: (String) -> Unit,
+    onPostcodeLookup: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.background(GovUkTheme.colourScheme.surfaces.background)) {
@@ -200,9 +203,10 @@ private fun BottomNavBar(
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val buttonText = stringResource(R.string.local_confirm_button)
             PrimaryButton(
-                text = stringResource(R.string.local_confirm_button),
-                onClick = { onPostcodeLookup(postcode) },
+                text = buttonText,
+                onClick = { onPostcodeLookup(buttonText, postcode) },
             )
         }
     }

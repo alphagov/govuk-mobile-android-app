@@ -30,9 +30,13 @@ internal class LocalViewModel @Inject constructor(
 ): ViewModel() {
 
     companion object {
-        private const val SCREEN_CLASS = "LocalScreen"
-        private const val SCREEN_NAME = "Local"
-        private const val TITLE = "Local"
+        private const val EXPLAINER_SCREEN_CLASS = "LocalExplainerScreen"
+        private const val EXPLAINER_SCREEN_NAME = "Local Explainer"
+        private const val EXPLAINER_TITLE = "Local Explainer"
+
+        private const val LOOKUP_SCREEN_CLASS = "LocalLookupScreen"
+        private const val LOOKUP_SCREEN_NAME = "Local Lookup"
+        private const val LOOKUP_TITLE = "Local Lookup"
     }
 
     private val _uiState: MutableStateFlow<LocalUiState> = MutableStateFlow(
@@ -46,23 +50,29 @@ internal class LocalViewModel @Inject constructor(
         }
     }
 
-    fun onPageView() {
+    fun onExplainerPageView() {
         analyticsClient.screenView(
-            screenClass = SCREEN_CLASS,
-            screenName = SCREEN_NAME,
-            title = TITLE
+            screenClass = EXPLAINER_SCREEN_CLASS,
+            screenName = EXPLAINER_SCREEN_NAME,
+            title = EXPLAINER_TITLE
         )
     }
 
-    fun onEditPageView() {
+    fun onExplainerButtonClick(text: String) {
+        analyticsClient.buttonClick(text)
+    }
+
+    fun onLookupPageView() {
         analyticsClient.screenView(
-            screenClass = "LocalEntryScreen",
-            screenName = SCREEN_NAME,
-            title = TITLE
+            screenClass = LOOKUP_SCREEN_CLASS,
+            screenName = LOOKUP_SCREEN_NAME,
+            title = LOOKUP_TITLE
         )
     }
 
-    fun onSearchPostcode(postcode: String) {
+    fun onSearchPostcode(buttonText: String, postcode: String) {
+        analyticsClient.buttonClick(buttonText)
+
         clearPreviousResults()
         _uiState.value.postcode = postcode
 

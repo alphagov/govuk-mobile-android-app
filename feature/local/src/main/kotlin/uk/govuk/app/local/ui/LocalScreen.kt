@@ -43,9 +43,9 @@ internal fun LocalRoute(
 
     LocalScreen(
         onBack = onBack,
-        onPageView = { viewModel.onPageView() },
-        onEditClick = {
-            viewModel.onEditPageView()
+        onPageView = { viewModel.onExplainerPageView() },
+        onContinueClick = { text ->
+            viewModel.onExplainerButtonClick(text)
             navController.navigateToLocalEdit()
         },
         modifier = modifier
@@ -56,7 +56,7 @@ internal fun LocalRoute(
 private fun LocalScreen(
     onBack: () -> Unit,
     onPageView: () -> Unit,
-    onEditClick: () -> Unit,
+    onContinueClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -75,7 +75,7 @@ private fun LocalScreen(
         },
         bottomBar = {
             BottomNavBar(
-                onEditClick = onEditClick,
+                onContinueClick = onContinueClick,
                 modifier = modifier
             )
         }
@@ -115,7 +115,7 @@ private fun LocalScreen(
 
 @Composable
 private fun BottomNavBar(
-    onEditClick: () -> Unit,
+    onContinueClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.background(GovUkTheme.colourScheme.surfaces.background)) {
@@ -134,9 +134,10 @@ private fun BottomNavBar(
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val buttonText = stringResource(R.string.local_continue_button)
             PrimaryButton(
-                text = stringResource(R.string.local_continue_button),
-                onClick = { onEditClick() },
+                text = buttonText,
+                onClick = { onContinueClick(buttonText) },
             )
         }
     }
