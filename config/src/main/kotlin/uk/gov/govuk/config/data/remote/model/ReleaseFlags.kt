@@ -7,5 +7,6 @@ data class ReleaseFlags(
     @SerializedName("search") val search: Boolean,
     @SerializedName("recentActivity") val recentActivity: Boolean,
     @SerializedName("topics") val topics: Boolean,
-    @SerializedName("notifications") val notifications: Boolean
+    @SerializedName("notifications") val notifications: Boolean,
+    @SerializedName("localServices") val localServices: Boolean
 )

@@ -1,8 +1,8 @@
 package uk.gov.govuk.config.data.flags
 
+import uk.gov.govuk.config.BuildConfig
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.extensions.isVersionLessThan
-import uk.gov.govuk.config.BuildConfig
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -71,13 +71,11 @@ class FlagRepo @Inject constructor(
         )
     }
 
-    fun isLocalEnabled(): Boolean {
-        return true
-//        TODO: add feature flag for local
-//        return isEnabled(
-//            debugFlag = debugFlags.isLocalEnabled,
-//            remoteFlag = configRepo.config.releaseFlags.local
-//        )
+    fun isLocalServicesEnabled(): Boolean {
+        return isEnabled(
+            debugFlag = debugFlags.isLocalServicesEnabled,
+            remoteFlag = configRepo.config.releaseFlags.localServices
+        )
     }
 }
 
