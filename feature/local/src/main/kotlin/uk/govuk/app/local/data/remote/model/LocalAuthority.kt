@@ -7,5 +7,5 @@ data class LocalAuthority(
     @SerializedName("homepage_url") val homePageUrl: String,
     @SerializedName("tier") val tier: String,
     @SerializedName("slug") val slug: String,
-    val parent: LocalAuthority? = null
+    @SerializedName("parent") val parent: LocalAuthority? = null
 )

@@ -106,10 +106,10 @@ internal class LocalViewModel @Inject constructor(
                 }
 
                 is DeviceOffline -> {
-                    println("Device offline: $response")
+                    println(response)
                 }
 
-                else -> println("Another Error: $response")
+                else -> println(response)
             }
         }
     }
