@@ -1,11 +1,17 @@
 package uk.gov.govuk.notifications
 
 import android.content.Context
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import androidx.core.net.toUri
 import com.onesignal.OneSignal
+import com.onesignal.notifications.INotificationClickEvent
+import com.onesignal.notifications.INotificationClickListener
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import uk.gov.govuk.notifications.model.asAdditionalData
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,5 +36,26 @@ class NotificationsClient @Inject constructor() {
             OneSignal.consentGiven = permissionGranted
             onCompleted?.invoke()
         }
+    }
+
+    fun addClickListener(context: Context) {
+        OneSignal.Notifications.addClickListener(object : INotificationClickListener {
+            override fun onClick(event: INotificationClickEvent) {
+                handleAdditionalData(context, event.notification.additionalData.toString())
+            }
+        })
+    }
+
+    internal fun handleAdditionalData(
+        context: Context,
+        additionalDataStr: String,
+        intent: Intent = Intent(Intent.ACTION_VIEW)
+    ) {
+        val additionalData = additionalDataStr.asAdditionalData()
+        intent.apply {
+            data = additionalData.deepLink.toUri()
+            flags = FLAG_ACTIVITY_NEW_TASK
+        }
+        context.startActivity(intent)
     }
 }

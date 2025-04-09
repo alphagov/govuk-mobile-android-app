@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -58,9 +59,11 @@ import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.extension.asDeepLinks
+import uk.gov.govuk.extension.getUrlParam
 import uk.gov.govuk.home.HomeWidget
 import uk.gov.govuk.home.navigation.homeGraph
 import uk.gov.govuk.navigation.AppLaunchNavigation
+import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
 import uk.gov.govuk.notifications.navigation.notificationsGraph
 import uk.gov.govuk.notifications.ui.NotificationsPromptWidget
@@ -209,8 +212,14 @@ private fun BottomNavScaffold(
                         navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
                     )
                 } else {
-                    onDeepLinkReceived(false, uri.toString())
-                    showDeepLinkNotFoundAlert(context = context)
+                    uri.getUrlParam(DeepLink.allowedAppUrls, DeepLink.allowedGovUkUrls)?.let {
+                        onDeepLinkReceived(true, uri.toString())
+                        val customTabsIntent = CustomTabsIntent.Builder().build()
+                        customTabsIntent.launchUrl(context, it)
+                    } ?: run {
+                        onDeepLinkReceived(false, uri.toString())
+                        showDeepLinkNotFoundAlert(context = context)
+                    }
                 }
             }
         }
@@ -346,7 +355,7 @@ private fun GovUkNavHost(
                     navController.popBackStack()
                     navController.navigate(launchRoutes.pop())
                 },
-                deepLinks = { it.asDeepLinks() },
+                deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
                 modifier = Modifier.padding(paddingValues)
             )
         }
@@ -365,7 +374,7 @@ private fun GovUkNavHost(
                 onClick = onWidgetClick,
                 onSuppressClick = onSuppressWidgetClick
             ),
-            deepLinks = { it.asDeepLinks() },
+            deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
             modifier = Modifier.padding(paddingValues),
             headerWidget = if (homeWidgets.contains(HomeWidget.SEARCH)) {
                 { modifier ->
@@ -383,16 +392,16 @@ private fun GovUkNavHost(
         settingsGraph(
             navigateTo = { route -> navController.navigate(route) },
             appVersion = BuildConfig.VERSION_NAME,
-            deepLinks = { it.asDeepLinks() },
+            deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
             modifier = Modifier.padding(paddingValues)
         )
         if (homeWidgets.contains(HomeWidget.SEARCH)) {
-            searchGraph(navController, deepLinks = { it.asDeepLinks() })
+            searchGraph(navController, deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) })
         }
         if (homeWidgets.contains(HomeWidget.RECENT_ACTIVITY)) {
             visitedGraph(
                 navController = navController,
-                deepLinks = { it.asDeepLinks() },
+                deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
                 modifier = Modifier.padding(paddingValues)
             )
         }

@@ -1,18 +1,23 @@
 package uk.gov.govuk.notifications
 
 import android.content.Context
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.net.Uri
 import com.onesignal.OneSignal
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.spyk
 import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -28,6 +33,7 @@ class NotificationsClientTest {
 
         mockkStatic(OneSignal::class)
         mockkStatic(OneSignal.Debug::class)
+        mockkStatic(Uri::class)
     }
 
     @After
@@ -81,6 +87,47 @@ class NotificationsClientTest {
             }
             verify(exactly = 1) {
                 OneSignal.consentGiven = false
+            }
+        }
+    }
+
+    @Test
+    fun `Given we have a notifications client, when add click listener is called, One Signal add click listener function is called`() {
+        every { OneSignal.Notifications.addClickListener(any()) } returns Unit
+
+        runTest {
+            notificationsClient.addClickListener(context)
+
+            verify(exactly = 1) {
+                OneSignal.Notifications.addClickListener(any())
+            }
+        }
+    }
+
+    @Test
+    fun `Given we have a notifications client, when handle additional data function is called, a new activity is started with an intent`() {
+        val uri = mockk<Uri>()
+        val intent = spyk<Intent>()
+
+        every { uri.scheme } returns "scheme"
+        every { uri.host } returns "host"
+        every { Uri.parse("scheme://host") } returns uri
+        every { intent.setData(uri) } returns intent
+        every { intent.data } returns uri
+        every { intent.setFlags(FLAG_ACTIVITY_NEW_TASK) } returns intent
+        every { intent.flags } returns FLAG_ACTIVITY_NEW_TASK
+
+        val additionalData = "{\"deeplink\":\"scheme://host\"}"
+
+        runTest {
+            notificationsClient.handleAdditionalData(context, additionalData, intent)
+
+            assertEquals("scheme", intent.data?.scheme)
+            assertEquals("host", intent.data?.host)
+            assertEquals(FLAG_ACTIVITY_NEW_TASK, intent.flags)
+
+            verify(exactly = 1) {
+                context.startActivity(intent)
             }
         }
     }
