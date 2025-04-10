@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.PrimaryButton
@@ -170,13 +169,14 @@ private fun LocalEntryScreen(
             BodyRegularLabel(stringResource(R.string.local_postcode_use_description_1))
             LargeVerticalSpacer()
             BodyRegularLabel(stringResource(R.string.local_postcode_use_description_2))
+        }
+    }
 
-            ExtraLargeVerticalSpacer()
-
-            BodyRegularLabel(
-                text = uiState.toString(),
-                modifier = modifier
-            )
+    LaunchedEffect(uiState) {
+        // Todo - navigate back to home screen when a local authority is returned, logic will be
+        //  updated in future tickets!
+        if (uiState.localAuthority != null) {
+            onCancel()
         }
     }
 }

@@ -121,6 +121,8 @@ internal class LocalViewModel @Inject constructor(
                             message = response.value.message
                         )
                     }
+
+                    println("Success: $response")
                 }
 
                 is DeviceOffline -> {
