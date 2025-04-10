@@ -37,6 +37,8 @@ internal class LocalViewModel @Inject constructor(
         private const val LOOKUP_SCREEN_CLASS = "LocalLookupScreen"
         private const val LOOKUP_SCREEN_NAME = "Local Lookup"
         private const val LOOKUP_TITLE = "Local Lookup"
+
+        private const val SECTION = "Local"
     }
 
     private val _uiState: MutableStateFlow<LocalUiState> = MutableStateFlow(
@@ -59,7 +61,10 @@ internal class LocalViewModel @Inject constructor(
     }
 
     fun onExplainerButtonClick(text: String) {
-        analyticsClient.buttonClick(text)
+        analyticsClient.buttonClick(
+            text = text,
+            section = SECTION
+        )
     }
 
     fun onLookupPageView() {
@@ -71,7 +76,10 @@ internal class LocalViewModel @Inject constructor(
     }
 
     fun onSearchPostcode(buttonText: String, postcode: String) {
-        analyticsClient.buttonClick(buttonText)
+        analyticsClient.buttonClick(
+            text = buttonText,
+            section = SECTION
+        )
 
         clearPreviousResults()
         _uiState.value.postcode = postcode

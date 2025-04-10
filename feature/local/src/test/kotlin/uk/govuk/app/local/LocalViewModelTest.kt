@@ -62,7 +62,10 @@ class LocalViewModelTest {
             viewModel.onExplainerButtonClick("button text")
 
             verify {
-                analyticsClient.buttonClick("button text")
+                analyticsClient.buttonClick(
+                    text = "button text",
+                    section = "Local"
+                )
             }
         }
 
@@ -85,7 +88,10 @@ class LocalViewModelTest {
             viewModel.onSearchPostcode("button text", "")
 
             verify {
-                analyticsClient.buttonClick("button text")
+                analyticsClient.buttonClick(
+                    text = "button text",
+                    section = "Local"
+                )
             }
         }
     }
