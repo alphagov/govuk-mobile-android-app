@@ -628,7 +628,7 @@ class AppViewModelTest {
     fun `Given the local feature is enabled, When init, then emit local enabled state`() {
         coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
-        coEvery { flagRepo.isLocalEnabled() } returns true
+        coEvery { flagRepo.isLocalServicesEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 
@@ -643,7 +643,7 @@ class AppViewModelTest {
     fun `Given the local feature is disabled, When init, then emit local disabled state`() {
         coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns true
-        coEvery { flagRepo.isLocalEnabled() } returns false
+        coEvery { flagRepo.isLocalServicesEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, analyticsClient, appDataStore)
 

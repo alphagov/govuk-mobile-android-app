@@ -1,13 +1,15 @@
 package uk.govuk.app.local.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -26,9 +28,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.ChildPageHeader
-import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
+import uk.gov.govuk.design.ui.component.FullScreenHeader
+import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.PrimaryButton
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title1BoldLabel
@@ -40,6 +43,7 @@ import uk.govuk.app.local.R
 @Composable
 internal fun LocalEntryRoute(
     onBack: () -> Unit,
+    onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: LocalViewModel = hiltViewModel()
@@ -48,9 +52,13 @@ internal fun LocalEntryRoute(
     LocalEntryScreen(
         uiState = uiState,
         onBack = onBack,
-        onPageView = { viewModel.onEditPageView() },
-        onPostcodeLookup = { postcode ->
-            viewModel.onSearchPostcode(postcode)
+        onCancel = onCancel,
+        onPageView = { viewModel.onLookupPageView() },
+        onPostcodeLookup = { buttonText, postcode ->
+            viewModel.onSearchPostcode(
+                buttonText = buttonText,
+                postcode = postcode
+            )
         },
         modifier = modifier
     )
@@ -60,8 +68,9 @@ internal fun LocalEntryRoute(
 private fun LocalEntryScreen(
     uiState: LocalUiState,
     onBack: () -> Unit,
+    onCancel: () -> Unit,
     onPageView: () -> Unit,
-    onPostcodeLookup: (String) -> Unit,
+    onPostcodeLookup: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var postcode by remember { mutableStateOf(uiState.postcode) }
@@ -75,9 +84,10 @@ private fun LocalEntryScreen(
         modifier = modifier.fillMaxWidth(),
 
         topBar = {
-            ChildPageHeader(
+            FullScreenHeader(
                 onBack = { onBack() },
-                modifier = modifier.padding(bottom = GovUkTheme.spacing.large)
+                actionText = "Cancel",
+                onAction = onCancel
             )
         },
         bottomBar = {
@@ -88,55 +98,40 @@ private fun LocalEntryScreen(
             )
         }
     ) { innerPadding ->
-        LazyColumn(
+        Column(
             modifier = modifier
+                .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
                 .padding(horizontal = GovUkTheme.spacing.medium)
                 .fillMaxWidth()
         ) {
-            item {
-                SmallVerticalSpacer()
-            }
-
-            item {
-                Title1BoldLabel(
-                    text = stringResource(R.string.local_whats_your_postcode),
-                    modifier = modifier,
-                )
-            }
-
-            item {
-                SmallVerticalSpacer()
-            }
-
-            item {
-                BodyRegularLabel(
-                    text = stringResource(R.string.local_postcode_example),
-                    modifier = modifier
-                )
-            }
-
-            item {
-                SmallVerticalSpacer()
-            }
-
-            item {
-                TextField(
-                    value = postcode,
-                    onValueChange = { postcode = it.uppercase() },
-                    label = {
-                        Text(
-                            text = stringResource(R.string.local_postcode_default_text)
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Characters
-                    ),
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
+            SmallVerticalSpacer()
+            Title1BoldLabel(
+                text = stringResource(R.string.local_whats_your_postcode),
+                modifier = modifier,
+            )
+            SmallVerticalSpacer()
+            BodyRegularLabel(
+                text = stringResource(R.string.local_postcode_example),
+                modifier = modifier
+            )
+            SmallVerticalSpacer()
+            TextField(
+                value = postcode,
+                onValueChange = { postcode = it.uppercase() },
+                label = {
+                    Text(
+                        text = stringResource(R.string.local_postcode_default_text)
+                    )
+                },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Characters
+                ),
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
 //                        TODO: we'll need more colours for error states, so leaving these colours here for now
-                        cursorColor = GovUkTheme.colourScheme.strokes.textFieldCursor,
+                    cursorColor = GovUkTheme.colourScheme.strokes.textFieldCursor,
 //                        errorContainerColor = Color.Red,
 //                        errorCursorColor = Color.Red,
 //                        errorIndicatorColor = Color.Yellow,
@@ -146,40 +141,42 @@ private fun LocalEntryScreen(
 //                        errorSuffixColor = Color.Red
 //                        errorSupportingTextColor = Color.Red,
 //                        errorTextColor = Color.Red,
-                        focusedContainerColor = GovUkTheme.colourScheme.surfaces.textFieldBackground,
-                        focusedIndicatorColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-                        focusedLabelColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-                        focusedPlaceholderColor = GovUkTheme.colourScheme.textAndIcons.secondary,
+                    focusedContainerColor = GovUkTheme.colourScheme.surfaces.textFieldBackground,
+                    focusedIndicatorColor = GovUkTheme.colourScheme.textAndIcons.secondary,
+                    focusedLabelColor = GovUkTheme.colourScheme.textAndIcons.secondary,
+                    focusedPlaceholderColor = GovUkTheme.colourScheme.textAndIcons.secondary,
 //                        focusedPrefixColor = GovUkTheme.colourScheme.textAndIcons.secondary,
 //                        focusedSuffixColor = Color.Blue,
 //                        focusedSupportingTextColor = Color.Green,
-                        focusedTextColor = GovUkTheme.colourScheme.textAndIcons.primary,
-                        selectionColors = TextSelectionColors(
-                            handleColor = GovUkTheme.colourScheme.surfaces.highlightedTextField,
-                            backgroundColor = GovUkTheme.colourScheme.surfaces.highlightedTextField
-                        ),
-                        unfocusedContainerColor = GovUkTheme.colourScheme.surfaces.textFieldBackground,
-                        unfocusedIndicatorColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-                        unfocusedLabelColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-                        unfocusedPlaceholderColor = GovUkTheme.colourScheme.textAndIcons.secondary,
+                    focusedTextColor = GovUkTheme.colourScheme.textAndIcons.primary,
+                    selectionColors = TextSelectionColors(
+                        handleColor = GovUkTheme.colourScheme.surfaces.highlightedTextField,
+                        backgroundColor = GovUkTheme.colourScheme.surfaces.highlightedTextField
+                    ),
+                    unfocusedContainerColor = GovUkTheme.colourScheme.surfaces.textFieldBackground,
+                    unfocusedIndicatorColor = GovUkTheme.colourScheme.textAndIcons.secondary,
+                    unfocusedLabelColor = GovUkTheme.colourScheme.textAndIcons.secondary,
+                    unfocusedPlaceholderColor = GovUkTheme.colourScheme.textAndIcons.secondary,
 //                        unfocusedPrefixColor = Color.Gray,
 //                        unfocusedSuffixColor = Color.Gray,
 //                        unfocusedSupportingTextColor = Color.Gray,
-                        unfocusedTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-                    )
+                    unfocusedTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
                 )
-            }
+            )
+            LargeVerticalSpacer()
+            BodyBoldLabel(stringResource(R.string.local_postcode_use_title))
+            LargeVerticalSpacer()
+            BodyRegularLabel(stringResource(R.string.local_postcode_use_description_1))
+            LargeVerticalSpacer()
+            BodyRegularLabel(stringResource(R.string.local_postcode_use_description_2))
+        }
+    }
 
-            item {
-                ExtraLargeVerticalSpacer()
-            }
-
-            item {
-                BodyRegularLabel(
-                    text = uiState.toString(),
-                    modifier = modifier
-                )
-            }
+    LaunchedEffect(uiState) {
+        // Todo - navigate back to home screen when a local authority is returned, logic will be
+        //  updated in future tickets!
+        if (uiState.localAuthority != null) {
+            onCancel()
         }
     }
 }
@@ -187,10 +184,10 @@ private fun LocalEntryScreen(
 @Composable
 private fun BottomNavBar(
     postcode: String,
-    onPostcodeLookup: (String) -> Unit,
+    onPostcodeLookup: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.background(GovUkTheme.colourScheme.surfaces.background)) {
         HorizontalDivider(
             thickness = 1.dp,
             color = GovUkTheme.colourScheme.strokes.fixedContainer
@@ -206,9 +203,10 @@ private fun BottomNavBar(
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val buttonText = stringResource(R.string.local_confirm_button)
             PrimaryButton(
-                text = stringResource(R.string.local_confirm_button),
-                onClick = { onPostcodeLookup(postcode) },
+                text = buttonText,
+                onClick = { onPostcodeLookup(buttonText, postcode) },
             )
         }
     }

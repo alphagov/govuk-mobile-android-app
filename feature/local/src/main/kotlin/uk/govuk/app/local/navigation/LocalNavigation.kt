@@ -15,6 +15,7 @@ private const val LOCAL_EDIT_ROUTE = "local_entry_route"
 
 fun NavGraphBuilder.localGraph(
     navController: NavHostController,
+    onCancel: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -35,6 +36,7 @@ fun NavGraphBuilder.localGraph(
         ) {
             LocalEntryRoute(
                 onBack = { navController.popBackStack() },
+                onCancel = onCancel,
                 modifier = modifier
             )
         }

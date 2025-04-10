@@ -34,7 +34,7 @@ fun GovUkCard(
     isSelected: Boolean = false,
     onClick: (() -> Unit)? = null,
     backgroundColour: Color = GovUkTheme.colourScheme.surfaces.cardBlue,
-    defaultBorderColour: Color = GovUkTheme.colourScheme.strokes.cardBlue,
+    borderColour: Color = GovUkTheme.colourScheme.strokes.cardBlue,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val cardColour = if (isSelected) {
@@ -46,7 +46,7 @@ fun GovUkCard(
     val strokeColour = if (isSelected) {
         GovUkTheme.colourScheme.strokes.cardSelected
     } else {
-        defaultBorderColour
+        borderColour
     }
 
     OutlinedCard(
@@ -71,24 +71,6 @@ fun GovUkCard(
 }
 
 @Composable
-fun BlueCard(
-    modifier: Modifier = Modifier,
-    isSelected: Boolean = false,
-    onClick: (() -> Unit)? = null,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    GovUkCard(
-        modifier = modifier,
-        isSelected = isSelected,
-        onClick = onClick,
-        backgroundColour = GovUkTheme.colourScheme.surfaces.cardBlue,
-        defaultBorderColour = GovUkTheme.colourScheme.strokes.cardBlue
-    ) {
-        content()
-    }
-}
-
-@Composable
 fun HomeNavigationCard(
     title: String,
     onClick: () -> Unit,
@@ -98,7 +80,7 @@ fun HomeNavigationCard(
     @DrawableRes icon: Int? = null,
     description: String? = null
 ) {
-    BlueCard(
+    GovUkCard(
         modifier = modifier,
         isSelected = isSelected,
         onClick = onClick
@@ -178,16 +160,6 @@ private fun HomeNavigationCardSuppressiblePreview() {
             icon = R.drawable.ic_settings,
             description = "Card description that may go over multiple lines"
         )
-    }
-}
-
-@Preview
-@Composable
-private fun BlueCardPreview() {
-    GovUkTheme {
-        BlueCard {
-            Title3BoldLabel("Title")
-        }
     }
 }
 

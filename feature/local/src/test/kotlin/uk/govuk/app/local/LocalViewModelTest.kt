@@ -44,27 +44,53 @@ class LocalViewModelTest {
         }
 
         @Test
-        fun `Given a page view, then log analytics`() {
-            viewModel.onPageView()
+        fun `Given an explainer page view, then log analytics`() {
+            viewModel.onExplainerPageView()
 
             verify {
                 analyticsClient.screenView(
-                    screenClass = "LocalScreen",
-                    screenName = "Local",
-                    title = "Local"
+                    screenClass = "LocalExplainerScreen",
+                    screenName = "Local Explainer",
+                    title = "Local Explainer"
                 )
             }
         }
 
         @Test
-        fun `Given a edit page view, then log analytics`() {
-            viewModel.onEditPageView()
+        fun `Given an explainer button click, then log analytics`() {
+            val viewModel = LocalViewModel(analyticsClient, localRepo)
+            viewModel.onExplainerButtonClick("button text")
+
+            verify {
+                analyticsClient.buttonClick(
+                    text = "button text",
+                    section = "Local"
+                )
+            }
+        }
+
+        @Test
+        fun `Given a lookup page view, then log analytics`() {
+            viewModel.onLookupPageView()
 
             verify {
                 analyticsClient.screenView(
-                    screenClass = "LocalEntryScreen",
-                    screenName = "Local",
-                    title = "Local"
+                    screenClass = "LocalLookupScreen",
+                    screenName = "Local Lookup",
+                    title = "Local Lookup"
+                )
+            }
+        }
+
+        @Test
+        fun `Given a postcode lookup, then log analytics`() {
+            val viewModel = LocalViewModel(analyticsClient, localRepo)
+            viewModel.onSearchPostcode("button text", "")
+
+            verify {
+                analyticsClient.buttonClick(
+                    text = "button text",
+                    section = "Local"
                 )
             }
         }
@@ -139,7 +165,7 @@ class LocalViewModelTest {
             } returns Success(responseWithUnitaryResult)
 
             val viewModel = LocalViewModel(analyticsClient, localRepo)
-            viewModel.onSearchPostcode(postcode)
+            viewModel.onSearchPostcode("", postcode)
 
             runTest {
                 val uiState = viewModel.uiState.value
@@ -158,7 +184,7 @@ class LocalViewModelTest {
             } returns Success(responseWithTwoTierResult)
 
             val viewModel = LocalViewModel(analyticsClient, localRepo)
-            viewModel.onSearchPostcode(postcode)
+            viewModel.onSearchPostcode("", postcode)
 
             runTest {
                 val uiState = viewModel.uiState.value
@@ -177,7 +203,7 @@ class LocalViewModelTest {
             } returns Success(responseWithAddressResult)
 
             val viewModel = LocalViewModel(analyticsClient, localRepo)
-            viewModel.onSearchPostcode(postcode)
+            viewModel.onSearchPostcode("", postcode)
 
             runTest {
                 val uiState = viewModel.uiState.value
@@ -241,7 +267,7 @@ class LocalViewModelTest {
             )
 
             val viewModel = LocalViewModel(analyticsClient, localRepo)
-            viewModel.onSearchPostcode(postcode)
+            viewModel.onSearchPostcode("", postcode)
 
             runTest {
                 val uiState = viewModel.uiState.value
@@ -267,7 +293,7 @@ class LocalViewModelTest {
             )
 
             val viewModel = LocalViewModel(analyticsClient, localRepo)
-            viewModel.onSearchPostcode(postcode)
+            viewModel.onSearchPostcode("", postcode)
 
             runTest {
                 val uiState = viewModel.uiState.value

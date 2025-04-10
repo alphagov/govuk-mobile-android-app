@@ -386,4 +386,24 @@ class FlagRepoTest {
 
         assertFalse(flagRepo.isNotificationsEnabled())
     }
+
+    @Test
+    fun `Given local is enabled, When is local enabled, then return true`() {
+        mockkStatic(::isEnabled)
+        every { isEnabled(any(), any(), any()) } returns true
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertTrue(flagRepo.isLocalServicesEnabled())
+    }
+
+    @Test
+    fun `Given local is disabled, When is local enabled, then return false`() {
+        mockkStatic(::isEnabled)
+        every { isEnabled(any(), any(), any()) } returns false
+
+        val flagRepo = FlagRepo(debugFlags, configRepo)
+
+        assertFalse(flagRepo.isLocalServicesEnabled())
+    }
 }

@@ -99,7 +99,7 @@ internal class AppViewModel @Inject constructor(
                 if (isSearchEnabled()) {
                     widgets.add(HomeWidget.SEARCH)
                 }
-                if (isLocalEnabled()) {
+                if (isLocalServicesEnabled()) {
                     widgets.add(HomeWidget.LOCAL)
                 }
                 if (isRecentActivityEnabled()) {
