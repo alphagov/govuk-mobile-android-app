@@ -34,30 +34,25 @@ internal class LocalRepo @Inject constructor(
         if (response is Result.Success && response.value.localAuthority != null) {
             val localAuthority = response.value.localAuthority
 
-            var parentLocalAuthority: LocalAuthority? = null
-            if (localAuthority?.parent != null) {
-                parentLocalAuthority = localAuthority.parent
-            }
-
             storeLocalAuthorities(
                 localAuthorities = arrayListOf(
                     localAuthority,
-                    parentLocalAuthority
+                    localAuthority?.parent
                 )
             )
         }
     }
 
     private suspend fun storeLocalAuthorities(localAuthorities: List<LocalAuthority?>) {
-        if (localAuthorities.isNotEmpty()) {
-            localDataSource.insertOrReplace(
-                localAuthorities[0]?.name ?: "",
-                localAuthorities[0]?.homePageUrl ?: "",
-                localAuthorities[0]?.slug ?: "",
-                localAuthorities[1]?.name ?: "",
-                localAuthorities[1]?.homePageUrl ?: "",
-                localAuthorities[1]?.slug ?: ""
-            )
-        }
+        val localAuthority = localAuthorities[0] ?: return
+        val localAuthorityParent = localAuthorities[1]
+        localDataSource.insertOrReplace(
+            localAuthority.name,
+            localAuthority.homePageUrl,
+            localAuthority.slug,
+            localAuthorityParent?.name,
+            localAuthorityParent?.homePageUrl,
+            localAuthorityParent?.slug
+        )
     }
 }
