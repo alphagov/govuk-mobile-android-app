@@ -31,8 +31,8 @@ internal class LocalRepo @Inject constructor(
     }
 
     private suspend fun processResponse(response: Result<ApiResponse>) {
-        if (response is Result.Success && response.value.localAuthority != null) {
-            val localAuthority = response.value.localAuthority
+        if (response is Result.Success) {
+            val localAuthority = response.value.localAuthority ?: return
 
             storeLocalAuthorities(
                 localAuthorities = arrayListOf(
