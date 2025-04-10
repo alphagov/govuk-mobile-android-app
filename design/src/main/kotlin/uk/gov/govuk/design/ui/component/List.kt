@@ -113,17 +113,17 @@ fun InternalLinkListItem(
             MediumHorizontalSpacer()
 
             status?.let {
-                FootnoteRegularLabel(
+                BodyRegularLabel(
                     text = it,
-                    Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+                    color = GovUkTheme.colourScheme.textAndIcons.link
+                )
+            } ?: run {
+                Icon(
+                    painter = painterResource(R.drawable.ic_chevron),
+                    contentDescription = null,
+                    tint = GovUkTheme.colourScheme.textAndIcons.icon
                 )
             }
-
-            Icon(
-                painter = painterResource(R.drawable.ic_chevron),
-                contentDescription = null,
-                tint = GovUkTheme.colourScheme.textAndIcons.icon
-            )
         }
     }
 }
