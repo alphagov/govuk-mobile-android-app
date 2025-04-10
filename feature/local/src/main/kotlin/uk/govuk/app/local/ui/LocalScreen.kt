@@ -92,7 +92,7 @@ private fun LocalScreen(
             SmallVerticalSpacer()
             Image(
                 painter = painterResource(id = R.drawable.local_icon),
-                contentDescription = "",
+                contentDescription = null,
                 modifier = Modifier
             )
             MediumVerticalSpacer()
