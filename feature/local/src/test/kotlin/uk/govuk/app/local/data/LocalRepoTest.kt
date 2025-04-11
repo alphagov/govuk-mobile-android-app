@@ -15,17 +15,21 @@ import uk.govuk.app.local.data.remote.LocalApi
 import uk.govuk.app.local.data.remote.model.Address
 import uk.govuk.app.local.data.remote.model.ApiResponse
 import uk.govuk.app.local.data.remote.model.LocalAuthority
+import uk.govuk.app.local.data.store.LocalDataSource
+import uk.govuk.app.local.data.store.LocalRealmProvider
 
 @RunWith(Enclosed::class)
 class LocalRepoTest {
     class GetLocalPostcodeTest {
+        private val realmProvider = mockk<LocalRealmProvider>(relaxed = true)
         private val localApi = mockk<LocalApi>(relaxed = true)
         private val apiResponse = mockk<Response<ApiResponse>>()
         private lateinit var localRepo: LocalRepo
 
         @Before
         fun setup() {
-            localRepo = LocalRepo(localApi)
+            val localDataSource = LocalDataSource(realmProvider)
+            localRepo = LocalRepo(localApi, localDataSource)
         }
 
         @Test
@@ -166,14 +170,16 @@ class LocalRepoTest {
         }
     }
 
-    class GetLocalAuthorityTest {
+    class GetStoredLocalAuthorityTest {
+        private val realmProvider = mockk<LocalRealmProvider>(relaxed = true)
         private val localApi = mockk<LocalApi>(relaxed = true)
         private val apiResponse = mockk<Response<ApiResponse>>()
         private lateinit var localRepo: LocalRepo
 
         @Before
         fun setup() {
-            localRepo = LocalRepo(localApi)
+            val localDataSource = LocalDataSource(realmProvider)
+            localRepo = LocalRepo(localApi, localDataSource)
         }
 
         @Test
