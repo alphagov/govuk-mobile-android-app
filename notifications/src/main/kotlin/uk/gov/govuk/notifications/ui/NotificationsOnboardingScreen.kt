@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.core.layout.WindowHeightSizeClass
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.HorizontalButtonGroup
 import uk.gov.govuk.design.ui.component.ListDivider
 import uk.gov.govuk.design.ui.component.OnboardingSlide
@@ -92,6 +93,11 @@ internal fun NotificationsOnboardingNoSkipRoute(
                 OnboardingScreen(
                     onPageView = { viewModel.onPageView() },
                     modifier = modifier,
+                    header = {
+                        ChildPageHeader(
+                            onBack = notificationsOnboardingCompleted
+                        )
+                    },
                     footer = {
                         OnboardingScreenFooterNoSkip(
                             onContinue = {
@@ -123,6 +129,7 @@ private fun EmptyScreen() {
 private fun OnboardingScreen(
     onPageView: () -> Unit,
     modifier: Modifier = Modifier,
+    header: (@Composable () -> Unit)? = null,
     footer: @Composable () -> Unit
 ) {
     LaunchedEffect(Unit) {
@@ -130,6 +137,8 @@ private fun OnboardingScreen(
     }
 
     Column(modifier.fillMaxWidth()) {
+        header?.invoke()
+
         OnboardingSlide(
             title = R.string.onboarding_screen_title,
             body = R.string.onboarding_screen_body,
@@ -209,5 +218,8 @@ private fun OnboardingScreenPreview() {
 @Preview
 @Composable
 private fun OnboardingScreenNoSkipPreview() {
-    OnboardingScreen({}, footer = { OnboardingScreenFooterNoSkip({}) })
+    OnboardingScreen(
+        {},
+        header = { ChildPageHeader(onBack = {}) },
+        footer = { OnboardingScreenFooterNoSkip({}) })
 }
