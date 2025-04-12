@@ -3,10 +3,14 @@ package uk.gov.govuk
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.config.data.ConfigRepo
@@ -38,9 +42,16 @@ internal class AppViewModel @Inject constructor(
     private val _homeWidgets: MutableStateFlow<List<HomeWidget>?> = MutableStateFlow(null)
     internal val homeWidgets = _homeWidgets.asStateFlow()
 
-    private val config = flow {
-        emit(configRepo.initConfig())
-    }
+    private val configRetryTrigger = MutableSharedFlow<Unit>(replay = 0)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val config = configRetryTrigger
+        .onStart { emit(Unit) }
+        .flatMapLatest {
+            flow {
+                emit(configRepo.initConfig())
+            }
+        }
 
     init {
         viewModelScope.launch {
@@ -79,7 +90,9 @@ internal class AppViewModel @Inject constructor(
 
     fun onTryAgain() {
         _uiState.value = AppUiState.Loading
-//        fetchConfig() TODO!!!
+        viewModelScope.launch {
+            configRetryTrigger.emit(Unit)
+        }
     }
 
     fun onboardingCompleted() {
