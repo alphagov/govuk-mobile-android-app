@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import uk.gov.govuk.ui.model.HomeWidget
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -42,11 +43,12 @@ internal class AppDataStore @Inject constructor(
         }
     }
 
-    internal suspend fun isHomeWidgetInSuppressedList(widget: HomeWidget): Boolean {
-        return getSuppressedHomeWidgets()?.contains(widget.name) ?: false
-    }
+    internal val suppressedHomeWidgets = dataStore.data
+        .map { preferences ->
+            preferences[stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS)] ?: emptySet()
+        }
 
-    internal suspend fun addHomeWidgetToSuppressedList(widget: HomeWidget) {
+    internal suspend fun suppressHomeWidget(widget: HomeWidget) {
         val mutableWidgets = getSuppressedHomeWidgets()?.toMutableSet() ?: mutableSetOf()
         mutableWidgets.add(widget.name)
         dataStore.edit { prefs -> prefs[stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS)] = mutableWidgets.toSet() }

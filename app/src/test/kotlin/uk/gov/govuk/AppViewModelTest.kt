@@ -562,7 +562,7 @@ class AppViewModelTest {
             viewModel.onSuppressWidgetClick("text", "section", HomeWidget.NOTIFICATIONS)
 
             coVerify {
-                appDataStore.addHomeWidgetToSuppressedList(HomeWidget.NOTIFICATIONS)
+                appDataStore.suppressHomeWidget(HomeWidget.NOTIFICATIONS)
                 viewModel.updateHomeWidgets()
                 analyticsClient.suppressWidgetClick("text", "section")
             }

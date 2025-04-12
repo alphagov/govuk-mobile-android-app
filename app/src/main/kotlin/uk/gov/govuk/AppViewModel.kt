@@ -16,7 +16,6 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
-import uk.gov.govuk.data.local.AppDataStore
 import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
@@ -32,8 +31,7 @@ internal class AppViewModel @Inject constructor(
     private val flagRepo: FlagRepo,
     private val topicsFeature: TopicsFeature,
     localFeature: LocalFeature,
-    private val analyticsClient: AnalyticsClient,
-    private val appDataStore: AppDataStore
+    private val analyticsClient: AnalyticsClient
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<AppUiState?> = MutableStateFlow(null)
@@ -55,8 +53,12 @@ internal class AppViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            config.combine(localFeature.hasLocalAuthority()) { configResult, hasLocalAuthority ->
-                Pair(configResult, hasLocalAuthority)
+            combine(
+                config,
+                appRepo.suppressedHomeWidgets,
+                localFeature.hasLocalAuthority()
+            ) { configResult, suppressedHomeWidgets, hasLocalAuthority  ->
+                Triple(configResult, suppressedHomeWidgets, hasLocalAuthority)
             }.collect {
                 _uiState.value = when (it.first) {
                     is Success -> {
@@ -65,7 +67,7 @@ internal class AppViewModel @Inject constructor(
                         } else if (flagRepo.isForcedUpdate(BuildConfig.VERSION_NAME)) {
                             AppUiState.ForcedUpdate
                         } else {
-                            updateHomeWidgets(it.second)
+                            updateHomeWidgets(it.second, it.third)
 
                             val topicsInitSuccess = topicsFeature.init()
 
@@ -107,12 +109,15 @@ internal class AppViewModel @Inject constructor(
         }
     }
 
-    private fun updateHomeWidgets(hasLocalAuthority: Boolean) {
+    private fun updateHomeWidgets(
+        suppressedWidgets: Set<String>,
+        hasLocalAuthority: Boolean
+    ) {
         viewModelScope.launch {
             with(flagRepo) {
                 val widgets = mutableListOf<HomeWidget>()
                 if (isNotificationsEnabled()
-                    && !appDataStore.isHomeWidgetInSuppressedList(HomeWidget.NOTIFICATIONS)
+                    && !suppressedWidgets.contains(HomeWidget.NOTIFICATIONS.name)
                 ) {
                     widgets.add(HomeWidget.NOTIFICATIONS)
                 }
@@ -154,8 +159,7 @@ internal class AppViewModel @Inject constructor(
         widget: HomeWidget
     ) {
         viewModelScope.launch {
-            appDataStore.addHomeWidgetToSuppressedList(widget)
-//            updateHomeWidgets() TODO!!!
+            appRepo.suppressHomeWidget(widget)
         }
         analyticsClient.suppressWidgetClick(
             text,
