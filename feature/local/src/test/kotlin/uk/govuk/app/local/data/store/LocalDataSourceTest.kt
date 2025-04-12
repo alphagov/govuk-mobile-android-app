@@ -10,7 +10,9 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import uk.govuk.app.local.data.model.StoredLocalAuthority
+import uk.govuk.app.local.data.local.LocalDataSource
+import uk.govuk.app.local.data.local.LocalRealmProvider
+import uk.govuk.app.local.data.local.model.StoredLocalAuthority
 
 class LocalDataSourceTest {
     private val realmProvider = mockk<LocalRealmProvider>(relaxed = true)
@@ -52,7 +54,7 @@ class LocalDataSourceTest {
 
             val localDataSource = LocalDataSource(realmProvider)
 
-            val localAuthority = localDataSource.storedLocalAuthority.first()
+            val localAuthority = localDataSource.localAuthority.first()
 
             assertEquals("name", localAuthority.name)
             assertEquals("url", localAuthority.url)
@@ -77,7 +79,7 @@ class LocalDataSourceTest {
                 "parentSlug"
             )
 
-            val localAuthority = localDataSource.storedLocalAuthority.first()
+            val localAuthority = localDataSource.localAuthority.first()
 
             assertEquals("name", localAuthority.name)
             assertEquals("url", localAuthority.url)
@@ -108,7 +110,7 @@ class LocalDataSourceTest {
                 "newSlug"
             )
 
-            val localAuthority = localDataSource.storedLocalAuthority.first()
+            val localAuthority = localDataSource.localAuthority.first()
 
             assertEquals("newName", localAuthority.name)
             assertEquals("newUrl", localAuthority.url)

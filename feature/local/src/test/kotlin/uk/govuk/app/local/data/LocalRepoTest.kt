@@ -14,9 +14,9 @@ import uk.gov.govuk.data.model.Result.Success
 import uk.govuk.app.local.data.remote.LocalApi
 import uk.govuk.app.local.data.remote.model.Address
 import uk.govuk.app.local.data.remote.model.ApiResponse
-import uk.govuk.app.local.data.remote.model.LocalAuthority
-import uk.govuk.app.local.data.store.LocalDataSource
-import uk.govuk.app.local.data.store.LocalRealmProvider
+import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
+import uk.govuk.app.local.data.local.LocalDataSource
+import uk.govuk.app.local.data.local.LocalRealmProvider
 
 @RunWith(Enclosed::class)
 class LocalRepoTest {
@@ -35,7 +35,7 @@ class LocalRepoTest {
         @Test
         fun `Perform postcode lookup returns a unitary local authority when postcode is valid and known`() {
             val unitaryResponse = ApiResponse(
-                localAuthority = LocalAuthority(
+                localAuthority = RemoteLocalAuthority(
                     name = "name",
                     homePageUrl = "homePageUrl",
                     tier = "unitary",
@@ -62,12 +62,12 @@ class LocalRepoTest {
         @Test
         fun `Perform postcode lookup returns a two-tier local authority when postcode is valid and known`() {
             val twoTierResponse = ApiResponse(
-                localAuthority = LocalAuthority(
+                localAuthority = RemoteLocalAuthority(
                     name = "name",
                     homePageUrl = "homePageUrl",
                     tier = "district",
                     slug = "slug",
-                    parent = LocalAuthority(
+                    parent = RemoteLocalAuthority(
                         name = "parent name",
                         homePageUrl = "parentHomePageUrl",
                         tier = "county",
@@ -170,7 +170,7 @@ class LocalRepoTest {
         }
     }
 
-    class GetStoredLocalAuthorityTest {
+    class GetStoredRemoteLocalAuthorityTest {
         private val realmProvider = mockk<LocalRealmProvider>(relaxed = true)
         private val localApi = mockk<LocalApi>(relaxed = true)
         private val apiResponse = mockk<Response<ApiResponse>>()
@@ -185,7 +185,7 @@ class LocalRepoTest {
         @Test
         fun `Perform get local authority returns a unitary local authority`() {
             val unitaryResponse = ApiResponse(
-                localAuthority = LocalAuthority(
+                localAuthority = RemoteLocalAuthority(
                     name = "name",
                     homePageUrl = "homePageUrl",
                     tier = "unitary",
@@ -212,12 +212,12 @@ class LocalRepoTest {
         @Test
         fun `Perform get local authority returns a two-tier local authority`() {
             val twoTierResponse = ApiResponse(
-                localAuthority = LocalAuthority(
+                localAuthority = RemoteLocalAuthority(
                     name = "name",
                     homePageUrl = "homePageUrl",
                     tier = "district",
                     slug = "slug",
-                    parent = LocalAuthority(
+                    parent = RemoteLocalAuthority(
                         name = "parent name",
                         homePageUrl = "parentHomePageUrl",
                         tier = "county",

@@ -1,10 +1,12 @@
-package uk.govuk.app.local.data.store
+package uk.govuk.app.local.data.local
 
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.find
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import uk.govuk.app.local.data.model.StoredLocalAuthority
+import kotlinx.coroutines.flow.map
+import uk.govuk.app.local.data.local.model.StoredLocalAuthority
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,9 +14,13 @@ import javax.inject.Singleton
 internal class LocalDataSource @Inject constructor(
     private val realmProvider: LocalRealmProvider
 ) {
-    val storedLocalAuthority: Flow<StoredLocalAuthority> = flow {
-        emit(
-            realmProvider.open().query<StoredLocalAuthority>().first().find() ?: StoredLocalAuthority()
+    val localAuthority: Flow<StoredLocalAuthority?> = flow {
+        emitAll(
+            realmProvider.open()
+                .query<StoredLocalAuthority>()
+                .find()
+                .asFlow()
+                .map { it.list.firstOrNull() }
         )
     }
 

@@ -1,4 +1,4 @@
-package uk.govuk.app.local.data.model
+package uk.govuk.app.local.data.local.model
 
 import io.realm.kotlin.types.RealmObject
 

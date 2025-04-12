@@ -20,7 +20,7 @@ import uk.gov.govuk.data.model.Result.Success
 import uk.govuk.app.local.data.LocalRepo
 import uk.govuk.app.local.data.remote.model.Address
 import uk.govuk.app.local.data.remote.model.ApiResponse
-import uk.govuk.app.local.data.remote.model.LocalAuthority
+import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
 
 @RunWith(Enclosed::class)
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -100,18 +100,18 @@ class LocalViewModelTest {
         private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
         private val localRepo = mockk<LocalRepo>(relaxed = true)
         private val dispatcher = UnconfinedTestDispatcher()
-        private val unitaryLocalAuthority = LocalAuthority(
+        private val unitaryLocalAuthority = RemoteLocalAuthority(
             name = "name",
             homePageUrl = "homePageUrl",
             tier = "unitary",
             slug = "slug"
         )
-        private val twoTierLocalAuthority = LocalAuthority(
+        private val twoTierLocalAuthority = RemoteLocalAuthority(
             name = "name",
             homePageUrl = "homePageUrl",
             tier = "district",
             slug = "slug",
-            parent = LocalAuthority(
+            parent = RemoteLocalAuthority(
                 name = "parent name",
                 homePageUrl = "parentHomePageUrl",
                 tier = "county",

@@ -1,11 +1,13 @@
 package uk.govuk.app.local.data
 
+import kotlinx.coroutines.flow.map
 import uk.gov.govuk.data.model.Result
+import uk.govuk.app.local.data.local.LocalDataSource
 import uk.govuk.app.local.data.remote.LocalApi
 import uk.govuk.app.local.data.remote.model.ApiResponse
-import uk.govuk.app.local.data.remote.model.LocalAuthority
+import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
 import uk.govuk.app.local.data.remote.safeLocalApiCall
-import uk.govuk.app.local.data.store.LocalDataSource
+import uk.govuk.app.local.domain.model.LocalAuthority
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,6 +16,19 @@ internal class LocalRepo @Inject constructor(
     private val localApi: LocalApi,
     private val localDataSource: LocalDataSource
 ) {
+    val localAuthority = localDataSource.localAuthority.map {
+        it?.let { storedLocalAuthority ->
+            LocalAuthority(
+                name = storedLocalAuthority.name,
+                url = storedLocalAuthority.url,
+                slug = storedLocalAuthority.slug,
+                parentName = storedLocalAuthority.parentName,
+                parentUrl = storedLocalAuthority.parentUrl,
+                parentSlug = storedLocalAuthority.parentSlug
+            )
+        }
+    }
+
     suspend fun performGetLocalPostcode(
         postcode: String
     ): Result<ApiResponse> {
@@ -41,7 +56,7 @@ internal class LocalRepo @Inject constructor(
         }
     }
 
-    private suspend fun storeLocalAuthorities(child: LocalAuthority, parent: LocalAuthority?) {
+    private suspend fun storeLocalAuthorities(child: RemoteLocalAuthority, parent: RemoteLocalAuthority?) {
         localDataSource.insertOrReplace(
             child.name,
             child.homePageUrl,

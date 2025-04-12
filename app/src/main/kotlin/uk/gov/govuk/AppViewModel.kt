@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.config.data.ConfigRepo
@@ -14,8 +16,9 @@ import uk.gov.govuk.data.local.AppDataStore
 import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
-import uk.gov.govuk.ui.model.HomeWidget
 import uk.gov.govuk.topics.TopicsFeature
+import uk.gov.govuk.ui.model.HomeWidget
+import uk.govuk.app.local.LocalFeature
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,6 +27,7 @@ internal class AppViewModel @Inject constructor(
     private val configRepo: ConfigRepo,
     private val flagRepo: FlagRepo,
     private val topicsFeature: TopicsFeature,
+    localFeature: LocalFeature,
     private val analyticsClient: AnalyticsClient,
     private val appDataStore: AppDataStore
 ) : ViewModel() {
@@ -34,45 +38,48 @@ internal class AppViewModel @Inject constructor(
     private val _homeWidgets: MutableStateFlow<List<HomeWidget>?> = MutableStateFlow(null)
     internal val homeWidgets = _homeWidgets.asStateFlow()
 
+    private val config = flow {
+        emit(configRepo.initConfig())
+    }
+
     init {
-        fetchConfig()
+        viewModelScope.launch {
+            config.combine(localFeature.hasLocalAuthority()) { configResult, hasLocalAuthority ->
+                Pair(configResult, hasLocalAuthority)
+            }.collect {
+                _uiState.value = when (it.first) {
+                    is Success -> {
+                        if (!flagRepo.isAppAvailable()) {
+                            AppUiState.AppUnavailable
+                        } else if (flagRepo.isForcedUpdate(BuildConfig.VERSION_NAME)) {
+                            AppUiState.ForcedUpdate
+                        } else {
+                            updateHomeWidgets(it.second)
+
+                            val topicsInitSuccess = topicsFeature.init()
+
+                            AppUiState.Default(
+                                shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
+                                shouldDisplayAnalyticsConsent = analyticsClient.isAnalyticsConsentRequired(),
+                                shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
+                                shouldDisplayTopicSelection = flagRepo.isTopicsEnabled()
+                                        && !appRepo.isTopicSelectionCompleted()
+                                        && topicsInitSuccess,
+                                shouldDisplayNotificationsOnboarding = flagRepo.isNotificationsEnabled()
+                            )
+                        }
+                    }
+                    is InvalidSignature -> AppUiState.ForcedUpdate
+                    is DeviceOffline -> AppUiState.DeviceOffline
+                    else -> AppUiState.AppUnavailable
+                }
+            }
+        }
     }
 
     fun onTryAgain() {
         _uiState.value = AppUiState.Loading
-        fetchConfig()
-    }
-
-    private fun fetchConfig() {
-        viewModelScope.launch {
-            val result = configRepo.initConfig()
-            _uiState.value = when (result) {
-                is Success -> {
-                    if (!flagRepo.isAppAvailable()) {
-                        AppUiState.AppUnavailable
-                    } else if (flagRepo.isForcedUpdate(BuildConfig.VERSION_NAME)) {
-                        AppUiState.ForcedUpdate
-                    } else {
-                        updateHomeWidgets()
-
-                        val topicsInitSuccess = topicsFeature.init()
-
-                        AppUiState.Default(
-                            shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
-                            shouldDisplayAnalyticsConsent = analyticsClient.isAnalyticsConsentRequired(),
-                            shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
-                            shouldDisplayTopicSelection = flagRepo.isTopicsEnabled()
-                                    && !appRepo.isTopicSelectionCompleted()
-                                    && topicsInitSuccess,
-                            shouldDisplayNotificationsOnboarding = flagRepo.isNotificationsEnabled()
-                        )
-                    }
-                }
-                is InvalidSignature -> AppUiState.ForcedUpdate
-                is DeviceOffline -> AppUiState.DeviceOffline
-                else -> AppUiState.AppUnavailable
-            }
-        }
+//        fetchConfig() TODO!!!
     }
 
     fun onboardingCompleted() {
@@ -87,7 +94,7 @@ internal class AppViewModel @Inject constructor(
         }
     }
 
-    fun updateHomeWidgets() {
+    private fun updateHomeWidgets(hasLocalAuthority: Boolean) {
         viewModelScope.launch {
             with(flagRepo) {
                 val widgets = mutableListOf<HomeWidget>()
@@ -99,7 +106,7 @@ internal class AppViewModel @Inject constructor(
                 if (isSearchEnabled()) {
                     widgets.add(HomeWidget.SEARCH)
                 }
-                if (isLocalServicesEnabled()) {
+                if (isLocalServicesEnabled() && !hasLocalAuthority) {
                     widgets.add(HomeWidget.LOCAL)
                 }
                 if (isRecentActivityEnabled()) {
@@ -107,6 +114,9 @@ internal class AppViewModel @Inject constructor(
                 }
                 if (isTopicsEnabled()) {
                     widgets.add(HomeWidget.TOPICS)
+                }
+                if (isLocalServicesEnabled() && hasLocalAuthority) {
+                    widgets.add(HomeWidget.LOCAL)
                 }
                 _homeWidgets.value = widgets
             }
@@ -132,7 +142,7 @@ internal class AppViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             appDataStore.addHomeWidgetToSuppressedList(widget)
-            updateHomeWidgets()
+//            updateHomeWidgets() TODO!!!
         }
         analyticsClient.suppressWidgetClick(
             text,
