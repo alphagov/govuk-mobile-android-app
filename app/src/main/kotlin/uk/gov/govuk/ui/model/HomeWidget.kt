@@ -1,4 +1,4 @@
-package uk.gov.govuk.home
+package uk.gov.govuk.ui.model
 
 enum class HomeWidget {
     NOTIFICATIONS,

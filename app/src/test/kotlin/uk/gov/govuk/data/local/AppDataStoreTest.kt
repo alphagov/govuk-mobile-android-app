@@ -12,7 +12,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import uk.gov.govuk.home.HomeWidget
+import uk.gov.govuk.ui.model.HomeWidget
 
 class AppDataStoreTest {
 

@@ -14,7 +14,7 @@ import uk.gov.govuk.data.local.AppDataStore
 import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
-import uk.gov.govuk.home.HomeWidget
+import uk.gov.govuk.ui.model.HomeWidget
 import uk.gov.govuk.topics.TopicsFeature
 import javax.inject.Inject
 

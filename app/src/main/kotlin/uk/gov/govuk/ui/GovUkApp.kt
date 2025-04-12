@@ -59,7 +59,7 @@ import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.extension.asDeepLinks
 import uk.gov.govuk.extension.getUrlParam
-import uk.gov.govuk.home.HomeWidget
+import uk.gov.govuk.ui.model.HomeWidget
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
 import uk.gov.govuk.navigation.AppLaunchNavigation

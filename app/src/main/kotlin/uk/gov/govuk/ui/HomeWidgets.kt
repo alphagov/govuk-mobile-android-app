@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import uk.gov.govuk.BuildConfig
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
-import uk.gov.govuk.home.HomeWidget
+import uk.gov.govuk.ui.model.HomeWidget
 import uk.gov.govuk.notifications.ui.NotificationsPromptWidget
 import uk.gov.govuk.notifications.ui.notificationsPermissionShouldShowRationale
 import uk.gov.govuk.settings.navigation.navigateToHelpAndFeedback

@@ -25,7 +25,7 @@ import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.local.AppDataStore
 import uk.gov.govuk.data.model.Result.*
-import uk.gov.govuk.home.HomeWidget
+import uk.gov.govuk.ui.model.HomeWidget
 import uk.gov.govuk.topics.TopicsFeature
 
 @OptIn(ExperimentalCoroutinesApi::class)
