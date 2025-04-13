@@ -18,13 +18,23 @@ internal class LocalRepo @Inject constructor(
 ) {
     val localAuthority = localDataSource.localAuthority.map {
         it?.let { storedLocalAuthority ->
+            val parentName = storedLocalAuthority.parentName
+            val parentUrl = storedLocalAuthority.parentUrl
+            val parentSlug = storedLocalAuthority.parentSlug
+
+            val parent = if (parentName != null && parentUrl != null && parentSlug != null) {
+                LocalAuthority(
+                    name = parentName,
+                    url = parentUrl,
+                    slug = parentSlug
+                )
+            } else null
+
             LocalAuthority(
                 name = storedLocalAuthority.name,
                 url = storedLocalAuthority.url,
                 slug = storedLocalAuthority.slug,
-                parentName = storedLocalAuthority.parentName,
-                parentUrl = storedLocalAuthority.parentUrl,
-                parentSlug = storedLocalAuthority.parentSlug
+                parent = parent
             )
         }
     }

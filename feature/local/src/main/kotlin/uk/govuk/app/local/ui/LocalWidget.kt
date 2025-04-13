@@ -14,13 +14,17 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ExtraSmallVerticalSpacer
@@ -29,6 +33,9 @@ import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title3BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
+import uk.govuk.app.local.LocalWidgetUiState.LocalAuthoritySelected
+import uk.govuk.app.local.LocalWidgetUiState.NoLocalAuthority
+import uk.govuk.app.local.LocalWidgetViewModel
 import uk.govuk.app.local.R
 
 @Composable
@@ -36,15 +43,29 @@ fun LocalWidget(
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val viewModel: LocalWidgetViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
 
-    LocalNavigationCard(
-        onClick = onClick,
-        modifier = modifier
-    )
+    uiState?.let {
+        when (it) {
+            is LocalAuthoritySelected -> LocalAuthorityCard(it.localAuthority, modifier)
+            is NoLocalAuthority -> NoLocalAuthorityCard(onClick, modifier)
+        }
+    }
 }
 
 @Composable
-private fun LocalNavigationCard(
+private fun LocalAuthorityCard(
+    localAuthority: LocalAuthorityUi,
+    modifier: Modifier = Modifier
+) {
+    Column {
+        Text("$localAuthority")
+    }
+}
+
+@Composable
+private fun NoLocalAuthorityCard(
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
