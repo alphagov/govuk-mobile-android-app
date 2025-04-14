@@ -79,7 +79,7 @@ private fun LocalAuthorityCard(
             Spacer(Modifier.weight(1f))
 
             val editButtonText = stringResource(R.string.local_edit_button)
-            val editButtonAltText = "Edit alt text" // TODO!!!
+            val editButtonAltText = stringResource(R.string.local_edit_button_alt_text)
 
             TextButton(
                 onClick = { }
