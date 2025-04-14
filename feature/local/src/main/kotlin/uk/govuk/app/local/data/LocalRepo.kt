@@ -5,7 +5,6 @@ import uk.gov.govuk.data.model.Result
 import uk.govuk.app.local.data.local.LocalDataSource
 import uk.govuk.app.local.data.remote.LocalApi
 import uk.govuk.app.local.data.remote.model.ApiResponse
-import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
 import uk.govuk.app.local.data.remote.safeLocalApiCall
 import uk.govuk.app.local.domain.model.LocalAuthority
 import javax.inject.Inject
@@ -18,23 +17,17 @@ internal class LocalRepo @Inject constructor(
 ) {
     val localAuthority = localDataSource.localAuthority.map {
         it?.let { storedLocalAuthority ->
-            val parentName = storedLocalAuthority.parentName
-            val parentUrl = storedLocalAuthority.parentUrl
-            val parentSlug = storedLocalAuthority.parentSlug
-
-            val parent = if (parentName != null && parentUrl != null && parentSlug != null) {
-                LocalAuthority(
-                    name = parentName,
-                    url = parentUrl,
-                    slug = parentSlug
-                )
-            } else null
-
             LocalAuthority(
                 name = storedLocalAuthority.name,
                 url = storedLocalAuthority.url,
                 slug = storedLocalAuthority.slug,
-                parent = parent
+                parent = storedLocalAuthority.parent ?.let { parent ->
+                    LocalAuthority(
+                        name = parent.name,
+                        url = parent.url,
+                        slug = parent.slug
+                    )
+                }
             )
         }
     }
@@ -58,22 +51,8 @@ internal class LocalRepo @Inject constructor(
     private suspend fun processResponse(response: Result<ApiResponse>) {
         if (response is Result.Success) {
             response.value.localAuthority?.let { localAuthority ->
-                storeLocalAuthorities(
-                    child = localAuthority,
-                    parent = localAuthority.parent
-                )
+                localDataSource.insertOrReplace(localAuthority)
             }
         }
-    }
-
-    private suspend fun storeLocalAuthorities(child: RemoteLocalAuthority, parent: RemoteLocalAuthority?) {
-        localDataSource.insertOrReplace(
-            child.name,
-            child.homePageUrl,
-            child.slug,
-            parent?.name,
-            parent?.homePageUrl,
-            parent?.slug
-        )
     }
 }

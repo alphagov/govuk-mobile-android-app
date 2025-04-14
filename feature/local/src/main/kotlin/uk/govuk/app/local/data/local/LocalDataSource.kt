@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import uk.govuk.app.local.data.local.model.StoredLocalAuthority
+import uk.govuk.app.local.data.local.model.StoredLocalAuthorityParent
+import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,17 +22,14 @@ internal class LocalDataSource @Inject constructor(
                 .query<StoredLocalAuthority>()
                 .find()
                 .asFlow()
-                .map { it.list.firstOrNull() }
+                .map {
+                    it.list.firstOrNull()
+                }
         )
     }
 
     suspend fun insertOrReplace(
-        name: String,
-        url: String,
-        slug: String,
-        parentName: String? = "",
-        parentUrl: String? = "",
-        parentSlug: String? = ""
+        localAuthority: RemoteLocalAuthority
     ) {
         realmProvider.open().write {
             query<StoredLocalAuthority>().find {
@@ -39,12 +38,16 @@ internal class LocalDataSource @Inject constructor(
 
             copyToRealm(
                 StoredLocalAuthority().apply {
-                    this.name = name
-                    this.url = url
-                    this.slug = slug
-                    this.parentName = parentName
-                    this.parentUrl = parentUrl
-                    this.parentSlug = parentSlug
+                    this.name = localAuthority.name
+                    this.url = localAuthority.homePageUrl
+                    this.slug = localAuthority.slug
+                    this.parent = localAuthority.parent?.let { parent ->
+                        StoredLocalAuthorityParent().apply {
+                            this.name = parent.name
+                            this.url = parent.homePageUrl
+                            this.slug = parent.slug
+                        }
+                    }
                 }
             )
         }
