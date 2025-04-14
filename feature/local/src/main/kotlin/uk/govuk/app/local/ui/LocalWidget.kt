@@ -26,12 +26,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ExtraSmallVerticalSpacer
+import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.component.SearchResultCard
 import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title3BoldLabel
@@ -69,14 +72,14 @@ private fun LocalAuthorityCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Title3BoldLabel(
-                text = "Your local services",
+                text = stringResource(R.string.local_widget_title),
                 modifier = Modifier.semantics { heading() }
             )
 
             Spacer(Modifier.weight(1f))
 
-            val editButtonText = "Edit"
-            val editButtonAltText = "Edit alt text"
+            val editButtonText = stringResource(R.string.local_edit_button)
+            val editButtonAltText = "Edit alt text" // TODO!!!
 
             TextButton(
                 onClick = { }
@@ -91,9 +94,33 @@ private fun LocalAuthorityCard(
             }
         }
 
-        if (localAuthority.parent != null) {
-            BodyRegularLabel("Services in your area are provided by 2 local councils")
+        val description = if (localAuthority.parent != null) {
+            stringResource(R.string.local_child_authority_description, localAuthority.name)
+        } else {
+            stringResource(R.string.local_unitary_authority_description, localAuthority.name)
         }
+
+        localAuthority.parent?.let { parent ->
+            BodyRegularLabel(stringResource(R.string.local_two_tier_title))
+            SmallVerticalSpacer()
+            SearchResultCard(
+                title = parent.name,
+                description = stringResource(
+                    R.string.local_parent_authority_description,
+                    parent.name
+                ),
+                url = parent.url,
+                onClick = { _, _ -> } // TODO!!!
+            )
+            LargeVerticalSpacer()
+        }
+
+        SearchResultCard(
+            title = localAuthority.name,
+            description = description,
+            url = localAuthority.url,
+            onClick = { _, _ -> } // TODO!!!
+        )
     }
 }
 
@@ -102,7 +129,7 @@ private fun NoLocalAuthorityCard(
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val title = stringResource(R.string.local_title)
+    val title = stringResource(R.string.local_widget_title)
 
     OutlinedCard(
         modifier = modifier,
@@ -164,5 +191,48 @@ private fun NoLocalAuthorityCard(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun NoLocalAuthorityPreview() {
+    GovUkTheme {
+        NoLocalAuthorityCard(
+            onClick = { }
+        )
+    }
+}
+
+@Preview (showBackground = true)
+@Composable
+private fun UnitaryLocalAuthorityPreview() {
+    GovUkTheme {
+        LocalAuthorityCard(
+            localAuthority = LocalAuthorityUi(
+                name = "London Borough of Tower Hamlets",
+                url = "",
+                slug = ""
+            )
+        )
+    }
+}
+
+@Preview (showBackground = true)
+@Composable
+private fun TwoTierLocalAuthorityPreview() {
+    GovUkTheme {
+        LocalAuthorityCard(
+            localAuthority = LocalAuthorityUi(
+                name = "Derbyshire Dales District Council",
+                url = "",
+                slug = "",
+                parent = LocalAuthorityUi(
+                    name = "Derbyshire County Council",
+                    url = "",
+                    slug = ""
+                )
+            )
+        )
     }
 }
