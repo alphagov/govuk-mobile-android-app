@@ -117,7 +117,7 @@ internal class AppViewModel @Inject constructor(
             with(flagRepo) {
                 val widgets = mutableListOf<HomeWidget>()
                 if (isNotificationsEnabled()
-                    && !suppressedWidgets.contains(HomeWidget.NOTIFICATIONS.name)
+                    && !suppressedWidgets.contains(HomeWidget.NOTIFICATIONS.serializedName)
                 ) {
                     widgets.add(HomeWidget.NOTIFICATIONS)
                 }
