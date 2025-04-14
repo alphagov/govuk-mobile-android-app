@@ -143,11 +143,13 @@ internal class AppViewModel @Inject constructor(
 
     fun onWidgetClick(
         text: String,
+        url: String? = null,
         external: Boolean,
         section: String
     ) {
         analyticsClient.widgetClick(
             text,
+            url,
             external,
             section
         )

@@ -46,7 +46,8 @@ import uk.govuk.app.local.R
 
 @Composable
 fun LocalWidget(
-    onClick: (String) -> Unit,
+    onLookupClick: (String) -> Unit,
+    onLocalAuthorityClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: LocalWidgetViewModel = hiltViewModel()
@@ -54,8 +55,13 @@ fun LocalWidget(
 
     uiState?.let {
         when (it) {
-            is LocalAuthoritySelected -> LocalAuthorityCard(it.localAuthority, modifier)
-            is NoLocalAuthority -> NoLocalAuthorityCard(onClick, modifier)
+            is LocalAuthoritySelected ->
+                LocalAuthorityCard(
+                    it.localAuthority,
+                    onLocalAuthorityClick,
+                    modifier
+                )
+            is NoLocalAuthority -> NoLocalAuthorityCard(onLookupClick, modifier)
         }
     }
 }
@@ -63,6 +69,7 @@ fun LocalWidget(
 @Composable
 private fun LocalAuthorityCard(
     localAuthority: LocalAuthorityUi,
+    onClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
@@ -110,7 +117,7 @@ private fun LocalAuthorityCard(
                     parent.name
                 ),
                 url = parent.url,
-                onClick = { _, _ -> } // TODO!!!
+                onClick = onClick
             )
             LargeVerticalSpacer()
         }
@@ -119,7 +126,7 @@ private fun LocalAuthorityCard(
             title = localAuthority.name,
             description = description,
             url = localAuthority.url,
-            onClick = { _, _ -> } // TODO!!!
+            onClick = onClick
         )
     }
 }
@@ -213,7 +220,8 @@ private fun UnitaryLocalAuthorityPreview() {
                 name = "London Borough of Tower Hamlets",
                 url = "",
                 slug = ""
-            )
+            ),
+            onClick = { _, _ -> }
         )
     }
 }
@@ -232,7 +240,8 @@ private fun TwoTierLocalAuthorityPreview() {
                     url = "",
                     slug = ""
                 )
-            )
+            ),
+            onClick = { _, _ -> }
         )
     }
 }
