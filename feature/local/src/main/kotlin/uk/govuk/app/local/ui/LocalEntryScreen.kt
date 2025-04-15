@@ -150,8 +150,8 @@ private fun LocalEntryScreen(
 //                        focusedSupportingTextColor = Color.Green,
                     focusedTextColor = GovUkTheme.colourScheme.textAndIcons.primary,
                     selectionColors = TextSelectionColors(
-                        handleColor = GovUkTheme.colourScheme.surfaces.highlightedTextField,
-                        backgroundColor = GovUkTheme.colourScheme.surfaces.highlightedTextField
+                        handleColor = GovUkTheme.colourScheme.surfaces.textFieldHighlighted,
+                        backgroundColor = GovUkTheme.colourScheme.surfaces.textFieldHighlighted
                     ),
                     unfocusedContainerColor = GovUkTheme.colourScheme.surfaces.textFieldBackground,
                     unfocusedIndicatorColor = GovUkTheme.colourScheme.textAndIcons.secondary,
