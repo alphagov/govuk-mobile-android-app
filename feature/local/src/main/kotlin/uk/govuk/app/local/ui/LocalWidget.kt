@@ -52,10 +52,10 @@ private fun LocalNavigationCard(
 
     OutlinedCard(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.localBackground),
+        colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.cardGreen),
         border = BorderStroke(
             width = 1.dp,
-            color = GovUkTheme.colourScheme.strokes.localBorder
+            color = GovUkTheme.colourScheme.strokes.cardGreen
         )
     ) {
         Column(
@@ -75,7 +75,7 @@ private fun LocalNavigationCard(
                 Title3BoldLabel(stringResource(R.string.local_section_title))
             }
             SmallVerticalSpacer()
-            HorizontalDivider(color = GovUkTheme.colourScheme.strokes.localBorder)
+            HorizontalDivider(color = GovUkTheme.colourScheme.strokes.cardGreen)
             MediumVerticalSpacer()
             Row(
                 modifier = Modifier
@@ -88,7 +88,7 @@ private fun LocalNavigationCard(
                     painterResource(R.drawable.outline_pin_drop_24),
                     contentDescription = null,
                     modifier = Modifier.size(40.dp),
-                    tint = GovUkTheme.colourScheme.textAndIcons.localIcon
+                    tint = GovUkTheme.colourScheme.textAndIcons.iconGreen
                 )
                 SmallHorizontalSpacer()
                 Column(
@@ -106,7 +106,7 @@ private fun LocalNavigationCard(
                 Icon(
                     painterResource(uk.gov.govuk.design.R.drawable.ic_chevron),
                     contentDescription = null,
-                    tint = GovUkTheme.colourScheme.textAndIcons.localIcon
+                    tint = GovUkTheme.colourScheme.textAndIcons.iconGreen
                 )
             }
         }
