@@ -84,7 +84,7 @@ data class GovUkColourScheme(
         val logo: Color,
         val logoDot: Color,
         val logoCrown: Color,
-        val localIcon: Color
+        val iconGreen: Color
     )
 
     data class Surfaces(
@@ -117,9 +117,9 @@ data class GovUkColourScheme(
         val toggleHandle: Color,
         val icon: Color,
         val homeHeader: Color,
-        val localBackground: Color,
+        val cardGreen: Color,
         val textFieldBackground: Color,
-        val highlightedTextField: Color
+        val textFieldHighlighted: Color
     )
 
     data class Strokes(
@@ -132,7 +132,7 @@ data class GovUkColourScheme(
         val switchOn: Color,
         val switchOff: Color,
         val buttonCompactHighlight: Color,
-        val localBorder: Color,
+        val cardGreen: Color,
         val textFieldCursor: Color
     )
 }
@@ -166,7 +166,7 @@ internal val LightColorScheme = GovUkColourScheme(
         logo = White,
         logoDot = TealAccent,
         logoCrown = BlackLighter50,
-        localIcon = GreenDarker25
+        iconGreen = GreenDarker25
     ),
     surfaces = Surfaces(
         background = White,
@@ -198,9 +198,9 @@ internal val LightColorScheme = GovUkColourScheme(
         toggleHandle = White,
         icon = BluePrimary,
         homeHeader = BluePrimary,
-        localBackground = GreenLighter95,
+        cardGreen = GreenLighter95,
         textFieldBackground = Grey60,
-        highlightedTextField = BlueLighter50
+        textFieldHighlighted = BlueLighter50
     ),
     strokes = Strokes(
         fixedContainer = BlackAlpha30,
@@ -212,7 +212,7 @@ internal val LightColorScheme = GovUkColourScheme(
         switchOn = GreenPrimary,
         switchOff = BlackLighter50,
         buttonCompactHighlight = BlueLighter25,
-        localBorder = GreenLighter50,
+        cardGreen = GreenLighter50,
         textFieldCursor = Grey700
     )
 )
@@ -246,7 +246,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         logo = White,
         logoDot = TealAccent,
         logoCrown = BlackLighter50,
-        localIcon = White
+        iconGreen = White
     ),
     surfaces = Surfaces(
         background = Black,
@@ -278,9 +278,9 @@ internal val DarkColorScheme = GovUkColourScheme(
         toggleHandle = White,
         icon = BlueAccent,
         homeHeader = BlueDarker50,
-        localBackground = GreenDarker50,
+        cardGreen = GreenDarker50,
         textFieldBackground = Grey800,
-        highlightedTextField = BlueDarker25
+        textFieldHighlighted = BlueDarker25
     ),
     strokes = Strokes(
         fixedContainer = WhiteAlpha30,
@@ -292,7 +292,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         switchOn = GreenPrimary,
         switchOff = BlackLighter50,
         buttonCompactHighlight = BlueDarker25,
-        localBorder = GreenLighter25,
+        cardGreen = GreenLighter25,
         textFieldCursor = Grey300
     )
 )
@@ -327,7 +327,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             logo = Color.Unspecified,
             logoDot = Color.Unspecified,
             logoCrown = Color.Unspecified,
-            localIcon = Color.Unspecified
+            iconGreen = Color.Unspecified
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,
@@ -359,9 +359,9 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             toggleHandle = Color.Unspecified,
             icon = Color.Unspecified,
             homeHeader = Color.Unspecified,
-            localBackground = Color.Unspecified,
+            cardGreen = Color.Unspecified,
             textFieldBackground = Color.Unspecified,
-            highlightedTextField = Color.Unspecified
+            textFieldHighlighted = Color.Unspecified
         ),
         strokes = Strokes(
             fixedContainer = Color.Unspecified,
@@ -373,7 +373,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             switchOn = Color.Unspecified,
             switchOff = Color.Unspecified,
             buttonCompactHighlight = Color.Unspecified,
-            localBorder = Color.Unspecified,
+            cardGreen = Color.Unspecified,
             textFieldCursor = Color.Unspecified
         )
     )

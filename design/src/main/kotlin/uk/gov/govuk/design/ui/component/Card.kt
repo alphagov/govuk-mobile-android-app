@@ -1,5 +1,6 @@
 package uk.gov.govuk.design.ui.component
 
+import android.content.Intent
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -21,10 +22,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import uk.gov.govuk.design.R
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
@@ -136,6 +139,53 @@ fun HomeNavigationCard(
     }
 }
 
+@Composable
+fun SearchResultCard(
+    title: String,
+    description: String?,
+    url: String,
+    onClick: (String, String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val intent = Intent(Intent.ACTION_VIEW)
+    intent.data = url.toUri()
+
+    GovUkCard(
+        modifier = modifier,
+        onClick = {
+            onClick(title, url)
+            context.startActivity(intent)
+        }
+    ) {
+        Row(
+            verticalAlignment = Alignment.Top
+        ) {
+            BodyRegularLabel(
+                text = title,
+                modifier = Modifier.weight(1f),
+                color = GovUkTheme.colourScheme.textAndIcons.link,
+            )
+
+            Icon(
+                painter = painterResource(
+                    R.drawable.ic_external_link
+                ),
+                contentDescription = stringResource(
+                    R.string.opens_in_web_browser
+                ),
+                tint = GovUkTheme.colourScheme.textAndIcons.link,
+                modifier = Modifier.padding(start = GovUkTheme.spacing.medium)
+            )
+        }
+
+        if (!description.isNullOrBlank()) {
+            SmallVerticalSpacer()
+            BodyRegularLabel(description)
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun HomeNavigationCardPreview() {
@@ -182,6 +232,32 @@ private fun HomeNavigationCardNoIconPreview() {
         HomeNavigationCard(
             title = "Card title",
             onClick = { }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SearchResultWithDescriptionPreview() {
+    GovUkTheme {
+        SearchResultCard(
+            title = "Card title",
+            description = "Description",
+            url = "",
+            onClick = { _, _ -> }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SearchResultWithoutDescriptionPreview() {
+    GovUkTheme {
+        SearchResultCard(
+            title = "Card title",
+            description = null,
+            url = "",
+            onClick = { _, _ -> }
         )
     }
 }

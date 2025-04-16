@@ -1,15 +1,11 @@
 package uk.gov.govuk.search.ui
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,20 +13,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.GovUkCard
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
-import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
+import uk.gov.govuk.design.ui.component.SearchResultCard
 import uk.gov.govuk.design.ui.component.Title3BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.search.R
@@ -57,7 +48,18 @@ internal fun SearchResults(
             Header(focusRequester)
         }
         items(searchResults) { searchResult ->
-            SearchResult(searchResult, onClick)
+            SearchResultCard(
+                title = StringUtils.collapseWhitespace(searchResult.title),
+                description = searchResult.description?.let { StringUtils.collapseWhitespace(it) },
+                url = StringUtils.buildFullUrl(searchResult.link),
+                onClick = onClick,
+                modifier = Modifier.padding(
+                    GovUkTheme.spacing.medium,
+                    GovUkTheme.spacing.medium,
+                    GovUkTheme.spacing.medium,
+                    0.dp
+                )
+            )
         }
         item {
             MediumVerticalSpacer()
@@ -82,64 +84,10 @@ private fun Header(
     Title3BoldLabel(
         text = stringResource(R.string.search_results_heading),
         modifier = modifier
-            .padding(horizontal = GovUkTheme.spacing.extraLarge,)
+            .padding(horizontal = GovUkTheme.spacing.extraLarge)
             .padding(top = GovUkTheme.spacing.medium)
             .focusRequester(focusRequester)
             .focusable()
             .semantics { heading() }
     )
-}
-
-@Composable
-private fun SearchResult(
-    searchResult: SearchResult,
-    onClick: (String, String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val title = StringUtils.collapseWhitespace(searchResult.title)
-    val url = StringUtils.buildFullUrl(searchResult.link)
-
-    val context = LocalContext.current
-    val intent = Intent(Intent.ACTION_VIEW)
-    intent.data = Uri.parse(url)
-
-    GovUkCard(
-        modifier = modifier.padding(
-            GovUkTheme.spacing.medium,
-            GovUkTheme.spacing.medium,
-            GovUkTheme.spacing.medium,
-            0.dp
-        ),
-        onClick = {
-            onClick(title, url)
-            context.startActivity(intent)
-        }
-    ) {
-        Row(
-            verticalAlignment = Alignment.Top
-        ) {
-            BodyRegularLabel(
-                text = title,
-                modifier = Modifier.weight(1f),
-                color = GovUkTheme.colourScheme.textAndIcons.link,
-            )
-
-            Icon(
-                painter = painterResource(
-                    uk.gov.govuk.design.R.drawable.ic_external_link
-                ),
-                contentDescription = stringResource(
-                    uk.gov.govuk.design.R.string.opens_in_web_browser
-                ),
-                tint = GovUkTheme.colourScheme.textAndIcons.link,
-                modifier = Modifier.padding(start = GovUkTheme.spacing.medium)
-            )
-        }
-
-        val description = searchResult.description
-        if (!description.isNullOrBlank()) {
-            SmallVerticalSpacer()
-            BodyRegularLabel(StringUtils.collapseWhitespace(description))
-        }
-    }
 }
