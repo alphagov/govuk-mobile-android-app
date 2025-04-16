@@ -2,15 +2,12 @@ package uk.govuk.app.local.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -22,17 +19,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
+import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
-import uk.gov.govuk.design.ui.component.PrimaryButton
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title1BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -188,26 +183,10 @@ private fun BottomNavBar(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.background(GovUkTheme.colourScheme.surfaces.background)) {
-        HorizontalDivider(
-            thickness = 1.dp,
-            color = GovUkTheme.colourScheme.strokes.fixedContainer
+        val buttonText = stringResource(R.string.local_confirm_button)
+        FixedPrimaryButton(
+            text = buttonText,
+            onClick = { onPostcodeLookup(buttonText, postcode) }
         )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .defaultMinSize(minHeight = 64.dp)
-                .padding(
-                    start = GovUkTheme.spacing.medium,
-                    end = GovUkTheme.spacing.medium,
-                    bottom = GovUkTheme.spacing.large
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            val buttonText = stringResource(R.string.local_confirm_button)
-            PrimaryButton(
-                text = buttonText,
-                onClick = { onPostcodeLookup(buttonText, postcode) },
-            )
-        }
     }
 }

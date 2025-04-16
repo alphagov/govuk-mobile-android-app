@@ -6,26 +6,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.window.core.layout.WindowHeightSizeClass
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import uk.gov.govuk.design.ui.component.ChildPageHeader
-import uk.gov.govuk.design.ui.component.HorizontalButtonGroup
-import uk.gov.govuk.design.ui.component.ListDivider
+import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
+import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.OnboardingSlide
-import uk.gov.govuk.design.ui.component.PrimaryButton
-import uk.gov.govuk.design.ui.component.VerticalButtonGroup
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.notifications.NotificationsOnboardingUiState
 import uk.gov.govuk.notifications.NotificationsOnboardingViewModel
@@ -147,8 +141,6 @@ private fun OnboardingScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        ListDivider()
-
         footer()
     }
 }
@@ -159,32 +151,16 @@ private fun OnboardingScreenFooter(
     onSkip: ((String) -> Unit),
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .padding(top = GovUkTheme.spacing.medium, bottom = GovUkTheme.spacing.small)
-            .padding(horizontal = GovUkTheme.spacing.small),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-
+    Column(modifier) {
         val allowButtonText = stringResource(R.string.allow_button)
         val notNowButtonText = stringResource(R.string.not_now_button)
 
-        if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
-            HorizontalButtonGroup(
-                primaryText = allowButtonText,
-                onPrimary = { onContinue(allowButtonText) },
-                secondaryText = notNowButtonText,
-                onSecondary = { onSkip(notNowButtonText) }
-            )
-        } else {
-            VerticalButtonGroup(
-                primaryText = allowButtonText,
-                onPrimary = { onContinue(allowButtonText) },
-                secondaryText = notNowButtonText,
-                onSecondary = { onSkip(notNowButtonText) }
-            )
-        }
+        FixedDoubleButtonGroup(
+            primaryText = allowButtonText,
+            onPrimary = { onContinue(allowButtonText) },
+            secondaryText = notNowButtonText,
+            onSecondary = { onSkip(notNowButtonText) }
+        )
     }
 }
 
@@ -193,33 +169,30 @@ private fun OnboardingScreenFooterNoSkip(
     onContinue: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .padding(vertical = GovUkTheme.spacing.medium)
-            .padding(horizontal = GovUkTheme.spacing.small),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
+    Column(modifier) {
         val allowButtonText = stringResource(R.string.allow_button)
-
-        PrimaryButton(
+        FixedPrimaryButton(
             text = allowButtonText,
             onClick = { onContinue(allowButtonText) },
-            modifier = modifier
         )
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun OnboardingScreenPreview() {
-    OnboardingScreen({}, footer = { OnboardingScreenFooter({}, {}) })
+    GovUkTheme {
+        OnboardingScreen({}, footer = { OnboardingScreenFooter({}, {}) })
+    }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun OnboardingScreenNoSkipPreview() {
-    OnboardingScreen(
-        {},
-        header = { ChildPageHeader(onBack = {}) },
-        footer = { OnboardingScreenFooterNoSkip({}) })
+    GovUkTheme {
+        OnboardingScreen(
+            {},
+            header = { ChildPageHeader(onBack = {}) },
+            footer = { OnboardingScreenFooterNoSkip({}) })
+    }
 }

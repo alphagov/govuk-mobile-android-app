@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -18,13 +17,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.window.core.layout.WindowWidthSizeClass
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.HorizontalButtonGroup
+import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
-import uk.gov.govuk.design.ui.component.ListDivider
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
-import uk.gov.govuk.design.ui.component.VerticalButtonGroup
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.R
 import uk.gov.govuk.topics.TopicSelectionUiState
@@ -68,8 +64,6 @@ private fun TopicSelectionScreen(
     onSkip: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val windowWidthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
-
     val title = stringResource(R.string.topicSelectionTitle)
 
     LaunchedEffect(Unit) {
@@ -128,32 +122,22 @@ private fun TopicSelectionScreen(
                     modifier = modifier
                 )
             }
+
+            MediumVerticalSpacer()
         }
 
         uiState?.let {
-            ListDivider()
-
             val doneButtonText = stringResource(R.string.doneButton)
             val skipButtonText = stringResource(R.string.skipButton)
             val isDoneEnabled = it.isDoneEnabled
 
-            if (windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
-                VerticalButtonGroup(
-                    primaryText = doneButtonText,
-                    onPrimary = { onDone(doneButtonText) },
-                    secondaryText = skipButtonText,
-                    onSecondary = { onSkip(skipButtonText) },
-                    primaryEnabled = isDoneEnabled
-                )
-            } else {
-                HorizontalButtonGroup(
-                    primaryText = doneButtonText,
-                    onPrimary = { onDone(doneButtonText) },
-                    secondaryText = skipButtonText,
-                    onSecondary = { onSkip(skipButtonText) },
-                    primaryEnabled = isDoneEnabled
-                )
-            }
+            FixedDoubleButtonGroup(
+                primaryText = doneButtonText,
+                onPrimary = { onDone(doneButtonText) },
+                secondaryText = skipButtonText,
+                onSecondary = { onSkip(skipButtonText) },
+                primaryEnabled = isDoneEnabled
+            )
         }
     }
 }

@@ -1,7 +1,6 @@
 package uk.gov.govuk.design.ui.component.error
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,10 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.net.toUri
 import uk.gov.govuk.design.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
+import uk.gov.govuk.design.ui.component.FixedSecondaryButton
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
-import uk.gov.govuk.design.ui.component.ListDivider
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SecondaryButton
 import uk.gov.govuk.design.ui.component.error.ErrorConstants.GOV_UK_URL
@@ -37,15 +37,16 @@ fun AppUnavailableScreen(
             BodyRegularLabel(stringResource(R.string.app_unavailable_description))
         }
 
-        ListDivider()
-
         val context = LocalContext.current
-        GoToGovUkButton(
-            onGoToGovUkClick = {
+        val text = stringResource(R.string.go_to_the_gov_uk_website)
+        FixedSecondaryButton(
+            text = text,
+            onClick = {
                 val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse(GOV_UK_URL)
+                intent.data = GOV_UK_URL.toUri()
                 context.startActivity(intent)
-            }
+            },
+            externalLink = true
         )
     }
 }
