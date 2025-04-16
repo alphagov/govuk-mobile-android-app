@@ -7,5 +7,11 @@ internal data class AdditionalData(
     @SerializedName("deeplink") val deepLink: String
 )
 
-internal fun String.asAdditionalData(gson: Gson = Gson()) =
-    gson.fromJson(this, AdditionalData::class.java)
+internal fun String.asAdditionalData(): AdditionalData? {
+    return try {
+        val gson = Gson()
+        gson.fromJson(this, AdditionalData::class.java)
+    } catch (_: Exception) {
+        null
+    }
+}

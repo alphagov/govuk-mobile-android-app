@@ -16,6 +16,7 @@ import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -42,7 +43,7 @@ class NotificationsClientTest {
     }
 
     @Test
-    fun `Given we have a notifications client, when initialise is called, One Signal initialise function is called`() {
+    fun `Given we have a notifications client, when initialise is called, then One Signal initialise function is called`() {
         val oneSignalAppId = "1234"
         every { OneSignal.initWithContext(context, oneSignalAppId) } returns Unit
 
@@ -56,7 +57,7 @@ class NotificationsClientTest {
     }
 
     @Test
-    fun `Given we have a notifications client, when request permission is called and permissions denied, One Signal request permission function is called`() {
+    fun `Given we have a notifications client, when request permission is called and permissions denied, then One Signal request permission function is called`() {
         every { OneSignal.Notifications.canRequestPermission } returns true
         coEvery { OneSignal.Notifications.requestPermission(false) } returns true
 
@@ -74,7 +75,7 @@ class NotificationsClientTest {
     }
 
     @Test
-    fun `Given we have a notifications client, when request permission is called and permissions granted, One Signal request permission function is called`() {
+    fun `Given we have a notifications client, when request permission is called and permissions granted, then One Signal request permission function is called`() {
         every { OneSignal.Notifications.canRequestPermission } returns true
         coEvery { OneSignal.Notifications.requestPermission(false) } returns false
 
@@ -92,7 +93,7 @@ class NotificationsClientTest {
     }
 
     @Test
-    fun `Given we have a notifications client, when add click listener is called, One Signal add click listener function is called`() {
+    fun `Given we have a notifications client, when add click listener is called, then One Signal add click listener function is called`() {
         every { OneSignal.Notifications.addClickListener(any()) } returns Unit
 
         runTest {
@@ -105,9 +106,10 @@ class NotificationsClientTest {
     }
 
     @Test
-    fun `Given we have a notifications client, when handle additional data function is called, a new activity is started with an intent`() {
+    fun `Given we have a notifications client, when handle additional data function is called with valid additional data, then a new activity is started with an intent`() {
         val uri = mockk<Uri>()
         val intent = spyk<Intent>()
+        val additionalData = mockk<JSONObject>()
 
         every { uri.scheme } returns "scheme"
         every { uri.host } returns "host"
@@ -116,8 +118,7 @@ class NotificationsClientTest {
         every { intent.data } returns uri
         every { intent.setFlags(FLAG_ACTIVITY_NEW_TASK) } returns intent
         every { intent.flags } returns FLAG_ACTIVITY_NEW_TASK
-
-        val additionalData = "{\"deeplink\":\"scheme://host\"}"
+        every { additionalData.toString() } returns "{\"deeplink\":\"scheme://host\"}"
 
         runTest {
             notificationsClient.handleAdditionalData(context, additionalData, intent)
@@ -127,6 +128,21 @@ class NotificationsClientTest {
             assertEquals(FLAG_ACTIVITY_NEW_TASK, intent.flags)
 
             verify(exactly = 1) {
+                context.startActivity(intent)
+            }
+        }
+    }
+
+    @Test
+    fun `Given we have a notifications client, when handle additional data function is called and additional data is null, then start activity is not called`() {
+        val intent = spyk<Intent>()
+
+        val additionalData: JSONObject? = null
+
+        runTest {
+            notificationsClient.handleAdditionalData(context, additionalData, intent)
+
+            verify(exactly = 0) {
                 context.startActivity(intent)
             }
         }
