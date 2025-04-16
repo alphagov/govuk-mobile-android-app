@@ -462,8 +462,12 @@ class AnalyticsClientTest {
     }
 
     @Test
-    fun `Given a widget click, then log event`() {
-        analyticsClient.widgetClick("text", false, "section")
+    fun `Given a widget click with no url, then log event`() {
+        analyticsClient.widgetClick(
+            text = "text",
+            external = false,
+            section = "section"
+        )
 
         verify {
             firebaseAnalyticClient.logEvent(
@@ -471,6 +475,30 @@ class AnalyticsClientTest {
                 mapOf(
                     "type" to "Widget",
                     "external" to false,
+                    "language" to Locale.getDefault().language,
+                    "text" to "text",
+                    "section" to "section"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a widget click with url, then log event`() {
+        analyticsClient.widgetClick(
+            text = "text",
+            url = "url",
+            external = true,
+            section = "section"
+        )
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "Widget",
+                    "url" to "url",
+                    "external" to true,
                     "language" to Locale.getDefault().language,
                     "text" to "text",
                     "section" to "section"
