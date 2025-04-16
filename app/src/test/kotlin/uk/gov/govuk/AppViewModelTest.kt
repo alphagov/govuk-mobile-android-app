@@ -8,6 +8,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -15,7 +16,9 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -23,7 +26,6 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
-import uk.gov.govuk.data.local.AppDataStore
 import uk.gov.govuk.data.model.Result.Error
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
@@ -41,11 +43,16 @@ class AppViewModelTest {
     private val topicsFeature = mockk<TopicsFeature>(relaxed = true)
     private val localFeature = mockk<LocalFeature>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
-    private val appDataStore = mockk<AppDataStore>(relaxed = true)
 
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
+
+        // Default setup state, overridden by individual tests if/when required
+        coEvery { configRepo.initConfig() } returns Success(Unit)
+        every { localFeature.hasLocalAuthority() } returns flowOf(false)
+        every { appRepo.suppressedHomeWidgets } returns flowOf(emptySet())
+        every { flagRepo.isAppAvailable() } returns true
     }
 
     @After
@@ -79,7 +86,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given the app is unavailable, When init, then should display app unavailable`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
         every { flagRepo.isAppAvailable() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -92,9 +98,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given the app is available, When init, then should not display app unavailable`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
-
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
 
         runTest {
@@ -105,8 +108,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given forced update, When init, then should display forced update`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isForcedUpdate(any()) } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -119,8 +120,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given don't forced update, When init, then should not display forced update`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isForcedUpdate(any()) } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -133,8 +132,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given recommend update, When init, then should display recommend update`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isRecommendUpdate(any()) } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -147,8 +144,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given don't recommend update, When init, then should not display recommend update`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isRecommendUpdate(any()) } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -161,8 +156,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given analytics consent is required, When init, then should display analytics consent`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         coEvery { analyticsClient.isAnalyticsConsentRequired() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -175,8 +168,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given the analytics enabled state is enabled, When init, then should not display analytics consent`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         coEvery { analyticsClient.isAnalyticsConsentRequired() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -189,8 +180,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given the user has previously completed onboarding and onboarding is enabled, When init, then should not display onboarding`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         coEvery { appRepo.isOnboardingCompleted() } returns true
         every { flagRepo.isOnboardingEnabled() } returns true
 
@@ -204,8 +193,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given the user has not previously completed onboarding and onboarding is enabled, When init, then should display onboarding`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         coEvery { appRepo.isOnboardingCompleted() } returns false
         every { flagRepo.isOnboardingEnabled() } returns true
 
@@ -219,8 +206,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given the user has previously completed onboarding and onboarding is disabled, When init, then should not display onboarding`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         coEvery { appRepo.isOnboardingCompleted() } returns true
         every { flagRepo.isOnboardingEnabled() } returns false
 
@@ -234,8 +219,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given the user has not previously completed onboarding and onboarding is disabled, When init, then should not display onboarding`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         coEvery { appRepo.isOnboardingCompleted() } returns false
         every { flagRepo.isOnboardingEnabled() } returns false
 
@@ -249,8 +232,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given topics are disabled, When init, then should not display topic selection`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isTopicsEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -263,8 +244,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given topic selection has been completed, When init, then should not display topic selection`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isTopicsEnabled() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns true
 
@@ -278,8 +257,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given topic init was not successful, When init, then should not display topic selection`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isTopicsEnabled() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
         coEvery { topicsFeature.init() } returns false
@@ -294,8 +271,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given topics is enabled, selection has not been completed and init was successful, When init, then should display topic selection`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isTopicsEnabled() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
         coEvery { topicsFeature.init() } returns true
@@ -310,8 +285,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given notifications are enabled, When init, then emit notifications enabled state`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isNotificationsEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -324,8 +297,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given notifications are disabled, When init, then emit notifications disabled state`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         every { flagRepo.isNotificationsEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -338,8 +309,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given the search feature is enabled, When init, then emit search enabled state`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isSearchEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -353,8 +322,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given the search feature is disabled, When init, then emit search disabled state`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isSearchEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -367,8 +334,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given the recent activity feature is enabled, When init, then emit recent activity enabled state`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isRecentActivityEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -381,8 +346,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given the recent activity feature is disabled, When init, then emit recent activity disabled state`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isRecentActivityEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -395,8 +358,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given the topics feature is enabled, When init, then emit topics enabled state`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isTopicsEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -409,8 +370,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given the topics feature is disabled, When init, then emit topics disabled state`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isTopicsEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -423,8 +382,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given the notifications widget is enabled, When init, then emit notifications widget enabled state`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isNotificationsEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -437,8 +394,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given the notifications widget is disabled, When init, then emit notifications widget disabled state`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isNotificationsEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -451,10 +406,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the notifications widget is not suppressed, When init, then emit notifications widget enabled state`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isNotificationsEnabled() } returns true
-//        coEvery { appDataStore.isHomeWidgetInSuppressedList(HomeWidget.NOTIFICATIONS) } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
 
@@ -466,10 +418,8 @@ class AppViewModelTest {
 
     @Test
     fun `Given the notifications widget is suppressed, When init, then emit notifications widget disabled state`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
+        every { appRepo.suppressedHomeWidgets } returns flowOf(setOf(HomeWidget.NOTIFICATIONS.serializedName))
         coEvery { flagRepo.isNotificationsEnabled() } returns true
-//        coEvery { appDataStore.isHomeWidgetInSuppressedList(HomeWidget.NOTIFICATIONS) } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
 
@@ -481,9 +431,6 @@ class AppViewModelTest {
 
     @Test
     fun `When onboarding completed, then call repo onboarding completed`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
-
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
 
         runTest {
@@ -495,9 +442,6 @@ class AppViewModelTest {
 
     @Test
     fun `When topic selection completed, then call repo topic selection completed`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
-
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
 
         runTest {
@@ -509,9 +453,6 @@ class AppViewModelTest {
 
     @Test
     fun `When tab is clicked, then log analytics`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
-
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
 
         runTest {
@@ -525,49 +466,39 @@ class AppViewModelTest {
 
     @Test
     fun `When an external widget is clicked, then log analytics`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
-
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
 
         runTest {
-//            viewModel.onWidgetClick("text", true, "section")
+            viewModel.onWidgetClick("text", "url", true, "section")
 
             coVerify {
-//                analyticsClient.widgetClick("text", true, "section")
+                analyticsClient.widgetClick("text", "url", true, "section")
             }
         }
     }
 
     @Test
     fun `When an internal widget is clicked, then log analytics`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
-
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
 
         runTest {
-//            viewModel.onWidgetClick("text", false, "section")
+            viewModel.onWidgetClick("text", "url", false, "section")
 
             coVerify(exactly = 1) {
-//                analyticsClient.widgetClick("text", false, "section")
+                analyticsClient.widgetClick("text", "url", false, "section")
             }
         }
     }
 
     @Test
     fun `When an suppress widget is clicked, then log analytics`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
-
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
 
         runTest {
             viewModel.onSuppressWidgetClick("text", "section", HomeWidget.NOTIFICATIONS)
 
             coVerify {
-                appDataStore.suppressHomeWidget(HomeWidget.NOTIFICATIONS)
-//                viewModel.updateHomeWidgets()
+                appRepo.suppressHomeWidget(HomeWidget.NOTIFICATIONS)
                 analyticsClient.suppressWidgetClick("text", "section")
             }
         }
@@ -575,9 +506,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given a deep link is received, When the app has the deep link, then log analytics`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
-
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
 
         runTest {
@@ -591,9 +519,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given a deep link is received, When the app doesn't have the deep link, then log analytics`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
-
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
 
         runTest {
@@ -607,8 +532,6 @@ class AppViewModelTest {
 
     @Test
     fun `Given the user tries again, then emit loading state and fetch config`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-
         runTest {
             val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
 
@@ -629,24 +552,7 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given the local feature is enabled, When init, then emit local enabled state`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
-        coEvery { flagRepo.isLocalServicesEnabled() } returns true
-
-        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
-
-        runTest {
-            viewModel.homeWidgets.first()
-                ?.let { assertTrue(it.contains(HomeWidget.LOCAL)) }
-        }
-    }
-
-
-    @Test
     fun `Given the local feature is disabled, When init, then emit local disabled state`() {
-        coEvery { configRepo.initConfig() } returns Success(Unit)
-        every { flagRepo.isAppAvailable() } returns true
         coEvery { flagRepo.isLocalServicesEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
@@ -654,6 +560,35 @@ class AppViewModelTest {
         runTest {
             viewModel.homeWidgets.first()
                 ?.let { assertFalse(it.contains(HomeWidget.LOCAL)) }
+        }
+    }
+
+    @Test
+    fun `Given the local feature is enabled and a local authority is not selected, When init, then emit local enabled state`() {
+        coEvery { flagRepo.isLocalServicesEnabled() } returns true
+        coEvery { flagRepo.isTopicsEnabled() } returns true
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
+
+        runTest {
+            val homeWidgets = viewModel.homeWidgets.value!!
+            assertEquals(HomeWidget.LOCAL, homeWidgets.first())
+            assertNotEquals(HomeWidget.LOCAL, homeWidgets.last())
+        }
+    }
+
+    @Test
+    fun `Given the local feature is enabled and a local authority is selected, When init, then emit local enabled state`() {
+        coEvery { flagRepo.isLocalServicesEnabled() } returns true
+        coEvery { flagRepo.isTopicsEnabled() } returns true
+        every { localFeature.hasLocalAuthority() } returns flowOf(true)
+
+        val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature, analyticsClient)
+
+        runTest {
+            val homeWidgets = viewModel.homeWidgets.value!!
+            assertNotEquals(HomeWidget.LOCAL, homeWidgets.first())
+            assertEquals(HomeWidget.LOCAL, homeWidgets.last())
         }
     }
 }

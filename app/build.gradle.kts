@@ -165,4 +165,5 @@ dependencies {
     androidTestImplementation(libs.hilt.android)
 
     debugImplementation(libs.androidx.ui.test.manifest)
+    testImplementation(kotlin("test"))
 }
