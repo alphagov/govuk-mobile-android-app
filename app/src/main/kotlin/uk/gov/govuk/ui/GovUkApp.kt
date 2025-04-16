@@ -59,7 +59,6 @@ import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.extension.asDeepLinks
 import uk.gov.govuk.extension.getUrlParam
-import uk.gov.govuk.home.HomeWidget
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
 import uk.gov.govuk.navigation.AppLaunchNavigation
@@ -73,6 +72,7 @@ import uk.gov.govuk.search.ui.widget.SearchWidget
 import uk.gov.govuk.settings.BuildConfig.PRIVACY_POLICY_URL
 import uk.gov.govuk.settings.navigation.settingsGraph
 import uk.gov.govuk.topics.navigation.topicsGraph
+import uk.gov.govuk.ui.model.HomeWidget
 import uk.gov.govuk.visited.navigation.visitedGraph
 import uk.govuk.app.local.navigation.localGraph
 
@@ -108,8 +108,20 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                             topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
                             onTabClick = { tabText -> viewModel.onTabClick(tabText) },
                             homeWidgets = homeWidgets,
-                            onWidgetClick = { text, external ->
-                                viewModel.onWidgetClick(text, external, section)
+                            onInternalWidgetClick = { text ->
+                                viewModel.onWidgetClick(
+                                    text = text,
+                                    external = false,
+                                    section = section
+                                )
+                            },
+                            onExternalWidgetClick = { text, url ->
+                                viewModel.onWidgetClick(
+                                    text = text,
+                                    url = url,
+                                    external = true,
+                                    section = section
+                                )
                             },
                             onSuppressWidgetClick = { text, widget ->
                                 viewModel.onSuppressWidgetClick(text, section, widget)
@@ -148,7 +160,8 @@ private fun BottomNavScaffold(
     topicSelectionCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
     homeWidgets: List<HomeWidget>?,
-    onWidgetClick: (String, Boolean) -> Unit,
+    onInternalWidgetClick: (String) -> Unit,
+    onExternalWidgetClick: (String, String?) -> Unit,
     onSuppressWidgetClick: (String, HomeWidget) -> Unit,
     onDeepLinkReceived: (Boolean, String) -> Unit
 ) {
@@ -172,7 +185,8 @@ private fun BottomNavScaffold(
                 onboardingCompleted = onboardingCompleted,
                 topicSelectionCompleted = topicSelectionCompleted,
                 homeWidgets = homeWidgets,
-                onWidgetClick = onWidgetClick,
+                onInternalWidgetClick = onInternalWidgetClick,
+                onExternalWidgetClick = onExternalWidgetClick,
                 onSuppressWidgetClick = onSuppressWidgetClick,
                 paddingValues = paddingValues
             )
@@ -302,7 +316,8 @@ private fun GovUkNavHost(
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     homeWidgets: List<HomeWidget>?,
-    onWidgetClick: (String, Boolean) -> Unit,
+    onInternalWidgetClick: (String) -> Unit,
+    onExternalWidgetClick: (String, String?) -> Unit,
     onSuppressWidgetClick: (String, HomeWidget) -> Unit,
     paddingValues: PaddingValues
 ) {
@@ -353,7 +368,8 @@ private fun GovUkNavHost(
                 context = context,
                 navController = navController,
                 homeWidgets = homeWidgets,
-                onClick = onWidgetClick,
+                onInternalClick = onInternalWidgetClick,
+                onExternalClick = onExternalWidgetClick,
                 onSuppressClick = onSuppressWidgetClick
             ),
             deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
@@ -362,7 +378,7 @@ private fun GovUkNavHost(
                 { modifier ->
                     SearchWidget(
                         onClick = { text ->
-                            onWidgetClick(text, false)
+                            onInternalWidgetClick(text)
                             navController.navigate(SEARCH_GRAPH_ROUTE)
                         },
                         modifier = modifier

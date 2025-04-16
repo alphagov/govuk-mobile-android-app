@@ -12,7 +12,7 @@ import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.Success
 import uk.govuk.app.local.data.LocalRepo
 import uk.govuk.app.local.data.remote.model.Address
-import uk.govuk.app.local.data.remote.model.LocalAuthority
+import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
 import javax.inject.Inject
 
 internal data class LocalUiState(
@@ -20,7 +20,7 @@ internal data class LocalUiState(
     var slug: String? = "",
     var message: String? = "",
     var addresses: List<Address>? = emptyList(),
-    var localAuthority: LocalAuthority? = null
+    var localAuthority: RemoteLocalAuthority? = null
 )
 
 @HiltViewModel

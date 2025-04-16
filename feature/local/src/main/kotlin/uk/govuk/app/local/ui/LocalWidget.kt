@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,41 +15,128 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ExtraSmallVerticalSpacer
+import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.component.SearchResultCard
 import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title3BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
+import uk.govuk.app.local.LocalWidgetUiState.LocalAuthoritySelected
+import uk.govuk.app.local.LocalWidgetUiState.NoLocalAuthority
+import uk.govuk.app.local.LocalWidgetViewModel
 import uk.govuk.app.local.R
 
 @Composable
 fun LocalWidget(
-    onClick: (String) -> Unit,
+    onLookupClick: (String) -> Unit,
+    onLocalAuthorityClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val viewModel: LocalWidgetViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
 
-    LocalNavigationCard(
-        onClick = onClick,
-        modifier = modifier
-    )
+    uiState?.let {
+        when (it) {
+            is LocalAuthoritySelected ->
+                LocalAuthorityCard(
+                    it.localAuthority,
+                    onLocalAuthorityClick,
+                    modifier
+                )
+            is NoLocalAuthority -> NoLocalAuthorityCard(onLookupClick, modifier)
+        }
+    }
 }
 
 @Composable
-private fun LocalNavigationCard(
+private fun LocalAuthorityCard(
+    localAuthority: LocalAuthorityUi,
+    onClick: (String, String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Title3BoldLabel(
+                text = stringResource(R.string.local_widget_title),
+                modifier = Modifier.semantics { heading() }
+            )
+
+            Spacer(Modifier.weight(1f))
+
+            val editButtonText = stringResource(R.string.local_edit_button)
+            val editButtonAltText = stringResource(R.string.local_edit_button_alt_text)
+
+            TextButton(
+                onClick = { }
+            ) {
+                BodyRegularLabel(
+                    text = editButtonText,
+                    color = GovUkTheme.colourScheme.textAndIcons.link,
+                    modifier = Modifier.semantics {
+                        contentDescription = editButtonAltText
+                    }
+                )
+            }
+        }
+
+        val description = if (localAuthority.parent != null) {
+            stringResource(R.string.local_child_authority_description, localAuthority.name)
+        } else {
+            stringResource(R.string.local_unitary_authority_description, localAuthority.name)
+        }
+
+        localAuthority.parent?.let { parent ->
+            BodyRegularLabel(stringResource(R.string.local_two_tier_title))
+            SmallVerticalSpacer()
+            SearchResultCard(
+                title = parent.name,
+                description = stringResource(
+                    R.string.local_parent_authority_description,
+                    parent.name
+                ),
+                url = parent.url,
+                onClick = onClick
+            )
+            LargeVerticalSpacer()
+        }
+
+        SearchResultCard(
+            title = localAuthority.name,
+            description = description,
+            url = localAuthority.url,
+            onClick = onClick
+        )
+    }
+}
+
+@Composable
+private fun NoLocalAuthorityCard(
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val title = stringResource(R.string.local_title)
+    val title = stringResource(R.string.local_widget_title)
 
     OutlinedCard(
         modifier = modifier,
@@ -115,8 +203,45 @@ private fun LocalNavigationCard(
 
 @Preview
 @Composable
-private fun LocalWidgetPreview() {
+private fun NoLocalAuthorityPreview() {
     GovUkTheme {
-        LocalWidget(onClick = { })
+        NoLocalAuthorityCard(
+            onClick = { }
+        )
+    }
+}
+
+@Preview (showBackground = true)
+@Composable
+private fun UnitaryLocalAuthorityPreview() {
+    GovUkTheme {
+        LocalAuthorityCard(
+            localAuthority = LocalAuthorityUi(
+                name = "London Borough of Tower Hamlets",
+                url = "",
+                slug = ""
+            ),
+            onClick = { _, _ -> }
+        )
+    }
+}
+
+@Preview (showBackground = true)
+@Composable
+private fun TwoTierLocalAuthorityPreview() {
+    GovUkTheme {
+        LocalAuthorityCard(
+            localAuthority = LocalAuthorityUi(
+                name = "Derbyshire Dales District Council",
+                url = "",
+                slug = "",
+                parent = LocalAuthorityUi(
+                    name = "Derbyshire County Council",
+                    url = "",
+                    slug = ""
+                )
+            ),
+            onClick = { _, _ -> }
+        )
     }
 }

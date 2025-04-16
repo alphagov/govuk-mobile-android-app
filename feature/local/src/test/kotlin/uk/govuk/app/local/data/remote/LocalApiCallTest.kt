@@ -12,7 +12,7 @@ import org.junit.Test
 import retrofit2.Response
 import uk.gov.govuk.data.model.Result.Success
 import uk.govuk.app.local.data.remote.model.ApiResponse
-import uk.govuk.app.local.data.remote.model.LocalAuthority
+import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
 import java.net.UnknownHostException
 
 class LocalApiCallTest {
@@ -33,7 +33,7 @@ class LocalApiCallTest {
     @Test
     fun `API call returns 200`() = runTest {
         val apiResponse = ApiResponse(
-            localAuthority = LocalAuthority(
+            localAuthority = RemoteLocalAuthority(
                 name = "name",
                 homePageUrl = "homePageUrl",
                 tier = "unitary",

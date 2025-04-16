@@ -1,8 +1,9 @@
-package uk.govuk.app.local.data.store
+package uk.govuk.app.local.data.local
 
 import uk.gov.govuk.data.local.RealmEncryptionHelper
 import uk.gov.govuk.data.local.RealmProvider
-import uk.govuk.app.local.data.model.StoredLocalAuthority
+import uk.govuk.app.local.data.local.model.StoredLocalAuthority
+import uk.govuk.app.local.data.local.model.StoredLocalAuthorityParent
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,5 +13,5 @@ internal class LocalRealmProvider @Inject constructor(
 ): RealmProvider(encryptionHelper) {
     override val schemaVersion: Long = 1
     override val name = "local"
-    override val schema = setOf(StoredLocalAuthority::class)
+    override val schema = setOf(StoredLocalAuthority::class, StoredLocalAuthorityParent::class)
 }

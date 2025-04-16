@@ -71,12 +71,14 @@ class AnalyticsClient @Inject constructor(
 
     fun widgetClick(
         text: String,
+        url: String? = null,
         external: Boolean,
-        section: String
+        section: String,
     ) {
         navigation(
             text = text,
             type = "Widget",
+            url = url,
             external = external,
             section = section
         )

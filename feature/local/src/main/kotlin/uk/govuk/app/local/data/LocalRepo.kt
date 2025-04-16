@@ -1,11 +1,12 @@
 package uk.govuk.app.local.data
 
+import kotlinx.coroutines.flow.map
 import uk.gov.govuk.data.model.Result
+import uk.govuk.app.local.data.local.LocalDataSource
 import uk.govuk.app.local.data.remote.LocalApi
 import uk.govuk.app.local.data.remote.model.ApiResponse
-import uk.govuk.app.local.data.remote.model.LocalAuthority
 import uk.govuk.app.local.data.remote.safeLocalApiCall
-import uk.govuk.app.local.data.store.LocalDataSource
+import uk.govuk.app.local.domain.model.LocalAuthority
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,6 +15,23 @@ internal class LocalRepo @Inject constructor(
     private val localApi: LocalApi,
     private val localDataSource: LocalDataSource
 ) {
+    val localAuthority = localDataSource.localAuthority.map {
+        it?.let { storedLocalAuthority ->
+            LocalAuthority(
+                name = storedLocalAuthority.name,
+                url = storedLocalAuthority.url,
+                slug = storedLocalAuthority.slug,
+                parent = storedLocalAuthority.parent ?.let { parent ->
+                    LocalAuthority(
+                        name = parent.name,
+                        url = parent.url,
+                        slug = parent.slug
+                    )
+                }
+            )
+        }
+    }
+
     suspend fun performGetLocalPostcode(
         postcode: String
     ): Result<ApiResponse> {
@@ -33,22 +51,8 @@ internal class LocalRepo @Inject constructor(
     private suspend fun processResponse(response: Result<ApiResponse>) {
         if (response is Result.Success) {
             response.value.localAuthority?.let { localAuthority ->
-                storeLocalAuthorities(
-                    child = localAuthority,
-                    parent = localAuthority.parent
-                )
+                localDataSource.insertOrReplace(localAuthority)
             }
         }
-    }
-
-    private suspend fun storeLocalAuthorities(child: LocalAuthority, parent: LocalAuthority?) {
-        localDataSource.insertOrReplace(
-            child.name,
-            child.homePageUrl,
-            child.slug,
-            parent?.name,
-            parent?.homePageUrl,
-            parent?.slug
-        )
     }
 }
