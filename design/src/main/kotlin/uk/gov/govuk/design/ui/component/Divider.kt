@@ -14,3 +14,12 @@ fun ListDivider(modifier: Modifier = Modifier) {
         color = GovUkTheme.colourScheme.strokes.listBlue
     )
 }
+
+@Composable
+fun FixedContainerDivider(modifier: Modifier = Modifier) {
+    HorizontalDivider(
+        modifier = modifier,
+        thickness = 1.dp,
+        color = GovUkTheme.colourScheme.strokes.fixedContainer
+    )
+}

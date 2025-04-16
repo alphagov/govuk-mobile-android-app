@@ -45,7 +45,9 @@ internal fun TopicsGrid(
                 rowIndex = rowIndex,
                 content = content
             )
-            MediumVerticalSpacer()
+            if (rowIndex < rowCount -1) {
+                MediumVerticalSpacer()
+            }
         }
     }
 }

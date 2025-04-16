@@ -12,7 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,18 +23,15 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.window.core.layout.WindowHeightSizeClass
 import uk.gov.govuk.analytics.AnalyticsViewModel
 import uk.gov.govuk.analytics.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.HorizontalButtonGroup
+import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
-import uk.gov.govuk.design.ui.component.ListDivider
 import uk.gov.govuk.design.ui.component.MediumHorizontalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
-import uk.gov.govuk.design.ui.component.VerticalButtonGroup
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -95,26 +91,15 @@ private fun AnalyticsConsentScreen(
             MediumVerticalSpacer()
         }
 
-        ListDivider()
-
         val enableButtonText = stringResource(R.string.analytics_consent_button_enable)
         val disableButtonText = stringResource(R.string.analytics_consent_button_disable)
-        val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-        if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
-            HorizontalButtonGroup(
-                primaryText = enableButtonText,
-                onPrimary = onConsentGranted,
-                secondaryText = disableButtonText,
-                onSecondary = onConsentDenied
-            )
-        } else {
-            VerticalButtonGroup(
-                primaryText = enableButtonText,
-                onPrimary = onConsentGranted,
-                secondaryText = disableButtonText,
-                onSecondary = onConsentDenied
-            )
-        }
+
+        FixedDoubleButtonGroup(
+            primaryText = enableButtonText,
+            onPrimary = onConsentGranted,
+            secondaryText = disableButtonText,
+            onSecondary = onConsentDenied
+        )
     }
 }
 

@@ -21,6 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.CompactButton
+import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title3BoldLabel
 import uk.gov.govuk.design.ui.component.error.ProblemMessage
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -140,6 +141,7 @@ private fun TopicsWidgetContent(
         }
 
         if (uiState.displayShowAll) {
+            LargeVerticalSpacer()
             val seeAllButtonText = stringResource(R.string.allTopicsButton)
             CompactButton(
                 text = seeAllButtonText,

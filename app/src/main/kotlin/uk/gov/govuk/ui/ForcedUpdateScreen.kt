@@ -1,7 +1,6 @@
 package uk.gov.govuk.ui
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,13 +9,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.net.toUri
 import uk.gov.govuk.BuildConfig.PLAY_STORE_URL
 import uk.gov.govuk.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
+import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
-import uk.gov.govuk.design.ui.component.ListDivider
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
-import uk.gov.govuk.design.ui.component.PrimaryButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -37,28 +36,17 @@ internal fun ForcedUpdateScreen(
             BodyRegularLabel(stringResource(R.string.forced_update_description))
         }
 
-        ListDivider()
-
+        val text = stringResource(R.string.forced_update_button_title_update)
         val context = LocalContext.current
-        UpdateButton(
-            onUpdateClick = {
+        FixedPrimaryButton(
+            text = text,
+            onClick = {
                 val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse(PLAY_STORE_URL)
+                intent.data = PLAY_STORE_URL.toUri()
                 context.startActivity(intent)
             }
         )
     }
-}
-
-@Composable
-private fun UpdateButton(
-    onUpdateClick: () -> Unit
-) {
-    val text = stringResource(R.string.forced_update_button_title_update)
-    PrimaryButton(
-        text = text,
-        onClick = { onUpdateClick() }
-    )
 }
 
 @Preview

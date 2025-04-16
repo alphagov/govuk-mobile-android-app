@@ -10,11 +10,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import uk.gov.govuk.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
+import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
-import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
-import uk.gov.govuk.design.ui.component.ListDivider
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
-import uk.gov.govuk.design.ui.component.PrimaryButton
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
@@ -43,15 +41,10 @@ internal fun DeviceOfflineScreen(
             Spacer(Modifier.weight(1f))
         }
 
-        ListDivider()
-
-        PrimaryButton(
+        FixedPrimaryButton(
             text = stringResource(R.string.device_offline_button_title),
             onClick = onTryAgain,
-            modifier = Modifier.padding(horizontal = GovUkTheme.spacing.small)
         )
-
-        LargeVerticalSpacer()
     }
 }
 
