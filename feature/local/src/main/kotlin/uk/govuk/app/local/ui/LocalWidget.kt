@@ -48,6 +48,7 @@ import uk.govuk.app.local.R
 fun LocalWidget(
     onLookupClick: (String) -> Unit,
     onLocalAuthorityClick: (String, String) -> Unit,
+    onEditClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: LocalWidgetViewModel = hiltViewModel()
@@ -59,6 +60,7 @@ fun LocalWidget(
                 LocalAuthorityCard(
                     it.localAuthority,
                     onLocalAuthorityClick,
+                    onEditClick,
                     modifier
                 )
             is NoLocalAuthority -> NoLocalAuthorityCard(onLookupClick, modifier)
@@ -70,6 +72,7 @@ fun LocalWidget(
 private fun LocalAuthorityCard(
     localAuthority: LocalAuthorityUi,
     onClick: (String, String) -> Unit,
+    onEditClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
@@ -89,7 +92,7 @@ private fun LocalAuthorityCard(
             val editButtonAltText = stringResource(R.string.local_edit_button_alt_text)
 
             TextButton(
-                onClick = { }
+                onClick = { onEditClick(editButtonAltText) }
             ) {
                 BodyRegularLabel(
                     text = editButtonText,
@@ -221,7 +224,8 @@ private fun UnitaryLocalAuthorityPreview() {
                 url = "",
                 slug = ""
             ),
-            onClick = { _, _ -> }
+            onClick = { _, _ -> },
+            onEditClick = { }
         )
     }
 }
@@ -241,7 +245,8 @@ private fun TwoTierLocalAuthorityPreview() {
                     slug = ""
                 )
             ),
-            onClick = { _, _ -> }
+            onClick = { _, _ -> },
+            onEditClick = { }
         )
     }
 }
