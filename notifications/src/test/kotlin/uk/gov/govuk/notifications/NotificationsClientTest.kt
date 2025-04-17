@@ -5,11 +5,15 @@ import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
 import com.onesignal.OneSignal
+import com.onesignal.notifications.INotification
+import com.onesignal.notifications.INotificationClickEvent
+import com.onesignal.notifications.INotificationClickListener
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.unmockkAll
 import io.mockk.verify
@@ -100,14 +104,28 @@ class NotificationsClientTest {
     }
 
     @Test
-    fun `Given we have a notifications client, when add click listener is called, then One Signal add click listener function is called`() {
-        every { OneSignal.Notifications.addClickListener(any()) } returns Unit
+    fun `Given we have a notifications client, when add click listener is called, then the correct functions are called`() {
+        val event = mockk<INotificationClickEvent>()
+        val notification = mockk<INotification>()
+        val clickListener = slot<INotificationClickListener>()
+        every { event.notification.additionalData } returns null
+        every { event.notification.additionalData.toString() } returns ""
+        every { event.notification } returns notification
+        every { notification.additionalData } returns null
+        every { notification.additionalData.toString() } returns ""
+        every {
+            OneSignal.Notifications.addClickListener(listener = capture(clickListener))
+        } answers {
+            clickListener.captured.onClick(event)
+        }
 
         runTest {
             notificationsClient.addClickListener(context)
 
             verify(exactly = 1) {
                 OneSignal.Notifications.addClickListener(any())
+
+                notificationsClient.handleAdditionalData(context, notification.additionalData)
             }
         }
     }
