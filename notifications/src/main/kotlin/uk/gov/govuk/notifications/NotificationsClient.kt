@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import uk.gov.govuk.notifications.model.asAdditionalData
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -41,21 +42,22 @@ class NotificationsClient @Inject constructor() {
     fun addClickListener(context: Context) {
         OneSignal.Notifications.addClickListener(object : INotificationClickListener {
             override fun onClick(event: INotificationClickEvent) {
-                handleAdditionalData(context, event.notification.additionalData.toString())
+                handleAdditionalData(context, event.notification.additionalData)
             }
         })
     }
 
     internal fun handleAdditionalData(
         context: Context,
-        additionalDataStr: String,
+        additionalDataJson: JSONObject?,
         intent: Intent = Intent(Intent.ACTION_VIEW)
     ) {
-        val additionalData = additionalDataStr.asAdditionalData()
-        intent.apply {
-            data = additionalData.deepLink.toUri()
-            flags = FLAG_ACTIVITY_NEW_TASK
+        additionalDataJson.asAdditionalData()?.let { additionalData ->
+            intent.apply {
+                data = additionalData.deepLink.toUri()
+                flags = FLAG_ACTIVITY_NEW_TASK
+            }
+            context.startActivity(intent)
         }
-        context.startActivity(intent)
     }
 }
