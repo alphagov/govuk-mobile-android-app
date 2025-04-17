@@ -19,6 +19,8 @@ import kotlinx.coroutines.test.runTest
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -57,7 +59,7 @@ class NotificationsClientTest {
     }
 
     @Test
-    fun `Given we have a notifications client, when request permission is called and permissions denied, then One Signal request permission function is called`() {
+    fun `Given we have a notifications client, when request permission is called and permissions denied, then One Signal request permission function is called and consent given is true`() {
         every { OneSignal.Notifications.canRequestPermission } returns true
         coEvery { OneSignal.Notifications.requestPermission(false) } returns true
 
@@ -68,14 +70,12 @@ class NotificationsClientTest {
             coVerify(exactly = 1) {
                 OneSignal.Notifications.requestPermission(false)
             }
-            verify(exactly = 1) {
-                OneSignal.consentGiven = true
-            }
+            assertTrue(OneSignal.consentGiven)
         }
     }
 
     @Test
-    fun `Given we have a notifications client, when request permission is called and permissions granted, then One Signal request permission function is called`() {
+    fun `Given we have a notifications client, when request permission is called and permissions granted, then One Signal request permission function is called and consent given is false`() {
         every { OneSignal.Notifications.canRequestPermission } returns true
         coEvery { OneSignal.Notifications.requestPermission(false) } returns false
 
@@ -86,9 +86,16 @@ class NotificationsClientTest {
             coVerify(exactly = 1) {
                 OneSignal.Notifications.requestPermission(false)
             }
-            verify(exactly = 1) {
-                OneSignal.consentGiven = false
-            }
+            assertFalse(OneSignal.consentGiven)
+        }
+    }
+
+    @Test
+    fun `Given we have a notifications client, when give consent is called, then One Signal consent given is true`() {
+        runTest {
+            notificationsClient.giveConsent()
+
+            assertTrue(OneSignal.consentGiven)
         }
     }
 
@@ -128,6 +135,22 @@ class NotificationsClientTest {
             assertEquals(FLAG_ACTIVITY_NEW_TASK, intent.flags)
 
             verify(exactly = 1) {
+                context.startActivity(intent)
+            }
+        }
+    }
+
+    @Test
+    fun `Given we have a notifications client, when handle additional data function is called with invalid additional data, then a new activity is not started`() {
+        val intent = spyk<Intent>()
+        val additionalData = mockk<JSONObject>()
+
+        every { additionalData.toString() } returns ""
+
+        runTest {
+            notificationsClient.handleAdditionalData(context, additionalData, intent)
+
+            verify(exactly = 0) {
                 context.startActivity(intent)
             }
         }
