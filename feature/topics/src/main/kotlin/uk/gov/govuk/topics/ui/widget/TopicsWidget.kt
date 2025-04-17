@@ -2,7 +2,6 @@ package uk.gov.govuk.topics.ui.widget
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.TextButton
@@ -83,10 +82,11 @@ private fun TopicsWidgetContent(
             }
             Title3BoldLabel(
                 text = title,
-                modifier = Modifier.semantics { heading() }
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = GovUkTheme.spacing.large)
+                    .semantics { heading() }
             )
-
-            Spacer(Modifier.weight(1f))
 
             if (!uiState.isError) {
                 val editButtonText = stringResource(R.string.editButton)
