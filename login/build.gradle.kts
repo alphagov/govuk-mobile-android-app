@@ -20,11 +20,21 @@ android {
         manifestPlaceholders["appAuthRedirectScheme"] = "govuk"
 
         buildConfigField("String", "LOGIN_SERVICE_URL", "\"https://aulmirij8h.execute-api.eu-west-2.amazonaws.com/\"")
+        buildConfigField("String", "AUTHORIZE_URL", "\"https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/authorize\"")
+        buildConfigField("String", "TOKEN_URL", "\"https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/token\"")
+        buildConfigField("String", "CLIENT_ID", "\"121f51j1s4kmk9i98um0b5mphh\"")
+        buildConfigField("String", "REDIRECT_URI", "\"govuk://govuk/login-auth-callback\"")
+        buildConfigField("String", "SCOPE", "\"openid\"")
     }
 
     buildTypes {
         release {
             buildConfigField("String", "LOGIN_SERVICE_URL", "\"https://aulmirij8h.execute-api.eu-west-2.amazonaws.com/\"")
+            buildConfigField("String", "AUTHORIZE_URL", "\"https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/authorize\"")
+            buildConfigField("String", "TOKEN_URL", "\"https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/token\"")
+            buildConfigField("String", "CLIENT_ID", "\"121f51j1s4kmk9i98um0b5mphh\"")
+            buildConfigField("String", "REDIRECT_URI", "\"govuk://govuk/login-auth-callback\"")
+            buildConfigField("String", "SCOPE", "\"openid\"")
         }
     }
 

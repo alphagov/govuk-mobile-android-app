@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="login_sign_in_with_gov_uk">Sign in with GOV.UK One Login</string>
+  <string name="login_sign_sub_text">You’ll need to create a GOV.UK One Login account if you do not already have one</string>
+  <string name="login_continue_button">Continue</string>
+</resources>

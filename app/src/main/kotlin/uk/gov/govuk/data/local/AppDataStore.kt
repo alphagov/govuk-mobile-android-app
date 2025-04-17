@@ -17,6 +17,7 @@ internal class AppDataStore @Inject constructor(
 ) {
     companion object {
         internal const val ONBOARDING_COMPLETED_KEY = "onboarding_completed"
+        internal const val LOGIN_COMPLETED_KEY = "login_completed"
         internal const val TOPIC_SELECTION_COMPLETED_KEY = "topic_selection_completed"
         internal const val SUPPRESSED_HOME_WIDGETS = "suppressed_home_widgets"
     }
@@ -35,6 +36,12 @@ internal class AppDataStore @Inject constructor(
     internal suspend fun isTopicSelectionCompleted(): Boolean {
         return dataStore.data.firstOrNull()
             ?.get(booleanPreferencesKey(TOPIC_SELECTION_COMPLETED_KEY)) == true
+    }
+
+    internal suspend fun loginCompleted(): Boolean {
+        return false // TODO: for development login is never completed
+//        return dataStore.data.firstOrNull()
+//            ?.get(booleanPreferencesKey(LOGIN_COMPLETED_KEY)) == true
     }
 
     internal suspend fun topicSelectionCompleted() {

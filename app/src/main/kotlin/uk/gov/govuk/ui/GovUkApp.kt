@@ -61,6 +61,7 @@ import uk.gov.govuk.extension.asDeepLinks
 import uk.gov.govuk.extension.getUrlParam
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
+import uk.gov.govuk.login.navigation.loginGraph
 import uk.gov.govuk.navigation.AppLaunchNavigation
 import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
@@ -105,6 +106,7 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                             uiState = it,
                             intentFlow = intentFlow,
                             onboardingCompleted = { viewModel.onboardingCompleted() },
+                            loginCompleted = { viewModel.loginCompleted() },
                             topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
                             onTabClick = { tabText -> viewModel.onTabClick(tabText) },
                             homeWidgets = homeWidgets,
@@ -158,6 +160,7 @@ private fun BottomNavScaffold(
     intentFlow: Flow<Intent>,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
+    loginCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
     homeWidgets: List<HomeWidget>?,
     onInternalWidgetClick: (String) -> Unit,
@@ -184,6 +187,7 @@ private fun BottomNavScaffold(
                 uiState = uiState,
                 onboardingCompleted = onboardingCompleted,
                 topicSelectionCompleted = topicSelectionCompleted,
+                loginCompleted = loginCompleted,
                 homeWidgets = homeWidgets,
                 onInternalWidgetClick = onInternalWidgetClick,
                 onExternalWidgetClick = onExternalWidgetClick,
@@ -315,6 +319,7 @@ private fun GovUkNavHost(
     uiState: AppUiState.Default,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
+    loginCompleted: () -> Unit,
     homeWidgets: List<HomeWidget>?,
     onInternalWidgetClick: (String) -> Unit,
     onExternalWidgetClick: (String, String?) -> Unit,
@@ -344,6 +349,7 @@ private fun GovUkNavHost(
                 navController.navigate(launchRoutes.pop())
             }
         )
+        loginGraph()
         if (homeWidgets.contains(HomeWidget.TOPICS)) {
             topicsGraph(
                 navController = navController,

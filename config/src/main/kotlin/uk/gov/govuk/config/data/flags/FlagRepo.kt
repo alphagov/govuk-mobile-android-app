@@ -77,6 +77,13 @@ class FlagRepo @Inject constructor(
             remoteFlag = configRepo.config.releaseFlags.localServices
         )
     }
+
+    fun isLoginEnabled(): Boolean {
+        return isEnabled(
+            debugFlag = debugFlags.isLoginEnabled,
+            remoteFlag = false // TODO - decide if this is a feature flag or not
+        )
+    }
 }
 
 internal fun isEnabled(

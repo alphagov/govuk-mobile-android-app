@@ -15,6 +15,8 @@ internal class AppRepo @Inject constructor(
 
     internal suspend fun isTopicSelectionCompleted() = appDataStore.isTopicSelectionCompleted()
 
+    internal suspend fun loginCompleted() = appDataStore.loginCompleted()
+
     internal suspend fun topicSelectionCompleted() = appDataStore.topicSelectionCompleted()
 
     internal val suppressedHomeWidgets = appDataStore.suppressedHomeWidgets
