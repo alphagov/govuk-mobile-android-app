@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -83,10 +82,11 @@ private fun LocalAuthorityCard(
         ) {
             Title3BoldLabel(
                 text = stringResource(R.string.local_widget_title),
-                modifier = Modifier.semantics { heading() }
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = GovUkTheme.spacing.large)
+                    .semantics { heading() }
             )
-
-            Spacer(Modifier.weight(1f))
 
             val editButtonText = stringResource(R.string.local_edit_button)
             val editButtonAltText = stringResource(R.string.local_edit_button_alt_text)
