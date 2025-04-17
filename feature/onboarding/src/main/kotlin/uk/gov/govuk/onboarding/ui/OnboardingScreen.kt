@@ -13,7 +13,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -29,15 +28,14 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.window.core.layout.WindowHeightSizeClass
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import uk.gov.govuk.design.ui.component.HorizontalButtonGroup
-import uk.gov.govuk.design.ui.component.ListDivider
+import uk.gov.govuk.design.ui.component.DoubleButtonGroup
+import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
+import uk.gov.govuk.design.ui.component.FixedContainerDivider
+import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.OnboardingSlide
 import uk.gov.govuk.design.ui.component.PrimaryButton
-import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
-import uk.gov.govuk.design.ui.component.VerticalButtonGroup
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.onboarding.OnboardingPage
 import uk.gov.govuk.onboarding.OnboardingViewModel
@@ -103,8 +101,6 @@ private fun OnboardingScreen(
                 isCurrentPage = pagerState.currentPage == pageIndex
             )
         }
-
-        ListDivider()
 
         val coroutineScope = rememberCoroutineScope()
         val changePage: (Int) -> Unit = { pageIndex ->
@@ -173,40 +169,37 @@ private fun Footer(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier
-            .padding(top = GovUkTheme.spacing.medium, bottom = GovUkTheme.spacing.small)
-            .padding(horizontal = GovUkTheme.spacing.small),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+        FixedContainerDivider()
+
+        MediumVerticalSpacer()
+
+        PagerIndicator(pageCount, currentPageIndex, onPagerIndicator)
+
+        MediumVerticalSpacer()
 
         val continueButtonText = stringResource(R.string.continueButton)
         val skipButtonText = stringResource(R.string.skipButton)
 
         if (currentPageIndex < pageCount - 1) {
-            if (windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
-                HorizontalButtonGroup(
-                    primaryText = continueButtonText,
-                    onPrimary = { onContinue(continueButtonText) },
-                    secondaryText = skipButtonText,
-                    onSecondary = { onSkip(skipButtonText) }
-                )
-            } else {
-                VerticalButtonGroup(
-                    primaryText = continueButtonText,
-                    onPrimary = { onContinue(continueButtonText) },
-                    secondaryText = skipButtonText,
-                    onSecondary = { onSkip(skipButtonText) }
-                )
-            }
+            DoubleButtonGroup(
+                primaryText = continueButtonText,
+                onPrimary = { onContinue(continueButtonText) },
+                secondaryText = skipButtonText,
+                onSecondary = { onSkip(skipButtonText) }
+            )
         } else {
             DoneButton(
                 onClick = { text -> onDone(text) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = GovUkTheme.spacing.medium)
             )
         }
-        SmallVerticalSpacer()
-        PagerIndicator(pageCount, currentPageIndex, onPagerIndicator)
+
+        ExtraLargeVerticalSpacer()
     }
 }
 
@@ -269,6 +262,6 @@ private fun FilledCircle(modifier: Modifier = Modifier) {
         modifier = modifier
             .size(16.dp)
             .clip(CircleShape)
-            .background(GovUkTheme.colourScheme.surfaces.primary)
+            .background(GovUkTheme.colourScheme.surfaces.switchOn)
     )
 }

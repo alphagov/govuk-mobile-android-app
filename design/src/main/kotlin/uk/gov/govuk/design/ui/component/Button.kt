@@ -6,9 +6,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -197,7 +194,6 @@ private fun BaseButton(
     Button(
         onClick = onClick,
         modifier = modifier
-            .padding(GovUkTheme.spacing.small)
             .focusRequester(focusRequester)
             .focusable(interactionSource = interactionSource),
         enabled = enabled,
@@ -226,60 +222,6 @@ private fun ExternalLinkIcon() {
             .padding(start = GovUkTheme.spacing.small)
             .testTag("openInNewTabIcon")
     )
-}
-
-@Composable
-fun VerticalButtonGroup(
-    primaryText: String,
-    onPrimary: () -> Unit,
-    secondaryText: String,
-    onSecondary: () -> Unit,
-    modifier: Modifier = Modifier,
-    primaryEnabled: Boolean = true,
-    secondaryEnabled: Boolean = true,
-) {
-    Column(modifier) {
-        PrimaryButton(
-            text = primaryText,
-            onClick = onPrimary,
-            modifier = Modifier.fillMaxWidth(),
-            enabled = primaryEnabled
-        )
-        SecondaryButton(
-            text = secondaryText,
-            onClick = onSecondary,
-            modifier = Modifier.fillMaxWidth(),
-            enabled = secondaryEnabled
-        )
-    }
-}
-
-@Composable
-fun HorizontalButtonGroup(
-    primaryText: String,
-    onPrimary: () -> Unit,
-    secondaryText: String,
-    onSecondary: () -> Unit,
-    modifier: Modifier = Modifier,
-    primaryEnabled: Boolean = true,
-    secondaryEnabled: Boolean = true,
-) {
-    Row(modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceAround
-    ) {
-        PrimaryButton(
-            text = primaryText,
-            onClick = onPrimary,
-            modifier = Modifier.weight(0.5f),
-            enabled = primaryEnabled
-        )
-        SecondaryButton(
-            text = secondaryText,
-            onClick = onSecondary,
-            modifier = Modifier.weight(0.5f),
-            enabled = secondaryEnabled
-        )
-    }
 }
 
 @Preview
@@ -392,34 +334,6 @@ private fun CompactDisabled()
             text = "Compact button",
             onClick = { },
             enabled = false
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun VerticalButtons()
-{
-    GovUkTheme {
-        VerticalButtonGroup(
-            primaryText = "Primary",
-            onPrimary = {},
-            secondaryText = "Seondary",
-            onSecondary = {}
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun HorizontalButtons()
-{
-    GovUkTheme {
-        HorizontalButtonGroup(
-            primaryText = "Primary",
-            onPrimary = {},
-            secondaryText = "Seondary",
-            onSecondary = {}
         )
     }
 }
