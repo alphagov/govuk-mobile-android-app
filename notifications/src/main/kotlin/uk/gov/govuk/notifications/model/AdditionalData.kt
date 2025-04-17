@@ -14,7 +14,7 @@ internal data class AdditionalData(
  * If successful returns an Additional Data object.
  * If unsuccessful returns null.
  */
-internal fun JSONObject.asAdditionalData(): AdditionalData? {
+internal fun JSONObject?.asAdditionalData(): AdditionalData? {
     return try {
         val gson = Gson()
         gson.fromJson(this.toString(), AdditionalData::class.java)

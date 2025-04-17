@@ -13,7 +13,7 @@ class AdditionalDataTest {
     private val additionalDataJson = mockk<JSONObject>()
 
     @Test
-    fun `Given we have a JSON object that toString() returns an empty String, When asAdditionalData() is called on it, then additional data should be null`() {
+    fun `Given we have an additional data JSON object that toString() returns an empty String, When asAdditionalData() is called on it, then should return null`() {
         every { additionalDataJson.toString() } returns ""
 
         runTest {
@@ -24,7 +24,7 @@ class AdditionalDataTest {
     }
 
     @Test
-    fun `Given we have a JSON object containing a deeplink, When asAdditionalData() is called on it, then deepLink should have the JSON value`() {
+    fun `Given we have an additional data JSON object containing a deeplink, When asAdditionalData() is called on it, then deepLink should have the JSON value`() {
         every { additionalDataJson.toString() } returns "{\"deeplink\":\"scheme://host\"}"
 
         runTest {
@@ -35,13 +35,23 @@ class AdditionalDataTest {
     }
 
     @Test
-    fun `Given we have a JSON object that toString() returns malformed JSON, When asAdditionalData() is called on it, then deepLink should be null`() {
+    fun `Given we have an additional data JSON object that toString() returns malformed JSON, When asAdditionalData() is called on it, then should return null`() {
         every { additionalDataJson.toString() } returns "{deeplink\":\"scheme://host\"}"
 
         runTest {
             val additionalData = additionalDataJson.asAdditionalData()
 
-            assertNull(additionalData?.deepLink)
+            assertNull(additionalData)
+        }
+    }
+
+    @Test
+    fun `Given additional data JSON is null, When asAdditionalData() is called on it, then should return null`() {
+        val additionalDataJson: JSONObject? = null
+        runTest {
+            val additionalData = additionalDataJson.asAdditionalData()
+
+            assertNull(additionalData)
         }
     }
 }

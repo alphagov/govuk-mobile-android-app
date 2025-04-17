@@ -52,14 +52,12 @@ class NotificationsClient @Inject constructor() {
         additionalDataJson: JSONObject?,
         intent: Intent = Intent(Intent.ACTION_VIEW)
     ) {
-        additionalDataJson?.let {
-            it.asAdditionalData()?.let { additionalData ->
-                intent.apply {
-                    data = additionalData.deepLink.toUri()
-                    flags = FLAG_ACTIVITY_NEW_TASK
-                }
-                context.startActivity(intent)
+        additionalDataJson.asAdditionalData()?.let { additionalData ->
+            intent.apply {
+                data = additionalData.deepLink.toUri()
+                flags = FLAG_ACTIVITY_NEW_TASK
             }
+            context.startActivity(intent)
         }
     }
 }
