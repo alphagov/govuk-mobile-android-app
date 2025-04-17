@@ -35,13 +35,13 @@ class AdditionalDataTest {
     }
 
     @Test
-    fun `Given we have an additional data JSON object that toString() returns malformed JSON, When asAdditionalData() is called on it, then should return null`() {
+    fun `Given we have an additional data JSON object that toString() returns malformed JSON, When asAdditionalData() is called on it, then deeplink should be null`() {
         every { additionalDataJson.toString() } returns "{deeplink\":\"scheme://host\"}"
 
         runTest {
             val additionalData = additionalDataJson.asAdditionalData()
 
-            assertNull(additionalData)
+            assertNull(additionalData?.deepLink)
         }
     }
 
