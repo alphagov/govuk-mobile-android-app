@@ -53,8 +53,7 @@ class NotificationsClient @Inject constructor() {
         intent: Intent = Intent(Intent.ACTION_VIEW)
     ) {
         additionalDataJson?.let {
-            val additionalDataStr = it.toString()
-            additionalDataStr.asAdditionalData()?.let { additionalData ->
+            it.asAdditionalData()?.let { additionalData ->
                 intent.apply {
                     data = additionalData.deepLink.toUri()
                     flags = FLAG_ACTIVITY_NEW_TASK
