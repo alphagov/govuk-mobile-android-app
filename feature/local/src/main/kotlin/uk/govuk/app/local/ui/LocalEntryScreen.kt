@@ -21,6 +21,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
@@ -80,6 +83,11 @@ private fun LocalEntryScreen(
 
         topBar = {
             FullScreenHeader(
+                modifier = Modifier
+                    .semantics {
+                        isTraversalGroup = true
+                        traversalIndex = -1f
+                    },
                 onBack = { onBack() },
                 actionText = "Cancel",
                 onAction = onCancel
@@ -89,12 +97,16 @@ private fun LocalEntryScreen(
             BottomNavBar(
                 postcode = postcode,
                 onPostcodeLookup = onPostcodeLookup,
-                modifier = modifier
+                modifier = Modifier
+                    .semantics {
+                        isTraversalGroup = true
+                        traversalIndex = 1f
+                    }
             )
         }
     ) { innerPadding ->
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
                 .padding(horizontal = GovUkTheme.spacing.medium)
@@ -102,13 +114,11 @@ private fun LocalEntryScreen(
         ) {
             SmallVerticalSpacer()
             Title1BoldLabel(
-                text = stringResource(R.string.local_whats_your_postcode),
-                modifier = modifier,
+                text = stringResource(R.string.local_whats_your_postcode)
             )
             SmallVerticalSpacer()
             BodyRegularLabel(
-                text = stringResource(R.string.local_postcode_example),
-                modifier = modifier
+                text = stringResource(R.string.local_postcode_example)
             )
             SmallVerticalSpacer()
             TextField(
