@@ -5,7 +5,6 @@ import uk.gov.govuk.analytics.navigation.ANALYTICS_GRAPH_ROUTE
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_GRAPH_ROUTE
 import uk.gov.govuk.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
-import uk.gov.govuk.topics.navigation.TOPICS_GRAPH_ROUTE
 import uk.gov.govuk.topics.navigation.TOPIC_SELECTION_ROUTE
 import java.util.ArrayDeque
 import java.util.Deque
@@ -21,6 +20,8 @@ internal class AppLaunchNavigation(
 
     private fun setLaunchRoutes() {
         launchRoutes.push(HOME_GRAPH_ROUTE)
+
+        launchRoutes.push("biometrics") // Todo - route via navigation
 
         if (uiState.shouldDisplayNotificationsOnboarding) {
             launchRoutes.push(NOTIFICATIONS_GRAPH_ROUTE)

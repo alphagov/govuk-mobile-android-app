@@ -4,10 +4,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,11 +28,12 @@ import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.login.R
 
+// Todo - make it internal and expose via navigation
 @Composable
-internal fun BiometricRoute(
+fun BiometricRoute(
     modifier: Modifier = Modifier
 ) {
-
+    BiometricScreen(modifier)
 }
 
 @Composable
@@ -37,44 +41,49 @@ private fun BiometricScreen(
     modifier: Modifier = Modifier
 ) {
     Column(modifier.fillMaxSize()) {
-        Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(top = 100.dp)
-                .padding(horizontal = GovUkTheme.spacing.medium)
-                .weight(1f)
-            ,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            IconRow()
+        Column(Modifier.weight(1f)) {
+            Spacer(Modifier.weight(1F))
 
-            MediumVerticalSpacer()
+            Column(
+                modifier = modifier
+                    .verticalScroll(rememberScrollState())
+                    .fillMaxWidth()
+                    .padding(horizontal = GovUkTheme.spacing.medium)
+                    .padding(vertical = GovUkTheme.spacing.large),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                IconRow()
 
-            LargeTitleBoldLabel(
-                text = stringResource(R.string.login_biometrics_title),
-                textAlign = TextAlign.Center
-            )
+                MediumVerticalSpacer()
 
-            MediumVerticalSpacer()
+                LargeTitleBoldLabel(
+                    text = stringResource(R.string.login_biometrics_title),
+                    textAlign = TextAlign.Center
+                )
 
-            BodyRegularLabel(
-                text = stringResource(R.string.login_biometrics_description_1),
-                textAlign = TextAlign.Center
-            )
+                MediumVerticalSpacer()
 
-            MediumVerticalSpacer()
+                BodyRegularLabel(
+                    text = stringResource(R.string.login_biometrics_description_1),
+                    textAlign = TextAlign.Center
+                )
 
-            BodyRegularLabel(
-                text = stringResource(R.string.login_biometrics_description_2),
-                textAlign = TextAlign.Center
-            )
+                MediumVerticalSpacer()
 
-            MediumVerticalSpacer()
+                BodyRegularLabel(
+                    text = stringResource(R.string.login_biometrics_description_2),
+                    textAlign = TextAlign.Center
+                )
 
-            BodyRegularLabel(
-                text = stringResource(R.string.login_biometrics_description_3),
-                textAlign = TextAlign.Center
-            )
+                MediumVerticalSpacer()
+
+                BodyRegularLabel(
+                    text = stringResource(R.string.login_biometrics_description_3),
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Spacer(Modifier.weight(1F))
         }
 
         FixedDoubleButtonGroup(
