@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_biometrics_title">Unlock the app with biometrics</string>
+    <string name="login_biometrics_description_1">You can unlock the app with your face, fingerprint or iris within 90 days of signing in with GOV.UK One Login.</string>
+    <string name="login_biometrics_description_2">You can unlock the app with your face, fingerprint or iris within 90 days of signing in with GOV.UK One Login.</string>
+    <string name="login_biometrics_description_3">Anyone who can unlock your phone with their biometrics or with your phone\'s pin or pattern might be able to access your app.</string>
+    <string name="login_biometrics_button">Use biometrics</string>
+    <string name="login_biometrics_skip_button">Skip</string>
+</resources>
