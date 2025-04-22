@@ -15,6 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -65,19 +68,28 @@ private fun LocalScreen(
 
         topBar = {
             FullScreenHeader(
-                onBack = { onBack() },
-                modifier = modifier.padding(bottom = GovUkTheme.spacing.large)
+                modifier = Modifier
+                    .padding(bottom = GovUkTheme.spacing.large)
+                    .semantics {
+                        isTraversalGroup = true
+                        traversalIndex = -1f
+                    },
+                onBack = { onBack() }
             )
         },
         bottomBar = {
             BottomNavBar(
                 onContinueClick = onContinueClick,
-                modifier = modifier
+                modifier = Modifier
+                    .semantics {
+                        isTraversalGroup = true
+                        traversalIndex = 1f
+                    }
             )
         }
     ) { innerPadding ->
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
                 .padding(horizontal = GovUkTheme.spacing.medium)
@@ -88,14 +100,12 @@ private fun LocalScreen(
             SmallVerticalSpacer()
             Image(
                 painter = painterResource(id = R.drawable.local_icon),
-                contentDescription = null,
-                modifier = Modifier
+                contentDescription = null
             )
             MediumVerticalSpacer()
             LargeTitleBoldLabel(
                 text = stringResource(R.string.local_title),
                 color = GovUkTheme.colourScheme.textAndIcons.primary,
-                modifier = Modifier,
                 textAlign = TextAlign.Center
             )
             SmallVerticalSpacer()
