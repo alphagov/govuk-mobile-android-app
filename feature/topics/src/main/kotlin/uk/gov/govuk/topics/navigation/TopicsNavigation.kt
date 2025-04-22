@@ -2,9 +2,9 @@ package uk.gov.govuk.topics.navigation
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
@@ -18,8 +18,9 @@ import uk.gov.govuk.topics.ui.EditTopicsRoute
 import uk.gov.govuk.topics.ui.TopicRoute
 import uk.gov.govuk.topics.ui.TopicSelectionRoute
 
+const val TOPIC_SELECTION_GRAPH_ROUTE = "topic_selection_graph_route"
+private const val TOPIC_SELECTION_ROUTE = "topic_selection_route"
 const val TOPICS_GRAPH_ROUTE = "topics_graph_route"
-const val TOPIC_SELECTION_ROUTE = "topic_selection_route"
 const val TOPIC_ROUTE = "topic_route"
 internal const val TOPIC_REF_ARG = "ref"
 internal const val TOPIC_SUBTOPIC_ARG = "isSubtopic"
@@ -27,15 +28,12 @@ private const val TOPICS_EDIT_ROUTE = "topics_edit_route"
 const val TOPICS_ALL_ROUTE = "topics_all_route"
 const val TOPICS_ALL_STEP_BY_STEPS_ROUTE = "topics_all_step_by_steps_route"
 
-fun NavGraphBuilder.topicsGraph(
-    navController: NavController,
+fun NavGraphBuilder.topicSelectionGraph(
     topicSelectionCompleted: () -> Unit,
-    deepLinks: (path: String) -> List<NavDeepLink>,
-    modifier: Modifier = Modifier
 ) {
     navigation(
-        route = TOPICS_GRAPH_ROUTE,
-        startDestination = TOPICS_ALL_ROUTE
+        route = TOPIC_SELECTION_GRAPH_ROUTE,
+        startDestination = TOPIC_SELECTION_ROUTE
     ) {
         composable(TOPIC_SELECTION_ROUTE) {
             TopicSelectionRoute(
@@ -43,6 +41,18 @@ fun NavGraphBuilder.topicsGraph(
                 onSkip = topicSelectionCompleted
             )
         }
+    }
+}
+
+fun NavGraphBuilder.topicsGraph(
+    navController: NavController,
+    deepLinks: (path: String) -> List<NavDeepLink>,
+    modifier: Modifier = Modifier
+) {
+    navigation(
+        route = TOPICS_GRAPH_ROUTE,
+        startDestination = TOPICS_ALL_ROUTE
+    ) {
         val topicPath = "/{$TOPIC_REF_ARG}?$TOPIC_SUBTOPIC_ARG={$TOPIC_SUBTOPIC_ARG}"
         composable(
             "$TOPIC_ROUTE$topicPath",
@@ -93,7 +103,7 @@ fun NavGraphBuilder.topicsGraph(
 
 private fun launchExternalLink(context: Context, url: String) {
     val intent = Intent(Intent.ACTION_VIEW)
-    intent.data = Uri.parse(url)
+    intent.data = url.toUri()
     context.startActivity(intent)
 }
 
