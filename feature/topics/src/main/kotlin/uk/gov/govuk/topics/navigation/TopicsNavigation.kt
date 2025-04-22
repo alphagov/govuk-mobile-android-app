@@ -2,9 +2,9 @@ package uk.gov.govuk.topics.navigation
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
@@ -103,7 +103,7 @@ fun NavGraphBuilder.topicsGraph(
 
 private fun launchExternalLink(context: Context, url: String) {
     val intent = Intent(Intent.ACTION_VIEW)
-    intent.data = Uri.parse(url)
+    intent.data = url.toUri()
     context.startActivity(intent)
 }
 
