@@ -33,8 +33,8 @@ dependencyResolutionManagement {
                 }
             } else {
                 credentials {
-                    username = System.getenv("GITHUB_USERNAME")
-                    password = System.getenv("GITHUB_TOKEN")
+                    username = System.getenv("CI_ACCESS_USERNAME")
+                    password = System.getenv("CI_ACCESS_TOKEN")
                 }
             }
         }
