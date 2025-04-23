@@ -1,4 +1,4 @@
-name: Alpha
+name: Alpha build to Firebase
 
 on:
   workflow_dispatch:
