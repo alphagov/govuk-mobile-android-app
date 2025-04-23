@@ -21,14 +21,16 @@ internal class AppLaunchNavigation(
     private fun setLaunchRoutes() {
         launchRoutes.push(HOME_GRAPH_ROUTE)
 
-        launchRoutes.push("biometrics") // Todo - route via navigation
-
         if (uiState.shouldDisplayNotificationsOnboarding) {
             launchRoutes.push(NOTIFICATIONS_GRAPH_ROUTE)
         }
 
         if (uiState.shouldDisplayTopicSelection) {
             launchRoutes.push(TOPIC_SELECTION_ROUTE)
+        }
+
+        if (uiState.shouldDisplayBiometricOnboarding) {
+            launchRoutes.push("biometrics") // Todo - route via navigation
         }
 
         if (uiState.shouldDisplayOnboarding) {

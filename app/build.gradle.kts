@@ -153,13 +153,6 @@ dependencies {
     implementation(libs.lottie.compose)
     implementation(libs.play.services.oss.licenses)
 
-    implementation(libs.gov.securestore) {
-        artifact {
-            classifier = "release"
-            type = "aar"
-        }
-    }
-
     ksp(libs.hilt.compiler)
 
     testImplementation(libs.junit)
