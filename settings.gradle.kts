@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 pluginManagement {
     repositories {
         google {
@@ -17,6 +20,24 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://maven.pkg.github.com/govuk-one-login/mobile-android-authentication") {
+            if (file("${rootProject.projectDir.path}/github.properties").exists()) {
+                val propsFile = File("${rootProject.projectDir.path}/github.properties")
+                val props = Properties().also { it.load(FileInputStream(propsFile)) }
+                val ghUsername = props["ghUsername"] as String?
+                val ghToken = props["ghToken"] as String?
+
+                credentials {
+                    username = ghUsername
+                    password = ghToken
+                }
+            } else {
+                credentials {
+                    username = System.getenv("GITHUB_USERNAME")
+                    password = System.getenv("GITHUB_TOKEN")
+                }
+            }
+        }
     }
 }
 

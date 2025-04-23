@@ -38,6 +38,8 @@ browser = "1.8.0"
 
 openid = "0.11.1"
 
+gov-secure-store = "0.9.1"
+
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -74,6 +76,8 @@ play-services-oss-licenses = { group = "com.google.android.gms", name = "play-se
 oss-licenses = { group = "com.google.android.gms", name = "oss-licenses-plugin", version.ref = "ossLicenses" }
 
 openid = { group = "net.openid", name = "appauth", version.ref = "openid"}
+
+gov-securestore = { group = "uk.gov.securestore", name = "app", version.ref = "gov-secure-store"}
 
 # A library that provides Android runtime permissions support for Jetpack Compose
 google-accompanist = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "googleAccompanist" }
