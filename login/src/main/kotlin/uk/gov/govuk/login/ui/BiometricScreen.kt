@@ -13,34 +13,54 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
+import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
 import uk.gov.govuk.design.ui.component.LargeHorizontalSpacer
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
+import uk.gov.govuk.login.LoginViewModel
 import uk.gov.govuk.login.R
 
 @Composable
 internal fun BiometricRoute(
-    onSkip: () -> Unit,
+    onComplete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val viewModel: LoginViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
+
+    val activity = LocalContext.current as FragmentActivity
+
     BiometricScreen(
-        onSkip,
-        modifier
+        onSetupBiometrics = { viewModel.onSetupBiometrics(activity) },
+        onSkip = onComplete,
+        modifier = modifier
     )
+
+    LaunchedEffect(uiState) {
+        if (uiState) {
+            onComplete()
+        }
+    }
 }
 
 @Composable
 private fun BiometricScreen(
+    onSetupBiometrics: () -> Unit,
     onSkip: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -92,7 +112,7 @@ private fun BiometricScreen(
 
         FixedDoubleButtonGroup(
             primaryText = stringResource(R.string.login_biometrics_button),
-            onPrimary = { },
+            onPrimary = onSetupBiometrics,
             secondaryText = stringResource(R.string.login_biometrics_skip_button),
             onSecondary = onSkip
         )
@@ -147,6 +167,7 @@ private fun IconRow(
 private fun BiometricPreview() {
     GovUkTheme {
         BiometricScreen(
+            onSetupBiometrics = { },
             onSkip = { }
         )
     }

@@ -10,7 +10,7 @@ const val LOGIN_GRAPH_ROUTE = "login_graph_route"
 private const val BIOMETRIC_ROUTE = "biometric_route"
 
 fun NavGraphBuilder.loginGraph(
-    onSkip: () -> Unit,
+    onComplete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -21,7 +21,7 @@ fun NavGraphBuilder.loginGraph(
             BIOMETRIC_ROUTE,
         ) {
             BiometricRoute(
-                onSkip,
+                onComplete = onComplete,
                 modifier = modifier
             )
         }

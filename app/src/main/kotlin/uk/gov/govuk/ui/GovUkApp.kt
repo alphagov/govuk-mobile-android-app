@@ -365,7 +365,7 @@ private fun GovUkNavHost(
             }
         )
         loginGraph(
-            onSkip = {
+            onComplete = {
                 navController.popBackStack()
                 navController.navigate(launchRoutes.pop())
             }
