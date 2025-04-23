@@ -28,16 +28,20 @@ import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.login.R
 
-// Todo - make it internal and expose via navigation
 @Composable
-fun BiometricRoute(
+internal fun BiometricRoute(
+    onSkip: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    BiometricScreen(modifier)
+    BiometricScreen(
+        onSkip,
+        modifier
+    )
 }
 
 @Composable
 private fun BiometricScreen(
+    onSkip: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier.fillMaxSize()) {
@@ -90,7 +94,7 @@ private fun BiometricScreen(
             primaryText = stringResource(R.string.login_biometrics_button),
             onPrimary = { },
             secondaryText = stringResource(R.string.login_biometrics_skip_button),
-            onSecondary = { }
+            onSecondary = onSkip
         )
     }
 }
@@ -142,6 +146,8 @@ private fun IconRow(
 @Composable
 private fun BiometricPreview() {
     GovUkTheme {
-        BiometricScreen()
+        BiometricScreen(
+            onSkip = { }
+        )
     }
 }

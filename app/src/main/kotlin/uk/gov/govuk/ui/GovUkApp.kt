@@ -47,7 +47,6 @@ import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -62,7 +61,7 @@ import uk.gov.govuk.extension.asDeepLinks
 import uk.gov.govuk.extension.getUrlParam
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
-import uk.gov.govuk.login.ui.BiometricRoute
+import uk.gov.govuk.login.navigation.loginGraph
 import uk.gov.govuk.navigation.AppLaunchNavigation
 import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
@@ -365,9 +364,12 @@ private fun GovUkNavHost(
                 navController.navigate(launchRoutes.pop())
             }
         )
-        composable("biometrics") { // Todo - route via navigation
-            BiometricRoute(Modifier.padding(paddingValues))
-        }
+        loginGraph(
+            onSkip = {
+                navController.popBackStack()
+                navController.navigate(launchRoutes.pop())
+            }
+        )
         homeGraph(
             widgets = homeWidgets(
                 context = context,
