@@ -46,8 +46,14 @@ internal fun BiometricRoute(
     val activity = LocalContext.current as FragmentActivity
 
     BiometricScreen(
-        onSetupBiometrics = { viewModel.onSetupBiometrics(activity) },
-        onSkip = onComplete,
+        onPageView = { viewModel.onBiometricPageView() },
+        onSetupBiometrics = { text ->
+            viewModel.onSetupBiometrics(activity, text)
+        },
+        onSkip = { text ->
+            viewModel.onSkip(text)
+            onComplete()
+        },
         modifier = modifier
     )
 
@@ -60,10 +66,15 @@ internal fun BiometricRoute(
 
 @Composable
 private fun BiometricScreen(
-    onSetupBiometrics: () -> Unit,
-    onSkip: () -> Unit,
+    onPageView: () -> Unit,
+    onSetupBiometrics: (String) -> Unit,
+    onSkip: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(Unit) {
+        onPageView()
+    }
+
     Column(modifier.fillMaxSize()) {
         Column(Modifier.weight(1f)) {
             Spacer(Modifier.weight(1F))
@@ -110,11 +121,14 @@ private fun BiometricScreen(
             Spacer(Modifier.weight(1F))
         }
 
+        val primaryButtonText = stringResource(R.string.login_biometrics_button)
+        val secondaryButtonText = stringResource(R.string.login_biometrics_skip_button)
+
         FixedDoubleButtonGroup(
-            primaryText = stringResource(R.string.login_biometrics_button),
-            onPrimary = onSetupBiometrics,
-            secondaryText = stringResource(R.string.login_biometrics_skip_button),
-            onSecondary = onSkip
+            primaryText = primaryButtonText,
+            onPrimary = { onSetupBiometrics(primaryButtonText) },
+            secondaryText = secondaryButtonText,
+            onSecondary = { onSkip(secondaryButtonText) }
         )
     }
 }
@@ -167,6 +181,7 @@ private fun IconRow(
 private fun BiometricPreview() {
     GovUkTheme {
         BiometricScreen(
+            onPageView = { },
             onSetupBiometrics = { },
             onSkip = { }
         )
