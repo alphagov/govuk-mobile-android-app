@@ -32,7 +32,7 @@ import uk.gov.govuk.design.ui.component.LargeHorizontalSpacer
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-import uk.gov.govuk.login.LoginViewModel
+import uk.gov.govuk.login.BiometricViewModel
 import uk.gov.govuk.login.R
 
 @Composable
@@ -40,15 +40,15 @@ internal fun BiometricRoute(
     onComplete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: LoginViewModel = hiltViewModel()
+    val viewModel: BiometricViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     val activity = LocalContext.current as FragmentActivity
 
     BiometricScreen(
-        onPageView = { viewModel.onBiometricPageView() },
+        onPageView = { viewModel.onPageView() },
         onSetupBiometrics = { text ->
-            viewModel.onSetupBiometrics(activity, text)
+            viewModel.onContinue(activity, text)
         },
         onSkip = { text ->
             viewModel.onSkip(text)

@@ -22,7 +22,7 @@ import uk.gov.govuk.login.data.LoginRepo
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class LoginViewModelTest {
+class BiometricViewModelTest {
 
     private val secureStore = mockk<SecureStore>(relaxed = true)
     private val loginRepo = mockk<LoginRepo>(relaxed = true)
@@ -30,12 +30,12 @@ class LoginViewModelTest {
     private val activity = mockk<FragmentActivity>(relaxed = true)
     private val dispatcher = UnconfinedTestDispatcher()
 
-    private lateinit var viewModel: LoginViewModel
+    private lateinit var viewModel: BiometricViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = LoginViewModel(secureStore, loginRepo, analyticsClient)
+        viewModel = BiometricViewModel(secureStore, loginRepo, analyticsClient)
     }
 
     @After
@@ -44,8 +44,8 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Given a biometric page view, then log analytics`() {
-        viewModel.onBiometricPageView()
+    fun `Given a page view, then log analytics`() {
+        viewModel.onPageView()
 
         verify {
             analyticsClient.screenView(
@@ -57,31 +57,31 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Given biometrics setup, then log analytics`() {
-        viewModel.onSetupBiometrics(activity, "button text")
+    fun `Given continue, then log analytics`() {
+        viewModel.onContinue(activity, "button text")
 
         verify {
             analyticsClient.buttonClick(
                 text = "button text",
-                section = "Login"
+                section = "Biometrics"
             )
         }
     }
 
     @Test
-    fun `Given biometrics skip, then log analytics`() {
+    fun `Given skip, then log analytics`() {
         viewModel.onSkip("button text")
 
         verify {
             analyticsClient.buttonClick(
                 text = "button text",
-                section = "Login"
+                section = "Biometrics"
             )
         }
     }
 
     @Test
-    fun `Given biometrics setup, when biometrics success, then store token and emit ui state`() {
+    fun `Given continue, when biometrics success, then store token and emit ui state`() {
         every { loginRepo.token } returns "token-value"
         coEvery {
             secureStore.retrieveWithAuthentication(
@@ -91,7 +91,7 @@ class LoginViewModelTest {
             )
         } returns RetrievalEvent.Success(emptyMap())
 
-        viewModel.onSetupBiometrics(activity, "button text")
+        viewModel.onContinue(activity, "button text")
 
         coVerify {
             secureStore.upsert("token", "token-value")
@@ -101,7 +101,7 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Given biometrics setup, when biometrics failure, then delete token and do not emit ui state`() {
+    fun `Given continue, when biometrics failure, then delete token and do not emit ui state`() {
         every { loginRepo.token } returns "token-value"
         coEvery {
             secureStore.retrieveWithAuthentication(
@@ -111,7 +111,7 @@ class LoginViewModelTest {
             )
         } returns RetrievalEvent.Failed(SecureStoreErrorType.GENERAL)
 
-        viewModel.onSetupBiometrics(activity, "button text")
+        viewModel.onContinue(activity, "button text")
 
         coVerify {
             secureStore.delete("token")

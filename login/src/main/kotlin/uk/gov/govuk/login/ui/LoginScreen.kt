@@ -30,19 +30,15 @@ internal fun LoginRoute(
     modifier: Modifier = Modifier
 ) {
     val viewModel: LoginViewModel = hiltViewModel()
-//    val uiState by viewModel.uiState.collectAsState()
 
     val authLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
 
     }
 
     LoginScreen(
-//        onPageView = { viewModel.onPageView() },
-        onPageView = { },
-//        onContinueClick = { text ->
-//            viewModel.onContinueClick(text)
-//        },
-        onContinueClick = {
+        onPageView = { viewModel.onPageView() },
+        onContinueClick = { text ->
+            viewModel.onContinue(text)
             authLauncher.launch(viewModel.authIntent)
         },
         modifier = modifier
