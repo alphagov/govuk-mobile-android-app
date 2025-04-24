@@ -13,6 +13,7 @@ import retrofit2.Response
 import uk.gov.govuk.data.model.Result.Success
 import uk.govuk.app.local.data.remote.model.ApiResponse
 import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
+import uk.govuk.app.local.domain.StatusCode
 import java.net.UnknownHostException
 
 class LocalApiCallTest {
@@ -40,7 +41,7 @@ class LocalApiCallTest {
                 slug = "slug"
             ),
             addresses = null,
-            message = null
+            status = null
         )
 
         coEvery {
@@ -56,7 +57,7 @@ class LocalApiCallTest {
         val apiResponse = ApiResponse(
             localAuthority = null,
             addresses = null,
-            message = "Invalid postcode"
+            status = StatusCode.INVALID_POSTCODE
         )
 
         coEvery {
@@ -72,7 +73,7 @@ class LocalApiCallTest {
         val apiResponse = ApiResponse(
             localAuthority = null,
             addresses = null,
-            message = "Postcode not found"
+            status = StatusCode.POSTCODE_NOT_FOUND
         )
 
         coEvery {

@@ -19,4 +19,7 @@
   <string name="local_unitary_authority_description">Find services for your area on the %1$s website</string>
   <string name="local_two_tier_title">Services in your area are provided by 2 local councils</string>
   <string name="local_parent_authority_description">Find services like education, social care and transport on the %1$s website</string>
+  <string name="local_no_postcode_message">Enter your postcode</string>
+  <string name="local_invalid_postcode_message">Enter a postcode in the correct format</string>
+  <string name="local_not_found_postcode_message">We could not find a council for this postcode. Check the postcode and try again.</string>
 </resources>

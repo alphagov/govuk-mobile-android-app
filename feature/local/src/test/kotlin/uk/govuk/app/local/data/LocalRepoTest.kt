@@ -19,6 +19,7 @@ import uk.govuk.app.local.data.remote.LocalApi
 import uk.govuk.app.local.data.remote.model.Address
 import uk.govuk.app.local.data.remote.model.ApiResponse
 import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
+import uk.govuk.app.local.domain.StatusCode
 
 @RunWith(Enclosed::class)
 class LocalRepoTest {
@@ -44,7 +45,7 @@ class LocalRepoTest {
             val unitaryResponse = ApiResponse(
                 localAuthority = remoteLocalAuthority,
                 addresses = null,
-                message = null
+                status = null
             )
 
             coEvery {
@@ -82,7 +83,7 @@ class LocalRepoTest {
             val twoTierResponse = ApiResponse(
                 localAuthority = remoteLocalAuthority,
                 addresses = null,
-                message = null
+                status = null
             )
 
             coEvery {
@@ -119,7 +120,7 @@ class LocalRepoTest {
                         name = "name2"
                     )
                 ),
-                message = null
+                status = null
             )
 
             coEvery {
@@ -145,7 +146,7 @@ class LocalRepoTest {
             val notFoundResponse = ApiResponse(
                 localAuthority = null,
                 addresses = null,
-                message = "Postcode not found"
+                status = StatusCode.POSTCODE_NOT_FOUND
             )
 
             coEvery {
@@ -171,7 +172,7 @@ class LocalRepoTest {
             val postcodeInvalidResponse = ApiResponse(
                 localAuthority = null,
                 addresses = null,
-                message = "Invalid postcode"
+                status = StatusCode.INVALID_POSTCODE
             )
 
             coEvery {
@@ -234,7 +235,7 @@ class LocalRepoTest {
             val unitaryResponse = ApiResponse(
                 localAuthority = remoteLocalAuthority,
                 addresses = null,
-                message = null
+                status = null
             )
 
             coEvery {
@@ -272,7 +273,7 @@ class LocalRepoTest {
             val twoTierResponse = ApiResponse(
                 localAuthority = remoteLocalAuthority,
                 addresses = null,
-                message = null
+                status = null
             )
 
             coEvery {

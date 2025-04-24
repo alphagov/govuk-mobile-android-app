@@ -8,6 +8,7 @@ import uk.gov.govuk.data.model.Result.Error
 import uk.gov.govuk.data.model.Result.ServiceNotResponding
 import uk.gov.govuk.data.model.Result.Success
 import uk.govuk.app.local.data.remote.model.ApiResponse
+import uk.govuk.app.local.domain.StatusCode
 import java.net.UnknownHostException
 
 suspend fun safeLocalApiCall(
@@ -18,26 +19,19 @@ suspend fun safeLocalApiCall(
         val body = response.body()
         val code = response.code()
 
-
         if (response.isSuccessful && body != null) {
             Success(body)
         } else {
-            when (code) {
-                400 -> Success(
+            if (StatusCode.isErrorStatus(code)) {
+                Success(
                     ApiResponse(
                         localAuthority = null,
                         addresses = null,
-                        message = "Invalid postcode"
+                        status = code
                     )
                 )
-                404 -> Success(
-                    ApiResponse(
-                        localAuthority = null,
-                        addresses = null,
-                        message = "Postcode not found"
-                    )
-                )
-                else -> Error()
+            } else {
+                Error()
             }
         }
     } catch (e: Exception) {

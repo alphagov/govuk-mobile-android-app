@@ -21,6 +21,7 @@ import uk.govuk.app.local.data.LocalRepo
 import uk.govuk.app.local.data.remote.model.Address
 import uk.govuk.app.local.data.remote.model.ApiResponse
 import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
+import uk.govuk.app.local.domain.StatusCode
 
 @RunWith(Enclosed::class)
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -94,6 +95,20 @@ class LocalViewModelTest {
                 )
             }
         }
+
+        @Test
+        fun `Given an error is displayed, then log analytics`() {
+            val viewModel = LocalViewModel(analyticsClient, localRepo)
+            viewModel.onErrorStatus(message = "No postcode")
+
+            verify {
+                analyticsClient.screenView(
+                    screenClass = "LocalLookupScreen",
+                    screenName = "Local Lookup",
+                    title = "No postcode"
+                )
+            }
+        }
     }
 
     class UiStateTest {
@@ -121,12 +136,12 @@ class LocalViewModelTest {
         private val responseWithUnitaryResult = ApiResponse(
             localAuthority = unitaryLocalAuthority,
             addresses = listOf(),
-            message = null
+            status = null
         )
         private val responseWithTwoTierResult = ApiResponse(
             localAuthority = twoTierLocalAuthority,
             addresses = listOf(),
-            message = null
+            status = null
         )
         private val addresses = listOf(
             Address(
@@ -143,7 +158,7 @@ class LocalViewModelTest {
         private val responseWithAddressResult = ApiResponse(
             localAuthority = null,
             addresses = addresses,
-            message = null
+            status = null
         )
 
         @Before
@@ -254,7 +269,7 @@ class LocalViewModelTest {
         @Test
         fun `Given a local authority lookup that returns a not found response, then get a message`() {
             val postcode = "SW1A1AA"
-            val message = "Postcode not found"
+            val status = StatusCode.POSTCODE_NOT_FOUND
 
             coEvery {
                 localRepo.performGetLocalPostcode(postcode)
@@ -262,7 +277,7 @@ class LocalViewModelTest {
                 ApiResponse(
                     localAuthority = null,
                     addresses = null,
-                    message = message
+                    status = status
                 )
             )
 
@@ -273,14 +288,14 @@ class LocalViewModelTest {
                 val uiState = viewModel.uiState.value
 
                 assertEquals(postcode, uiState.postcode)
-                assertEquals(message, uiState.message)
+                assertEquals(status, uiState.status)
             }
         }
 
         @Test
         fun `Given a local authority lookup that returns a invalid postcode response, then get a message`() {
             val postcode = "SW1"
-            val message = "Invalid postcode"
+            val status = StatusCode.INVALID_POSTCODE
 
             coEvery {
                 localRepo.performGetLocalPostcode(postcode)
@@ -288,7 +303,7 @@ class LocalViewModelTest {
                 ApiResponse(
                     localAuthority = null,
                     addresses = null,
-                    message = message
+                    status = status
                 )
             )
 
@@ -299,7 +314,33 @@ class LocalViewModelTest {
                 val uiState = viewModel.uiState.value
 
                 assertEquals(postcode, uiState.postcode)
-                assertEquals(message, uiState.message)
+                assertEquals(status, uiState.status)
+            }
+        }
+
+        @Test
+        fun `Given a local authority lookup with an empty postcode, then get a message`() {
+            val postcode = ""
+            val status = StatusCode.NO_POSTCODE_GIVEN
+
+            coEvery {
+                localRepo.performGetLocalPostcode(postcode)
+            } returns Success(
+                ApiResponse(
+                    localAuthority = null,
+                    addresses = null,
+                    status = status
+                )
+            )
+
+            val viewModel = LocalViewModel(analyticsClient, localRepo)
+            viewModel.onSearchPostcode("", postcode)
+
+            runTest {
+                val uiState = viewModel.uiState.value
+
+                assertEquals(postcode, uiState.postcode)
+                assertEquals(status, uiState.status)
             }
         }
     }

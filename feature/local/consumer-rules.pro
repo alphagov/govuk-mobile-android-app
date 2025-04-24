@@ -5,4 +5,4 @@
 
 -keep class uk.govuk.app.local.data.remote.model.Address
 -keep class uk.govuk.app.local.data.remote.model.ApiResponse
--keep class uk.govuk.app.local.data.remote.model.LocalAuthority
+-keep class uk.govuk.app.local.data.remote.model.RemoteLocalAuthority

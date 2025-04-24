@@ -13,12 +13,13 @@ import uk.gov.govuk.data.model.Result.Success
 import uk.govuk.app.local.data.LocalRepo
 import uk.govuk.app.local.data.remote.model.Address
 import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
+import uk.govuk.app.local.domain.StatusCode
 import javax.inject.Inject
 
 internal data class LocalUiState(
     var postcode: String = "",
     var slug: String? = "",
-    var message: String? = "",
+    var status: Int? = null,
     var addresses: List<Address>? = emptyList(),
     var localAuthority: RemoteLocalAuthority? = null
 )
@@ -75,6 +76,14 @@ internal class LocalViewModel @Inject constructor(
         )
     }
 
+    fun onErrorStatus(message: String) {
+        analyticsClient.screenView(
+            screenClass = LOOKUP_SCREEN_CLASS,
+            screenName = LOOKUP_SCREEN_NAME,
+            title = message
+        )
+    }
+
     fun onSearchPostcode(buttonText: String, postcode: String) {
         analyticsClient.buttonClick(
             text = buttonText,
@@ -101,7 +110,7 @@ internal class LocalViewModel @Inject constructor(
     private fun clearPreviousResults() {
         _uiState.value.postcode = ""
         _uiState.value.slug = ""
-        _uiState.value.message = ""
+        _uiState.value.status = null
         _uiState.value.addresses = emptyList()
         _uiState.value.localAuthority = null
     }
@@ -111,25 +120,35 @@ internal class LocalViewModel @Inject constructor(
     }
 
     private fun fetchPostcodeLookupResult(postcode: String) {
-        viewModelScope.launch {
-            when (val response = localRepo.performGetLocalPostcode(postcode)) {
-                is Success -> {
-                    _uiState.update { current ->
-                        current.copy(
-                            localAuthority = response.value.localAuthority,
-                            addresses = response.value.addresses,
-                            message = response.value.message
-                        )
+        if (postcode.isNullOrEmpty()) {
+            _uiState.update { current ->
+                current.copy(
+                    localAuthority = null,
+                    addresses = null,
+                    status = StatusCode.NO_POSTCODE_GIVEN
+                )
+            }
+        } else {
+            viewModelScope.launch {
+                when (val response = localRepo.performGetLocalPostcode(postcode)) {
+                    is Success -> {
+                        _uiState.update { current ->
+                            current.copy(
+                                localAuthority = response.value.localAuthority,
+                                addresses = response.value.addresses,
+                                status = response.value.status
+                            )
+                        }
+
+                        println("Success: $response")
                     }
 
-                    println("Success: $response")
-                }
+                    is DeviceOffline -> {
+                        println(response)
+                    }
 
-                is DeviceOffline -> {
-                    println(response)
+                    else -> println(response)
                 }
-
-                else -> println(response)
             }
         }
     }
