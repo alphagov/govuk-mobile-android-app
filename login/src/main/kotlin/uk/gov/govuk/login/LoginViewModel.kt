@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import uk.gov.android.securestore.RetrievalEvent
 import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.authentication.AuthenticatorPromptConfiguration
 import uk.gov.govuk.login.data.LoginRepo
@@ -24,7 +25,7 @@ internal class LoginViewModel @Inject constructor(
     fun onSetupBiometrics(activity: FragmentActivity) {
         viewModelScope.launch {
             secureStore.upsert("token", loginRepo.token)
-            secureStore.retrieveWithAuthentication(
+            val result = secureStore.retrieveWithAuthentication(
                 key = arrayOf("token"),
                 authPromptConfig = AuthenticatorPromptConfiguration(
                     title = "Title",
@@ -33,7 +34,11 @@ internal class LoginViewModel @Inject constructor(
                 ),
                 context = activity
             )
-            _uiState.value = true
+            if (result is RetrievalEvent.Success) {
+                _uiState.value = true
+            } else {
+                secureStore.delete("token")
+            }
         }
     }
 
