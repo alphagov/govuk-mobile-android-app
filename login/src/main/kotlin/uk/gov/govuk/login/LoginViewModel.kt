@@ -1,8 +1,10 @@
 package uk.gov.govuk.login
 
 import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import net.openid.appauth.AuthorizationResponse
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.login.data.LoginRepo
 import javax.inject.Inject
@@ -35,5 +37,9 @@ internal class LoginViewModel @Inject constructor(
             text = text,
             section = SECTION
         )
+    }
+
+    fun onAuthResponse(authResponse: AuthorizationResponse?) {
+        Log.d("Blah", "$authResponse")
     }
 }
