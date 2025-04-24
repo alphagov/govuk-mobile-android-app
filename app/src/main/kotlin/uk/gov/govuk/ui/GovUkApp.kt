@@ -61,6 +61,7 @@ import uk.gov.govuk.extension.asDeepLinks
 import uk.gov.govuk.extension.getUrlParam
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
+import uk.gov.govuk.login.navigation.loginGraph
 import uk.gov.govuk.navigation.AppLaunchNavigation
 import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
@@ -360,6 +361,12 @@ private fun GovUkNavHost(
             notificationsOnboardingCompleted = {
                 navController.popBackStack()
                 if (launchRoutes.isEmpty()) return@notificationsGraph
+                navController.navigate(launchRoutes.pop())
+            }
+        )
+        loginGraph(
+            onComplete = {
+                navController.popBackStack()
                 navController.navigate(launchRoutes.pop())
             }
         )

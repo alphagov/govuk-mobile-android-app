@@ -19,6 +19,7 @@ import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
+import uk.gov.govuk.login.LoginFeature
 import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.ui.model.HomeWidget
 import uk.govuk.app.local.LocalFeature
@@ -29,6 +30,7 @@ internal class AppViewModel @Inject constructor(
     private val appRepo: AppRepo,
     private val configRepo: ConfigRepo,
     private val flagRepo: FlagRepo,
+    loginFeature: LoginFeature,
     private val topicsFeature: TopicsFeature,
     localFeature: LocalFeature,
     private val analyticsClient: AnalyticsClient
@@ -75,6 +77,7 @@ internal class AppViewModel @Inject constructor(
                                 shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
                                 shouldDisplayAnalyticsConsent = analyticsClient.isAnalyticsConsentRequired(),
                                 shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
+                                shouldDisplayBiometricOnboarding = loginFeature.isAuthenticationEnabled(),
                                 shouldDisplayTopicSelection = flagRepo.isTopicsEnabled()
                                         && !appRepo.isTopicSelectionCompleted()
                                         && topicsInitSuccess,

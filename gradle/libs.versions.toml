@@ -1,5 +1,6 @@
 [versions]
 agp = "8.9.1"
+biometric = "1.1.0"
 kotlin = "2.0.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -36,6 +37,10 @@ playServicesOssLicenses = "17.1.0"
 googleAccompanist = "0.37.0"
 browser = "1.8.0"
 
+openid = "0.11.1"
+
+gov-secure-store = "0.9.1"
+
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -49,6 +54,7 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "testRules" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHilt" }
+androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
@@ -70,6 +76,10 @@ realm-base = { group = "io.realm.kotlin", name = "library-base", version.ref = "
 play-services-measurement-api = { group = "com.google.android.gms", name = "play-services-measurement-api", version.ref = "playServicesMeasurementApi" }
 play-services-oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-licenses", version.ref = "playServicesOssLicenses" }
 oss-licenses = { group = "com.google.android.gms", name = "oss-licenses-plugin", version.ref = "ossLicenses" }
+
+openid = { group = "net.openid", name = "appauth", version.ref = "openid"}
+
+gov-securestore = { group = "uk.gov.securestore", name = "app", version.ref = "gov-secure-store"}
 
 # A library that provides Android runtime permissions support for Jetpack Compose
 google-accompanist = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "googleAccompanist" }
