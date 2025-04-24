@@ -1,5 +1,6 @@
 package uk.gov.govuk.login
 
+import android.content.Intent
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,7 +19,8 @@ import javax.inject.Inject
 internal class LoginViewModel @Inject constructor(
     private val secureStore: SecureStore,
     private val loginRepo: LoginRepo,
-    private val analyticsClient: AnalyticsClient
+    private val analyticsClient: AnalyticsClient,
+    val authIntent: Intent,
 ) : ViewModel() {
 
     companion object {

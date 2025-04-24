@@ -1,12 +1,18 @@
 package uk.gov.govuk.login.di
 
 import android.content.Context
+import android.content.Intent
 import androidx.biometric.BiometricManager
+import androidx.core.net.toUri
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import net.openid.appauth.AuthorizationRequest
+import net.openid.appauth.AuthorizationService
+import net.openid.appauth.AuthorizationServiceConfiguration
+import net.openid.appauth.ResponseTypeValues
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import uk.gov.android.securestore.AccessControlLevel
@@ -53,5 +59,29 @@ class LoginModule {
     @Provides
     fun provideBiometricManager(@ApplicationContext context: Context): BiometricManager {
         return BiometricManager.from(context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideAuthIntent(@ApplicationContext context: Context): Intent {
+        // Todo - extract into build variables!!!
+        val authService = AuthorizationService(context)
+        val authConfig = AuthorizationServiceConfiguration(
+            "https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/authorize".toUri(),
+            "https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/token".toUri()
+        )
+
+        val authRequestBuilder = AuthorizationRequest.Builder(
+            authConfig,
+            "121f51j1s4kmk9i98um0b5mphh",
+            ResponseTypeValues.CODE,
+            "govuk://govuk/login-auth-callback".toUri()
+        )
+
+        val authRequest = authRequestBuilder
+            .setScopes("openid")
+            .build()
+
+        return authService.getAuthorizationRequestIntent(authRequest)
     }
 }
