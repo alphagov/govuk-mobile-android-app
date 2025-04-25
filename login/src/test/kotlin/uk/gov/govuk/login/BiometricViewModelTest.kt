@@ -2,8 +2,6 @@ package uk.gov.govuk.login
 
 import androidx.fragment.app.FragmentActivity
 import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
@@ -14,17 +12,14 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import uk.gov.android.securestore.RetrievalEvent
-import uk.gov.android.securestore.SecureStore
-import uk.gov.android.securestore.error.SecureStoreErrorType
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.login.data.LoginRepo
-import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BiometricViewModelTest {
 
-    private val secureStore = mockk<SecureStore>(relaxed = true)
     private val loginRepo = mockk<LoginRepo>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val activity = mockk<FragmentActivity>(relaxed = true)
@@ -35,7 +30,7 @@ class BiometricViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = BiometricViewModel(secureStore, loginRepo, analyticsClient)
+        viewModel = BiometricViewModel(loginRepo, analyticsClient)
     }
 
     @After
@@ -81,42 +76,20 @@ class BiometricViewModelTest {
     }
 
     @Test
-    fun `Given continue, when biometrics success, then store token and emit ui state`() {
-        every { loginRepo.accessToken } returns "token-value"
-        coEvery {
-            secureStore.retrieveWithAuthentication(
-                key = arrayOf("token"),
-                authPromptConfig = any(),
-                context = any()
-            )
-        } returns RetrievalEvent.Success(emptyMap())
+    fun `Given continue, when persist token success, then emit ui state`() {
+        coEvery { loginRepo.persistRefreshToken(any(), any(), any(), any()) } returns true
 
         viewModel.onContinue(activity, "button text")
 
-        coVerify {
-            secureStore.upsert("token", "token-value")
-        }
-
-        assertEquals(true, viewModel.uiState.value)
+        assertTrue(viewModel.uiState.value)
     }
 
     @Test
-    fun `Given continue, when biometrics failure, then delete token and do not emit ui state`() {
-        every { loginRepo.accessToken } returns "token-value"
-        coEvery {
-            secureStore.retrieveWithAuthentication(
-                key = arrayOf("token"),
-                authPromptConfig = any(),
-                context = any()
-            )
-        } returns RetrievalEvent.Failed(SecureStoreErrorType.GENERAL)
+    fun `Given continue, when persist token failure, then emit ui state`() {
+        coEvery { loginRepo.persistRefreshToken(any(), any(), any(), any()) } returns false
 
         viewModel.onContinue(activity, "button text")
 
-        coVerify {
-            secureStore.delete("token")
-        }
-
-        assertEquals(false, viewModel.uiState.value)
+        assertFalse(viewModel.uiState.value)
     }
 }

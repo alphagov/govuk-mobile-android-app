@@ -19,6 +19,7 @@ import kotlin.coroutines.suspendCoroutine
 internal class LoginRepo @Inject constructor(
     val authIntent: Intent,
     private val authService: AuthorizationService,
+    private val tokenResponseMapper: TokenResponseMapper,
     private val secureStore: SecureStore,
     private val biometricManager: BiometricManager
 ) {
@@ -34,9 +35,11 @@ internal class LoginRepo @Inject constructor(
             authService.performTokenRequest(
                 authResponse.createTokenExchangeRequest()
             ) { tokenResponse, exception ->
-                val accessToken = tokenResponse?.accessToken
-                val idToken = tokenResponse?.idToken
-                val refreshToken = tokenResponse?.refreshToken
+                val mappedTokenResponse = tokenResponseMapper.map(tokenResponse)
+
+                val accessToken = mappedTokenResponse.accessToken
+                val idToken = mappedTokenResponse.idToken
+                val refreshToken = mappedTokenResponse.refreshToken
 
                 if (exception == null &&
                     accessToken != null &&
