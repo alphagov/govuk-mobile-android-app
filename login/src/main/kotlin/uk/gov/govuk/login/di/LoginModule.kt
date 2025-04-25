@@ -63,9 +63,14 @@ class LoginModule {
 
     @Singleton
     @Provides
-    fun provideAuthIntent(@ApplicationContext context: Context): Intent {
+    fun provideAuthService(@ApplicationContext context: Context): AuthorizationService {
+        return AuthorizationService(context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideAuthIntent(authService: AuthorizationService): Intent {
         // Todo - extract into build variables!!!
-        val authService = AuthorizationService(context)
         val authConfig = AuthorizationServiceConfiguration(
             "https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/authorize".toUri(),
             "https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/token".toUri()

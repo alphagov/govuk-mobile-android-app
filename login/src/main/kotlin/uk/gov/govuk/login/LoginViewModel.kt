@@ -3,8 +3,9 @@ package uk.gov.govuk.login
 import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import net.openid.appauth.AuthorizationResponse
+import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.login.data.LoginRepo
 import javax.inject.Inject
@@ -12,8 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 internal class LoginViewModel @Inject constructor(
     private val loginRepo: LoginRepo,
-    private val analyticsClient: AnalyticsClient,
-    val authIntent: Intent,
+    private val analyticsClient: AnalyticsClient
 ) : ViewModel() {
 
     companion object {
@@ -23,6 +23,8 @@ internal class LoginViewModel @Inject constructor(
 
         private const val SECTION = "Login"
     }
+
+    val authIntent = loginRepo.authIntent
 
     fun onPageView() {
         analyticsClient.screenView(
@@ -39,7 +41,10 @@ internal class LoginViewModel @Inject constructor(
         )
     }
 
-    fun onAuthResponse(authResponse: AuthorizationResponse?) {
-        Log.d("Blah", "$authResponse")
+    fun onAuthResponse(data: Intent?) {
+        viewModelScope.launch {
+            val result = loginRepo.handleAuthResponse(data)
+            Log.d("Blah", "$result")
+        }
     }
 }

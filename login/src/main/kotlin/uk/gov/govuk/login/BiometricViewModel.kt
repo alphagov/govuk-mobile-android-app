@@ -47,9 +47,9 @@ internal class BiometricViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            secureStore.upsert("token", loginRepo.token)
+            secureStore.upsert("refreshToken", loginRepo.tokens.refreshToken)
             val result = secureStore.retrieveWithAuthentication(
-                key = arrayOf("token"),
+                key = arrayOf("refreshToken"),
                 authPromptConfig = AuthenticatorPromptConfiguration(
                     title = "Title",
                     subTitle = "Subtitle",
@@ -60,7 +60,7 @@ internal class BiometricViewModel @Inject constructor(
             if (result is RetrievalEvent.Success) {
                 _uiState.value = true
             } else {
-                secureStore.delete("token")
+                secureStore.delete("refreshToken")
             }
         }
     }

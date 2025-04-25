@@ -82,7 +82,7 @@ class BiometricViewModelTest {
 
     @Test
     fun `Given continue, when biometrics success, then store token and emit ui state`() {
-        every { loginRepo.token } returns "token-value"
+        every { loginRepo.accessToken } returns "token-value"
         coEvery {
             secureStore.retrieveWithAuthentication(
                 key = arrayOf("token"),
@@ -102,7 +102,7 @@ class BiometricViewModelTest {
 
     @Test
     fun `Given continue, when biometrics failure, then delete token and do not emit ui state`() {
-        every { loginRepo.token } returns "token-value"
+        every { loginRepo.accessToken } returns "token-value"
         coEvery {
             secureStore.retrieveWithAuthentication(
                 key = arrayOf("token"),

@@ -18,7 +18,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import net.openid.appauth.AuthorizationResponse
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
@@ -35,10 +34,7 @@ internal fun LoginRoute(
 
     val authLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val authResponse = result.data?.let { AuthorizationResponse.fromIntent(it) }
-            viewModel.onAuthResponse(authResponse)
-        } else {
-            // Todo - forward to view model???
+            viewModel.onAuthResponse(result.data)
         }
     }
 

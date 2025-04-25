@@ -19,16 +19,16 @@ class LoginRepoTest {
 
     @Test
     fun `loginRepo returns the correct token`() {
-        assertEquals("some-random-token", loginRepo.token)
+        assertEquals("some-random-token", loginRepo.accessToken)
     }
 
     @Test
     fun `loginRepo does not return a null token`() {
-        assertNotNull(loginRepo.token)
+        assertNotNull(loginRepo.accessToken)
     }
 
     @Test
     fun `loginRepo does not return an empty token`() {
-        assertNotEquals("", loginRepo.token)
+        assertNotEquals("", loginRepo.accessToken)
     }
 }
