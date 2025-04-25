@@ -1,6 +1,6 @@
 package uk.gov.govuk.login
 
-import android.content.Intent
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,25 +12,21 @@ import uk.gov.govuk.login.data.LoginRepo
 import javax.inject.Inject
 
 @HiltViewModel
-internal class LoginViewModel @Inject constructor(
+internal class BiometricViewModel @Inject constructor(
     private val loginRepo: LoginRepo,
     private val analyticsClient: AnalyticsClient
 ) : ViewModel() {
 
-    data class LoginUiState(val isAuthenticationEnabled: Boolean)
-
     companion object {
-        private const val SCREEN_CLASS = "LoginScreen"
-        private const val SCREEN_NAME = "Login"
-        private const val TITLE = "Login"
+        private const val SCREEN_CLASS = "BiometricScreen"
+        private const val SCREEN_NAME = "Biometrics"
+        private const val TITLE = "Biometrics"
 
-        private const val SECTION = "Login"
+        private const val SECTION = "Biometrics"
     }
 
-    private val _uiState: MutableStateFlow<LoginUiState?> = MutableStateFlow(null)
+    private val _uiState: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val uiState = _uiState.asStateFlow()
-
-    val authIntent = loginRepo.authIntent
 
     fun onPageView() {
         analyticsClient.screenView(
@@ -40,21 +36,27 @@ internal class LoginViewModel @Inject constructor(
         )
     }
 
-    fun onContinue(text: String) {
+    fun onContinue(activity: FragmentActivity, text: String) {
         analyticsClient.buttonClick(
             text = text,
             section = SECTION
         )
+
+        viewModelScope.launch {
+            _uiState.value = loginRepo.persistRefreshToken(
+                // Todo - actual copy!!!
+                activity = activity,
+                title = "Title",
+                subtitle = "Subtitle",
+                description = "Description"
+            )
+        }
     }
 
-    fun onAuthResponse(data: Intent?) {
-        viewModelScope.launch {
-            val result = loginRepo.handleAuthResponse(data)
-            if (result) {
-                _uiState.value = LoginUiState(loginRepo.isAuthenticationEnabled())
-            } else {
-                // Todo - handle failure!!!
-            }
-        }
+    fun onSkip(text: String) {
+        analyticsClient.buttonClick(
+            text = text,
+            section = SECTION
+        )
     }
 }

@@ -30,9 +30,7 @@ internal class AppLaunchNavigation(
             launchRoutes.push(TOPIC_SELECTION_ROUTE)
         }
 
-        if (uiState.shouldDisplayBiometricOnboarding) {
-            launchRoutes.push(LOGIN_GRAPH_ROUTE)
-        }
+        launchRoutes.push(LOGIN_GRAPH_ROUTE)
 
         if (uiState.shouldDisplayOnboarding) {
             launchRoutes.push(ONBOARDING_GRAPH_ROUTE)

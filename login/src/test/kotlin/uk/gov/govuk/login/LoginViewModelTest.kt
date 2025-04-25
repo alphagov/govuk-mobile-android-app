@@ -1,8 +1,6 @@
 package uk.gov.govuk.login
 
-import androidx.fragment.app.FragmentActivity
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -14,20 +12,17 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import uk.gov.android.securestore.RetrievalEvent
-import uk.gov.android.securestore.SecureStore
-import uk.gov.android.securestore.error.SecureStoreErrorType
 import uk.gov.govuk.analytics.AnalyticsClient
+import uk.gov.govuk.login.LoginViewModel.LoginUiState
 import uk.gov.govuk.login.data.LoginRepo
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginViewModelTest {
 
-    private val secureStore = mockk<SecureStore>(relaxed = true)
     private val loginRepo = mockk<LoginRepo>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
-    private val activity = mockk<FragmentActivity>(relaxed = true)
     private val dispatcher = UnconfinedTestDispatcher()
 
     private lateinit var viewModel: LoginViewModel
@@ -35,7 +30,7 @@ class LoginViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = LoginViewModel(secureStore, loginRepo, analyticsClient)
+        viewModel = LoginViewModel(loginRepo, analyticsClient)
     }
 
     @After
@@ -44,21 +39,21 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Given a biometric page view, then log analytics`() {
-        viewModel.onBiometricPageView()
+    fun `Given a page view, then log analytics`() {
+        viewModel.onPageView()
 
         verify {
             analyticsClient.screenView(
-                screenClass = "BiometricScreen",
-                screenName = "Biometrics",
-                title = "Biometrics"
+                screenClass = "LoginScreen",
+                screenName = "Login",
+                title = "Login"
             )
         }
     }
 
     @Test
-    fun `Given biometrics setup, then log analytics`() {
-        viewModel.onSetupBiometrics(activity, "button text")
+    fun `Given continue, then log analytics`() {
+        viewModel.onContinue("button text")
 
         verify {
             analyticsClient.buttonClick(
@@ -69,54 +64,31 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Given biometrics skip, then log analytics`() {
-        viewModel.onSkip("button text")
+    fun `Given an auth response and authentication enabled, when success, then emit ui state`() {
+        coEvery { loginRepo.handleAuthResponse(any()) } returns true
+        every { loginRepo.isAuthenticationEnabled() } returns true
 
-        verify {
-            analyticsClient.buttonClick(
-                text = "button text",
-                section = "Login"
-            )
-        }
+        viewModel.onAuthResponse(null)
+
+        assertEquals(LoginUiState(true), viewModel.uiState.value)
     }
 
     @Test
-    fun `Given biometrics setup, when biometrics success, then store token and emit ui state`() {
-        every { loginRepo.token } returns "token-value"
-        coEvery {
-            secureStore.retrieveWithAuthentication(
-                key = arrayOf("token"),
-                authPromptConfig = any(),
-                context = any()
-            )
-        } returns RetrievalEvent.Success(emptyMap())
+    fun `Given an auth response and authentication disabled, when success, then emit ui state`() {
+        coEvery { loginRepo.handleAuthResponse(any()) } returns true
+        every { loginRepo.isAuthenticationEnabled() } returns false
 
-        viewModel.onSetupBiometrics(activity, "button text")
+        viewModel.onAuthResponse(null)
 
-        coVerify {
-            secureStore.upsert("token", "token-value")
-        }
-
-        assertEquals(true, viewModel.uiState.value)
+        assertEquals(LoginUiState(false), viewModel.uiState.value)
     }
 
     @Test
-    fun `Given biometrics setup, when biometrics failure, then delete token and do not emit ui state`() {
-        every { loginRepo.token } returns "token-value"
-        coEvery {
-            secureStore.retrieveWithAuthentication(
-                key = arrayOf("token"),
-                authPromptConfig = any(),
-                context = any()
-            )
-        } returns RetrievalEvent.Failed(SecureStoreErrorType.GENERAL)
+    fun `Given an auth response, when failure, then do not emit ui state`() {
+        coEvery { loginRepo.handleAuthResponse(any()) } returns false
 
-        viewModel.onSetupBiometrics(activity, "button text")
+        viewModel.onAuthResponse(null)
 
-        coVerify {
-            secureStore.delete("token")
-        }
-
-        assertEquals(false, viewModel.uiState.value)
+        assertNull(viewModel.uiState.value)
     }
 }

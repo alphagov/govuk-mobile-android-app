@@ -1,6 +1,5 @@
 package uk.gov.govuk.login.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,34 +32,34 @@ import uk.gov.govuk.design.ui.component.LargeHorizontalSpacer
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-import uk.gov.govuk.login.LoginViewModel
+import uk.gov.govuk.login.BiometricViewModel
 import uk.gov.govuk.login.R
 
 @Composable
 internal fun BiometricRoute(
-    onComplete: () -> Unit,
+    onCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: LoginViewModel = hiltViewModel()
+    val viewModel: BiometricViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     val activity = LocalContext.current as FragmentActivity
 
     BiometricScreen(
-        onPageView = { viewModel.onBiometricPageView() },
+        onPageView = { viewModel.onPageView() },
         onSetupBiometrics = { text ->
-            viewModel.onSetupBiometrics(activity, text)
+            viewModel.onContinue(activity, text)
         },
         onSkip = { text ->
             viewModel.onSkip(text)
-            onComplete()
+            onCompleted()
         },
         modifier = modifier
     )
 
     LaunchedEffect(uiState) {
         if (uiState) {
-            onComplete()
+            onCompleted()
         }
     }
 }
@@ -141,9 +141,10 @@ private fun IconRow(
         modifier = modifier.height(IntrinsicSize.Max),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
+        Icon(
             painter = painterResource(id = R.drawable.ic_face),
-            contentDescription = null
+            contentDescription = null,
+            tint = GovUkTheme.colourScheme.textAndIcons.primary
         )
 
         LargeHorizontalSpacer()
@@ -155,9 +156,10 @@ private fun IconRow(
 
         LargeHorizontalSpacer()
 
-        Image(
+        Icon(
             painter = painterResource(id = R.drawable.ic_fingerprint),
-            contentDescription = null
+            contentDescription = null,
+            tint = GovUkTheme.colourScheme.textAndIcons.primary
         )
 
         LargeHorizontalSpacer()
@@ -169,9 +171,10 @@ private fun IconRow(
 
         LargeHorizontalSpacer()
 
-        Image(
+        Icon(
             painter = painterResource(id = R.drawable.ic_iris),
-            contentDescription = null
+            contentDescription = null,
+            tint = GovUkTheme.colourScheme.textAndIcons.primary
         )
     }
 }

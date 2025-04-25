@@ -5,16 +5,16 @@ import org.junit.Test
 import uk.gov.govuk.AppUiState
 import uk.gov.govuk.analytics.navigation.ANALYTICS_GRAPH_ROUTE
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
+import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_GRAPH_ROUTE
 import uk.gov.govuk.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
-import uk.gov.govuk.topics.navigation.TOPICS_GRAPH_ROUTE
 import uk.gov.govuk.topics.navigation.TOPIC_SELECTION_ROUTE
 import java.util.ArrayDeque
 
 class AppLaunchNavigationTest {
 
     @Test
-    fun `Given recommend update, analytics consent, onboarding, topic selection and notifications onboarding should be displayed, then return correct start destination and navigate through routes`() {
+    fun `Given recommend update, analytics consent, onboarding, topic selection and notifications onboarding should be displayed, then return correct launch routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState.Default(
                 shouldDisplayRecommendUpdate = true,
@@ -29,6 +29,7 @@ class AppLaunchNavigationTest {
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(TOPIC_SELECTION_ROUTE)
+        expected.push(LOGIN_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
@@ -48,6 +49,7 @@ class AppLaunchNavigationTest {
         val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(TOPIC_SELECTION_ROUTE)
+        expected.push(LOGIN_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
@@ -65,6 +67,7 @@ class AppLaunchNavigationTest {
 
         val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
+        expected.push(LOGIN_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
@@ -83,6 +86,7 @@ class AppLaunchNavigationTest {
         val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(TOPIC_SELECTION_ROUTE)
+        expected.push(LOGIN_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
         assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
@@ -98,6 +102,7 @@ class AppLaunchNavigationTest {
 
         val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
+        expected.push(LOGIN_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
         assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
@@ -115,6 +120,7 @@ class AppLaunchNavigationTest {
         val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(TOPIC_SELECTION_ROUTE)
+        expected.push(LOGIN_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
 
         assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
@@ -130,6 +136,7 @@ class AppLaunchNavigationTest {
 
         val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
+        expected.push(LOGIN_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
 
         assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
@@ -146,6 +153,7 @@ class AppLaunchNavigationTest {
         val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(TOPIC_SELECTION_ROUTE)
+        expected.push(LOGIN_GRAPH_ROUTE)
 
         assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
@@ -162,6 +170,7 @@ class AppLaunchNavigationTest {
         val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+        expected.push(LOGIN_GRAPH_ROUTE)
         expected.push(ANALYTICS_GRAPH_ROUTE)
 
         assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
@@ -180,6 +189,7 @@ class AppLaunchNavigationTest {
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
         expected.push(TOPIC_SELECTION_ROUTE)
+        expected.push(LOGIN_GRAPH_ROUTE)
 
         assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
@@ -196,6 +206,7 @@ class AppLaunchNavigationTest {
         val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+        expected.push(LOGIN_GRAPH_ROUTE)
         expected.push(ONBOARDING_GRAPH_ROUTE)
 
         assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
@@ -212,18 +223,20 @@ class AppLaunchNavigationTest {
         val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
         expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+        expected.push(LOGIN_GRAPH_ROUTE)
 
         assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
 
     @Test
-    fun `Given analytics, onboarding and topic selection should not be displayed, then return home as start destination`() {
+    fun `Given analytics, onboarding and topic selection should not be displayed, then return correct launch routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState.Default()
         )
 
         val expected = ArrayDeque<String>()
         expected.push(HOME_GRAPH_ROUTE)
+        expected.push(LOGIN_GRAPH_ROUTE)
 
         assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
     }
