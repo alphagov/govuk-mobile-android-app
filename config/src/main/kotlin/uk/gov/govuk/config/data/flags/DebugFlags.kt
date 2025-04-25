@@ -11,7 +11,7 @@ class DebugFlags @Inject constructor() {
     internal val minimumVersion: String? = "0.0.1"
     internal val recommendedVersion: String? = "0.0.1"
     internal val isOnboardingEnabled: Boolean? = true
-    internal val isSearchEnabled: Boolean? = true
+    internal val isSearchEnabled: Boolean? = false
     internal val isRecentActivityEnabled: Boolean? = true
     internal val isTopicsEnabled: Boolean? = true
     internal val isNotificationsEnabled: Boolean? = true

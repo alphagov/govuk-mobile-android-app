@@ -435,6 +435,5 @@ private fun SetStatusBarColour(
         window.statusBarColor = colour.toArgb()
     }
 
-    
     WindowCompat.getInsetsController(window, localView).isAppearanceLightStatusBars = false
 }
