@@ -1,8 +1,14 @@
 package uk.gov.govuk.login.data
 
 import android.content.Intent
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricManager.Authenticators
+import androidx.fragment.app.FragmentActivity
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
+import uk.gov.android.securestore.RetrievalEvent
+import uk.gov.android.securestore.SecureStore
+import uk.gov.android.securestore.authentication.AuthenticatorPromptConfiguration
 import uk.gov.govuk.login.data.model.Tokens
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -12,12 +18,15 @@ import kotlin.coroutines.suspendCoroutine
 @Singleton
 internal class LoginRepo @Inject constructor(
     val authIntent: Intent,
-    private val authService: AuthorizationService
+    private val authService: AuthorizationService,
+    private val secureStore: SecureStore,
+    private val biometricManager: BiometricManager
 ) {
-    private lateinit var _tokens: Tokens
+    companion object {
+        private const val REFRESH_TOKEN_KEY = "refreshToken"
+    }
 
-    val tokens: Tokens
-        get() = _tokens
+    private lateinit var tokens: Tokens
 
     suspend fun handleAuthResponse(data: Intent?): Boolean = suspendCoroutine { continuation ->
         val authResponse = data?.let { AuthorizationResponse.fromIntent(it) }
@@ -34,7 +43,7 @@ internal class LoginRepo @Inject constructor(
                     idToken != null &&
                     refreshToken != null
                 ) {
-                    _tokens = Tokens(
+                    tokens = Tokens(
                         accessToken = accessToken,
                         idToken = idToken,
                         refreshToken = refreshToken
@@ -47,5 +56,37 @@ internal class LoginRepo @Inject constructor(
         } else {
             continuation.resume(false)
         }
+    }
+
+    suspend fun persistRefreshToken(
+        activity: FragmentActivity,
+        title: String,
+        subtitle: String,
+        description: String
+    ): Boolean {
+        secureStore.upsert(REFRESH_TOKEN_KEY, tokens.refreshToken)
+        val result = secureStore.retrieveWithAuthentication(
+            key = arrayOf(REFRESH_TOKEN_KEY),
+            authPromptConfig = AuthenticatorPromptConfiguration(
+                title = title,
+                subTitle = subtitle,
+                description = description
+            ),
+            context = activity
+        )
+
+        return if (result is RetrievalEvent.Success) {
+            true
+        } else {
+            secureStore.delete(REFRESH_TOKEN_KEY)
+            false
+        }
+    }
+
+    fun isAuthenticationEnabled(): Boolean {
+        val result  = biometricManager.canAuthenticate(
+            Authenticators.BIOMETRIC_STRONG or Authenticators.DEVICE_CREDENTIAL
+        )
+        return result == BiometricManager.BIOMETRIC_SUCCESS
     }
 }

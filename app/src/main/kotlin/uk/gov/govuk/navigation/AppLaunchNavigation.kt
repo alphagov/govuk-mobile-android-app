@@ -3,7 +3,6 @@ package uk.gov.govuk.navigation
 import uk.gov.govuk.AppUiState
 import uk.gov.govuk.analytics.navigation.ANALYTICS_GRAPH_ROUTE
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
-import uk.gov.govuk.login.navigation.BIOMETRIC_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_GRAPH_ROUTE
 import uk.gov.govuk.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
@@ -29,10 +28,6 @@ internal class AppLaunchNavigation(
 
         if (uiState.shouldDisplayTopicSelection) {
             launchRoutes.push(TOPIC_SELECTION_ROUTE)
-        }
-
-        if (uiState.shouldDisplayBiometricOnboarding) {
-            launchRoutes.push(BIOMETRIC_ROUTE)
         }
 
         launchRoutes.push(LOGIN_GRAPH_ROUTE)

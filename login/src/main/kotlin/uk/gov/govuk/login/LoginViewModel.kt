@@ -1,10 +1,11 @@
 package uk.gov.govuk.login
 
 import android.content.Intent
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.login.data.LoginRepo
@@ -16,6 +17,8 @@ internal class LoginViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient
 ) : ViewModel() {
 
+    data class LoginUiState(val isAuthenticationEnabled: Boolean)
+
     companion object {
         private const val SCREEN_CLASS = "LoginScreen"
         private const val SCREEN_NAME = "Login"
@@ -23,6 +26,9 @@ internal class LoginViewModel @Inject constructor(
 
         private const val SECTION = "Login"
     }
+
+    private val _uiState: MutableStateFlow<LoginUiState?> = MutableStateFlow(null)
+    val uiState = _uiState.asStateFlow()
 
     val authIntent = loginRepo.authIntent
 
@@ -44,7 +50,11 @@ internal class LoginViewModel @Inject constructor(
     fun onAuthResponse(data: Intent?) {
         viewModelScope.launch {
             val result = loginRepo.handleAuthResponse(data)
-            Log.d("Blah", "$result")
+            if (result) {
+                _uiState.value = LoginUiState(loginRepo.isAuthenticationEnabled())
+            } else {
+                // Todo - handle failure!!!
+            }
         }
     }
 }

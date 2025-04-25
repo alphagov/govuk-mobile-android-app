@@ -1,5 +1,5 @@
 package uk.gov.govuk.login
 
-interface LoginFeature {
+fun interface LoginFeature {
     fun isAuthenticationEnabled(): Boolean
 }

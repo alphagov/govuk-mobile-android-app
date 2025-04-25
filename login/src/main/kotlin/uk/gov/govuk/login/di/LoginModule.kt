@@ -21,13 +21,13 @@ import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.SharedPrefsStore
 import uk.gov.govuk.login.BuildConfig
 import uk.gov.govuk.login.LoginFeature
-import uk.gov.govuk.login.LoginFeatureProvider
+import uk.gov.govuk.login.data.LoginRepo
 import uk.gov.govuk.login.data.remote.LoginApi
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class LoginModule {
+internal class LoginModule {
     @Provides
     @Singleton
     fun providesLoginApi(): LoginApi {
@@ -40,8 +40,8 @@ class LoginModule {
 
     @Provides
     @Singleton
-    fun providesLoginFeature(biometricManager: BiometricManager): LoginFeature {
-        return LoginFeatureProvider(biometricManager)
+    fun providesLoginFeature(loginRepo: LoginRepo): LoginFeature {
+        return LoginFeature { loginRepo.isAuthenticationEnabled() }
     }
 
     @Singleton

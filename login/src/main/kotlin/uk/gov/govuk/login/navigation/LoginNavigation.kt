@@ -1,6 +1,7 @@
 package uk.gov.govuk.login.navigation
 
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
@@ -12,7 +13,8 @@ private const val LOGIN_ROUTE = "login_route"
 const val BIOMETRIC_ROUTE = "biometric_route"
 
 fun NavGraphBuilder.loginGraph(
-    onComplete: () -> Unit,
+    navController: NavController,
+    onCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -21,12 +23,20 @@ fun NavGraphBuilder.loginGraph(
     ) {
         composable(LOGIN_ROUTE) {
             LoginRoute(
+                onLogin = { authenticationEnabled ->
+                    if (authenticationEnabled) {
+                        navController.popBackStack()
+                        navController.navigate(BIOMETRIC_ROUTE)
+                    } else {
+                        onCompleted()
+                    }
+                },
                 modifier = modifier,
             )
         }
         composable(BIOMETRIC_ROUTE) {
             BiometricRoute(
-                onComplete = onComplete,
+                onCompleted = onCompleted,
                 modifier = modifier
             )
         }

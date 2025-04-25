@@ -37,7 +37,7 @@ import uk.gov.govuk.login.R
 
 @Composable
 internal fun BiometricRoute(
-    onComplete: () -> Unit,
+    onCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: BiometricViewModel = hiltViewModel()
@@ -52,14 +52,14 @@ internal fun BiometricRoute(
         },
         onSkip = { text ->
             viewModel.onSkip(text)
-            onComplete()
+            onCompleted()
         },
         modifier = modifier
     )
 
     LaunchedEffect(uiState) {
         if (uiState) {
-            onComplete()
+            onCompleted()
         }
     }
 }

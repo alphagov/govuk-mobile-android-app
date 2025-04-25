@@ -7,16 +7,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import uk.gov.android.securestore.RetrievalEvent
-import uk.gov.android.securestore.SecureStore
-import uk.gov.android.securestore.authentication.AuthenticatorPromptConfiguration
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.login.data.LoginRepo
 import javax.inject.Inject
 
 @HiltViewModel
 internal class BiometricViewModel @Inject constructor(
-    private val secureStore: SecureStore,
     private val loginRepo: LoginRepo,
     private val analyticsClient: AnalyticsClient
 ) : ViewModel() {
@@ -47,21 +43,13 @@ internal class BiometricViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            secureStore.upsert("refreshToken", loginRepo.tokens.refreshToken)
-            val result = secureStore.retrieveWithAuthentication(
-                key = arrayOf("refreshToken"),
-                authPromptConfig = AuthenticatorPromptConfiguration(
-                    title = "Title",
-                    subTitle = "Subtitle",
-                    description = "Description"
-                ),
-                context = activity
+            _uiState.value = loginRepo.persistRefreshToken(
+                // Todo - actual copy!!!
+                activity = activity,
+                title = "Title",
+                subtitle = "Subtitle",
+                description = "Description"
             )
-            if (result is RetrievalEvent.Success) {
-                _uiState.value = true
-            } else {
-                secureStore.delete("refreshToken")
-            }
         }
     }
 

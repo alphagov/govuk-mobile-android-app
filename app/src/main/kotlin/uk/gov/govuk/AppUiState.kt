@@ -5,7 +5,6 @@ internal sealed class AppUiState {
         val shouldDisplayRecommendUpdate: Boolean = false,
         val shouldDisplayAnalyticsConsent: Boolean = false,
         val shouldDisplayOnboarding: Boolean = false,
-        val shouldDisplayBiometricOnboarding: Boolean = false,
         val shouldDisplayTopicSelection: Boolean = false,
         val shouldDisplayNotificationsOnboarding: Boolean = false
     ) : AppUiState()
