@@ -1,5 +1,5 @@
 [versions]
-agp = "8.9.1"
+agp = "8.9.2"
 kotlin = "2.0.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -9,7 +9,7 @@ testRules = "1.6.1"
 activityCompose = "1.10.1"
 lottieCompose = "6.4.1"
 navigationCompose = "2.8.9"
-composeBom = "2025.03.01"
+composeBom = "2025.04.00"
 androidxHilt = "1.2.0"
 adaptiveAndroid = "1.1.0"
 hilt = "2.51.1"
@@ -22,7 +22,7 @@ oneSignal = "[5.0.0, 5.99.99]"
 ossLicenses = "0.10.6"
 retrofit = "2.11.0"
 
-firebaseBom = "33.11.0"
+firebaseBom = "33.12.0"
 
 realm = "2.0.0"
 

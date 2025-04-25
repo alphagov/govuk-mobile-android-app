@@ -74,7 +74,7 @@ class FlagRepo @Inject constructor(
     fun isLocalServicesEnabled(): Boolean {
         return isEnabled(
             debugFlag = debugFlags.isLocalServicesEnabled,
-            remoteFlag = configRepo.config.releaseFlags.localServices
+            remoteFlag = false // TODO - Hardcoded off
         )
     }
 }
