@@ -45,6 +45,7 @@ import uk.govuk.app.local.domain.StatusCode
 import uk.govuk.app.local.domain.StatusCode.INVALID_POSTCODE
 import uk.govuk.app.local.domain.StatusCode.NO_POSTCODE_GIVEN
 import uk.govuk.app.local.domain.StatusCode.POSTCODE_NOT_FOUND
+import androidx.compose.ui.semantics.error
 
 @Composable
 internal fun LocalEntryRoute(
@@ -134,6 +135,14 @@ private fun LocalEntryScreen(
                 text = stringResource(R.string.local_postcode_example)
             )
             SmallVerticalSpacer()
+
+            var isError = false
+            var errorMessage = ""
+            if (StatusCode.isErrorStatus(uiState.status)) {
+                isError = true
+                errorMessage = getErrorMessage(uiState.status)
+            }
+
             TextField(
                 value = postcode,
                 onValueChange = {
@@ -145,17 +154,21 @@ private fun LocalEntryScreen(
                         text = stringResource(R.string.local_postcode_default_text)
                     )
                 },
-                modifier = Modifier.fillMaxWidth()
-                    .focusRequester(focusRequester),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester)
+                    .semantics {
+                        isTraversalGroup = true
+                        traversalIndex = 1f
+                        if (isError) error(errorMessage)
+                    },
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Characters
                 ),
                 singleLine = true,
                 isError = StatusCode.isErrorStatus(uiState.status),
                 supportingText = {
-                    if (StatusCode.isErrorStatus(uiState.status)) {
-                        val errorMessage = getErrorMessage(uiState.status)
-
+                    if (isError) {
                         BodyBoldLabel(
                             color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
                             text = errorMessage
