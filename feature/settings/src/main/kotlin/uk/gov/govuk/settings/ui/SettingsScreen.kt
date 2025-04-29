@@ -33,8 +33,6 @@ import uk.gov.govuk.design.ui.component.CaptionRegularLabel
 import uk.gov.govuk.design.ui.component.CardListItem
 import uk.gov.govuk.design.ui.component.ExternalLinkListItem
 import uk.gov.govuk.design.ui.component.InternalLinkListItem
-import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
-import uk.gov.govuk.design.ui.component.ListHeadingLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.TabHeader
@@ -127,22 +125,21 @@ private fun SettingsScreen(
                 .padding(horizontal = GovUkTheme.spacing.medium)
                 .padding(bottom = GovUkTheme.spacing.extraLarge)
         ) {
-            SmallVerticalSpacer()
+            MediumVerticalSpacer()
+
+            NotificationsAndPrivacy(
+                isNotificationsEnabled = isNotificationsEnabled,
+                isAnalyticsEnabled = isAnalyticsEnabled,
+                onNotificationsClick = onNotificationsClick,
+                onAnalyticsConsentChange = onAnalyticsConsentChange,
+                onPrivacyPolicyClick = onPrivacyPolicyClick
+            )
+
+            MediumVerticalSpacer()
+
             AboutTheApp(
                 appVersion = appVersion,
                 onHelpClick = onHelpClick
-            )
-            if (isNotificationsEnabled) {
-                LargeVerticalSpacer()
-                Notifications(
-                    onNotificationsClick = onNotificationsClick
-                )
-            }
-            LargeVerticalSpacer()
-            PrivacyAndLegal(
-                isAnalyticsEnabled = isAnalyticsEnabled,
-                onAnalyticsConsentChange = onAnalyticsConsentChange,
-                onPrivacyPolicyClick = onPrivacyPolicyClick
             )
 
             MediumVerticalSpacer()
@@ -156,49 +153,10 @@ private fun SettingsScreen(
 }
 
 @Composable
-private fun AboutTheApp(
-    appVersion: String,
-    onHelpClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-    ) {
-        ListHeadingLabel(stringResource(R.string.about_title))
-
-        SmallVerticalSpacer()
-
-        ExternalLinkListItem(
-            title = stringResource(R.string.help_and_feedback_title),
-            onClick = onHelpClick,
-            isFirst = true,
-            isLast = false
-        )
-
-        CardListItem(
-            isFirst = false,
-            isLast = true
-        ) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(GovUkTheme.spacing.medium),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BodyRegularLabel(
-                    text = stringResource(R.string.version_setting),
-                    modifier = Modifier.weight(1f)
-                )
-
-                BodyRegularLabel(text = appVersion)
-            }
-        }
-    }
-}
-
-@Composable
-private fun PrivacyAndLegal(
+private fun NotificationsAndPrivacy(
+    isNotificationsEnabled: Boolean,
     isAnalyticsEnabled: Boolean,
+    onNotificationsClick: () -> Unit,
     onAnalyticsConsentChange: (Boolean) -> Unit,
     onPrivacyPolicyClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -206,14 +164,17 @@ private fun PrivacyAndLegal(
     Column(
         modifier = modifier
     ) {
-        ListHeadingLabel(stringResource(R.string.privacy_title))
-
-        SmallVerticalSpacer()
+        if (isNotificationsEnabled) {
+            Notifications(
+                onNotificationsClick = onNotificationsClick
+            )
+        }
 
         ToggleListItem(
             title = stringResource(R.string.share_setting),
             checked = isAnalyticsEnabled,
-            onCheckedChange = onAnalyticsConsentChange
+            onCheckedChange = onAnalyticsConsentChange,
+            isFirst = !isNotificationsEnabled
         )
 
         SmallVerticalSpacer()
@@ -236,6 +197,72 @@ private fun PrivacyAndLegal(
                 .padding(horizontal = GovUkTheme.spacing.medium)
                 .clickable(onClick = onPrivacyPolicyClick),
             color = GovUkTheme.colourScheme.textAndIcons.link,
+        )
+    }
+}
+
+@Composable
+private fun Notifications(
+    onNotificationsClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    fun getStatus() = if (NotificationManagerCompat.from(context)
+            .areNotificationsEnabled()
+    ) R.string.on_button else R.string.off_button
+
+    var status by remember { mutableIntStateOf(getStatus()) }
+
+    LifecycleResumeEffect(Unit) {
+        status = getStatus()
+        onPauseOrDispose {
+            // Do nothing
+        }
+    }
+
+    InternalLinkListItem(
+        title = stringResource(R.string.notifications_title),
+        status = stringResource(status),
+        onClick = onNotificationsClick,
+        modifier = modifier,
+        isFirst = true,
+        isLast = false,
+    )
+}
+
+@Composable
+private fun AboutTheApp(
+    appVersion: String,
+    onHelpClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        CardListItem(
+            isFirst = true,
+            isLast = false
+        ) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(GovUkTheme.spacing.medium),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                BodyRegularLabel(
+                    text = stringResource(R.string.version_setting),
+                    modifier = Modifier.weight(1f)
+                )
+
+                BodyRegularLabel(text = appVersion)
+            }
+        }
+
+        ExternalLinkListItem(
+            title = stringResource(R.string.help_and_feedback_title),
+            onClick = onHelpClick,
+            isFirst = false,
+            isLast = true
         )
     }
 }
@@ -280,43 +307,6 @@ private fun OpenSourceLicenses(
         isFirst = false,
         isLast = false,
     )
-}
-
-@Composable
-private fun Notifications(
-    onNotificationsClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-    ) {
-        ListHeadingLabel(stringResource(R.string.notifications_title))
-
-        SmallVerticalSpacer()
-
-        val context = LocalContext.current
-        fun getStatus() = if (NotificationManagerCompat.from(context)
-                .areNotificationsEnabled()
-        ) R.string.on_button else R.string.off_button
-
-        var status by remember { mutableIntStateOf(getStatus()) }
-
-        LifecycleResumeEffect(Unit) {
-            status = getStatus()
-            onPauseOrDispose {
-                // Do nothing
-            }
-        }
-
-        InternalLinkListItem(
-            title = stringResource(R.string.notifications_title),
-            status = stringResource(status),
-            onClick = onNotificationsClick,
-            modifier = modifier,
-            isFirst = true,
-            isLast = true,
-        )
-    }
 }
 
 @Composable
