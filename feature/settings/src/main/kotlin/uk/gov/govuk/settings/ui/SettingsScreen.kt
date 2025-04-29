@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -33,8 +35,11 @@ import uk.gov.govuk.design.ui.component.CaptionRegularLabel
 import uk.gov.govuk.design.ui.component.CardListItem
 import uk.gov.govuk.design.ui.component.ExternalLinkListItem
 import uk.gov.govuk.design.ui.component.InternalLinkListItem
+import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
+import uk.gov.govuk.design.ui.component.SubheadlineRegularLabel
 import uk.gov.govuk.design.ui.component.TabHeader
 import uk.gov.govuk.design.ui.component.ToggleListItem
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -123,9 +128,13 @@ private fun SettingsScreen(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = GovUkTheme.spacing.medium)
-                .padding(bottom = GovUkTheme.spacing.extraLarge)
+                .padding(bottom = GovUkTheme.spacing.large)
         ) {
             MediumVerticalSpacer()
+
+            ManageLogin()
+
+            LargeVerticalSpacer()
 
             NotificationsAndPrivacy(
                 isNotificationsEnabled = isNotificationsEnabled,
@@ -148,6 +157,62 @@ private fun SettingsScreen(
             AccessibilityStatement(onAccessibilityStatementClick)
             OpenSourceLicenses(onLicenseClick)
             TermsAndConditions(onTermsAndConditionsClick)
+        }
+    }
+}
+
+@Composable
+private fun ManageLogin(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        CardListItem(
+            isFirst = true,
+            isLast = false
+        ) {
+            Row(
+                modifier = Modifier.padding(GovUkTheme.spacing.medium),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_login),
+                    contentDescription = null
+                )
+                SmallHorizontalSpacer()
+                Column {
+                    BodyRegularLabel(stringResource(R.string.manage_login_header_title))
+                    SubheadlineRegularLabel("my@emailaddress.com")
+                }
+            }
+        }
+
+        ExternalLinkListItem(
+            title = stringResource(R.string.manage_login_link),
+            onClick = { },
+            isFirst = false
+        )
+
+        SmallVerticalSpacer()
+
+        CaptionRegularLabel(
+            text = stringResource(R.string.manage_login_description),
+            modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+        )
+
+        MediumVerticalSpacer()
+
+        CardListItem(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { }
+        ) {
+            BodyRegularLabel(
+                text = stringResource(R.string.manage_login_sign_out),
+                modifier = Modifier
+                    .padding(GovUkTheme.spacing.medium),
+                color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
+            )
         }
     }
 }
