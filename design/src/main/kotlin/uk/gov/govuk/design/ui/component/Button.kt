@@ -141,6 +141,37 @@ fun CompactButton(
 }
 
 @Composable
+fun DestructiveButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    externalLink: Boolean = false
+) {
+    val colours = GovUkButtonColours(
+        defaultContainerColour = GovUkTheme.colourScheme.surfaces.buttonDestructive,
+        defaultContentColour = GovUkTheme.colourScheme.textAndIcons.buttonPrimary,
+        focussedContainerColour = GovUkTheme.colourScheme.surfaces.buttonPrimaryFocused,
+        focussedContentColour = GovUkTheme.colourScheme.textAndIcons.buttonPrimaryFocused,
+        pressedContainerColour = GovUkTheme.colourScheme.surfaces.buttonDestructiveHighlight,
+        pressedContentColour = GovUkTheme.colourScheme.textAndIcons.buttonPrimaryHighlight,
+        disabledContainerColour = GovUkTheme.colourScheme.surfaces.buttonPrimaryDisabled,
+        disabledContentColour = GovUkTheme.colourScheme.textAndIcons.buttonPrimaryDisabled
+    )
+
+    BaseButton(
+        text = text,
+        onClick = onClick,
+        colours = colours,
+        textStyle = GovUkTheme.typography.bodyBold,
+        modifier = modifier.fillMaxWidth(),
+        enabled = enabled,
+        externalLink = externalLink,
+        shape = RoundedCornerShape(15.dp)
+    )
+}
+
+@Composable
 private fun BaseButton(
     text: String,
     onClick: () -> Unit,
@@ -331,6 +362,44 @@ private fun CompactDisabled()
 {
     GovUkTheme {
         CompactButton(
+            text = "Compact button",
+            onClick = { },
+            enabled = false
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun Destructive()
+{
+    GovUkTheme {
+        DestructiveButton(
+            text = "Compact button",
+            onClick = { }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DestructiveExternalLink()
+{
+    GovUkTheme {
+        DestructiveButton(
+            text = "Compact button",
+            onClick = { },
+            externalLink = true
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DestructiveDisabled()
+{
+    GovUkTheme {
+        DestructiveButton(
             text = "Compact button",
             onClick = { },
             enabled = false
