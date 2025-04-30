@@ -72,6 +72,7 @@ import uk.gov.govuk.search.navigation.searchGraph
 import uk.gov.govuk.search.ui.widget.SearchWidget
 import uk.gov.govuk.settings.BuildConfig.PRIVACY_POLICY_URL
 import uk.gov.govuk.settings.navigation.settingsGraph
+import uk.gov.govuk.settings.navigation.signOutGraph
 import uk.gov.govuk.topics.navigation.topicsGraph
 import uk.gov.govuk.ui.model.HomeWidget
 import uk.gov.govuk.visited.navigation.visitedGraph
@@ -401,6 +402,7 @@ private fun GovUkNavHost(
             deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
             modifier = Modifier.padding(paddingValues)
         )
+        signOutGraph()
         if (homeWidgets.contains(HomeWidget.SEARCH)) {
             searchGraph(navController, deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) })
         }

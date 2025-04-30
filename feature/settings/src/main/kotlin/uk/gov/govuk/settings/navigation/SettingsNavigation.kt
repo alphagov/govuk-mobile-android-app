@@ -25,6 +25,8 @@ import java.net.URLEncoder
 
 const val SETTINGS_GRAPH_ROUTE = "settings_graph_route"
 private const val SETTINGS_ROUTE = "settings_route"
+
+const val SIGN_OUT_GRAPH_ROUTE = "sign_out_graph_route"
 private const val SIGN_OUT_ROUTE = "sign_out_route"
 
 fun NavGraphBuilder.settingsGraph(
@@ -49,7 +51,7 @@ fun NavGraphBuilder.settingsGraph(
                         openInBrowser(context, ACCOUNT_URL)
                     },
                     onSignOutClick = {
-                        navigateTo(SIGN_OUT_ROUTE)
+                        navigateTo(SIGN_OUT_GRAPH_ROUTE)
                     },
                     onNotificationsClick = {
                         navigateTo(NOTIFICATIONS_ONBOARDING_NO_SKIP_ROUTE)
@@ -74,6 +76,14 @@ fun NavGraphBuilder.settingsGraph(
                 modifier = modifier
             )
         }
+    }
+}
+
+fun NavGraphBuilder.signOutGraph() {
+    navigation(
+        route = SIGN_OUT_GRAPH_ROUTE,
+        startDestination = SIGN_OUT_ROUTE
+    ) {
         composable(SIGN_OUT_ROUTE) {
             SignOutConfirmationRoute()
         }
