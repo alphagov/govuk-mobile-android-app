@@ -1,28 +1,31 @@
 package uk.govuk.app.local
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
-import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.Success
 import uk.govuk.app.local.data.LocalRepo
 import uk.govuk.app.local.data.remote.model.Address
+import uk.govuk.app.local.data.remote.model.LocalAuthorityResult
 import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
-import uk.govuk.app.local.domain.StatusCode
 import javax.inject.Inject
 
-internal data class LocalUiState(
-    var postcode: String = "",
-    var slug: String? = "",
-    var status: Int? = null,
-    var addresses: List<Address>? = emptyList(),
-    var localAuthority: RemoteLocalAuthority? = null
-)
+internal sealed class LocalUiState {
+    class LocalAuthority(
+        val localAuthority: RemoteLocalAuthority
+    ): LocalUiState() // Todo - should probably be mapping data layer objects to domain layer objects
+
+    class Addresses(
+        val addresses: List<Address>
+    ): LocalUiState() // Todo - should probably be mapping data layer objects to domain layer objects
+
+    class Error(@StringRes val message: Int): LocalUiState()
+}
 
 @HiltViewModel
 internal class LocalViewModel @Inject constructor(
@@ -42,16 +45,8 @@ internal class LocalViewModel @Inject constructor(
         private const val SECTION = "Local"
     }
 
-    private val _uiState: MutableStateFlow<LocalUiState> = MutableStateFlow(
-        LocalUiState()
-    )
+    private val _uiState: MutableStateFlow<LocalUiState?> = MutableStateFlow(null)
     internal val uiState = _uiState.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            _uiState.value = LocalUiState()
-        }
-    }
 
     fun onExplainerPageView() {
         analyticsClient.screenView(
@@ -90,29 +85,15 @@ internal class LocalViewModel @Inject constructor(
             section = SECTION
         )
 
-        clearPreviousResults()
-        _uiState.value.postcode = postcode
-
         viewModelScope.launch {
             fetchPostcodeLookupResult(toApiPostcode(postcode))
         }
     }
 
     fun onSearchLocalAuthority(slug: String) {
-        clearPreviousResults()
-        _uiState.value.slug = slug
-
         viewModelScope.launch {
             fetchLocalAuthorityResult(slug)
         }
-    }
-
-    private fun clearPreviousResults() {
-        _uiState.value.postcode = ""
-        _uiState.value.slug = ""
-        _uiState.value.status = null
-        _uiState.value.addresses = emptyList()
-        _uiState.value.localAuthority = null
     }
 
     private fun toApiPostcode(str: String): String {
@@ -120,33 +101,14 @@ internal class LocalViewModel @Inject constructor(
     }
 
     private fun fetchPostcodeLookupResult(postcode: String) {
-        if (postcode.isNullOrEmpty()) {
-            _uiState.update { current ->
-                current.copy(
-                    localAuthority = null,
-                    addresses = null,
-                    status = StatusCode.NO_POSTCODE_GIVEN
-                )
-            }
+        if (postcode.isEmpty()) {
+            _uiState.value = LocalUiState.Error(R.string.local_no_postcode_message)
         } else {
             viewModelScope.launch {
                 when (val response = localRepo.performGetLocalPostcode(postcode)) {
                     is Success -> {
-                        _uiState.update { current ->
-                            current.copy(
-                                localAuthority = response.value.localAuthority,
-                                addresses = response.value.addresses,
-                                status = response.value.status
-                            )
-                        }
-
-                        println("Success: $response")
+                        emitUiState(response.value)
                     }
-
-                    is DeviceOffline -> {
-                        println(response)
-                    }
-
                     else -> println(response)
                 }
             }
@@ -157,19 +119,20 @@ internal class LocalViewModel @Inject constructor(
         viewModelScope.launch {
             when (val response = localRepo.performGetLocalAuthority(slug)) {
                 is Success -> {
-                    _uiState.update { current ->
-                        current.copy(
-                            localAuthority = response.value.localAuthority
-                        )
-                    }
+                    emitUiState(response.value)
                 }
-
-                is DeviceOffline -> {
-                    println(response)
-                }
-
                 else -> println(response)
             }
+        }
+    }
+
+    private fun emitUiState(result: LocalAuthorityResult) {
+        _uiState.value = when (result) {
+            is LocalAuthorityResult.LocalAuthority -> LocalUiState.LocalAuthority(result.localAuthority)
+            is LocalAuthorityResult.Addresses -> LocalUiState.Addresses(result.addresses)
+            is LocalAuthorityResult.InvalidPostcode -> LocalUiState.Error(R.string.local_invalid_postcode_message)
+            is LocalAuthorityResult.PostcodeNotFound -> LocalUiState.Error(R.string.local_not_found_postcode_message)
+            is LocalAuthorityResult.PostcodeEmptyOrNull -> LocalUiState.Error(R.string.local_no_postcode_message)
         }
     }
 }

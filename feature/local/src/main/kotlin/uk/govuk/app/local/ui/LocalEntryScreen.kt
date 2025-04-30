@@ -18,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -41,11 +42,6 @@ import uk.govuk.app.local.LocalUiState
 import uk.govuk.app.local.LocalViewModel
 import uk.govuk.app.local.R
 import uk.govuk.app.local.domain.PostcodeSanitizer
-import uk.govuk.app.local.domain.StatusCode
-import uk.govuk.app.local.domain.StatusCode.INVALID_POSTCODE
-import uk.govuk.app.local.domain.StatusCode.NO_POSTCODE_GIVEN
-import uk.govuk.app.local.domain.StatusCode.POSTCODE_NOT_FOUND
-import androidx.compose.ui.semantics.error
 
 @Composable
 internal fun LocalEntryRoute(
@@ -76,7 +72,7 @@ internal fun LocalEntryRoute(
 
 @Composable
 private fun LocalEntryScreen(
-    uiState: LocalUiState,
+    uiState: LocalUiState?,
     onBack: () -> Unit,
     onCancel: () -> Unit,
     onPageView: () -> Unit,
@@ -84,7 +80,7 @@ private fun LocalEntryScreen(
     onErrorStatus: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var postcode by remember { mutableStateOf(uiState.postcode) }
+    var postcode by rememberSaveable { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
@@ -135,46 +131,32 @@ private fun LocalEntryScreen(
                 text = stringResource(R.string.local_postcode_example)
             )
             SmallVerticalSpacer()
-
-            var isError = false
-            var errorMessage = ""
-            if (StatusCode.isErrorStatus(uiState.status)) {
-                isError = true
-                errorMessage = getErrorMessage(uiState.status)
-            }
-
             TextField(
                 value = postcode,
                 onValueChange = {
                     postcode = PostcodeSanitizer.sanitize(it)
-                    uiState.status = null
                 },
                 label = {
                     Text(
                         text = stringResource(R.string.local_postcode_default_text)
                     )
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester)
-                    .semantics {
-                        isTraversalGroup = true
-                        traversalIndex = 1f
-                        if (isError) error(errorMessage)
-                    },
+                modifier = Modifier.fillMaxWidth()
+                    .focusRequester(focusRequester),
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Characters
                 ),
                 singleLine = true,
-                isError = StatusCode.isErrorStatus(uiState.status),
+                isError = uiState is LocalUiState.Error,
                 supportingText = {
-                    if (isError) {
+                    if (uiState is LocalUiState.Error) {
+                        val errorMessage = stringResource(uiState.message)
                         BodyBoldLabel(
                             color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
                             text = errorMessage
                         )
 
-                        LaunchedEffect(uiState.status) {
+                        LaunchedEffect(uiState) {
                             delay(500)
                             onErrorStatus(errorMessage)
                         }
@@ -219,7 +201,7 @@ private fun LocalEntryScreen(
     LaunchedEffect(uiState) {
         // Todo - navigate back to home screen when a local authority is returned, logic will be
         //  updated in future tickets!
-        if (uiState.localAuthority != null && uiState.status == null) {
+        if (uiState is LocalUiState.LocalAuthority) {
             onCancel()
         }
     }
@@ -237,16 +219,5 @@ private fun BottomNavBar(
             text = buttonText,
             onClick = { onPostcodeLookup(buttonText, postcode) }
         )
-    }
-}
-
-
-@Composable
-fun getErrorMessage(status: Int?): String {
-    return when (status) {
-        INVALID_POSTCODE -> stringResource(R.string.local_invalid_postcode_message)
-        POSTCODE_NOT_FOUND -> stringResource(R.string.local_not_found_postcode_message)
-        NO_POSTCODE_GIVEN -> stringResource(R.string.local_no_postcode_message)
-        else -> ""
     }
 }

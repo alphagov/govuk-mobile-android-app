@@ -4,16 +4,16 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import uk.govuk.app.local.data.remote.model.ApiResponse
+import uk.govuk.app.local.data.remote.model.LocalAuthorityResponse
 
 interface LocalApi {
     @GET("query.json")
     suspend fun getLocalPostcode(
         @Query("postcode") postcode: String
-    ) : Response<ApiResponse>
+    ) : Response<LocalAuthorityResponse>
 
     @GET("{slug}.json")
     suspend fun getLocalAuthority(
         @Path("slug") slug: String
-    ) : Response<ApiResponse>
+    ) : Response<LocalAuthorityResponse>
 }
