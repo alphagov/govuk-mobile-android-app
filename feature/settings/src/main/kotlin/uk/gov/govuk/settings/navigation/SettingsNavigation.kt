@@ -19,11 +19,13 @@ import uk.gov.govuk.settings.BuildConfig.PRIVACY_POLICY_URL
 import uk.gov.govuk.settings.BuildConfig.TERMS_AND_CONDITIONS_URL
 import uk.gov.govuk.settings.ui.SettingsRoute
 import uk.gov.govuk.settings.ui.SettingsRouteActions
+import uk.gov.govuk.settings.ui.SignOutConfirmationRoute
 import java.net.URLEncoder
 
 
 const val SETTINGS_GRAPH_ROUTE = "settings_graph_route"
 private const val SETTINGS_ROUTE = "settings_route"
+private const val SIGN_OUT_ROUTE = "sign_out_route"
 
 fun NavGraphBuilder.settingsGraph(
     navigateTo: (String) -> Unit,
@@ -45,6 +47,9 @@ fun NavGraphBuilder.settingsGraph(
                 actions = SettingsRouteActions(
                     onAccountClick = {
                         openInBrowser(context, ACCOUNT_URL)
+                    },
+                    onSignOutClick = {
+                        navigateTo(SIGN_OUT_ROUTE)
                     },
                     onNotificationsClick = {
                         navigateTo(NOTIFICATIONS_ONBOARDING_NO_SKIP_ROUTE)
@@ -68,6 +73,9 @@ fun NavGraphBuilder.settingsGraph(
                 ),
                 modifier = modifier
             )
+        }
+        composable(SIGN_OUT_ROUTE) {
+            SignOutConfirmationRoute()
         }
     }
 }

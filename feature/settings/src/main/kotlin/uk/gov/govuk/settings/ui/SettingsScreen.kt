@@ -50,6 +50,7 @@ import uk.gov.govuk.settings.SettingsViewModel
 
 internal class SettingsRouteActions(
     val onAccountClick: () -> Unit,
+    val onSignOutClick: () -> Unit,
     val onNotificationsClick: () -> Unit,
     val onPrivacyPolicyClick: () -> Unit,
     val onHelpClick: () -> Unit,
@@ -76,6 +77,10 @@ internal fun SettingsRoute(
                 onAccountClick = {
                     // Todo - analytics
                     actions.onAccountClick()
+                },
+                onSignOutClick = {
+                    // Todo - analytics
+                    actions.onSignOutClick()
                 },
                 onNotificationsClick = {
                     viewModel.onNotificationsClick()
@@ -115,6 +120,7 @@ internal fun SettingsRoute(
 private class SettingsActions(
     val onPageView: () -> Unit,
     val onAccountClick: () -> Unit,
+    val onSignOutClick: () -> Unit,
     val onNotificationsClick: () -> Unit,
     val onAnalyticsConsentChange: (Boolean) -> Unit,
     val onPrivacyPolicyClick: () -> Unit,
@@ -149,7 +155,8 @@ private fun SettingsScreen(
 
             ManageLogin(
                 userEmail = uiState.userEmail,
-                onAccountClick = actions.onAccountClick
+                onAccountClick = actions.onAccountClick,
+                onSignOutClick = actions.onSignOutClick
             )
 
             LargeVerticalSpacer()
@@ -183,6 +190,7 @@ private fun SettingsScreen(
 private fun ManageLogin(
     userEmail: String,
     onAccountClick: () -> Unit,
+    onSignOutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -225,7 +233,7 @@ private fun ManageLogin(
 
         CardListItem(
             modifier = Modifier.fillMaxWidth(),
-            onClick = { }
+            onClick = onSignOutClick
         ) {
             BodyRegularLabel(
                 text = stringResource(R.string.manage_login_sign_out),
