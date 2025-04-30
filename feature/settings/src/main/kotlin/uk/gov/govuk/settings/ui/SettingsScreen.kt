@@ -48,15 +48,20 @@ import uk.gov.govuk.settings.R
 import uk.gov.govuk.settings.SettingsUiState
 import uk.gov.govuk.settings.SettingsViewModel
 
+internal class SettingsRouteActions(
+    val onAccountClick: () -> Unit,
+    val onNotificationsClick: () -> Unit,
+    val onPrivacyPolicyClick: () -> Unit,
+    val onHelpClick: () -> Unit,
+    val onAccessibilityStatementClick: () -> Unit,
+    val onOpenSourceLicenseClick: () -> Unit,
+    val onTermsAndConditionsClick: () -> Unit
+)
+
 @Composable
 internal fun SettingsRoute(
     appVersion: String,
-    onHelpClick: () -> Unit,
-    onPrivacyPolicyClick: () -> Unit,
-    onAccessibilityStatementClick: () -> Unit,
-    onTermsAndConditionsClick: () -> Unit,
-    onOpenSourceLicenseClick: () -> Unit,
-    onNotificationsClick: () -> Unit,
+    actions: SettingsRouteActions,
     modifier: Modifier = Modifier
 ) {
     val viewModel: SettingsViewModel = hiltViewModel()
@@ -66,57 +71,68 @@ internal fun SettingsRoute(
         SettingsScreen(
             uiState = it,
             appVersion = appVersion,
-            onPageView = { viewModel.onPageView() },
-            onLicenseClick = {
-                viewModel.onLicenseView()
-                onOpenSourceLicenseClick()
-            },
-            onHelpClick = {
-                viewModel.onHelpAndFeedbackView()
-                onHelpClick()
-            },
-            onAnalyticsConsentChange = { enabled -> viewModel.onAnalyticsConsentChanged(enabled) },
-            onPrivacyPolicyClick = {
-                viewModel.onPrivacyPolicyView()
-                onPrivacyPolicyClick()
-            },
-            onAccessibilityStatementClick = {
-                viewModel.onAccessibilityStatementView()
-                onAccessibilityStatementClick()
-            },
-            onTermsAndConditionsClick = {
-                viewModel.onTermsAndConditionsView()
-                onTermsAndConditionsClick()
-            },
-            onNotificationsClick = {
-                viewModel.onNotificationsClick()
-                if (notificationsPermissionShouldShowRationale(context as Activity)) {
-                    onNotificationsClick()
-                } else {
-                    showNotificationsAlert(context, viewModel)
+            actions = SettingsActions(
+                onPageView = { viewModel.onPageView() },
+                onAccountClick = {
+                    // Todo - analytics
+                    actions.onAccountClick()
+                },
+                onNotificationsClick = {
+                    viewModel.onNotificationsClick()
+                    if (notificationsPermissionShouldShowRationale(context as Activity)) {
+                        actions.onNotificationsClick()
+                    } else {
+                        showNotificationsAlert(context, viewModel)
+                    }
+                },
+                onAnalyticsConsentChange = { enabled -> viewModel.onAnalyticsConsentChanged(enabled) },
+                onPrivacyPolicyClick = {
+                    viewModel.onPrivacyPolicyView()
+                    actions.onPrivacyPolicyClick()
+                },
+                onHelpClick = {
+                    viewModel.onHelpAndFeedbackView()
+                    actions.onHelpClick()
+                },
+                onAccessibilityStatementClick = {
+                    viewModel.onAccessibilityStatementView()
+                    actions.onAccessibilityStatementClick()
+                },
+                onLicenseClick = {
+                    viewModel.onLicenseView()
+                    actions.onOpenSourceLicenseClick()
+                },
+                onTermsAndConditionsClick = {
+                    viewModel.onTermsAndConditionsView()
+                    actions.onTermsAndConditionsClick()
                 }
-            },
+            ),
             modifier = modifier
         )
     }
 }
 
+private class SettingsActions(
+    val onPageView: () -> Unit,
+    val onAccountClick: () -> Unit,
+    val onNotificationsClick: () -> Unit,
+    val onAnalyticsConsentChange: (Boolean) -> Unit,
+    val onPrivacyPolicyClick: () -> Unit,
+    val onHelpClick: () -> Unit,
+    val onAccessibilityStatementClick: () -> Unit,
+    val onLicenseClick: () -> Unit,
+    val onTermsAndConditionsClick: () -> Unit,
+)
+
 @Composable
 private fun SettingsScreen(
     uiState: SettingsUiState,
     appVersion: String,
-    onPageView: () -> Unit,
-    onLicenseClick: () -> Unit,
-    onHelpClick: () -> Unit,
-    onAnalyticsConsentChange: (Boolean) -> Unit,
-    onPrivacyPolicyClick: () -> Unit,
-    onAccessibilityStatementClick: () -> Unit,
-    onTermsAndConditionsClick: () -> Unit,
-    onNotificationsClick: () -> Unit,
+    actions: SettingsActions,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
-        onPageView()
+        actions.onPageView()
     }
 
     Column(
@@ -131,31 +147,34 @@ private fun SettingsScreen(
         ) {
             MediumVerticalSpacer()
 
-            ManageLogin(uiState.userEmail)
+            ManageLogin(
+                userEmail = uiState.userEmail,
+                onAccountClick = actions.onAccountClick
+            )
 
             LargeVerticalSpacer()
 
             NotificationsAndPrivacy(
                 isNotificationsEnabled = uiState.isNotificationsEnabled,
                 isAnalyticsEnabled = uiState.isAnalyticsEnabled,
-                onNotificationsClick = onNotificationsClick,
-                onAnalyticsConsentChange = onAnalyticsConsentChange,
-                onPrivacyPolicyClick = onPrivacyPolicyClick
+                onNotificationsClick = actions.onNotificationsClick,
+                onAnalyticsConsentChange = actions.onAnalyticsConsentChange,
+                onPrivacyPolicyClick = actions.onPrivacyPolicyClick
             )
 
             MediumVerticalSpacer()
 
             AboutTheApp(
                 appVersion = appVersion,
-                onHelpClick = onHelpClick
+                onHelpClick = actions.onHelpClick
             )
 
             MediumVerticalSpacer()
 
-            PrivacyPolicy(onPrivacyPolicyClick)
-            AccessibilityStatement(onAccessibilityStatementClick)
-            OpenSourceLicenses(onLicenseClick)
-            TermsAndConditions(onTermsAndConditionsClick)
+            PrivacyPolicy(actions.onPrivacyPolicyClick)
+            AccessibilityStatement(actions.onAccessibilityStatementClick)
+            OpenSourceLicenses(actions.onLicenseClick)
+            TermsAndConditions(actions.onTermsAndConditionsClick)
         }
     }
 }
@@ -163,6 +182,7 @@ private fun SettingsScreen(
 @Composable
 private fun ManageLogin(
     userEmail: String,
+    onAccountClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -190,7 +210,7 @@ private fun ManageLogin(
 
         ExternalLinkListItem(
             title = stringResource(R.string.manage_login_link),
-            onClick = { },
+            onClick = onAccountClick,
             isFirst = false
         )
 
