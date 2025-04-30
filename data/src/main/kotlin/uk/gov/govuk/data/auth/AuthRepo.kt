@@ -1,11 +1,13 @@
 package uk.gov.govuk.data.auth
 
 import android.content.Intent
+import android.util.Base64
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators
 import androidx.fragment.app.FragmentActivity
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
+import org.json.JSONObject
 import uk.gov.android.securestore.RetrievalEvent
 import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.authentication.AuthenticatorPromptConfiguration
@@ -91,5 +93,18 @@ class AuthRepo @Inject constructor(
             Authenticators.BIOMETRIC_STRONG or Authenticators.DEVICE_CREDENTIAL
         )
         return result == BiometricManager.BIOMETRIC_SUCCESS
+    }
+
+    fun getUserEmail(): String {
+        val parts = tokens.idToken.split(".")
+        return try {
+            if (parts.size == 3) {
+                val payload = String(Base64.decode(parts[1], Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP))
+                val json = JSONObject(payload)
+                return json.getString("email")
+            } else ""
+        } catch (e: Exception) {
+            ""
+        }
     }
 }

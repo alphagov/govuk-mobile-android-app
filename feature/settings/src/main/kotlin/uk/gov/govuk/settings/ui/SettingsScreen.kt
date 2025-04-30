@@ -45,6 +45,7 @@ import uk.gov.govuk.design.ui.component.ToggleListItem
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.notifications.notificationsPermissionShouldShowRationale
 import uk.gov.govuk.settings.R
+import uk.gov.govuk.settings.SettingsUiState
 import uk.gov.govuk.settings.SettingsViewModel
 
 @Composable
@@ -63,9 +64,8 @@ internal fun SettingsRoute(
     val context = LocalContext.current
     uiState?.let {
         SettingsScreen(
+            uiState = it,
             appVersion = appVersion,
-            isAnalyticsEnabled = it.isAnalyticsEnabled,
-            isNotificationsEnabled = it.isNotificationsEnabled,
             onPageView = { viewModel.onPageView() },
             onLicenseClick = {
                 viewModel.onLicenseView()
@@ -103,9 +103,8 @@ internal fun SettingsRoute(
 
 @Composable
 private fun SettingsScreen(
+    uiState: SettingsUiState,
     appVersion: String,
-    isAnalyticsEnabled: Boolean,
-    isNotificationsEnabled: Boolean,
     onPageView: () -> Unit,
     onLicenseClick: () -> Unit,
     onHelpClick: () -> Unit,
@@ -132,13 +131,13 @@ private fun SettingsScreen(
         ) {
             MediumVerticalSpacer()
 
-            ManageLogin()
+            ManageLogin(uiState.userEmail)
 
             LargeVerticalSpacer()
 
             NotificationsAndPrivacy(
-                isNotificationsEnabled = isNotificationsEnabled,
-                isAnalyticsEnabled = isAnalyticsEnabled,
+                isNotificationsEnabled = uiState.isNotificationsEnabled,
+                isAnalyticsEnabled = uiState.isAnalyticsEnabled,
                 onNotificationsClick = onNotificationsClick,
                 onAnalyticsConsentChange = onAnalyticsConsentChange,
                 onPrivacyPolicyClick = onPrivacyPolicyClick
@@ -163,6 +162,7 @@ private fun SettingsScreen(
 
 @Composable
 private fun ManageLogin(
+    userEmail: String,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -183,7 +183,7 @@ private fun ManageLogin(
                 SmallHorizontalSpacer()
                 Column {
                     BodyRegularLabel(stringResource(R.string.manage_login_header_title))
-                    SubheadlineRegularLabel("my@emailaddress.com")
+                    SubheadlineRegularLabel(userEmail)
                 }
             }
         }

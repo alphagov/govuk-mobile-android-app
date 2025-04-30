@@ -5,9 +5,11 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.config.data.flags.FlagRepo
+import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.settings.BuildConfig.ACCESSIBILITY_STATEMENT_EVENT
 import uk.gov.govuk.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
 import uk.gov.govuk.settings.BuildConfig.HELP_AND_FEEDBACK_EVENT
@@ -21,14 +23,16 @@ import uk.gov.govuk.settings.BuildConfig.TERMS_AND_CONDITIONS_URL
 import javax.inject.Inject
 
 internal data class SettingsUiState(
-    val isAnalyticsEnabled: Boolean,
-    val isNotificationsEnabled: Boolean
+    val userEmail: String,
+    val isNotificationsEnabled: Boolean,
+    val isAnalyticsEnabled: Boolean
 )
 
 @HiltViewModel
 internal class SettingsViewModel @Inject constructor(
-    private val analyticsClient: AnalyticsClient,
-    private val flagRepo: FlagRepo
+    authRepo: AuthRepo,
+    flagRepo: FlagRepo,
+    private val analyticsClient: AnalyticsClient
 ): ViewModel() {
 
     companion object {
@@ -42,8 +46,9 @@ internal class SettingsViewModel @Inject constructor(
 
     init {
         _uiState.value = SettingsUiState(
-            isAnalyticsEnabled = analyticsClient.isAnalyticsEnabled(),
-            isNotificationsEnabled = flagRepo.isNotificationsEnabled()
+            userEmail = authRepo.getUserEmail(),
+            isNotificationsEnabled = flagRepo.isNotificationsEnabled(),
+            isAnalyticsEnabled = analyticsClient.isAnalyticsEnabled()
         )
     }
 
@@ -106,10 +111,9 @@ internal class SettingsViewModel @Inject constructor(
             } else {
                 analyticsClient.disable()
             }
-            _uiState.value = SettingsUiState(
-                isAnalyticsEnabled = enabled,
-                isNotificationsEnabled = flagRepo.isNotificationsEnabled()
-            )
+            _uiState.update { current ->
+                current?.copy(isAnalyticsEnabled = enabled)
+            }
         }
     }
 
