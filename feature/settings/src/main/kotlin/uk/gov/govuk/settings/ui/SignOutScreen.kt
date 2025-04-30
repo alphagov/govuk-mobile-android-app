@@ -9,6 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ExtraSmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
@@ -18,14 +19,18 @@ import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title3BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
+import uk.gov.govuk.settings.SignOutViewModel
 
 @Composable
-internal fun SignOutConfirmationRoute(
+internal fun SignOutRoute(
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val viewModel: SignOutViewModel = hiltViewModel()
+
     SignOutScreen(
         onBack = onBack,
+        onSignOut = { viewModel.onSignOut() },
         modifier = modifier
     )
 }
@@ -33,6 +38,7 @@ internal fun SignOutConfirmationRoute(
 @Composable
 private fun SignOutScreen(
     onBack: () -> Unit,
+    onSignOut: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier.fillMaxSize()) {
@@ -73,7 +79,7 @@ private fun SignOutScreen(
 
         FixedDoubleButtonGroup(
             primaryText = "Sign out",
-            onPrimary = { },
+            onPrimary = onSignOut,
             secondaryText = "Cancel",
             onSecondary = onBack,
             primaryDestructive = true
@@ -86,7 +92,8 @@ private fun SignOutScreen(
 private fun SignOutPreview() {
     GovUkTheme {
         SignOutScreen(
-            onBack = { }
+            onBack = { },
+            onSignOut = { }
         )
     }
 }

@@ -34,7 +34,7 @@ class AuthRepo @Inject constructor(
         authService.getAuthorizationRequestIntent(authRequest)
     }
 
-    private lateinit var tokens: Tokens
+    private var tokens = Tokens()
 
     suspend fun handleAuthResponse(data: Intent?): Boolean = suspendCoroutine { continuation ->
         val authResponse = data?.let { AuthorizationResponse.fromIntent(it) }
@@ -111,5 +111,10 @@ class AuthRepo @Inject constructor(
         } catch (e: Exception) {
             ""
         }
+    }
+
+    fun signOut() {
+        secureStore.delete(REFRESH_TOKEN_KEY)
+        tokens = Tokens()
     }
 }

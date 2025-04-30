@@ -20,7 +20,7 @@ import uk.gov.govuk.settings.BuildConfig.PRIVACY_POLICY_URL
 import uk.gov.govuk.settings.BuildConfig.TERMS_AND_CONDITIONS_URL
 import uk.gov.govuk.settings.ui.SettingsRoute
 import uk.gov.govuk.settings.ui.SettingsRouteActions
-import uk.gov.govuk.settings.ui.SignOutConfirmationRoute
+import uk.gov.govuk.settings.ui.SignOutRoute
 import java.net.URLEncoder
 
 
@@ -88,7 +88,7 @@ fun NavGraphBuilder.signOutGraph(
         startDestination = SIGN_OUT_ROUTE
     ) {
         composable(SIGN_OUT_ROUTE) {
-            SignOutConfirmationRoute(
+            SignOutRoute(
                 onBack = { navController.popBackStack() }
             )
         }
