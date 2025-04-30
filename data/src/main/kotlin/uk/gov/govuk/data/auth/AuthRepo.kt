@@ -5,6 +5,7 @@ import android.util.Base64
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators
 import androidx.fragment.app.FragmentActivity
+import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import org.json.JSONObject
@@ -19,7 +20,7 @@ import kotlin.coroutines.suspendCoroutine
 
 @Singleton
 class AuthRepo @Inject constructor(
-    val authIntent: Intent,
+    private val authRequest: AuthorizationRequest,
     private val authService: AuthorizationService,
     private val tokenResponseMapper: TokenResponseMapper,
     private val secureStore: SecureStore,
@@ -27,6 +28,10 @@ class AuthRepo @Inject constructor(
 ) {
     companion object {
         private const val REFRESH_TOKEN_KEY = "refreshToken"
+    }
+
+    val authIntent: Intent by lazy {
+        authService.getAuthorizationRequestIntent(authRequest)
     }
 
     private lateinit var tokens: Tokens

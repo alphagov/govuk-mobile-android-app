@@ -1,7 +1,6 @@
 package uk.gov.govuk.data.auth.di
 
 import android.content.Context
-import android.content.Intent
 import androidx.biometric.BiometricManager
 import androidx.core.net.toUri
 import dagger.Module
@@ -47,7 +46,7 @@ class AuthModule {
 
     @Singleton
     @Provides
-    fun provideAuthIntent(authService: AuthorizationService): Intent {
+    fun provideAuthRequest(): AuthorizationRequest {
         // Todo - extract into build variables!!!
         val authConfig = AuthorizationServiceConfiguration(
             "https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/authorize".toUri(),
@@ -61,10 +60,8 @@ class AuthModule {
             "govuk://govuk/login-auth-callback".toUri()
         )
 
-        val authRequest = authRequestBuilder
+        return authRequestBuilder
             .setScopes("openid")
             .build()
-
-        return authService.getAuthorizationRequestIntent(authRequest)
     }
 }

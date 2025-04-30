@@ -30,7 +30,9 @@ internal class LoginViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<LoginUiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
 
-    val authIntent = authRepo.authIntent
+    val authIntent: Intent by lazy {
+        authRepo.authIntent
+    }
 
     fun onPageView() {
         analyticsClient.screenView(
