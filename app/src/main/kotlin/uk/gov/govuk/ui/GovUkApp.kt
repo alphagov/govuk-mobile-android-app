@@ -402,7 +402,7 @@ private fun GovUkNavHost(
             deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
             modifier = Modifier.padding(paddingValues)
         )
-        signOutGraph()
+        signOutGraph(navController)
         if (homeWidgets.contains(HomeWidget.SEARCH)) {
             searchGraph(navController, deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) })
         }

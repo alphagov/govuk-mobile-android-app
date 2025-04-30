@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
+import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -79,13 +80,17 @@ fun NavGraphBuilder.settingsGraph(
     }
 }
 
-fun NavGraphBuilder.signOutGraph() {
+fun NavGraphBuilder.signOutGraph(
+    navController: NavController
+) {
     navigation(
         route = SIGN_OUT_GRAPH_ROUTE,
         startDestination = SIGN_OUT_ROUTE
     ) {
         composable(SIGN_OUT_ROUTE) {
-            SignOutConfirmationRoute()
+            SignOutConfirmationRoute(
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 }

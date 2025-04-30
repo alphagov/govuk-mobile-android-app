@@ -21,18 +21,23 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
 internal fun SignOutConfirmationRoute(
+    onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    SignOutScreen(modifier)
+    SignOutScreen(
+        onBack = onBack,
+        modifier = modifier
+    )
 }
 
 @Composable
 private fun SignOutScreen(
+    onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier.fillMaxSize()) {
         FullScreenHeader(
-            onBack = { }
+            onBack = onBack
         )
         Column(Modifier
             .verticalScroll(rememberScrollState())
@@ -70,7 +75,7 @@ private fun SignOutScreen(
             primaryText = "Sign out",
             onPrimary = { },
             secondaryText = "Cancel",
-            onSecondary = { },
+            onSecondary = onBack,
             primaryDestructive = true
         )
     }
@@ -80,6 +85,8 @@ private fun SignOutScreen(
 @Composable
 private fun SignOutPreview() {
     GovUkTheme {
-        SignOutScreen()
+        SignOutScreen(
+            onBack = { }
+        )
     }
 }
