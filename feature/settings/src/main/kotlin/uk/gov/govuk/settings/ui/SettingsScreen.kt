@@ -75,11 +75,11 @@ internal fun SettingsRoute(
             actions = SettingsActions(
                 onPageView = { viewModel.onPageView() },
                 onAccountClick = {
-                    // Todo - analytics
+                    viewModel.onAccount()
                     actions.onAccountClick()
                 },
                 onSignOutClick = {
-                    // Todo - analytics
+                    viewModel.onSignOut()
                     actions.onSignOutClick()
                 },
                 onNotificationsClick = {

@@ -118,9 +118,9 @@ class AnalyticsClient @Inject constructor(
         navigation(text = text, type = "VisitedItem", url = url, external = true)
     }
 
-    fun settingsItemClick(text: String, url: String) {
+    fun settingsItemClick(text: String, url: String? = null, external: Boolean = true) {
         // external as these links will be opened in the device browser
-        navigation(text = text, type = "SettingsItem", url = url, external = true)
+        navigation(text = text, type = "SettingsItem", url = url, external = external)
     }
 
     fun toggleFunction(text: String, section: String, action: String) {

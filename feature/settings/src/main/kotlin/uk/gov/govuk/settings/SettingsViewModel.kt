@@ -12,12 +12,15 @@ import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.settings.BuildConfig.ACCESSIBILITY_STATEMENT_EVENT
 import uk.gov.govuk.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
+import uk.gov.govuk.settings.BuildConfig.ACCOUNT_EVENT
+import uk.gov.govuk.settings.BuildConfig.ACCOUNT_URL
 import uk.gov.govuk.settings.BuildConfig.HELP_AND_FEEDBACK_EVENT
 import uk.gov.govuk.settings.BuildConfig.HELP_AND_FEEDBACK_URL
 import uk.gov.govuk.settings.BuildConfig.NOTIFICATIONS_PERMISSION_EVENT
 import uk.gov.govuk.settings.BuildConfig.OPEN_SOURCE_LICENCE_EVENT
 import uk.gov.govuk.settings.BuildConfig.PRIVACY_POLICY_EVENT
 import uk.gov.govuk.settings.BuildConfig.PRIVACY_POLICY_URL
+import uk.gov.govuk.settings.BuildConfig.SIGN_OUT_EVENT
 import uk.gov.govuk.settings.BuildConfig.TERMS_AND_CONDITIONS_EVENT
 import uk.gov.govuk.settings.BuildConfig.TERMS_AND_CONDITIONS_URL
 import javax.inject.Inject
@@ -57,6 +60,20 @@ internal class SettingsViewModel @Inject constructor(
             screenClass = SCREEN_CLASS,
             screenName = SCREEN_NAME,
             title = TITLE
+        )
+    }
+
+    fun onAccount() {
+        analyticsClient.settingsItemClick(
+            text = ACCOUNT_EVENT,
+            url = ACCOUNT_URL
+        )
+    }
+
+    fun onSignOut() {
+        analyticsClient.settingsItemClick(
+            text = SIGN_OUT_EVENT,
+            external = false
         )
     }
 

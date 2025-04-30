@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,9 +33,10 @@ internal fun SignOutRoute(
     val viewModel: SignOutViewModel = hiltViewModel()
 
     SignOutScreen(
+        onPageView = { viewModel.onPageView() },
         onBack = onBack,
-        onSignOut = {
-            viewModel.onSignOut()
+        onSignOut = { text ->
+            viewModel.onSignOut(text)
             onSignOut()
         },
         modifier = modifier
@@ -43,10 +45,15 @@ internal fun SignOutRoute(
 
 @Composable
 private fun SignOutScreen(
+    onPageView: () -> Unit,
     onBack: () -> Unit,
-    onSignOut: () -> Unit,
+    onSignOut: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(Unit) {
+        onPageView()
+    }
+
     Column(modifier.fillMaxSize()) {
         FullScreenHeader(
             onBack = onBack
@@ -83,9 +90,10 @@ private fun SignOutScreen(
             LargeVerticalSpacer()
         }
 
+        val primaryButtonText = stringResource(R.string.sign_out_button)
         FixedDoubleButtonGroup(
-            primaryText = stringResource(R.string.sign_out_button),
-            onPrimary = onSignOut,
+            primaryText = primaryButtonText,
+            onPrimary = { onSignOut(primaryButtonText) },
             secondaryText = stringResource(R.string.sign_out_cancel_button),
             onSecondary = onBack,
             primaryDestructive = true
@@ -98,8 +106,9 @@ private fun SignOutScreen(
 private fun SignOutPreview() {
     GovUkTheme {
         SignOutScreen(
+            onPageView = { },
             onBack = { },
-            onSignOut = { }
+            onSignOut = { _ -> }
         )
     }
 }

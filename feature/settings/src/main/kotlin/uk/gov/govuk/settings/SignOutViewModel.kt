@@ -14,7 +14,28 @@ class SignOutViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient
 ): ViewModel() {
 
-    fun onSignOut() {
+    companion object {
+        private const val SCREEN_CLASS = "SignOutScreen"
+        private const val SCREEN_NAME = "Sign Out"
+        private const val TITLE = "Sign Out"
+
+        private const val SECTION = "Settings"
+    }
+
+    fun onPageView() {
+        analyticsClient.screenView(
+            screenClass = SCREEN_CLASS,
+            screenName = SCREEN_NAME,
+            title = TITLE
+        )
+    }
+
+    fun onSignOut(text: String) {
+        analyticsClient.buttonClick(
+            text = text,
+            section = SECTION
+        )
+
         viewModelScope.launch {
             analyticsClient.disable()
             authRepo.signOut()
