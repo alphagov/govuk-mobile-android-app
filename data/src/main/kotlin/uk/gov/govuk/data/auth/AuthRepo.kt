@@ -1,4 +1,4 @@
-package uk.gov.govuk.login.data
+package uk.gov.govuk.data.auth
 
 import android.content.Intent
 import androidx.biometric.BiometricManager
@@ -9,14 +9,14 @@ import net.openid.appauth.AuthorizationService
 import uk.gov.android.securestore.RetrievalEvent
 import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.authentication.AuthenticatorPromptConfiguration
-import uk.gov.govuk.login.data.model.Tokens
+import uk.gov.govuk.data.auth.model.Tokens
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @Singleton
-internal class LoginRepo @Inject constructor(
+class AuthRepo @Inject constructor(
     val authIntent: Intent,
     private val authService: AuthorizationService,
     private val tokenResponseMapper: TokenResponseMapper,

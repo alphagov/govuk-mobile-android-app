@@ -13,14 +13,14 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.analytics.AnalyticsClient
-import uk.gov.govuk.login.data.LoginRepo
+import uk.gov.govuk.data.auth.AuthRepo
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BiometricViewModelTest {
 
-    private val loginRepo = mockk<LoginRepo>(relaxed = true)
+    private val authRepo = mockk<AuthRepo>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val activity = mockk<FragmentActivity>(relaxed = true)
     private val dispatcher = UnconfinedTestDispatcher()
@@ -30,7 +30,7 @@ class BiometricViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = BiometricViewModel(loginRepo, analyticsClient)
+        viewModel = BiometricViewModel(authRepo, analyticsClient)
     }
 
     @After
@@ -77,7 +77,7 @@ class BiometricViewModelTest {
 
     @Test
     fun `Given continue, when persist token success, then emit ui state`() {
-        coEvery { loginRepo.persistRefreshToken(any(), any(), any(), any()) } returns true
+        coEvery { authRepo.persistRefreshToken(any(), any(), any(), any()) } returns true
 
         viewModel.onContinue(activity, "button text")
 
@@ -86,7 +86,7 @@ class BiometricViewModelTest {
 
     @Test
     fun `Given continue, when persist token failure, then emit ui state`() {
-        coEvery { loginRepo.persistRefreshToken(any(), any(), any(), any()) } returns false
+        coEvery { authRepo.persistRefreshToken(any(), any(), any(), any()) } returns false
 
         viewModel.onContinue(activity, "button text")
 

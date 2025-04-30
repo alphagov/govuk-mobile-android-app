@@ -43,11 +43,20 @@ dependencies {
 
     implementation(libs.hilt.android)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.biometric)
 
     ksp(libs.hilt.compiler)
 
     implementation(libs.retrofit)
     implementation(libs.realm.base)
+    implementation(libs.openid)
+
+    implementation(libs.gov.securestore) {
+        artifact {
+            classifier = "release"
+            type = "aar"
+        }
+    }
 
     testImplementation(libs.junit)
 

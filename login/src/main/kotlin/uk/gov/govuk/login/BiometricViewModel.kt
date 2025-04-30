@@ -8,12 +8,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
-import uk.gov.govuk.login.data.LoginRepo
+import uk.gov.govuk.data.auth.AuthRepo
 import javax.inject.Inject
 
 @HiltViewModel
 internal class BiometricViewModel @Inject constructor(
-    private val loginRepo: LoginRepo,
+    private val authRepo: AuthRepo,
     private val analyticsClient: AnalyticsClient
 ) : ViewModel() {
 
@@ -43,7 +43,7 @@ internal class BiometricViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            _uiState.value = loginRepo.persistRefreshToken(
+            _uiState.value = authRepo.persistRefreshToken(
                 // Todo - actual copy!!!
                 activity = activity,
                 title = "Title",

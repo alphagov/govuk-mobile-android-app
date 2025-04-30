@@ -1,4 +1,4 @@
-package uk.gov.govuk.login.data.model
+package uk.gov.govuk.data.auth.model
 
 data class Tokens(
     val accessToken: String,

@@ -23,10 +23,12 @@ import org.junit.Test
 import uk.gov.android.securestore.RetrievalEvent
 import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.error.SecureStoreErrorType
+import uk.gov.govuk.data.auth.AuthRepo
+import uk.gov.govuk.data.auth.TokenResponseMapper
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class LoginRepoTest {
+class AuthRepoTest {
 
     private val authIntent = mockk<Intent>(relaxed = true)
     private val authService = mockk<AuthorizationService>(relaxed = true)
@@ -38,13 +40,13 @@ class LoginRepoTest {
     private val tokenResponse = mockk<TokenResponse>(relaxed = true)
     private val activity = mockk<FragmentActivity>(relaxed = true)
 
-    private lateinit var loginRepo: LoginRepo
+    private lateinit var authRepo: AuthRepo
 
     @Before
     fun setup() {
         mockkStatic(AuthorizationResponse::class)
 
-        loginRepo = LoginRepo(authIntent, authService, tokenResponseMapper, secureStore, biometricManager)
+        authRepo = AuthRepo(authIntent, authService, tokenResponseMapper, secureStore, biometricManager)
     }
 
     @After
@@ -56,7 +58,7 @@ class LoginRepoTest {
     @Test
     fun `Given null data, when handle auth response, return false`() {
         runTest {
-            assertFalse(loginRepo.handleAuthResponse(null))
+            assertFalse(authRepo.handleAuthResponse(null))
         }
     }
 
@@ -65,7 +67,7 @@ class LoginRepoTest {
         every { AuthorizationResponse.fromIntent(any()) } returns null
 
         runTest {
-            assertFalse(loginRepo.handleAuthResponse(authIntent))
+            assertFalse(authRepo.handleAuthResponse(authIntent))
         }
     }
 
@@ -78,7 +80,7 @@ class LoginRepoTest {
         }
 
         runTest {
-            assertFalse(loginRepo.handleAuthResponse(authIntent))
+            assertFalse(authRepo.handleAuthResponse(authIntent))
         }
     }
 
@@ -97,7 +99,7 @@ class LoginRepoTest {
                 )
 
         runTest {
-            assertFalse(loginRepo.handleAuthResponse(authIntent))
+            assertFalse(authRepo.handleAuthResponse(authIntent))
         }
     }
 
@@ -116,7 +118,7 @@ class LoginRepoTest {
                 )
 
         runTest {
-            assertFalse(loginRepo.handleAuthResponse(authIntent))
+            assertFalse(authRepo.handleAuthResponse(authIntent))
         }
     }
 
@@ -135,7 +137,7 @@ class LoginRepoTest {
                 )
 
         runTest {
-            assertFalse(loginRepo.handleAuthResponse(authIntent))
+            assertFalse(authRepo.handleAuthResponse(authIntent))
         }
     }
 
@@ -154,7 +156,7 @@ class LoginRepoTest {
                 )
 
         runTest {
-            assertTrue(loginRepo.handleAuthResponse(authIntent))
+            assertTrue(authRepo.handleAuthResponse(authIntent))
         }
     }
 
@@ -180,9 +182,9 @@ class LoginRepoTest {
         } returns RetrievalEvent.Success(emptyMap())
 
         runTest {
-            loginRepo.handleAuthResponse(authIntent)
+            authRepo.handleAuthResponse(authIntent)
             assertTrue(
-                loginRepo.persistRefreshToken(activity, "", "", "")
+                authRepo.persistRefreshToken(activity, "", "", "")
             )
 
             coVerify { secureStore.upsert("refreshToken", "refreshToken") }
@@ -211,9 +213,9 @@ class LoginRepoTest {
         } returns RetrievalEvent.Failed(SecureStoreErrorType.GENERAL)
 
         runTest {
-            loginRepo.handleAuthResponse(authIntent)
+            authRepo.handleAuthResponse(authIntent)
             assertFalse(
-                loginRepo.persistRefreshToken(activity, "", "", "")
+                authRepo.persistRefreshToken(activity, "", "", "")
             )
 
             coVerify { secureStore.upsert("refreshToken", "refreshToken") }
@@ -229,7 +231,7 @@ class LoginRepoTest {
             )
         } returns  BIOMETRIC_SUCCESS
 
-        assertTrue(loginRepo.isAuthenticationEnabled())
+        assertTrue(authRepo.isAuthenticationEnabled())
     }
 
     @Test
@@ -240,7 +242,7 @@ class LoginRepoTest {
             )
         } returns BiometricManager.BIOMETRIC_STATUS_UNKNOWN
 
-        assertFalse(loginRepo.isAuthenticationEnabled())
+        assertFalse(authRepo.isAuthenticationEnabled())
 
         every {
             biometricManager.canAuthenticate(
@@ -248,7 +250,7 @@ class LoginRepoTest {
             )
         } returns BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED
 
-        assertFalse(loginRepo.isAuthenticationEnabled())
+        assertFalse(authRepo.isAuthenticationEnabled())
 
         every {
             biometricManager.canAuthenticate(
@@ -256,7 +258,7 @@ class LoginRepoTest {
             )
         } returns BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE
 
-        assertFalse(loginRepo.isAuthenticationEnabled())
+        assertFalse(authRepo.isAuthenticationEnabled())
 
         every {
             biometricManager.canAuthenticate(
@@ -264,7 +266,7 @@ class LoginRepoTest {
             )
         } returns BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED
 
-        assertFalse(loginRepo.isAuthenticationEnabled())
+        assertFalse(authRepo.isAuthenticationEnabled())
 
         every {
             biometricManager.canAuthenticate(
@@ -272,7 +274,7 @@ class LoginRepoTest {
             )
         } returns BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
 
-        assertFalse(loginRepo.isAuthenticationEnabled())
+        assertFalse(authRepo.isAuthenticationEnabled())
 
         every {
             biometricManager.canAuthenticate(
@@ -280,6 +282,6 @@ class LoginRepoTest {
             )
         } returns BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED
 
-        assertFalse(loginRepo.isAuthenticationEnabled())
+        assertFalse(authRepo.isAuthenticationEnabled())
     }
 }
