@@ -81,7 +81,8 @@ fun NavGraphBuilder.settingsGraph(
 }
 
 fun NavGraphBuilder.signOutGraph(
-    navController: NavController
+    navController: NavController,
+    onSignOut: () -> Unit
 ) {
     navigation(
         route = SIGN_OUT_GRAPH_ROUTE,
@@ -89,7 +90,8 @@ fun NavGraphBuilder.signOutGraph(
     ) {
         composable(SIGN_OUT_ROUTE) {
             SignOutRoute(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onSignOut = onSignOut
             )
         }
     }

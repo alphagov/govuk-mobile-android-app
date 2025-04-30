@@ -24,13 +24,17 @@ import uk.gov.govuk.settings.SignOutViewModel
 @Composable
 internal fun SignOutRoute(
     onBack: () -> Unit,
+    onSignOut: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: SignOutViewModel = hiltViewModel()
 
     SignOutScreen(
         onBack = onBack,
-        onSignOut = { viewModel.onSignOut() },
+        onSignOut = {
+            viewModel.onSignOut()
+            onSignOut()
+        },
         modifier = modifier
     )
 }

@@ -59,9 +59,11 @@ import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.extension.asDeepLinks
 import uk.gov.govuk.extension.getUrlParam
+import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
 import uk.gov.govuk.login.navigation.loginGraph
+import uk.gov.govuk.login.navigation.navigateToLoginPostSignOut
 import uk.gov.govuk.navigation.AppLaunchNavigation
 import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
@@ -367,9 +369,13 @@ private fun GovUkNavHost(
         )
         loginGraph(
             navController = navController,
-            onCompleted = {
+            onCompleted = { isPostSignOut ->
                 navController.popBackStack()
-                navController.navigate(launchRoutes.pop())
+                if (isPostSignOut) {
+                    navController.navigate(HOME_GRAPH_ROUTE)
+                } else {
+                    navController.navigate(launchRoutes.pop())
+                }
             }
         )
         homeGraph(
@@ -402,7 +408,12 @@ private fun GovUkNavHost(
             deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
             modifier = Modifier.padding(paddingValues)
         )
-        signOutGraph(navController)
+        signOutGraph(
+            navController = navController,
+            onSignOut = {
+                navController.navigateToLoginPostSignOut()
+            }
+        )
         if (homeWidgets.contains(HomeWidget.SEARCH)) {
             searchGraph(navController, deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) })
         }

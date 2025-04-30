@@ -46,8 +46,7 @@ internal class SettingsViewModel @Inject constructor(
 
     init {
         _uiState.value = SettingsUiState(
-//            userEmail = authRepo.getUserEmail(), Todo - Revert!!!
-            userEmail = "",
+            userEmail = authRepo.getUserEmail(),
             isNotificationsEnabled = flagRepo.isNotificationsEnabled(),
             isAnalyticsEnabled = analyticsClient.isAnalyticsEnabled()
         )
