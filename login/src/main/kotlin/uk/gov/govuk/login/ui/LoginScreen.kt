@@ -84,7 +84,7 @@ private fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 val title = if (isPostSignOut) {
-                    "You've signed out"
+                    stringResource(R.string.login_post_sign_out_title)
                 } else {
                     stringResource(R.string.login_sign_in_with_gov_uk)
                 }
@@ -96,7 +96,7 @@ private fun LoginScreen(
                 MediumVerticalSpacer()
 
                 val subtitle = if (isPostSignOut) {
-                    "You need to sign in again to use the app"
+                    stringResource(R.string.login_post_sign_out_sub_text)
                 } else {
                     stringResource(R.string.login_sign_sub_text)
                 }
@@ -111,7 +111,7 @@ private fun LoginScreen(
         }
 
         val buttonText = if (isPostSignOut) {
-            "Sign in with GOV.UK One Login"
+            stringResource(R.string.login_post_sign_out_continue_button)
         } else {
             stringResource(R.string.login_continue_button)
         }

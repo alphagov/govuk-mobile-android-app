@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
@@ -19,6 +20,7 @@ import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title3BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
+import uk.gov.govuk.settings.R
 import uk.gov.govuk.settings.SignOutViewModel
 
 @Composable
@@ -54,37 +56,37 @@ private fun SignOutScreen(
             .weight(1f)
             .padding(horizontal = GovUkTheme.spacing.medium)
         ) {
-            LargeTitleBoldLabel("Are you sure you want to sign out?")
+            LargeTitleBoldLabel(stringResource(R.string.sign_out_title))
 
             MediumVerticalSpacer()
 
-            BodyRegularLabel("This means:")
+            BodyRegularLabel(stringResource(R.string.sign_out_bullet_title))
 
             MediumVerticalSpacer()
 
             Row {
                 Title3BoldLabel("•    ")
-                BodyRegularLabel("if you're using your fingerprint, face or iris to unlock the app, this will be turned off")
+                BodyRegularLabel(stringResource(R.string.sign_out_bullet_1))
             }
 
             ExtraSmallVerticalSpacer()
 
             Row {
                 Title3BoldLabel("•    ")
-                BodyRegularLabel("you'll stop sharing statistics about how you use the app")
+                BodyRegularLabel(stringResource(R.string.sign_out_bullet_2))
             }
 
             MediumVerticalSpacer()
 
-            BodyRegularLabel("Next time you sign in, you'll be able to set these preferences again.")
+            BodyRegularLabel(stringResource(R.string.sign_out_bullet_subtitle))
 
             LargeVerticalSpacer()
         }
 
         FixedDoubleButtonGroup(
-            primaryText = "Sign out",
+            primaryText = stringResource(R.string.sign_out_button),
             onPrimary = onSignOut,
-            secondaryText = "Cancel",
+            secondaryText = stringResource(R.string.sign_out_cancel_button),
             onSecondary = onBack,
             primaryDestructive = true
         )
