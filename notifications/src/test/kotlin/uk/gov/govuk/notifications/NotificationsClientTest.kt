@@ -2,6 +2,7 @@ package uk.gov.govuk.notifications
 
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
 import com.onesignal.OneSignal
@@ -105,9 +106,11 @@ class NotificationsClientTest {
 
     @Test
     fun `Given we have a notifications client, when add click listener is called, then the correct functions are called`() {
+        val uri = mockk<Uri>()
         val event = mockk<INotificationClickEvent>()
         val notification = mockk<INotification>()
         val clickListener = slot<INotificationClickListener>()
+        every { Uri.parse("") } returns uri
         every { event.notification.additionalData } returns null
         every { event.notification.additionalData.toString() } returns ""
         every { event.notification } returns notification
@@ -125,7 +128,7 @@ class NotificationsClientTest {
             verify(exactly = 1) {
                 OneSignal.Notifications.addClickListener(any())
 
-                notificationsClient.handleAdditionalData(context, notification.additionalData)
+                notificationsClient.handleAdditionalData(context, notification.additionalData, null)
             }
         }
     }
@@ -141,8 +144,8 @@ class NotificationsClientTest {
         every { Uri.parse("scheme://host") } returns uri
         every { intent.setData(uri) } returns intent
         every { intent.data } returns uri
-        every { intent.setFlags(FLAG_ACTIVITY_NEW_TASK) } returns intent
-        every { intent.flags } returns FLAG_ACTIVITY_NEW_TASK
+        every { intent.setFlags(FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK) } returns intent
+        every { intent.flags } returns (FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK)
         every { additionalData.toString() } returns "{\"deeplink\":\"scheme://host\"}"
 
         runTest {
@@ -150,7 +153,7 @@ class NotificationsClientTest {
 
             assertEquals("scheme", intent.data?.scheme)
             assertEquals("host", intent.data?.host)
-            assertEquals(FLAG_ACTIVITY_NEW_TASK, intent.flags)
+            assertEquals(FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK, intent.flags)
 
             verify(exactly = 1) {
                 context.startActivity(intent)
@@ -159,26 +162,55 @@ class NotificationsClientTest {
     }
 
     @Test
-    fun `Given we have a notifications client, when handle additional data function is called with invalid additional data, then a new activity is not started`() {
+    fun `Given we have a notifications client, when handle additional data function is called with invalid additional data, then start activity is called with expected data`() {
+        val uri = mockk<Uri>()
         val intent = spyk<Intent>()
         val additionalData = mockk<JSONObject>()
 
+        every { Uri.parse("") } returns uri
+        every { intent.setData(uri) } returns intent
+        every { intent.data } returns uri
+        every { intent.setFlags(FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK) } returns intent
         every { additionalData.toString() } returns ""
 
         runTest {
             notificationsClient.handleAdditionalData(context, additionalData, intent)
 
-            verify(exactly = 0) {
+            assertEquals(uri, intent.data)
+
+            verify(exactly = 1) {
                 context.startActivity(intent)
             }
         }
     }
 
     @Test
-    fun `Given we have a notifications client, when handle additional data function is called and additional data is null, then start activity is not called`() {
+    fun `Given we have a notifications client, when handle additional data function is called and additional data is null, then start activity is called with expected data`() {
+        val uri = mockk<Uri>()
         val intent = spyk<Intent>()
 
+        every { Uri.parse("") } returns uri
+        every { intent.setData(uri) } returns intent
+        every { intent.data } returns uri
+        every { intent.setFlags(FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK) } returns intent
+
         val additionalData: JSONObject? = null
+
+        runTest {
+            notificationsClient.handleAdditionalData(context, additionalData, intent)
+
+            assertEquals(uri, intent.data)
+
+            verify(exactly = 1) {
+                context.startActivity(intent)
+            }
+        }
+    }
+
+    @Test
+    fun `Given we have a notifications client, when handle additional data function is called and intent is null, then start activity is not called`() {
+        val intent: Intent? = null
+        val additionalData = mockk<JSONObject>()
 
         runTest {
             notificationsClient.handleAdditionalData(context, additionalData, intent)

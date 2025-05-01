@@ -2,6 +2,7 @@ package uk.gov.govuk.notifications
 
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import androidx.core.net.toUri
 import com.onesignal.OneSignal
@@ -50,14 +51,14 @@ class NotificationsClient @Inject constructor() {
     internal fun handleAdditionalData(
         context: Context,
         additionalDataJson: JSONObject?,
-        intent: Intent = Intent(Intent.ACTION_VIEW)
+        intent: Intent? = context.packageManager.getLaunchIntentForPackage(context.packageName)
     ) {
-        additionalDataJson.asAdditionalData()?.let { additionalData ->
-            intent.apply {
-                data = additionalData.deepLink.toUri()
-                flags = FLAG_ACTIVITY_NEW_TASK
-            }
-            context.startActivity(intent)
+        // If additional data couldn't be parsed, send an empty Uri for the app to handle
+        val deepLink = additionalDataJson.asAdditionalData()?.deepLink ?: ""
+        intent?.let {
+            it.data = deepLink.toUri()
+            it.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
+            context.startActivity(it)
         }
     }
 }
