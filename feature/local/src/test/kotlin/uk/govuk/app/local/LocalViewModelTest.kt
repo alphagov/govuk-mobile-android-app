@@ -1,6 +1,9 @@
 package uk.govuk.app.local
 
+import android.content.Context
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
@@ -11,296 +14,189 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
-import org.junit.experimental.runners.Enclosed
-import org.junit.runner.RunWith
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.model.Result.Success
 import uk.govuk.app.local.data.LocalRepo
-import uk.govuk.app.local.data.remote.model.Address
-import uk.govuk.app.local.data.remote.model.ApiResponse
-import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
+import uk.govuk.app.local.data.remote.model.LocalAuthorityResult
 
-@RunWith(Enclosed::class)
 @OptIn(ExperimentalCoroutinesApi::class)
 class LocalViewModelTest {
-    class AnalyticsTest {
-        private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
-        private val localRepo = mockk<LocalRepo>(relaxed = true)
-        private val dispatcher = UnconfinedTestDispatcher()
+    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
+    private val localRepo = mockk<LocalRepo>(relaxed = true)
+    private val context = mockk<Context>(relaxed = true)
+    private val dispatcher = UnconfinedTestDispatcher()
 
-        private lateinit var viewModel: LocalViewModel
+    private lateinit var viewModel: LocalViewModel
 
-        @Before
-        fun setup() {
-            Dispatchers.setMain(dispatcher)
-            viewModel = LocalViewModel(analyticsClient, localRepo)
-        }
+    @Before
+    fun setup() {
+        Dispatchers.setMain(dispatcher)
+        viewModel = LocalViewModel(analyticsClient, localRepo, context)
+    }
 
-        @After
-        fun tearDown() {
-            Dispatchers.resetMain()
-        }
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
-        @Test
-        fun `Given an explainer page view, then log analytics`() {
-            viewModel.onExplainerPageView()
+    @Test
+    fun `Given an explainer page view, then log analytics`() {
+        viewModel.onExplainerPageView()
 
-            verify {
-                analyticsClient.screenView(
-                    screenClass = "LocalExplainerScreen",
-                    screenName = "Local Explainer",
-                    title = "Local Explainer"
-                )
-            }
-        }
-
-        @Test
-        fun `Given an explainer button click, then log analytics`() {
-            val viewModel = LocalViewModel(analyticsClient, localRepo)
-            viewModel.onExplainerButtonClick("button text")
-
-            verify {
-                analyticsClient.buttonClick(
-                    text = "button text",
-                    section = "Local"
-                )
-            }
-        }
-
-        @Test
-        fun `Given a lookup page view, then log analytics`() {
-            viewModel.onLookupPageView()
-
-            verify {
-                analyticsClient.screenView(
-                    screenClass = "LocalLookupScreen",
-                    screenName = "Local Lookup",
-                    title = "Local Lookup"
-                )
-            }
-        }
-
-        @Test
-        fun `Given a postcode lookup, then log analytics`() {
-            val viewModel = LocalViewModel(analyticsClient, localRepo)
-            viewModel.onSearchPostcode("button text", "")
-
-            verify {
-                analyticsClient.buttonClick(
-                    text = "button text",
-                    section = "Local"
-                )
-            }
+        verify {
+            analyticsClient.screenView(
+                screenClass = "LocalExplainerScreen",
+                screenName = "Local Explainer",
+                title = "Local Explainer"
+            )
         }
     }
 
-    class UiStateTest {
-        private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
-        private val localRepo = mockk<LocalRepo>(relaxed = true)
-        private val dispatcher = UnconfinedTestDispatcher()
-        private val unitaryLocalAuthority = RemoteLocalAuthority(
-            name = "name",
-            homePageUrl = "homePageUrl",
-            tier = "unitary",
-            slug = "slug"
-        )
-        private val twoTierLocalAuthority = RemoteLocalAuthority(
-            name = "name",
-            homePageUrl = "homePageUrl",
-            tier = "district",
-            slug = "slug",
-            parent = RemoteLocalAuthority(
-                name = "parent name",
-                homePageUrl = "parentHomePageUrl",
-                tier = "county",
-                slug = "slug"
+    @Test
+    fun `Given an explainer button click, then log analytics`() {
+        viewModel.onExplainerButtonClick("button text")
+
+        verify {
+            analyticsClient.buttonClick(
+                text = "button text",
+                section = "Local"
             )
-        )
-        private val responseWithUnitaryResult = ApiResponse(
-            localAuthority = unitaryLocalAuthority,
-            addresses = listOf(),
-            message = null
-        )
-        private val responseWithTwoTierResult = ApiResponse(
-            localAuthority = twoTierLocalAuthority,
-            addresses = listOf(),
-            message = null
-        )
-        private val addresses = listOf(
-            Address(
-                address = "address1",
-                slug = "slug1",
-                name = "name1"
-            ),
-            Address(
-                address = "address2",
-                slug = "slug2",
-                name = "name2"
+        }
+    }
+
+    @Test
+    fun `Given a lookup page view, then log analytics`() {
+        viewModel.onLookupPageView()
+
+        verify {
+            analyticsClient.screenView(
+                screenClass = "LocalLookupScreen",
+                screenName = "Local Lookup",
+                title = "Local Lookup"
             )
-        )
-        private val responseWithAddressResult = ApiResponse(
-            localAuthority = null,
-            addresses = addresses,
-            message = null
-        )
-
-        @Before
-        fun setup() {
-            Dispatchers.setMain(dispatcher)
         }
+    }
 
-        @After
-        fun tearDown() {
-            Dispatchers.resetMain()
-        }
+    @Test
+    fun `Given a postcode lookup, then log analytics`() {
+        viewModel.onSearchPostcode("button text", "")
 
-        @Test
-        fun `Given a postcode lookup that returns a unitary local authority, then we get a unitary local authority`() {
-            val postcode = "E18QS"
-
-            coEvery {
-                localRepo.performGetLocalPostcode(postcode)
-            } returns Success(responseWithUnitaryResult)
-
-            val viewModel = LocalViewModel(analyticsClient, localRepo)
-            viewModel.onSearchPostcode("", postcode)
-
-            runTest {
-                val uiState = viewModel.uiState.value
-
-                assertEquals(postcode, uiState.postcode)
-                assertEquals(unitaryLocalAuthority, uiState.localAuthority)
-            }
-        }
-
-        @Test
-        fun `Given a postcode lookup that returns a two-tier local authority, then we get a two-tier local authority`() {
-            val postcode = "E18QS"
-
-            coEvery {
-                localRepo.performGetLocalPostcode(postcode)
-            } returns Success(responseWithTwoTierResult)
-
-            val viewModel = LocalViewModel(analyticsClient, localRepo)
-            viewModel.onSearchPostcode("", postcode)
-
-            runTest {
-                val uiState = viewModel.uiState.value
-
-                assertEquals(postcode, uiState.postcode)
-                assertEquals(twoTierLocalAuthority, uiState.localAuthority)
-            }
-        }
-
-        @Test
-        fun `Given a postcode lookup that returns an ambiguous response, then we get an address list`() {
-            val postcode = "E18QS"
-
-            coEvery {
-                localRepo.performGetLocalPostcode(postcode)
-            } returns Success(responseWithAddressResult)
-
-            val viewModel = LocalViewModel(analyticsClient, localRepo)
-            viewModel.onSearchPostcode("", postcode)
-
-            runTest {
-                val uiState = viewModel.uiState.value
-
-                assertEquals(postcode, uiState.postcode)
-                assertEquals(addresses, uiState.addresses)
-            }
-        }
-
-        @Test
-        fun `Given a local authority lookup that returns a unitary local authority, then get a unitary local authority`() {
-            val slug = "slug"
-
-            coEvery {
-                localRepo.performGetLocalAuthority(slug)
-            } returns Success(responseWithUnitaryResult)
-
-            val viewModel = LocalViewModel(analyticsClient, localRepo)
-            viewModel.onSearchLocalAuthority(slug)
-
-            runTest {
-                val uiState = viewModel.uiState.value
-
-                assertEquals(slug, uiState.slug)
-                assertEquals(unitaryLocalAuthority, uiState.localAuthority)
-            }
-        }
-
-        @Test
-        fun `Given a local authority lookup that returns a two-tier local authority, then get a two-tier local authority`() {
-            val slug = "slug"
-
-            coEvery {
-                localRepo.performGetLocalAuthority(slug)
-            } returns Success(responseWithTwoTierResult)
-
-            val viewModel = LocalViewModel(analyticsClient, localRepo)
-            viewModel.onSearchLocalAuthority(slug)
-
-            runTest {
-                val uiState = viewModel.uiState.value
-
-                assertEquals(slug, uiState.slug)
-                assertEquals(twoTierLocalAuthority, uiState.localAuthority)
-            }
-        }
-
-        @Test
-        fun `Given a local authority lookup that returns a not found response, then get a message`() {
-            val postcode = "SW1A1AA"
-            val message = "Postcode not found"
-
-            coEvery {
-                localRepo.performGetLocalPostcode(postcode)
-            } returns Success(
-                ApiResponse(
-                    localAuthority = null,
-                    addresses = null,
-                    message = message
-                )
+        verify {
+            analyticsClient.buttonClick(
+                text = "button text",
+                section = "Local"
             )
-
-            val viewModel = LocalViewModel(analyticsClient, localRepo)
-            viewModel.onSearchPostcode("", postcode)
-
-            runTest {
-                val uiState = viewModel.uiState.value
-
-                assertEquals(postcode, uiState.postcode)
-                assertEquals(message, uiState.message)
-            }
         }
+    }
 
-        @Test
-        fun `Given a local authority lookup that returns a invalid postcode response, then get a message`() {
-            val postcode = "SW1"
-            val message = "Invalid postcode"
+    @Test
+    fun `Given a uiState that is an error, when the postcode is changed, then is clears the error`() {
+        viewModel.onSearchPostcode("text", " ")
 
-            coEvery {
-                localRepo.performGetLocalPostcode(postcode)
-            } returns Success(
-                ApiResponse(
-                    localAuthority = null,
-                    addresses = null,
-                    message = message
-                )
+        viewModel.onPostcodeChange()
+
+        assertNull(viewModel.uiState.value)
+    }
+
+    @Test
+    fun `onSearchPostcode calls analyticsClient and performGetLocalPostcode`() = runTest {
+        val buttonText = "Search"
+        val postcode = "E18QS"
+        val localAuthorityResult: LocalAuthorityResult = mockk<LocalAuthorityResult>(relaxed = true)
+
+        coEvery { localRepo.performGetLocalPostcode(postcode) } returns Success(localAuthorityResult)
+
+        viewModel.onSearchPostcode(buttonText, postcode)
+
+        verify { analyticsClient.buttonClick(text = buttonText, section = "Local") }
+        coVerify { localRepo.performGetLocalPostcode(postcode) }
+    }
+
+    @Test
+    fun `onSearchPostcode calls analyticsClient and performGetLocalPostcode - returns invalid postcode - emits error`() = runTest {
+        val buttonText = "Search"
+        val postcode = "E18QS"
+
+        coEvery {
+            localRepo.performGetLocalPostcode(postcode)
+        } returns Success(LocalAuthorityResult.InvalidPostcode)
+
+        val errorMessage = "invalid postcode error"
+
+        every { context.getString(R.string.local_invalid_postcode_message) } returns errorMessage
+
+        viewModel.onSearchPostcode(buttonText, postcode)
+
+        verify {
+            analyticsClient.buttonClick(text = buttonText, section = "Local")
+            analyticsClient.screenView(
+                screenClass = "LocalLookupScreen",
+                screenName = "Local Lookup",
+                title = errorMessage
             )
-
-            val viewModel = LocalViewModel(analyticsClient, localRepo)
-            viewModel.onSearchPostcode("", postcode)
-
-            runTest {
-                val uiState = viewModel.uiState.value
-
-                assertEquals(postcode, uiState.postcode)
-                assertEquals(message, uiState.message)
-            }
         }
+        coVerify { localRepo.performGetLocalPostcode(postcode) }
+        val uiState = viewModel.uiState.value as LocalUiState.Error
+        assertEquals(R.string.local_invalid_postcode_message, uiState.message)
+    }
+
+    @Test
+    fun `onSearchPostcode calls analyticsClient and performGetLocalPostcode - returns postcode not found - emits error`() = runTest {
+        val buttonText = "Search"
+        val postcode = "E18QS"
+
+        coEvery {
+            localRepo.performGetLocalPostcode(postcode)
+        } returns Success(LocalAuthorityResult.PostcodeNotFound)
+
+        val errorMessage = "postcode not found error"
+
+        every { context.getString(R.string.local_not_found_postcode_message) } returns errorMessage
+
+        viewModel.onSearchPostcode(buttonText, postcode)
+
+        verify { analyticsClient.buttonClick(text = buttonText, section = "Local") }
+        coVerify { localRepo.performGetLocalPostcode(postcode) }
+        val uiState = viewModel.uiState.value as LocalUiState.Error
+        assertEquals(R.string.local_not_found_postcode_message, uiState.message)
+    }
+
+    @Test
+    fun `onSearchPostcode calls analyticsClient - performGetLocalPostcode is not called - returns no postcode - emits error`() = runTest {
+        val buttonText = "Search"
+        val postcode = " "
+
+        val errorMessage = "no postcode error"
+
+        every { context.getString(R.string.local_no_postcode_message) } returns errorMessage
+
+        viewModel.onSearchPostcode(buttonText, postcode)
+
+        verify {
+            analyticsClient.buttonClick(text = buttonText, section = "Local")
+            analyticsClient.screenView(
+                screenClass = "LocalLookupScreen",
+                screenName = "Local Lookup",
+                title = errorMessage
+            )
+        }
+        coVerify(exactly = 0) { localRepo.performGetLocalPostcode(any()) }
+        val uiState = viewModel.uiState.value as LocalUiState.Error
+        assertEquals(R.string.local_no_postcode_message, uiState.message)
+    }
+
+    @Test
+    fun `onSearchLocalAuthority calls analyticsClient and performGetLocalAuthority`() = runTest {
+        val slug = "dorset"
+        val localAuthorityResult: LocalAuthorityResult = mockk<LocalAuthorityResult>(relaxed = true)
+
+        coEvery { localRepo.performGetLocalAuthority(slug) } returns Success(localAuthorityResult)
+
+        viewModel.onSearchLocalAuthority(slug)
+
+        coVerify { localRepo.performGetLocalAuthority(slug) }
     }
 }

@@ -2,8 +2,7 @@ package uk.govuk.app.local.data.remote.model
 
 import com.google.gson.annotations.SerializedName
 
-data class ApiResponse(
+data class LocalAuthorityResponse(
     @SerializedName("local_authority") val localAuthority: RemoteLocalAuthority?,
     @SerializedName("addresses") val addresses: List<Address>?,
-    @SerializedName("message") val message: String?
 )
