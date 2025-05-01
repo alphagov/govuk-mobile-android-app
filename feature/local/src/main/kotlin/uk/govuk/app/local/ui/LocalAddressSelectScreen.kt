@@ -1,8 +1,6 @@
 package uk.govuk.app.local.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,59 +8,42 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
+import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.FullScreenHeader
-import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
+import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
+import uk.gov.govuk.design.ui.component.Title1BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-import uk.govuk.app.local.LocalViewModel
 import uk.govuk.app.local.R
-import uk.govuk.app.local.navigation.navigateToLocalEdit
 
 @Composable
-internal fun LocalRoute(
-    navController: NavController,
+internal fun LocalAddressSelectRoute(
     onBack: () -> Unit,
-    modifier: Modifier = Modifier
+    onCancel: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val viewModel: LocalViewModel = hiltViewModel()
-
-    LocalScreen(
+    LocalAddressSelectScreen(
         onBack = onBack,
-        onPageView = { viewModel.onExplainerPageView() },
-        onContinueClick = { text ->
-            viewModel.onExplainerButtonClick(text)
-            navController.navigateToLocalEdit()
-        },
+        onCancel = onCancel,
         modifier = modifier
     )
 }
 
 @Composable
-private fun LocalScreen(
+private fun LocalAddressSelectScreen(
     onBack: () -> Unit,
-    onPageView: () -> Unit,
-    onContinueClick: (String) -> Unit,
+    onCancel: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(Unit) {
-        onPageView()
-    }
-
     Scaffold(
         containerColor = GovUkTheme.colourScheme.surfaces.background,
         modifier = modifier.fillMaxWidth(),
@@ -70,17 +51,17 @@ private fun LocalScreen(
         topBar = {
             FullScreenHeader(
                 modifier = Modifier
-                    .padding(bottom = GovUkTheme.spacing.large)
                     .semantics {
                         isTraversalGroup = true
                         traversalIndex = -1f
                     },
-                onBack = { onBack() }
+                onBack = { onBack() },
+                actionText = stringResource(R.string.local_cancel_button),
+                onAction = onCancel
             )
         },
         bottomBar = {
             BottomNavBar(
-                onContinueClick = onContinueClick,
                 modifier = Modifier
                     .semantics {
                         isTraversalGroup = true
@@ -94,27 +75,35 @@ private fun LocalScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
                 .padding(horizontal = GovUkTheme.spacing.medium)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .fillMaxWidth()
         ) {
             SmallVerticalSpacer()
-            Image(
-                painter = painterResource(id = R.drawable.local_icon),
-                contentDescription = null
-            )
-            MediumVerticalSpacer()
-            LargeTitleBoldLabel(
-                text = stringResource(R.string.local_title),
-                color = GovUkTheme.colourScheme.textAndIcons.primary,
-                textAlign = TextAlign.Center
+            Title1BoldLabel(
+                text = stringResource(R.string.local_select_address_title)
             )
             SmallVerticalSpacer()
+
             BodyRegularLabel(
-                text = stringResource(R.string.local_explainer),
-                color = GovUkTheme.colourScheme.textAndIcons.primary,
-                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.extraLarge),
-                textAlign = TextAlign.Center
+                text = stringResource(R.string.local_select_address_description)
+            )
+
+            MediumVerticalSpacer()
+
+            // TODO: remove hardcoded value
+            val isError = false
+            if (isError) {
+                BodyBoldLabel(
+                    text = stringResource(R.string.local_select_address_error),
+                    color = GovUkTheme.colourScheme.textAndIcons.textFieldError
+                )
+                MediumVerticalSpacer()
+            }
+
+            RadioButtonGroup(
+                listOf(
+                    "APPLETREE COTTAGE, BARRACK ROAD, WEST PARLEY, FERNDOWN, BH22 8UB",
+                    "LONGCROFT BRICK, BARRACK ROAD, FERNDOWN, DORSET, BH22 8UB"
+                )
             )
         }
     }
@@ -122,26 +111,26 @@ private fun LocalScreen(
 
 @Composable
 private fun BottomNavBar(
-    onContinueClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.background(GovUkTheme.colourScheme.surfaces.background)) {
-        val buttonText = stringResource(R.string.local_continue_button)
+        val buttonText = stringResource(R.string.local_select_address_confirm)
         FixedPrimaryButton(
             text = buttonText,
-            onClick = { onContinueClick(buttonText) },
+            onClick = { /* TODO */ }
         )
+
+        LargeVerticalSpacer()
     }
 }
 
 @Preview
 @Composable
-private fun LocalScreenPreview() {
+private fun LocalAddressSelectScreenPreview() {
     GovUkTheme {
-        LocalScreen(
+        LocalAddressSelectScreen(
             onBack = {},
-            onPageView = {},
-            onContinueClick = {}
+            onCancel = {},
         )
     }
 }

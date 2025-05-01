@@ -28,6 +28,7 @@ import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
@@ -46,6 +47,7 @@ import uk.govuk.app.local.domain.PostcodeSanitizer
 internal fun LocalEntryRoute(
     onBack: () -> Unit,
     onCancel: () -> Unit,
+    onSelect: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: LocalViewModel = hiltViewModel()
@@ -55,6 +57,7 @@ internal fun LocalEntryRoute(
         uiState = uiState,
         onBack = onBack,
         onCancel = onCancel,
+        onSelect = onSelect,
         onPageView = { viewModel.onLookupPageView() },
         onPostcodeLookup = { buttonText, postcode ->
             viewModel.onSearchPostcode(
@@ -72,6 +75,7 @@ private fun LocalEntryScreen(
     uiState: LocalUiState?,
     onBack: () -> Unit,
     onCancel: () -> Unit,
+    onSelect: (String) -> Unit,
     onPageView: () -> Unit,
     onPostcodeLookup: (String, String) -> Unit,
     onPostcodeChange: () -> Unit,
@@ -96,7 +100,7 @@ private fun LocalEntryScreen(
                         traversalIndex = -1f
                     },
                 onBack = { onBack() },
-                actionText = "Cancel",
+                actionText = stringResource(R.string.local_cancel_button),
                 onAction = onCancel
             )
         },
@@ -196,6 +200,18 @@ private fun LocalEntryScreen(
         //  updated in future tickets!
         if (uiState is LocalUiState.LocalAuthority) {
             onCancel()
+        } else if (uiState is LocalUiState.Addresses) {
+//            TODO: pass in address list to auth select page, does it have to be a string?
+            onSelect(postcode)
+
+//            println(uiState.addresses)
+//
+//            val slugs = uiState.addresses.distinctBy { it.slug }.map { it.slug }
+//            println(slugs)
+//
+//            slugs.forEach { slug ->
+//                println(slug)
+//            }
         }
     }
 }
@@ -211,6 +227,22 @@ private fun BottomNavBar(
         FixedPrimaryButton(
             text = buttonText,
             onClick = { onPostcodeLookup(buttonText, postcode) }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun LocalEntryScreenPreview() {
+    GovUkTheme {
+        LocalEntryScreen(
+            onBack = {},
+            onPageView = {},
+            onCancel = {},
+            onSelect = {},
+            uiState = null,
+            onPostcodeLookup = { _, _ -> },
+            onPostcodeChange = {}
         )
     }
 }
