@@ -18,15 +18,15 @@ import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
 import javax.inject.Inject
 
 internal sealed class LocalUiState {
-    class LocalAuthority(
+    data class LocalAuthority(
         val localAuthority: RemoteLocalAuthority
     ): LocalUiState() // Todo - should probably be mapping data layer objects to domain layer objects
 
-    class Addresses(
+    data class Addresses(
         val addresses: List<Address>
     ): LocalUiState() // Todo - should probably be mapping data layer objects to domain layer objects
 
-    class Error(@StringRes val message: Int): LocalUiState()
+    data class Error(@StringRes val message: Int): LocalUiState()
 }
 
 @HiltViewModel
@@ -66,11 +66,11 @@ internal class LocalViewModel @Inject constructor(
         )
     }
 
-    fun onLookupPageView() {
+    fun onLookupPageView(title: String = LOOKUP_TITLE) {
         analyticsClient.screenView(
             screenClass = LOOKUP_SCREEN_CLASS,
             screenName = LOOKUP_SCREEN_NAME,
-            title = LOOKUP_TITLE
+            title = title
         )
     }
 
@@ -136,15 +136,7 @@ internal class LocalViewModel @Inject constructor(
     }
 
     private fun createAndLogError(@StringRes errorMessage: Int): LocalUiState.Error {
-        onErrorStatus(context.getString(errorMessage))
+        onLookupPageView(context.getString(errorMessage))
         return LocalUiState.Error(errorMessage)
-    }
-
-    private fun onErrorStatus(message: String) {
-        analyticsClient.screenView(
-            screenClass = LOOKUP_SCREEN_CLASS,
-            screenName = LOOKUP_SCREEN_NAME,
-            title = message
-        )
     }
 }
