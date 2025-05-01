@@ -13,7 +13,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import uk.gov.govuk.notifications.model.asAdditionalData
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -53,12 +52,14 @@ class NotificationsClient @Inject constructor() {
         additionalDataJson: JSONObject?,
         intent: Intent? = context.packageManager.getLaunchIntentForPackage(context.packageName)
     ) {
-        intent?.let {
-            // If additional data couldn't be parsed, send an empty Uri for the app to handle
-            val deepLink = additionalDataJson.asAdditionalData()?.deepLink ?: ""
-            it.data = deepLink.toUri()
-            it.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
-            context.startActivity(it)
+        additionalDataJson?.optString("deeplink")?.let { deepLink ->
+            if (deepLink.isNotEmpty()) {
+                intent?.let { intent ->
+                    intent.data = deepLink.toUri()
+                    intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
+                    context.startActivity(intent)
+                }
+            }
         }
     }
 }
