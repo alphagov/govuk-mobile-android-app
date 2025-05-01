@@ -53,9 +53,9 @@ class NotificationsClient @Inject constructor() {
         additionalDataJson: JSONObject?,
         intent: Intent? = context.packageManager.getLaunchIntentForPackage(context.packageName)
     ) {
-        // If additional data couldn't be parsed, send an empty Uri for the app to handle
-        val deepLink = additionalDataJson.asAdditionalData()?.deepLink ?: ""
         intent?.let {
+            // If additional data couldn't be parsed, send an empty Uri for the app to handle
+            val deepLink = additionalDataJson.asAdditionalData()?.deepLink ?: ""
             it.data = deepLink.toUri()
             it.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
             context.startActivity(it)
