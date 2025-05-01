@@ -1,4 +1,4 @@
-package uk.gov.govuk.login.data
+package uk.gov.govuk.data.auth
 
 import android.content.Intent
 import androidx.biometric.BiometricManager
@@ -11,30 +11,31 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import net.openid.appauth.AuthorizationException
+import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationService.TokenResponseCallback
 import net.openid.appauth.TokenResponse
 import org.junit.After
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.gov.android.securestore.RetrievalEvent
 import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.error.SecureStoreErrorType
-import uk.gov.govuk.data.auth.AuthRepo
-import uk.gov.govuk.data.auth.TokenResponseMapper
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class AuthRepoTest {
 
-    private val authIntent = mockk<Intent>(relaxed = true)
+    private val authRequest = mockk<AuthorizationRequest>(relaxed = true)
     private val authService = mockk<AuthorizationService>(relaxed = true)
     private val tokenResponseMapper = mockk<TokenResponseMapper>(relaxed = true)
     private val secureStore = mockk<SecureStore>(relaxed = true)
     private val biometricManager = mockk<BiometricManager>(relaxed = true)
+    private val intent = mockk<Intent>(relaxed = true)
     private val authResponse = mockk<AuthorizationResponse>(relaxed = true)
     private val authException = mockk<AuthorizationException>(relaxed = true)
     private val tokenResponse = mockk<TokenResponse>(relaxed = true)
@@ -46,7 +47,7 @@ class AuthRepoTest {
     fun setup() {
         mockkStatic(AuthorizationResponse::class)
 
-        authRepo = AuthRepo(authIntent, authService, tokenResponseMapper, secureStore, biometricManager)
+        authRepo = AuthRepo(authRequest, authService, tokenResponseMapper, secureStore, biometricManager)
     }
 
     @After
@@ -67,7 +68,7 @@ class AuthRepoTest {
         every { AuthorizationResponse.fromIntent(any()) } returns null
 
         runTest {
-            assertFalse(authRepo.handleAuthResponse(authIntent))
+            assertFalse(authRepo.handleAuthResponse(intent))
         }
     }
 
@@ -80,7 +81,7 @@ class AuthRepoTest {
         }
 
         runTest {
-            assertFalse(authRepo.handleAuthResponse(authIntent))
+            assertFalse(authRepo.handleAuthResponse(intent))
         }
     }
 
@@ -99,7 +100,7 @@ class AuthRepoTest {
                 )
 
         runTest {
-            assertFalse(authRepo.handleAuthResponse(authIntent))
+            assertFalse(authRepo.handleAuthResponse(intent))
         }
     }
 
@@ -118,7 +119,7 @@ class AuthRepoTest {
                 )
 
         runTest {
-            assertFalse(authRepo.handleAuthResponse(authIntent))
+            assertFalse(authRepo.handleAuthResponse(intent))
         }
     }
 
@@ -137,7 +138,7 @@ class AuthRepoTest {
                 )
 
         runTest {
-            assertFalse(authRepo.handleAuthResponse(authIntent))
+            assertFalse(authRepo.handleAuthResponse(intent))
         }
     }
 
@@ -156,7 +157,7 @@ class AuthRepoTest {
                 )
 
         runTest {
-            assertTrue(authRepo.handleAuthResponse(authIntent))
+            assertTrue(authRepo.handleAuthResponse(intent))
         }
     }
 
@@ -182,7 +183,7 @@ class AuthRepoTest {
         } returns RetrievalEvent.Success(emptyMap())
 
         runTest {
-            authRepo.handleAuthResponse(authIntent)
+            authRepo.handleAuthResponse(intent)
             assertTrue(
                 authRepo.persistRefreshToken(activity, "", "", "")
             )
@@ -213,7 +214,7 @@ class AuthRepoTest {
         } returns RetrievalEvent.Failed(SecureStoreErrorType.GENERAL)
 
         runTest {
-            authRepo.handleAuthResponse(authIntent)
+            authRepo.handleAuthResponse(intent)
             assertFalse(
                 authRepo.persistRefreshToken(activity, "", "", "")
             )
@@ -283,5 +284,14 @@ class AuthRepoTest {
         } returns BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED
 
         assertFalse(authRepo.isAuthenticationEnabled())
+    }
+
+    @Test
+    fun `Given the user signs out, when sign out, delete token from secure store`() {
+        authRepo.signOut()
+
+        verify {
+            secureStore.delete("refreshToken")
+        }
     }
 }

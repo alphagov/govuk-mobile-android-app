@@ -427,7 +427,7 @@ class AnalyticsClientTest {
     }
 
     @Test
-    fun `Given a settings item click, then log event`() {
+    fun `Given an external settings item click, then log event`() {
         analyticsClient.settingsItemClick("settings item title", "settings item link")
 
         verify {
@@ -439,6 +439,23 @@ class AnalyticsClientTest {
                     "language" to Locale.getDefault().language,
                     "text" to "settings item title",
                     "url" to "settings item link"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a internal settings item click, then log event`() {
+        analyticsClient.settingsItemClick("settings item title", external = false)
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "SettingsItem",
+                    "external" to false,
+                    "language" to Locale.getDefault().language,
+                    "text" to "settings item title"
                 )
             )
         }
