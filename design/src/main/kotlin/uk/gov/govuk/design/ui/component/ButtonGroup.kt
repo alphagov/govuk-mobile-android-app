@@ -63,6 +63,7 @@ fun FixedDoubleButtonGroup(
     secondaryText: String,
     onSecondary: () -> Unit,
     modifier: Modifier = Modifier,
+    primaryDestructive: Boolean = false,
     primaryEnabled: Boolean = true,
     secondaryEnabled: Boolean = true,
     windowHeightSizeClass: WindowHeightSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowHeightSizeClass
@@ -75,6 +76,7 @@ fun FixedDoubleButtonGroup(
             onPrimary = onPrimary,
             secondaryText = secondaryText,
             onSecondary = onSecondary,
+            primaryDestructive = primaryDestructive,
             primaryEnabled = primaryEnabled,
             secondaryEnabled = secondaryEnabled,
             windowHeightSizeClass = windowHeightSizeClass
@@ -90,6 +92,7 @@ fun DoubleButtonGroup(
     secondaryText: String,
     onSecondary: () -> Unit,
     modifier: Modifier = Modifier,
+    primaryDestructive: Boolean = false,
     primaryEnabled: Boolean = true,
     secondaryEnabled: Boolean = true,
     windowHeightSizeClass: WindowHeightSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowHeightSizeClass
@@ -101,6 +104,7 @@ fun DoubleButtonGroup(
             secondaryText = secondaryText,
             onSecondary = onSecondary,
             modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium),
+            primaryDestructive = primaryDestructive,
             primaryEnabled = primaryEnabled,
             secondaryEnabled = secondaryEnabled
         )
@@ -111,6 +115,7 @@ fun DoubleButtonGroup(
             secondaryText = secondaryText,
             onSecondary = onSecondary,
             modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium),
+            primaryDestructive = primaryDestructive,
             primaryEnabled = primaryEnabled,
             secondaryEnabled = secondaryEnabled
         )
@@ -124,16 +129,26 @@ private fun VerticalButtonGroup(
     secondaryText: String,
     onSecondary: () -> Unit,
     modifier: Modifier = Modifier,
+    primaryDestructive: Boolean = false,
     primaryEnabled: Boolean = true,
     secondaryEnabled: Boolean = true,
 ) {
     Column(modifier) {
-        PrimaryButton(
-            text = primaryText,
-            onClick = onPrimary,
-            modifier = Modifier.fillMaxWidth(),
-            enabled = primaryEnabled
-        )
+        if (primaryDestructive) {
+            DestructiveButton(
+                text = primaryText,
+                onClick = onPrimary,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = primaryEnabled
+            )
+        } else {
+            PrimaryButton(
+                text = primaryText,
+                onClick = onPrimary,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = primaryEnabled
+            )
+        }
         MediumVerticalSpacer()
         SecondaryButton(
             text = secondaryText,
@@ -151,18 +166,28 @@ private fun HorizontalButtonGroup(
     secondaryText: String,
     onSecondary: () -> Unit,
     modifier: Modifier = Modifier,
+    primaryDestructive: Boolean = false,
     primaryEnabled: Boolean = true,
     secondaryEnabled: Boolean = true,
 ) {
     Row(modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
-        PrimaryButton(
-            text = primaryText,
-            onClick = onPrimary,
-            modifier = Modifier.weight(0.5f),
-            enabled = primaryEnabled
-        )
+        if (primaryDestructive) {
+            DestructiveButton(
+                text = primaryText,
+                onClick = onPrimary,
+                modifier = Modifier.weight(0.5f),
+                enabled = primaryEnabled
+            )
+        } else {
+            PrimaryButton(
+                text = primaryText,
+                onClick = onPrimary,
+                modifier = Modifier.weight(0.5f),
+                enabled = primaryEnabled
+            )
+        }
         MediumHorizontalSpacer()
         SecondaryButton(
             text = secondaryText,
@@ -222,6 +247,38 @@ private fun HorizontalButtonGroupPreview()
             onPrimary = {},
             secondaryText = "Secondary",
             onSecondary = {},
+            windowHeightSizeClass = WindowHeightSizeClass.COMPACT
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun VerticalDestructiveButtonGroupPreview()
+{
+    GovUkTheme {
+        FixedDoubleButtonGroup(
+            primaryText = "Primary",
+            onPrimary = {},
+            secondaryText = "Secondary",
+            onSecondary = {},
+            primaryDestructive = true,
+            windowHeightSizeClass = WindowHeightSizeClass.MEDIUM
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun HorizontalDestructiveButtonGroupPreview()
+{
+    GovUkTheme {
+        FixedDoubleButtonGroup(
+            primaryText = "Primary",
+            onPrimary = {},
+            secondaryText = "Secondary",
+            onSecondary = {},
+            primaryDestructive = true,
             windowHeightSizeClass = WindowHeightSizeClass.COMPACT
         )
     }

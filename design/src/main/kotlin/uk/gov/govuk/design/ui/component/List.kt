@@ -117,13 +117,14 @@ fun InternalLinkListItem(
                     text = it,
                     color = GovUkTheme.colourScheme.textAndIcons.link
                 )
-            } ?: run {
-                Icon(
-                    painter = painterResource(R.drawable.ic_chevron),
-                    contentDescription = null,
-                    tint = GovUkTheme.colourScheme.textAndIcons.icon
-                )
+                MediumHorizontalSpacer()
             }
+
+            Icon(
+                painter = painterResource(R.drawable.ic_chevron),
+                contentDescription = null,
+                tint = GovUkTheme.colourScheme.textAndIcons.icon
+            )
         }
     }
 }

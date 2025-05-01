@@ -59,21 +59,11 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.adaptive.android)
     implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.androidx.biometric)
     implementation(libs.hilt.android)
-    implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
     implementation(libs.retrofit.scalars)
-    implementation(libs.openid)
-
-    implementation(libs.gov.securestore) {
-        artifact {
-            classifier = "release"
-            type = "aar"
-        }
-    }
 
     ksp(libs.hilt.compiler)
 

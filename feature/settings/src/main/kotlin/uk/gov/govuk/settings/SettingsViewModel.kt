@@ -5,30 +5,37 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.config.data.flags.FlagRepo
+import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.settings.BuildConfig.ACCESSIBILITY_STATEMENT_EVENT
 import uk.gov.govuk.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
+import uk.gov.govuk.settings.BuildConfig.ACCOUNT_EVENT
+import uk.gov.govuk.settings.BuildConfig.ACCOUNT_URL
 import uk.gov.govuk.settings.BuildConfig.HELP_AND_FEEDBACK_EVENT
 import uk.gov.govuk.settings.BuildConfig.HELP_AND_FEEDBACK_URL
 import uk.gov.govuk.settings.BuildConfig.NOTIFICATIONS_PERMISSION_EVENT
 import uk.gov.govuk.settings.BuildConfig.OPEN_SOURCE_LICENCE_EVENT
 import uk.gov.govuk.settings.BuildConfig.PRIVACY_POLICY_EVENT
 import uk.gov.govuk.settings.BuildConfig.PRIVACY_POLICY_URL
+import uk.gov.govuk.settings.BuildConfig.SIGN_OUT_EVENT
 import uk.gov.govuk.settings.BuildConfig.TERMS_AND_CONDITIONS_EVENT
 import uk.gov.govuk.settings.BuildConfig.TERMS_AND_CONDITIONS_URL
 import javax.inject.Inject
 
 internal data class SettingsUiState(
-    val isAnalyticsEnabled: Boolean,
-    val isNotificationsEnabled: Boolean
+    val userEmail: String,
+    val isNotificationsEnabled: Boolean,
+    val isAnalyticsEnabled: Boolean
 )
 
 @HiltViewModel
 internal class SettingsViewModel @Inject constructor(
-    private val analyticsClient: AnalyticsClient,
-    private val flagRepo: FlagRepo
+    authRepo: AuthRepo,
+    flagRepo: FlagRepo,
+    private val analyticsClient: AnalyticsClient
 ): ViewModel() {
 
     companion object {
@@ -42,8 +49,9 @@ internal class SettingsViewModel @Inject constructor(
 
     init {
         _uiState.value = SettingsUiState(
-            isAnalyticsEnabled = analyticsClient.isAnalyticsEnabled(),
-            isNotificationsEnabled = flagRepo.isNotificationsEnabled()
+            userEmail = authRepo.getUserEmail(),
+            isNotificationsEnabled = flagRepo.isNotificationsEnabled(),
+            isAnalyticsEnabled = analyticsClient.isAnalyticsEnabled()
         )
     }
 
@@ -52,6 +60,20 @@ internal class SettingsViewModel @Inject constructor(
             screenClass = SCREEN_CLASS,
             screenName = SCREEN_NAME,
             title = TITLE
+        )
+    }
+
+    fun onAccount() {
+        analyticsClient.settingsItemClick(
+            text = ACCOUNT_EVENT,
+            url = ACCOUNT_URL
+        )
+    }
+
+    fun onSignOut() {
+        analyticsClient.settingsItemClick(
+            text = SIGN_OUT_EVENT,
+            external = false
         )
     }
 
@@ -106,10 +128,9 @@ internal class SettingsViewModel @Inject constructor(
             } else {
                 analyticsClient.disable()
             }
-            _uiState.value = SettingsUiState(
-                isAnalyticsEnabled = enabled,
-                isNotificationsEnabled = flagRepo.isNotificationsEnabled()
-            )
+            _uiState.update { current ->
+                current?.copy(isAnalyticsEnabled = enabled)
+            }
         }
     }
 

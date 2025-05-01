@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.realm)
+    alias(libs.plugins.kover)
 }
 
 android {
@@ -43,13 +44,24 @@ dependencies {
 
     implementation(libs.hilt.android)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.biometric)
 
     ksp(libs.hilt.compiler)
 
     implementation(libs.retrofit)
     implementation(libs.realm.base)
+    implementation(libs.openid)
+
+    implementation(libs.gov.securestore) {
+        artifact {
+            classifier = "release"
+            type = "aar"
+        }
+    }
 
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutine.test)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

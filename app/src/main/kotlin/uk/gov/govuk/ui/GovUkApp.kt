@@ -59,9 +59,11 @@ import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.extension.asDeepLinks
 import uk.gov.govuk.extension.getUrlParam
+import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
 import uk.gov.govuk.login.navigation.loginGraph
+import uk.gov.govuk.login.navigation.navigateToLoginPostSignOut
 import uk.gov.govuk.navigation.AppLaunchNavigation
 import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
@@ -72,6 +74,7 @@ import uk.gov.govuk.search.navigation.searchGraph
 import uk.gov.govuk.search.ui.widget.SearchWidget
 import uk.gov.govuk.settings.BuildConfig.PRIVACY_POLICY_URL
 import uk.gov.govuk.settings.navigation.settingsGraph
+import uk.gov.govuk.settings.navigation.signOutGraph
 import uk.gov.govuk.topics.navigation.topicsGraph
 import uk.gov.govuk.ui.model.HomeWidget
 import uk.gov.govuk.visited.navigation.visitedGraph
@@ -366,9 +369,13 @@ private fun GovUkNavHost(
         )
         loginGraph(
             navController = navController,
-            onCompleted = {
+            onCompleted = { isPostSignOut ->
                 navController.popBackStack()
-                navController.navigate(launchRoutes.pop())
+                if (isPostSignOut) {
+                    navController.navigate(HOME_GRAPH_ROUTE)
+                } else {
+                    navController.navigate(launchRoutes.pop())
+                }
             }
         )
         homeGraph(
@@ -400,6 +407,12 @@ private fun GovUkNavHost(
             appVersion = BuildConfig.VERSION_NAME,
             deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
             modifier = Modifier.padding(paddingValues)
+        )
+        signOutGraph(
+            navController = navController,
+            onSignOut = {
+                navController.navigateToLoginPostSignOut()
+            }
         )
         if (homeWidgets.contains(HomeWidget.SEARCH)) {
             searchGraph(navController, deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) })

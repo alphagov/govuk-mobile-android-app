@@ -14,14 +14,14 @@ import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.login.LoginViewModel.LoginUiState
-import uk.gov.govuk.login.data.LoginRepo
+import uk.gov.govuk.data.auth.AuthRepo
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginViewModelTest {
 
-    private val loginRepo = mockk<LoginRepo>(relaxed = true)
+    private val authRepo = mockk<AuthRepo>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val dispatcher = UnconfinedTestDispatcher()
 
@@ -30,7 +30,7 @@ class LoginViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = LoginViewModel(loginRepo, analyticsClient)
+        viewModel = LoginViewModel(authRepo, analyticsClient)
     }
 
     @After
@@ -65,8 +65,8 @@ class LoginViewModelTest {
 
     @Test
     fun `Given an auth response and authentication enabled, when success, then emit ui state`() {
-        coEvery { loginRepo.handleAuthResponse(any()) } returns true
-        every { loginRepo.isAuthenticationEnabled() } returns true
+        coEvery { authRepo.handleAuthResponse(any()) } returns true
+        every { authRepo.isAuthenticationEnabled() } returns true
 
         viewModel.onAuthResponse(null)
 
@@ -75,8 +75,8 @@ class LoginViewModelTest {
 
     @Test
     fun `Given an auth response and authentication disabled, when success, then emit ui state`() {
-        coEvery { loginRepo.handleAuthResponse(any()) } returns true
-        every { loginRepo.isAuthenticationEnabled() } returns false
+        coEvery { authRepo.handleAuthResponse(any()) } returns true
+        every { authRepo.isAuthenticationEnabled() } returns false
 
         viewModel.onAuthResponse(null)
 
@@ -85,7 +85,7 @@ class LoginViewModelTest {
 
     @Test
     fun `Given an auth response, when failure, then do not emit ui state`() {
-        coEvery { loginRepo.handleAuthResponse(any()) } returns false
+        coEvery { authRepo.handleAuthResponse(any()) } returns false
 
         viewModel.onAuthResponse(null)
 

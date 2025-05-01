@@ -1,11 +1,11 @@
-package uk.gov.govuk.login.data
+package uk.gov.govuk.data.auth
 
 import net.openid.appauth.TokenResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-internal class TokenResponseMapper @Inject constructor() {
+class TokenResponseMapper @Inject constructor() {
 
     data class Tokens(
         val accessToken: String?,

@@ -30,6 +30,7 @@ import uk.gov.govuk.login.R
 
 @Composable
 internal fun LoginRoute(
+    isPostSignOut: Boolean,
     onLogin: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -43,6 +44,7 @@ internal fun LoginRoute(
     }
 
     LoginScreen(
+        isPostSignOut = isPostSignOut,
         onPageView = { viewModel.onPageView() },
         onContinueClick = { text ->
             viewModel.onContinue(text)
@@ -60,6 +62,7 @@ internal fun LoginRoute(
 
 @Composable
 private fun LoginScreen(
+    isPostSignOut: Boolean,
     onPageView: () -> Unit,
     onContinueClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -80,15 +83,26 @@ private fun LoginScreen(
                     .padding(vertical = GovUkTheme.spacing.large),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                val title = if (isPostSignOut) {
+                    stringResource(R.string.login_post_sign_out_title)
+                } else {
+                    stringResource(R.string.login_sign_in_with_gov_uk)
+                }
                 LargeTitleBoldLabel(
-                    text = stringResource(R.string.login_sign_in_with_gov_uk),
+                    text = title,
                     textAlign = TextAlign.Center
                 )
 
                 MediumVerticalSpacer()
 
+                val subtitle = if (isPostSignOut) {
+                    stringResource(R.string.login_post_sign_out_sub_text)
+                } else {
+                    stringResource(R.string.login_sign_sub_text)
+                }
+
                 BodyRegularLabel(
-                    text = stringResource(R.string.login_sign_sub_text),
+                    text = subtitle,
                     textAlign = TextAlign.Center
                 )
             }
@@ -96,7 +110,11 @@ private fun LoginScreen(
             Spacer(Modifier.weight(1F))
         }
 
-        val buttonText = stringResource(R.string.login_continue_button)
+        val buttonText = if (isPostSignOut) {
+            stringResource(R.string.login_post_sign_out_continue_button)
+        } else {
+            stringResource(R.string.login_continue_button)
+        }
         FixedPrimaryButton(
             text = buttonText,
             onClick = { onContinueClick(buttonText) }
@@ -109,6 +127,19 @@ private fun LoginScreen(
 private fun LoginPreview() {
     GovUkTheme {
         LoginScreen(
+            isPostSignOut = false,
+            onPageView = { },
+            onContinueClick = { }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LoginPostSignOutPreview() {
+    GovUkTheme {
+        LoginScreen(
+            isPostSignOut = true,
             onPageView = { },
             onContinueClick = { }
         )

@@ -8,12 +8,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
-import uk.gov.govuk.login.data.LoginRepo
+import uk.gov.govuk.data.auth.AuthRepo
 import javax.inject.Inject
 
 @HiltViewModel
 internal class LoginViewModel @Inject constructor(
-    private val loginRepo: LoginRepo,
+    private val authRepo: AuthRepo,
     private val analyticsClient: AnalyticsClient
 ) : ViewModel() {
 
@@ -30,7 +30,9 @@ internal class LoginViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<LoginUiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
 
-    val authIntent = loginRepo.authIntent
+    val authIntent: Intent by lazy {
+        authRepo.authIntent
+    }
 
     fun onPageView() {
         analyticsClient.screenView(
@@ -49,9 +51,9 @@ internal class LoginViewModel @Inject constructor(
 
     fun onAuthResponse(data: Intent?) {
         viewModelScope.launch {
-            val result = loginRepo.handleAuthResponse(data)
+            val result = authRepo.handleAuthResponse(data)
             if (result) {
-                _uiState.value = LoginUiState(loginRepo.isAuthenticationEnabled())
+                _uiState.value = LoginUiState(authRepo.isAuthenticationEnabled())
             } else {
                 // Todo - handle failure!!!
             }
