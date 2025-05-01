@@ -1,9 +1,11 @@
 package uk.govuk.app.local
 
+import android.content.Context
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -31,6 +33,7 @@ internal sealed class LocalUiState {
 internal class LocalViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient,
     private val localRepo: LocalRepo,
+    @ApplicationContext private val context: Context
 ): ViewModel() {
 
     companion object {
@@ -71,14 +74,6 @@ internal class LocalViewModel @Inject constructor(
         )
     }
 
-    fun onErrorStatus(message: String) {
-        analyticsClient.screenView(
-            screenClass = LOOKUP_SCREEN_CLASS,
-            screenName = LOOKUP_SCREEN_NAME,
-            title = message
-        )
-    }
-
     fun onSearchPostcode(buttonText: String, postcode: String) {
         analyticsClient.buttonClick(
             text = buttonText,
@@ -105,8 +100,8 @@ internal class LocalViewModel @Inject constructor(
     }
 
     private fun fetchPostcodeLookupResult(postcode: String) {
-        if (postcode.isEmpty()) {
-            _uiState.value = LocalUiState.Error(R.string.local_no_postcode_message)
+        if (postcode.isBlank()) {
+            _uiState.value = createAndLogError(R.string.local_no_postcode_message)
         } else {
             viewModelScope.launch {
                 when (val response = localRepo.performGetLocalPostcode(postcode)) {
@@ -134,9 +129,22 @@ internal class LocalViewModel @Inject constructor(
         _uiState.value = when (result) {
             is LocalAuthorityResult.LocalAuthority -> LocalUiState.LocalAuthority(result.localAuthority)
             is LocalAuthorityResult.Addresses -> LocalUiState.Addresses(result.addresses)
-            is LocalAuthorityResult.InvalidPostcode -> LocalUiState.Error(R.string.local_invalid_postcode_message)
-            is LocalAuthorityResult.PostcodeNotFound -> LocalUiState.Error(R.string.local_not_found_postcode_message)
-            is LocalAuthorityResult.PostcodeEmptyOrNull -> LocalUiState.Error(R.string.local_no_postcode_message)
+            is LocalAuthorityResult.InvalidPostcode -> createAndLogError(R.string.local_invalid_postcode_message)
+            is LocalAuthorityResult.PostcodeNotFound -> createAndLogError(R.string.local_not_found_postcode_message)
+            is LocalAuthorityResult.PostcodeEmptyOrNull -> createAndLogError(R.string.local_no_postcode_message)
         }
+    }
+
+    private fun createAndLogError(@StringRes errorMessage: Int): LocalUiState.Error {
+        onErrorStatus(context.getString(errorMessage))
+        return LocalUiState.Error(errorMessage)
+    }
+
+    private fun onErrorStatus(message: String) {
+        analyticsClient.screenView(
+            screenClass = LOOKUP_SCREEN_CLASS,
+            screenName = LOOKUP_SCREEN_NAME,
+            title = message
+        )
     }
 }

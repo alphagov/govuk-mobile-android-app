@@ -47,8 +47,7 @@ class LocalApiCallTest {
         } returns Response.success(
             LocalAuthorityResponse(
                 remoteLocalAuthority,
-                addresses = null,
-                status = null
+                addresses = null
             )
         )
 
@@ -82,8 +81,7 @@ class LocalApiCallTest {
         } returns Response.success(
             LocalAuthorityResponse(
                 localAuthority = null,
-                addresses = addresses,
-                status = null
+                addresses = addresses
             )
         )
 
@@ -104,8 +102,7 @@ class LocalApiCallTest {
         } returns Response.success(
             LocalAuthorityResponse(
                 localAuthority = null,
-                addresses = null,
-                status = null
+                addresses = null
             )
         )
 

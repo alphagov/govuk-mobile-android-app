@@ -29,7 +29,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.delay
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
@@ -64,9 +63,6 @@ internal fun LocalEntryRoute(
             )
         },
         onPostcodeChange = { viewModel.onPostcodeChange() },
-        onErrorStatus = { message ->
-            viewModel.onErrorStatus(message)
-        },
         modifier = modifier
     )
 }
@@ -79,7 +75,6 @@ private fun LocalEntryScreen(
     onPageView: () -> Unit,
     onPostcodeLookup: (String, String) -> Unit,
     onPostcodeChange: () -> Unit,
-    onErrorStatus: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var postcode by rememberSaveable { mutableStateOf("") }
@@ -158,11 +153,6 @@ private fun LocalEntryScreen(
                             color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
                             text = errorMessage
                         )
-
-                        LaunchedEffect(uiState) {
-                            delay(500)
-                            onErrorStatus(errorMessage)
-                        }
                     }
                 },
                 colors = TextFieldDefaults.colors(
