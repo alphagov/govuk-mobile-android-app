@@ -96,6 +96,10 @@ internal class LocalViewModel @Inject constructor(
         }
     }
 
+    fun onPostcodeChange() {
+         _uiState.value = null
+    }
+
     private fun toApiPostcode(str: String): String {
         return str.filter { !it.isWhitespace() }.uppercase()
     }

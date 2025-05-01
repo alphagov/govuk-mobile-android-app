@@ -63,6 +63,7 @@ internal fun LocalEntryRoute(
                 postcode = postcode
             )
         },
+        onPostcodeChange = { viewModel.onPostcodeChange() },
         onErrorStatus = { message ->
             viewModel.onErrorStatus(message)
         },
@@ -77,6 +78,7 @@ private fun LocalEntryScreen(
     onCancel: () -> Unit,
     onPageView: () -> Unit,
     onPostcodeLookup: (String, String) -> Unit,
+    onPostcodeChange: () -> Unit,
     onErrorStatus: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -134,6 +136,7 @@ private fun LocalEntryScreen(
             TextField(
                 value = postcode,
                 onValueChange = {
+                    onPostcodeChange()
                     postcode = PostcodeSanitizer.sanitize(it)
                 },
                 label = {

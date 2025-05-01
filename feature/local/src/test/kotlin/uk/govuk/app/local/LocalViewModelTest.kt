@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.analytics.AnalyticsClient
@@ -101,6 +102,16 @@ class LocalViewModelTest {
                 title = "No postcode"
             )
         }
+    }
+
+    @Test
+    fun `Given a uiState that is an error, when the postcode is changed, then is clears the error`() {
+        val viewModel = LocalViewModel(analyticsClient, localRepo)
+        viewModel.onErrorStatus(message = "No postcode")
+
+        viewModel.onPostcodeChange()
+
+        assertNull(viewModel.uiState.value)
     }
 
     @Test
