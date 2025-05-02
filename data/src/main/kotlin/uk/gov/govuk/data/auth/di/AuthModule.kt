@@ -18,6 +18,7 @@ import uk.gov.android.securestore.AccessControlLevel
 import uk.gov.android.securestore.SecureStorageConfiguration
 import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.SharedPrefsStore
+import uk.gov.govuk.data.BuildConfig
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -49,22 +50,20 @@ class AuthModule {
     @Singleton
     @Provides
     fun provideAuthServiceConfig(): AuthorizationServiceConfiguration {
-        // Todo - extract into build variables!!!
         return AuthorizationServiceConfiguration(
-            "https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/authorize".toUri(),
-            "https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/token".toUri()
+            BuildConfig.AUTHORIZE_ENDPOINT.toUri(),
+            BuildConfig.TOKEN_ENDPOINT.toUri()
         )
     }
 
     @Singleton
     @Provides
     fun provideAuthRequest(authConfig: AuthorizationServiceConfiguration): AuthorizationRequest {
-        // Todo - extract into build variables!!!
         val authRequestBuilder = AuthorizationRequest.Builder(
             authConfig,
-            "121f51j1s4kmk9i98um0b5mphh",
+            BuildConfig.AUTH_CLIENT_ID,
             ResponseTypeValues.CODE,
-            "govuk://govuk/login-auth-callback".toUri()
+            BuildConfig.AUTH_REDIRECT.toUri()
         )
 
         return authRequestBuilder
@@ -77,7 +76,7 @@ class AuthModule {
     fun provideTokenRequestBuilder(authConfig: AuthorizationServiceConfiguration): TokenRequest.Builder {
         val tokenRequestBuilder = TokenRequest.Builder(
             authConfig,
-            "121f51j1s4kmk9i98um0b5mphh"
+            BuildConfig.AUTH_CLIENT_ID
         )
 
         return tokenRequestBuilder

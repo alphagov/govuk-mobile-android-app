@@ -15,6 +15,11 @@ android {
         minSdk = Version.MIN_SDK
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "AUTHORIZE_ENDPOINT", "\"https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/authorize\"")
+        buildConfigField("String", "TOKEN_ENDPOINT", "\"https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/token\"")
+        buildConfigField("String", "AUTH_CLIENT_ID", "\"121f51j1s4kmk9i98um0b5mphh\"")
+        buildConfigField("String", "AUTH_REDIRECT", "\"govuk://govuk/login-auth-callback\"")
     }
 
     compileOptions {
@@ -24,6 +29,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 }
 
