@@ -75,14 +75,11 @@ class AuthRepo @Inject constructor(
         description: String
     ): Boolean {
         secureStore.upsert(REFRESH_TOKEN_KEY, tokens.refreshToken)
-        val result = secureStore.retrieveWithAuthentication(
-            key = arrayOf(REFRESH_TOKEN_KEY),
-            authPromptConfig = AuthenticatorPromptConfiguration(
-                title = title,
-                subTitle = subtitle,
-                description = description
-            ),
-            context = activity
+        val result = retrieveRefreshToken(
+            activity = activity,
+            title = title,
+            subtitle = subtitle,
+            description = description
         )
 
         return if (result is RetrievalEvent.Success) {
@@ -98,6 +95,42 @@ class AuthRepo @Inject constructor(
             Authenticators.BIOMETRIC_STRONG or Authenticators.DEVICE_CREDENTIAL
         )
         return result == BiometricManager.BIOMETRIC_SUCCESS
+    }
+
+    fun isUserSignedIn(): Boolean {
+        return secureStore.exists(REFRESH_TOKEN_KEY)
+    }
+
+    suspend fun performTokenExchange(
+        activity: FragmentActivity,
+        title: String,
+        subtitle: String,
+        description: String
+    ): Boolean {
+        val result = retrieveRefreshToken(
+            activity = activity,
+            title = title,
+            subtitle = subtitle,
+            description = description
+        )
+        return result is RetrievalEvent.Success
+    }
+
+    private suspend fun retrieveRefreshToken(
+        activity: FragmentActivity,
+        title: String,
+        subtitle: String,
+        description: String
+    ): RetrievalEvent {
+        return secureStore.retrieveWithAuthentication(
+            key = arrayOf(REFRESH_TOKEN_KEY),
+            authPromptConfig = AuthenticatorPromptConfiguration(
+                title = title,
+                subTitle = subtitle,
+                description = description
+            ),
+            context = activity
+        )
     }
 
     fun getUserEmail(): String {
