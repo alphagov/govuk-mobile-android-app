@@ -40,11 +40,10 @@ internal class LoginViewModel @Inject constructor(
             viewModelScope.launch {
                 if (
                     authRepo.refreshTokens(
-                        // Todo - actual copy!!!
                         activity = activity,
-                        title = "Title",
-                        subtitle = "Subtitle",
-                        description = "Description"
+                        title = activity.getString(R.string.login_biometric_prompt_title),
+                        subtitle = activity.getString(R.string.login_biometric_prompt_subtitle),
+                        description = activity.getString(R.string.login_biometric_prompt_description)
                     )
                 ) {
                     _uiState.value = LoginUiState(false)

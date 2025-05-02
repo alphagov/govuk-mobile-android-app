@@ -46,9 +46,9 @@ internal class BiometricViewModel @Inject constructor(
             _uiState.value = authRepo.persistRefreshToken(
                 // Todo - actual copy!!!
                 activity = activity,
-                title = "Title",
-                subtitle = "Subtitle",
-                description = "Description"
+                title = activity.getString(R.string.login_biometric_prompt_title),
+                subtitle = activity.getString(R.string.login_biometric_prompt_subtitle),
+                description = activity.getString(R.string.login_biometric_prompt_description)
             )
         }
     }
