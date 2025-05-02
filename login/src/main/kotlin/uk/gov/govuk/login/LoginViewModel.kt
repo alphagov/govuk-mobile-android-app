@@ -39,7 +39,7 @@ internal class LoginViewModel @Inject constructor(
         if (authRepo.isUserSignedIn()) {
             viewModelScope.launch {
                 if (
-                    authRepo.performTokenExchange(
+                    authRepo.refreshTokens(
                         // Todo - actual copy!!!
                         activity = activity,
                         title = "Title",

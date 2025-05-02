@@ -11,7 +11,9 @@ import dagger.hilt.components.SingletonComponent
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
+import net.openid.appauth.GrantTypeValues
 import net.openid.appauth.ResponseTypeValues
+import net.openid.appauth.TokenRequest
 import uk.gov.android.securestore.AccessControlLevel
 import uk.gov.android.securestore.SecureStorageConfiguration
 import uk.gov.android.securestore.SecureStore
@@ -46,13 +48,18 @@ class AuthModule {
 
     @Singleton
     @Provides
-    fun provideAuthRequest(): AuthorizationRequest {
+    fun provideAuthServiceConfig(): AuthorizationServiceConfiguration {
         // Todo - extract into build variables!!!
-        val authConfig = AuthorizationServiceConfiguration(
+        return AuthorizationServiceConfiguration(
             "https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/authorize".toUri(),
             "https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/token".toUri()
         )
+    }
 
+    @Singleton
+    @Provides
+    fun provideAuthRequest(authConfig: AuthorizationServiceConfiguration): AuthorizationRequest {
+        // Todo - extract into build variables!!!
         val authRequestBuilder = AuthorizationRequest.Builder(
             authConfig,
             "121f51j1s4kmk9i98um0b5mphh",
@@ -63,5 +70,17 @@ class AuthModule {
         return authRequestBuilder
             .setScopes("openid")
             .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideTokenRequestBuilder(authConfig: AuthorizationServiceConfiguration): TokenRequest.Builder {
+        val tokenRequestBuilder = TokenRequest.Builder(
+            authConfig,
+            "121f51j1s4kmk9i98um0b5mphh"
+        )
+
+        return tokenRequestBuilder
+            .setGrantType(GrantTypeValues.REFRESH_TOKEN)
     }
 }
