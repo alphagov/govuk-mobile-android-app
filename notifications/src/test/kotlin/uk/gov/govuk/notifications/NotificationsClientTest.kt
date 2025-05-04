@@ -114,6 +114,7 @@ class NotificationsClientTest {
         every { event.notification.additionalData } returns null
         every { event.notification } returns notification
         every { notification.additionalData } returns null
+        every { notification.additionalData?.has("deeplink") } returns true
         every { notification.additionalData?.optString("deeplink") } returns ""
         every {
             OneSignal.Notifications.addClickListener(listener = capture(clickListener))
@@ -145,6 +146,7 @@ class NotificationsClientTest {
         every { intent.data } returns uri
         every { intent.setFlags(FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK) } returns intent
         every { intent.flags } returns (FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK)
+        every { additionalData.has("deeplink") } returns true
         every { additionalData.optString("deeplink") } returns "scheme://host"
 
         runTest {
@@ -155,6 +157,22 @@ class NotificationsClientTest {
             assertEquals(FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK, intent.flags)
 
             verify(exactly = 1) {
+                context.startActivity(intent)
+            }
+        }
+    }
+
+    @Test
+    fun `Given we have a notifications client, when handle additional data function is called without a deep link, then start activity is not called`() {
+        val intent = spyk<Intent>()
+        val additionalData = mockk<JSONObject>()
+
+        every { additionalData.has("deeplink") } returns false
+
+        runTest {
+            notificationsClient.handleAdditionalData(context, additionalData, intent)
+
+            verify(exactly = 0) {
                 context.startActivity(intent)
             }
         }

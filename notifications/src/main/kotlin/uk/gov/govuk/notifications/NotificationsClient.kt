@@ -19,6 +19,10 @@ import javax.inject.Singleton
 @Singleton
 class NotificationsClient @Inject constructor() {
 
+    companion object {
+        private const val DEEP_LINK = "deeplink"
+    }
+
     fun initialise(context: Context, oneSignalAppId: String) {
         OneSignal.consentRequired = true
         OneSignal.initWithContext(context, oneSignalAppId)
@@ -49,17 +53,16 @@ class NotificationsClient @Inject constructor() {
 
     internal fun handleAdditionalData(
         context: Context,
-        additionalDataJson: JSONObject?,
+        additionalData: JSONObject?,
         intent: Intent? = context.packageManager.getLaunchIntentForPackage(context.packageName)
     ) {
-        additionalDataJson?.optString("deeplink")?.let { deepLink ->
-            if (deepLink.isNotEmpty()) {
-                intent?.let { intent ->
-                    intent.data = deepLink.toUri()
-                    intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
-                    context.startActivity(intent)
-                }
-            }
+        additionalData ?: return
+        intent ?: return
+        if (additionalData.has(DEEP_LINK)) {
+            val deepLink = additionalData.optString(DEEP_LINK)
+            intent.data = deepLink.toUri()
+            intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
+            context.startActivity(intent)
         }
     }
 }
