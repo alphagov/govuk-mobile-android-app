@@ -211,7 +211,10 @@ private fun ManageLogin(
                 SmallHorizontalSpacer()
                 Column {
                     BodyRegularLabel(stringResource(R.string.manage_login_header_title))
-                    SubheadlineRegularLabel(userEmail)
+                    SubheadlineRegularLabel(
+                        text = userEmail,
+                        color = GovUkTheme.colourScheme.textAndIcons.secondary
+                    )
                 }
             }
         }
