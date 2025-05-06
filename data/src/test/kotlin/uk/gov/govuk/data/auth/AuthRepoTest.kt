@@ -18,6 +18,7 @@ import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationService.TokenResponseCallback
+import net.openid.appauth.TokenRequest
 import net.openid.appauth.TokenResponse
 import org.junit.After
 import org.junit.Assert.assertFalse
@@ -32,6 +33,7 @@ class AuthRepoTest {
 
     private val authRequest = mockk<AuthorizationRequest>(relaxed = true)
     private val authService = mockk<AuthorizationService>(relaxed = true)
+    private val tokenRequestBuilder = mockk<TokenRequest.Builder>(relaxed = true)
     private val tokenResponseMapper = mockk<TokenResponseMapper>(relaxed = true)
     private val secureStore = mockk<SecureStore>(relaxed = true)
     private val biometricManager = mockk<BiometricManager>(relaxed = true)
@@ -47,7 +49,7 @@ class AuthRepoTest {
     fun setup() {
         mockkStatic(AuthorizationResponse::class)
 
-        authRepo = AuthRepo(authRequest, authService, tokenResponseMapper, secureStore, biometricManager)
+        authRepo = AuthRepo(authRequest, authService, tokenRequestBuilder, tokenResponseMapper, secureStore, biometricManager)
     }
 
     @After
@@ -284,6 +286,122 @@ class AuthRepoTest {
         } returns BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED
 
         assertFalse(authRepo.isAuthenticationEnabled())
+    }
+
+    @Test
+    fun `Given the refresh token retrieval is unsuccessful, when refresh tokens, then return false`() {
+        coEvery {
+            secureStore.retrieveWithAuthentication(
+                key = arrayOf("refreshToken"),
+                authPromptConfig = any(),
+                context = any()
+            )
+        } returns RetrievalEvent.Failed(SecureStoreErrorType.GENERAL)
+
+        runTest {
+            assertFalse(authRepo.refreshTokens(activity, "", "", ""))
+        }
+    }
+
+    @Test
+    fun `Given the token request returns an exception, when refresh tokens, then return false`() {
+        coEvery {
+            secureStore.retrieveWithAuthentication(
+                key = arrayOf("refreshToken"),
+                authPromptConfig = any(),
+                context = any()
+            )
+        } returns RetrievalEvent.Success(mapOf("refreshToken" to "token"))
+
+        every { authService.performTokenRequest(any(), any()) } answers {
+            val callback = secondArg<TokenResponseCallback>()
+            callback.onTokenRequestCompleted(null, authException)
+        }
+
+        runTest {
+            assertFalse(authRepo.refreshTokens(activity, "", "", ""))
+        }
+    }
+
+    @Test
+    fun `Given the token request returns a null access token, when refresh tokens, then return false`() {
+        coEvery {
+            secureStore.retrieveWithAuthentication(
+                key = arrayOf("refreshToken"),
+                authPromptConfig = any(),
+                context = any()
+            )
+        } returns RetrievalEvent.Success(mapOf("refreshToken" to "token"))
+
+        every { authService.performTokenRequest(any(), any()) } answers {
+            val callback = secondArg<TokenResponseCallback>()
+            callback.onTokenRequestCompleted(tokenResponse, null)
+        }
+
+        every { tokenResponseMapper.map(any()) } returns
+                TokenResponseMapper.Tokens(
+                    accessToken = null,
+                    idToken = "idToken",
+                    refreshToken = "refreshToken"
+                )
+
+        runTest {
+            assertFalse(authRepo.refreshTokens(activity, "", "", ""))
+        }
+    }
+
+    @Test
+    fun `Given the token request returns a null id token, when refresh tokens, then return false`() {
+        coEvery {
+            secureStore.retrieveWithAuthentication(
+                key = arrayOf("refreshToken"),
+                authPromptConfig = any(),
+                context = any()
+            )
+        } returns RetrievalEvent.Success(mapOf("refreshToken" to "token"))
+
+        every { authService.performTokenRequest(any(), any()) } answers {
+            val callback = secondArg<TokenResponseCallback>()
+            callback.onTokenRequestCompleted(tokenResponse, null)
+        }
+
+        every { tokenResponseMapper.map(any()) } returns
+                TokenResponseMapper.Tokens(
+                    accessToken = "accessToken",
+                    idToken = null,
+                    refreshToken = "refreshToken"
+                )
+
+        runTest {
+            assertFalse(authRepo.refreshTokens(activity, "", "", ""))
+        }
+    }
+
+    @Test
+    fun `Given the token request is successful, when refresh tokens, then return true`() {
+        coEvery {
+            secureStore.retrieveWithAuthentication(
+                key = arrayOf("refreshToken"),
+                authPromptConfig = any(),
+                context = any()
+            )
+        } returns RetrievalEvent.Success(mapOf("refreshToken" to "token"))
+
+        every { authService.performTokenRequest(any(), any()) } answers {
+            val callback = secondArg<TokenResponseCallback>()
+            callback.onTokenRequestCompleted(tokenResponse, null)
+        }
+
+        every { tokenResponseMapper.map(any()) } returns
+                TokenResponseMapper.Tokens(
+                    accessToken = "accessToken",
+                    idToken = "idToken",
+                    refreshToken = null
+                )
+
+        runTest {
+            assertTrue(authRepo.refreshTokens(activity, "", "", ""))
+        }
     }
 
     @Test
