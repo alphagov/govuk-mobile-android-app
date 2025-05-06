@@ -125,10 +125,13 @@ internal class LocalViewModel @Inject constructor(
         }
     }
 
-    private fun emitUiState(result: LocalAuthorityResult) {
+    private suspend fun emitUiState(result: LocalAuthorityResult) {
         _uiState.value = when (result) {
             is LocalAuthorityResult.LocalAuthority -> LocalUiState.LocalAuthority(result.localAuthority)
-            is LocalAuthorityResult.Addresses -> LocalUiState.Addresses(result.addresses)
+            is LocalAuthorityResult.Addresses -> {
+                localRepo.cacheAddresses(result.addresses)
+                LocalUiState.Addresses(result.addresses)
+            }
             is LocalAuthorityResult.InvalidPostcode -> createAndLogError(R.string.local_invalid_postcode_message)
             is LocalAuthorityResult.PostcodeNotFound -> createAndLogError(R.string.local_not_found_postcode_message)
             is LocalAuthorityResult.PostcodeEmptyOrNull -> createAndLogError(R.string.local_no_postcode_message)

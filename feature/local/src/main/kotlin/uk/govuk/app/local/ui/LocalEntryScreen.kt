@@ -162,9 +162,9 @@ private fun LocalEntryScreen(
                 colors = TextFieldDefaults.colors(
                     cursorColor = GovUkTheme.colourScheme.strokes.textFieldCursor,
                     errorContainerColor = GovUkTheme.colourScheme.surfaces.textFieldBackground,
-                    errorCursorColor = GovUkTheme.colourScheme.strokes.textFieldError,
+                    errorCursorColor = GovUkTheme.colourScheme.strokes.textFieldCursor,
                     errorIndicatorColor = GovUkTheme.colourScheme.strokes.textFieldError,
-                    errorLabelColor = GovUkTheme.colourScheme.textAndIcons.textFieldError,
+                    errorLabelColor = GovUkTheme.colourScheme.textAndIcons.primary,
                     errorPrefixColor = GovUkTheme.colourScheme.textAndIcons.textFieldError,
                     errorPlaceholderColor = GovUkTheme.colourScheme.textAndIcons.textFieldError,
                     errorSuffixColor = GovUkTheme.colourScheme.textAndIcons.textFieldError,
@@ -196,22 +196,10 @@ private fun LocalEntryScreen(
     }
 
     LaunchedEffect(uiState) {
-        // Todo - navigate back to home screen when a local authority is returned, logic will be
-        //  updated in future tickets!
         if (uiState is LocalUiState.LocalAuthority) {
             onCancel()
         } else if (uiState is LocalUiState.Addresses) {
-//            TODO: pass in address list to auth select page, does it have to be a string?
             onSelect(postcode)
-
-//            println(uiState.addresses)
-//
-//            val slugs = uiState.addresses.distinctBy { it.slug }.map { it.slug }
-//            println(slugs)
-//
-//            slugs.forEach { slug ->
-//                println(slug)
-//            }
         }
     }
 }

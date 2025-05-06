@@ -14,7 +14,7 @@
   <string name="local_postcode_use_description_2">Your local council is only kept on your phone. It’s not saved online or shared with any other organisations. You can update it at any time on the app home page.</string>
   <string name="local_widget_title">Your local services</string>
   <string name="local_edit_button">Edit</string>
-  <string name="local_edit_button_alt_text">Edit your local services</string>
+  <string name="local_edit_button_alt_text">Edit your local council</string>
   <string name="local_child_authority_description">Find services like rubbish and recycling collection, council tax and housing on the %1$s website</string>
   <string name="local_unitary_authority_description">Find services for your area on the %1$s website</string>
   <string name="local_two_tier_title">Services in your area are provided by 2 local councils</string>

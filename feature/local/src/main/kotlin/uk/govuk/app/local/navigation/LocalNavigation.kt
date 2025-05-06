@@ -62,7 +62,7 @@ fun NavGraphBuilder.localGraph(
             LocalAuthoritySelectRoute(
                 onBack = { navController.popBackStack() },
                 onCancel = onCancel,
-                onSelect = { navController.navigateToLocalAddressSelect() },
+                onSelectByAddress = { navController.navigateToLocalAddressSelect() },
                 postcode = postcode,
                 modifier = modifier
             )

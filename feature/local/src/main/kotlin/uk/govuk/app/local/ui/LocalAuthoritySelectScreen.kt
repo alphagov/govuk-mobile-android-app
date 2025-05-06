@@ -2,19 +2,34 @@ package uk.govuk.app.local.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.tooling.preview.Preview
-import uk.gov.govuk.design.ui.component.BodyBoldLabel
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.FullScreenHeader
@@ -23,21 +38,32 @@ import uk.gov.govuk.design.ui.component.SecondaryButton
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title1BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
+import uk.govuk.app.local.LocalSelectViewModel
 import uk.govuk.app.local.R
+import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
 
 @Composable
 internal fun LocalAuthoritySelectRoute(
     onBack: () -> Unit,
     onCancel: () -> Unit,
-    onSelect: () -> Unit,
+    onSelectByAddress: () -> Unit,
     postcode: String,
     modifier: Modifier = Modifier,
 ) {
+    val viewModel: LocalSelectViewModel = hiltViewModel()
+
     LocalAuthoritySelectScreen(
         onBack = onBack,
+        onPageView = { viewModel.onSelectByLocalAuthorityPageView() },
         onCancel = onCancel,
-        onSelect = onSelect,
+        onSelectByAddress = { buttonText ->
+            viewModel.onSelectByAddressButtonClick(buttonText)
+            onSelectByAddress() },
+        onSlugSelect = { buttonText, slug ->
+            viewModel.updateLocalAuthority(buttonText, slug)
+            onCancel() },
         postcode = postcode,
+        localAuthorities = viewModel.localAuthorities(),
         modifier = modifier
     )
 }
@@ -45,11 +71,20 @@ internal fun LocalAuthoritySelectRoute(
 @Composable
 private fun LocalAuthoritySelectScreen(
     onBack: () -> Unit,
+    onPageView: () -> Unit,
     onCancel: () -> Unit,
-    onSelect: () -> Unit,
+    onSelectByAddress: (String) -> Unit,
+    onSlugSelect: (String, String) -> Unit,
     postcode: String,
+    localAuthorities: List<RemoteLocalAuthority>,
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(Unit) {
+        onPageView()
+    }
+
+    var selectedSlug by rememberSaveable { mutableStateOf("") }
+
     Scaffold(
         containerColor = GovUkTheme.colourScheme.surfaces.background,
         modifier = modifier.fillMaxWidth(),
@@ -68,7 +103,9 @@ private fun LocalAuthoritySelectScreen(
         },
         bottomBar = {
             BottomNavBar(
-                onSelect = onSelect,
+                onSelectByAddress = onSelectByAddress,
+                selectedSlug = selectedSlug,
+                onSlugSelect = onSlugSelect,
                 modifier = Modifier
                     .semantics {
                         isTraversalGroup = true
@@ -96,21 +133,9 @@ private fun LocalAuthoritySelectScreen(
 
             MediumVerticalSpacer()
 
-            // TODO: remove hardcoded value
-            val isError = false
-            if (isError) {
-                BodyBoldLabel(
-                    text = stringResource(R.string.local_select_council_error),
-                    color = GovUkTheme.colourScheme.textAndIcons.textFieldError
-                )
-                MediumVerticalSpacer()
-            }
-
             RadioButtonGroup(
-                listOf(
-                    "Bournemouth, Christchurch and Poole Council",
-                    "Dorset Council"
-                )
+                localAuthorities,
+                onSlugChange = { slug -> selectedSlug = slug }
             )
         }
     }
@@ -118,46 +143,116 @@ private fun LocalAuthoritySelectScreen(
 
 @Composable
 private fun BottomNavBar(
-    onSelect: () -> Unit,
+    onSelectByAddress: (String) -> Unit,
+    onSlugSelect: (String, String) -> Unit,
+    selectedSlug: String,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.background(GovUkTheme.colourScheme.surfaces.background)) {
-        val buttonText = stringResource(R.string.local_select_council_confirm)
+        val confirmButtonText = stringResource(R.string.local_select_council_confirm)
+        val selectByAddressButtonText = stringResource(R.string.local_select_by_address)
+
         FixedPrimaryButton(
-            text = buttonText,
-            onClick = { /* TODO */ }
+            text = confirmButtonText,
+            enabled = selectedSlug.isNotEmpty(),
+            onClick = { onSlugSelect(confirmButtonText, selectedSlug) }
         )
 
         SecondaryButton(
-            text = stringResource(R.string.local_select_by_address),
-            onClick = onSelect
+            text = selectByAddressButtonText,
+            onClick = { onSelectByAddress(selectByAddressButtonText) }
         )
 
         MediumVerticalSpacer()
     }
 }
 
+@Composable
+private fun RadioButtonGroup(
+    radioOptions: List<RemoteLocalAuthority>,
+    onSlugChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf("") }
+
+    Column(modifier.selectableGroup()) {
+        radioOptions.forEachIndexed { index, localAuthority ->
+            MediumVerticalSpacer()
+
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .selectable(
+                        selected = (localAuthority.slug == selectedOption),
+                        onClick = {
+                            onSlugChange(localAuthority.slug)
+                            onOptionSelected(localAuthority.slug) },
+                        role = Role.RadioButton
+                    ),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                RadioButton(
+                    selected = (localAuthority.slug == selectedOption),
+                    onClick = null,
+                    colors = RadioButtonColors(
+                        selectedColor = GovUkTheme.colourScheme.surfaces.radioSelected,
+                        unselectedColor = GovUkTheme.colourScheme.surfaces.radioUnselected,
+                        disabledSelectedColor = GovUkTheme.colourScheme.surfaces.radioUnselected,
+                        disabledUnselectedColor = GovUkTheme.colourScheme.surfaces.radioUnselected
+                    )
+                )
+                BodyRegularLabel(
+                    text = localAuthority.name,
+                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+                )
+            }
+
+            MediumVerticalSpacer()
+
+            if (index < radioOptions.lastIndex) {
+                RadioDivider()
+            }
+        }
+    }
+}
+
+
+@Composable
+private fun RadioDivider(modifier: Modifier = Modifier) {
+    HorizontalDivider(
+        modifier = modifier,
+        thickness = 1.dp,
+        color = GovUkTheme.colourScheme.strokes.radioDivider
+    )
+}
+
 @Preview
 @Composable
 private fun LocalAuthoritySelectScreenPreview() {
     GovUkTheme {
-        LocalAuthoritySelectRoute(
+        LocalAuthoritySelectScreen(
             onBack = {},
+            onPageView = {},
             onCancel = {},
-            onSelect = {},
+            onSelectByAddress = {},
+            onSlugSelect = { _, _ ->},
             postcode = "E18QS",
-//            addresses = listOf(
-//                Address(
-//                    address = "BH22 8UB",
-//                    slug = "dorset",
-//                    name = "Dorset County Council"
-//                ),
-//                Address(
-//                    address = "BH22 8UB",
-//                    slug = "bournemouth-christchurch-poole",
-//                    name = "Bournemouth, Christchurch, and Poole"
-//                )
-//            )
+            localAuthorities = listOf(
+                RemoteLocalAuthority(
+                    name = "Dorset County Council",
+                    homePageUrl = "https://www.example.com",
+                    slug = "dorset",
+                    tier = "unitary",
+                    parent = null
+                ),
+                RemoteLocalAuthority(
+                    name = "Bournemouth, Christchurch, and Poole",
+                    homePageUrl = "https://www.example.com",
+                    slug = "bournemouth-christchurch-poole",
+                    tier = "unitary",
+                    parent = null
+                )
+            )
         )
     }
 }
