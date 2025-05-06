@@ -165,7 +165,7 @@ private fun LocalEntryScreen(
                     errorPlaceholderColor = GovUkTheme.colourScheme.textAndIcons.textFieldError,
                     errorSuffixColor = GovUkTheme.colourScheme.textAndIcons.textFieldError,
                     errorSupportingTextColor = GovUkTheme.colourScheme.textAndIcons.textFieldError,
-                    errorTextColor = GovUkTheme.colourScheme.textAndIcons.textFieldError,
+                    errorTextColor = GovUkTheme.colourScheme.textAndIcons.primary,
                     focusedContainerColor = GovUkTheme.colourScheme.surfaces.textFieldBackground,
                     focusedIndicatorColor = GovUkTheme.colourScheme.textAndIcons.secondary,
                     focusedLabelColor = GovUkTheme.colourScheme.textAndIcons.secondary,
