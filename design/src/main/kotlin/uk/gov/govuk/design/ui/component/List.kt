@@ -259,15 +259,18 @@ fun CardListItem(
 
     Box(
         modifier = modifier
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null
-            ) {
-                onClick?.let {
-                    isClicked = true
-                    it()
-                }
-            }
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) {
+                        isClicked = true
+                        onClick()
+                    }
+                } else Modifier
+            )
+            .semantics(mergeDescendants = true) { }
             .drawBehind {
                 drawCell(
                     isFirst = isFirst,
