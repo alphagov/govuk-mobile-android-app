@@ -112,10 +112,10 @@ class NotificationsClientTest {
         val clickListener = slot<INotificationClickListener>()
         every { Uri.parse("") } returns uri
         every { event.notification.additionalData } returns null
-        every { event.notification.additionalData.toString() } returns ""
         every { event.notification } returns notification
         every { notification.additionalData } returns null
-        every { notification.additionalData.toString() } returns ""
+        every { notification.additionalData?.has("deeplink") } returns true
+        every { notification.additionalData?.optString("deeplink") } returns ""
         every {
             OneSignal.Notifications.addClickListener(listener = capture(clickListener))
         } answers {
@@ -146,7 +146,8 @@ class NotificationsClientTest {
         every { intent.data } returns uri
         every { intent.setFlags(FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK) } returns intent
         every { intent.flags } returns (FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK)
-        every { additionalData.toString() } returns "{\"deeplink\":\"scheme://host\"}"
+        every { additionalData.has("deeplink") } returns true
+        every { additionalData.optString("deeplink") } returns "scheme://host"
 
         runTest {
             notificationsClient.handleAdditionalData(context, additionalData, intent)
@@ -162,46 +163,31 @@ class NotificationsClientTest {
     }
 
     @Test
-    fun `Given we have a notifications client, when handle additional data function is called with invalid additional data, then start activity is called with expected data`() {
-        val uri = mockk<Uri>()
+    fun `Given we have a notifications client, when handle additional data function is called without a deep link, then start activity is not called`() {
         val intent = spyk<Intent>()
         val additionalData = mockk<JSONObject>()
 
-        every { Uri.parse("") } returns uri
-        every { intent.setData(uri) } returns intent
-        every { intent.data } returns uri
-        every { intent.setFlags(FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK) } returns intent
-        every { additionalData.toString() } returns ""
+        every { additionalData.has("deeplink") } returns false
 
         runTest {
             notificationsClient.handleAdditionalData(context, additionalData, intent)
 
-            assertEquals(uri, intent.data)
-
-            verify(exactly = 1) {
+            verify(exactly = 0) {
                 context.startActivity(intent)
             }
         }
     }
 
     @Test
-    fun `Given we have a notifications client, when handle additional data function is called and additional data is null, then start activity is called with expected data`() {
-        val uri = mockk<Uri>()
+    fun `Given we have a notifications client, when handle additional data function is called and additional data is null, then start activity is not called`() {
         val intent = spyk<Intent>()
-
-        every { Uri.parse("") } returns uri
-        every { intent.setData(uri) } returns intent
-        every { intent.data } returns uri
-        every { intent.setFlags(FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK) } returns intent
 
         val additionalData: JSONObject? = null
 
         runTest {
             notificationsClient.handleAdditionalData(context, additionalData, intent)
 
-            assertEquals(uri, intent.data)
-
-            verify(exactly = 1) {
+            verify(exactly = 0) {
                 context.startActivity(intent)
             }
         }
@@ -211,6 +197,8 @@ class NotificationsClientTest {
     fun `Given we have a notifications client, when handle additional data function is called and intent is null, then start activity is not called`() {
         val intent: Intent? = null
         val additionalData = mockk<JSONObject>()
+
+        every { additionalData.optString("deeplink") } returns "deeplink"
 
         runTest {
             notificationsClient.handleAdditionalData(context, additionalData, intent)

@@ -43,7 +43,6 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.ui.tooling)
     implementation(libs.google.accompanist)
-    implementation(libs.retrofit.gson)
 
     ksp(libs.hilt.compiler)
 

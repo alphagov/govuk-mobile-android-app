@@ -13,12 +13,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import uk.gov.govuk.notifications.model.asAdditionalData
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class NotificationsClient @Inject constructor() {
+
+    companion object {
+        private const val DEEP_LINK = "deeplink"
+    }
 
     fun initialise(context: Context, oneSignalAppId: String) {
         OneSignal.consentRequired = true
@@ -50,15 +53,16 @@ class NotificationsClient @Inject constructor() {
 
     internal fun handleAdditionalData(
         context: Context,
-        additionalDataJson: JSONObject?,
+        additionalData: JSONObject?,
         intent: Intent? = context.packageManager.getLaunchIntentForPackage(context.packageName)
     ) {
-        intent?.let {
-            // If additional data couldn't be parsed, send an empty Uri for the app to handle
-            val deepLink = additionalDataJson.asAdditionalData()?.deepLink ?: ""
-            it.data = deepLink.toUri()
-            it.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
-            context.startActivity(it)
+        additionalData ?: return
+        intent ?: return
+        if (additionalData.has(DEEP_LINK)) {
+            val deepLink = additionalData.optString(DEEP_LINK)
+            intent.data = deepLink.toUri()
+            intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
+            context.startActivity(intent)
         }
     }
 }

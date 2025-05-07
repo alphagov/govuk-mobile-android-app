@@ -54,6 +54,23 @@ class MainActivityTest {
     }
 
     @Test
+    fun given_the_MainActivity_is_launched_When_onCreate_is_called_then_the_intentFlow_has_a_cached_value() {
+        val scenario = ActivityScenario.launch<MainActivity>(intent)
+        scenario.onActivity { activity ->
+            runTest {
+                val deferredCacheSize = async {
+                    activity.intentFlow.replayCache.size
+                }
+                val deferredIntent = async {
+                    activity.intentFlow.first()
+                }
+                assertEquals(1, deferredCacheSize.await())
+                assertEquals(activity.intent, deferredIntent.await())
+            }
+        }
+    }
+
+    @Test
     fun given_the_MainActivity_is_launched_then_recreated_When_onCreate_is_called_then_the_intentFlow_has_an_empty_cache() {
         val scenario = ActivityScenario.launch<MainActivity>(intent)
         scenario.recreate()
