@@ -5,9 +5,12 @@ import android.util.Base64
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators
 import androidx.fragment.app.FragmentActivity
+import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
+import net.openid.appauth.TokenRequest
+import net.openid.appauth.TokenResponse
 import org.json.JSONObject
 import uk.gov.android.securestore.RetrievalEvent
 import uk.gov.android.securestore.SecureStore
@@ -22,6 +25,7 @@ import kotlin.coroutines.suspendCoroutine
 class AuthRepo @Inject constructor(
     private val authRequest: AuthorizationRequest,
     private val authService: AuthorizationService,
+    private val tokenRequestBuilder: TokenRequest.Builder,
     private val tokenResponseMapper: TokenResponseMapper,
     private val secureStore: SecureStore,
     private val biometricManager: BiometricManager
@@ -42,26 +46,8 @@ class AuthRepo @Inject constructor(
             authService.performTokenRequest(
                 authResponse.createTokenExchangeRequest()
             ) { tokenResponse, exception ->
-                val mappedTokenResponse = tokenResponseMapper.map(tokenResponse)
-
-                val accessToken = mappedTokenResponse.accessToken
-                val idToken = mappedTokenResponse.idToken
-                val refreshToken = mappedTokenResponse.refreshToken
-
-                if (exception == null &&
-                    accessToken != null &&
-                    idToken != null &&
-                    refreshToken != null
-                ) {
-                    tokens = Tokens(
-                        accessToken = accessToken,
-                        idToken = idToken,
-                        refreshToken = refreshToken
-                    )
-                    continuation.resume(true)
-                } else {
-                    continuation.resume(false)
-                }
+                val success = handleTokenResponse(tokenResponse, exception)
+                continuation.resume(success)
             }
         } else {
             continuation.resume(false)
@@ -75,14 +61,11 @@ class AuthRepo @Inject constructor(
         description: String
     ): Boolean {
         secureStore.upsert(REFRESH_TOKEN_KEY, tokens.refreshToken)
-        val result = secureStore.retrieveWithAuthentication(
-            key = arrayOf(REFRESH_TOKEN_KEY),
-            authPromptConfig = AuthenticatorPromptConfiguration(
-                title = title,
-                subTitle = subtitle,
-                description = description
-            ),
-            context = activity
+        val result = retrieveRefreshToken(
+            activity = activity,
+            title = title,
+            subtitle = subtitle,
+            description = description
         )
 
         return if (result is RetrievalEvent.Success) {
@@ -98,6 +81,83 @@ class AuthRepo @Inject constructor(
             Authenticators.BIOMETRIC_STRONG or Authenticators.DEVICE_CREDENTIAL
         )
         return result == BiometricManager.BIOMETRIC_SUCCESS
+    }
+
+    fun isUserSignedIn(): Boolean {
+        return secureStore.exists(REFRESH_TOKEN_KEY)
+    }
+
+    suspend fun refreshTokens(
+        activity: FragmentActivity,
+        title: String,
+        subtitle: String,
+        description: String
+    ): Boolean {
+        val result = retrieveRefreshToken(
+            activity = activity,
+            title = title,
+            subtitle = subtitle,
+            description = description
+        )
+        return suspendCoroutine { continuation ->
+            if (result is RetrievalEvent.Success) {
+                val refreshToken = result.value[REFRESH_TOKEN_KEY]
+                val tokenRequest = tokenRequestBuilder
+                    .setRefreshToken(refreshToken)
+                    .build()
+
+                authService.performTokenRequest(tokenRequest) { tokenResponse, exception ->
+                    val success = handleTokenResponse(tokenResponse, exception, refreshToken)
+                    continuation.resume(success)
+                }
+            } else {
+                continuation.resume(false)
+            }
+        }
+    }
+
+    private suspend fun retrieveRefreshToken(
+        activity: FragmentActivity,
+        title: String,
+        subtitle: String,
+        description: String
+    ): RetrievalEvent {
+        return secureStore.retrieveWithAuthentication(
+            key = arrayOf(REFRESH_TOKEN_KEY),
+            authPromptConfig = AuthenticatorPromptConfiguration(
+                title = title,
+                subTitle = subtitle,
+                description = description
+            ),
+            context = activity
+        )
+    }
+
+    private fun handleTokenResponse(
+        tokenResponse: TokenResponse?,
+        exception: AuthorizationException?,
+        refreshToken: String? = null
+    ): Boolean {
+        val mappedTokenResponse = tokenResponseMapper.map(tokenResponse)
+        val accessToken = mappedTokenResponse.accessToken
+        val idToken = mappedTokenResponse.idToken
+        val mappedRefreshToken = refreshToken ?: mappedTokenResponse.refreshToken
+
+        return if (exception == null &&
+            accessToken != null &&
+            idToken != null &&
+            mappedRefreshToken != null
+        ) {
+            tokens = Tokens(
+                accessToken = accessToken,
+                idToken = idToken,
+                refreshToken = mappedRefreshToken
+            )
+
+            true
+        } else {
+            false
+        }
     }
 
     fun getUserEmail(): String {

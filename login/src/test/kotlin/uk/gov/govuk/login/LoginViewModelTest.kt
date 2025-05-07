@@ -1,6 +1,8 @@
 package uk.gov.govuk.login
 
+import androidx.fragment.app.FragmentActivity
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -10,11 +12,12 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.analytics.AnalyticsClient
-import uk.gov.govuk.login.LoginViewModel.LoginUiState
 import uk.gov.govuk.data.auth.AuthRepo
+import uk.gov.govuk.login.LoginViewModel.LoginUiState
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
@@ -23,6 +26,7 @@ class LoginViewModelTest {
 
     private val authRepo = mockk<AuthRepo>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
+    private val activity = mockk<FragmentActivity>(relaxed = true)
     private val dispatcher = UnconfinedTestDispatcher()
 
     private lateinit var viewModel: LoginViewModel
@@ -36,6 +40,37 @@ class LoginViewModelTest {
     @After
     fun tearDown() {
         Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `Given the user is not signed in, when init, then do nothing`() {
+        every { authRepo.isUserSignedIn() } returns false
+
+        viewModel.init(activity)
+
+        coVerify(exactly = 0) {
+            authRepo.refreshTokens(any(), any(), any(), any())
+        }
+    }
+
+    @Test
+    fun `Given the user is signed in, when init is successful, then emit ui state`() {
+        every { authRepo.isUserSignedIn() } returns true
+        coEvery { authRepo.refreshTokens(any(), any(), any(), any()) } returns true
+
+        viewModel.init(activity)
+
+        assertFalse(viewModel.uiState.value!!.shouldDisplayLocalAuthOnboarding)
+    }
+
+    @Test
+    fun `Given the user is signed in, when init is unsuccessful, then do nothing`() {
+        every { authRepo.isUserSignedIn() } returns true
+        coEvery { authRepo.refreshTokens(any(), any(), any(), any()) } returns false
+
+        viewModel.init(activity)
+
+        assertNull(viewModel.uiState.value)
     }
 
     @Test

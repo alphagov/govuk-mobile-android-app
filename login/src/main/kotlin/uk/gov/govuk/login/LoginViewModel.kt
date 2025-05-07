@@ -1,6 +1,7 @@
 package uk.gov.govuk.login
 
 import android.content.Intent
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +18,7 @@ internal class LoginViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient
 ) : ViewModel() {
 
-    data class LoginUiState(val isAuthenticationEnabled: Boolean)
+    data class LoginUiState(val shouldDisplayLocalAuthOnboarding: Boolean)
 
     companion object {
         private const val SCREEN_CLASS = "LoginScreen"
@@ -32,6 +33,25 @@ internal class LoginViewModel @Inject constructor(
 
     val authIntent: Intent by lazy {
         authRepo.authIntent
+    }
+
+    fun init(activity: FragmentActivity) {
+        if (authRepo.isUserSignedIn()) {
+            viewModelScope.launch {
+                if (
+                    authRepo.refreshTokens(
+                        activity = activity,
+                        title = activity.getString(R.string.login_biometric_prompt_title),
+                        subtitle = activity.getString(R.string.login_biometric_prompt_subtitle),
+                        description = activity.getString(R.string.login_biometric_prompt_description)
+                    )
+                ) {
+                    _uiState.value = LoginUiState(false)
+                } else {
+                    // Todo - handle failure!!!
+                }
+            }
+        }
     }
 
     fun onPageView() {

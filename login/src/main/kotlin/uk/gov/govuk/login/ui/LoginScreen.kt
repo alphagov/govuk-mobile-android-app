@@ -16,9 +16,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
@@ -53,9 +55,15 @@ internal fun LoginRoute(
         modifier = modifier
     )
 
+    val activity = LocalContext.current as FragmentActivity
+
+    LaunchedEffect(Unit) {
+        viewModel.init(activity)
+    }
+
     LaunchedEffect(uiState) {
         uiState?.let { loginState ->
-            onLogin(loginState.isAuthenticationEnabled)
+            onLogin(loginState.shouldDisplayLocalAuthOnboarding)
         }
     }
 }

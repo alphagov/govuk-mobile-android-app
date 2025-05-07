@@ -11,11 +11,14 @@ import dagger.hilt.components.SingletonComponent
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
+import net.openid.appauth.GrantTypeValues
 import net.openid.appauth.ResponseTypeValues
+import net.openid.appauth.TokenRequest
 import uk.gov.android.securestore.AccessControlLevel
 import uk.gov.android.securestore.SecureStorageConfiguration
 import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.SharedPrefsStore
+import uk.gov.govuk.data.BuildConfig
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -46,22 +49,37 @@ class AuthModule {
 
     @Singleton
     @Provides
-    fun provideAuthRequest(): AuthorizationRequest {
-        // Todo - extract into build variables!!!
-        val authConfig = AuthorizationServiceConfiguration(
-            "https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/authorize".toUri(),
-            "https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/token".toUri()
+    fun provideAuthServiceConfig(): AuthorizationServiceConfiguration {
+        return AuthorizationServiceConfiguration(
+            BuildConfig.AUTHORIZE_ENDPOINT.toUri(),
+            BuildConfig.TOKEN_ENDPOINT.toUri()
         )
+    }
 
+    @Singleton
+    @Provides
+    fun provideAuthRequest(authConfig: AuthorizationServiceConfiguration): AuthorizationRequest {
         val authRequestBuilder = AuthorizationRequest.Builder(
             authConfig,
-            "121f51j1s4kmk9i98um0b5mphh",
+            BuildConfig.AUTH_CLIENT_ID,
             ResponseTypeValues.CODE,
-            "govuk://govuk/login-auth-callback".toUri()
+            BuildConfig.AUTH_REDIRECT.toUri()
         )
 
         return authRequestBuilder
             .setScopes("openid")
             .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideTokenRequestBuilder(authConfig: AuthorizationServiceConfiguration): TokenRequest.Builder {
+        val tokenRequestBuilder = TokenRequest.Builder(
+            authConfig,
+            BuildConfig.AUTH_CLIENT_ID
+        )
+
+        return tokenRequestBuilder
+            .setGrantType(GrantTypeValues.REFRESH_TOKEN)
     }
 }

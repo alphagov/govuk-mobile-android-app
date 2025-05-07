@@ -37,8 +37,8 @@ fun NavGraphBuilder.loginGraph(
             val isPostSignOut = backStackEntry.arguments?.getBoolean(POST_SIGN_OUT_ARG) ?: false
             LoginRoute(
                 isPostSignOut = isPostSignOut,
-                onLogin = { authenticationEnabled ->
-                    if (authenticationEnabled) {
+                onLogin = { shouldDisplayLocalAuthOnboarding ->
+                    if (shouldDisplayLocalAuthOnboarding) {
                         navController.popBackStack()
                         navController.navigate(
                             BIOMETRIC_ROUTE
