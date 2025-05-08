@@ -6,27 +6,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.model.Result.Success
 import uk.govuk.app.local.data.LocalRepo
-import uk.govuk.app.local.data.remote.model.Address
 import uk.govuk.app.local.data.remote.model.LocalAuthorityResult
-import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
 import javax.inject.Inject
 
 internal sealed class LocalUiState {
-    data class LocalAuthority(
-        val localAuthority: RemoteLocalAuthority
-    ): LocalUiState() // Todo - should probably be mapping data layer objects to domain layer objects
-
-    data class Addresses(
-        val addresses: List<Address>
-    ): LocalUiState() // Todo - should probably be mapping data layer objects to domain layer objects
-
     data class Error(@StringRes val message: Int): LocalUiState()
+}
+
+sealed class NavigationEvent {
+    data object LocalAuthoritySelected: NavigationEvent()
+    data class Addresses(val postcode: String): NavigationEvent()
 }
 
 @HiltViewModel
@@ -50,6 +47,9 @@ internal class LocalViewModel @Inject constructor(
 
     private val _uiState: MutableStateFlow<LocalUiState?> = MutableStateFlow(null)
     internal val uiState = _uiState.asStateFlow()
+
+    private val _navigationEvent = MutableSharedFlow<NavigationEvent>()
+    val navigationEvent: SharedFlow<NavigationEvent> = _navigationEvent
 
     fun onExplainerPageView() {
         analyticsClient.screenView(
@@ -106,7 +106,7 @@ internal class LocalViewModel @Inject constructor(
             viewModelScope.launch {
                 when (val response = localRepo.performGetLocalPostcode(postcode)) {
                     is Success -> {
-                        emitUiState(response.value)
+                        emitErrorOrNavigate(response.value)
                     }
                     else -> println(response)
                 }
@@ -118,28 +118,34 @@ internal class LocalViewModel @Inject constructor(
         viewModelScope.launch {
             when (val response = localRepo.performGetLocalAuthority(slug)) {
                 is Success -> {
-                    emitUiState(response.value)
+                    emitErrorOrNavigate(response.value)
                 }
                 else -> println(response)
             }
         }
     }
 
-    private suspend fun emitUiState(result: LocalAuthorityResult) {
-        _uiState.value = when (result) {
-            is LocalAuthorityResult.LocalAuthority -> LocalUiState.LocalAuthority(result.localAuthority)
-            is LocalAuthorityResult.Addresses -> {
-                localRepo.cacheAddresses(result.addresses)
-                LocalUiState.Addresses(result.addresses)
-            }
-            is LocalAuthorityResult.InvalidPostcode -> createAndLogError(R.string.local_invalid_postcode_message)
-            is LocalAuthorityResult.PostcodeNotFound -> createAndLogError(R.string.local_not_found_postcode_message)
-            is LocalAuthorityResult.PostcodeEmptyOrNull -> createAndLogError(R.string.local_no_postcode_message)
-        }
-    }
-
     private fun createAndLogError(@StringRes errorMessage: Int): LocalUiState.Error {
         onLookupPageView(context.getString(errorMessage))
         return LocalUiState.Error(errorMessage)
+    }
+
+    private suspend fun emitErrorOrNavigate(
+        result: LocalAuthorityResult,
+        postcode: String = ""
+    ) {
+        when (result) {
+            is LocalAuthorityResult.LocalAuthority -> _navigationEvent.emit(NavigationEvent.LocalAuthoritySelected)
+            is LocalAuthorityResult.Addresses -> {
+                localRepo.cacheAddresses(result.addresses)
+                _navigationEvent.emit(NavigationEvent.Addresses(postcode))
+            }
+            is LocalAuthorityResult.InvalidPostcode ->
+                _uiState.value = createAndLogError(R.string.local_invalid_postcode_message)
+            is LocalAuthorityResult.PostcodeNotFound ->
+                _uiState.value = createAndLogError(R.string.local_not_found_postcode_message)
+            is LocalAuthorityResult.PostcodeEmptyOrNull ->
+                _uiState.value = createAndLogError(R.string.local_no_postcode_message)
+        }
     }
 }

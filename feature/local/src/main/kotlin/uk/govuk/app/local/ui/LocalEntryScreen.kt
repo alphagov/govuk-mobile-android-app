@@ -40,6 +40,7 @@ import uk.gov.govuk.design.ui.component.Title1BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.govuk.app.local.LocalUiState
 import uk.govuk.app.local.LocalViewModel
+import uk.govuk.app.local.NavigationEvent
 import uk.govuk.app.local.R
 import uk.govuk.app.local.domain.PostcodeSanitizer
 
@@ -57,7 +58,6 @@ internal fun LocalEntryRoute(
         uiState = uiState,
         onBack = onBack,
         onCancel = onCancel,
-        onSelect = onSelect,
         onPageView = { viewModel.onLookupPageView() },
         onPostcodeLookup = { buttonText, postcode ->
             viewModel.onSearchPostcode(
@@ -68,6 +68,15 @@ internal fun LocalEntryRoute(
         onPostcodeChange = { viewModel.onPostcodeChange() },
         modifier = modifier
     )
+
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                is NavigationEvent.LocalAuthoritySelected -> onCancel()
+                is NavigationEvent.Addresses -> onSelect(event.postcode)
+            }
+        }
+    }
 }
 
 @Composable
@@ -75,7 +84,6 @@ private fun LocalEntryScreen(
     uiState: LocalUiState?,
     onBack: () -> Unit,
     onCancel: () -> Unit,
-    onSelect: (String) -> Unit,
     onPageView: () -> Unit,
     onPostcodeLookup: (String, String) -> Unit,
     onPostcodeChange: () -> Unit,
@@ -194,14 +202,6 @@ private fun LocalEntryScreen(
             BodyRegularLabel(stringResource(R.string.local_postcode_use_description_2))
         }
     }
-
-    LaunchedEffect(uiState) {
-        if (uiState is LocalUiState.LocalAuthority) {
-            onCancel()
-        } else if (uiState is LocalUiState.Addresses) {
-            onSelect(postcode)
-        }
-    }
 }
 
 @Composable
@@ -227,7 +227,6 @@ private fun LocalEntryScreenPreview() {
             onBack = {},
             onPageView = {},
             onCancel = {},
-            onSelect = {},
             uiState = null,
             onPostcodeLookup = { _, _ -> },
             onPostcodeChange = {}

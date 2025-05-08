@@ -56,8 +56,7 @@ fun NavGraphBuilder.localGraph(
                     type = NavType.StringType
                 },
             )
-        ) {
-            backStackEntry ->
+        ) { backStackEntry ->
                 val postcode = backStackEntry.arguments?.getString("postcode") ?: ""
             LocalAuthoritySelectRoute(
                 onBack = { navController.popBackStack() },
