@@ -36,13 +36,12 @@ internal class LocalRepo @Inject constructor(
 
     var addressList: List<Address> = emptyList()
     var localAuthorityList: List<RemoteLocalAuthority> = emptyList()
-    var slugList: List<String> = emptyList()
 
     suspend fun cacheAddresses(
         addresses: List<Address>
     ) {
         addressList = addresses
-        slugList = addresses.distinctBy { it.slug }.map { it.slug }
+        val slugList = addresses.distinctBy { it.slug }.map { it.slug }
 
         val localAuthorities = emptyList<RemoteLocalAuthority>().toMutableList()
         slugList.forEach { slug ->

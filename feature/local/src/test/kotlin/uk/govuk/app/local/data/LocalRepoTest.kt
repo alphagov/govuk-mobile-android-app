@@ -86,7 +86,6 @@ class LocalRepoTest {
         localRepo.cacheAddresses(addresses)
 
         assertEquals(addresses, localRepo.addressList)
-        assertEquals(listOf("slug-one", "slug-two"), localRepo.slugList)
         assertEquals(
             listOf(remoteLocalAuthority1, remoteLocalAuthority2),
             localRepo.localAuthorityList
@@ -102,7 +101,6 @@ class LocalRepoTest {
         localRepo.cacheAddresses(emptyList())
 
         assertEquals(emptyList<Address>(), localRepo.addressList)
-        assertEquals(emptyList<String>(), localRepo.slugList)
         assertEquals(emptyList<RemoteLocalAuthority>(), localRepo.localAuthorityList)
 
         coVerify(exactly = 0) { localApi.getLocalAuthority(any()) }
@@ -123,7 +121,6 @@ class LocalRepoTest {
         localRepo.cacheAddresses(addresses)
 
         assertEquals(addresses, localRepo.addressList)
-        assertEquals(listOf("slug-one"), localRepo.slugList)
         assertEquals(emptyList<RemoteLocalAuthority>(), localRepo.localAuthorityList)
 
         coVerify(exactly = 1) { localApi.getLocalAuthority("slug-one") }
