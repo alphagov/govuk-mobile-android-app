@@ -1,9 +1,6 @@
 package uk.gov.govuk.analytics.navigation
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
@@ -21,8 +18,6 @@ fun NavGraphBuilder.analyticsGraph(
         startDestination = ANALYTICS_CONSENT_ROUTE
     ) {
         composable(ANALYTICS_CONSENT_ROUTE) {
-            val context = LocalContext.current
-
             AnalyticsConsentRoute(
                 analyticsConsentCompleted = analyticsConsentCompleted,
                 modifier = modifier
