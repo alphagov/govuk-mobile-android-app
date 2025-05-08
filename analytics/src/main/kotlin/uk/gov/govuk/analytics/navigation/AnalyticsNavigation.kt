@@ -13,7 +13,6 @@ const val ANALYTICS_GRAPH_ROUTE = "analytics_graph_route"
 private const val ANALYTICS_CONSENT_ROUTE = "analytics_consent_route"
 
 fun NavGraphBuilder.analyticsGraph(
-    privacyPolicyUrl: String,
     analyticsConsentCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -25,11 +24,6 @@ fun NavGraphBuilder.analyticsGraph(
             val context = LocalContext.current
 
             AnalyticsConsentRoute(
-                onPrivacyPolicyClick = {
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    intent.data = Uri.parse(privacyPolicyUrl)
-                    context.startActivity(intent)
-                },
                 analyticsConsentCompleted = analyticsConsentCompleted,
                 modifier = modifier
             )

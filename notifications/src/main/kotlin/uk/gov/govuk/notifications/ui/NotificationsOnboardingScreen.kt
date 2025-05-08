@@ -1,5 +1,10 @@
 package uk.gov.govuk.notifications.ui
 
+import android.content.Context
+import android.content.Intent
+import android.provider.Settings
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,15 +50,46 @@ internal fun NotificationsOnboardingRoute(
             NotificationsOnboardingUiState.Default -> {
                 OnboardingScreen(
                     onPageView = { viewModel.onPageView() },
+                    body = R.string.onboarding_screen_body,
+                    onPrivacyPolicyClick = { text, url ->
+                        viewModel.onPrivacyPolicyClick(text, url)
+                    },
+                    image = R.drawable.notifications_bell,
+                    footer = {
+                        val primaryText = stringResource(R.string.allow_notifications_button)
+                        val secondaryText = stringResource(R.string.not_now_button)
+                        FixedDoubleButtonGroup(
+                            primaryText = primaryText,
+                            onPrimary = { viewModel.onContinueClick(primaryText) },
+                            secondaryText = secondaryText,
+                            onSecondary = {
+                                viewModel.onSkipClick(secondaryText)
+                                notificationsOnboardingCompleted()
+                            }
+                        )
+                    }
+                )
+            }
+
+            NotificationsOnboardingUiState.NoConsent -> {
+                OnboardingScreen(
+                    onPageView = { viewModel.onPageView() },
+                    body = R.string.onboarding_screen_no_consent_body,
+                    onPrivacyPolicyClick = { text, url ->
+                        viewModel.onPrivacyPolicyClick(text, url)
+                    },
                     modifier = modifier,
                     footer = {
-                        OnboardingScreenFooter(
-                            onContinue = {
-                                viewModel.onContinueClick(it)
-                            },
-                            onSkip = {
-                                viewModel.onSkipClick(it)
-                                notificationsOnboardingCompleted()
+                        val context = LocalContext.current
+                        val primaryText = stringResource(R.string.allow_notifications_button)
+                        val secondaryText = stringResource(R.string.turn_off_notifications_button)
+                        FixedDoubleButtonGroup(
+                            primaryText = primaryText,
+                            onPrimary = { viewModel.onGiveConsentClick(primaryText) },
+                            secondaryText = secondaryText,
+                            onSecondary = {
+                                viewModel.onTurnOffNotificationsClick(secondaryText)
+                                openDeviceSettings(context)
                             }
                         )
                     }
@@ -86,6 +123,10 @@ internal fun NotificationsOnboardingNoSkipRoute(
             NotificationsOnboardingUiState.Default -> {
                 OnboardingScreen(
                     onPageView = { viewModel.onPageView() },
+                    body = R.string.onboarding_screen_body,
+                    onPrivacyPolicyClick = { text, url ->
+                        viewModel.onPrivacyPolicyClick(text, url)
+                    },
                     modifier = modifier,
                     header = {
                         ChildPageHeader(
@@ -93,16 +134,22 @@ internal fun NotificationsOnboardingNoSkipRoute(
                         )
                     },
                     footer = {
-                        OnboardingScreenFooterNoSkip(
-                            onContinue = {
-                                viewModel.onContinueClick(it)
+                        val primaryText = stringResource(R.string.allow_notifications_button)
+                        val secondaryText = stringResource(R.string.not_now_button)
+                        FixedDoubleButtonGroup(
+                            primaryText = primaryText,
+                            onPrimary = { viewModel.onContinueClick(primaryText) },
+                            secondaryText = secondaryText,
+                            onSecondary = {
+                                viewModel.onSkipClick(secondaryText)
+                                notificationsOnboardingCompleted()
                             }
                         )
                     }
                 )
             }
 
-            NotificationsOnboardingUiState.Finish -> {
+            else -> {
                 EmptyScreen()
                 notificationsOnboardingCompleted()
             }
@@ -122,7 +169,10 @@ private fun EmptyScreen() {
 @Composable
 private fun OnboardingScreen(
     onPageView: () -> Unit,
+    @StringRes body: Int,
+    onPrivacyPolicyClick: (text: String, url: String) -> Unit,
     modifier: Modifier = Modifier,
+    @DrawableRes image: Int? = null,
     header: (@Composable () -> Unit)? = null,
     footer: @Composable () -> Unit
 ) {
@@ -135,8 +185,9 @@ private fun OnboardingScreen(
 
         OnboardingSlide(
             title = R.string.onboarding_screen_title,
-            body = R.string.onboarding_screen_body,
-            animation = R.raw.bell
+            body = body,
+            image = image,
+            onPrivacyPolicyClick = onPrivacyPolicyClick
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -145,54 +196,40 @@ private fun OnboardingScreen(
     }
 }
 
-@Composable
-private fun OnboardingScreenFooter(
-    onContinue: (String) -> Unit,
-    onSkip: ((String) -> Unit),
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier) {
-        val allowButtonText = stringResource(R.string.allow_button)
-        val notNowButtonText = stringResource(R.string.not_now_button)
-
-        FixedDoubleButtonGroup(
-            primaryText = allowButtonText,
-            onPrimary = { onContinue(allowButtonText) },
-            secondaryText = notNowButtonText,
-            onSecondary = { onSkip(notNowButtonText) }
-        )
-    }
-}
-
-@Composable
-private fun OnboardingScreenFooterNoSkip(
-    onContinue: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier) {
-        val allowButtonText = stringResource(R.string.allow_button)
-        FixedPrimaryButton(
-            text = allowButtonText,
-            onClick = { onContinue(allowButtonText) },
-        )
-    }
+private fun openDeviceSettings(context: Context) {
+    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+        .also { intent ->
+            context.startActivity(intent)
+        }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun OnboardingScreenPreview() {
-    GovUkTheme {
-        OnboardingScreen({}, footer = { OnboardingScreenFooter({}, {}) })
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun OnboardingScreenNoSkipPreview() {
+private fun OnboardingScreenOneButtonPreview() {
     GovUkTheme {
         OnboardingScreen(
             {},
+            body = R.string.onboarding_screen_no_consent_body,
+            onPrivacyPolicyClick = { _, _ -> },
             header = { ChildPageHeader(onBack = {}) },
-            footer = { OnboardingScreenFooterNoSkip({}) })
+            footer = { FixedPrimaryButton("Primary button", {}) })
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OnboardingScreenTwoButtonsPreview() {
+    GovUkTheme {
+        OnboardingScreen(
+            {},
+            body = R.string.onboarding_screen_body,
+            onPrivacyPolicyClick = { _, _ -> },
+            image = R.drawable.ic_bell,
+            header = { ChildPageHeader(onBack = {}) },
+            footer = {
+                FixedDoubleButtonGroup("Primary button", {}, "Secondary button", {})
+            })
     }
 }

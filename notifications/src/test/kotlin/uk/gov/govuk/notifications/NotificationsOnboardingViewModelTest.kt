@@ -3,7 +3,6 @@ package uk.gov.govuk.notifications
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.shouldShowRationale
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -45,6 +44,8 @@ class NotificationsOnboardingViewModelTest {
 
     @Test
     fun `Given continue button click, then request permission and log analytics`() {
+        every { notificationsClient.giveConsent() } returns Unit
+
         val onCompleted = slot<() -> Unit>()
         every {
             notificationsClient.requestPermission(onCompleted = capture(onCompleted))
@@ -77,49 +78,100 @@ class NotificationsOnboardingViewModelTest {
     }
 
     @Test
+    fun `Given Allow notifications button click, then give consent and log analytics`() {
+        every { notificationsClient.giveConsent() } returns Unit
+
+        viewModel.onGiveConsentClick("Title")
+
+        runTest {
+            verify(exactly = 1) {
+                notificationsClient.giveConsent()
+                analyticsClient.buttonClick("Title")
+            }
+            val result = viewModel.uiState.first()
+            assertTrue(result is NotificationsOnboardingUiState.Finish)
+        }
+    }
+
+    @Test
+    fun `Given Turn off notifications button click, then log analytics`() {
+        viewModel.onTurnOffNotificationsClick("Title")
+
+        runTest {
+            verify(exactly = 1) {
+                analyticsClient.buttonClick(
+                    text = "Title",
+                    external = true
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `Given Privacy policy link click, then log analytics`() {
+        viewModel.onPrivacyPolicyClick("Text", "Url")
+
+        runTest {
+            verify(exactly = 1) {
+                analyticsClient.buttonClick(
+                    text = "Text",
+                    url = "Url",
+                    external = true
+                )
+            }
+        }
+    }
+
+    @Test
     fun `Given the permission status is granted, When init, then ui state should be finish`() {
         every { permissionStatus.isGranted } returns true
         every { notificationsClient.giveConsent() } returns Unit
+        every { notificationsClient.consentGiven() } returns true
 
         viewModel.updateUiState(permissionStatus)
 
         runTest {
             val result = viewModel.uiState.first()
             assertTrue(result is NotificationsOnboardingUiState.Finish)
-
-            verify(exactly = 1) {
-                notificationsClient.giveConsent()
-            }
         }
     }
 
     @Test
-    fun `Given the permission status is not granted, When init, then permission is requested and ui state should be finish`() {
+    fun `Given the permission status is not granted, When init, then the ui state should be default`() {
         every { permissionStatus.isGranted } returns false
-        every { permissionStatus.shouldShowRationale } returns false
         every { notificationsClient.requestPermission() } returns Unit
 
         viewModel.updateUiState(permissionStatus)
 
         runTest {
             val result = viewModel.uiState.first()
-            assertTrue(result is NotificationsOnboardingUiState.Finish)
-
-            verify(exactly = 1) {
-                notificationsClient.requestPermission()
-            }
+            assertTrue(result is NotificationsOnboardingUiState.Default)
         }
     }
 
     @Test
-    fun `Given the permission status is should show rationale, When init, then ui state should be opt in`() {
-        every { permissionStatus.shouldShowRationale } returns true
+    fun `Given the permission status is granted and consent is given, When init, then ui state should be finish`() {
+        every { permissionStatus.isGranted } returns true
+        every { notificationsClient.consentGiven() } returns true
 
         viewModel.updateUiState(permissionStatus)
 
         runTest {
             val result = viewModel.uiState.first()
-            assertTrue(result is NotificationsOnboardingUiState.Default)
+            assertTrue(result is NotificationsOnboardingUiState.Finish)
+        }
+    }
+
+    @Test
+    fun `Given the permission status is granted but consent is not given, When init, then ui state should be no consent`() {
+        every { permissionStatus.isGranted } returns true
+        every { notificationsClient.consentGiven() } returns false
+
+        viewModel.updateUiState(permissionStatus)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertTrue(result is NotificationsOnboardingUiState.NoConsent)
         }
     }
 }

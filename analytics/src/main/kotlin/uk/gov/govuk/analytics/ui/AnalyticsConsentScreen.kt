@@ -1,7 +1,6 @@
 package uk.gov.govuk.analytics.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,12 +10,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -30,20 +27,18 @@ import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.MediumHorizontalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
-import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
+import uk.gov.govuk.design.ui.component.PrivacyPolicyLink
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
 internal fun AnalyticsConsentRoute(
-    onPrivacyPolicyClick: () -> Unit,
     analyticsConsentCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: AnalyticsViewModel = hiltViewModel()
 
     AnalyticsConsentScreen(
-        onPrivacyPolicyClick = onPrivacyPolicyClick,
         onConsentGranted = {
             viewModel.onConsentGranted()
             analyticsConsentCompleted()
@@ -58,7 +53,6 @@ internal fun AnalyticsConsentRoute(
 
 @Composable
 private fun AnalyticsConsentScreen(
-    onPrivacyPolicyClick: () -> Unit,
     onConsentGranted: () -> Unit,
     onConsentDenied: () -> Unit,
     modifier: Modifier = Modifier
@@ -87,7 +81,7 @@ private fun AnalyticsConsentScreen(
             MediumVerticalSpacer()
             BodyRegularLabel(stringResource(R.string.analytics_consent_stop))
             MediumVerticalSpacer()
-            PrivacyPolicyLink(onPrivacyPolicyClick)
+            PrivacyPolicyLink()
             MediumVerticalSpacer()
         }
 
@@ -138,38 +132,11 @@ private fun BulletItem(
     }
 }
 
-@Composable
-private fun PrivacyPolicyLink(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier
-            .clickable { onClick() }
-    ) {
-        BodyRegularLabel(
-            text = stringResource(R.string.analytics_consent_privacy_policy),
-            color = GovUkTheme.colourScheme.textAndIcons.link,
-            modifier = Modifier.weight(1f, fill = false)
-        )
-        SmallHorizontalSpacer()
-        Icon(
-            painter = painterResource(
-                uk.gov.govuk.design.R.drawable.ic_external_link
-            ),
-            contentDescription = stringResource(R.string.analytics_consent_link_opens_in),
-            tint = GovUkTheme.colourScheme.textAndIcons.link,
-            modifier = Modifier.align(Alignment.CenterVertically)
-        )
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun AnalyticsConsentPreview() {
     GovUkTheme {
         AnalyticsConsentScreen(
-            onPrivacyPolicyClick = { },
             onConsentGranted = { },
             onConsentDenied = { }
         )

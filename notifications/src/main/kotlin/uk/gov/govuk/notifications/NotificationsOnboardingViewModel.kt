@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.shouldShowRationale
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,13 +27,13 @@ internal class NotificationsOnboardingViewModel @Inject constructor(
 
     internal fun updateUiState(status: PermissionStatus) {
         _uiState.value = if (status.isGranted) {
-            notificationsClient.giveConsent()
-            NotificationsOnboardingUiState.Finish
-        } else if (status.shouldShowRationale) {
-            NotificationsOnboardingUiState.Default
+            if (notificationsClient.consentGiven()) {
+                NotificationsOnboardingUiState.Finish
+            } else {
+                NotificationsOnboardingUiState.NoConsent
+            }
         } else {
-            notificationsClient.requestPermission()
-            NotificationsOnboardingUiState.Finish
+            NotificationsOnboardingUiState.Default
         }
     }
 
@@ -47,6 +46,7 @@ internal class NotificationsOnboardingViewModel @Inject constructor(
     }
 
     internal fun onContinueClick(text: String) {
+        notificationsClient.giveConsent()
         notificationsClient.requestPermission {
             _uiState.value = NotificationsOnboardingUiState.Finish
         }
@@ -58,6 +58,29 @@ internal class NotificationsOnboardingViewModel @Inject constructor(
     internal fun onSkipClick(text: String) {
         analyticsClient.buttonClick(
             text = text
+        )
+    }
+
+    internal fun onGiveConsentClick(text: String) {
+        notificationsClient.giveConsent()
+        analyticsClient.buttonClick(
+            text = text
+        )
+        _uiState.value = NotificationsOnboardingUiState.Finish
+    }
+
+    internal fun onTurnOffNotificationsClick(text: String) {
+        analyticsClient.buttonClick(
+            text = text,
+            external = true
+        )
+    }
+
+    internal fun onPrivacyPolicyClick(text: String, url: String) {
+        analyticsClient.buttonClick(
+            text = text,
+            url = url,
+            external = true
         )
     }
 }
