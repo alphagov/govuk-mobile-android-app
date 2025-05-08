@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -34,25 +36,33 @@ import uk.gov.govuk.design.ui.component.CardListItem
 import uk.gov.govuk.design.ui.component.ExternalLinkListItem
 import uk.gov.govuk.design.ui.component.InternalLinkListItem
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
-import uk.gov.govuk.design.ui.component.ListHeadingLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
+import uk.gov.govuk.design.ui.component.SubheadlineRegularLabel
 import uk.gov.govuk.design.ui.component.TabHeader
 import uk.gov.govuk.design.ui.component.ToggleListItem
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.notifications.notificationsPermissionShouldShowRationale
 import uk.gov.govuk.settings.R
+import uk.gov.govuk.settings.SettingsUiState
 import uk.gov.govuk.settings.SettingsViewModel
+
+internal class SettingsRouteActions(
+    val onAccountClick: () -> Unit,
+    val onSignOutClick: () -> Unit,
+    val onNotificationsClick: () -> Unit,
+    val onPrivacyPolicyClick: () -> Unit,
+    val onHelpClick: () -> Unit,
+    val onAccessibilityStatementClick: () -> Unit,
+    val onOpenSourceLicenseClick: () -> Unit,
+    val onTermsAndConditionsClick: () -> Unit
+)
 
 @Composable
 internal fun SettingsRoute(
     appVersion: String,
-    onHelpClick: () -> Unit,
-    onPrivacyPolicyClick: () -> Unit,
-    onAccessibilityStatementClick: () -> Unit,
-    onTermsAndConditionsClick: () -> Unit,
-    onOpenSourceLicenseClick: () -> Unit,
-    onNotificationsClick: () -> Unit,
+    actions: SettingsRouteActions,
     modifier: Modifier = Modifier
 ) {
     val viewModel: SettingsViewModel = hiltViewModel()
@@ -60,61 +70,75 @@ internal fun SettingsRoute(
     val context = LocalContext.current
     uiState?.let {
         SettingsScreen(
+            uiState = it,
             appVersion = appVersion,
-            isAnalyticsEnabled = it.isAnalyticsEnabled,
-            isNotificationsEnabled = it.isNotificationsEnabled,
-            onPageView = { viewModel.onPageView() },
-            onLicenseClick = {
-                viewModel.onLicenseView()
-                onOpenSourceLicenseClick()
-            },
-            onHelpClick = {
-                viewModel.onHelpAndFeedbackView()
-                onHelpClick()
-            },
-            onAnalyticsConsentChange = { enabled -> viewModel.onAnalyticsConsentChanged(enabled) },
-            onPrivacyPolicyClick = {
-                viewModel.onPrivacyPolicyView()
-                onPrivacyPolicyClick()
-            },
-            onAccessibilityStatementClick = {
-                viewModel.onAccessibilityStatementView()
-                onAccessibilityStatementClick()
-            },
-            onTermsAndConditionsClick = {
-                viewModel.onTermsAndConditionsView()
-                onTermsAndConditionsClick()
-            },
-            onNotificationsClick = {
-                viewModel.onNotificationsClick()
-                if (notificationsPermissionShouldShowRationale(context as Activity)) {
-                    onNotificationsClick()
-                } else {
-                    showNotificationsAlert(context, viewModel)
+            actions = SettingsActions(
+                onPageView = { viewModel.onPageView() },
+                onAccountClick = {
+                    viewModel.onAccount()
+                    actions.onAccountClick()
+                },
+                onSignOutClick = {
+                    viewModel.onSignOut()
+                    actions.onSignOutClick()
+                },
+                onNotificationsClick = {
+                    viewModel.onNotificationsClick()
+                    if (notificationsPermissionShouldShowRationale(context as Activity)) {
+                        actions.onNotificationsClick()
+                    } else {
+                        showNotificationsAlert(context, viewModel)
+                    }
+                },
+                onAnalyticsConsentChange = { enabled -> viewModel.onAnalyticsConsentChanged(enabled) },
+                onPrivacyPolicyClick = {
+                    viewModel.onPrivacyPolicyView()
+                    actions.onPrivacyPolicyClick()
+                },
+                onHelpClick = {
+                    viewModel.onHelpAndFeedbackView()
+                    actions.onHelpClick()
+                },
+                onAccessibilityStatementClick = {
+                    viewModel.onAccessibilityStatementView()
+                    actions.onAccessibilityStatementClick()
+                },
+                onLicenseClick = {
+                    viewModel.onLicenseView()
+                    actions.onOpenSourceLicenseClick()
+                },
+                onTermsAndConditionsClick = {
+                    viewModel.onTermsAndConditionsView()
+                    actions.onTermsAndConditionsClick()
                 }
-            },
+            ),
             modifier = modifier
         )
     }
 }
 
+private class SettingsActions(
+    val onPageView: () -> Unit,
+    val onAccountClick: () -> Unit,
+    val onSignOutClick: () -> Unit,
+    val onNotificationsClick: () -> Unit,
+    val onAnalyticsConsentChange: (Boolean) -> Unit,
+    val onPrivacyPolicyClick: () -> Unit,
+    val onHelpClick: () -> Unit,
+    val onAccessibilityStatementClick: () -> Unit,
+    val onLicenseClick: () -> Unit,
+    val onTermsAndConditionsClick: () -> Unit,
+)
+
 @Composable
 private fun SettingsScreen(
+    uiState: SettingsUiState,
     appVersion: String,
-    isAnalyticsEnabled: Boolean,
-    isNotificationsEnabled: Boolean,
-    onPageView: () -> Unit,
-    onLicenseClick: () -> Unit,
-    onHelpClick: () -> Unit,
-    onAnalyticsConsentChange: (Boolean) -> Unit,
-    onPrivacyPolicyClick: () -> Unit,
-    onAccessibilityStatementClick: () -> Unit,
-    onTermsAndConditionsClick: () -> Unit,
-    onNotificationsClick: () -> Unit,
+    actions: SettingsActions,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
-        onPageView()
+        actions.onPageView()
     }
 
     Column(
@@ -125,80 +149,110 @@ private fun SettingsScreen(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = GovUkTheme.spacing.medium)
-                .padding(bottom = GovUkTheme.spacing.extraLarge)
+                .padding(bottom = GovUkTheme.spacing.large)
         ) {
-            SmallVerticalSpacer()
-            AboutTheApp(
-                appVersion = appVersion,
-                onHelpClick = onHelpClick
+            MediumVerticalSpacer()
+
+            ManageLogin(
+                userEmail = uiState.userEmail,
+                onAccountClick = actions.onAccountClick,
+                onSignOutClick = actions.onSignOutClick
             )
-            if (isNotificationsEnabled) {
-                LargeVerticalSpacer()
-                Notifications(
-                    onNotificationsClick = onNotificationsClick
-                )
-            }
+
             LargeVerticalSpacer()
-            PrivacyAndLegal(
-                isAnalyticsEnabled = isAnalyticsEnabled,
-                onAnalyticsConsentChange = onAnalyticsConsentChange,
-                onPrivacyPolicyClick = onPrivacyPolicyClick
+
+            NotificationsAndPrivacy(
+                isNotificationsEnabled = uiState.isNotificationsEnabled,
+                isAnalyticsEnabled = uiState.isAnalyticsEnabled,
+                onNotificationsClick = actions.onNotificationsClick,
+                onAnalyticsConsentChange = actions.onAnalyticsConsentChange,
+                onPrivacyPolicyClick = actions.onPrivacyPolicyClick
             )
 
             MediumVerticalSpacer()
 
-            PrivacyPolicy(onPrivacyPolicyClick)
-            AccessibilityStatement(onAccessibilityStatementClick)
-            OpenSourceLicenses(onLicenseClick)
-            TermsAndConditions(onTermsAndConditionsClick)
+            AboutTheApp(
+                appVersion = appVersion,
+                onHelpClick = actions.onHelpClick
+            )
+
+            MediumVerticalSpacer()
+
+            PrivacyPolicy(actions.onPrivacyPolicyClick)
+            AccessibilityStatement(actions.onAccessibilityStatementClick)
+            OpenSourceLicenses(actions.onLicenseClick)
+            TermsAndConditions(actions.onTermsAndConditionsClick)
         }
     }
 }
 
 @Composable
-private fun AboutTheApp(
-    appVersion: String,
-    onHelpClick: () -> Unit,
+private fun ManageLogin(
+    userEmail: String,
+    onAccountClick: () -> Unit,
+    onSignOutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
     ) {
-        ListHeadingLabel(stringResource(R.string.about_title))
+        CardListItem(
+            isFirst = true,
+            isLast = false
+        ) {
+            Row(
+                modifier = Modifier.padding(GovUkTheme.spacing.medium),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_login),
+                    contentDescription = null
+                )
+                SmallHorizontalSpacer()
+                Column {
+                    BodyRegularLabel(stringResource(R.string.manage_login_header_title))
+                    SubheadlineRegularLabel(
+                        text = userEmail,
+                        color = GovUkTheme.colourScheme.textAndIcons.secondary
+                    )
+                }
+            }
+        }
+
+        ExternalLinkListItem(
+            title = stringResource(R.string.manage_login_link),
+            onClick = onAccountClick,
+            isFirst = false
+        )
 
         SmallVerticalSpacer()
 
-        ExternalLinkListItem(
-            title = stringResource(R.string.help_and_feedback_title),
-            onClick = onHelpClick,
-            isFirst = true,
-            isLast = false
+        CaptionRegularLabel(
+            text = stringResource(R.string.manage_login_description),
+            modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
         )
 
-        CardListItem(
-            isFirst = false,
-            isLast = true
-        ) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(GovUkTheme.spacing.medium),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BodyRegularLabel(
-                    text = stringResource(R.string.version_setting),
-                    modifier = Modifier.weight(1f)
-                )
+        MediumVerticalSpacer()
 
-                BodyRegularLabel(text = appVersion)
-            }
+        CardListItem(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = onSignOutClick
+        ) {
+            BodyRegularLabel(
+                text = stringResource(R.string.manage_login_sign_out),
+                modifier = Modifier
+                    .padding(GovUkTheme.spacing.medium),
+                color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
+            )
         }
     }
 }
 
 @Composable
-private fun PrivacyAndLegal(
+private fun NotificationsAndPrivacy(
+    isNotificationsEnabled: Boolean,
     isAnalyticsEnabled: Boolean,
+    onNotificationsClick: () -> Unit,
     onAnalyticsConsentChange: (Boolean) -> Unit,
     onPrivacyPolicyClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -206,14 +260,17 @@ private fun PrivacyAndLegal(
     Column(
         modifier = modifier
     ) {
-        ListHeadingLabel(stringResource(R.string.privacy_title))
-
-        SmallVerticalSpacer()
+        if (isNotificationsEnabled) {
+            Notifications(
+                onNotificationsClick = onNotificationsClick
+            )
+        }
 
         ToggleListItem(
             title = stringResource(R.string.share_setting),
             checked = isAnalyticsEnabled,
-            onCheckedChange = onAnalyticsConsentChange
+            onCheckedChange = onAnalyticsConsentChange,
+            isFirst = !isNotificationsEnabled
         )
 
         SmallVerticalSpacer()
@@ -236,6 +293,72 @@ private fun PrivacyAndLegal(
                 .padding(horizontal = GovUkTheme.spacing.medium)
                 .clickable(onClick = onPrivacyPolicyClick),
             color = GovUkTheme.colourScheme.textAndIcons.link,
+        )
+    }
+}
+
+@Composable
+private fun Notifications(
+    onNotificationsClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    fun getStatus() = if (NotificationManagerCompat.from(context)
+            .areNotificationsEnabled()
+    ) R.string.on_button else R.string.off_button
+
+    var status by remember { mutableIntStateOf(getStatus()) }
+
+    LifecycleResumeEffect(Unit) {
+        status = getStatus()
+        onPauseOrDispose {
+            // Do nothing
+        }
+    }
+
+    InternalLinkListItem(
+        title = stringResource(R.string.notifications_title),
+        status = stringResource(status),
+        onClick = onNotificationsClick,
+        modifier = modifier,
+        isFirst = true,
+        isLast = false,
+    )
+}
+
+@Composable
+private fun AboutTheApp(
+    appVersion: String,
+    onHelpClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        CardListItem(
+            isFirst = true,
+            isLast = false
+        ) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(GovUkTheme.spacing.medium),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                BodyRegularLabel(
+                    text = stringResource(R.string.version_setting),
+                    modifier = Modifier.weight(1f)
+                )
+
+                BodyRegularLabel(text = appVersion)
+            }
+        }
+
+        ExternalLinkListItem(
+            title = stringResource(R.string.help_and_feedback_title),
+            onClick = onHelpClick,
+            isFirst = false,
+            isLast = true
         )
     }
 }
@@ -280,43 +403,6 @@ private fun OpenSourceLicenses(
         isFirst = false,
         isLast = false,
     )
-}
-
-@Composable
-private fun Notifications(
-    onNotificationsClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-    ) {
-        ListHeadingLabel(stringResource(R.string.notifications_title))
-
-        SmallVerticalSpacer()
-
-        val context = LocalContext.current
-        fun getStatus() = if (NotificationManagerCompat.from(context)
-                .areNotificationsEnabled()
-        ) R.string.on_button else R.string.off_button
-
-        var status by remember { mutableIntStateOf(getStatus()) }
-
-        LifecycleResumeEffect(Unit) {
-            status = getStatus()
-            onPauseOrDispose {
-                // Do nothing
-            }
-        }
-
-        InternalLinkListItem(
-            title = stringResource(R.string.notifications_title),
-            status = stringResource(status),
-            onClick = onNotificationsClick,
-            modifier = modifier,
-            isFirst = true,
-            isLast = true,
-        )
-    }
 }
 
 @Composable

@@ -13,7 +13,7 @@ import java.util.ArrayDeque
 class AppLaunchNavigationTest {
 
     @Test
-    fun `Given recommend update, analytics consent, onboarding, topic selection and notifications onboarding should be displayed, then return correct start destination and navigate through routes`() {
+    fun `Given recommend update, analytics consent, onboarding, topic selection and notifications onboarding should be displayed, then return correct launch routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState.Default(
                 shouldDisplayRecommendUpdate = true,
@@ -216,7 +216,7 @@ class AppLaunchNavigationTest {
     }
 
     @Test
-    fun `Given analytics, onboarding and topic selection should not be displayed, then return home as start destination`() {
+    fun `Given analytics, onboarding and topic selection should not be displayed, then return correct launch routes`() {
         val appLaunchNavigation = AppLaunchNavigation(
             AppUiState.Default()
         )

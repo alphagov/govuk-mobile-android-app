@@ -117,13 +117,14 @@ fun InternalLinkListItem(
                     text = it,
                     color = GovUkTheme.colourScheme.textAndIcons.link
                 )
-            } ?: run {
-                Icon(
-                    painter = painterResource(R.drawable.ic_chevron),
-                    contentDescription = null,
-                    tint = GovUkTheme.colourScheme.textAndIcons.icon
-                )
+                MediumHorizontalSpacer()
             }
+
+            Icon(
+                painter = painterResource(R.drawable.ic_chevron),
+                contentDescription = null,
+                tint = GovUkTheme.colourScheme.textAndIcons.icon
+            )
         }
     }
 }
@@ -258,15 +259,18 @@ fun CardListItem(
 
     Box(
         modifier = modifier
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null
-            ) {
-                onClick?.let {
-                    isClicked = true
-                    it()
-                }
-            }
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) {
+                        isClicked = true
+                        onClick()
+                    }
+                } else Modifier
+            )
+            .semantics(mergeDescendants = true) { }
             .drawBehind {
                 drawCell(
                     isFirst = isFirst,
