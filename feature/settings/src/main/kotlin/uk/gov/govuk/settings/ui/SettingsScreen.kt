@@ -153,13 +153,15 @@ private fun SettingsScreen(
         ) {
             MediumVerticalSpacer()
 
-            ManageLogin(
-                userEmail = uiState.userEmail,
-                onAccountClick = actions.onAccountClick,
-                onSignOutClick = actions.onSignOutClick
-            )
+            if (uiState.isLoginEnabled) {
+                ManageLogin(
+                    userEmail = uiState.userEmail,
+                    onAccountClick = actions.onAccountClick,
+                    onSignOutClick = actions.onSignOutClick
+                )
 
-            LargeVerticalSpacer()
+                LargeVerticalSpacer()
+            }
 
             NotificationsAndPrivacy(
                 isNotificationsEnabled = uiState.isNotificationsEnabled,

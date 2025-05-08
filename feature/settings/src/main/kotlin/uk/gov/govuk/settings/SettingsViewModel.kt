@@ -27,6 +27,7 @@ import javax.inject.Inject
 
 internal data class SettingsUiState(
     val userEmail: String,
+    val isLoginEnabled: Boolean,
     val isNotificationsEnabled: Boolean,
     val isAnalyticsEnabled: Boolean
 )
@@ -50,6 +51,7 @@ internal class SettingsViewModel @Inject constructor(
     init {
         _uiState.value = SettingsUiState(
             userEmail = authRepo.getUserEmail(),
+            isLoginEnabled = flagRepo.isLoginEnabled(),
             isNotificationsEnabled = flagRepo.isNotificationsEnabled(),
             isAnalyticsEnabled = analyticsClient.isAnalyticsEnabled()
         )
