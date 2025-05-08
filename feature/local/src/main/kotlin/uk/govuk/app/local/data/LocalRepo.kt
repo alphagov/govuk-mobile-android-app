@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.map
 import uk.gov.govuk.data.model.Result
 import uk.govuk.app.local.data.local.LocalDataSource
 import uk.govuk.app.local.data.remote.LocalApi
-import uk.govuk.app.local.data.remote.model.ApiResponse
+import uk.govuk.app.local.data.remote.model.LocalAuthorityResult
 import uk.govuk.app.local.data.remote.safeLocalApiCall
 import uk.govuk.app.local.domain.model.LocalAuthority
 import javax.inject.Inject
@@ -34,25 +34,24 @@ internal class LocalRepo @Inject constructor(
 
     suspend fun performGetLocalPostcode(
         postcode: String
-    ): Result<ApiResponse> {
-        val response = safeLocalApiCall { localApi.getLocalPostcode(postcode) }
-        processResponse(response)
-        return response
+    ): Result<LocalAuthorityResult> {
+        val result = safeLocalApiCall { localApi.getLocalPostcode(postcode) }
+        processResult(result)
+        return result
     }
 
     suspend fun performGetLocalAuthority(
         slug: String
-    ): Result<ApiResponse> {
-        val response = safeLocalApiCall { localApi.getLocalAuthority(slug) }
-        processResponse(response)
-        return response
+    ): Result<LocalAuthorityResult> {
+        val result = safeLocalApiCall { localApi.getLocalAuthority(slug) }
+        processResult(result)
+        return result
     }
 
-    private suspend fun processResponse(response: Result<ApiResponse>) {
-        if (response is Result.Success) {
-            response.value.localAuthority?.let { localAuthority ->
-                localDataSource.insertOrReplace(localAuthority)
-            }
+    private suspend fun processResult(result: Result<LocalAuthorityResult>) {
+        ((result as? Result.Success)?.value
+                as? LocalAuthorityResult.LocalAuthority)?.localAuthority?.let { localAuthority ->
+            localDataSource.insertOrReplace(localAuthority)
         }
     }
 }

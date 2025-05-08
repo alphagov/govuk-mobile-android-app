@@ -2,6 +2,7 @@ package uk.gov.govuk.notifications
 
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import androidx.core.net.toUri
 import com.onesignal.OneSignal
@@ -12,12 +13,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import uk.gov.govuk.notifications.model.asAdditionalData
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class NotificationsClient @Inject constructor() {
+
+    companion object {
+        private const val DEEP_LINK = "deeplink"
+    }
 
     fun initialise(context: Context, oneSignalAppId: String) {
         OneSignal.consentRequired = true
@@ -49,14 +53,15 @@ class NotificationsClient @Inject constructor() {
 
     internal fun handleAdditionalData(
         context: Context,
-        additionalDataJson: JSONObject?,
-        intent: Intent = Intent(Intent.ACTION_VIEW)
+        additionalData: JSONObject?,
+        intent: Intent? = context.packageManager.getLaunchIntentForPackage(context.packageName)
     ) {
-        additionalDataJson.asAdditionalData()?.let { additionalData ->
-            intent.apply {
-                data = additionalData.deepLink.toUri()
-                flags = FLAG_ACTIVITY_NEW_TASK
-            }
+        additionalData ?: return
+        intent ?: return
+        if (additionalData.has(DEEP_LINK)) {
+            val deepLink = additionalData.optString(DEEP_LINK)
+            intent.data = deepLink.toUri()
+            intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
             context.startActivity(intent)
         }
     }

@@ -10,8 +10,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
-import uk.gov.govuk.data.model.Result.Success
-import uk.govuk.app.local.data.remote.model.ApiResponse
+import uk.gov.govuk.data.model.Result
+import uk.govuk.app.local.data.remote.model.Address
+import uk.govuk.app.local.data.remote.model.LocalAuthorityResponse
+import uk.govuk.app.local.data.remote.model.LocalAuthorityResult
 import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
 import java.net.UnknownHostException
 
@@ -31,56 +33,121 @@ class LocalApiCallTest {
     }
 
     @Test
-    fun `API call returns 200`() = runTest {
-        val apiResponse = ApiResponse(
-            localAuthority = RemoteLocalAuthority(
-                name = "name",
-                homePageUrl = "homePageUrl",
-                tier = "unitary",
-                slug = "slug"
-            ),
-            addresses = null,
-            message = null
+    fun `API call returns 200 - local authority`() = runTest {
+        val remoteLocalAuthority = RemoteLocalAuthority(
+            name = "Dorset County Council",
+            homePageUrl = "",
+            tier = "tier",
+            slug = "dorset",
+            parent = null
         )
 
         coEvery {
             localApi.getLocalPostcode("E18QS")
-        } returns Response.success(apiResponse)
+        } returns Response.success(
+            LocalAuthorityResponse(
+                remoteLocalAuthority,
+                addresses = null
+            )
+        )
 
         val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
-        assertEquals(Success(apiResponse), actual)
+
+        assertEquals(
+            Result.Success(
+                LocalAuthorityResult.LocalAuthority(remoteLocalAuthority)
+            ),
+            actual
+        )
+    }
+
+    @Test
+    fun `API call returns 200 - address list`() = runTest {
+        val addresses = listOf(
+            Address(
+                address = "BH22 8UB",
+                slug = "dorset",
+                name = "Dorset County Council"
+            ),
+            Address(
+                address = "BH22 8UB",
+                slug = "bournemouth-christchurch-poole",
+                name = "Bournemouth, Christchurch, and Poole"
+            )
+        )
+
+        coEvery {
+            localApi.getLocalPostcode("BH228UB")
+        } returns Response.success(
+            LocalAuthorityResponse(
+                localAuthority = null,
+                addresses = addresses
+            )
+        )
+
+        val actual = safeLocalApiCall { localApi.getLocalPostcode("BH228UB") }
+
+        assertEquals(
+            Result.Success(
+                LocalAuthorityResult.Addresses(addresses)
+            ),
+            actual
+        )
+    }
+
+    @Test
+    fun `API call returns Error`() = runTest {
+        coEvery {
+            localApi.getLocalPostcode("E18QS")
+        } returns Response.success(
+            LocalAuthorityResponse(
+                localAuthority = null,
+                addresses = null
+            )
+        )
+
+        val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
+
+        assertEquals("Error", actual.javaClass.kotlin.simpleName)
     }
 
     @Test
     fun `API call returns 400`() = runTest {
-        val apiResponse = ApiResponse(
-            localAuthority = null,
-            addresses = null,
-            message = "Invalid postcode"
-        )
+        val apiResponse = LocalAuthorityResult.InvalidPostcode
 
         coEvery {
             localApi.getLocalPostcode("E18QS")
         } returns Response.error(400, "Error".toResponseBody(null))
 
         val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
-        assertEquals(Success(apiResponse), actual)
+
+        assertEquals(Result.Success(apiResponse), actual)
     }
 
     @Test
     fun `API call returns 404`() = runTest {
-        val apiResponse = ApiResponse(
-            localAuthority = null,
-            addresses = null,
-            message = "Postcode not found"
-        )
+        val apiResponse = LocalAuthorityResult.PostcodeNotFound
 
         coEvery {
             localApi.getLocalPostcode("E18QS")
         } returns Response.error(404, "Error".toResponseBody(null))
 
         val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
-        assertEquals(Success(apiResponse), actual)
+
+        assertEquals(Result.Success(apiResponse), actual)
+    }
+
+    @Test
+    fun `API call returns 418`() = runTest {
+        val apiResponse = LocalAuthorityResult.PostcodeEmptyOrNull
+
+        coEvery {
+            localApi.getLocalPostcode("")
+        } returns Response.error(418, "Error".toResponseBody(null))
+
+        val actual = safeLocalApiCall { localApi.getLocalPostcode("") }
+
+        assertEquals(Result.Success(apiResponse), actual)
     }
 
     @Test
@@ -90,6 +157,7 @@ class LocalApiCallTest {
         } returns Response.error(500, "Error".toResponseBody(null))
 
         val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
+
         assertEquals("Error", actual.javaClass.kotlin.simpleName)
     }
 
@@ -100,16 +168,23 @@ class LocalApiCallTest {
         } throws UnknownHostException()
 
         val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
+
         assertEquals("DeviceOffline", actual.javaClass.kotlin.simpleName)
     }
 
     @Test
-    fun `API call throws Exception`() = runTest {
+    fun `API call throws HttpException`() = runTest {
         coEvery {
             localApi.getLocalPostcode("E18QS")
-        } throws Exception()
+        } throws retrofit2.HttpException(
+            Response.error<Any>(
+                500,
+                "Error".toResponseBody(null)
+            )
+        )
 
         val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
-        assertEquals("Error", actual.javaClass.kotlin.simpleName)
+
+        assertEquals("ServiceNotResponding", actual.javaClass.kotlin.simpleName)
     }
 }

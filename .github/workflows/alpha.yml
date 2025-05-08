@@ -1,8 +1,10 @@
-name: Merge into develop
+name: Alpha build to Firebase
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ develop ]
+    branches:
+      - develop
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

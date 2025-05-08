@@ -6,7 +6,7 @@ import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_GRAPH_ROUTE
 import uk.gov.govuk.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
-import uk.gov.govuk.topics.navigation.TOPIC_SELECTION_ROUTE
+import uk.gov.govuk.topics.navigation.TOPIC_SELECTION_GRAPH_ROUTE
 import java.util.ArrayDeque
 import java.util.Deque
 
@@ -27,7 +27,7 @@ internal class AppLaunchNavigation(
         }
 
         if (uiState.shouldDisplayTopicSelection) {
-            launchRoutes.push(TOPIC_SELECTION_ROUTE)
+            launchRoutes.push(TOPIC_SELECTION_GRAPH_ROUTE)
         }
 
         if (uiState.shouldDisplayLogin) {

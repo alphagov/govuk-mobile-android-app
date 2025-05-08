@@ -83,7 +83,8 @@ data class GovUkColourScheme(
         val logo: Color,
         val logoDot: Color,
         val logoCrown: Color,
-        val iconGreen: Color
+        val iconGreen: Color,
+        val textFieldError: Color
     )
 
     data class Surfaces(
@@ -134,7 +135,8 @@ data class GovUkColourScheme(
         val switchOff: Color,
         val buttonCompactHighlight: Color,
         val cardGreen: Color,
-        val textFieldCursor: Color
+        val textFieldCursor: Color,
+        val textFieldError: Color
     )
 }
 
@@ -166,7 +168,8 @@ internal val LightColorScheme = GovUkColourScheme(
         logo = White,
         logoDot = TealAccent,
         logoCrown = BlackLighter50,
-        iconGreen = GreenDarker25
+        iconGreen = GreenDarker25,
+        textFieldError = RedPrimary
     ),
     surfaces = Surfaces(
         background = White,
@@ -215,7 +218,8 @@ internal val LightColorScheme = GovUkColourScheme(
         switchOff = BlackLighter50,
         buttonCompactHighlight = BlueLighter25,
         cardGreen = GreenLighter50,
-        textFieldCursor = Grey700
+        textFieldCursor = Grey700,
+        textFieldError = RedPrimary
     )
 )
 
@@ -247,7 +251,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         logo = White,
         logoDot = TealAccent,
         logoCrown = BlackLighter50,
-        iconGreen = White
+        iconGreen = White,
+        textFieldError = RedAccent
     ),
     surfaces = Surfaces(
         background = Black,
@@ -296,7 +301,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         switchOff = BlackLighter50,
         buttonCompactHighlight = BlueDarker25,
         cardGreen = GreenLighter25,
-        textFieldCursor = Grey300
+        textFieldCursor = Grey300,
+        textFieldError = RedAccent
     )
 )
 
@@ -329,7 +335,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             logo = Color.Unspecified,
             logoDot = Color.Unspecified,
             logoCrown = Color.Unspecified,
-            iconGreen = Color.Unspecified
+            iconGreen = Color.Unspecified,
+            textFieldError = Color.Unspecified
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,
@@ -378,7 +385,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             switchOff = Color.Unspecified,
             buttonCompactHighlight = Color.Unspecified,
             cardGreen = Color.Unspecified,
-            textFieldCursor = Color.Unspecified
+            textFieldCursor = Color.Unspecified,
+            textFieldError = Color.Unspecified
         )
     )
 }

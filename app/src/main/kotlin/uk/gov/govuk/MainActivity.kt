@@ -19,7 +19,7 @@ import uk.gov.govuk.ui.GovUkApp
 class MainActivity : FragmentActivity() {
 
     private val _intentFlow: MutableSharedFlow<Intent> =
-        MutableSharedFlow(replay = 1, extraBufferCapacity = 1)
+        MutableSharedFlow(replay = 1)
     internal val intentFlow = _intentFlow.asSharedFlow()
 
     override fun onCreate(savedInstanceState: Bundle?) {
