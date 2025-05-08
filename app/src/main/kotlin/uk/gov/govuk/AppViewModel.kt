@@ -75,6 +75,7 @@ internal class AppViewModel @Inject constructor(
                                 shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
                                 shouldDisplayAnalyticsConsent = analyticsClient.isAnalyticsConsentRequired(),
                                 shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
+                                shouldDisplayLogin = flagRepo.isLoginEnabled(),
                                 shouldDisplayTopicSelection = flagRepo.isTopicsEnabled()
                                         && !appRepo.isTopicSelectionCompleted()
                                         && topicsInitSuccess,
