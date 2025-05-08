@@ -1,6 +1,5 @@
 package uk.gov.govuk.config.data.flags
 
-import uk.gov.govuk.config.BuildConfig
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.extensions.isVersionLessThan
 import javax.inject.Inject
@@ -8,11 +7,13 @@ import javax.inject.Singleton
 
 @Singleton
 class FlagRepo @Inject constructor(
+    private val debugEnabled: Boolean,
     private val debugFlags: DebugFlags,
     private val configRepo: ConfigRepo
 ) {
     fun isAppAvailable(): Boolean {
         return isEnabled(
+            debugEnabled = debugEnabled,
             debugFlag = debugFlags.isAppAvailable,
             remoteFlag = configRepo.config.available
         )
@@ -20,6 +21,7 @@ class FlagRepo @Inject constructor(
 
     fun isForcedUpdate(appVersion: String): Boolean {
         return isEnabled(
+            debugEnabled = debugEnabled,
             debugFlag = debugFlags.minimumVersion?.let {
                 appVersion.isVersionLessThan(it)
             },
@@ -29,6 +31,7 @@ class FlagRepo @Inject constructor(
 
     fun isRecommendUpdate(appVersion: String): Boolean {
         return isEnabled(
+            debugEnabled = debugEnabled,
             debugFlag = debugFlags.recommendedVersion?.let {
                 appVersion.isVersionLessThan(it)
             },
@@ -38,6 +41,7 @@ class FlagRepo @Inject constructor(
 
     fun isOnboardingEnabled(): Boolean {
         return isEnabled(
+            debugEnabled = debugEnabled,
             debugFlag = debugFlags.isOnboardingEnabled,
             remoteFlag = configRepo.config.releaseFlags.onboarding
         )
@@ -45,6 +49,7 @@ class FlagRepo @Inject constructor(
 
     fun isSearchEnabled(): Boolean {
         return isEnabled(
+            debugEnabled = debugEnabled,
             debugFlag = debugFlags.isSearchEnabled,
             remoteFlag = configRepo.config.releaseFlags.search
         )
@@ -52,6 +57,7 @@ class FlagRepo @Inject constructor(
 
     fun isRecentActivityEnabled(): Boolean {
         return isEnabled(
+            debugEnabled = debugEnabled,
             debugFlag = debugFlags.isRecentActivityEnabled,
             remoteFlag = configRepo.config.releaseFlags.recentActivity
         )
@@ -59,6 +65,7 @@ class FlagRepo @Inject constructor(
 
     fun isTopicsEnabled(): Boolean {
         return isEnabled(
+            debugEnabled = debugEnabled,
             debugFlag = debugFlags.isTopicsEnabled,
             remoteFlag = configRepo.config.releaseFlags.topics
         )
@@ -66,6 +73,7 @@ class FlagRepo @Inject constructor(
 
     fun isNotificationsEnabled(): Boolean {
         return isEnabled(
+            debugEnabled = debugEnabled,
             debugFlag = debugFlags.isNotificationsEnabled,
             remoteFlag = false // TODO - GOVUKAPP-1095 requires this is hardcoded 'off' for now
         )
@@ -73,14 +81,23 @@ class FlagRepo @Inject constructor(
 
     fun isLocalServicesEnabled(): Boolean {
         return isEnabled(
+            debugEnabled = debugEnabled,
             debugFlag = debugFlags.isLocalServicesEnabled,
             remoteFlag = configRepo.config.releaseFlags.localServices
+        )
+    }
+
+    fun isLoginEnabled(): Boolean {
+        return isEnabled(
+            debugEnabled = debugEnabled,
+            debugFlag = false, // Dev only flag, only set to true when actively working on login
+            remoteFlag = false // Dev only flag, always off for production builds!!!
         )
     }
 }
 
 internal fun isEnabled(
-    debugEnabled:Boolean = BuildConfig.DEBUG,
+    debugEnabled: Boolean,
     debugFlag: Boolean?,
     remoteFlag: Boolean
 ): Boolean {

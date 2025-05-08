@@ -7,6 +7,7 @@ import io.mockk.unmockkAll
 import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.config.data.ConfigRepo
 
@@ -14,6 +15,17 @@ class FlagRepoTest {
 
     private val debugFlags = mockk<DebugFlags>(relaxed = true)
     private val configRepo = mockk<ConfigRepo>(relaxed = true)
+
+    private lateinit var flagRepo: FlagRepo
+
+    @Before
+    fun setup() {
+        flagRepo = FlagRepo(
+            debugEnabled = true,
+            debugFlags = debugFlags,
+            configRepo = configRepo
+        )
+    }
 
     @After
     fun tearDown() {
@@ -158,8 +170,6 @@ class FlagRepoTest {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns true
 
-        val flagRepo = FlagRepo(debugFlags, configRepo)
-
         assertTrue(flagRepo.isAppAvailable())
     }
 
@@ -168,16 +178,12 @@ class FlagRepoTest {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns false
 
-        val flagRepo = FlagRepo(debugFlags, configRepo)
-
         assertFalse(flagRepo.isAppAvailable())
     }
 
     @Test
     fun `Given the debug minimum version is 0_0_2, When the app version is 0_0_1, then return true`() {
         every { debugFlags.minimumVersion } returns "0.0.2"
-
-        val flagRepo = FlagRepo(debugFlags, configRepo)
 
         assertTrue(flagRepo.isForcedUpdate("0.0.1"))
     }
@@ -186,16 +192,12 @@ class FlagRepoTest {
     fun `Given the debug minimum version is 0_0_2, When the app version is 0_0_2, then return false`() {
         every { debugFlags.minimumVersion } returns "0.0.2"
 
-        val flagRepo = FlagRepo(debugFlags, configRepo)
-
         assertFalse(flagRepo.isForcedUpdate("0.0.2"))
     }
 
     @Test
     fun `Given the debug minimum version is 0_0_1, When the app version is 0_0_2, then return false`() {
         every { debugFlags.minimumVersion } returns "0.0.1"
-
-        val flagRepo = FlagRepo(debugFlags, configRepo)
 
         assertFalse(flagRepo.isForcedUpdate("0.0.2"))
     }
@@ -205,8 +207,6 @@ class FlagRepoTest {
         every { debugFlags.minimumVersion } returns null
         every { configRepo.config.minimumVersion } returns "0.0.2"
 
-        val flagRepo = FlagRepo(debugFlags, configRepo)
-
         assertTrue(flagRepo.isForcedUpdate("0.0.1"))
     }
 
@@ -214,8 +214,6 @@ class FlagRepoTest {
     fun `Given the remote minimum version is 0_0_2, When the app version is 0_0_2, then return false`() {
         every { debugFlags.minimumVersion } returns null
         every { configRepo.config.minimumVersion } returns "0.0.2"
-
-        val flagRepo = FlagRepo(debugFlags, configRepo)
 
         assertFalse(flagRepo.isForcedUpdate("0.0.2"))
     }
@@ -225,16 +223,12 @@ class FlagRepoTest {
         every { debugFlags.minimumVersion } returns null
         every { configRepo.config.minimumVersion } returns "0.0.1"
 
-        val flagRepo = FlagRepo(debugFlags, configRepo)
-
         assertFalse(flagRepo.isForcedUpdate("0.0.2"))
     }
 
     @Test
     fun `Given the debug recommended version is 0_0_2, When the app version is 0_0_1, then return true`() {
         every { debugFlags.recommendedVersion } returns "0.0.2"
-
-        val flagRepo = FlagRepo(debugFlags, configRepo)
 
         assertTrue(flagRepo.isRecommendUpdate("0.0.1"))
     }
@@ -243,16 +237,12 @@ class FlagRepoTest {
     fun `Given the debug recommended version is 0_0_2, When the app version is 0_0_2, then return false`() {
         every { debugFlags.recommendedVersion } returns "0.0.2"
 
-        val flagRepo = FlagRepo(debugFlags, configRepo)
-
         assertFalse(flagRepo.isRecommendUpdate("0.0.2"))
     }
 
     @Test
     fun `Given the debug recommended version is 0_0_1, When the app version is 0_0_2, then return false`() {
         every { debugFlags.recommendedVersion } returns "0.0.1"
-
-        val flagRepo = FlagRepo(debugFlags, configRepo)
 
         assertFalse(flagRepo.isRecommendUpdate("0.0.2"))
     }
@@ -262,8 +252,6 @@ class FlagRepoTest {
         every { debugFlags.recommendedVersion } returns null
         every { configRepo.config.recommendedVersion } returns "0.0.2"
 
-        val flagRepo = FlagRepo(debugFlags, configRepo)
-
         assertTrue(flagRepo.isRecommendUpdate("0.0.1"))
     }
 
@@ -271,8 +259,6 @@ class FlagRepoTest {
     fun `Given the remote recommended version is 0_0_2, When the app version is 0_0_2, then return false`() {
         every { debugFlags.recommendedVersion } returns null
         every { configRepo.config.recommendedVersion } returns "0.0.2"
-
-        val flagRepo = FlagRepo(debugFlags, configRepo)
 
         assertFalse(flagRepo.isRecommendUpdate("0.0.2"))
     }
@@ -282,8 +268,6 @@ class FlagRepoTest {
         every { debugFlags.recommendedVersion } returns null
         every { configRepo.config.recommendedVersion } returns "0.0.1"
 
-        val flagRepo = FlagRepo(debugFlags, configRepo)
-
         assertFalse(flagRepo.isRecommendUpdate("0.0.2"))
     }
 
@@ -291,8 +275,6 @@ class FlagRepoTest {
     fun `Given onboarding is enabled, When is onboarding enabled, then return true`() {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns true
-
-        val flagRepo = FlagRepo(debugFlags, configRepo)
 
         assertTrue(flagRepo.isOnboardingEnabled())
     }
@@ -302,8 +284,6 @@ class FlagRepoTest {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns false
 
-        val flagRepo = FlagRepo(debugFlags, configRepo)
-
         assertFalse(flagRepo.isOnboardingEnabled())
     }
 
@@ -311,8 +291,6 @@ class FlagRepoTest {
     fun `Given search is enabled, When is search enabled, then return true`() {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns true
-
-        val flagRepo = FlagRepo(debugFlags, configRepo)
 
         assertTrue(flagRepo.isSearchEnabled())
     }
@@ -322,8 +300,6 @@ class FlagRepoTest {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns false
 
-        val flagRepo = FlagRepo(debugFlags, configRepo)
-
         assertFalse(flagRepo.isSearchEnabled())
     }
 
@@ -331,8 +307,6 @@ class FlagRepoTest {
     fun `Given recent activity is enabled, When is recent activity enabled, then return true`() {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns true
-
-        val flagRepo = FlagRepo(debugFlags, configRepo)
 
         assertTrue(flagRepo.isRecentActivityEnabled())
     }
@@ -342,8 +316,6 @@ class FlagRepoTest {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns false
 
-        val flagRepo = FlagRepo(debugFlags, configRepo)
-
         assertFalse(flagRepo.isRecentActivityEnabled())
     }
 
@@ -351,8 +323,6 @@ class FlagRepoTest {
     fun `Given topics is enabled, When is topics enabled, then return true`() {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns true
-
-        val flagRepo = FlagRepo(debugFlags, configRepo)
 
         assertTrue(flagRepo.isTopicsEnabled())
     }
@@ -362,8 +332,6 @@ class FlagRepoTest {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns false
 
-        val flagRepo = FlagRepo(debugFlags, configRepo)
-
         assertFalse(flagRepo.isTopicsEnabled())
     }
 
@@ -371,8 +339,6 @@ class FlagRepoTest {
     fun `Given notifications is enabled, When is notifications enabled, then return true`() {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns true
-
-        val flagRepo = FlagRepo(debugFlags, configRepo)
 
         assertTrue(flagRepo.isNotificationsEnabled())
     }
@@ -382,8 +348,6 @@ class FlagRepoTest {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns false
 
-        val flagRepo = FlagRepo(debugFlags, configRepo)
-
         assertFalse(flagRepo.isNotificationsEnabled())
     }
 
@@ -391,8 +355,6 @@ class FlagRepoTest {
     fun `Given local is enabled, When is local enabled, then return true`() {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns true
-
-        val flagRepo = FlagRepo(debugFlags, configRepo)
 
         assertTrue(flagRepo.isLocalServicesEnabled())
     }
@@ -402,8 +364,20 @@ class FlagRepoTest {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns false
 
-        val flagRepo = FlagRepo(debugFlags, configRepo)
-
         assertFalse(flagRepo.isLocalServicesEnabled())
+    }
+
+    @Test
+    fun `Given a debug build, When is login enabled, then return false`() {
+        flagRepo = FlagRepo(true, debugFlags, configRepo)
+
+        assertFalse(flagRepo.isLoginEnabled())
+    }
+
+    @Test
+    fun `Given a release build, When is login enabled, then return false`() {
+        flagRepo = FlagRepo(false, debugFlags, configRepo)
+
+        assertFalse(flagRepo.isLoginEnabled())
     }
 }
