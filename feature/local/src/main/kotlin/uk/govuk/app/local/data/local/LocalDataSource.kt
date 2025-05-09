@@ -52,4 +52,10 @@ internal class LocalDataSource @Inject constructor(
             )
         }
     }
+
+    suspend fun clear() {
+        realmProvider.open().write {
+            deleteAll()
+        }
+    }
 }

@@ -26,4 +26,8 @@ internal class TopicsDataStore @Inject constructor(
             preferences[booleanPreferencesKey(TOPICS_CUSTOMISED)] = true
         }
     }
+
+    internal suspend fun clear() {
+       dataStore.edit { preferences -> preferences.remove(booleanPreferencesKey(TOPICS_CUSTOMISED)) }
+    }
 }

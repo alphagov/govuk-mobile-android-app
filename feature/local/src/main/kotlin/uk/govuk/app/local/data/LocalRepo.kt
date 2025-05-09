@@ -54,4 +54,8 @@ internal class LocalRepo @Inject constructor(
             localDataSource.insertOrReplace(localAuthority)
         }
     }
+
+    suspend fun clear() {
+        localDataSource.clear()
+    }
 }

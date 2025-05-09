@@ -7,6 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import uk.gov.govuk.topics.BuildConfig
+import uk.gov.govuk.topics.DefaultTopicsFeature
 import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.topics.data.TopicsRepo
 import uk.gov.govuk.topics.data.remote.TopicsApi
@@ -19,7 +20,7 @@ internal class TopicsModule {
     @Provides
     @Singleton
     fun providesTopicFeature(topicsRepo: TopicsRepo): TopicsFeature {
-        return TopicsFeature { return@TopicsFeature topicsRepo.sync() }
+        return DefaultTopicsFeature(topicsRepo)
     }
 
     @Provides

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -43,10 +44,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -64,7 +67,6 @@ import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
 import uk.gov.govuk.login.navigation.loginGraph
 import uk.gov.govuk.login.navigation.navigateToLoginPostSignOut
-import uk.gov.govuk.navigation.AppLaunchNavigation
 import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
 import uk.gov.govuk.notifications.navigation.notificationsGraph
@@ -107,8 +109,8 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                     } else {
                         val section = stringResource(R.string.homepage)
                         BottomNavScaffold(
-                            uiState = it,
                             intentFlow = intentFlow,
+                            onNext = { navController -> viewModel.blahNavigation.onNext(navController) },
                             onboardingCompleted = { viewModel.onboardingCompleted() },
                             topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
                             onTabClick = { tabText -> viewModel.onTabClick(tabText) },
@@ -159,8 +161,8 @@ private fun LoadingScreen(
 
 @Composable
 private fun BottomNavScaffold(
-    uiState: AppUiState.Default,
     intentFlow: Flow<Intent>,
+    onNext: (NavController) -> Unit,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
@@ -186,7 +188,7 @@ private fun BottomNavScaffold(
         ) {
             GovUkNavHost(
                 navController = navController,
-                uiState = uiState,
+                onNext = { onNext(navController) },
                 onboardingCompleted = onboardingCompleted,
                 topicSelectionCompleted = topicSelectionCompleted,
                 homeWidgets = homeWidgets,
@@ -247,7 +249,7 @@ private fun BottomNav(
     val topLevelDestinations = listOf(TopLevelDestination.Home, TopLevelDestination.Settings)
 
     var selectedIndex by rememberSaveable {
-        mutableIntStateOf(0)
+        mutableIntStateOf(-1)
     }
 
     navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -317,44 +319,49 @@ private fun BottomNav(
 @Composable
 private fun GovUkNavHost(
     navController: NavHostController,
-    uiState: AppUiState.Default,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
     homeWidgets: List<HomeWidget>?,
     onInternalWidgetClick: (String) -> Unit,
     onExternalWidgetClick: (String, String?) -> Unit,
     onSuppressWidgetClick: (String, HomeWidget) -> Unit,
+    onNext: () -> Unit,
     paddingValues: PaddingValues
 ) {
-    val launchRoutes = rememberSaveable { AppLaunchNavigation(uiState).launchRoutes }
-    val startDestination = rememberSaveable { launchRoutes.pop() }
-
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        onNext()
+    }
 
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = "launcher"
     ) {
+        composable("launcher") {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(GovUkTheme.colourScheme.surfaces.primary)
+            )
+        }
         analyticsGraph(
             privacyPolicyUrl = PRIVACY_POLICY_URL,
             analyticsConsentCompleted = {
-                navController.popBackStack()
-                navController.navigate(launchRoutes.pop())
+                onNext()
             }
         )
         onboardingGraph(
             onboardingCompleted = {
                 onboardingCompleted()
-                navController.popBackStack()
-                navController.navigate(launchRoutes.pop())
+                onNext()
             }
         )
         if (homeWidgets.contains(HomeWidget.TOPICS)) {
             topicSelectionGraph(
                 topicSelectionCompleted = {
                     topicSelectionCompleted()
-                    navController.popBackStack()
-                    navController.navigate(launchRoutes.pop())
+                    onNext()
                 }
             )
             topicsGraph(
@@ -366,18 +373,17 @@ private fun GovUkNavHost(
         notificationsGraph(
             notificationsOnboardingCompleted = {
                 navController.popBackStack()
-                if (launchRoutes.isEmpty()) return@notificationsGraph
-                navController.navigate(launchRoutes.pop())
+                onNext()
             }
         )
         loginGraph(
             navController = navController,
             onCompleted = { isPostSignOut ->
-                navController.popBackStack()
                 if (isPostSignOut) {
+                    navController.popBackStack()
                     navController.navigate(HOME_GRAPH_ROUTE)
                 } else {
-                    navController.navigate(launchRoutes.pop())
+                    onNext()
                 }
             }
         )

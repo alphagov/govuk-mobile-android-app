@@ -12,7 +12,6 @@ import uk.gov.govuk.topics.data.local.model.LocalTopicItem
 import uk.gov.govuk.topics.data.remote.model.RemoteTopicItem
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.collections.forEach
 
 @Singleton
 internal class TopicsLocalDataSource @Inject constructor(
@@ -85,5 +84,12 @@ internal class TopicsLocalDataSource @Inject constructor(
 
     internal suspend fun topicsCustomised() {
         topicsDataStore.topicsCustomised()
+    }
+
+    suspend fun clear() {
+        realmProvider.open().write {
+            deleteAll()
+        }
+        topicsDataStore.clear()
     }
 }

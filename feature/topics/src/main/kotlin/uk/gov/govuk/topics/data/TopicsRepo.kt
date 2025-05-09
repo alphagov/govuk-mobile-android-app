@@ -68,4 +68,8 @@ internal class TopicsRepo @Inject constructor(
     internal suspend fun topicsCustomised() {
         localDataSource.topicsCustomised()
     }
+
+    suspend fun clear() {
+        localDataSource.clear()
+    }
 }
