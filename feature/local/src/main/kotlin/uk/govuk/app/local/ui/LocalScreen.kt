@@ -19,6 +19,7 @@ import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
@@ -129,6 +130,18 @@ private fun BottomNavBar(
         FixedPrimaryButton(
             text = buttonText,
             onClick = { onContinueClick(buttonText) },
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun LocalScreenPreview() {
+    GovUkTheme {
+        LocalScreen(
+            onBack = {},
+            onPageView = {},
+            onContinueClick = {}
         )
     }
 }

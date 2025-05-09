@@ -121,7 +121,9 @@ data class GovUkColourScheme(
         val homeHeader: Color,
         val cardGreen: Color,
         val textFieldBackground: Color,
-        val textFieldHighlighted: Color
+        val textFieldHighlighted: Color,
+        val radioSelected: Color,
+        val radioUnselected: Color
     )
 
     data class Strokes(
@@ -136,7 +138,8 @@ data class GovUkColourScheme(
         val buttonCompactHighlight: Color,
         val cardGreen: Color,
         val textFieldCursor: Color,
-        val textFieldError: Color
+        val textFieldError: Color,
+        val radioDivider: Color
     )
 }
 
@@ -205,7 +208,9 @@ internal val LightColorScheme = GovUkColourScheme(
         homeHeader = BluePrimary,
         cardGreen = GreenLighter95,
         textFieldBackground = Grey60,
-        textFieldHighlighted = BlueLighter50
+        textFieldHighlighted = BlueLighter50,
+        radioSelected = GreenPrimary,
+        radioUnselected = Grey300
     ),
     strokes = Strokes(
         fixedContainer = BlackAlpha30,
@@ -219,7 +224,8 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonCompactHighlight = BlueLighter25,
         cardGreen = GreenLighter50,
         textFieldCursor = Grey700,
-        textFieldError = RedPrimary
+        textFieldError = RedPrimary,
+        radioDivider = Grey300
     )
 )
 
@@ -288,7 +294,9 @@ internal val DarkColorScheme = GovUkColourScheme(
         homeHeader = BlueDarker50,
         cardGreen = GreenDarker50,
         textFieldBackground = Grey800,
-        textFieldHighlighted = BlueDarker25
+        textFieldHighlighted = BlueDarker25,
+        radioSelected = GreenAccent,
+        radioUnselected = Grey500
     ),
     strokes = Strokes(
         fixedContainer = WhiteAlpha30,
@@ -302,7 +310,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonCompactHighlight = BlueDarker25,
         cardGreen = GreenLighter25,
         textFieldCursor = Grey300,
-        textFieldError = RedAccent
+        textFieldError = RedAccent,
+        radioDivider = Grey500
     )
 )
 
@@ -372,7 +381,9 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             homeHeader = Color.Unspecified,
             cardGreen = Color.Unspecified,
             textFieldBackground = Color.Unspecified,
-            textFieldHighlighted = Color.Unspecified
+            textFieldHighlighted = Color.Unspecified,
+            radioSelected = Color.Unspecified,
+            radioUnselected = Color.Unspecified
         ),
         strokes = Strokes(
             fixedContainer = Color.Unspecified,
@@ -386,7 +397,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             buttonCompactHighlight = Color.Unspecified,
             cardGreen = Color.Unspecified,
             textFieldCursor = Color.Unspecified,
-            textFieldError = Color.Unspecified
+            textFieldError = Color.Unspecified,
+            radioDivider = Color.Unspecified
         )
     )
 }
