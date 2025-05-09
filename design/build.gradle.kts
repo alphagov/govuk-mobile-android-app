@@ -12,6 +12,8 @@ android {
         minSdk = Version.MIN_SDK
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "PRIVACY_POLICY_URL", "\"https://www.gov.uk/government/publications/govuk-app-privacy-notice-how-we-use-your-data\"")
     }
 
     compileOptions {
@@ -25,6 +27,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -33,7 +36,6 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material3)
     implementation(libs.androidx.adaptive.android)
-    implementation(libs.lottie.compose)
     implementation(libs.androidx.ui.tooling)
 
     androidTestImplementation(libs.androidx.junit)

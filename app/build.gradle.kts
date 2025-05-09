@@ -149,6 +149,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling)
     implementation(libs.hilt.android)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.google.accompanist)
 
     implementation(libs.lottie.compose)
     implementation(libs.play.services.oss.licenses)

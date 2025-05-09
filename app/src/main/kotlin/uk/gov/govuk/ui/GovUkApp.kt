@@ -48,6 +48,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import uk.gov.govuk.AppUiState
@@ -67,12 +69,13 @@ import uk.gov.govuk.login.navigation.navigateToLoginPostSignOut
 import uk.gov.govuk.navigation.AppLaunchNavigation
 import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
+import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.notificationsGraph
+import uk.gov.govuk.notifications.ui.getNotificationsPermissionStatus
 import uk.gov.govuk.onboarding.navigation.onboardingGraph
 import uk.gov.govuk.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.gov.govuk.search.navigation.searchGraph
 import uk.gov.govuk.search.ui.widget.SearchWidget
-import uk.gov.govuk.settings.BuildConfig.PRIVACY_POLICY_URL
 import uk.gov.govuk.settings.navigation.settingsGraph
 import uk.gov.govuk.settings.navigation.signOutGraph
 import uk.gov.govuk.topics.navigation.topicSelectionGraph
@@ -168,7 +171,7 @@ private fun BottomNavScaffold(
     onInternalWidgetClick: (String) -> Unit,
     onExternalWidgetClick: (String, String?) -> Unit,
     onSuppressWidgetClick: (String, HomeWidget) -> Unit,
-    onDeepLinkReceived: (Boolean, String) -> Unit
+    onDeepLinkReceived: (hasDeepLink: Boolean, url: String) -> Unit
 ) {
     val navController = rememberNavController()
     val navBarPadding = WindowInsets.navigationBars.asPaddingValues()
@@ -197,9 +200,21 @@ private fun BottomNavScaffold(
             )
         }
     }
-    val context = LocalContext.current
+    HandleReceivedIntents(
+        intentFlow = intentFlow,
+        navController = navController,
+        onDeepLinkReceived = onDeepLinkReceived
+    )
+    HandleNotificationsPermissionStatus(navController)
+}
 
-    // Collect and handle intent data sent with deep links
+@Composable
+private fun HandleReceivedIntents(
+    intentFlow: Flow<Intent>,
+    navController: NavHostController,
+    onDeepLinkReceived: (hasDeepLink: Boolean, url: String) -> Unit
+) {
+    val context = LocalContext.current
     LaunchedEffect(intentFlow) {
         intentFlow.collectLatest { intent ->
             intent.data?.let { uri ->
@@ -236,6 +251,19 @@ private fun showDeepLinkNotFoundAlert(context: Context) {
         }
     }.also { deepLinkNotFoundAlert ->
         deepLinkNotFoundAlert.show()
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun HandleNotificationsPermissionStatus(navController: NavHostController) {
+    val notificationsPermissionStatus = getNotificationsPermissionStatus()
+    LaunchedEffect(notificationsPermissionStatus) {
+        if (notificationsPermissionStatus.isGranted) {
+            navController.navigate(NOTIFICATIONS_GRAPH_ROUTE) {
+                launchSingleTop = true
+            }
+        }
     }
 }
 
@@ -336,7 +364,6 @@ private fun GovUkNavHost(
         startDestination = startDestination
     ) {
         analyticsGraph(
-            privacyPolicyUrl = PRIVACY_POLICY_URL,
             analyticsConsentCompleted = {
                 navController.popBackStack()
                 navController.navigate(launchRoutes.pop())
