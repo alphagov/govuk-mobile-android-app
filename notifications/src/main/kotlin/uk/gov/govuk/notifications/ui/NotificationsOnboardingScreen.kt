@@ -6,11 +6,11 @@ import android.provider.Settings
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -180,18 +180,21 @@ private fun OnboardingScreen(
         onPageView()
     }
 
-    Column(modifier.fillMaxWidth()) {
-        header?.invoke()
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        header?.invoke() ?: run {
+            image ?: Spacer(Modifier)
+        }
 
         OnboardingSlide(
             title = R.string.onboarding_screen_title,
             body = body,
             image = image,
-            onPrivacyPolicyClick = onPrivacyPolicyClick
+            onPrivacyPolicyClick = onPrivacyPolicyClick,
+            modifier = Modifier.weight(1f, fill = false)
         )
-
-        Spacer(modifier = Modifier.weight(1f))
-
         footer()
     }
 }
