@@ -1,6 +1,5 @@
 package uk.govuk.app.local.data
 
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import uk.gov.govuk.data.model.Result
 import uk.govuk.app.local.data.local.LocalDataSource
@@ -35,13 +34,13 @@ internal class LocalRepo @Inject constructor(
         }
     }
 
-    private val _addressList: MutableStateFlow<List<Address>> = MutableStateFlow(emptyList())
+    private var _addressList: List<Address> = emptyList()
     val addressList: List<Address>
-        get() = _addressList.value
+        get() = _addressList
 
-    private val _localAuthorityList: MutableStateFlow<List<RemoteLocalAuthority>> = MutableStateFlow(emptyList())
+    private var _localAuthorityList: List<RemoteLocalAuthority> = emptyList()
     val localAuthorityList: List<RemoteLocalAuthority>
-        get() = _localAuthorityList.value
+        get() = _localAuthorityList.toList()
 
     suspend fun cacheAddresses(
         addresses: List<Address>
@@ -58,8 +57,8 @@ internal class LocalRepo @Inject constructor(
             }
         }
 
-        _addressList.value = addresses
-        _localAuthorityList.value = localAuthorities
+        _addressList = addresses
+        _localAuthorityList = localAuthorities
     }
 
     suspend fun updateLocalAuthority(slug: String) {
