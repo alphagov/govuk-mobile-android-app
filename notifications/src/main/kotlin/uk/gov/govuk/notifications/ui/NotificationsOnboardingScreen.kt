@@ -183,8 +183,7 @@ private fun OnboardingScreen(
 
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = GovUkTheme.spacing.medium),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         header?.invoke() ?: run {
@@ -196,7 +195,9 @@ private fun OnboardingScreen(
             body = body,
             image = image,
             onPrivacyPolicyClick = onPrivacyPolicyClick,
-            modifier = Modifier.weight(1f, fill = false)
+            modifier = Modifier
+                .weight(1f, fill = false)
+                .padding(horizontal = GovUkTheme.spacing.medium)
         )
         footer()
     }
