@@ -9,6 +9,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import uk.gov.govuk.config.BuildConfig
+import uk.gov.govuk.config.data.ConfigRepo
+import uk.gov.govuk.config.data.flags.DebugFlags
+import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.config.data.remote.ConfigApi
 import javax.inject.Singleton
 
@@ -30,4 +33,17 @@ class ConfigModule {
     @Provides
     @Singleton
     fun providesGson() = Gson()
+
+    @Provides
+    @Singleton
+    fun providesFlagRepo(
+        debugFlags: DebugFlags,
+        configRepo: ConfigRepo
+    ): FlagRepo {
+        return FlagRepo(
+            debugEnabled = BuildConfig.DEBUG,
+            debugFlags = debugFlags,
+            configRepo = configRepo
+        )
+    }
 }

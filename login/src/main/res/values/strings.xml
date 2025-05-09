@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_sign_in_with_gov_uk">Sign in with GOV.UK One Login</string>
+    <string name="login_sign_sub_text">You’ll need to create a GOV.UK One Login account if you do not already have one</string>
+    <string name="login_continue_button">Continue</string>
+
+    <string name="login_post_sign_out_title">You\'ve signed out</string>
+    <string name="login_post_sign_out_sub_text">You need to sign in again to use the app</string>
+    <string name="login_post_sign_out_continue_button">Sign in with GOV.UK One Login</string>
+
+    <string name="login_biometrics_title">Unlock the app with biometrics</string>
+    <string name="login_biometrics_description_1">You can unlock the app with your face, fingerprint or iris within 90 days of signing in with GOV.UK One Login.</string>
+    <string name="login_biometrics_description_2">If you do not want to use your biometrics, you can unlock the app with your phone’s pin or pattern, or with your email address and password.</string>
+    <string name="login_biometrics_description_3">Anyone who can unlock your phone with their biometrics or with your phone\'s pin or pattern might be able to access your app.</string>
+    <string name="login_biometrics_button">Use biometrics</string>
+    <string name="login_biometrics_skip_button">Skip</string>
+
+    <!-- Todo - actual copy!!! -->
+    <string name="login_biometric_prompt_title">Title</string>
+    <string name="login_biometric_prompt_subtitle">Subtitle</string>
+    <string name="login_biometric_prompt_description">Description</string>
+
+</resources>

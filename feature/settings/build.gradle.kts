@@ -16,6 +16,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        buildConfigField("String", "ACCOUNT_EVENT", "\"ManageOneLoginAccount\"")
+        buildConfigField("String", "ACCOUNT_URL", "\"https://home.account.gov.uk/\"")
+
+        buildConfigField("String", "SIGN_OUT_EVENT", "\"SignOut\"")
+
         buildConfigField("String", "ACCESSIBILITY_STATEMENT_EVENT", "\"AccessibilityStatement\"")
         buildConfigField("String", "ACCESSIBILITY_STATEMENT_URL", "\"https://www.gov.uk/government/publications/accessibility-statement-for-the-govuk-app\"")
 
@@ -53,12 +58,14 @@ dependencies {
     implementation(projects.design)
     implementation(projects.config)
     implementation(projects.notifications)
+    implementation(projects.data)
 
     implementation(libs.androidx.navigation.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material3)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.adaptive.android)
     implementation(libs.hilt.android)
     implementation(libs.play.services.oss.licenses)
     implementation(libs.play.services.measurement.api)

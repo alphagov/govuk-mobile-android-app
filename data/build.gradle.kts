@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.realm)
+    alias(libs.plugins.kover)
 }
 
 android {
@@ -14,6 +15,11 @@ android {
         minSdk = Version.MIN_SDK
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "AUTHORIZE_ENDPOINT", "\"https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/authorize\"")
+        buildConfigField("String", "TOKEN_ENDPOINT", "\"https://eu-west-2fij6f25zh.auth.eu-west-2.amazoncognito.com/oauth2/token\"")
+        buildConfigField("String", "AUTH_CLIENT_ID", "\"121f51j1s4kmk9i98um0b5mphh\"")
+        buildConfigField("String", "AUTH_REDIRECT", "\"govuk://govuk/login-auth-callback\"")
     }
 
     compileOptions {
@@ -23,6 +29,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 }
 
@@ -43,13 +53,24 @@ dependencies {
 
     implementation(libs.hilt.android)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.biometric)
 
     ksp(libs.hilt.compiler)
 
     implementation(libs.retrofit)
     implementation(libs.realm.base)
+    implementation(libs.openid)
+
+    implementation(libs.gov.securestore) {
+        artifact {
+            classifier = "release"
+            type = "aar"
+        }
+    }
 
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutine.test)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
