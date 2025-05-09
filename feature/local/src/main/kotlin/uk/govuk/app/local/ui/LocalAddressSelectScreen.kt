@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -138,7 +137,7 @@ private fun RadioButtonGroup(
     onSlugChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf("") }
+    val (selectedOption, onOptionSelected) = rememberSaveable { mutableStateOf("") }
 
     Column(modifier.selectableGroup()) {
         radioOptions.forEachIndexed { index, address ->
