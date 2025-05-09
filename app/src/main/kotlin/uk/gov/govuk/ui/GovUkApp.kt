@@ -30,8 +30,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,6 +54,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 import uk.gov.govuk.AppUiState
 import uk.gov.govuk.AppViewModel
 import uk.gov.govuk.BuildConfig
@@ -258,12 +261,16 @@ private fun showDeepLinkNotFoundAlert(context: Context) {
 @Composable
 private fun HandleNotificationsPermissionStatus(navController: NavHostController) {
     val notificationsPermissionStatus = getNotificationsPermissionStatus()
-    LaunchedEffect(notificationsPermissionStatus) {
-        if (notificationsPermissionStatus.isGranted) {
-            navController.navigate(NOTIFICATIONS_GRAPH_ROUTE) {
-                launchSingleTop = true
+    LaunchedEffect(Unit) {
+        snapshotFlow { notificationsPermissionStatus }
+            .drop(1)
+            .collect { status ->
+                if (status.isGranted) {
+                    navController.navigate(NOTIFICATIONS_GRAPH_ROUTE) {
+                        launchSingleTop = true
+                    }
+                }
             }
-        }
     }
 }
 
