@@ -167,7 +167,7 @@ private fun BottomNavScaffold(
     onInternalWidgetClick: (String) -> Unit,
     onExternalWidgetClick: (String, String?) -> Unit,
     onSuppressWidgetClick: (String, HomeWidget) -> Unit,
-    onDeepLinkReceived: (Boolean, String) -> Unit
+    onDeepLinkReceived: (hasDeepLink: Boolean, url: String) -> Unit
 ) {
     val navController = rememberNavController()
     val navBarPadding = WindowInsets.navigationBars.asPaddingValues()
@@ -196,9 +196,21 @@ private fun BottomNavScaffold(
             )
         }
     }
-    val context = LocalContext.current
+    HandleReceivedIntents(
+        intentFlow = intentFlow,
+        navController = navController,
+        onDeepLinkReceived = onDeepLinkReceived
+    )
+    HandleNotificationsPermissionStatus(navController)
+}
 
-    // Collect and handle intent data sent with deep links
+@Composable
+private fun HandleReceivedIntents(
+    intentFlow: Flow<Intent>,
+    navController: NavHostController,
+    onDeepLinkReceived: (hasDeepLink: Boolean, url: String) -> Unit
+) {
+    val context = LocalContext.current
     LaunchedEffect(intentFlow) {
         intentFlow.collectLatest { intent ->
             intent.data?.let { uri ->
@@ -235,6 +247,19 @@ private fun showDeepLinkNotFoundAlert(context: Context) {
         }
     }.also { deepLinkNotFoundAlert ->
         deepLinkNotFoundAlert.show()
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun HandleNotificationsPermissionStatus(navController: NavHostController) {
+    val notificationsPermissionStatus = getNotificationsPermissionStatus()
+    LaunchedEffect(notificationsPermissionStatus) {
+        if (notificationsPermissionStatus.isGranted) {
+            navController.navigate(NOTIFICATIONS_GRAPH_ROUTE) {
+                launchSingleTop = true
+            }
+        }
     }
 }
 
@@ -313,7 +338,6 @@ private fun BottomNav(
     }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 private fun GovUkNavHost(
     navController: NavHostController,
@@ -415,14 +439,6 @@ private fun GovUkNavHost(
                 onCancel = { navController.popBackStack(HOME_GRAPH_START_DESTINATION, false)},
                 modifier = Modifier.padding(paddingValues)
             )
-        }
-    }
-    val notificationsPermissionStatus = getNotificationsPermissionStatus()
-    LaunchedEffect(notificationsPermissionStatus) {
-        if (notificationsPermissionStatus.isGranted) {
-            navController.navigate(NOTIFICATIONS_GRAPH_ROUTE) {
-                launchSingleTop = true
-            }
         }
     }
 }
