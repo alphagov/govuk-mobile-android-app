@@ -57,6 +57,8 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
     implementation(libs.realm.base)
+    implementation(libs.androidx.adaptive.android)
+    implementation(libs.androidx.ui.tooling)
 
     ksp(libs.hilt.compiler)
 
@@ -69,4 +71,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 }

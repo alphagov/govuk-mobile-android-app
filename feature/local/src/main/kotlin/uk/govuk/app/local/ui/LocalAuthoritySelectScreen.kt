@@ -31,10 +31,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.FixedPrimaryButton
+import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
 import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
-import uk.gov.govuk.design.ui.component.SecondaryButton
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title1BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -152,18 +151,14 @@ private fun BottomNavBar(
         val confirmButtonText = stringResource(R.string.local_select_council_confirm)
         val selectByAddressButtonText = stringResource(R.string.local_select_by_address)
 
-        FixedPrimaryButton(
-            text = confirmButtonText,
-            enabled = selectedSlug.isNotEmpty(),
-            onClick = { onSlugSelect(confirmButtonText, selectedSlug) }
+        FixedDoubleButtonGroup(
+            primaryText = confirmButtonText,
+            onPrimary = { onSlugSelect(confirmButtonText, selectedSlug) },
+            secondaryText = selectByAddressButtonText,
+            onSecondary = { onSelectByAddress(selectByAddressButtonText) },
+            modifier = modifier,
+            primaryEnabled = selectedSlug.isNotEmpty()
         )
-
-        SecondaryButton(
-            text = selectByAddressButtonText,
-            onClick = { onSelectByAddress(selectByAddressButtonText) }
-        )
-
-        MediumVerticalSpacer()
     }
 }
 
