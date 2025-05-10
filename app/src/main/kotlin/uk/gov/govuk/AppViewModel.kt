@@ -15,7 +15,7 @@ import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
-import uk.gov.govuk.navigation.BlahNavigation
+import uk.gov.govuk.navigation.AppLaunchNavigation
 import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.ui.model.HomeWidget
 import uk.govuk.app.local.LocalFeature
@@ -30,7 +30,7 @@ internal class AppViewModel @Inject constructor(
     private val topicsFeature: TopicsFeature,
     private val localFeature: LocalFeature,
     private val analyticsClient: AnalyticsClient,
-    val blahNavigation: BlahNavigation
+    val appLaunchNavigation: AppLaunchNavigation
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<AppUiState?> = MutableStateFlow(null)
@@ -45,12 +45,12 @@ internal class AppViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            authRepo.newUser.collect {
+            authRepo.differentUser.collect {
                 appRepo.clear()
                 topicsFeature.clear()
                 localFeature.clear()
 
-                blahNavigation.onDifferentUserLogin(topicsFeature.init()) // Todo - might not need this???
+                appLaunchNavigation.onDifferentUserLogin(topicsFeature.hasTopics())
             }
         }
     }
@@ -66,7 +66,7 @@ internal class AppViewModel @Inject constructor(
                 } else {
                     val topicsInitSuccess = topicsFeature.init()
 
-                    blahNavigation.buildLaunchFlow(topicsInitSuccess)
+                    appLaunchNavigation.buildLaunchFlow(topicsInitSuccess)
 
                     _uiState.value = AppUiState.Default(
                         shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),

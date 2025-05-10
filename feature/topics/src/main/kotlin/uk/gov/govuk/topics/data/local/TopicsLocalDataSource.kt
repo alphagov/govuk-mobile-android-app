@@ -61,6 +61,10 @@ internal class TopicsLocalDataSource @Inject constructor(
         }
     }
 
+    suspend fun hasTopics(): Boolean {
+        return realmProvider.open().query<LocalTopicItem>().find().toList().isNotEmpty()
+    }
+
     suspend fun toggleSelection(ref: String, isSelected: Boolean) {
         realmProvider.open().write {
             query<LocalTopicItem>("ref = $0", ref).first().find()?.apply {
@@ -88,8 +92,15 @@ internal class TopicsLocalDataSource @Inject constructor(
 
     suspend fun clear() {
         realmProvider.open().write {
-            deleteAll()
+            val localTopics = this.query<LocalTopicItem>().find().toList()
+
+            for (topic in localTopics) {
+                topic.apply {
+                    this.isSelected = true
+                }
+            }
         }
+
         topicsDataStore.clear()
     }
 }

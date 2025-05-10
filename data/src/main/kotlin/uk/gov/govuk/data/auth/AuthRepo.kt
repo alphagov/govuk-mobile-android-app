@@ -45,11 +45,11 @@ class AuthRepo @Inject constructor(
         authService.getAuthorizationRequestIntent(authRequest)
     }
 
-    private val _newUser = MutableSharedFlow<Unit>(
+    private val _differentUser = MutableSharedFlow<Unit>(
         replay = 0,
         extraBufferCapacity = 1
     )
-    val newUser: SharedFlow<Unit> = _newUser.asSharedFlow()
+    val differentUser: SharedFlow<Unit> = _differentUser.asSharedFlow()
 
     private var tokens = Tokens()
 
@@ -179,7 +179,7 @@ class AuthRepo @Inject constructor(
         val currentSubId = sharedPreferences.getString(SUB_ID_KEY, "")
         val newSubId = getIdTokenProperty("sub")
 
-        _newUser.tryEmit(Unit)
+        _differentUser.tryEmit(Unit)
 
 //        if (currentSubId != newSubId) {
 //             Todo - clear local data

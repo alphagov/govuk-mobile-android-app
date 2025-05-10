@@ -1,45 +1,82 @@
 package uk.gov.govuk.navigation
 
-import uk.gov.govuk.AppUiState
+import androidx.navigation.NavController
+import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.analytics.navigation.ANALYTICS_GRAPH_ROUTE
+import uk.gov.govuk.config.data.flags.FlagRepo
+import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_GRAPH_ROUTE
 import uk.gov.govuk.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.gov.govuk.topics.navigation.TOPIC_SELECTION_GRAPH_ROUTE
-import java.util.ArrayDeque
-import java.util.Deque
+import java.util.Stack
+import javax.inject.Inject
+import javax.inject.Singleton
 
-internal class AppLaunchNavigation(
-    private val uiState: AppUiState.Default
+@Singleton
+internal class AppLaunchNavigation @Inject constructor(
+    private val flagRepo: FlagRepo,
+    private val analyticsClient: AnalyticsClient,
+    private val appRepo: AppRepo
 ) {
-    val launchRoutes: Deque<String> = ArrayDeque()
+    private var _launchRoutes = Stack<String>()
 
-    init {
-        setLaunchRoutes()
+    private var _startDestination = ""
+    val startDestination
+        get() = _startDestination
+
+    suspend fun buildLaunchFlow(topicsInitSuccess: Boolean) {
+        _launchRoutes.clear()
+
+        _launchRoutes.push(HOME_GRAPH_ROUTE)
+
+        if (flagRepo.isNotificationsEnabled()) {
+            _launchRoutes.push(NOTIFICATIONS_GRAPH_ROUTE)
+        }
+
+        if (flagRepo.isTopicsEnabled()
+            && !appRepo.isTopicSelectionCompleted()
+            && topicsInitSuccess) {
+            _launchRoutes.push(TOPIC_SELECTION_GRAPH_ROUTE)
+        }
+
+        if (flagRepo.isLoginEnabled()) {
+            _launchRoutes.push(LOGIN_GRAPH_ROUTE)
+        }
+
+        if (flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted()) {
+            _launchRoutes.push(ONBOARDING_GRAPH_ROUTE)
+        }
+
+        if (analyticsClient.isAnalyticsConsentRequired()) {
+            _launchRoutes.push(ANALYTICS_GRAPH_ROUTE)
+        }
+
+        _startDestination = _launchRoutes.pop()
     }
 
-    private fun setLaunchRoutes() {
-        launchRoutes.push(HOME_GRAPH_ROUTE)
+    fun onDifferentUserLogin(hasTopics: Boolean) {
+        _launchRoutes.clear()
 
-        if (uiState.shouldDisplayNotificationsOnboarding) {
-            launchRoutes.push(NOTIFICATIONS_GRAPH_ROUTE)
+        _launchRoutes.push(HOME_GRAPH_ROUTE)
+
+        if (flagRepo.isNotificationsEnabled()) {
+            _launchRoutes.push(NOTIFICATIONS_GRAPH_ROUTE)
         }
 
-        if (uiState.shouldDisplayTopicSelection) {
-            launchRoutes.push(TOPIC_SELECTION_GRAPH_ROUTE)
+        if (flagRepo.isTopicsEnabled()
+            && hasTopics) {
+            _launchRoutes.push(TOPIC_SELECTION_GRAPH_ROUTE)
         }
+    }
 
-        if (uiState.shouldDisplayLogin) {
-            launchRoutes.push(LOGIN_GRAPH_ROUTE)
-        }
-
-        if (uiState.shouldDisplayOnboarding) {
-            launchRoutes.push(ONBOARDING_GRAPH_ROUTE)
-        }
-
-        if (uiState.shouldDisplayAnalyticsConsent) {
-            launchRoutes.push(ANALYTICS_GRAPH_ROUTE)
+    fun onNext(navController: NavController) {
+        navController.popBackStack()
+        if (_launchRoutes.isNotEmpty()) {
+            val route = _launchRoutes.pop()
+            _startDestination = route
+            navController.navigate(route)
         }
     }
 }

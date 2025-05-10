@@ -6,4 +6,6 @@ interface TopicsFeature  {
 
     suspend fun clear()
 
+    suspend fun hasTopics(): Boolean
+
 }

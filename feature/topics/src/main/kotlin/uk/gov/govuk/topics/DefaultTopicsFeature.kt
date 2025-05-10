@@ -17,4 +17,8 @@ internal class DefaultTopicsFeature @Inject constructor(
         topicsRepo.clear()
     }
 
+    override suspend fun hasTopics(): Boolean {
+        return topicsRepo.hasTopics()
+    }
+
 }
