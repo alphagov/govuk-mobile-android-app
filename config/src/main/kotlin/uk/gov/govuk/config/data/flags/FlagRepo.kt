@@ -74,8 +74,8 @@ class FlagRepo @Inject constructor(
     fun isNotificationsEnabled(): Boolean {
         return isEnabled(
             debugEnabled = debugEnabled,
-            debugFlag = debugFlags.isNotificationsEnabled,
-            remoteFlag = false // TODO - GOVUKAPP-1095 requires this is hardcoded 'off' for now
+            debugFlag = false, // Dev only flag, only set to true when actively working on notifications
+            remoteFlag = false // Dev only flag, always off for production builds!!!
         )
     }
 
