@@ -71,6 +71,16 @@ internal class AppLaunchNavigation @Inject constructor(
         }
     }
 
+    fun onSignOut() {
+        _launchRoutes.clear()
+
+        _launchRoutes.push(HOME_GRAPH_ROUTE)
+
+        if (flagRepo.isNotificationsEnabled()) {
+            _launchRoutes.push(NOTIFICATIONS_GRAPH_ROUTE)
+        }
+    }
+
     fun onNext(navController: NavController) {
         navController.popBackStack()
         if (_launchRoutes.isNotEmpty()) {

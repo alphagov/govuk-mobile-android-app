@@ -13,11 +13,11 @@ import uk.gov.govuk.login.ui.LoginRoute
 const val LOGIN_GRAPH_ROUTE = "login_graph_route"
 private const val POST_SIGN_OUT_ARG = "isPostSignOut"
 private const val LOGIN_ROUTE = "login_route?$POST_SIGN_OUT_ARG={$POST_SIGN_OUT_ARG}"
-const val BIOMETRIC_ROUTE = "biometric_route?$POST_SIGN_OUT_ARG={$POST_SIGN_OUT_ARG}"
+const val BIOMETRIC_ROUTE = "biometric_route"
 
 fun NavGraphBuilder.loginGraph(
     navController: NavController,
-    onCompleted: (Boolean) -> Unit,
+    onCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -45,26 +45,15 @@ fun NavGraphBuilder.loginGraph(
                                 .replace("{$POST_SIGN_OUT_ARG}", isPostSignOut.toString())
                         )
                     } else {
-                        onCompleted(isPostSignOut)
+                        onCompleted()
                     }
                 },
                 modifier = modifier,
             )
         }
-        composable(
-            route = BIOMETRIC_ROUTE,
-            arguments = listOf(
-                navArgument(POST_SIGN_OUT_ARG) {
-                    type = NavType.BoolType
-                    defaultValue = false
-                    nullable = false
-                }
-            )
-        ) { backStackEntry ->
-            val isPostSignOut = backStackEntry.arguments?.getBoolean(POST_SIGN_OUT_ARG) ?: false
-
+        composable(BIOMETRIC_ROUTE) {
             BiometricRoute(
-                onCompleted = { onCompleted(isPostSignOut) },
+                onCompleted = { onCompleted() },
                 modifier = modifier
             )
         }

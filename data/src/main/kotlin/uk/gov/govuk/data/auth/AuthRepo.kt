@@ -51,6 +51,12 @@ class AuthRepo @Inject constructor(
     )
     val differentUser: SharedFlow<Unit> = _differentUser.asSharedFlow()
 
+    private val _userSignOut = MutableSharedFlow<Unit>(
+        replay = 0,
+        extraBufferCapacity = 1
+    )
+    val userSignOut: SharedFlow<Unit> = _userSignOut.asSharedFlow()
+
     private var tokens = Tokens()
 
     suspend fun handleAuthResponse(data: Intent?): Boolean = suspendCoroutine { continuation ->
@@ -208,5 +214,7 @@ class AuthRepo @Inject constructor(
     fun signOut() {
         secureStore.delete(REFRESH_TOKEN_KEY)
         tokens = Tokens()
+
+        _userSignOut.tryEmit(Unit)
     }
 }

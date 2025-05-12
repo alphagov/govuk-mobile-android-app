@@ -53,6 +53,12 @@ internal class AppViewModel @Inject constructor(
                 appLaunchNavigation.onDifferentUserLogin(topicsFeature.hasTopics())
             }
         }
+        
+        viewModelScope.launch {
+            authRepo.userSignOut.collect {
+                appLaunchNavigation.onSignOut()
+            }
+        }
     }
 
     private suspend fun initWithConfig() {
