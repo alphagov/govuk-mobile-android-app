@@ -44,6 +44,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
@@ -116,6 +118,7 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                             intentFlow = intentFlow,
                             onboardingCompleted = { viewModel.onboardingCompleted() },
                             topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
+                            shouldDisplayNotificationsOnboarding = it.shouldDisplayNotificationsOnboarding,
                             onTabClick = { tabText -> viewModel.onTabClick(tabText) },
                             homeWidgets = homeWidgets,
                             onInternalWidgetClick = { text ->
@@ -168,6 +171,7 @@ private fun BottomNavScaffold(
     intentFlow: Flow<Intent>,
     onboardingCompleted: () -> Unit,
     topicSelectionCompleted: () -> Unit,
+    shouldDisplayNotificationsOnboarding: Boolean,
     onTabClick: (String) -> Unit,
     homeWidgets: List<HomeWidget>?,
     onInternalWidgetClick: (String) -> Unit,
@@ -207,7 +211,9 @@ private fun BottomNavScaffold(
         navController = navController,
         onDeepLinkReceived = onDeepLinkReceived
     )
-    HandleNotificationsPermissionStatus(navController)
+    if (shouldDisplayNotificationsOnboarding) {
+        HandleNotificationsPermissionStatus(navController)
+    }
 }
 
 @Composable
@@ -265,9 +271,7 @@ private fun HandleNotificationsPermissionStatus(navController: NavHostController
             .drop(1)
             .collect { status ->
                 if (status.isGranted) {
-                    navController.navigate(NOTIFICATIONS_GRAPH_ROUTE) {
-                        launchSingleTop = true
-                    }
+                    navController.navigate(NOTIFICATIONS_GRAPH_ROUTE)
                 }
             }
     }
