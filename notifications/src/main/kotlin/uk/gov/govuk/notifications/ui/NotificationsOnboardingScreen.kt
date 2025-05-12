@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -106,7 +107,7 @@ internal fun NotificationsOnboardingRoute(
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-internal fun NotificationsOnboardingNoSkipRoute(
+internal fun NotificationsOnboardingFromSettingsRoute(
     notificationsOnboardingCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -115,7 +116,7 @@ internal fun NotificationsOnboardingNoSkipRoute(
 
     val permissionStatus = getNotificationsPermissionStatus()
     LaunchedEffect(permissionStatus) {
-        viewModel.updateUiState(permissionStatus)
+        viewModel.updateUiState(permissionStatus, fromSettings = true)
     }
 
     uiState?.let { state ->
@@ -181,7 +182,8 @@ private fun OnboardingScreen(
     }
 
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         header?.invoke() ?: run {
@@ -193,7 +195,9 @@ private fun OnboardingScreen(
             body = body,
             image = image,
             onPrivacyPolicyClick = onPrivacyPolicyClick,
-            modifier = Modifier.weight(1f, fill = false)
+            modifier = Modifier
+                .weight(1f, fill = false)
+                .padding(horizontal = GovUkTheme.spacing.medium)
         )
         footer()
     }
