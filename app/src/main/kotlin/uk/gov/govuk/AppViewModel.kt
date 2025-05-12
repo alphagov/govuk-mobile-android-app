@@ -2,6 +2,7 @@ package uk.gov.govuk
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +12,6 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
-import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
@@ -26,7 +26,6 @@ internal class AppViewModel @Inject constructor(
     private val appRepo: AppRepo,
     private val configRepo: ConfigRepo,
     private val flagRepo: FlagRepo,
-    authRepo: AuthRepo,
     private val topicsFeature: TopicsFeature,
     private val localFeature: LocalFeature,
     private val analyticsClient: AnalyticsClient,
@@ -42,22 +41,6 @@ internal class AppViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             initWithConfig()
-        }
-
-        viewModelScope.launch {
-            authRepo.differentUser.collect {
-                appRepo.clear()
-                topicsFeature.clear()
-                localFeature.clear()
-
-                appLaunchNavigation.onDifferentUserLogin(topicsFeature.hasTopics())
-            }
-        }
-        
-        viewModelScope.launch {
-            authRepo.userSignOut.collect {
-                appLaunchNavigation.onSignOut()
-            }
         }
     }
 
@@ -111,6 +94,20 @@ internal class AppViewModel @Inject constructor(
     fun onboardingCompleted() {
         viewModelScope.launch {
             appRepo.onboardingCompleted()
+        }
+    }
+
+    fun onLogin(isDifferentUser: Boolean, navController: NavController) {
+        viewModelScope.launch {
+            if (isDifferentUser) {
+                appRepo.clear()
+                analyticsClient.isAnalyticsConsentRequired()
+                topicsFeature.clear()
+                localFeature.clear()
+
+                appLaunchNavigation.onDifferentUserLogin(true)
+            }
+            appLaunchNavigation.onNext(navController)
         }
     }
 
@@ -189,5 +186,9 @@ internal class AppViewModel @Inject constructor(
             hasDeepLink,
             url
         )
+    }
+
+    fun onSignOut() {
+        appLaunchNavigation.onSignOut()
     }
 }

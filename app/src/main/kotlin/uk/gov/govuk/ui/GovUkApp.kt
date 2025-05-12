@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
@@ -109,6 +110,9 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                             intentFlow = intentFlow,
                             appLaunchNavigation = viewModel.appLaunchNavigation,
                             onboardingCompleted = { viewModel.onboardingCompleted() },
+                            onLogin = { isDifferentUser, navController ->
+                                viewModel.onLogin(isDifferentUser, navController)
+                            },
                             topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
                             onTabClick = { tabText -> viewModel.onTabClick(tabText) },
                             homeWidgets = homeWidgets,
@@ -130,6 +134,7 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                             onSuppressWidgetClick = { text, widget ->
                                 viewModel.onSuppressWidgetClick(text, section, widget)
                             },
+                            onSignOut = { viewModel.onSignOut() },
                             onDeepLinkReceived = { hasDeepLink, url ->
                                 viewModel.onDeepLinkReceived(hasDeepLink, url)
                             }
@@ -161,12 +166,14 @@ private fun BottomNavScaffold(
     intentFlow: Flow<Intent>,
     appLaunchNavigation: AppLaunchNavigation,
     onboardingCompleted: () -> Unit,
+    onLogin: (Boolean, NavController) -> Unit,
     topicSelectionCompleted: () -> Unit,
     onTabClick: (String) -> Unit,
     homeWidgets: List<HomeWidget>?,
     onInternalWidgetClick: (String) -> Unit,
     onExternalWidgetClick: (String, String?) -> Unit,
     onSuppressWidgetClick: (String, HomeWidget) -> Unit,
+    onSignOut: () -> Unit,
     onDeepLinkReceived: (Boolean, String) -> Unit
 ) {
     val navController = rememberNavController()
@@ -187,11 +194,13 @@ private fun BottomNavScaffold(
                 navController = navController,
                 appLaunchNavigation = appLaunchNavigation,
                 onboardingCompleted = onboardingCompleted,
+                onLogin = { isDifferentUser -> onLogin(isDifferentUser, navController) },
                 topicSelectionCompleted = topicSelectionCompleted,
                 homeWidgets = homeWidgets,
                 onInternalWidgetClick = onInternalWidgetClick,
                 onExternalWidgetClick = onExternalWidgetClick,
                 onSuppressWidgetClick = onSuppressWidgetClick,
+                onSignOut = onSignOut,
                 paddingValues = paddingValues
             )
         }
@@ -318,11 +327,13 @@ private fun GovUkNavHost(
     navController: NavHostController,
     appLaunchNavigation: AppLaunchNavigation,
     onboardingCompleted: () -> Unit,
+    onLogin: (Boolean) -> Unit,
     topicSelectionCompleted: () -> Unit,
     homeWidgets: List<HomeWidget>?,
     onInternalWidgetClick: (String) -> Unit,
     onExternalWidgetClick: (String, String?) -> Unit,
     onSuppressWidgetClick: (String, HomeWidget) -> Unit,
+    onSignOut: () -> Unit,
     paddingValues: PaddingValues
 ) {
     val context = LocalContext.current
@@ -364,8 +375,10 @@ private fun GovUkNavHost(
             }
         )
         loginGraph(
-            navController = navController,
-            onCompleted = {
+            onLoginCompleted = { isDifferentUser ->
+                onLogin(isDifferentUser)
+            },
+            onBiometricSetupCompleted = {
                 appLaunchNavigation.onNext(navController)
             }
         )
@@ -402,6 +415,7 @@ private fun GovUkNavHost(
         signOutGraph(
             navController = navController,
             onSignOut = {
+                onSignOut()
                 navController.navigateToLoginPostSignOut()
             }
         )

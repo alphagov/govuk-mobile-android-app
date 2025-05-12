@@ -12,8 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -33,11 +31,10 @@ import uk.gov.govuk.login.R
 @Composable
 internal fun LoginRoute(
     isPostSignOut: Boolean,
-    onLogin: (Boolean) -> Unit,
+    onLoginCompleted: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: LoginViewModel = hiltViewModel()
-    val uiState by viewModel.uiState.collectAsState()
 
     val authLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -61,9 +58,9 @@ internal fun LoginRoute(
         viewModel.init(activity)
     }
 
-    LaunchedEffect(uiState) {
-        uiState?.let { loginState ->
-            onLogin(loginState.shouldDisplayLocalAuthOnboarding)
+    LaunchedEffect(Unit) {
+        viewModel.loginCompleted.collect { isDifferentUser ->
+            onLoginCompleted(isDifferentUser)
         }
     }
 }

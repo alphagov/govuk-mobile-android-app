@@ -60,7 +60,7 @@ class LoginViewModelTest {
 
         viewModel.init(activity)
 
-        assertFalse(viewModel.uiState.value!!.shouldDisplayLocalAuthOnboarding)
+        assertFalse(viewModel.loginCompleted.value!!.shouldDisplayLocalAuthOnboarding)
     }
 
     @Test
@@ -70,7 +70,7 @@ class LoginViewModelTest {
 
         viewModel.init(activity)
 
-        assertNull(viewModel.uiState.value)
+        assertNull(viewModel.loginCompleted.value)
     }
 
     @Test
@@ -105,7 +105,7 @@ class LoginViewModelTest {
 
         viewModel.onAuthResponse(null)
 
-        assertEquals(LoginUiState(true), viewModel.uiState.value)
+        assertEquals(LoginUiState(true), viewModel.loginCompleted.value)
     }
 
     @Test
@@ -115,7 +115,7 @@ class LoginViewModelTest {
 
         viewModel.onAuthResponse(null)
 
-        assertEquals(LoginUiState(false), viewModel.uiState.value)
+        assertEquals(LoginUiState(false), viewModel.loginCompleted.value)
     }
 
     @Test
@@ -124,6 +124,6 @@ class LoginViewModelTest {
 
         viewModel.onAuthResponse(null)
 
-        assertNull(viewModel.uiState.value)
+        assertNull(viewModel.loginCompleted.value)
     }
 }

@@ -7,9 +7,6 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators
 import androidx.core.content.edit
 import androidx.fragment.app.FragmentActivity
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
@@ -44,18 +41,6 @@ class AuthRepo @Inject constructor(
     val authIntent: Intent by lazy {
         authService.getAuthorizationRequestIntent(authRequest)
     }
-
-    private val _differentUser = MutableSharedFlow<Unit>(
-        replay = 0,
-        extraBufferCapacity = 1
-    )
-    val differentUser: SharedFlow<Unit> = _differentUser.asSharedFlow()
-
-    private val _userSignOut = MutableSharedFlow<Unit>(
-        replay = 0,
-        extraBufferCapacity = 1
-    )
-    val userSignOut: SharedFlow<Unit> = _userSignOut.asSharedFlow()
 
     private var tokens = Tokens()
 
@@ -173,25 +158,19 @@ class AuthRepo @Inject constructor(
                 refreshToken = mappedRefreshToken
             )
 
-            handleSubId()
-
             true
         } else {
             false
         }
     }
 
-    private fun handleSubId() {
+    fun isDifferentUser(): Boolean {
         val currentSubId = sharedPreferences.getString(SUB_ID_KEY, "")
         val newSubId = getIdTokenProperty("sub")
-
-        _differentUser.tryEmit(Unit)
-
-//        if (currentSubId != newSubId) {
-//             Todo - clear local data
-//        }
-
         sharedPreferences.edit(commit = true) { putString(SUB_ID_KEY, newSubId) }
+
+        return currentSubId != "" && currentSubId != newSubId
+//        return true
     }
 
     fun getUserEmail(): String {
@@ -214,7 +193,5 @@ class AuthRepo @Inject constructor(
     fun signOut() {
         secureStore.delete(REFRESH_TOKEN_KEY)
         tokens = Tokens()
-
-        _userSignOut.tryEmit(Unit)
     }
 }

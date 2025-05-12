@@ -16,8 +16,8 @@ private const val LOGIN_ROUTE = "login_route?$POST_SIGN_OUT_ARG={$POST_SIGN_OUT_
 const val BIOMETRIC_ROUTE = "biometric_route"
 
 fun NavGraphBuilder.loginGraph(
-    navController: NavController,
-    onCompleted: () -> Unit,
+    onLoginCompleted: (Boolean) -> Unit,
+    onBiometricSetupCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -37,23 +37,15 @@ fun NavGraphBuilder.loginGraph(
             val isPostSignOut = backStackEntry.arguments?.getBoolean(POST_SIGN_OUT_ARG) ?: false
             LoginRoute(
                 isPostSignOut = isPostSignOut,
-                onLogin = { shouldDisplayLocalAuthOnboarding ->
-                    if (shouldDisplayLocalAuthOnboarding) {
-                        navController.popBackStack()
-                        navController.navigate(
-                            BIOMETRIC_ROUTE
-                                .replace("{$POST_SIGN_OUT_ARG}", isPostSignOut.toString())
-                        )
-                    } else {
-                        onCompleted()
-                    }
+                onLoginCompleted = { isDifferentUser ->
+                    onLoginCompleted(isDifferentUser)
                 },
                 modifier = modifier,
             )
         }
         composable(BIOMETRIC_ROUTE) {
             BiometricRoute(
-                onCompleted = { onCompleted() },
+                onCompleted = { onBiometricSetupCompleted() },
                 modifier = modifier
             )
         }

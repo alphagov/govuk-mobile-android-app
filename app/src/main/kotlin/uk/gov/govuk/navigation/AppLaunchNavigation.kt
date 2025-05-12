@@ -5,7 +5,9 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.analytics.navigation.ANALYTICS_GRAPH_ROUTE
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
+import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
+import uk.gov.govuk.login.navigation.BIOMETRIC_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_GRAPH_ROUTE
 import uk.gov.govuk.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
@@ -18,7 +20,8 @@ import javax.inject.Singleton
 internal class AppLaunchNavigation @Inject constructor(
     private val flagRepo: FlagRepo,
     private val analyticsClient: AnalyticsClient,
-    private val appRepo: AppRepo
+    private val appRepo: AppRepo,
+    private val authRepo: AuthRepo
 ) {
     private var _launchRoutes = Stack<String>()
 
@@ -39,6 +42,10 @@ internal class AppLaunchNavigation @Inject constructor(
             && !appRepo.isTopicSelectionCompleted()
             && topicsInitSuccess) {
             _launchRoutes.push(TOPIC_SELECTION_GRAPH_ROUTE)
+        }
+
+        if (authRepo.isAuthenticationEnabled() && !authRepo.isUserSignedIn()) {
+            _launchRoutes.push(BIOMETRIC_ROUTE)
         }
 
         if (flagRepo.isLoginEnabled()) {
@@ -69,6 +76,12 @@ internal class AppLaunchNavigation @Inject constructor(
             && hasTopics) {
             _launchRoutes.push(TOPIC_SELECTION_GRAPH_ROUTE)
         }
+
+        if (authRepo.isAuthenticationEnabled()) {
+            _launchRoutes.push(BIOMETRIC_ROUTE)
+        }
+
+        _launchRoutes.push(ANALYTICS_GRAPH_ROUTE)
     }
 
     fun onSignOut() {
@@ -78,6 +91,10 @@ internal class AppLaunchNavigation @Inject constructor(
 
         if (flagRepo.isNotificationsEnabled()) {
             _launchRoutes.push(NOTIFICATIONS_GRAPH_ROUTE)
+        }
+
+        if (authRepo.isAuthenticationEnabled()) {
+            _launchRoutes.push(BIOMETRIC_ROUTE)
         }
     }
 
