@@ -1,6 +1,7 @@
 package uk.govuk.app.local.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -152,7 +153,8 @@ private fun LocalEntryScreen(
                     )
                 },
                 modifier = Modifier.fillMaxWidth()
-                    .focusRequester(focusRequester),
+                    .focusRequester(focusRequester)
+                    .focusable(true),
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Characters
                 ),
@@ -160,6 +162,7 @@ private fun LocalEntryScreen(
                 isError = uiState is LocalUiState.Error,
                 supportingText = {
                     if (uiState is LocalUiState.Error) {
+                        focusRequester.requestFocus()
                         val errorMessage = stringResource(uiState.message)
                         BodyBoldLabel(
                             color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
