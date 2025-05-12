@@ -98,6 +98,10 @@ android {
                 signingConfigs.getByName("debug")
             }
 
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
+
             buildConfigField("String", "ONE_SIGNAL_APP_ID", "\"bbea84fc-28cc-4712-a6c5-88f5d08b0d0d\"")
         }
     }
