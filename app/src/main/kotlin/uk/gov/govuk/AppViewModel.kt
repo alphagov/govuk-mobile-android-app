@@ -105,7 +105,7 @@ internal class AppViewModel @Inject constructor(
                 topicsFeature.clear()
                 localFeature.clear()
 
-                appLaunchNavigation.onDifferentUserLogin(true)
+                appLaunchNavigation.onDifferentUserLogin(topicsFeature.hasTopics())
             }
             appLaunchNavigation.onNext(navController)
         }

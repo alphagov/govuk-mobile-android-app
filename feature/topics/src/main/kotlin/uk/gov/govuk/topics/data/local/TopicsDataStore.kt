@@ -6,11 +6,12 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 internal class TopicsDataStore @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    @Named("topics_prefs") private val dataStore: DataStore<Preferences>
 ) {
 
     companion object {
@@ -28,6 +29,6 @@ internal class TopicsDataStore @Inject constructor(
     }
 
     internal suspend fun clear() {
-       dataStore.edit { preferences -> preferences.remove(booleanPreferencesKey(TOPICS_CUSTOMISED)) }
+       dataStore.edit { preferences -> preferences.clear() }
     }
 }

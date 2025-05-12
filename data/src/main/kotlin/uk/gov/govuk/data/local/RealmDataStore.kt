@@ -6,11 +6,12 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 class RealmDataStore @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    @Named("database_prefs") private val dataStore: DataStore<Preferences>
 ) {
 
     companion object {

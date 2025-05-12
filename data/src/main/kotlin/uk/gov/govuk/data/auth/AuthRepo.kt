@@ -170,7 +170,6 @@ class AuthRepo @Inject constructor(
         sharedPreferences.edit(commit = true) { putString(SUB_ID_KEY, newSubId) }
 
         return currentSubId != "" && currentSubId != newSubId
-//        return true
     }
 
     fun getUserEmail(): String {

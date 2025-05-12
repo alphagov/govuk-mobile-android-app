@@ -10,11 +10,12 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import uk.gov.govuk.ui.model.HomeWidget
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 internal class AppDataStore @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    @Named("app_prefs") private val dataStore: DataStore<Preferences>
 ) {
     companion object {
         internal const val ONBOARDING_COMPLETED_KEY = "onboarding_completed"
