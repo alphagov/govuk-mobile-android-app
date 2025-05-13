@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.adaptive.android)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
+    implementation(libs.androidx.ui.tooling)
 
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
@@ -75,6 +76,5 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    debugImplementation(libs.androidx.ui.tooling)
     testImplementation(kotlin("test"))
 }
