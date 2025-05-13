@@ -13,6 +13,7 @@ plugins {
 
 val majorVersion = "0"
 val minorVersion = "1"
+val patchVersion = "0"
 
 android {
     namespace = "uk.gov.govuk"
@@ -26,7 +27,7 @@ android {
         minSdk = Version.MIN_SDK
         targetSdk = Version.TARGET_SDK
         versionCode = buildNumber
-        versionName = "$majorVersion.$minorVersion.$versionCode"
+        versionName = "$majorVersion.$minorVersion.$patchVersion.$versionCode"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
