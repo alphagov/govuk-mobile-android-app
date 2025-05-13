@@ -442,7 +442,7 @@ private fun GovUkNavHost(
         )
         settingsGraph(
             navigateTo = { route -> navController.navigate(route) },
-            appVersion = BuildConfig.VERSION_NAME,
+            appVersion = BuildConfig.VERSION_NAME_USER_FACING,
             deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
             modifier = Modifier.padding(paddingValues)
         )

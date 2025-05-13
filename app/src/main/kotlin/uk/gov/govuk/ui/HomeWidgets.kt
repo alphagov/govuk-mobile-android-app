@@ -56,7 +56,7 @@ internal fun homeWidgets(
                     FeedbackPromptWidget(
                         onClick = { text ->
                             onExternalClick(text, null)
-                            navigateToHelpAndFeedback(context, BuildConfig.VERSION_NAME)
+                            navigateToHelpAndFeedback(context, BuildConfig.VERSION_NAME_USER_FACING)
                         },
                         modifier = modifier
                     )
