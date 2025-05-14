@@ -101,7 +101,6 @@ internal class AppViewModel @Inject constructor(
         viewModelScope.launch {
             if (isDifferentUser) {
                 appRepo.clear()
-                analyticsClient.isAnalyticsConsentRequired()
                 topicsFeature.clear()
                 localFeature.clear()
 

@@ -13,7 +13,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import retrofit2.HttpException
 import retrofit2.Response
-import uk.gov.govuk.data.model.Result.*
+import uk.gov.govuk.data.model.Result.DeviceOffline
+import uk.gov.govuk.data.model.Result.Error
+import uk.gov.govuk.data.model.Result.ServiceNotResponding
+import uk.gov.govuk.data.model.Result.Success
 import uk.gov.govuk.topics.data.local.TopicsLocalDataSource
 import uk.gov.govuk.topics.data.local.model.LocalTopicItem
 import uk.gov.govuk.topics.data.remote.TopicsApi
@@ -262,6 +265,39 @@ class TopicsRepoTest{
             coVerify {
                 localDataSource.topicsCustomised()
             }
+        }
+    }
+
+    @Test
+    fun `Given no topics, when has topics, then return false`() {
+        coEvery { localDataSource.hasTopics() } returns false
+
+        val repo = TopicsRepo(topicsApi, localDataSource)
+
+        runTest {
+            assertFalse(repo.hasTopics())
+        }
+    }
+
+    @Test
+    fun `Given topics, when has topics, then return true`() {
+        coEvery { localDataSource.hasTopics() } returns true
+
+        val repo = TopicsRepo(topicsApi, localDataSource)
+
+        runTest {
+            assertTrue(repo.hasTopics())
+        }
+    }
+
+    @Test
+    fun `Clear clears local data source`() {
+        val repo = TopicsRepo(topicsApi, localDataSource)
+
+        runTest {
+            repo.clear()
+
+            coVerify { localDataSource.clear() }
         }
     }
 }

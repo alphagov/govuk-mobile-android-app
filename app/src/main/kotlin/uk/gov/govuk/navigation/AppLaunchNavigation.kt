@@ -24,6 +24,8 @@ internal class AppLaunchNavigation @Inject constructor(
     private val authRepo: AuthRepo
 ) {
     private var _launchRoutes = Stack<String>()
+    val launchRoutes
+        get() = _launchRoutes
 
     private var _startDestination = ""
     val startDestination
@@ -44,7 +46,9 @@ internal class AppLaunchNavigation @Inject constructor(
             _launchRoutes.push(TOPIC_SELECTION_GRAPH_ROUTE)
         }
 
-        if (authRepo.isAuthenticationEnabled() && !authRepo.isUserSignedIn()) {
+        if (flagRepo.isLoginEnabled()
+            && authRepo.isAuthenticationEnabled()
+            && !authRepo.isUserSignedIn()) {
             _launchRoutes.push(BIOMETRIC_ROUTE)
         }
 

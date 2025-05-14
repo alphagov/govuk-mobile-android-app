@@ -6,12 +6,12 @@ import io.mockk.mockk
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.ext.query
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Assert.assertFalse
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.topics.data.local.model.LocalTopicItem
@@ -273,6 +273,68 @@ class TopicsLocalDataSourceTest {
             coVerify {
                 dataStore.topicsCustomised()
             }
+        }
+    }
+
+    @Test
+    fun `Given topics, when has topics, then return true`() {
+        runTest {
+            realm.write {
+                copyToRealm(
+                    LocalTopicItem().apply {
+                        ref = "ref1"
+                        title = "title1"
+                        description = "description1"
+                        isSelected = true
+                    }
+                )
+            }
+
+            assertTrue(localDataSource.hasTopics())
+        }
+    }
+
+    @Test
+    fun `Given no topics, when has topics, then return false`() {
+        runTest {
+            assertFalse(localDataSource.hasTopics())
+        }
+    }
+
+    @Test
+    fun `Given topics, when clear, then select all in realm and clear data store`() {
+        runTest {
+            realm.write {
+                copyToRealm(
+                    LocalTopicItem().apply {
+                        ref = "ref1"
+                        title = "title1"
+                        description = "description1"
+                        isSelected = false
+                    }
+                )
+
+                copyToRealm(
+                    LocalTopicItem().apply {
+                        ref = "ref2"
+                        title = "title2"
+                        description = "description2"
+                        isSelected = false
+                    }
+                )
+
+                assertTrue(query<LocalTopicItem>().find().isNotEmpty())
+            }
+
+            localDataSource.clear()
+
+            val topics = realm.query<LocalTopicItem>().find().toList()
+
+            for (topic in topics) {
+                assertTrue(topic.isSelected)
+            }
+
+            coVerify { dataStore.clear() }
         }
     }
 }

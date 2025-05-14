@@ -4,11 +4,13 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
+import io.realm.kotlin.ext.query
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.govuk.app.local.data.local.LocalDataSource
@@ -145,6 +147,34 @@ class LocalDataSourceTest {
             assertEquals("newUrl", localAuthority?.url)
             assertEquals("newSlug", localAuthority?.slug)
             assertNull(localAuthority?.parent)
+        }
+    }
+
+    @Test
+    fun `Given a local authority, when clear, then delete from realm`() {
+        runTest {
+            realm.write {
+                copyToRealm(
+                    StoredLocalAuthority().apply {
+                        this.name = "name"
+                        this.url = "url"
+                        this.slug = "slug"
+                        this.parent =
+                            StoredLocalAuthorityParent().apply {
+                                this.name = "parent name"
+                                this.url = "parent url"
+                                this.slug = "parent slug"
+                            }
+                    }
+                )
+
+                assertTrue(query<StoredLocalAuthority>().find().isNotEmpty())
+            }
+
+            val localDataSource = LocalDataSource(realmProvider)
+            localDataSource.clear()
+
+            assertTrue(realm.query<StoredLocalAuthority>().find().isEmpty())
         }
     }
 }

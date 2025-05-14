@@ -78,5 +78,14 @@ class LocalRepoTest {
                 localDataSource.insertOrReplace(any())
             }
         }
+
+        @Test
+        fun `Clear clears local data source`() {
+            runTest {
+                localRepo.clear()
+
+                coVerify { localDataSource.clear() }
+            }
+        }
     }
 }

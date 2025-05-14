@@ -1,229 +1,419 @@
 package uk.gov.govuk.navigation
 
-import org.junit.Assert.assertArrayEquals
+import androidx.navigation.NavController
+import io.mockk.clearAllMocks
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Test
-import uk.gov.govuk.AppUiState
+import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.analytics.navigation.ANALYTICS_GRAPH_ROUTE
+import uk.gov.govuk.config.data.flags.FlagRepo
+import uk.gov.govuk.data.AppRepo
+import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
+import uk.gov.govuk.login.navigation.BIOMETRIC_ROUTE
+import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_GRAPH_ROUTE
 import uk.gov.govuk.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.gov.govuk.topics.navigation.TOPIC_SELECTION_GRAPH_ROUTE
-import java.util.ArrayDeque
+import java.util.Stack
+import kotlin.test.assertEquals
 
 class AppLaunchNavigationTest {
 
-    @Test
-    fun `Given recommend update, analytics consent, onboarding, topic selection and notifications onboarding should be displayed, then return correct launch routes`() {
-        val appLaunchNavigation = AppLaunchNavigation(
-            AppUiState.Default(
-                shouldDisplayRecommendUpdate = true,
-                shouldDisplayAnalyticsConsent = true,
-                shouldDisplayOnboarding = true,
-                shouldDisplayTopicSelection = true,
-                shouldDisplayNotificationsOnboarding = true
-            )
-        )
+    private val flagRepo = mockk<FlagRepo>(relaxed = true)
+    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
+    private val appRepo = mockk<AppRepo>(relaxed = true)
+    private val authRepo = mockk<AuthRepo>(relaxed = true)
+    private val navController = mockk<NavController>(relaxed = true)
 
-        val expected = ArrayDeque<String>()
-        expected.push(HOME_GRAPH_ROUTE)
-        expected.push(NOTIFICATIONS_GRAPH_ROUTE)
-        expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-        expected.push(ONBOARDING_GRAPH_ROUTE)
-        expected.push(ANALYTICS_GRAPH_ROUTE)
+    private lateinit var appLaunchNav: AppLaunchNavigation
 
-        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
+    @Before
+    fun setup() {
+        appLaunchNav = AppLaunchNavigation(flagRepo, analyticsClient, appRepo, authRepo)
+
+        // Default config (simulates first time app launch)
+        every { flagRepo.isNotificationsEnabled() } returns true
+        every { flagRepo.isTopicsEnabled() } returns true
+        coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        coEvery { authRepo.isAuthenticationEnabled() } returns true
+        coEvery { authRepo.isUserSignedIn() } returns false
+        coEvery { flagRepo.isLoginEnabled() } returns true
+        coEvery { flagRepo.isOnboardingEnabled() } returns true
+        coEvery { appRepo.isOnboardingCompleted() } returns false
+        coEvery { analyticsClient.isAnalyticsConsentRequired() } returns true
+
+        runTest {
+            appLaunchNav.buildLaunchFlow(true)
+        }
     }
 
     @Test
-    fun `Given analytics consent, onboarding and topic selection should be displayed, then return correct launch routes`() {
-        val appLaunchNavigation = AppLaunchNavigation(
-            AppUiState.Default(
-                shouldDisplayAnalyticsConsent = true,
-                shouldDisplayOnboarding = true,
-                shouldDisplayTopicSelection = true
-            )
-        )
+    fun `When build launch flow, builds all launch routes`() {
+        every { flagRepo.isNotificationsEnabled() } returns true
+        every { flagRepo.isTopicsEnabled() } returns true
+        coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        coEvery { authRepo.isAuthenticationEnabled() } returns true
+        coEvery { authRepo.isUserSignedIn() } returns false
+        coEvery { flagRepo.isLoginEnabled() } returns true
+        coEvery { flagRepo.isOnboardingEnabled() } returns true
+        coEvery { appRepo.isOnboardingCompleted() } returns false
+        coEvery { analyticsClient.isAnalyticsConsentRequired() } returns true
 
-        val expected = ArrayDeque<String>()
-        expected.push(HOME_GRAPH_ROUTE)
-        expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-        expected.push(ONBOARDING_GRAPH_ROUTE)
-        expected.push(ANALYTICS_GRAPH_ROUTE)
+        runTest {
+            appLaunchNav.buildLaunchFlow(true)
 
-        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
+            assertEquals(ANALYTICS_GRAPH_ROUTE, appLaunchNav.startDestination)
+
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
+            expected.push(BIOMETRIC_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
+            expected.push(ONBOARDING_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
     }
 
     @Test
-    fun `Given analytics consent and onboarding should be displayed, then return correct launch routes`() {
-        val appLaunchNavigation = AppLaunchNavigation(
-            AppUiState.Default(
-                shouldDisplayAnalyticsConsent = true,
-                shouldDisplayOnboarding = true
-            )
-        )
+    fun `Given analytics consent is not required, When build launch flow, builds launch routes`() {
+        coEvery { analyticsClient.isAnalyticsConsentRequired() } returns false
 
-        val expected = ArrayDeque<String>()
-        expected.push(HOME_GRAPH_ROUTE)
-        expected.push(ONBOARDING_GRAPH_ROUTE)
-        expected.push(ANALYTICS_GRAPH_ROUTE)
+        runTest {
+            appLaunchNav.buildLaunchFlow(true)
 
-        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
+            assertEquals(ONBOARDING_GRAPH_ROUTE, appLaunchNav.startDestination)
+
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
+            expected.push(BIOMETRIC_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
     }
 
     @Test
-    fun `Given analytics consent and topic selection should be displayed, then return correct launch routes`() {
-        val appLaunchNavigation = AppLaunchNavigation(
-            AppUiState.Default(
-                shouldDisplayAnalyticsConsent = true,
-                shouldDisplayTopicSelection = true
-            )
-        )
+    fun `Given onboarding is complete, When build launch flow, builds launch routes`() {
+        coEvery { appRepo.isOnboardingCompleted() } returns true
 
-        val expected = ArrayDeque<String>()
-        expected.push(HOME_GRAPH_ROUTE)
-        expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-        expected.push(ANALYTICS_GRAPH_ROUTE)
+        runTest {
+            appLaunchNav.buildLaunchFlow(true)
 
-        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
+            expected.push(BIOMETRIC_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
     }
 
     @Test
-    fun `Given analytics consent should be displayed, then return correct launch routes`() {
-        val appLaunchNavigation = AppLaunchNavigation(
-            AppUiState.Default(
-                shouldDisplayAnalyticsConsent = true
-            )
-        )
+    fun `Given onboarding is disabled, When build launch flow, builds launch routes`() {
+        coEvery { flagRepo.isOnboardingEnabled() } returns false
 
-        val expected = ArrayDeque<String>()
-        expected.push(HOME_GRAPH_ROUTE)
-        expected.push(ANALYTICS_GRAPH_ROUTE)
+        runTest {
+            appLaunchNav.buildLaunchFlow(true)
 
-        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
+            expected.push(BIOMETRIC_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
     }
 
     @Test
-    fun `Given onboarding and topic selection should be displayed, then return correct launch routes`() {
-        val appLaunchNavigation = AppLaunchNavigation(
-            AppUiState.Default(
-                shouldDisplayOnboarding = true,
-                shouldDisplayTopicSelection = true
-            )
-        )
+    fun `Given login is disabled, When build launch flow, builds launch routes`() {
+        coEvery { flagRepo.isLoginEnabled() } returns false
 
-        val expected = ArrayDeque<String>()
-        expected.push(HOME_GRAPH_ROUTE)
-        expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-        expected.push(ONBOARDING_GRAPH_ROUTE)
+        runTest {
+            appLaunchNav.buildLaunchFlow(true)
 
-        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
+            expected.push(ONBOARDING_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
     }
 
     @Test
-    fun `Given onboarding should be displayed, then return correct launch routes`() {
-        val appLaunchNavigation = AppLaunchNavigation(
-            AppUiState.Default(
-                shouldDisplayOnboarding = true,
-            )
-        )
+    fun `Given authentication is not enabled, When build launch flow, builds launch routes`() {
+        coEvery { authRepo.isAuthenticationEnabled() } returns false
 
-        val expected = ArrayDeque<String>()
-        expected.push(HOME_GRAPH_ROUTE)
-        expected.push(ONBOARDING_GRAPH_ROUTE)
+        runTest {
+            appLaunchNav.buildLaunchFlow(true)
 
-        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
+            expected.push(ONBOARDING_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
     }
 
     @Test
-    fun `Given topic selection should be displayed, then return correct launch routes`() {
-        val appLaunchNavigation = AppLaunchNavigation(
-            AppUiState.Default(
-                shouldDisplayTopicSelection = true,
-            )
-        )
+    fun `Given user is signed in, When build launch flow, builds launch routes`() {
+        coEvery { authRepo.isUserSignedIn() } returns true
 
-        val expected = ArrayDeque<String>()
-        expected.push(HOME_GRAPH_ROUTE)
-        expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
+        runTest {
+            appLaunchNav.buildLaunchFlow(true)
 
-        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
+            expected.push(ONBOARDING_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
     }
 
     @Test
-    fun `Given analytics consent and notifications onboarding should be displayed, then return correct launch routes`() {
-        val appLaunchNavigation = AppLaunchNavigation(
-            AppUiState.Default(
-                shouldDisplayAnalyticsConsent = true,
-                shouldDisplayNotificationsOnboarding = true
-            )
-        )
+    fun `Given topics are disabled, When build launch flow, builds launch routes`() {
+        every { flagRepo.isTopicsEnabled() } returns false
 
-        val expected = ArrayDeque<String>()
-        expected.push(HOME_GRAPH_ROUTE)
-        expected.push(NOTIFICATIONS_GRAPH_ROUTE)
-        expected.push(ANALYTICS_GRAPH_ROUTE)
+        runTest {
+            appLaunchNav.buildLaunchFlow(true)
 
-        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+            expected.push(BIOMETRIC_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
+            expected.push(ONBOARDING_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
     }
 
     @Test
-    fun `Given topic selection and notifications onboarding should be displayed, then return correct launch routes`() {
-        val appLaunchNavigation = AppLaunchNavigation(
-            AppUiState.Default(
-                shouldDisplayTopicSelection = true,
-                shouldDisplayNotificationsOnboarding = true
-            )
-        )
+    fun `Given topic selection is complete, When build launch flow, builds launch routes`() {
+        coEvery { appRepo.isTopicSelectionCompleted() } returns true
 
-        val expected = ArrayDeque<String>()
-        expected.push(HOME_GRAPH_ROUTE)
-        expected.push(NOTIFICATIONS_GRAPH_ROUTE)
-        expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
+        runTest {
+            appLaunchNav.buildLaunchFlow(true)
 
-        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+            expected.push(BIOMETRIC_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
+            expected.push(ONBOARDING_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
     }
 
     @Test
-    fun `Given onboarding and notifications onboarding should be displayed, then return correct launch routes`() {
-        val appLaunchNavigation = AppLaunchNavigation(
-            AppUiState.Default(
-                shouldDisplayOnboarding = true,
-                shouldDisplayNotificationsOnboarding = true
-            )
-        )
+    fun `Given topic init is unsuccessful, When build launch flow, builds launch routes`() {
+        runTest {
+            appLaunchNav.buildLaunchFlow(false)
 
-        val expected = ArrayDeque<String>()
-        expected.push(HOME_GRAPH_ROUTE)
-        expected.push(NOTIFICATIONS_GRAPH_ROUTE)
-        expected.push(ONBOARDING_GRAPH_ROUTE)
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+            expected.push(BIOMETRIC_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
+            expected.push(ONBOARDING_GRAPH_ROUTE)
 
-        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
     }
 
     @Test
-    fun `Given notifications onboarding should be displayed, then return correct launch routes`() {
-        val appLaunchNavigation = AppLaunchNavigation(
-            AppUiState.Default(
-                shouldDisplayNotificationsOnboarding = true
-            )
-        )
+    fun `Given notifications are disabled, When build launch flow, builds launch routes`() {
+        every { flagRepo.isNotificationsEnabled() } returns false
 
-        val expected = ArrayDeque<String>()
-        expected.push(HOME_GRAPH_ROUTE)
-        expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+        runTest {
+            appLaunchNav.buildLaunchFlow(true)
 
-        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
+            expected.push(BIOMETRIC_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
+            expected.push(ONBOARDING_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
     }
 
     @Test
-    fun `Given analytics, onboarding and topic selection should not be displayed, then return correct launch routes`() {
-        val appLaunchNavigation = AppLaunchNavigation(
-            AppUiState.Default()
-        )
+    fun `When different user login, builds all launch routes`() {
+        runTest {
+            appLaunchNav.onDifferentUserLogin(true)
 
-        val expected = ArrayDeque<String>()
-        expected.push(HOME_GRAPH_ROUTE)
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
+            expected.push(BIOMETRIC_ROUTE)
+            expected.push(ANALYTICS_GRAPH_ROUTE)
 
-        assertArrayEquals(expected.toTypedArray(), appLaunchNavigation.launchRoutes.toTypedArray())
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
+    }
+
+    @Test
+    fun `Given authentication is not enabled, When different user login, build launch routes`() {
+        every { authRepo.isAuthenticationEnabled() } returns false
+
+        runTest {
+            appLaunchNav.onDifferentUserLogin(true)
+
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
+            expected.push(ANALYTICS_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
+    }
+
+    @Test
+    fun `Given topics are disabled, When different user login, build launch routes`() {
+        every { flagRepo.isTopicsEnabled() } returns false
+
+        runTest {
+            appLaunchNav.onDifferentUserLogin(true)
+
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+            expected.push(BIOMETRIC_ROUTE)
+            expected.push(ANALYTICS_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
+    }
+
+    @Test
+    fun `Given no topics, When different user login, build launch routes`() {
+        runTest {
+            appLaunchNav.onDifferentUserLogin(false)
+
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+            expected.push(BIOMETRIC_ROUTE)
+            expected.push(ANALYTICS_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
+    }
+
+    @Test
+    fun `Given notifications are disabled, When different user login, build launch routes`() {
+        every { flagRepo.isNotificationsEnabled() } returns false
+
+        runTest {
+            appLaunchNav.onDifferentUserLogin(true)
+
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
+            expected.push(BIOMETRIC_ROUTE)
+            expected.push(ANALYTICS_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
+    }
+
+    @Test
+    fun `When sign out, builds all launch routes`() {
+        runTest {
+            appLaunchNav.onSignOut()
+
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+            expected.push(BIOMETRIC_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
+    }
+
+    @Test
+    fun `Given authentication is not enabled, When sign out, build launch routes`() {
+        every { authRepo.isAuthenticationEnabled() } returns false
+
+        runTest {
+            appLaunchNav.onSignOut()
+
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
+    }
+
+    @Test
+    fun `Given notifications are disabled, When sign out, build launch routes`() {
+        every { flagRepo.isNotificationsEnabled() } returns false
+
+        runTest {
+            appLaunchNav.onSignOut()
+
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(BIOMETRIC_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
+    }
+
+    @Test
+    fun `Given launch routes are empty, When on Next, pop back stack but don't navigate`() {
+        every { flagRepo.isNotificationsEnabled() } returns false
+        every { authRepo.isAuthenticationEnabled() } returns false
+
+        appLaunchNav.onSignOut()
+        appLaunchNav.onNext(navController)
+
+        clearAllMocks()
+
+        appLaunchNav.onNext(navController)
+        verify {
+            navController.popBackStack()
+        }
+        verify(exactly = 0) {
+            navController.navigate(any<String>())
+        }
+    }
+
+    @Test
+    fun `Given launch routes are not empty, When on Next, pop back stack and navigate`() {
+        appLaunchNav.onNext(navController)
+
+        verify {
+            navController.popBackStack()
+            navController.navigate(ONBOARDING_GRAPH_ROUTE)
+            assertEquals(ONBOARDING_GRAPH_ROUTE, appLaunchNav.startDestination)
+        }
     }
 }
