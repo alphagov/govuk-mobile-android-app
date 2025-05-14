@@ -64,23 +64,7 @@ class NotificationsClientTest {
     }
 
     @Test
-    fun `Given we have a notifications client, when request permission is called and permissions denied, then One Signal request permission function is called and consent given is true`() {
-        every { OneSignal.Notifications.canRequestPermission } returns true
-        coEvery { OneSignal.Notifications.requestPermission(false) } returns true
-
-        runTest {
-            val dispatcher = UnconfinedTestDispatcher()
-            notificationsClient.requestPermission(dispatcher)
-
-            coVerify(exactly = 1) {
-                OneSignal.Notifications.requestPermission(false)
-            }
-            assertTrue(OneSignal.consentGiven)
-        }
-    }
-
-    @Test
-    fun `Given we have a notifications client, when request permission is called and permissions granted, then One Signal request permission function is called and consent given is false`() {
+    fun `Given we have a notifications client, when request permission is called, then One Signal request permission function is called`() {
         every { OneSignal.Notifications.canRequestPermission } returns true
         coEvery { OneSignal.Notifications.requestPermission(false) } returns false
 
@@ -91,7 +75,6 @@ class NotificationsClientTest {
             coVerify(exactly = 1) {
                 OneSignal.Notifications.requestPermission(false)
             }
-            assertFalse(OneSignal.consentGiven)
         }
     }
 
@@ -101,6 +84,24 @@ class NotificationsClientTest {
             notificationsClient.giveConsent()
 
             assertTrue(OneSignal.consentGiven)
+        }
+    }
+
+    @Test
+    fun `Given we have a notifications client, when consent given is called and One Signal consent is true, then consent given returns true`() {
+        every {OneSignal.consentGiven} returns true
+
+        runTest {
+            assertTrue(notificationsClient.consentGiven())
+        }
+    }
+
+    @Test
+    fun `Given we have a notifications client, when consent given is called and One Signal consent is false, then consent given returns false`() {
+        every {OneSignal.consentGiven} returns false
+
+        runTest {
+            assertFalse(notificationsClient.consentGiven())
         }
     }
 

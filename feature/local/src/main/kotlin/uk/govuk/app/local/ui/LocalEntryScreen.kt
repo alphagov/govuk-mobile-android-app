@@ -1,6 +1,7 @@
 package uk.govuk.app.local.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,6 +29,7 @@ import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
@@ -39,6 +41,7 @@ import uk.gov.govuk.design.ui.component.Title1BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.govuk.app.local.LocalUiState
 import uk.govuk.app.local.LocalViewModel
+import uk.govuk.app.local.NavigationEvent
 import uk.govuk.app.local.R
 import uk.govuk.app.local.domain.PostcodeSanitizer
 
@@ -46,6 +49,7 @@ import uk.govuk.app.local.domain.PostcodeSanitizer
 internal fun LocalEntryRoute(
     onBack: () -> Unit,
     onCancel: () -> Unit,
+    onSelect: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: LocalViewModel = hiltViewModel()
@@ -65,6 +69,15 @@ internal fun LocalEntryRoute(
         onPostcodeChange = { viewModel.onPostcodeChange() },
         modifier = modifier
     )
+
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                is NavigationEvent.LocalAuthoritySelected -> onCancel()
+                is NavigationEvent.Addresses -> onSelect(event.postcode)
+            }
+        }
+    }
 }
 
 @Composable
@@ -96,7 +109,7 @@ private fun LocalEntryScreen(
                         traversalIndex = -1f
                     },
                 onBack = { onBack() },
-                actionText = "Cancel",
+                actionText = stringResource(R.string.local_cancel_button),
                 onAction = onCancel
             )
         },
@@ -140,7 +153,8 @@ private fun LocalEntryScreen(
                     )
                 },
                 modifier = Modifier.fillMaxWidth()
-                    .focusRequester(focusRequester),
+                    .focusRequester(focusRequester)
+                    .focusable(true),
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Characters
                 ),
@@ -148,6 +162,7 @@ private fun LocalEntryScreen(
                 isError = uiState is LocalUiState.Error,
                 supportingText = {
                     if (uiState is LocalUiState.Error) {
+                        focusRequester.requestFocus()
                         val errorMessage = stringResource(uiState.message)
                         BodyBoldLabel(
                             color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
@@ -158,9 +173,9 @@ private fun LocalEntryScreen(
                 colors = TextFieldDefaults.colors(
                     cursorColor = GovUkTheme.colourScheme.strokes.textFieldCursor,
                     errorContainerColor = GovUkTheme.colourScheme.surfaces.textFieldBackground,
-                    errorCursorColor = GovUkTheme.colourScheme.strokes.textFieldError,
+                    errorCursorColor = GovUkTheme.colourScheme.strokes.textFieldCursor,
                     errorIndicatorColor = GovUkTheme.colourScheme.strokes.textFieldError,
-                    errorLabelColor = GovUkTheme.colourScheme.textAndIcons.textFieldError,
+                    errorLabelColor = GovUkTheme.colourScheme.textAndIcons.primary,
                     errorPrefixColor = GovUkTheme.colourScheme.textAndIcons.textFieldError,
                     errorPlaceholderColor = GovUkTheme.colourScheme.textAndIcons.textFieldError,
                     errorSuffixColor = GovUkTheme.colourScheme.textAndIcons.textFieldError,
@@ -190,14 +205,6 @@ private fun LocalEntryScreen(
             BodyRegularLabel(stringResource(R.string.local_postcode_use_description_2))
         }
     }
-
-    LaunchedEffect(uiState) {
-        // Todo - navigate back to home screen when a local authority is returned, logic will be
-        //  updated in future tickets!
-        if (uiState is LocalUiState.LocalAuthority) {
-            onCancel()
-        }
-    }
 }
 
 @Composable
@@ -211,6 +218,21 @@ private fun BottomNavBar(
         FixedPrimaryButton(
             text = buttonText,
             onClick = { onPostcodeLookup(buttonText, postcode) }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun LocalEntryScreenPreview() {
+    GovUkTheme {
+        LocalEntryScreen(
+            onBack = {},
+            onPageView = {},
+            onCancel = {},
+            uiState = null,
+            onPostcodeLookup = { _, _ -> },
+            onPostcodeChange = {}
         )
     }
 }

@@ -146,7 +146,6 @@ private fun Page(
         body = page.body,
         modifier = modifier,
         image = page.image,
-        animation = page.animation,
         focusRequester = focusRequester
     )
 

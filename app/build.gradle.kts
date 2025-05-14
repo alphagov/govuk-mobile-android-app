@@ -13,6 +13,7 @@ plugins {
 
 val majorVersion = "0"
 val minorVersion = "1"
+val patchVersion = "0"
 
 android {
     namespace = "uk.gov.govuk"
@@ -26,7 +27,7 @@ android {
         minSdk = Version.MIN_SDK
         targetSdk = Version.TARGET_SDK
         versionCode = buildNumber
-        versionName = "$majorVersion.$minorVersion.$versionCode"
+        versionName = "$majorVersion.$minorVersion.$patchVersion"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -38,6 +39,7 @@ android {
 
         buildConfigField("String", "PLAY_STORE_URL", "\"https://play.google.com/store/apps/details?id=$applicationId\"")
         buildConfigField("String", "ONE_SIGNAL_APP_ID", "\"4c235189-5c5f-4a71-8385-2549fc36419f\"")
+        buildConfigField("String", "VERSION_NAME_USER_FACING", "\"$versionName ($versionCode)\"")
     }
 
     signingConfigs {
@@ -98,6 +100,10 @@ android {
                 signingConfigs.getByName("debug")
             }
 
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
+
             buildConfigField("String", "ONE_SIGNAL_APP_ID", "\"bbea84fc-28cc-4712-a6c5-88f5d08b0d0d\"")
         }
     }
@@ -149,6 +155,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling)
     implementation(libs.hilt.android)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.google.accompanist)
 
     implementation(libs.lottie.compose)
     implementation(libs.play.services.oss.licenses)

@@ -25,6 +25,6 @@ fun NotificationsPromptWidget(
         },
         modifier = modifier,
         onSuppressClick = { onSuppressClick(title) },
-        icon = R.drawable.notifications_bell
+        icon = R.drawable.ic_bell
     )
 }
