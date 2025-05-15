@@ -12,6 +12,10 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.auth.AuthRepo
 import javax.inject.Inject
 
+sealed class ErrorEvent {
+    data object UnableToSignInError: ErrorEvent()
+}
+
 @HiltViewModel
 internal class LoginViewModel @Inject constructor(
     private val authRepo: AuthRepo,
@@ -28,6 +32,9 @@ internal class LoginViewModel @Inject constructor(
 
     private val _loginCompleted = MutableSharedFlow<Boolean>()
     val loginCompleted: SharedFlow<Boolean> = _loginCompleted
+
+    private val _errorEvent = MutableSharedFlow<ErrorEvent>()
+    val errorEvent: SharedFlow<ErrorEvent> = _errorEvent
 
     val authIntent: Intent by lazy {
         authRepo.authIntent
@@ -73,7 +80,7 @@ internal class LoginViewModel @Inject constructor(
             if (result) {
                 _loginCompleted.emit(authRepo.isDifferentUser())
             } else {
-                // Todo - handle failure!!!
+                _errorEvent.emit(ErrorEvent.UnableToSignInError)
             }
         }
     }

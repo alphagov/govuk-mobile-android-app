@@ -2,7 +2,11 @@
 <resources>
     <string name="login_sign_in_with_gov_uk">Sign in with GOV.UK One Login</string>
     <string name="login_sign_sub_text">You’ll need to create a GOV.UK One Login account if you do not already have one</string>
+    <string name="login_sign_in_error_header">There was a problem signing you in</string>
+    <string name="login_sign_in_error_sub_text">Try to sign in again</string>
+
     <string name="login_continue_button">Continue</string>
+    <string name="login_back_and_try_again_button">Go back and try again</string>
 
     <string name="login_post_sign_out_title">You\'ve signed out</string>
     <string name="login_post_sign_out_sub_text">You need to sign in again to use the app</string>

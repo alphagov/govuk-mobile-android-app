@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
@@ -27,9 +28,11 @@ import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.login.LoginViewModel
 import uk.gov.govuk.login.R
+import uk.gov.govuk.login.navigation.navigateToErrorScreen
 
 @Composable
 internal fun LoginRoute(
+    navController: NavController,
     isPostSignOut: Boolean,
     onLoginCompleted: (Boolean) -> Unit,
     modifier: Modifier = Modifier
@@ -61,6 +64,12 @@ internal fun LoginRoute(
     LaunchedEffect(Unit) {
         viewModel.loginCompleted.collect { isDifferentUser ->
             onLoginCompleted(isDifferentUser)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.errorEvent.collect {
+            navController.navigateToErrorScreen()
         }
     }
 }

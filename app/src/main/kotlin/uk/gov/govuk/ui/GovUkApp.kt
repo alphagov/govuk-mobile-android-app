@@ -410,6 +410,7 @@ private fun GovUkNavHost(
             }
         )
         loginGraph(
+            navController = navController,
             onLoginCompleted = { isDifferentUser ->
                 onLogin(isDifferentUser)
             },
