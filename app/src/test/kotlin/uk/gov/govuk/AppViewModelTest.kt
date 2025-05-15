@@ -6,6 +6,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -643,6 +644,15 @@ class AppViewModelTest {
                 appLaunchNavigation.onDifferentUserLogin(any())
                 appLaunchNavigation.onNext(navController)
             }
+        }
+    }
+
+    @Test
+    fun `Given a user has signed out, When on sign out, then call app launch nav`() {
+        viewModel.onSignOut()
+
+        verify {
+            appLaunchNavigation.onSignOut()
         }
     }
 }

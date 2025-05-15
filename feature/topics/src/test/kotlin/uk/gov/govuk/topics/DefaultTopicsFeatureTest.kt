@@ -48,7 +48,7 @@ class DefaultTopicsFeatureTest {
         coEvery { topicsRepo.hasTopics() } returns false
 
         runTest {
-            assertFalse(topicsRepo.hasTopics())
+            assertFalse(topicsFeature.hasTopics())
         }
     }
 
@@ -57,7 +57,7 @@ class DefaultTopicsFeatureTest {
         coEvery { topicsRepo.hasTopics() } returns true
 
         runTest {
-            assertTrue(topicsRepo.hasTopics())
+            assertTrue(topicsFeature.hasTopics())
         }
     }
 }
