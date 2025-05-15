@@ -5,12 +5,18 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.auth.AuthRepo
 import javax.inject.Inject
+
+sealed class ErrorEvent {
+    data object UnableToSignInError: ErrorEvent()
+}
 
 @HiltViewModel
 internal class LoginViewModel @Inject constructor(
@@ -30,6 +36,9 @@ internal class LoginViewModel @Inject constructor(
 
     private val _uiState: MutableStateFlow<LoginUiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
+
+    private val _errorEvent = MutableSharedFlow<ErrorEvent>()
+    val errorEvent: SharedFlow<ErrorEvent> = _errorEvent
 
     val authIntent: Intent by lazy {
         authRepo.authIntent
@@ -75,7 +84,7 @@ internal class LoginViewModel @Inject constructor(
             if (result) {
                 _uiState.value = LoginUiState(authRepo.isAuthenticationEnabled())
             } else {
-                // Todo - handle failure!!!
+                _errorEvent.emit(ErrorEvent.UnableToSignInError)
             }
         }
     }
