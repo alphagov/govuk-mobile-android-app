@@ -107,4 +107,15 @@ class AppRepoTest {
             coVerify { appDataStore.suppressHomeWidget(HomeWidget.SEARCH) }
         }
     }
+
+    @Test
+    fun `Given a different user has logged in, When clear, then clear data store`() {
+        val repo = AppRepo(appDataStore)
+
+        runTest {
+            repo.clear()
+
+            coVerify { appDataStore.clear() }
+        }
+    }
 }

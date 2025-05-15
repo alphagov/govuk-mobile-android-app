@@ -1,9 +1,11 @@
 package uk.gov.govuk.data.auth
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.util.Base64
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators
+import androidx.core.content.edit
 import androidx.fragment.app.FragmentActivity
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
@@ -28,10 +30,12 @@ class AuthRepo @Inject constructor(
     private val tokenRequestBuilder: TokenRequest.Builder,
     private val tokenResponseMapper: TokenResponseMapper,
     private val secureStore: SecureStore,
-    private val biometricManager: BiometricManager
+    private val biometricManager: BiometricManager,
+    private val sharedPreferences: SharedPreferences
 ) {
     companion object {
         private const val REFRESH_TOKEN_KEY = "refreshToken"
+        private const val SUB_ID_KEY = "subId"
     }
 
     val authIntent: Intent by lazy {
@@ -160,13 +164,25 @@ class AuthRepo @Inject constructor(
         }
     }
 
+    fun isDifferentUser(): Boolean {
+        val currentSubId = sharedPreferences.getString(SUB_ID_KEY, "")
+        val newSubId = getIdTokenProperty("sub")
+        sharedPreferences.edit(commit = true) { putString(SUB_ID_KEY, newSubId) }
+
+        return currentSubId != "" && currentSubId != newSubId
+    }
+
     fun getUserEmail(): String {
+        return getIdTokenProperty("email")
+    }
+
+    private fun getIdTokenProperty(name: String): String {
         val parts = tokens.idToken.split(".")
         return try {
             if (parts.size == 3) {
                 val payload = String(Base64.decode(parts[1], Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP))
                 val json = JSONObject(payload)
-                return json.getString("email")
+                return json.getString(name)
             } else ""
         } catch (e: Exception) {
             ""

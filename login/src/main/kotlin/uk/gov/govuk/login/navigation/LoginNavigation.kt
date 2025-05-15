@@ -14,12 +14,13 @@ import uk.gov.govuk.login.ui.LoginRoute
 const val LOGIN_GRAPH_ROUTE = "login_graph_route"
 private const val POST_SIGN_OUT_ARG = "isPostSignOut"
 private const val LOGIN_ROUTE = "login_route?$POST_SIGN_OUT_ARG={$POST_SIGN_OUT_ARG}"
-const val BIOMETRIC_ROUTE = "biometric_route?$POST_SIGN_OUT_ARG={$POST_SIGN_OUT_ARG}"
+const val BIOMETRIC_ROUTE = "biometric_route"
 const val ERROR_ROUTE = "login_error_route"
 
 fun NavGraphBuilder.loginGraph(
     navController: NavController,
-    onCompleted: (Boolean) -> Unit,
+    onLoginCompleted: (Boolean) -> Unit,
+    onBiometricSetupCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -40,34 +41,15 @@ fun NavGraphBuilder.loginGraph(
             LoginRoute(
                 navController = navController,
                 isPostSignOut = isPostSignOut,
-                onLogin = { shouldDisplayLocalAuthOnboarding ->
-                    if (shouldDisplayLocalAuthOnboarding) {
-                        navController.popBackStack()
-                        navController.navigate(
-                            BIOMETRIC_ROUTE
-                                .replace("{$POST_SIGN_OUT_ARG}", isPostSignOut.toString())
-                        )
-                    } else {
-                        onCompleted(isPostSignOut)
-                    }
+                onLoginCompleted = { isDifferentUser ->
+                    onLoginCompleted(isDifferentUser)
                 },
                 modifier = modifier,
             )
         }
-        composable(
-            route = BIOMETRIC_ROUTE,
-            arguments = listOf(
-                navArgument(POST_SIGN_OUT_ARG) {
-                    type = NavType.BoolType
-                    defaultValue = false
-                    nullable = false
-                }
-            )
-        ) { backStackEntry ->
-            val isPostSignOut = backStackEntry.arguments?.getBoolean(POST_SIGN_OUT_ARG) ?: false
-
+        composable(BIOMETRIC_ROUTE) {
             BiometricRoute(
-                onCompleted = { onCompleted(isPostSignOut) },
+                onCompleted = { onBiometricSetupCompleted() },
                 modifier = modifier
             )
         }

@@ -20,4 +20,8 @@ internal class AppRepo @Inject constructor(
     internal val suppressedHomeWidgets = appDataStore.suppressedHomeWidgets
 
     internal suspend fun suppressHomeWidget(widget: HomeWidget) = appDataStore.suppressHomeWidget(widget)
+
+    // Clear everything other than onboarding
+    internal suspend fun clear() = appDataStore.clear()
+
 }

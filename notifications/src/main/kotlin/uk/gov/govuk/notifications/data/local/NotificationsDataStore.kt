@@ -6,11 +6,12 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 class NotificationsDataStore @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    @Named("notification_prefs") private val dataStore: DataStore<Preferences>
 ) {
 
     companion object {

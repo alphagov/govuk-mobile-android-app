@@ -1,8 +1,10 @@
 package uk.gov.govuk.data.auth.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.biometric.BiometricManager
 import androidx.core.net.toUri
+import androidx.security.crypto.EncryptedSharedPreferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -81,5 +83,17 @@ class AuthModule {
 
         return tokenRequestBuilder
             .setGrantType(GrantTypeValues.REFRESH_TOKEN)
+    }
+
+    @Singleton
+    @Provides
+    fun provideEncryptedSharedPrefs(@ApplicationContext context: Context): SharedPreferences {
+        return EncryptedSharedPreferences.create(
+            "auth_prefs",
+            "auth_prefs_key",
+            context,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
     }
 }

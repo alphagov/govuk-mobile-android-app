@@ -2,15 +2,11 @@ package uk.gov.govuk
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.config.data.ConfigRepo
@@ -19,6 +15,7 @@ import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
+import uk.gov.govuk.navigation.AppLaunchNavigation
 import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.ui.model.HomeWidget
 import uk.govuk.app.local.LocalFeature
@@ -30,8 +27,9 @@ internal class AppViewModel @Inject constructor(
     private val configRepo: ConfigRepo,
     private val flagRepo: FlagRepo,
     private val topicsFeature: TopicsFeature,
-    localFeature: LocalFeature,
-    private val analyticsClient: AnalyticsClient
+    private val localFeature: LocalFeature,
+    private val analyticsClient: AnalyticsClient,
+    val appLaunchNavigation: AppLaunchNavigation
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<AppUiState?> = MutableStateFlow(null)
@@ -40,67 +38,75 @@ internal class AppViewModel @Inject constructor(
     private val _homeWidgets: MutableStateFlow<List<HomeWidget>?> = MutableStateFlow(null)
     internal val homeWidgets = _homeWidgets.asStateFlow()
 
-    private val configRetryTrigger = MutableSharedFlow<Unit>(replay = 0)
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val config = configRetryTrigger
-        .onStart { emit(Unit) }
-        .flatMapLatest {
-            flow {
-                emit(configRepo.initConfig())
-            }
-        }
-
     init {
         viewModelScope.launch {
-            combine(
-                config,
-                appRepo.suppressedHomeWidgets,
-                localFeature.hasLocalAuthority()
-            ) { configResult, suppressedHomeWidgets, hasLocalAuthority  ->
-                Triple(configResult, suppressedHomeWidgets, hasLocalAuthority)
-            }.collect {
-                _uiState.value = when (it.first) {
-                    is Success -> {
-                        if (!flagRepo.isAppAvailable()) {
-                            AppUiState.AppUnavailable
-                        } else if (flagRepo.isForcedUpdate(BuildConfig.VERSION_NAME)) {
-                            AppUiState.ForcedUpdate
-                        } else {
-                            updateHomeWidgets(it.second, it.third)
+            initWithConfig()
+        }
+    }
 
-                            val topicsInitSuccess = topicsFeature.init()
+    private suspend fun initWithConfig() {
+        val configResult = configRepo.initConfig()
+        when (configResult) {
+            is Success -> {
+                if (!flagRepo.isAppAvailable()) {
+                    _uiState.value = AppUiState.AppUnavailable
+                } else if (flagRepo.isForcedUpdate(BuildConfig.VERSION_NAME)) {
+                    _uiState.value = AppUiState.ForcedUpdate
+                } else {
+                    val topicsInitSuccess = topicsFeature.init()
 
-                            AppUiState.Default(
-                                shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
-                                shouldDisplayAnalyticsConsent = analyticsClient.isAnalyticsConsentRequired(),
-                                shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
-                                shouldDisplayLogin = flagRepo.isLoginEnabled(),
-                                shouldDisplayTopicSelection = flagRepo.isTopicsEnabled()
-                                        && !appRepo.isTopicSelectionCompleted()
-                                        && topicsInitSuccess,
-                                shouldDisplayNotificationsOnboarding = flagRepo.isNotificationsEnabled()
-                            )
-                        }
+                    appLaunchNavigation.buildLaunchFlow(topicsInitSuccess)
+
+                    _uiState.value = AppUiState.Default(
+                        shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
+                        shouldDisplayAnalyticsConsent = analyticsClient.isAnalyticsConsentRequired(),
+                        shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
+                        shouldDisplayLogin = flagRepo.isLoginEnabled(),
+                        shouldDisplayTopicSelection = flagRepo.isTopicsEnabled()
+                                && !appRepo.isTopicSelectionCompleted()
+                                && topicsInitSuccess,
+                        shouldDisplayNotificationsOnboarding = flagRepo.isNotificationsEnabled()
+                    )
+
+                    combine(
+                        appRepo.suppressedHomeWidgets,
+                        localFeature.hasLocalAuthority()
+                    ) { suppressedWidgets, localAuthority ->
+                        Pair(suppressedWidgets, localAuthority)
+                    }.collect {
+                        updateHomeWidgets(it.first, it.second)
                     }
-                    is InvalidSignature -> AppUiState.ForcedUpdate
-                    is DeviceOffline -> AppUiState.DeviceOffline
-                    else -> AppUiState.AppUnavailable
                 }
             }
+            is InvalidSignature -> _uiState.value = AppUiState.ForcedUpdate
+            is DeviceOffline -> _uiState.value = AppUiState.DeviceOffline
+            else -> _uiState.value = AppUiState.AppUnavailable
         }
     }
 
     fun onTryAgain() {
         _uiState.value = AppUiState.Loading
         viewModelScope.launch {
-            configRetryTrigger.emit(Unit)
+            initWithConfig()
         }
     }
 
     fun onboardingCompleted() {
         viewModelScope.launch {
             appRepo.onboardingCompleted()
+        }
+    }
+
+    fun onLogin(isDifferentUser: Boolean, navController: NavController) {
+        viewModelScope.launch {
+            if (isDifferentUser) {
+                appRepo.clear()
+                topicsFeature.clear()
+                localFeature.clear()
+
+                appLaunchNavigation.onDifferentUserLogin(topicsFeature.hasTopics())
+            }
+            appLaunchNavigation.onNext(navController)
         }
     }
 
@@ -179,5 +185,9 @@ internal class AppViewModel @Inject constructor(
             hasDeepLink,
             url
         )
+    }
+
+    fun onSignOut() {
+        appLaunchNavigation.onSignOut()
     }
 }

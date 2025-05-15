@@ -125,4 +125,13 @@ class LocalRepoTest {
 
         coVerify(exactly = 1) { localApi.getLocalAuthority("slug-one") }
     }
+
+    @Test
+    fun `Clear clears local data source`() {
+        runTest {
+            localRepo.clear()
+
+            coVerify { localDataSource.clear() }
+        }
+    }
 }

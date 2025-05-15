@@ -5,15 +5,17 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import uk.gov.govuk.ui.model.HomeWidget
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 internal class AppDataStore @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    @Named("app_prefs") private val dataStore: DataStore<Preferences>
 ) {
     companion object {
         internal const val ONBOARDING_COMPLETED_KEY = "onboarding_completed"
@@ -47,6 +49,7 @@ internal class AppDataStore @Inject constructor(
         .map { preferences ->
             preferences[stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS)] ?: emptySet()
         }
+        .distinctUntilChanged()
 
     internal suspend fun suppressHomeWidget(widget: HomeWidget) {
         val mutableWidgets = getSuppressedHomeWidgets()?.toMutableSet() ?: mutableSetOf()
@@ -56,4 +59,12 @@ internal class AppDataStore @Inject constructor(
 
     private suspend fun getSuppressedHomeWidgets() = dataStore.data.firstOrNull()
         ?.get(stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS))
+
+    // Clear everything other than onboarding
+    internal suspend fun clear() {
+        dataStore.edit { prefs ->
+            prefs.remove(booleanPreferencesKey(TOPIC_SELECTION_COMPLETED_KEY))
+            prefs.remove(stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS))
+        }
+    }
 }

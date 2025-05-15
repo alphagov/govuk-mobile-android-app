@@ -6,9 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.auth.AuthRepo
@@ -24,8 +22,6 @@ internal class LoginViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient
 ) : ViewModel() {
 
-    data class LoginUiState(val shouldDisplayLocalAuthOnboarding: Boolean)
-
     companion object {
         private const val SCREEN_CLASS = "LoginScreen"
         private const val SCREEN_NAME = "Login"
@@ -34,8 +30,8 @@ internal class LoginViewModel @Inject constructor(
         private const val SECTION = "Login"
     }
 
-    private val _uiState: MutableStateFlow<LoginUiState?> = MutableStateFlow(null)
-    val uiState = _uiState.asStateFlow()
+    private val _loginCompleted = MutableSharedFlow<Boolean>()
+    val loginCompleted: SharedFlow<Boolean> = _loginCompleted
 
     private val _errorEvent = MutableSharedFlow<ErrorEvent>()
     val errorEvent: SharedFlow<ErrorEvent> = _errorEvent
@@ -55,7 +51,7 @@ internal class LoginViewModel @Inject constructor(
                         description = activity.getString(R.string.login_biometric_prompt_description)
                     )
                 ) {
-                    _uiState.value = LoginUiState(false)
+                    _loginCompleted.emit(false)
                 } else {
                     // Todo - handle failure!!!
                 }
@@ -82,7 +78,7 @@ internal class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             val result = authRepo.handleAuthResponse(data)
             if (result) {
-                _uiState.value = LoginUiState(authRepo.isAuthenticationEnabled())
+                _loginCompleted.emit(authRepo.isDifferentUser())
             } else {
                 _errorEvent.emit(ErrorEvent.UnableToSignInError)
             }

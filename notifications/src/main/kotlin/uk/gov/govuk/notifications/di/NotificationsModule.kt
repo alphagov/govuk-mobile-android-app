@@ -1,4 +1,4 @@
-package uk.gov.govuk.topics.di
+package uk.gov.govuk.notifications.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -12,45 +12,23 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import uk.gov.govuk.topics.BuildConfig
-import uk.gov.govuk.topics.DefaultTopicsFeature
-import uk.gov.govuk.topics.TopicsFeature
-import uk.gov.govuk.topics.data.TopicsRepo
-import uk.gov.govuk.topics.data.remote.TopicsApi
 import javax.inject.Named
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-internal class TopicsModule {
-
-    @Provides
-    @Singleton
-    fun providesTopicFeature(topicsRepo: TopicsRepo): TopicsFeature {
-        return DefaultTopicsFeature(topicsRepo)
-    }
-
-    @Provides
-    @Singleton
-    fun providesTopicsApi(): TopicsApi {
-        return Retrofit.Builder()
-            .baseUrl(BuildConfig.TOPICS_BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(TopicsApi::class.java)
-    }
+class NotificationsModule {
 
     @Singleton
     @Provides
-    @Named("topics_prefs")
+    @Named("notification_prefs")
     fun providePreferencesDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
         return PreferenceDataStoreFactory.create(
             corruptionHandler = ReplaceFileCorruptionHandler(
                 produceNewData = { emptyPreferences() }
             ),
-            produceFile = { context.preferencesDataStoreFile("topics_preferences") }
+            produceFile = { context.preferencesDataStoreFile("notification_prefs") }
         )
     }
+
 }

@@ -45,6 +45,10 @@ internal class TopicsRepo @Inject constructor(
         }
     }
 
+    suspend fun hasTopics(): Boolean {
+        return localDataSource.hasTopics()
+    }
+
     suspend fun toggleSelection(ref: String, isSelected: Boolean) {
         localDataSource.toggleSelection(ref, isSelected)
     }
@@ -67,5 +71,9 @@ internal class TopicsRepo @Inject constructor(
 
     internal suspend fun topicsCustomised() {
         localDataSource.topicsCustomised()
+    }
+
+    suspend fun clear() {
+        localDataSource.clear()
     }
 }

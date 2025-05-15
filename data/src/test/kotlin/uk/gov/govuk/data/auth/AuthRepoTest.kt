@@ -1,6 +1,7 @@
 package uk.gov.govuk.data.auth
 
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators
 import androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS
@@ -41,6 +42,7 @@ class AuthRepoTest {
     private val authResponse = mockk<AuthorizationResponse>(relaxed = true)
     private val authException = mockk<AuthorizationException>(relaxed = true)
     private val tokenResponse = mockk<TokenResponse>(relaxed = true)
+    private val sharedPrefs = mockk<SharedPreferences>(relaxed = true)
     private val activity = mockk<FragmentActivity>(relaxed = true)
 
     private lateinit var authRepo: AuthRepo
@@ -49,7 +51,8 @@ class AuthRepoTest {
     fun setup() {
         mockkStatic(AuthorizationResponse::class)
 
-        authRepo = AuthRepo(authRequest, authService, tokenRequestBuilder, tokenResponseMapper, secureStore, biometricManager)
+        authRepo = AuthRepo(authRequest, authService, tokenRequestBuilder, tokenResponseMapper,
+            secureStore, biometricManager, sharedPrefs)
     }
 
     @After

@@ -8,18 +8,19 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.auth.AuthRepo
-import uk.gov.govuk.login.LoginViewModel.LoginUiState
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginViewModelTest {
@@ -58,9 +59,15 @@ class LoginViewModelTest {
         every { authRepo.isUserSignedIn() } returns true
         coEvery { authRepo.refreshTokens(any(), any(), any(), any()) } returns true
 
-        viewModel.init(activity)
+        runTest {
+            val events = mutableListOf<Boolean>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(events)
+            }
+            viewModel.init(activity)
 
-        assertFalse(viewModel.uiState.value!!.shouldDisplayLocalAuthOnboarding)
+            assertFalse(events.first())
+        }
     }
 
     @Test
@@ -68,9 +75,15 @@ class LoginViewModelTest {
         every { authRepo.isUserSignedIn() } returns true
         coEvery { authRepo.refreshTokens(any(), any(), any(), any()) } returns false
 
-        viewModel.init(activity)
+        runTest {
+            val events = mutableListOf<Boolean>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(events)
+            }
+            viewModel.init(activity)
 
-        assertNull(viewModel.uiState.value)
+            assertTrue(events.isEmpty())
+        }
     }
 
     @Test
@@ -99,31 +112,49 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Given an auth response and authentication enabled, when success, then emit ui state`() {
+    fun `Given an auth response and a different user, when success, then emit ui state`() {
         coEvery { authRepo.handleAuthResponse(any()) } returns true
-        every { authRepo.isAuthenticationEnabled() } returns true
+        every { authRepo.isDifferentUser() } returns true
 
-        viewModel.onAuthResponse(null)
+        runTest {
+            val events = mutableListOf<Boolean>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(events)
+            }
+            viewModel.onAuthResponse(null)
 
-        assertEquals(LoginUiState(true), viewModel.uiState.value)
+            assertTrue(events.first())
+        }
     }
 
     @Test
-    fun `Given an auth response and authentication disabled, when success, then emit ui state`() {
+    fun `Given an auth response and the same user, when success, then emit ui state`() {
         coEvery { authRepo.handleAuthResponse(any()) } returns true
         every { authRepo.isAuthenticationEnabled() } returns false
 
-        viewModel.onAuthResponse(null)
+        runTest {
+            val events = mutableListOf<Boolean>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(events)
+            }
+            viewModel.onAuthResponse(null)
 
-        assertEquals(LoginUiState(false), viewModel.uiState.value)
+            assertFalse(events.first())
+        }
     }
 
     @Test
     fun `Given an auth response, when failure, then do not emit ui state`() {
         coEvery { authRepo.handleAuthResponse(any()) } returns false
 
-        viewModel.onAuthResponse(null)
+        runTest {
+            val events = mutableListOf<Boolean>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(events)
+            }
+            viewModel.onAuthResponse(null)
 
-        assertNull(viewModel.uiState.value)
+            assertTrue(events.isEmpty())
+        }
     }
 }

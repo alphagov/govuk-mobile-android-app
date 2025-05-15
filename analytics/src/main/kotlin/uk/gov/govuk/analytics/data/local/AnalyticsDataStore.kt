@@ -10,6 +10,7 @@ import uk.gov.govuk.analytics.data.local.AnalyticsEnabledState.DISABLED
 import uk.gov.govuk.analytics.data.local.AnalyticsEnabledState.ENABLED
 import uk.gov.govuk.analytics.data.local.AnalyticsEnabledState.NOT_SET
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
 enum class AnalyticsEnabledState {
@@ -18,7 +19,7 @@ enum class AnalyticsEnabledState {
 
 @Singleton
 class AnalyticsDataStore @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    @Named("analytics_prefs") private val dataStore: DataStore<Preferences>
 ) {
 
     companion object {

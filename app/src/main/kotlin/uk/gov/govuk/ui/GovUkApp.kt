@@ -44,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
@@ -63,7 +64,6 @@ import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.extension.asDeepLinks
 import uk.gov.govuk.extension.getUrlParam
-import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
 import uk.gov.govuk.login.navigation.loginGraph
@@ -112,9 +112,12 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                     } else {
                         val section = stringResource(R.string.homepage)
                         BottomNavScaffold(
-                            uiState = it,
                             intentFlow = intentFlow,
+                            appLaunchNavigation = viewModel.appLaunchNavigation,
                             onboardingCompleted = { viewModel.onboardingCompleted() },
+                            onLogin = { isDifferentUser, navController ->
+                                viewModel.onLogin(isDifferentUser, navController)
+                            },
                             topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
                             shouldDisplayNotificationsOnboarding = it.shouldDisplayNotificationsOnboarding,
                             onTabClick = { tabText -> viewModel.onTabClick(tabText) },
@@ -137,6 +140,7 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                             onSuppressWidgetClick = { text, widget ->
                                 viewModel.onSuppressWidgetClick(text, section, widget)
                             },
+                            onSignOut = { viewModel.onSignOut() },
                             onDeepLinkReceived = { hasDeepLink, url ->
                                 viewModel.onDeepLinkReceived(hasDeepLink, url)
                             }
@@ -165,9 +169,10 @@ private fun LoadingScreen(
 
 @Composable
 private fun BottomNavScaffold(
-    uiState: AppUiState.Default,
     intentFlow: Flow<Intent>,
+    appLaunchNavigation: AppLaunchNavigation,
     onboardingCompleted: () -> Unit,
+    onLogin: (Boolean, NavController) -> Unit,
     topicSelectionCompleted: () -> Unit,
     shouldDisplayNotificationsOnboarding: Boolean,
     onTabClick: (String) -> Unit,
@@ -175,6 +180,7 @@ private fun BottomNavScaffold(
     onInternalWidgetClick: (String) -> Unit,
     onExternalWidgetClick: (String, String?) -> Unit,
     onSuppressWidgetClick: (String, HomeWidget) -> Unit,
+    onSignOut: () -> Unit,
     onDeepLinkReceived: (hasDeepLink: Boolean, url: String) -> Unit
 ) {
     val navController = rememberNavController()
@@ -193,13 +199,15 @@ private fun BottomNavScaffold(
         ) {
             GovUkNavHost(
                 navController = navController,
-                uiState = uiState,
+                appLaunchNavigation = appLaunchNavigation,
                 onboardingCompleted = onboardingCompleted,
+                onLogin = { isDifferentUser -> onLogin(isDifferentUser, navController) },
                 topicSelectionCompleted = topicSelectionCompleted,
                 homeWidgets = homeWidgets,
                 onInternalWidgetClick = onInternalWidgetClick,
                 onExternalWidgetClick = onExternalWidgetClick,
                 onSuppressWidgetClick = onSuppressWidgetClick,
+                onSignOut = onSignOut,
                 paddingValues = paddingValues
             )
         }
@@ -283,7 +291,7 @@ private fun BottomNav(
     val topLevelDestinations = listOf(TopLevelDestination.Home, TopLevelDestination.Settings)
 
     var selectedIndex by rememberSaveable {
-        mutableIntStateOf(0)
+        mutableIntStateOf(-1)
     }
 
     navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -353,19 +361,19 @@ private fun BottomNav(
 @Composable
 private fun GovUkNavHost(
     navController: NavHostController,
-    uiState: AppUiState.Default,
+    appLaunchNavigation: AppLaunchNavigation,
     onboardingCompleted: () -> Unit,
+    onLogin: (Boolean) -> Unit,
     topicSelectionCompleted: () -> Unit,
     homeWidgets: List<HomeWidget>?,
     onInternalWidgetClick: (String) -> Unit,
     onExternalWidgetClick: (String, String?) -> Unit,
     onSuppressWidgetClick: (String, HomeWidget) -> Unit,
+    onSignOut: () -> Unit,
     paddingValues: PaddingValues
 ) {
-    val launchRoutes = rememberSaveable { AppLaunchNavigation(uiState).launchRoutes }
-    val startDestination = rememberSaveable { launchRoutes.pop() }
-
     val context = LocalContext.current
+    val startDestination = appLaunchNavigation.startDestination
 
     NavHost(
         navController = navController,
@@ -373,23 +381,20 @@ private fun GovUkNavHost(
     ) {
         analyticsGraph(
             analyticsConsentCompleted = {
-                navController.popBackStack()
-                navController.navigate(launchRoutes.pop())
+                appLaunchNavigation.onNext(navController)
             }
         )
         onboardingGraph(
             onboardingCompleted = {
                 onboardingCompleted()
-                navController.popBackStack()
-                navController.navigate(launchRoutes.pop())
+                appLaunchNavigation.onNext(navController)
             }
         )
         if (homeWidgets.contains(HomeWidget.TOPICS)) {
             topicSelectionGraph(
                 topicSelectionCompleted = {
                     topicSelectionCompleted()
-                    navController.popBackStack()
-                    navController.navigate(launchRoutes.pop())
+                    appLaunchNavigation.onNext(navController)
                 }
             )
             topicsGraph(
@@ -401,19 +406,16 @@ private fun GovUkNavHost(
         notificationsGraph(
             notificationsOnboardingCompleted = {
                 navController.popBackStack()
-                if (launchRoutes.isEmpty()) return@notificationsGraph
-                navController.navigate(launchRoutes.pop())
+                appLaunchNavigation.onNext(navController)
             }
         )
         loginGraph(
             navController = navController,
-            onCompleted = { isPostSignOut ->
-                navController.popBackStack()
-                if (isPostSignOut) {
-                    navController.navigate(HOME_GRAPH_ROUTE)
-                } else {
-                    navController.navigate(launchRoutes.pop())
-                }
+            onLoginCompleted = { isDifferentUser ->
+                onLogin(isDifferentUser)
+            },
+            onBiometricSetupCompleted = {
+                appLaunchNavigation.onNext(navController)
             }
         )
         homeGraph(
@@ -449,6 +451,7 @@ private fun GovUkNavHost(
         signOutGraph(
             navController = navController,
             onSignOut = {
+                onSignOut()
                 navController.navigateToLoginPostSignOut()
             }
         )
