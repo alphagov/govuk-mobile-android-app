@@ -67,7 +67,7 @@ private fun ErrorScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_error),
+                    painter = painterResource(id = uk.gov.govuk.design.R.drawable.ic_error),
                     contentDescription = null,
                     tint = GovUkTheme.colourScheme.textAndIcons.primary,
                     modifier = Modifier.height(IntrinsicSize.Min)
