@@ -8,7 +8,7 @@ import javax.inject.Singleton
 internal class NotificationsRepo @Inject constructor(
     private val notificationsDataStore: NotificationsDataStore
 ) {
-    internal suspend fun isOnboardingSeen() = notificationsDataStore.isOnboardingSeen()
+    internal suspend fun isOnboardingCompleted() = notificationsDataStore.isOnboardingCompleted()
 
-    internal suspend fun onboardingSeen() = notificationsDataStore.onboardingSeen()
+    internal suspend fun onboardingCompleted() = notificationsDataStore.onboardingCompleted()
 }

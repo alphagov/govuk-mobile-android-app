@@ -30,27 +30,27 @@ class NotificationsDataStoreTest {
         every { dataStore.data } returns emptyFlow()
 
         runTest {
-            assertFalse(notificationsDataStore.isOnboardingSeen())
+            assertFalse(notificationsDataStore.isOnboardingCompleted())
         }
     }
 
     @Test
-    fun `Given notifications onboarding seen is null, then return false`() {
+    fun `Given notifications onboarding completed is null, then return false`() {
         every { dataStore.data } returns flowOf(preferences)
         every { preferences[booleanPreferencesKey(NotificationsDataStore.NOTIFICATIONS_ONBOARDING_SEEN_KEY)] } returns null
 
         runTest {
-            assertFalse(notificationsDataStore.isOnboardingSeen())
+            assertFalse(notificationsDataStore.isOnboardingCompleted())
         }
     }
 
     @Test
-    fun `Given notifications onboarding seen is true, then return true`() {
+    fun `Given notifications onboarding completed is true, then return true`() {
         every { dataStore.data } returns flowOf(preferences)
         every { preferences[booleanPreferencesKey(NotificationsDataStore.NOTIFICATIONS_ONBOARDING_SEEN_KEY)] } returns true
 
         runTest {
-            assertTrue(notificationsDataStore.isOnboardingSeen())
+            assertTrue(notificationsDataStore.isOnboardingCompleted())
         }
     }
 }

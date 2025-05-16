@@ -18,12 +18,12 @@ class NotificationsDataStore @Inject constructor(
         internal const val NOTIFICATIONS_ONBOARDING_SEEN_KEY = "notifications_onboarding_seen"
     }
 
-    internal suspend fun isOnboardingSeen(): Boolean {
+    internal suspend fun isOnboardingCompleted(): Boolean {
         return dataStore.data.firstOrNull()
             ?.get(booleanPreferencesKey(NOTIFICATIONS_ONBOARDING_SEEN_KEY)) == true
     }
 
-    internal suspend fun onboardingSeen() {
+    internal suspend fun onboardingCompleted() {
         dataStore.edit { preferences -> preferences[booleanPreferencesKey(NOTIFICATIONS_ONBOARDING_SEEN_KEY)] = true
         }
     }

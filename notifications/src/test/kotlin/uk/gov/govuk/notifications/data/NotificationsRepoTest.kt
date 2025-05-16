@@ -14,36 +14,36 @@ class NotificationsRepoTest {
     private val notificationsDataStore = mockk<NotificationsDataStore>(relaxed = true)
 
     @Test
-    fun `Given the user has not previously seen onboarding, When is onboarding seen, then return false`() {
+    fun `Given the user has not previously completed onboarding, When is onboarding completed, then return false`() {
         val repo = NotificationsRepo(notificationsDataStore)
 
-        coEvery { notificationsDataStore.isOnboardingSeen() } returns false
+        coEvery { notificationsDataStore.isOnboardingCompleted() } returns false
 
         runTest {
 
-            assertFalse(repo.isOnboardingSeen())
+            assertFalse(repo.isOnboardingCompleted())
         }
     }
 
     @Test
-    fun `Given the user has previously seen onboarding, When is onboarding seen, then return true`() {
+    fun `Given the user has previously completed onboarding, When is onboarding completed, then return true`() {
         val repo = NotificationsRepo(notificationsDataStore)
 
-        coEvery { notificationsDataStore.isOnboardingSeen() } returns true
+        coEvery { notificationsDataStore.isOnboardingCompleted() } returns true
 
         runTest {
-            assertTrue(repo.isOnboardingSeen())
+            assertTrue(repo.isOnboardingCompleted())
         }
     }
 
     @Test
-    fun `Given the user has seen onboarding, When onboarding seen, then update data store`() {
+    fun `Given the user has completed onboarding, When onboarding completed, then update data store`() {
         val repo = NotificationsRepo(notificationsDataStore)
 
         runTest {
-            repo.onboardingSeen()
+            repo.onboardingCompleted()
 
-            coVerify { notificationsDataStore.onboardingSeen() }
+            coVerify { notificationsDataStore.onboardingCompleted() }
         }
     }
 }
