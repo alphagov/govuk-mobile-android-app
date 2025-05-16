@@ -1,5 +1,6 @@
 package uk.gov.govuk.visited.data
 
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.first
@@ -47,6 +48,19 @@ class VisitedRepoTest {
 
         runTest {
             assertEquals(2, repo.visitedItems.first().size)
+        }
+    }
+
+    @Test
+    fun `Given the repo is cleared, then clear local data source`() {
+        val repo = VisitedRepo(localDataSource)
+
+        runTest {
+            repo.clear()
+        }
+
+        coVerify {
+            localDataSource.clear()
         }
     }
 }

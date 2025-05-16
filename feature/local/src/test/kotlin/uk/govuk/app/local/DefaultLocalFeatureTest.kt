@@ -45,7 +45,7 @@ class DefaultLocalFeatureTest {
     }
 
     @Test
-    fun `Clear clears local data source`() {
+    fun `Clear clears the repo`() {
         runTest {
             localFeature.clear()
 

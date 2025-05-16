@@ -41,5 +41,9 @@ internal class SearchRepo @Inject constructor(
     suspend fun performLookup(searchTerm: String): Result<AutocompleteResponse> {
         return safeApiCall { autocompleteApi.getSuggestions(searchTerm) }
     }
+
+    suspend fun clear() {
+        localDataSource.clear()
+    }
 }
 

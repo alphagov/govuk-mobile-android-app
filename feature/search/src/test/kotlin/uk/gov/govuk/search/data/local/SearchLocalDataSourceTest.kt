@@ -244,4 +244,35 @@ class SearchLocalDataSourceTest {
             assertTrue(previousSearches.isEmpty())
         }
     }
+
+    @Test
+    fun `Given the data source is cleared, then delete all from realm`() {
+        val expected = listOf(
+            LocalSearchItem().apply {
+                searchTerm = "dog"
+                timestamp = 0
+            },
+            LocalSearchItem().apply {
+                searchTerm = "cat"
+                timestamp = 1
+            }
+        )
+
+        runTest {
+            realm.write {
+                copyToRealm(expected[0])
+                copyToRealm(expected[1])
+            }
+
+            var previousSearches = localDataSource.previousSearches.first()
+            assertEquals(2, previousSearches.size)
+            assertEquals("cat", previousSearches[0].searchTerm)
+            assertEquals("dog", previousSearches[1].searchTerm)
+
+            localDataSource.clear()
+
+            previousSearches = localDataSource.previousSearches.first()
+            assertTrue(previousSearches.isEmpty())
+        }
+    }
 }

@@ -4,10 +4,12 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
-import org.junit.Assert.assertEquals
+import io.realm.kotlin.ext.query
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.visited.data.model.VisitedItem
@@ -86,7 +88,9 @@ class VisitedLocalDataSourceTest {
             localDataSource.insertOrUpdate("title1", "url1")
 
             val visitedItems = localDataSource.visitedItems.first()
-            val expectedEpochDay = LocalDateTime.ofEpochSecond(visitedItems[0].lastVisited, 0, ZoneOffset.UTC).toLocalDate().toEpochDay()
+            val expectedEpochDay =
+                LocalDateTime.ofEpochSecond(visitedItems[0].lastVisited, 0, ZoneOffset.UTC)
+                    .toLocalDate().toEpochDay()
 
             assertEquals(today.toEpochDay(), expectedEpochDay)
         }
@@ -217,6 +221,28 @@ class VisitedLocalDataSourceTest {
             val visitedItems = localDataSource.visitedItems.first()
 
             assertEquals(0, visitedItems.size)
+        }
+    }
+
+    @Test
+    fun `Given the data source is cleared, then delete all from realm`() {
+        runTest {
+            realm.write {
+                copyToRealm(
+                    VisitedItem().apply {
+                        title = "title"
+                        url = "url"
+                        lastVisited = 0L
+                    }
+                )
+
+                assertTrue(query<VisitedItem>().find().isNotEmpty())
+            }
+
+            val localDataSource = VisitedLocalDataSource(realmProvider)
+            localDataSource.clear()
+
+            assertTrue(realm.query<VisitedItem>().find().isEmpty())
         }
     }
 }

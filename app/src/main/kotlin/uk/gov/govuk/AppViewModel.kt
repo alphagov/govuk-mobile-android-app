@@ -16,8 +16,10 @@ import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
 import uk.gov.govuk.navigation.AppLaunchNavigation
+import uk.gov.govuk.search.SearchFeature
 import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.ui.model.HomeWidget
+import uk.gov.govuk.visited.Visited
 import uk.govuk.app.local.LocalFeature
 import javax.inject.Inject
 
@@ -28,6 +30,8 @@ internal class AppViewModel @Inject constructor(
     private val flagRepo: FlagRepo,
     private val topicsFeature: TopicsFeature,
     private val localFeature: LocalFeature,
+    private val searchFeature: SearchFeature,
+    private val visitedFeature: Visited,
     private val analyticsClient: AnalyticsClient,
     val appLaunchNavigation: AppLaunchNavigation
 ) : ViewModel() {
@@ -103,6 +107,8 @@ internal class AppViewModel @Inject constructor(
                 appRepo.clear()
                 topicsFeature.clear()
                 localFeature.clear()
+                searchFeature.clear()
+                visitedFeature.clear()
 
                 appLaunchNavigation.onDifferentUserLogin(topicsFeature.hasTopics())
             }
