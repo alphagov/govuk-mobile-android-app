@@ -126,10 +126,14 @@ class NotificationsOnboardingViewModelTest {
     }
 
     @Test
-    fun `Given Turn off notifications button click, then log analytics`() {
+    fun `Given Turn off notifications button click, then onboarding completed and log analytics`() {
+        coEvery { notificationsDataStore.onboardingCompleted() } returns Unit
         viewModel.onTurnOffNotificationsClick("Title")
 
         runTest {
+            coVerify(exactly = 1) {
+                notificationsDataStore.onboardingCompleted()
+            }
             verify(exactly = 1) {
                 analyticsClient.buttonClick(
                     text = "Title",

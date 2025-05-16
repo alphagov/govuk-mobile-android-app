@@ -104,6 +104,9 @@ internal class NotificationsOnboardingViewModel @Inject constructor(
     }
 
     internal fun onTurnOffNotificationsClick(text: String) {
+        viewModelScope.launch {
+            notificationsDataStore.onboardingCompleted()
+        }
         analyticsClient.buttonClick(
             text = text,
             external = true
