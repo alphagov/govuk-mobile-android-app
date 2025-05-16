@@ -174,7 +174,7 @@ class NotificationsOnboardingViewModelTest {
     }
 
     @Test
-    fun `Given the permission status is not granted and onboarding not seen, When init, then the ui state should be default`() {
+    fun `Given the permission status is not granted and onboarding not completed, When init, then the ui state should be default`() {
         every { permissionStatus.isGranted } returns false
         every { notificationsClient.requestPermission() } returns Unit
         coEvery { notificationsDataStore.isOnboardingCompleted() } returns false
@@ -188,7 +188,7 @@ class NotificationsOnboardingViewModelTest {
     }
 
     @Test
-    fun `Given the permission status is granted, consent is given and onboarding is seen, When init, then ui state should be finish`() {
+    fun `Given the permission status is granted, consent is given and onboarding is completed, When init, then ui state should be finish`() {
         every { permissionStatus.isGranted } returns true
         every { notificationsClient.consentGiven() } returns true
         coEvery { notificationsDataStore.isOnboardingCompleted() } returns true
@@ -202,7 +202,7 @@ class NotificationsOnboardingViewModelTest {
     }
 
     @Test
-    fun `Given the permission status is granted, onboarding is seen but consent is not given, When init, then ui state should be no consent`() {
+    fun `Given the permission status is granted, onboarding is completed but consent is not given, When init, then ui state should be no consent`() {
         every { permissionStatus.isGranted } returns true
         every { notificationsClient.consentGiven() } returns false
         coEvery { notificationsDataStore.isOnboardingCompleted() } returns true
@@ -216,7 +216,7 @@ class NotificationsOnboardingViewModelTest {
     }
 
     @Test
-    fun `Given the permission status is granted, onboarding is not seen and Android version is less than Tiramisu, When init, then ui state should be no consent`() {
+    fun `Given the permission status is granted, onboarding is not completed and Android version is less than Tiramisu, When init, then ui state should be no consent`() {
         every { permissionStatus.isGranted } returns true
         every { notificationsClient.consentGiven() } returns false
         coEvery { notificationsDataStore.isOnboardingCompleted() } returns false
@@ -230,7 +230,7 @@ class NotificationsOnboardingViewModelTest {
     }
 
     @Test
-    fun `Given the permission status is not granted, onboarding is seen, When init, then ui state should be finish`() {
+    fun `Given the permission status is not granted, onboarding is completed, When init, then ui state should be finish`() {
         every { permissionStatus.isGranted } returns false
         coEvery { notificationsDataStore.isOnboardingCompleted() } returns true
 
@@ -243,7 +243,7 @@ class NotificationsOnboardingViewModelTest {
     }
 
     @Test
-    fun `Given the permission status is granted, Android version is Tiramisu, consent is given and onboarding is not seen, When init, then ui state should be default`() {
+    fun `Given the permission status is granted, Android version is Tiramisu, consent is given and onboarding is not completed, When init, then ui state should be default`() {
         every { permissionStatus.isGranted } returns true
         every { notificationsClient.consentGiven() } returns true
         coEvery { notificationsDataStore.isOnboardingCompleted() } returns false

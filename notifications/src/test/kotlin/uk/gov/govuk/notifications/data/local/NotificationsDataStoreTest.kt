@@ -37,7 +37,7 @@ class NotificationsDataStoreTest {
     @Test
     fun `Given notifications onboarding completed is null, then return false`() {
         every { dataStore.data } returns flowOf(preferences)
-        every { preferences[booleanPreferencesKey(NotificationsDataStore.NOTIFICATIONS_ONBOARDING_SEEN_KEY)] } returns null
+        every { preferences[booleanPreferencesKey(NotificationsDataStore.NOTIFICATIONS_ONBOARDING_COMPLETED_KEY)] } returns null
 
         runTest {
             assertFalse(notificationsDataStore.isOnboardingCompleted())
@@ -47,7 +47,7 @@ class NotificationsDataStoreTest {
     @Test
     fun `Given notifications onboarding completed is true, then return true`() {
         every { dataStore.data } returns flowOf(preferences)
-        every { preferences[booleanPreferencesKey(NotificationsDataStore.NOTIFICATIONS_ONBOARDING_SEEN_KEY)] } returns true
+        every { preferences[booleanPreferencesKey(NotificationsDataStore.NOTIFICATIONS_ONBOARDING_COMPLETED_KEY)] } returns true
 
         runTest {
             assertTrue(notificationsDataStore.isOnboardingCompleted())
