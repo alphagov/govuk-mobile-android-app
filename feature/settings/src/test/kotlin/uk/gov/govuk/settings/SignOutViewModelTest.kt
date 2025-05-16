@@ -1,6 +1,7 @@
 package uk.gov.govuk.settings
 
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +50,34 @@ class SignOutViewModelTest {
     }
 
     @Test
-    fun `Given a user signs out, then log analytics, disable analytics and sign out`() {
+    fun `Given an error page view, then log analytics`() {
+        viewModel.onErrorPageView()
+
+        verify {
+            analyticsClient.screenView(
+                screenClass = "SignOutErrorScreen",
+                screenName = "Sign Out",
+                title = "Sign Out"
+            )
+        }
+    }
+
+    @Test
+    fun `Given a back to settings button click, then log analytics`() {
+        viewModel.onBack("button text")
+
+        verify {
+            analyticsClient.buttonClick(
+                text = "button text",
+                section = "Settings"
+            )
+        }
+    }
+
+    @Test
+    fun `Given a user signs out successfully, then log analytics, disable analytics and sign out`() {
+        every { authRepo.signOut() } returns true
+
         viewModel.onSignOut("text")
 
         coVerify {
@@ -61,5 +89,23 @@ class SignOutViewModelTest {
             analyticsClient.disable()
             authRepo.signOut()
         }
+    }
+
+    @Test
+    fun `Given a user signs out unsuccessfully, then log analytics and do not disable analytics`() {
+        every { authRepo.signOut() } returns false
+
+        viewModel.onSignOut("text")
+
+        coVerify {
+            analyticsClient.buttonClick(
+                text = "text",
+                section = "Settings"
+            )
+
+            authRepo.signOut()
+        }
+
+        coVerify (exactly = 0) { analyticsClient.disable() }
     }
 }
