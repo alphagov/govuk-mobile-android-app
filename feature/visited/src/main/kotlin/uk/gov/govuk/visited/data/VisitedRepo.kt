@@ -8,7 +8,7 @@ import javax.inject.Singleton
 
 @Singleton
 internal class VisitedRepo @Inject constructor(
-    localDataSource: VisitedLocalDataSource,
+    private val localDataSource: VisitedLocalDataSource,
 ) {
     val visitedItems = localDataSource.visitedItems.map { visitedItems ->
         visitedItems.map { visitedItem ->
@@ -18,5 +18,9 @@ internal class VisitedRepo @Inject constructor(
                 lastVisited = visitedItem.lastVisited
             )
         }
+    }
+
+    suspend fun clear() {
+        localDataSource.clear()
     }
 }

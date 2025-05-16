@@ -6,6 +6,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import uk.gov.govuk.search.DefaultSearchFeature
+import uk.gov.govuk.search.SearchFeature
+import uk.gov.govuk.search.data.SearchRepo
 import uk.gov.govuk.search.data.remote.AutocompleteApi
 import uk.gov.govuk.search.data.remote.SearchApi
 import uk.gov.govuk.search.domain.SearchConfig
@@ -13,7 +16,13 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class SearchModule {
+internal class SearchModule {
+
+    @Provides
+    @Singleton
+    fun providesSearchFeature(searchRepo: SearchRepo): SearchFeature {
+        return DefaultSearchFeature(searchRepo)
+    }
 
     @Provides
     @Singleton

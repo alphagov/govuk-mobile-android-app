@@ -32,8 +32,10 @@ import uk.gov.govuk.data.model.Result.Error
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
 import uk.gov.govuk.navigation.AppLaunchNavigation
+import uk.gov.govuk.search.SearchFeature
 import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.ui.model.HomeWidget
+import uk.gov.govuk.visited.Visited
 import uk.govuk.app.local.LocalFeature
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -45,6 +47,8 @@ class AppViewModelTest {
     private val flagRepo = mockk<FlagRepo>(relaxed = true)
     private val topicsFeature = mockk<TopicsFeature>(relaxed = true)
     private val localFeature = mockk<LocalFeature>(relaxed = true)
+    private val searchFeature = mockk<SearchFeature>(relaxed = true)
+    private val visited = mockk<Visited>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val appLaunchNavigation = mockk<AppLaunchNavigation>(relaxed = true)
     private val navController = mockk<NavController>(relaxed = true)
@@ -62,7 +66,7 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
 
         viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
     }
 
     @After
@@ -75,7 +79,7 @@ class AppViewModelTest {
         coEvery { configRepo.initConfig() } returns Error()
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -88,7 +92,7 @@ class AppViewModelTest {
         coEvery { configRepo.initConfig() } returns InvalidSignature()
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -101,7 +105,7 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -122,7 +126,7 @@ class AppViewModelTest {
         every { flagRepo.isForcedUpdate(any()) } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -135,7 +139,7 @@ class AppViewModelTest {
         every { flagRepo.isForcedUpdate(any()) } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -148,7 +152,7 @@ class AppViewModelTest {
         every { flagRepo.isRecommendUpdate(any()) } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -161,7 +165,7 @@ class AppViewModelTest {
         every { flagRepo.isRecommendUpdate(any()) } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -174,7 +178,7 @@ class AppViewModelTest {
         coEvery { analyticsClient.isAnalyticsConsentRequired() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -187,7 +191,7 @@ class AppViewModelTest {
         coEvery { analyticsClient.isAnalyticsConsentRequired() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -201,7 +205,7 @@ class AppViewModelTest {
         every { flagRepo.isOnboardingEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -215,7 +219,7 @@ class AppViewModelTest {
         every { flagRepo.isOnboardingEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -229,7 +233,7 @@ class AppViewModelTest {
         every { flagRepo.isOnboardingEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -243,7 +247,7 @@ class AppViewModelTest {
         every { flagRepo.isOnboardingEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -256,7 +260,7 @@ class AppViewModelTest {
         every { flagRepo.isTopicsEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -270,7 +274,7 @@ class AppViewModelTest {
         coEvery { appRepo.isTopicSelectionCompleted() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -285,7 +289,7 @@ class AppViewModelTest {
         coEvery { topicsFeature.init() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -300,7 +304,7 @@ class AppViewModelTest {
         coEvery { topicsFeature.init() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -313,7 +317,7 @@ class AppViewModelTest {
         every { flagRepo.isNotificationsEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -326,7 +330,7 @@ class AppViewModelTest {
         every { flagRepo.isNotificationsEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -339,7 +343,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isSearchEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
@@ -353,7 +357,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isSearchEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
@@ -366,7 +370,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isRecentActivityEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
@@ -379,7 +383,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isRecentActivityEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
@@ -392,7 +396,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isTopicsEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
@@ -405,7 +409,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isTopicsEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
@@ -418,7 +422,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isNotificationsEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
@@ -431,7 +435,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isNotificationsEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
@@ -444,7 +448,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isNotificationsEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
@@ -458,7 +462,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isNotificationsEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
@@ -575,7 +579,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isLocalServicesEnabled() } returns false
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
@@ -589,7 +593,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isTopicsEnabled() } returns true
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val homeWidgets = viewModel.homeWidgets.value!!
@@ -605,7 +609,7 @@ class AppViewModelTest {
         every { localFeature.hasLocalAuthority() } returns flowOf(true)
 
         val viewModel = AppViewModel(appRepo, configRepo, flagRepo, topicsFeature, localFeature,
-            analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val homeWidgets = viewModel.homeWidgets.value!!
@@ -623,6 +627,8 @@ class AppViewModelTest {
                 appRepo.clear()
                 topicsFeature.clear()
                 localFeature.clear()
+                searchFeature.clear()
+                visited.clear()
                 appLaunchNavigation.onDifferentUserLogin(any())
             }
 
@@ -641,6 +647,8 @@ class AppViewModelTest {
                 appRepo.clear()
                 topicsFeature.clear()
                 localFeature.clear()
+                searchFeature.clear()
+                visited.clear()
                 appLaunchNavigation.onDifferentUserLogin(any())
                 appLaunchNavigation.onNext(navController)
             }

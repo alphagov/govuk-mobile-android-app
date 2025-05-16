@@ -28,7 +28,7 @@ internal class TopicsModule {
 
     @Provides
     @Singleton
-    fun providesTopicFeature(topicsRepo: TopicsRepo): TopicsFeature {
+    fun providesTopicsFeature(topicsRepo: TopicsRepo): TopicsFeature {
         return DefaultTopicsFeature(topicsRepo)
     }
 

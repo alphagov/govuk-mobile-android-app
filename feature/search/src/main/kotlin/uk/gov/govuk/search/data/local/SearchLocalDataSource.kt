@@ -71,4 +71,8 @@ internal class SearchLocalDataSource @Inject constructor(
             deleteAll()
         }
     }
+
+    suspend fun clear() {
+        removeAllPreviousSearches()
+    }
 }

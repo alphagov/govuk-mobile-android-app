@@ -15,7 +15,10 @@ import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
 import retrofit2.HttpException
 import retrofit2.Response
-import uk.gov.govuk.data.model.Result.*
+import uk.gov.govuk.data.model.Result.DeviceOffline
+import uk.gov.govuk.data.model.Result.Error
+import uk.gov.govuk.data.model.Result.ServiceNotResponding
+import uk.gov.govuk.data.model.Result.Success
 import uk.gov.govuk.search.data.local.SearchLocalDataSource
 import uk.gov.govuk.search.data.local.model.LocalSearchItem
 import uk.gov.govuk.search.data.remote.AutocompleteApi
@@ -282,6 +285,17 @@ class SearchRepoTest {
             runTest {
                 val result = searchRepo.performLookup(searchTerm)
                 assertTrue(result is Error)
+            }
+        }
+
+        @Test
+        fun `Clear clears local data source`() {
+            runTest {
+                searchRepo.clear()
+            }
+
+            coVerify {
+                localDataSource.clear()
             }
         }
     }

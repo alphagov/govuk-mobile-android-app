@@ -49,4 +49,10 @@ internal class VisitedLocalDataSource @Inject constructor(
             }
         }
     }
+
+    suspend fun clear() {
+        realmProvider.open().write {
+            deleteAll()
+        }
+    }
 }
