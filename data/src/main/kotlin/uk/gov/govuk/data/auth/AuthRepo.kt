@@ -17,6 +17,7 @@ import org.json.JSONObject
 import uk.gov.android.securestore.RetrievalEvent
 import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.authentication.AuthenticatorPromptConfiguration
+import uk.gov.android.securestore.error.SecureStorageError
 import uk.gov.govuk.data.auth.model.Tokens
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -189,8 +190,13 @@ class AuthRepo @Inject constructor(
         }
     }
 
-    fun signOut() {
-        secureStore.delete(REFRESH_TOKEN_KEY)
-        tokens = Tokens()
+    fun signOut(): Boolean {
+        try {
+            secureStore.delete(REFRESH_TOKEN_KEY)
+            tokens = Tokens()
+            return true
+        } catch (e: SecureStorageError) {
+            return false
+        }
     }
 }
