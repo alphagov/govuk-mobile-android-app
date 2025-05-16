@@ -10,11 +10,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.auth.AuthRepo
+import uk.gov.govuk.data.auth.ErrorEvent
 import javax.inject.Inject
-
-sealed class ErrorEvent {
-    data object UnableToSignInError: ErrorEvent()
-}
 
 @HiltViewModel
 internal class LoginViewModel @Inject constructor(
