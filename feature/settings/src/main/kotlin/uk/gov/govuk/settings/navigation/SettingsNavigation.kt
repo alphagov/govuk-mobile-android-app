@@ -20,6 +20,7 @@ import uk.gov.govuk.settings.BuildConfig.PRIVACY_POLICY_URL
 import uk.gov.govuk.settings.BuildConfig.TERMS_AND_CONDITIONS_URL
 import uk.gov.govuk.settings.ui.SettingsRoute
 import uk.gov.govuk.settings.ui.SettingsRouteActions
+import uk.gov.govuk.settings.ui.SignOutErrorRoute
 import uk.gov.govuk.settings.ui.SignOutRoute
 import java.net.URLEncoder
 
@@ -29,6 +30,8 @@ private const val SETTINGS_ROUTE = "settings_route"
 
 const val SIGN_OUT_GRAPH_ROUTE = "sign_out_graph_route"
 private const val SIGN_OUT_ROUTE = "sign_out_route"
+
+const val SIGN_OUT_ERROR_ROUTE = "sign_out_error_route"
 
 fun NavGraphBuilder.settingsGraph(
     navigateTo: (String) -> Unit,
@@ -82,7 +85,8 @@ fun NavGraphBuilder.settingsGraph(
 
 fun NavGraphBuilder.signOutGraph(
     navController: NavController,
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     navigation(
         route = SIGN_OUT_GRAPH_ROUTE,
@@ -90,11 +94,24 @@ fun NavGraphBuilder.signOutGraph(
     ) {
         composable(SIGN_OUT_ROUTE) {
             SignOutRoute(
+                navController = navController,
                 onBack = { navController.popBackStack() },
                 onSignOut = onSignOut
             )
         }
+        composable(
+            route = SIGN_OUT_ERROR_ROUTE,
+        ) {
+            SignOutErrorRoute(
+                onBack = { navController.navigate(SETTINGS_ROUTE) },
+                modifier = modifier
+            )
+        }
     }
+}
+
+fun NavController.navigateToErrorScreen() {
+    navigate(SIGN_OUT_ERROR_ROUTE)
 }
 
 fun navigateToHelpAndFeedback(
