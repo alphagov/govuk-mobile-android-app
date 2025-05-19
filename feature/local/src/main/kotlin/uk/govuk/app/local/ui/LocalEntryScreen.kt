@@ -200,9 +200,7 @@ private fun LocalEntryScreen(
             LargeVerticalSpacer()
             BodyBoldLabel(stringResource(R.string.local_postcode_use_title))
             LargeVerticalSpacer()
-            BodyRegularLabel(stringResource(R.string.local_postcode_use_description_1))
-            LargeVerticalSpacer()
-            BodyRegularLabel(stringResource(R.string.local_postcode_use_description_2))
+            BodyRegularLabel(stringResource(R.string.local_postcode_use_description))
         }
     }
 }
