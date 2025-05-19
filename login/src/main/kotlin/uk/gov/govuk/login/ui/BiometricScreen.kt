@@ -109,13 +109,6 @@ private fun BiometricScreen(
                     text = stringResource(R.string.login_biometrics_description_2),
                     textAlign = TextAlign.Center
                 )
-
-                MediumVerticalSpacer()
-
-                BodyRegularLabel(
-                    text = stringResource(R.string.login_biometrics_description_3),
-                    textAlign = TextAlign.Center
-                )
             }
 
             Spacer(Modifier.weight(1F))
