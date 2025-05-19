@@ -16,11 +16,14 @@ import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.GrantTypeValues
 import net.openid.appauth.ResponseTypeValues
 import net.openid.appauth.TokenRequest
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import uk.gov.android.securestore.AccessControlLevel
 import uk.gov.android.securestore.SecureStorageConfiguration
 import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.SharedPrefsStore
 import uk.gov.govuk.data.BuildConfig
+import uk.gov.govuk.data.remote.AuthApi
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -53,8 +56,8 @@ class AuthModule {
     @Provides
     fun provideAuthServiceConfig(): AuthorizationServiceConfiguration {
         return AuthorizationServiceConfiguration(
-            BuildConfig.AUTHORIZE_ENDPOINT.toUri(),
-            BuildConfig.TOKEN_ENDPOINT.toUri()
+            "${BuildConfig.AUTH_BASE_URL}${BuildConfig.AUTHORIZE_ENDPOINT}".toUri(),
+            "${BuildConfig.AUTH_BASE_URL}${BuildConfig.TOKEN_ENDPOINT}".toUri()
         )
     }
 
@@ -95,5 +98,15 @@ class AuthModule {
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
+    }
+
+    @Provides
+    @Singleton
+    fun providesAuthApi(): AuthApi {
+        return Retrofit.Builder()
+            .baseUrl(BuildConfig.AUTH_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(AuthApi::class.java)
     }
 }

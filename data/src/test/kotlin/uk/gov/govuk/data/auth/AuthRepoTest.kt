@@ -21,6 +21,7 @@ import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationService.TokenResponseCallback
 import net.openid.appauth.TokenRequest
 import net.openid.appauth.TokenResponse
+import okio.IOException
 import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -30,6 +31,7 @@ import uk.gov.android.securestore.RetrievalEvent
 import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.error.SecureStorageError
 import uk.gov.android.securestore.error.SecureStoreErrorType
+import uk.gov.govuk.data.remote.AuthApi
 
 class AuthRepoTest {
 
@@ -44,6 +46,7 @@ class AuthRepoTest {
     private val authException = mockk<AuthorizationException>(relaxed = true)
     private val tokenResponse = mockk<TokenResponse>(relaxed = true)
     private val sharedPrefs = mockk<SharedPreferences>(relaxed = true)
+    private val authApi = mockk<AuthApi>(relaxed = true)
     private val activity = mockk<FragmentActivity>(relaxed = true)
 
     private lateinit var authRepo: AuthRepo
@@ -53,7 +56,7 @@ class AuthRepoTest {
         mockkStatic(AuthorizationResponse::class)
 
         authRepo = AuthRepo(authRequest, authService, tokenRequestBuilder, tokenResponseMapper,
-            secureStore, biometricManager, sharedPrefs)
+            secureStore, biometricManager, sharedPrefs, authApi)
     }
 
     @After
@@ -409,14 +412,34 @@ class AuthRepoTest {
     }
 
     @Test
-    fun `Given the user signs out, when sign out, delete token from secure store`() {
-        assertTrue(authRepo.signOut())
+    fun `Given the user signs out, when sign out, delete token from secure store, revoke token and return true`() {
+        runTest {
+            assertTrue(authRepo.signOut())
+        }
 
-        verify { secureStore.delete("refreshToken") }
+        coVerify {
+            secureStore.delete("refreshToken")
+            authApi.revoke(any(), any())
+        }
     }
 
     @Test
-    fun `Given the user signs out, when a SecureStorageError is thrown, delete token from secure store`() {
+    fun `Given the user signs out and the auth api throws an exception, when sign out, return true`() {
+        coEvery {
+            authApi.revoke(any(), any())
+        } throws IOException()
+
+        runTest {
+            assertTrue(authRepo.signOut())
+        }
+
+        verify {
+            secureStore.delete("refreshToken")
+        }
+    }
+
+    @Test
+    fun `Given the user signs out, when a SecureStorageError is thrown, do not revoke token and return false`() {
         every {
             secureStore.delete("refreshToken")
         } throws SecureStorageError(
@@ -424,6 +447,12 @@ class AuthRepoTest {
             exception = Exception()
         )
 
-        assertFalse(authRepo.signOut())
+        runTest {
+            assertFalse(authRepo.signOut())
+        }
+
+        coVerify(exactly = 0) {
+            authApi.revoke(any(), any())
+        }
     }
 }
