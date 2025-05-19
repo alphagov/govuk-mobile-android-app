@@ -14,6 +14,7 @@ import uk.govuk.app.local.data.remote.model.LocalAuthorityResult.InvalidPostcode
 import uk.govuk.app.local.data.remote.model.LocalAuthorityResult.LocalAuthority
 import uk.govuk.app.local.data.remote.model.LocalAuthorityResult.PostcodeEmptyOrNull
 import uk.govuk.app.local.data.remote.model.LocalAuthorityResult.PostcodeNotFound
+import uk.govuk.app.local.data.remote.model.LocalAuthorityResult.PostcodeRateLimit
 import java.net.UnknownHostException
 
 internal suspend fun safeLocalApiCall(
@@ -35,6 +36,7 @@ internal suspend fun safeLocalApiCall(
                     400 -> Success(InvalidPostcode)
                     404 -> Success(PostcodeNotFound)
                     418 -> Success(PostcodeEmptyOrNull)
+                    429 -> Success(PostcodeRateLimit)
                     else -> Error()
                 }
         }
