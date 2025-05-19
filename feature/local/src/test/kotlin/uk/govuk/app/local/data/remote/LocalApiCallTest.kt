@@ -176,13 +176,15 @@ class LocalApiCallTest {
 
     @Test
     fun `API call throws UnknownHostException`() = runTest {
+        val apiResponse = LocalAuthorityResult.DeviceNotConnected
+
         coEvery {
             localApi.getLocalPostcode("E18QS")
         } throws UnknownHostException()
 
         val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
 
-        assertEquals("DeviceOffline", actual.javaClass.kotlin.simpleName)
+        assertEquals(Result.Success(apiResponse), actual)
     }
 
     @Test
