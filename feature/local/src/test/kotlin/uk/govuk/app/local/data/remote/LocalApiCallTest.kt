@@ -152,7 +152,7 @@ class LocalApiCallTest {
 
     @Test
     fun `API call returns 429`() = runTest {
-        val apiResponse = LocalAuthorityResult.PostcodeRateLimit
+        val apiResponse = LocalAuthorityResult.ApiNotResponding
 
         coEvery {
             localApi.getLocalPostcode("")
@@ -189,6 +189,8 @@ class LocalApiCallTest {
 
     @Test
     fun `API call throws HttpException`() = runTest {
+        val apiResponse = LocalAuthorityResult.ApiNotResponding
+
         coEvery {
             localApi.getLocalPostcode("E18QS")
         } throws retrofit2.HttpException(
@@ -200,6 +202,6 @@ class LocalApiCallTest {
 
         val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
 
-        assertEquals("ServiceNotResponding", actual.javaClass.kotlin.simpleName)
+        assertEquals(Result.Success(apiResponse), actual)
     }
 }

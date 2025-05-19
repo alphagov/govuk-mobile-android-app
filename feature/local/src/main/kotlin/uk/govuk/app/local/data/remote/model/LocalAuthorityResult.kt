@@ -6,6 +6,6 @@ internal sealed class LocalAuthorityResult {
     data object InvalidPostcode: LocalAuthorityResult()
     data object PostcodeNotFound: LocalAuthorityResult()
     data object PostcodeEmptyOrNull: LocalAuthorityResult()
-    data object PostcodeRateLimit: LocalAuthorityResult()
+    data object ApiNotResponding: LocalAuthorityResult()
     data object DeviceNotConnected: LocalAuthorityResult()
 }
