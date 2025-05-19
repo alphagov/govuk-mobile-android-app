@@ -228,7 +228,7 @@ class LocalViewModelTest {
 
         coEvery {
             localRepo.performGetLocalPostcode(postcode)
-        } returns Success(LocalAuthorityResult.PostcodeRateLimit)
+        } returns Success(LocalAuthorityResult.ApiNotResponding)
 
         val errorMessage = "rate limiting error"
 
