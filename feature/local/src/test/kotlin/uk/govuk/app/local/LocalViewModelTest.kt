@@ -221,7 +221,6 @@ class LocalViewModelTest {
         assertEquals(R.string.local_no_postcode_message, uiState.message)
     }
 
-
     @Test
     fun `onSearchPostcode calls analyticsClient and performGetLocalPostcode - returns rate limit message - emits error`() = runTest {
         val buttonText = "Search"
@@ -241,5 +240,26 @@ class LocalViewModelTest {
         coVerify { localRepo.performGetLocalPostcode(postcode) }
         val uiState = viewModel.uiState.value as LocalUiState.Error
         assertEquals(R.string.local_rate_limit_message, uiState.message)
+    }
+
+    @Test
+    fun `onSearchPostcode calls analyticsClient and performGetLocalPostcode - returns device not connected message - emits error`() = runTest {
+        val buttonText = "Search"
+        val postcode = "E18QS"
+
+        coEvery {
+            localRepo.performGetLocalPostcode(postcode)
+        } returns Success(LocalAuthorityResult.DeviceNotConnected)
+
+        val errorMessage = "not connected error"
+
+        every { context.getString(R.string.local_not_connected_message) } returns errorMessage
+
+        viewModel.onSearchPostcode(buttonText, postcode)
+
+        verify { analyticsClient.buttonClick(text = buttonText, section = "Local") }
+        coVerify { localRepo.performGetLocalPostcode(postcode) }
+        val uiState = viewModel.uiState.value as LocalUiState.Error
+        assertEquals(R.string.local_not_connected_message, uiState.message)
     }
 }

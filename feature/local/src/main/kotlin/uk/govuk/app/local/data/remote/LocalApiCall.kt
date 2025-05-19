@@ -3,13 +3,13 @@ package uk.govuk.app.local.data.remote
 import retrofit2.HttpException
 import retrofit2.Response
 import uk.gov.govuk.data.model.Result
-import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.Error
 import uk.gov.govuk.data.model.Result.ServiceNotResponding
 import uk.gov.govuk.data.model.Result.Success
 import uk.govuk.app.local.data.remote.model.LocalAuthorityResponse
 import uk.govuk.app.local.data.remote.model.LocalAuthorityResult
 import uk.govuk.app.local.data.remote.model.LocalAuthorityResult.Addresses
+import uk.govuk.app.local.data.remote.model.LocalAuthorityResult.DeviceNotConnected
 import uk.govuk.app.local.data.remote.model.LocalAuthorityResult.InvalidPostcode
 import uk.govuk.app.local.data.remote.model.LocalAuthorityResult.LocalAuthority
 import uk.govuk.app.local.data.remote.model.LocalAuthorityResult.PostcodeEmptyOrNull
@@ -42,7 +42,7 @@ internal suspend fun safeLocalApiCall(
         }
     } catch (e: Exception) {
         when (e) {
-            is UnknownHostException -> DeviceOffline()
+            is UnknownHostException -> Success(DeviceNotConnected)
             is HttpException -> ServiceNotResponding()
             else -> Error()
         }
