@@ -146,6 +146,8 @@ internal class LocalViewModel @Inject constructor(
                 _uiState.value = createAndLogError(R.string.local_not_found_postcode_message)
             is LocalAuthorityResult.PostcodeEmptyOrNull ->
                 _uiState.value = createAndLogError(R.string.local_no_postcode_message)
+            is LocalAuthorityResult.PostcodeRateLimit ->
+                _uiState.value = createAndLogError(R.string.local_rate_limit_message)
         }
     }
 }

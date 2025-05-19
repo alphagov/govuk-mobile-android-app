@@ -199,4 +199,47 @@ class LocalViewModelTest {
 
         coVerify { localRepo.performGetLocalAuthority(slug) }
     }
+
+    @Test
+    fun `onSearchPostcode calls analyticsClient and performGetLocalPostcode - returns postcode empty or null - emits error`() = runTest {
+        val buttonText = "Search"
+        val postcode = ""
+
+        coEvery {
+            localRepo.performGetLocalPostcode(postcode)
+        } returns Success(LocalAuthorityResult.PostcodeEmptyOrNull)
+
+        val errorMessage = "postcode empty or null error"
+
+        every { context.getString(R.string.local_no_postcode_message) } returns errorMessage
+
+        viewModel.onSearchPostcode(buttonText, postcode)
+
+        verify { analyticsClient.buttonClick(text = buttonText, section = "Local") }
+        coVerify(exactly = 0) { localRepo.performGetLocalPostcode(postcode) }
+        val uiState = viewModel.uiState.value as LocalUiState.Error
+        assertEquals(R.string.local_no_postcode_message, uiState.message)
+    }
+
+
+    @Test
+    fun `onSearchPostcode calls analyticsClient and performGetLocalPostcode - returns rate limit message - emits error`() = runTest {
+        val buttonText = "Search"
+        val postcode = "E18QS"
+
+        coEvery {
+            localRepo.performGetLocalPostcode(postcode)
+        } returns Success(LocalAuthorityResult.PostcodeRateLimit)
+
+        val errorMessage = "rate limiting error"
+
+        every { context.getString(R.string.local_rate_limit_message) } returns errorMessage
+
+        viewModel.onSearchPostcode(buttonText, postcode)
+
+        verify { analyticsClient.buttonClick(text = buttonText, section = "Local") }
+        coVerify { localRepo.performGetLocalPostcode(postcode) }
+        val uiState = viewModel.uiState.value as LocalUiState.Error
+        assertEquals(R.string.local_rate_limit_message, uiState.message)
+    }
 }

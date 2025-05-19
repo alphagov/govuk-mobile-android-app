@@ -151,6 +151,19 @@ class LocalApiCallTest {
     }
 
     @Test
+    fun `API call returns 429`() = runTest {
+        val apiResponse = LocalAuthorityResult.PostcodeRateLimit
+
+        coEvery {
+            localApi.getLocalPostcode("")
+        } returns Response.error(429, "Error".toResponseBody(null))
+
+        val actual = safeLocalApiCall { localApi.getLocalPostcode("") }
+
+        assertEquals(Result.Success(apiResponse), actual)
+    }
+
+    @Test
     fun `API call returns 500`() = runTest {
         coEvery {
             localApi.getLocalPostcode("E18QS")
