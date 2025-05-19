@@ -18,7 +18,9 @@ import uk.gov.android.securestore.RetrievalEvent
 import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.authentication.AuthenticatorPromptConfiguration
 import uk.gov.android.securestore.error.SecureStorageError
+import uk.gov.govuk.data.BuildConfig
 import uk.gov.govuk.data.auth.model.Tokens
+import uk.gov.govuk.data.remote.AuthApi
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resume
@@ -32,7 +34,8 @@ class AuthRepo @Inject constructor(
     private val tokenResponseMapper: TokenResponseMapper,
     private val secureStore: SecureStore,
     private val biometricManager: BiometricManager,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val authApi: AuthApi
 ) {
     companion object {
         private const val REFRESH_TOKEN_KEY = "refreshToken"
@@ -190,9 +193,19 @@ class AuthRepo @Inject constructor(
         }
     }
 
-    fun signOut(): Boolean {
+    suspend fun signOut(): Boolean {
         try {
             secureStore.delete(REFRESH_TOKEN_KEY)
+
+            try {
+                authApi.revoke(
+                    refreshToken = tokens.refreshToken,
+                    clientId = BuildConfig.AUTH_CLIENT_ID
+                )
+            } catch (e: Exception) {
+                // Ignore API failure
+            }
+
             tokens = Tokens()
             return true
         } catch (e: SecureStorageError) {
