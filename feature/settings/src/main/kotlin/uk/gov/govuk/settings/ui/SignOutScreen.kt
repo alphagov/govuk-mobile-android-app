@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ExtraSmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
@@ -23,9 +24,11 @@ import uk.gov.govuk.design.ui.component.Title3BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.settings.R
 import uk.gov.govuk.settings.SignOutViewModel
+import uk.gov.govuk.settings.navigation.navigateToErrorScreen
 
 @Composable
 internal fun SignOutRoute(
+    navController: NavController,
     onBack: () -> Unit,
     onSignOut: () -> Unit,
     modifier: Modifier = Modifier
@@ -41,6 +44,12 @@ internal fun SignOutRoute(
         },
         modifier = modifier
     )
+
+    LaunchedEffect(Unit) {
+        viewModel.errorEvent.collect {
+            navController.navigateToErrorScreen()
+        }
+    }
 }
 
 @Composable

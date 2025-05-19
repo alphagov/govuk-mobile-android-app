@@ -1,4 +1,4 @@
-package uk.gov.govuk.login.ui
+package uk.gov.govuk.settings.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -8,18 +8,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.ErrorPage
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-import uk.gov.govuk.login.ErrorViewModel
-import uk.gov.govuk.login.R
+import uk.gov.govuk.settings.R
+import uk.gov.govuk.settings.SignOutViewModel
 
 @Composable
-internal fun ErrorRoute(
+internal fun SignOutErrorRoute(
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: ErrorViewModel = hiltViewModel()
+    val viewModel: SignOutViewModel = hiltViewModel()
 
-    ErrorScreen(
-        onPageView = { viewModel.onPageView() },
+    SignOutErrorScreen(
+        onPageView = { viewModel.onErrorPageView() },
         onBackClick = { text ->
             viewModel.onBack(text)
             onBack() },
@@ -28,7 +28,7 @@ internal fun ErrorRoute(
 }
 
 @Composable
-private fun ErrorScreen(
+private fun SignOutErrorScreen(
     onPageView: () -> Unit,
     onBackClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -38,9 +38,10 @@ private fun ErrorScreen(
     }
 
     ErrorPage(
-        headerText = stringResource(R.string.login_sign_in_error_header),
-        subText = stringResource(R.string.login_sign_in_error_sub_text),
-        buttonText = stringResource(R.string.login_back_and_try_again_button),
+        headerText = stringResource(R.string.sign_out_error_header),
+        subText = stringResource(R.string.sign_out_error_sub_text),
+        additionalText = stringResource(R.string.sign_out_error_additional_text),
+        buttonText = stringResource(R.string.sign_out_error_go_back_to_settings_button),
         onBack = onBackClick,
         modifier = modifier
     )
@@ -48,9 +49,9 @@ private fun ErrorScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun ErrorScreenPreview() {
+private fun SignOutErrorScreenPreview() {
     GovUkTheme {
-        ErrorScreen(
+        SignOutErrorScreen(
             onPageView = { },
             onBackClick = { }
         )

@@ -22,12 +22,15 @@ import net.openid.appauth.AuthorizationService.TokenResponseCallback
 import net.openid.appauth.TokenRequest
 import net.openid.appauth.TokenResponse
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.gov.android.securestore.RetrievalEvent
 import uk.gov.android.securestore.SecureStore
+import uk.gov.android.securestore.error.SecureStorageError
 import uk.gov.android.securestore.error.SecureStoreErrorType
 
 class AuthRepoTest {
@@ -409,10 +412,20 @@ class AuthRepoTest {
 
     @Test
     fun `Given the user signs out, when sign out, delete token from secure store`() {
-        authRepo.signOut()
+        assertTrue(authRepo.signOut())
 
-        verify {
+        verify { secureStore.delete("refreshToken") }
+    }
+
+    @Test
+    fun `Given the user signs out, when a SecureStorageError is thrown, delete token from secure store`() {
+        every {
             secureStore.delete("refreshToken")
-        }
+        } throws SecureStorageError(
+            type = SecureStoreErrorType.GENERAL,
+            exception = Exception()
+        )
+
+        assertFalse(authRepo.signOut())
     }
 }
