@@ -1,7 +1,7 @@
 package uk.gov.govuk.settings
 
+import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
@@ -83,7 +83,7 @@ class SignOutViewModelTest {
 
     @Test
     fun `Given a user signs out successfully, then log analytics and emit nav event`() {
-        every { authRepo.signOut() } returns true
+        coEvery { authRepo.signOut() } returns true
 
         runTest {
             val navEvents = mutableListOf<NavigationEvent>()
@@ -113,7 +113,7 @@ class SignOutViewModelTest {
 
     @Test
     fun `Given a user signs out unsuccessfully, then log analytics and emit error`() {
-        every { authRepo.signOut() } returns false
+        coEvery { authRepo.signOut() } returns false
 
         runTest {
             val navEvents = mutableListOf<NavigationEvent>()
