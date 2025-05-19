@@ -40,23 +40,20 @@ internal class NotificationsOnboardingViewModel @Inject constructor(
                 NotificationsOnboardingUiState.Default
             } else if (status.isGranted) {
                 when {
-                    (!notificationsDataStore.isOnboardingSeen()
+                    (!notificationsDataStore.isOnboardingCompleted()
                             && androidVersion < Build.VERSION_CODES.TIRAMISU) -> {
-                        notificationsDataStore.onboardingSeen()
                         NotificationsOnboardingUiState.NoConsent
                     }
 
                     !notificationsClient.consentGiven() -> NotificationsOnboardingUiState.NoConsent
-                    notificationsDataStore.isOnboardingSeen() -> NotificationsOnboardingUiState.Finish
+                    notificationsDataStore.isOnboardingCompleted() -> NotificationsOnboardingUiState.Finish
                     else -> {
-                        notificationsDataStore.onboardingSeen()
                         NotificationsOnboardingUiState.Default
                     }
                 }
             } else {
                 when {
-                    !notificationsDataStore.isOnboardingSeen() -> {
-                        notificationsDataStore.onboardingSeen()
+                    !notificationsDataStore.isOnboardingCompleted() -> {
                         NotificationsOnboardingUiState.Default
                     }
                     else -> NotificationsOnboardingUiState.Finish
@@ -74,6 +71,9 @@ internal class NotificationsOnboardingViewModel @Inject constructor(
     }
 
     internal fun onContinueClick(text: String) {
+        viewModelScope.launch {
+            notificationsDataStore.onboardingCompleted()
+        }
         notificationsClient.giveConsent()
         notificationsClient.requestPermission {
             _uiState.value = NotificationsOnboardingUiState.Finish
@@ -84,12 +84,18 @@ internal class NotificationsOnboardingViewModel @Inject constructor(
     }
 
     internal fun onSkipClick(text: String) {
+        viewModelScope.launch {
+            notificationsDataStore.onboardingCompleted()
+        }
         analyticsClient.buttonClick(
             text = text
         )
     }
 
     internal fun onGiveConsentClick(text: String) {
+        viewModelScope.launch {
+            notificationsDataStore.onboardingCompleted()
+        }
         notificationsClient.giveConsent()
         analyticsClient.buttonClick(
             text = text
@@ -98,6 +104,9 @@ internal class NotificationsOnboardingViewModel @Inject constructor(
     }
 
     internal fun onTurnOffNotificationsClick(text: String) {
+        viewModelScope.launch {
+            notificationsDataStore.onboardingCompleted()
+        }
         analyticsClient.buttonClick(
             text = text,
             external = true

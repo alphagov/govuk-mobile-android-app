@@ -62,7 +62,8 @@ class NotificationsOnboardingViewModelTest {
     }
 
     @Test
-    fun `Given continue button click, then request permission and log analytics`() {
+    fun `Given continue button click, then onboarding completed, request permission and log analytics`() {
+        coEvery { notificationsDataStore.onboardingCompleted() } returns Unit
         every { notificationsClient.giveConsent() } returns Unit
 
         val onCompleted = slot<() -> Unit>()
@@ -75,6 +76,9 @@ class NotificationsOnboardingViewModelTest {
         viewModel.onContinueClick("Title")
 
         runTest {
+            coVerify(exactly = 1) {
+                notificationsDataStore.onboardingCompleted()
+            }
             verify(exactly = 1) {
                 notificationsClient.requestPermission(onCompleted = any())
 
@@ -86,10 +90,15 @@ class NotificationsOnboardingViewModelTest {
     }
 
     @Test
-    fun `Given Skip button click, then log analytics`() {
+    fun `Given Skip button click, then onboarding completed and log analytics`() {
+        coEvery { notificationsDataStore.onboardingCompleted() } returns Unit
+
         viewModel.onSkipClick("Title")
 
         runTest {
+            coVerify(exactly = 1) {
+                notificationsDataStore.onboardingCompleted()
+            }
             verify(exactly = 1) {
                 analyticsClient.buttonClick("Title")
             }
@@ -97,12 +106,16 @@ class NotificationsOnboardingViewModelTest {
     }
 
     @Test
-    fun `Given Allow notifications button click, then give consent and log analytics`() {
+    fun `Given Allow notifications button click, then onboarding completed, give consent and log analytics`() {
+        coEvery { notificationsDataStore.onboardingCompleted() } returns Unit
         every { notificationsClient.giveConsent() } returns Unit
 
         viewModel.onGiveConsentClick("Title")
 
         runTest {
+            coVerify(exactly = 1) {
+                notificationsDataStore.onboardingCompleted()
+            }
             verify(exactly = 1) {
                 notificationsClient.giveConsent()
                 analyticsClient.buttonClick("Title")
@@ -113,10 +126,14 @@ class NotificationsOnboardingViewModelTest {
     }
 
     @Test
-    fun `Given Turn off notifications button click, then log analytics`() {
+    fun `Given Turn off notifications button click, then onboarding completed and log analytics`() {
+        coEvery { notificationsDataStore.onboardingCompleted() } returns Unit
         viewModel.onTurnOffNotificationsClick("Title")
 
         runTest {
+            coVerify(exactly = 1) {
+                notificationsDataStore.onboardingCompleted()
+            }
             verify(exactly = 1) {
                 analyticsClient.buttonClick(
                     text = "Title",
@@ -142,11 +159,11 @@ class NotificationsOnboardingViewModelTest {
     }
 
     @Test
-    fun `Given the permission status is granted and onboarding seen, When init, then ui state should be finish`() {
+    fun `Given the permission status is granted and onboarding completed, When init, then ui state should be finish`() {
         every { permissionStatus.isGranted } returns true
         every { notificationsClient.giveConsent() } returns Unit
         every { notificationsClient.consentGiven() } returns true
-        coEvery { notificationsDataStore.isOnboardingSeen() } returns true
+        coEvery { notificationsDataStore.isOnboardingCompleted() } returns true
 
         runTest {
             viewModel.updateUiState(permissionStatus)
@@ -157,29 +174,24 @@ class NotificationsOnboardingViewModelTest {
     }
 
     @Test
-    fun `Given the permission status is not granted and onboarding not seen, When init, then the ui state should be default and onboarding seen called`() {
+    fun `Given the permission status is not granted and onboarding not completed, When init, then the ui state should be default`() {
         every { permissionStatus.isGranted } returns false
         every { notificationsClient.requestPermission() } returns Unit
-        coEvery { notificationsDataStore.isOnboardingSeen() } returns false
-        coEvery { notificationsDataStore.onboardingSeen() } returns Unit
+        coEvery { notificationsDataStore.isOnboardingCompleted() } returns false
 
         runTest {
             viewModel.updateUiState(permissionStatus)
 
             val result = viewModel.uiState.first()
             assertTrue(result is NotificationsOnboardingUiState.Default)
-
-            coVerify(exactly = 1) {
-                notificationsDataStore.onboardingSeen()
-            }
         }
     }
 
     @Test
-    fun `Given the permission status is granted, consent is given and onboarding is seen, When init, then ui state should be finish`() {
+    fun `Given the permission status is granted, consent is given and onboarding is completed, When init, then ui state should be finish`() {
         every { permissionStatus.isGranted } returns true
         every { notificationsClient.consentGiven() } returns true
-        coEvery { notificationsDataStore.isOnboardingSeen() } returns true
+        coEvery { notificationsDataStore.isOnboardingCompleted() } returns true
 
         runTest {
             viewModel.updateUiState(permissionStatus)
@@ -190,10 +202,10 @@ class NotificationsOnboardingViewModelTest {
     }
 
     @Test
-    fun `Given the permission status is granted, onboarding is seen but consent is not given, When init, then ui state should be no consent`() {
+    fun `Given the permission status is granted, onboarding is completed but consent is not given, When init, then ui state should be no consent`() {
         every { permissionStatus.isGranted } returns true
         every { notificationsClient.consentGiven() } returns false
-        coEvery { notificationsDataStore.isOnboardingSeen() } returns true
+        coEvery { notificationsDataStore.isOnboardingCompleted() } returns true
 
         runTest {
             viewModel.updateUiState(permissionStatus)
@@ -204,28 +216,23 @@ class NotificationsOnboardingViewModelTest {
     }
 
     @Test
-    fun `Given the permission status is granted, onboarding is not seen and Android version is less than Tiramisu, When init, then ui state should be no consent and onboarding seen called`() {
+    fun `Given the permission status is granted, onboarding is not completed and Android version is less than Tiramisu, When init, then ui state should be no consent`() {
         every { permissionStatus.isGranted } returns true
         every { notificationsClient.consentGiven() } returns false
-        coEvery { notificationsDataStore.isOnboardingSeen() } returns false
-        coEvery { notificationsDataStore.onboardingSeen() } returns Unit
+        coEvery { notificationsDataStore.isOnboardingCompleted() } returns false
 
         runTest {
             viewModel.updateUiState(permissionStatus, Build.VERSION_CODES.S_V2)
 
             val result = viewModel.uiState.first()
             assertTrue(result is NotificationsOnboardingUiState.NoConsent)
-
-            coVerify(exactly = 1) {
-                notificationsDataStore.onboardingSeen()
-            }
         }
     }
 
     @Test
-    fun `Given the permission status is not granted, onboarding is seen, When init, then ui state should be finish`() {
+    fun `Given the permission status is not granted, onboarding is completed, When init, then ui state should be finish`() {
         every { permissionStatus.isGranted } returns false
-        coEvery { notificationsDataStore.isOnboardingSeen() } returns true
+        coEvery { notificationsDataStore.isOnboardingCompleted() } returns true
 
         runTest {
             viewModel.updateUiState(permissionStatus)
@@ -236,21 +243,16 @@ class NotificationsOnboardingViewModelTest {
     }
 
     @Test
-    fun `Given the permission status is granted, Android version is Tiramisu, consent is given and onboarding is not seen, When init, then ui state should be default and onboarding seen called`() {
+    fun `Given the permission status is granted, Android version is Tiramisu, consent is given and onboarding is not completed, When init, then ui state should be default`() {
         every { permissionStatus.isGranted } returns true
         every { notificationsClient.consentGiven() } returns true
-        coEvery { notificationsDataStore.isOnboardingSeen() } returns false
-        coEvery { notificationsDataStore.onboardingSeen() } returns Unit
+        coEvery { notificationsDataStore.isOnboardingCompleted() } returns false
 
         runTest {
             viewModel.updateUiState(permissionStatus, Build.VERSION_CODES.TIRAMISU)
 
             val result = viewModel.uiState.first()
             assertTrue(result is NotificationsOnboardingUiState.Default)
-
-            coVerify(exactly = 1) {
-                notificationsDataStore.onboardingSeen()
-            }
         }
     }
 

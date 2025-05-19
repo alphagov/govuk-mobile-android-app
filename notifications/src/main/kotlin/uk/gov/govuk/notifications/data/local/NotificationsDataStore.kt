@@ -15,16 +15,16 @@ class NotificationsDataStore @Inject constructor(
 ) {
 
     companion object {
-        internal const val NOTIFICATIONS_ONBOARDING_SEEN_KEY = "notifications_onboarding_seen"
+        internal const val NOTIFICATIONS_ONBOARDING_COMPLETED_KEY = "notifications_onboarding_completed"
     }
 
-    internal suspend fun isOnboardingSeen(): Boolean {
+    internal suspend fun isOnboardingCompleted(): Boolean {
         return dataStore.data.firstOrNull()
-            ?.get(booleanPreferencesKey(NOTIFICATIONS_ONBOARDING_SEEN_KEY)) == true
+            ?.get(booleanPreferencesKey(NOTIFICATIONS_ONBOARDING_COMPLETED_KEY)) == true
     }
 
-    internal suspend fun onboardingSeen() {
-        dataStore.edit { preferences -> preferences[booleanPreferencesKey(NOTIFICATIONS_ONBOARDING_SEEN_KEY)] = true
+    internal suspend fun onboardingCompleted() {
+        dataStore.edit { preferences -> preferences[booleanPreferencesKey(NOTIFICATIONS_ONBOARDING_COMPLETED_KEY)] = true
         }
     }
 }
