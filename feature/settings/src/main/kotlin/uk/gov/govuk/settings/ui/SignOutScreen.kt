@@ -22,6 +22,7 @@ import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title3BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
+import uk.gov.govuk.settings.NavigationEvent
 import uk.gov.govuk.settings.R
 import uk.gov.govuk.settings.SignOutViewModel
 import uk.gov.govuk.settings.navigation.navigateToErrorScreen
@@ -40,14 +41,16 @@ internal fun SignOutRoute(
         onBack = onBack,
         onSignOut = { text ->
             viewModel.onSignOut(text)
-            onSignOut()
         },
         modifier = modifier
     )
 
     LaunchedEffect(Unit) {
-        viewModel.errorEvent.collect {
-            navController.navigateToErrorScreen()
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                is NavigationEvent.Success -> onSignOut()
+                is NavigationEvent.Error -> navController.navigateToErrorScreen()
+            }
         }
     }
 }
