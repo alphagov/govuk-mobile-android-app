@@ -9,7 +9,15 @@ import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.auth.ErrorEvent
+import uk.gov.govuk.data.auth.ErrorEvent.UnableToSignOutError
+import uk.gov.govuk.settings.NavigationEvent.Error
+import uk.gov.govuk.settings.NavigationEvent.Success
 import javax.inject.Inject
+
+sealed class NavigationEvent {
+    data object Success: NavigationEvent()
+    data class Error(val error: ErrorEvent): NavigationEvent()
+}
 
 @HiltViewModel
 class SignOutViewModel @Inject constructor(
@@ -17,8 +25,8 @@ class SignOutViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient
 ): ViewModel() {
 
-    private val _errorEvent = MutableSharedFlow<ErrorEvent>()
-    val errorEvent: SharedFlow<ErrorEvent> = _errorEvent
+    private val _navigationEvent = MutableSharedFlow<NavigationEvent>()
+    val navigationEvent: SharedFlow<NavigationEvent> = _navigationEvent
 
     companion object {
         private const val SCREEN_CLASS = "SignOutScreen"
@@ -60,9 +68,9 @@ class SignOutViewModel @Inject constructor(
 
         viewModelScope.launch {
             if (authRepo.signOut()) {
-                analyticsClient.disable()
+                _navigationEvent.emit(Success)
             } else {
-                _errorEvent.emit(ErrorEvent.UnableToSignOutError)
+                _navigationEvent.emit(Error(UnableToSignOutError))
             }
         }
     }

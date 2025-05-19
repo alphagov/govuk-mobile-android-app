@@ -15,13 +15,9 @@
     <string name="login_biometrics_title">Unlock the app with biometrics</string>
     <string name="login_biometrics_description_1">You can unlock the app with your face, fingerprint or iris.</string>
     <string name="login_biometrics_description_2">If you do not want to use your biometrics, you can unlock the app with your phone’s pin or pattern, or with your email address and password.</string>
-    <string name="login_biometrics_description_3">Anyone who can unlock your phone with their biometrics or with your phone’s pin or pattern might be able to access your app.</string>
     <string name="login_biometrics_button">Use biometrics</string>
     <string name="login_biometrics_skip_button">Skip</string>
 
-    <!-- Todo - actual copy!!! -->
-    <string name="login_biometric_prompt_title">Title</string>
-    <string name="login_biometric_prompt_subtitle">Subtitle</string>
-    <string name="login_biometric_prompt_description">Description</string>
+    <string name="login_biometric_prompt_title">Confirm that it\'s you</string>
 
 </resources>

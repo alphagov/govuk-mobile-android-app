@@ -62,8 +62,8 @@ class AuthRepo @Inject constructor(
     suspend fun persistRefreshToken(
         activity: FragmentActivity,
         title: String,
-        subtitle: String,
-        description: String
+        subtitle: String? = null,
+        description: String? = null
     ): Boolean {
         secureStore.upsert(REFRESH_TOKEN_KEY, tokens.refreshToken)
         val result = retrieveRefreshToken(
@@ -95,8 +95,8 @@ class AuthRepo @Inject constructor(
     suspend fun refreshTokens(
         activity: FragmentActivity,
         title: String,
-        subtitle: String,
-        description: String
+        subtitle: String? = null,
+        description: String? = null
     ): Boolean {
         val result = retrieveRefreshToken(
             activity = activity,
@@ -124,8 +124,8 @@ class AuthRepo @Inject constructor(
     private suspend fun retrieveRefreshToken(
         activity: FragmentActivity,
         title: String,
-        subtitle: String,
-        description: String
+        subtitle: String? = null,
+        description: String? = null
     ): RetrievalEvent {
         return secureStore.retrieveWithAuthentication(
             key = arrayOf(REFRESH_TOKEN_KEY),
