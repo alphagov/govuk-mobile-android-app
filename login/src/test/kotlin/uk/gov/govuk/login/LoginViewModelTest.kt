@@ -50,14 +50,14 @@ class LoginViewModelTest {
         viewModel.init(activity)
 
         coVerify(exactly = 0) {
-            authRepo.refreshTokens(any(), any(), any(), any())
+            authRepo.refreshTokens(any(), any())
         }
     }
 
     @Test
     fun `Given the user is signed in, when init is successful, then emit ui state`() {
         every { authRepo.isUserSignedIn() } returns true
-        coEvery { authRepo.refreshTokens(any(), any(), any(), any()) } returns true
+        coEvery { authRepo.refreshTokens(any(), any()) } returns true
 
         runTest {
             val events = mutableListOf<Boolean>()
@@ -73,7 +73,7 @@ class LoginViewModelTest {
     @Test
     fun `Given the user is signed in, when init is unsuccessful, then do nothing`() {
         every { authRepo.isUserSignedIn() } returns true
-        coEvery { authRepo.refreshTokens(any(), any(), any(), any()) } returns false
+        coEvery { authRepo.refreshTokens(any(), any()) } returns false
 
         runTest {
             val events = mutableListOf<Boolean>()

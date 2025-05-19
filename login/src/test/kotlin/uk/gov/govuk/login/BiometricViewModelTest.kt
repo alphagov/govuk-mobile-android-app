@@ -77,7 +77,7 @@ class BiometricViewModelTest {
 
     @Test
     fun `Given continue, when persist token success, then emit ui state`() {
-        coEvery { authRepo.persistRefreshToken(any(), any(), any(), any()) } returns true
+        coEvery { authRepo.persistRefreshToken(any(), any()) } returns true
 
         viewModel.onContinue(activity, "button text")
 
@@ -86,7 +86,7 @@ class BiometricViewModelTest {
 
     @Test
     fun `Given continue, when persist token failure, then emit ui state`() {
-        coEvery { authRepo.persistRefreshToken(any(), any(), any(), any()) } returns false
+        coEvery { authRepo.persistRefreshToken(any(), any()) } returns false
 
         viewModel.onContinue(activity, "button text")
 

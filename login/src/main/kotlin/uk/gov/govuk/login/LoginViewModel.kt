@@ -43,9 +43,7 @@ internal class LoginViewModel @Inject constructor(
                 if (
                     authRepo.refreshTokens(
                         activity = activity,
-                        title = activity.getString(R.string.login_biometric_prompt_title),
-                        subtitle = activity.getString(R.string.login_biometric_prompt_subtitle),
-                        description = activity.getString(R.string.login_biometric_prompt_description)
+                        title = activity.getString(R.string.login_biometric_prompt_title)
                     )
                 ) {
                     _loginCompleted.emit(false)

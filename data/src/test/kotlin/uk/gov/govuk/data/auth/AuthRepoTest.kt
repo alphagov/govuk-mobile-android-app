@@ -22,9 +22,7 @@ import net.openid.appauth.AuthorizationService.TokenResponseCallback
 import net.openid.appauth.TokenRequest
 import net.openid.appauth.TokenResponse
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -193,7 +191,7 @@ class AuthRepoTest {
         runTest {
             authRepo.handleAuthResponse(intent)
             assertTrue(
-                authRepo.persistRefreshToken(activity, "", "", "")
+                authRepo.persistRefreshToken(activity, "")
             )
 
             coVerify { secureStore.upsert("refreshToken", "refreshToken") }
@@ -224,7 +222,7 @@ class AuthRepoTest {
         runTest {
             authRepo.handleAuthResponse(intent)
             assertFalse(
-                authRepo.persistRefreshToken(activity, "", "", "")
+                authRepo.persistRefreshToken(activity, "")
             )
 
             coVerify { secureStore.upsert("refreshToken", "refreshToken") }
@@ -305,7 +303,7 @@ class AuthRepoTest {
         } returns RetrievalEvent.Failed(SecureStoreErrorType.GENERAL)
 
         runTest {
-            assertFalse(authRepo.refreshTokens(activity, "", "", ""))
+            assertFalse(authRepo.refreshTokens(activity, ""))
         }
     }
 
@@ -325,7 +323,7 @@ class AuthRepoTest {
         }
 
         runTest {
-            assertFalse(authRepo.refreshTokens(activity, "", "", ""))
+            assertFalse(authRepo.refreshTokens(activity, ""))
         }
     }
 
@@ -352,7 +350,7 @@ class AuthRepoTest {
                 )
 
         runTest {
-            assertFalse(authRepo.refreshTokens(activity, "", "", ""))
+            assertFalse(authRepo.refreshTokens(activity, ""))
         }
     }
 
@@ -379,7 +377,7 @@ class AuthRepoTest {
                 )
 
         runTest {
-            assertFalse(authRepo.refreshTokens(activity, "", "", ""))
+            assertFalse(authRepo.refreshTokens(activity, ""))
         }
     }
 
@@ -406,7 +404,7 @@ class AuthRepoTest {
                 )
 
         runTest {
-            assertTrue(authRepo.refreshTokens(activity, "", "", ""))
+            assertTrue(authRepo.refreshTokens(activity, ""))
         }
     }
 

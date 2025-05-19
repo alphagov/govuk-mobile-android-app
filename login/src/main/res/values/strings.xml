@@ -19,9 +19,6 @@
     <string name="login_biometrics_button">Use biometrics</string>
     <string name="login_biometrics_skip_button">Skip</string>
 
-    <!-- Todo - actual copy!!! -->
-    <string name="login_biometric_prompt_title">Title</string>
-    <string name="login_biometric_prompt_subtitle">Subtitle</string>
-    <string name="login_biometric_prompt_description">Description</string>
+    <string name="login_biometric_prompt_title">Confirm that it\'s you</string>
 
 </resources>
