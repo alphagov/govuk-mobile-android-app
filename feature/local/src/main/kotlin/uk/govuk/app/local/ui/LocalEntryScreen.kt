@@ -217,7 +217,8 @@ private fun BottomNavBar(
         val buttonText = stringResource(R.string.local_confirm_button)
         FixedPrimaryButton(
             text = buttonText,
-            onClick = { onPostcodeLookup(buttonText, postcode) }
+            onClick = { onPostcodeLookup(buttonText, postcode) },
+            enabled = postcode.isNotBlank(),
         )
     }
 }
