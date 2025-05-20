@@ -45,7 +45,7 @@ class NotificationsOnboardingViewModelTest {
         coEvery { notificationsDataStore.isOnboardingCompleted() } returns true
 
         runTest {
-            viewModel.updateUiState(permissionStatus)
+            viewModel.updateUiState(permissionStatus, Build.VERSION_CODES.TIRAMISU)
 
             val result = viewModel.uiState.first()
             assertTrue(result is NotificationsUiState.Finish)

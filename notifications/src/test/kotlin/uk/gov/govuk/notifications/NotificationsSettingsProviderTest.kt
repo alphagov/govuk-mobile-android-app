@@ -12,7 +12,7 @@ class NotificationsSettingsProviderTest {
     private val intent = mockk<Intent>(relaxed = true)
 
     @Test
-    fun openDeviceSettingsTest() {
+    fun `Given open device settings is called, then start activity is called`() {
         runTest {
             openDeviceSettings(context, intent)
 

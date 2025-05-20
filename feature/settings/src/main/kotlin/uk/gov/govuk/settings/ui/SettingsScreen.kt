@@ -61,7 +61,6 @@ internal fun SettingsRoute(
 ) {
     val viewModel: SettingsViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
-    val context = LocalContext.current
     uiState?.let {
         SettingsScreen(
             uiState = it,
