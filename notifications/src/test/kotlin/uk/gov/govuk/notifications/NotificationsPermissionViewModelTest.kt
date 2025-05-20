@@ -6,10 +6,8 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,7 +28,6 @@ class NotificationsPermissionViewModelTest {
     private val dispatcher = UnconfinedTestDispatcher()
     private val permissionStatus = mockk<PermissionStatus>()
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
-    private val notificationsClient = mockk<NotificationsClient>()
     private val notificationsDataStore = mockk<NotificationsDataStore>()
 
     private lateinit var viewModel: NotificationsPermissionViewModel
@@ -38,89 +35,12 @@ class NotificationsPermissionViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = NotificationsPermissionViewModel(analyticsClient, notificationsClient, notificationsDataStore)
+        viewModel = NotificationsPermissionViewModel(analyticsClient, notificationsDataStore)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @After
     fun tearDown() {
         Dispatchers.resetMain()
-    }
-
-    @Test
-    fun `Given a page view, then log analytics`() {
-        viewModel.onPageView()
-
-        runTest {
-            verify(exactly = 1) {
-                analyticsClient.screenView(
-                    screenClass = "NotificationsOnboardingScreen",
-                    screenName = "NotificationsOnboardingScreen",
-                    title = "NotificationsOnboardingScreen"
-                )
-            }
-        }
-    }
-
-    @Test
-    fun `Given continue button click, then onboarding completed, first permission completed, request permission and log analytics`() {
-        coEvery { notificationsDataStore.onboardingCompleted() } returns Unit
-        coEvery { notificationsDataStore.firstPermissionRequestCompleted() } returns Unit
-        every { notificationsClient.giveConsent() } returns Unit
-
-        val onCompleted = slot<() -> Unit>()
-        every {
-            notificationsClient.requestPermission(onCompleted = capture(onCompleted))
-        } answers {
-            onCompleted.captured.invoke()
-        }
-
-        viewModel.onContinueClick("Title")
-
-        runTest {
-            coVerify(exactly = 1) {
-                notificationsDataStore.onboardingCompleted()
-                notificationsDataStore.firstPermissionRequestCompleted()
-            }
-            verify(exactly = 1) {
-                notificationsClient.requestPermission(onCompleted = any())
-
-                analyticsClient.buttonClick("Title")
-            }
-            val result = viewModel.uiState.first()
-            assertTrue(result is NotificationsUiState.Finish)
-        }
-    }
-
-    @Test
-    fun `Given Skip button click, then onboarding completed and log analytics`() {
-        coEvery { notificationsDataStore.onboardingCompleted() } returns Unit
-
-        viewModel.onSkipClick("Title")
-
-        runTest {
-            coVerify(exactly = 1) {
-                notificationsDataStore.onboardingCompleted()
-            }
-            verify(exactly = 1) {
-                analyticsClient.buttonClick("Title")
-            }
-        }
-    }
-
-    @Test
-    fun `Given Privacy policy link click, then log analytics`() {
-        viewModel.onPrivacyPolicyClick("Text", "Url")
-
-        runTest {
-            verify(exactly = 1) {
-                analyticsClient.buttonClick(
-                    text = "Text",
-                    url = "Url",
-                    external = true
-                )
-            }
-        }
     }
 
     @Test
@@ -143,7 +63,7 @@ class NotificationsPermissionViewModelTest {
         every { permissionStatus.shouldShowRationale } returns false
 
         runTest {
-            viewModel.updateUiState(permissionStatus, Build.VERSION_CODES.TIRAMISU)
+            viewModel.updateUiState(permissionStatus)
 
             val result = viewModel.uiState.first()
             assertTrue(result is NotificationsUiState.Default)
@@ -157,7 +77,7 @@ class NotificationsPermissionViewModelTest {
         every { permissionStatus.shouldShowRationale } returns true
 
         runTest {
-            viewModel.updateUiState(permissionStatus, Build.VERSION_CODES.TIRAMISU)
+            viewModel.updateUiState(permissionStatus)
 
             val result = viewModel.uiState.first()
             assertTrue(result is NotificationsUiState.Default)
@@ -171,7 +91,7 @@ class NotificationsPermissionViewModelTest {
         every { permissionStatus.shouldShowRationale } returns false
 
         runTest {
-            viewModel.updateUiState(permissionStatus, Build.VERSION_CODES.TIRAMISU)
+            viewModel.updateUiState(permissionStatus)
 
             val result = viewModel.uiState.first()
             assertTrue(result is NotificationsUiState.Alert)
@@ -185,7 +105,7 @@ class NotificationsPermissionViewModelTest {
         every { permissionStatus.shouldShowRationale } returns false
 
         runTest {
-            viewModel.updateUiState(permissionStatus, Build.VERSION_CODES.TIRAMISU)
+            viewModel.updateUiState(permissionStatus)
 
             val result = viewModel.uiState.first()
             assertTrue(result is NotificationsUiState.Alert)

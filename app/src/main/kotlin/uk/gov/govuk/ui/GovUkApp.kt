@@ -292,7 +292,6 @@ private fun HandleNotificationsPermissionStatus(
                 if (isNotificationsEnabledOnResume != isNotificationsEnabled) {
                     val route = when(navController.currentDestination?.route) {
                         NOTIFICATIONS_ONBOARDING_ROUTE -> NOTIFICATIONS_ONBOARDING_ROUTE
-                        NOTIFICATIONS_PERMISSION_ROUTE -> NOTIFICATIONS_PERMISSION_ROUTE
                         else -> NOTIFICATIONS_CONSENT_ROUTE
                     }
                     navController.navigate(route) {

@@ -13,6 +13,7 @@ import com.google.accompanist.permissions.isGranted
 import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
 import uk.gov.govuk.notifications.NotificationsOnboardingViewModel
 import uk.gov.govuk.notifications.NotificationsUiState
+import uk.gov.govuk.notifications.NotificationsViewModel
 import uk.gov.govuk.notifications.R
 import uk.gov.govuk.notifications.openDeviceSettings
 
@@ -22,6 +23,7 @@ internal fun NotificationsOnboardingRoute(
     notificationsOnboardingCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val notificationsViewModel: NotificationsViewModel = hiltViewModel()
     val viewModel: NotificationsOnboardingViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
@@ -34,10 +36,10 @@ internal fun NotificationsOnboardingRoute(
         when (state) {
             NotificationsUiState.Default -> {
                 OnboardingScreen(
-                    onPageView = { viewModel.onPageView() },
+                    onPageView = { notificationsViewModel.onPageView() },
                     body = R.string.onboarding_screen_body,
                     onPrivacyPolicyClick = { text, url ->
-                        viewModel.onPrivacyPolicyClick(text, url)
+                        notificationsViewModel.onPrivacyPolicyClick(text, url)
                     },
                     modifier = modifier,
                     image = R.drawable.notifications_bell,
@@ -48,10 +50,10 @@ internal fun NotificationsOnboardingRoute(
                             val secondaryText = stringResource(R.string.turn_off_notifications_button)
                             FixedDoubleButtonGroup(
                                 primaryText = primaryText,
-                                onPrimary = { viewModel.onGiveConsentClick(primaryText) },
+                                onPrimary = { notificationsViewModel.onGiveConsentClick(primaryText) { notificationsOnboardingCompleted() } },
                                 secondaryText = secondaryText,
                                 onSecondary = {
-                                    viewModel.onTurnOffNotificationsClick(secondaryText)
+                                    notificationsViewModel.onTurnOffNotificationsClick(secondaryText)
                                     openDeviceSettings(context)
                                 }
                             )
@@ -59,10 +61,13 @@ internal fun NotificationsOnboardingRoute(
                             val secondaryText = stringResource(R.string.not_now_button)
                             FixedDoubleButtonGroup(
                                 primaryText = primaryText,
-                                onPrimary = { viewModel.onContinueClick(primaryText) },
+                                onPrimary = {
+                                    notificationsViewModel.onContinueClick(primaryText)
+                                    { notificationsOnboardingCompleted() }
+                                },
                                 secondaryText = secondaryText,
                                 onSecondary = {
-                                    viewModel.onSkipClick(secondaryText)
+                                    notificationsViewModel.onSkipClick(secondaryText)
                                     notificationsOnboardingCompleted()
                                 }
                             )

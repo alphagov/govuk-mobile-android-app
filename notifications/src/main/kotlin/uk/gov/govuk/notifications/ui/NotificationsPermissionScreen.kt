@@ -16,6 +16,7 @@ import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
 import uk.gov.govuk.notifications.NotificationsUiState
 import uk.gov.govuk.notifications.NotificationsPermissionViewModel
+import uk.gov.govuk.notifications.NotificationsViewModel
 import uk.gov.govuk.notifications.R
 import uk.gov.govuk.notifications.openDeviceSettings
 
@@ -25,6 +26,7 @@ internal fun NotificationsPermissionRoute(
     notificationsCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val notificationsViewModel: NotificationsViewModel = hiltViewModel()
     val viewModel: NotificationsPermissionViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
@@ -37,10 +39,10 @@ internal fun NotificationsPermissionRoute(
         when (state) {
             NotificationsUiState.Default -> {
                 OnboardingScreen(
-                    onPageView = { viewModel.onPageView() },
+                    onPageView = { notificationsViewModel.onPageView() },
                     body = R.string.onboarding_screen_body,
                     onPrivacyPolicyClick = { text, url ->
-                        viewModel.onPrivacyPolicyClick(text, url)
+                        notificationsViewModel.onPrivacyPolicyClick(text, url)
                     },
                     modifier = modifier,
                     header = {
@@ -52,11 +54,15 @@ internal fun NotificationsPermissionRoute(
                         val primaryText = stringResource(R.string.allow_notifications_button)
                         val secondaryText = stringResource(R.string.not_now_button)
                         FixedDoubleButtonGroup(
-                            primaryText = primaryText,
-                            onPrimary = { viewModel.onContinueClick(primaryText) },
+                            primaryText = primaryText, onPrimary = {
+                                notificationsViewModel.onContinueClick(primaryText)
+                                {
+                                    notificationsCompleted()
+                                }
+                            },
                             secondaryText = secondaryText,
                             onSecondary = {
-                                viewModel.onSkipClick(secondaryText)
+                                notificationsViewModel.onSkipClick(secondaryText)
                                 notificationsCompleted()
                             }
                         )
@@ -65,7 +71,7 @@ internal fun NotificationsPermissionRoute(
             }
             NotificationsUiState.Alert -> {
                 val context = LocalContext.current
-                showNotificationsAlert(context, viewModel)
+                showNotificationsAlert(context) { viewModel.onAlertButtonClick(it) }
                 EmptyScreen()
                 notificationsCompleted()
             }
@@ -78,7 +84,7 @@ internal fun NotificationsPermissionRoute(
     }
 }
 
-private fun showNotificationsAlert(context: Context, viewModel: NotificationsPermissionViewModel) {
+private fun showNotificationsAlert(context: Context, onAlertButtonClick: (String) -> Unit) {
     val isNotificationsOn = NotificationManagerCompat.from(context).areNotificationsEnabled()
     val alertTitle =
         if (isNotificationsOn) R.string.notifications_alert_title_off else R.string.notifications_alert_title_on
@@ -91,11 +97,11 @@ private fun showNotificationsAlert(context: Context, viewModel: NotificationsPer
         setTitle(context.getString(alertTitle))
         setMessage(context.getString(alertMessage))
         setNeutralButton(neutralButton) { dialog, _ ->
-            viewModel.onAlertButtonClick(neutralButton)
+            onAlertButtonClick(neutralButton)
             dialog.dismiss()
         }
         setPositiveButton(positiveButton) { dialog, _ ->
-            viewModel.onAlertButtonClick(positiveButton)
+            onAlertButtonClick(positiveButton)
             openDeviceSettings(context)
             dialog.dismiss()
         }

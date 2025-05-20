@@ -18,14 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 internal class NotificationsPermissionViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient,
-    private val notificationsClient: NotificationsClient,
     private val notificationsDataStore: NotificationsDataStore
 ) : ViewModel() {
-
-    companion object {
-        private const val SCREEN_CLASS = "NotificationsOnboardingScreen"
-        private const val TITLE = "NotificationsOnboardingScreen"
-    }
 
     private val _uiState: MutableStateFlow<NotificationsUiState?> = MutableStateFlow(null)
     internal val uiState = _uiState.asStateFlow()
@@ -50,45 +44,6 @@ internal class NotificationsPermissionViewModel @Inject constructor(
                 NotificationsUiState.Alert
             }
         }
-    }
-
-    internal fun onPageView() {
-        analyticsClient.screenView(
-            screenClass = SCREEN_CLASS,
-            screenName = TITLE,
-            title = TITLE
-        )
-    }
-
-    internal fun onContinueClick(text: String) {
-        viewModelScope.launch {
-            notificationsDataStore.onboardingCompleted()
-            notificationsDataStore.firstPermissionRequestCompleted()
-        }
-        notificationsClient.giveConsent()
-        notificationsClient.requestPermission {
-            _uiState.value = NotificationsUiState.Finish
-        }
-        analyticsClient.buttonClick(
-            text = text
-        )
-    }
-
-    internal fun onSkipClick(text: String) {
-        viewModelScope.launch {
-            notificationsDataStore.onboardingCompleted()
-        }
-        analyticsClient.buttonClick(
-            text = text
-        )
-    }
-
-    internal fun onPrivacyPolicyClick(text: String, url: String) {
-        analyticsClient.buttonClick(
-            text = text,
-            url = url,
-            external = true
-        )
     }
 
     internal fun onAlertButtonClick(text: String) {

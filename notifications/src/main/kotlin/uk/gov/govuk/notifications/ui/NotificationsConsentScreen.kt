@@ -12,6 +12,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
 import uk.gov.govuk.notifications.NotificationsConsentViewModel
 import uk.gov.govuk.notifications.NotificationsUiState
+import uk.gov.govuk.notifications.NotificationsViewModel
 import uk.gov.govuk.notifications.R
 import uk.gov.govuk.notifications.openDeviceSettings
 
@@ -21,6 +22,7 @@ internal fun NotificationsConsentRoute(
     notificationsCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val notificationsViewModel: NotificationsViewModel = hiltViewModel()
     val viewModel: NotificationsConsentViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
@@ -33,10 +35,10 @@ internal fun NotificationsConsentRoute(
         when (state) {
             NotificationsUiState.Default -> {
                 OnboardingScreen(
-                    onPageView = { viewModel.onPageView() },
+                    onPageView = { notificationsViewModel.onPageView() },
                     body = R.string.onboarding_screen_no_consent_body,
                     onPrivacyPolicyClick = { text, url ->
-                        viewModel.onPrivacyPolicyClick(text, url)
+                        notificationsViewModel.onPrivacyPolicyClick(text, url)
                     },
                     modifier = modifier,
                     footer = {
@@ -45,10 +47,14 @@ internal fun NotificationsConsentRoute(
                         val secondaryText = stringResource(R.string.turn_off_notifications_button)
                         FixedDoubleButtonGroup(
                             primaryText = primaryText,
-                            onPrimary = { viewModel.onGiveConsentClick(primaryText) },
+                            onPrimary = {
+                                notificationsViewModel.onGiveConsentClick(primaryText) {
+                                    notificationsCompleted()
+                                }
+                            },
                             secondaryText = secondaryText,
                             onSecondary = {
-                                viewModel.onTurnOffNotificationsClick(secondaryText)
+                                notificationsViewModel.onTurnOffNotificationsClick(secondaryText)
                                 openDeviceSettings(context)
                             }
                         )
