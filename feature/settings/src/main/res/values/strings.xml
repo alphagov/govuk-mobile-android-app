@@ -24,18 +24,8 @@
 
   <string name="feedback_prompt_widget_title">Give feedback to help improve this app</string>
 
-  <string name="notifications_alert_title_on">Turn on notifications</string>
-  <string name="notifications_alert_title_off">Turn off notifications</string>
-  <string name="notifications_alert_message_on">
-    Continue to your phone’s notifications settings to turn on notifications from GOV.UK
-  </string>
-  <string name="notifications_alert_message_off">
-    Continue to your phone’s notifications settings to turn off notifications from GOV.UK
-  </string>
-  <string name="continue_button">Continue</string>
   <string name="on_button">On</string>
   <string name="off_button">Off</string>
-  <string name="cancel_button">Cancel</string>
 
   <string name="sign_out_title">Are you sure you want to sign out?</string>
   <string name="sign_out_bullet_title">This means:</string>

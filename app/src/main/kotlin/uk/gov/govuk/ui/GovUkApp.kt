@@ -32,7 +32,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,19 +41,19 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.drop
 import uk.gov.govuk.AppUiState
 import uk.gov.govuk.AppViewModel
 import uk.gov.govuk.BuildConfig
@@ -71,9 +70,11 @@ import uk.gov.govuk.login.navigation.navigateToLoginPostSignOut
 import uk.gov.govuk.navigation.AppLaunchNavigation
 import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
-import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_GRAPH_ROUTE
+import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ROUTE
+import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
+import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_ROUTE
 import uk.gov.govuk.notifications.navigation.notificationsGraph
-import uk.gov.govuk.notifications.ui.getNotificationsPermissionStatus
+import uk.gov.govuk.notifications.navigation.notificationsOnboardingGraph
 import uk.gov.govuk.onboarding.navigation.onboardingGraph
 import uk.gov.govuk.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.gov.govuk.search.navigation.searchGraph
@@ -103,6 +104,7 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                 is AppUiState.DeviceOffline -> DeviceOfflineScreen(
                     onTryAgain = { viewModel.onTryAgain() }
                 )
+
                 is AppUiState.ForcedUpdate -> ForcedUpdateScreen()
                 is AppUiState.Default -> {
                     if (it.shouldDisplayRecommendUpdate && !isRecommendUpdateSkipped) {
@@ -218,7 +220,7 @@ private fun BottomNavScaffold(
         onDeepLinkReceived = onDeepLinkReceived
     )
     if (shouldDisplayNotificationsOnboarding) {
-        HandleNotificationsPermissionStatus(navController)
+        HandleNotificationsPermissionStatus(navController = navController)
     }
 }
 
@@ -268,18 +270,38 @@ private fun showDeepLinkNotFoundAlert(context: Context) {
     }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-private fun HandleNotificationsPermissionStatus(navController: NavHostController) {
-    val notificationsPermissionStatus = getNotificationsPermissionStatus()
+private fun HandleNotificationsPermissionStatus(
+    navController: NavHostController
+) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+    val context = LocalContext.current
+    var isNotificationsEnabled by rememberSaveable { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
-        snapshotFlow { notificationsPermissionStatus }
-            .drop(1)
-            .collect { status ->
-                if (status.isGranted) {
-                    navController.navigate(NOTIFICATIONS_GRAPH_ROUTE)
+        isNotificationsEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
+    }
+
+    LaunchedEffect(lifecycleState) {
+        when (lifecycleState) {
+            Lifecycle.State.RESUMED -> {
+                val isNotificationsEnabledOnResume =
+                    NotificationManagerCompat.from(context).areNotificationsEnabled()
+                if (isNotificationsEnabledOnResume != isNotificationsEnabled) {
+                    val route = when(navController.currentDestination?.route) {
+                        NOTIFICATIONS_ONBOARDING_ROUTE -> NOTIFICATIONS_ONBOARDING_ROUTE
+                        else -> NOTIFICATIONS_CONSENT_ROUTE
+                    }
+                    navController.navigate(route) {
+                        launchSingleTop = true
+                    }
+                    isNotificationsEnabled = isNotificationsEnabledOnResume
                 }
             }
+
+            else -> { /* Do nothing */ }
+        }
     }
 }
 
@@ -403,10 +425,15 @@ private fun GovUkNavHost(
                 modifier = Modifier.padding(paddingValues)
             )
         }
-        notificationsGraph(
+        notificationsOnboardingGraph(
             notificationsOnboardingCompleted = {
                 navController.popBackStack()
                 appLaunchNavigation.onNext(navController)
+            }
+        )
+        notificationsGraph(
+            notificationsCompleted = {
+                navController.popBackStack()
             }
         )
         loginGraph(
@@ -468,7 +495,7 @@ private fun GovUkNavHost(
         if (homeWidgets.contains(HomeWidget.LOCAL)) {
             localGraph(
                 navController = navController,
-                onCancel = { navController.popBackStack(HOME_GRAPH_START_DESTINATION, false)},
+                onCancel = { navController.popBackStack(HOME_GRAPH_START_DESTINATION, false) },
                 modifier = Modifier.padding(paddingValues)
             )
         }

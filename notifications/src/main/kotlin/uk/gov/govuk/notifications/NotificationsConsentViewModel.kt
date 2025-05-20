@@ -1,6 +1,5 @@
 package uk.gov.govuk.notifications
 
-import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -15,7 +14,7 @@ import uk.gov.govuk.notifications.data.local.NotificationsDataStore
 import javax.inject.Inject
 
 @HiltViewModel
-internal class NotificationsOnboardingViewModel @Inject constructor(
+internal class NotificationsConsentViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient,
     private val notificationsClient: NotificationsClient,
     private val notificationsDataStore: NotificationsDataStore
@@ -31,23 +30,13 @@ internal class NotificationsOnboardingViewModel @Inject constructor(
 
     @OptIn(ExperimentalPermissionsApi::class)
     internal fun updateUiState(
-        status: PermissionStatus,
-        androidVersion: Int = Build.VERSION.SDK_INT
+        status: PermissionStatus
     ) {
         viewModelScope.launch {
-            val androidVersionIsGreaterThanTwelve = androidVersion >= Build.VERSION_CODES.TIRAMISU
-            _uiState.value = if (androidVersionIsGreaterThanTwelve) {
-                if (notificationsDataStore.isOnboardingCompleted()) {
-                    NotificationsUiState.Finish
-                } else {
-                    NotificationsUiState.Default
-                }
+            _uiState.value = if (!status.isGranted || notificationsClient.consentGiven()) {
+                NotificationsUiState.Finish
             } else {
-                if (status.isGranted && !notificationsDataStore.isOnboardingCompleted()) {
-                    NotificationsUiState.Default
-                } else {
-                    NotificationsUiState.Finish
-                }
+                NotificationsUiState.Default
             }
         }
     }
@@ -57,29 +46,6 @@ internal class NotificationsOnboardingViewModel @Inject constructor(
             screenClass = SCREEN_CLASS,
             screenName = TITLE,
             title = TITLE
-        )
-    }
-
-    internal fun onContinueClick(text: String) {
-        viewModelScope.launch {
-            notificationsDataStore.onboardingCompleted()
-            notificationsDataStore.firstPermissionRequestCompleted()
-        }
-        notificationsClient.giveConsent()
-        notificationsClient.requestPermission {
-            _uiState.value = NotificationsUiState.Finish
-        }
-        analyticsClient.buttonClick(
-            text = text
-        )
-    }
-
-    internal fun onSkipClick(text: String) {
-        viewModelScope.launch {
-            notificationsDataStore.onboardingCompleted()
-        }
-        analyticsClient.buttonClick(
-            text = text
         )
     }
 

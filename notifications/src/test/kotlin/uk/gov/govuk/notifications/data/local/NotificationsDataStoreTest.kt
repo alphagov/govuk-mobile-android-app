@@ -26,7 +26,7 @@ class NotificationsDataStoreTest {
     }
 
     @Test
-    fun `Given the data store is empty, then return false`() {
+    fun `Given the data store is empty, then is onboarding completed returns false`() {
         every { dataStore.data } returns emptyFlow()
 
         runTest {
@@ -51,6 +51,35 @@ class NotificationsDataStoreTest {
 
         runTest {
             assertTrue(notificationsDataStore.isOnboardingCompleted())
+        }
+    }
+
+    @Test
+    fun `Given the data store is empty, then is first permission request completed returns false`() {
+        every { dataStore.data } returns emptyFlow()
+
+        runTest {
+            assertFalse(notificationsDataStore.isFirstPermissionRequestCompleted())
+        }
+    }
+
+    @Test
+    fun `Given first permission request completed is null, then return false`() {
+        every { dataStore.data } returns flowOf(preferences)
+        every { preferences[booleanPreferencesKey(NotificationsDataStore.NOTIFICATIONS_FIRST_PERMISSION_REQUEST_COMPLETED_KEY)] } returns null
+
+        runTest {
+            assertFalse(notificationsDataStore.isFirstPermissionRequestCompleted())
+        }
+    }
+
+    @Test
+    fun `Given first permission request completed is true, then return true`() {
+        every { dataStore.data } returns flowOf(preferences)
+        every { preferences[booleanPreferencesKey(NotificationsDataStore.NOTIFICATIONS_FIRST_PERMISSION_REQUEST_COMPLETED_KEY)] } returns true
+
+        runTest {
+            assertTrue(notificationsDataStore.isFirstPermissionRequestCompleted())
         }
     }
 }

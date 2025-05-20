@@ -11,4 +11,10 @@ internal class NotificationsRepo @Inject constructor(
     internal suspend fun isOnboardingCompleted() = notificationsDataStore.isOnboardingCompleted()
 
     internal suspend fun onboardingCompleted() = notificationsDataStore.onboardingCompleted()
+
+    internal suspend fun isFirstPermissionRequestCompleted() =
+        notificationsDataStore.isFirstPermissionRequestCompleted()
+
+    internal suspend fun firstPermissionRequestCompleted() =
+        notificationsDataStore.firstPermissionRequestCompleted()
 }
