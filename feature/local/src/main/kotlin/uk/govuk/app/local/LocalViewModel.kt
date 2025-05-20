@@ -106,7 +106,7 @@ internal class LocalViewModel @Inject constructor(
             viewModelScope.launch {
                 when (val response = localRepo.performGetLocalPostcode(postcode)) {
                     is Success -> {
-                        emitErrorOrNavigate(response.value)
+                        emitErrorOrNavigate(response.value, postcode)
                     }
                     else -> println(response)
                 }
