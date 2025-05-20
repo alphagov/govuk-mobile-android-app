@@ -46,7 +46,6 @@ internal fun OnboardingScreen(
             onPrivacyPolicyClick = onPrivacyPolicyClick,
             modifier = Modifier
                 .weight(1f, fill = false)
-                .padding(horizontal = GovUkTheme.spacing.medium)
         )
         footer()
     }
