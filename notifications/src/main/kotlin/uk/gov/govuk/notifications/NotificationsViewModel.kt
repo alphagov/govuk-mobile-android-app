@@ -28,7 +28,7 @@ internal open class NotificationsViewModel @Inject constructor(
         )
     }
 
-    internal fun onContinueClick(text: String, onCompleted: () -> Unit) {
+    internal fun onAllowNotificationsClick(text: String, onCompleted: () -> Unit) {
         viewModelScope.launch {
             notificationsDataStore.onboardingCompleted()
             notificationsDataStore.firstPermissionRequestCompleted()
@@ -44,7 +44,7 @@ internal open class NotificationsViewModel @Inject constructor(
         )
     }
 
-    internal fun onSkipClick(text: String) {
+    internal fun onNotNowClick(text: String) {
         viewModelScope.launch {
             notificationsDataStore.onboardingCompleted()
         }

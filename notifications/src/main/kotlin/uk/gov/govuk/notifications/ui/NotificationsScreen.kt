@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -17,7 +16,7 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.notifications.R
 
 @Composable
-internal fun OnboardingScreen(
+internal fun NotificationsScreen(
     onPageView: () -> Unit,
     @StringRes body: Int,
     onPrivacyPolicyClick: (text: String, url: String) -> Unit,
@@ -53,9 +52,9 @@ internal fun OnboardingScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun OnboardingScreenPreview() {
+private fun NotificationsScreenPreview() {
     GovUkTheme {
-        OnboardingScreen(
+        NotificationsScreen(
             {},
             body = R.string.onboarding_screen_body,
             onPrivacyPolicyClick = { _, _ -> },

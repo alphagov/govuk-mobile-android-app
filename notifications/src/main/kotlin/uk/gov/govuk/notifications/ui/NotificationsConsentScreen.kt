@@ -34,7 +34,7 @@ internal fun NotificationsConsentRoute(
     uiState?.let { state ->
         when (state) {
             NotificationsUiState.Default -> {
-                OnboardingScreen(
+                NotificationsScreen(
                     onPageView = { notificationsViewModel.onPageView() },
                     body = R.string.onboarding_screen_no_consent_body,
                     onPrivacyPolicyClick = { text, url ->

@@ -90,7 +90,7 @@ class NotificationsViewModelTest {
     }
 
     @Test
-    fun `Given continue button click, then onboarding completed, request permission and log analytics`() {
+    fun `Given Allow notifications button click, then onboarding completed, first permission request completed, request permission and log analytics`() {
         coEvery { notificationsDataStore.onboardingCompleted() } returns Unit
         coEvery { notificationsDataStore.firstPermissionRequestCompleted() } returns Unit
         every { notificationsClient.giveConsent() } returns Unit
@@ -102,7 +102,7 @@ class NotificationsViewModelTest {
             onCompleted.captured.invoke()
         }
 
-        viewModel.onContinueClick("Title") {}
+        viewModel.onAllowNotificationsClick("Title") {}
 
         runTest {
             coVerify(exactly = 1) {
@@ -118,10 +118,10 @@ class NotificationsViewModelTest {
     }
 
     @Test
-    fun `Given Skip button click, then onboarding completed and log analytics`() {
+    fun `Given Not now button click, then onboarding completed and log analytics`() {
         coEvery { notificationsDataStore.onboardingCompleted() } returns Unit
 
-        viewModel.onSkipClick("Title")
+        viewModel.onNotNowClick("Title")
 
         runTest {
             coVerify(exactly = 1) {

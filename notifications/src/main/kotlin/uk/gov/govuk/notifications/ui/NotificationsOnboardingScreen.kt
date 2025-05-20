@@ -35,7 +35,7 @@ internal fun NotificationsOnboardingRoute(
     uiState?.let { state ->
         when (state) {
             NotificationsUiState.Default -> {
-                OnboardingScreen(
+                NotificationsScreen(
                     onPageView = { notificationsViewModel.onPageView() },
                     body = R.string.onboarding_screen_body,
                     onPrivacyPolicyClick = { text, url ->
@@ -62,12 +62,12 @@ internal fun NotificationsOnboardingRoute(
                             FixedDoubleButtonGroup(
                                 primaryText = primaryText,
                                 onPrimary = {
-                                    notificationsViewModel.onContinueClick(primaryText)
+                                    notificationsViewModel.onAllowNotificationsClick(primaryText)
                                     { notificationsOnboardingCompleted() }
                                 },
                                 secondaryText = secondaryText,
                                 onSecondary = {
-                                    notificationsViewModel.onSkipClick(secondaryText)
+                                    notificationsViewModel.onNotNowClick(secondaryText)
                                     notificationsOnboardingCompleted()
                                 }
                             )

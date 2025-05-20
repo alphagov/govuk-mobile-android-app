@@ -38,7 +38,7 @@ internal fun NotificationsPermissionRoute(
     uiState?.let { state ->
         when (state) {
             NotificationsUiState.Default -> {
-                OnboardingScreen(
+                NotificationsScreen(
                     onPageView = { notificationsViewModel.onPageView() },
                     body = R.string.onboarding_screen_body,
                     onPrivacyPolicyClick = { text, url ->
@@ -55,14 +55,14 @@ internal fun NotificationsPermissionRoute(
                         val secondaryText = stringResource(R.string.not_now_button)
                         FixedDoubleButtonGroup(
                             primaryText = primaryText, onPrimary = {
-                                notificationsViewModel.onContinueClick(primaryText)
+                                notificationsViewModel.onAllowNotificationsClick(primaryText)
                                 {
                                     notificationsCompleted()
                                 }
                             },
                             secondaryText = secondaryText,
                             onSecondary = {
-                                notificationsViewModel.onSkipClick(secondaryText)
+                                notificationsViewModel.onNotNowClick(secondaryText)
                                 notificationsCompleted()
                             }
                         )
