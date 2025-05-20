@@ -73,6 +73,7 @@ import uk.gov.govuk.navigation.TopLevelDestination
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_ROUTE
+import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_PERMISSION_ROUTE
 import uk.gov.govuk.notifications.navigation.notificationsGraph
 import uk.gov.govuk.notifications.navigation.notificationsOnboardingGraph
 import uk.gov.govuk.onboarding.navigation.onboardingGraph
@@ -291,6 +292,7 @@ private fun HandleNotificationsPermissionStatus(
                 if (isNotificationsEnabledOnResume != isNotificationsEnabled) {
                     val route = when(navController.currentDestination?.route) {
                         NOTIFICATIONS_ONBOARDING_ROUTE -> NOTIFICATIONS_ONBOARDING_ROUTE
+                        NOTIFICATIONS_PERMISSION_ROUTE -> NOTIFICATIONS_PERMISSION_ROUTE
                         else -> NOTIFICATIONS_CONSENT_ROUTE
                     }
                     navController.navigate(route) {
