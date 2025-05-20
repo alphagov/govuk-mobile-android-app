@@ -63,7 +63,7 @@ class NotificationsPermissionViewModelTest {
         every { permissionStatus.shouldShowRationale } returns false
 
         runTest {
-            viewModel.updateUiState(permissionStatus)
+            viewModel.updateUiState(permissionStatus, Build.VERSION_CODES.TIRAMISU)
 
             val result = viewModel.uiState.first()
             assertTrue(result is NotificationsUiState.Default)
@@ -77,7 +77,7 @@ class NotificationsPermissionViewModelTest {
         every { permissionStatus.shouldShowRationale } returns true
 
         runTest {
-            viewModel.updateUiState(permissionStatus)
+            viewModel.updateUiState(permissionStatus, Build.VERSION_CODES.TIRAMISU)
 
             val result = viewModel.uiState.first()
             assertTrue(result is NotificationsUiState.Default)
