@@ -19,12 +19,12 @@ android {
 
         consumerProguardFiles("consumer-rules.pro")
 
-        buildConfigField("String", "LOCAL_SERVICES_BASE_URL", "\"https://development-local-api-05fe62f9622c.herokuapp.com/find-local-council/\"")
+        buildConfigField("String", "LOCAL_SERVICES_BASE_URL", "\"https://www.gov.uk/\"")
     }
 
     buildTypes {
         release {
-            buildConfigField("String", "LOCAL_SERVICES_BASE_URL", "\"https://development-local-api-05fe62f9622c.herokuapp.com/find-local-council/\"")
+            buildConfigField("String", "LOCAL_SERVICES_BASE_URL", "\"https://www.gov.uk/\"")
         }
     }
 

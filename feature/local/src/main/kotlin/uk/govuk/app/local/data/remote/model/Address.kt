@@ -4,6 +4,6 @@ import com.google.gson.annotations.SerializedName
 
 data class Address(
     @SerializedName("address") val address: String,
-    @SerializedName("slug") val slug: String,
-    @SerializedName("name") val name: String
+    @SerializedName("local_authority_slug") val slug: String,
+    @SerializedName("local_authority_name") val name: String
 )
