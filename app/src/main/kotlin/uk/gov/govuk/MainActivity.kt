@@ -22,6 +22,8 @@ class MainActivity : FragmentActivity() {
         MutableSharedFlow(replay = 1)
     internal val intentFlow = _intentFlow.asSharedFlow()
 
+//    private val viewModel: AppViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -60,4 +62,11 @@ class MainActivity : FragmentActivity() {
             _intentFlow.tryEmit(intent)
         }
     }
+
+    /*
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        viewModel.onUserInteraction()
+    }
+     */
 }

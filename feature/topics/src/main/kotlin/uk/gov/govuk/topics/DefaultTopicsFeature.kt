@@ -9,8 +9,8 @@ internal class DefaultTopicsFeature @Inject constructor(
     private val topicsRepo: TopicsRepo
 ): TopicsFeature {
 
-    override suspend fun init(): Boolean {
-        return topicsRepo.sync()
+    override suspend fun init() {
+        topicsRepo.sync()
     }
 
     override suspend fun clear() {

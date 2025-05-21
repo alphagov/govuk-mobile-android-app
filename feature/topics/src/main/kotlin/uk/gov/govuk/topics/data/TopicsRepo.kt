@@ -23,15 +23,11 @@ internal class TopicsRepo @Inject constructor(
     val stepBySteps
         get() = _stepBySteps
 
-    suspend fun sync(): Boolean {
-        var success = false
+    suspend fun sync() {
         val result = safeApiCall { topicsApi.getTopics() }
         if (result is Success){
             localDataSource.sync(result.value)
-            success = true
         }
-
-        return success
     }
 
     val topics = localDataSource.topics.map { localTopics ->
