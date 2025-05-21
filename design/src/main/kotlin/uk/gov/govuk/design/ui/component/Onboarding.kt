@@ -74,7 +74,10 @@ fun OnboardingSlide(
             textAlign = TextAlign.Center
         )
         LargeVerticalSpacer()
-        PrivacyPolicyLink { text, url -> onPrivacyPolicyClick?.invoke(text, url) }
+        PrivacyPolicyLink(
+            modifier = Modifier
+                .padding(horizontal = GovUkTheme.spacing.extraLarge)
+        ) { text, url -> onPrivacyPolicyClick?.invoke(text, url) }
         MediumVerticalSpacer()
     }
 }
