@@ -3,6 +3,7 @@ package uk.gov.govuk.topics.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,6 +31,7 @@ import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.ListHeader
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.error.OfflineMessage
 import uk.gov.govuk.design.ui.component.error.ProblemMessage
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -142,23 +144,30 @@ private fun TopicScreen(
         LazyColumn {
             item {
                 Column(
-                    Modifier
-                        .fillMaxWidth()
-                        .background(GovUkTheme.colourScheme.surfaces.homeHeader)
-                        .padding(horizontal = GovUkTheme.spacing.medium)
+                    Modifier.fillMaxWidth()
                 ) {
-                    LargeTitleBoldLabel(
-                        text = topic.title,
-                        modifier = Modifier.semantics { heading() },
-                        color = GovUkTheme.colourScheme.textAndIcons.header
-                    )
-                    MediumVerticalSpacer()
-                    topic.description?.let { description ->
-                        BodyRegularLabel(
-                            text = description,
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(GovUkTheme.colourScheme.surfaces.homeHeader)
+                    ) {
+                        LargeTitleBoldLabel(
+                            text = topic.title,
+                            modifier = Modifier
+                                .padding(horizontal = GovUkTheme.spacing.medium)
+                                .semantics { heading() },
                             color = GovUkTheme.colourScheme.textAndIcons.header
                         )
+                        SmallVerticalSpacer()
+                    }
+                    topic.description?.let { description ->
                         MediumVerticalSpacer()
+                        BodyRegularLabel(
+                            text = description,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = GovUkTheme.spacing.medium)
+                        )
                     }
                 }
             }
