@@ -6,12 +6,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
 import uk.gov.govuk.design.ui.component.OnboardingSlide
+import uk.gov.govuk.design.ui.component.PrivacyPolicyLink
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.notifications.R
 
@@ -42,7 +44,12 @@ internal fun NotificationsScreen(
             title = R.string.onboarding_screen_title,
             body = body,
             image = image,
-            onPrivacyPolicyClick = onPrivacyPolicyClick,
+            privacyPolicy = {
+                PrivacyPolicyLink(
+                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.extraLarge),
+                    onClick = onPrivacyPolicyClick
+                )
+            },
             modifier = Modifier
                 .weight(1f, fill = false)
         )
