@@ -49,7 +49,7 @@ internal fun NotificationsConsentRoute(
                             primaryText = primaryText,
                             onPrimary = {
                                 notificationsViewModel.onGiveConsentClick(primaryText) {
-                                    notificationsConsentCompleted()
+                                    viewModel.finish()
                                 }
                             },
                             secondaryText = secondaryText,

@@ -43,4 +43,8 @@ internal class NotificationsOnboardingViewModel @Inject constructor(
             }
         }
     }
+
+    internal fun finish() {
+        _uiState.value = NotificationsUiState.Finish
+    }
 }

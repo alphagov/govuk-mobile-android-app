@@ -50,7 +50,7 @@ internal fun NotificationsOnboardingRoute(
                             val secondaryText = stringResource(R.string.turn_off_notifications_button)
                             FixedDoubleButtonGroup(
                                 primaryText = primaryText,
-                                onPrimary = { notificationsViewModel.onGiveConsentClick(primaryText) { notificationsOnboardingCompleted() } },
+                                onPrimary = { notificationsViewModel.onGiveConsentClick(primaryText) { viewModel.finish() } },
                                 secondaryText = secondaryText,
                                 onSecondary = {
                                     notificationsViewModel.onTurnOffNotificationsClick(secondaryText)
@@ -63,12 +63,12 @@ internal fun NotificationsOnboardingRoute(
                                 primaryText = primaryText,
                                 onPrimary = {
                                     notificationsViewModel.onAllowNotificationsClick(primaryText)
-                                    { notificationsOnboardingCompleted() }
+                                    { viewModel.finish() }
                                 },
                                 secondaryText = secondaryText,
                                 onSecondary = {
                                     notificationsViewModel.onNotNowClick(secondaryText)
-                                    notificationsOnboardingCompleted()
+                                    viewModel.finish()
                                 }
                             )
                         }

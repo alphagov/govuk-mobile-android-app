@@ -115,4 +115,14 @@ class NotificationsOnboardingViewModelTest {
             assertTrue(result is NotificationsUiState.Finish)
         }
     }
+
+    @Test
+    fun `Given finish is called, then ui state should be finish`() {
+        runTest {
+            viewModel.finish()
+
+            val result = viewModel.uiState.first()
+            assertTrue(result is NotificationsUiState.Finish)
+        }
+    }
 }

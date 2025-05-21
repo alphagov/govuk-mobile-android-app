@@ -438,7 +438,7 @@ private fun GovUkNavHost(
         )
         notificationsConsentGraph(
             notificationsConsentCompleted = {
-                navController.navigateUp()
+                navController.popBackStack()
             }
         )
         loginGraph(
