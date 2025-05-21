@@ -19,7 +19,7 @@ import uk.gov.govuk.notifications.openDeviceSettings
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun NotificationsConsentRoute(
-    notificationsCompleted: () -> Unit,
+    notificationsConsentCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val notificationsViewModel: NotificationsViewModel = hiltViewModel()
@@ -49,7 +49,7 @@ internal fun NotificationsConsentRoute(
                             primaryText = primaryText,
                             onPrimary = {
                                 notificationsViewModel.onGiveConsentClick(primaryText) {
-                                    notificationsCompleted()
+                                    notificationsConsentCompleted()
                                 }
                             },
                             secondaryText = secondaryText,
@@ -64,7 +64,7 @@ internal fun NotificationsConsentRoute(
 
             else -> {
                 EmptyScreen()
-                notificationsCompleted()
+                notificationsConsentCompleted()
             }
         }
     }

@@ -70,10 +70,11 @@ import uk.gov.govuk.login.navigation.navigateToLoginPostSignOut
 import uk.gov.govuk.navigation.AppLaunchNavigation
 import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
-import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ROUTE
+import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_ROUTE
-import uk.gov.govuk.notifications.navigation.notificationsGraph
+import uk.gov.govuk.notifications.navigation.notificationsConsentGraph
 import uk.gov.govuk.notifications.navigation.notificationsOnboardingGraph
+import uk.gov.govuk.notifications.navigation.notificationsPermissionGraph
 import uk.gov.govuk.onboarding.navigation.onboardingGraph
 import uk.gov.govuk.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.gov.govuk.search.navigation.searchGraph
@@ -290,7 +291,7 @@ private fun HandleNotificationsPermissionStatus(
                 if (isNotificationsEnabledOnResume != isNotificationsEnabled) {
                     val route = when(navController.currentDestination?.route) {
                         NOTIFICATIONS_ONBOARDING_ROUTE -> NOTIFICATIONS_ONBOARDING_ROUTE
-                        else -> NOTIFICATIONS_CONSENT_ROUTE
+                        else -> NOTIFICATIONS_CONSENT_GRAPH_ROUTE
                     }
                     navController.navigate(route) {
                         launchSingleTop = true
@@ -430,9 +431,14 @@ private fun GovUkNavHost(
                 appLaunchNavigation.onNext(navController)
             }
         )
-        notificationsGraph(
-            notificationsCompleted = {
+        notificationsPermissionGraph(
+            notificationsPermissionCompleted = {
                 navController.popBackStack()
+            }
+        )
+        notificationsConsentGraph(
+            notificationsConsentCompleted = {
+                navController.navigateUp()
             }
         )
         loginGraph(

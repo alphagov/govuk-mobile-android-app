@@ -23,7 +23,7 @@ import uk.gov.govuk.notifications.openDeviceSettings
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun NotificationsPermissionRoute(
-    notificationsCompleted: () -> Unit,
+    notificationsPermissionCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val notificationsViewModel: NotificationsViewModel = hiltViewModel()
@@ -47,7 +47,7 @@ internal fun NotificationsPermissionRoute(
                     modifier = modifier,
                     header = {
                         ChildPageHeader(
-                            onBack = notificationsCompleted
+                            onBack = notificationsPermissionCompleted
                         )
                     },
                     footer = {
@@ -57,13 +57,13 @@ internal fun NotificationsPermissionRoute(
                             primaryText = primaryText, onPrimary = {
                                 notificationsViewModel.onAllowNotificationsClick(primaryText)
                                 {
-                                    notificationsCompleted()
+                                    notificationsPermissionCompleted()
                                 }
                             },
                             secondaryText = secondaryText,
                             onSecondary = {
                                 notificationsViewModel.onNotNowClick(secondaryText)
-                                notificationsCompleted()
+                                notificationsPermissionCompleted()
                             }
                         )
                     }
@@ -73,12 +73,12 @@ internal fun NotificationsPermissionRoute(
                 val context = LocalContext.current
                 showNotificationsAlert(context) { viewModel.onAlertButtonClick(it) }
                 EmptyScreen()
-                notificationsCompleted()
+                notificationsPermissionCompleted()
             }
 
             NotificationsUiState.Finish -> {
                 EmptyScreen()
-                notificationsCompleted()
+                notificationsPermissionCompleted()
             }
         }
     }
