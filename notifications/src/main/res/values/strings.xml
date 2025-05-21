@@ -18,4 +18,15 @@
         You can change your preferences at any time in your phone’s notifications settings.
     </string>
     <string name="prompt_widget_title">Turn on notifications</string>
+
+    <string name="notifications_alert_title_on">Turn on notifications</string>
+    <string name="notifications_alert_title_off">Turn off notifications</string>
+    <string name="notifications_alert_message_on">
+    Continue to your phone’s notifications settings to turn on notifications from GOV.UK
+  </string>
+    <string name="notifications_alert_message_off">
+    Continue to your phone’s notifications settings to turn off notifications from GOV.UK
+  </string>
+    <string name="cancel_button">Cancel</string>
+    <string name="continue_button">Continue</string>
 </resources>

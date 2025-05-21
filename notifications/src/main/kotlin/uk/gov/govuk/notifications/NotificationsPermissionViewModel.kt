@@ -6,15 +6,18 @@ import androidx.lifecycle.viewModelScope
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.shouldShowRationale
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.notifications.data.local.NotificationsDataStore
 import javax.inject.Inject
 
 @HiltViewModel
-internal class NotificationsOnboardingViewModel @Inject constructor(
+internal class NotificationsPermissionViewModel @Inject constructor(
+    private val analyticsClient: AnalyticsClient,
     private val notificationsDataStore: NotificationsDataStore
 ) : ViewModel() {
 
@@ -29,18 +32,21 @@ internal class NotificationsOnboardingViewModel @Inject constructor(
         viewModelScope.launch {
             val androidVersionIsGreaterThanTwelve = androidVersion >= Build.VERSION_CODES.TIRAMISU
             _uiState.value = if (androidVersionIsGreaterThanTwelve) {
-                if (notificationsDataStore.isOnboardingCompleted()) {
-                    NotificationsUiState.Finish
-                } else {
+                if (!status.isGranted &&
+                    (!notificationsDataStore.isFirstPermissionRequestCompleted() ||
+                            status.shouldShowRationale)
+                ) {
                     NotificationsUiState.Default
+                } else {
+                    NotificationsUiState.Alert
                 }
             } else {
-                if (status.isGranted && !notificationsDataStore.isOnboardingCompleted()) {
-                    NotificationsUiState.Default
-                } else {
-                    NotificationsUiState.Finish
-                }
+                NotificationsUiState.Alert
             }
         }
+    }
+
+    internal fun onAlertButtonClick(text: String) {
+        analyticsClient.buttonClick(text)
     }
 }
