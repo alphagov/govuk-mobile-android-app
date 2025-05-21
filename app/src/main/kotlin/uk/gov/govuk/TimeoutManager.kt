@@ -1,14 +1,19 @@
 package uk.gov.govuk
 
-import android.os.Handler
-import android.os.Looper
 import android.os.SystemClock
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-internal class TimeoutManager @Inject constructor() {
-    private val handler = Handler(Looper.getMainLooper())
+internal class TimeoutManager @Inject constructor(
+
+) {
+    private var job: Job? = null
     private var lastInteractionTime: Long = 0L
 
     fun onUserInteraction(
@@ -16,16 +21,13 @@ internal class TimeoutManager @Inject constructor() {
         timeoutInterval: Long = 15 * 60 * 1000L, // 15 mins
         onTimeout: () -> Unit,
     ) {
-        if (interactionTime - lastInteractionTime > 1000) {
+        if (interactionTime - lastInteractionTime >= 1000) {
             lastInteractionTime = interactionTime
-            handler.removeCallbacksAndMessages(null)
-            handler.postDelayed(
-                {
-                    onTimeout()
-                },
-                timeoutInterval
-            )
+            job?.cancel()
+            job = CoroutineScope(Dispatchers.Main).launch {
+                delay(timeoutInterval)
+                onTimeout()
+            }
         }
     }
-
 }

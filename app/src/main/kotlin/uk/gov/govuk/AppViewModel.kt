@@ -1,5 +1,6 @@
 package uk.gov.govuk
 
+import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -92,8 +93,11 @@ internal class AppViewModel @Inject constructor(
         }
     }
 
-    fun onUserInteraction(navController: NavController) {
-        timeoutManager.onUserInteraction {
+    fun onUserInteraction(
+        navController: NavController,
+        interactionTime: Long = SystemClock.elapsedRealtime()
+    ) {
+        timeoutManager.onUserInteraction(interactionTime) {
             if (flagRepo.isLoginEnabled() && authRepo.isUserSessionActive()) {
                 viewModelScope.launch {
                     authRepo.endUserSession()

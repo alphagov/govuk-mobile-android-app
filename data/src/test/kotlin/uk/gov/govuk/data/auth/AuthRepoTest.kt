@@ -455,4 +455,52 @@ class AuthRepoTest {
             authApi.revoke(any(), any())
         }
     }
+
+    @Test
+    fun `Given a user session is not active, when is user session active, return false`() {
+        assertFalse(authRepo.isUserSessionActive())
+    }
+
+    @Test
+    fun `Given a user session is active, when is user session active, return true`() {
+        every { AuthorizationResponse.fromIntent(any()) } returns authResponse
+        every { authService.performTokenRequest(any(), any()) } answers {
+            val callback = secondArg<TokenResponseCallback>()
+            callback.onTokenRequestCompleted(tokenResponse, null)
+        }
+        every { tokenResponseMapper.map(any()) } returns
+                TokenResponseMapper.Tokens(
+                    accessToken = "accessToken",
+                    idToken = "idToken",
+                    refreshToken = "refreshToken"
+                )
+
+        runTest {
+            authRepo.handleAuthResponse(intent)
+            assertTrue(authRepo.isUserSessionActive())
+        }
+    }
+
+
+    @Test
+    fun `Given a user session is ended, when end user session, then user session is no longer active`() {
+        every { AuthorizationResponse.fromIntent(any()) } returns authResponse
+        every { authService.performTokenRequest(any(), any()) } answers {
+            val callback = secondArg<TokenResponseCallback>()
+            callback.onTokenRequestCompleted(tokenResponse, null)
+        }
+        every { tokenResponseMapper.map(any()) } returns
+                TokenResponseMapper.Tokens(
+                    accessToken = "accessToken",
+                    idToken = "idToken",
+                    refreshToken = "refreshToken"
+                )
+
+        runTest {
+            authRepo.handleAuthResponse(intent)
+            assertTrue(authRepo.isUserSessionActive())
+            authRepo.endUserSession()
+            assertFalse(authRepo.isUserSessionActive())
+        }
+    }
 }

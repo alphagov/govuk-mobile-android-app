@@ -36,19 +36,23 @@ class TopicsRepoTest{
     private val topic = mockk<RemoteTopic>(relaxed = true)
 
     @Test
-    fun `Given the topics api response is unsuccessful, when sync, then return false`() {
+    fun `Given the topics api response is unsuccessful, when sync, then do not sync local data source`() {
         coEvery { topicsApi.getTopics() } returns topicsResponse
         every { topicsResponse.isSuccessful } returns false
 
         val repo = TopicsRepo(topicsApi, localDataSource)
 
         runTest {
-            assertFalse(repo.sync())
+            repo.sync()
+        }
+
+        coVerify(exactly = 0) {
+            localDataSource.sync(any())
         }
     }
 
     @Test
-    fun `Given the topics api response body is empty, when sync, then return false`() {
+    fun `Given the topics api response body is empty, when sync, then do not sync local data source`() {
         coEvery { topicsApi.getTopics() } returns topicsResponse
         every { topicsResponse.isSuccessful } returns true
         every { topicsResponse.body() } returns null
@@ -56,31 +60,46 @@ class TopicsRepoTest{
         val repo = TopicsRepo(topicsApi, localDataSource)
 
         runTest {
-            assertFalse(repo.sync())
+            repo.sync()
+        }
+
+        coVerify(exactly = 0) {
+            localDataSource.sync(any())
         }
     }
 
     @Test
-    fun `Given the topics api throws an exception, when sync, then return false`() {
+    fun `Given the topics api throws an exception, when sync, then do not sync local data source`() {
         coEvery { topicsApi.getTopics() } throws IOException()
 
         val repo = TopicsRepo(topicsApi, localDataSource)
 
         runTest {
-            assertFalse(repo.sync())
+            repo.sync()
+        }
+
+        coVerify(exactly = 0) {
+            localDataSource.sync(any())
         }
     }
 
     @Test
-    fun `Given the topics api is successful, when sync, then sync local data source and return true`() {
+    fun `Given the topics api is successful, when sync, then sync local data source`() {
+        val topics = listOf(
+            RemoteTopicItem("ref", "title", "desc")
+        )
+
         coEvery { topicsApi.getTopics() } returns topicsResponse
         every { topicsResponse.isSuccessful } returns true
-        every { topicsResponse.body() } returns emptyList()
-
+        every { topicsResponse.body() } returns topics
         val repo = TopicsRepo(topicsApi, localDataSource)
 
         runTest {
-            assertTrue(repo.sync())
+            repo.sync()
+        }
+
+        coVerify {
+            localDataSource.sync(topics)
         }
     }
 
