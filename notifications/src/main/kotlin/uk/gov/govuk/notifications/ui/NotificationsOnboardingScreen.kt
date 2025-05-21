@@ -27,6 +27,7 @@ import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.OnboardingSlide
+import uk.gov.govuk.design.ui.component.PrivacyPolicyLink
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.notifications.NotificationsOnboardingUiState
 import uk.gov.govuk.notifications.NotificationsOnboardingViewModel
@@ -194,7 +195,12 @@ private fun OnboardingScreen(
             title = R.string.onboarding_screen_title,
             body = body,
             image = image,
-            onPrivacyPolicyClick = onPrivacyPolicyClick,
+            privacyPolicy = {
+                PrivacyPolicyLink(
+                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.extraLarge),
+                    onClick = onPrivacyPolicyClick
+                )
+            },
             modifier = Modifier
                 .weight(1f, fill = false)
                 .padding(horizontal = GovUkTheme.spacing.medium)

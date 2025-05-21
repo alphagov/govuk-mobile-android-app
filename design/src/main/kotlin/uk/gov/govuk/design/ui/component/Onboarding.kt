@@ -29,7 +29,7 @@ fun OnboardingSlide(
     @StringRes title: Int,
     @StringRes body: Int,
     modifier: Modifier = Modifier,
-    onPrivacyPolicyClick: ((text: String, url: String) -> Unit)? = null,
+    privacyPolicy: (@Composable () -> Unit)? = null,
     @DrawableRes image: Int? = null,
     focusRequester: FocusRequester = remember { FocusRequester() }
 ) {
@@ -73,8 +73,10 @@ fun OnboardingSlide(
                 .padding(horizontal = GovUkTheme.spacing.extraLarge),
             textAlign = TextAlign.Center
         )
-        LargeVerticalSpacer()
-        PrivacyPolicyLink { text, url -> onPrivacyPolicyClick?.invoke(text, url) }
+        privacyPolicy?.let {
+            LargeVerticalSpacer()
+            it()
+        }
         MediumVerticalSpacer()
     }
 }
