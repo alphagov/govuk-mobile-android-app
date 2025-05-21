@@ -31,7 +31,6 @@ import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.ListHeader
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
-import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.error.OfflineMessage
 import uk.gov.govuk.design.ui.component.error.ProblemMessage
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -158,7 +157,6 @@ private fun TopicScreen(
                                 .semantics { heading() },
                             color = GovUkTheme.colourScheme.textAndIcons.header
                         )
-                        SmallVerticalSpacer()
                     }
                     topic.description?.let { description ->
                         MediumVerticalSpacer()
