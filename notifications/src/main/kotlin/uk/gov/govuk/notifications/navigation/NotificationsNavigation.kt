@@ -12,7 +12,7 @@ const val NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE = "notifications_onboarding_graph
 const val NOTIFICATIONS_PERMISSION_GRAPH_ROUTE = "notifications_permission_graph_route"
 const val NOTIFICATIONS_CONSENT_GRAPH_ROUTE = "notifications_consent_graph_route"
 const val NOTIFICATIONS_ONBOARDING_ROUTE = "notifications_onboarding_route"
-private const val NOTIFICATIONS_PERMISSION_ROUTE = "notifications_permission_route"
+const val NOTIFICATIONS_PERMISSION_ROUTE = "notifications_permission_route"
 private const val NOTIFICATIONS_CONSENT_ROUTE = "notifications_consent_route"
 
 fun NavGraphBuilder.notificationsOnboardingGraph(

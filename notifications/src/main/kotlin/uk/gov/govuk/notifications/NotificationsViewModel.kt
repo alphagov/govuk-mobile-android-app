@@ -33,7 +33,6 @@ internal open class NotificationsViewModel @Inject constructor(
             notificationsDataStore.onboardingCompleted()
             notificationsDataStore.firstPermissionRequestCompleted()
         }
-        notificationsClient.giveConsent()
         notificationsClient.requestPermission {
             viewModelScope.launch {
                 onCompleted()

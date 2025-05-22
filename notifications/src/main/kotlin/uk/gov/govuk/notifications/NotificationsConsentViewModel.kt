@@ -24,11 +24,18 @@ internal class NotificationsConsentViewModel @Inject constructor(
         status: PermissionStatus
     ) {
         viewModelScope.launch {
-            _uiState.value = if (!status.isGranted || notificationsClient.consentGiven()) {
+            _uiState.value = if (!status.isGranted) {
+                notificationsClient.removeConsent()
+                NotificationsUiState.Finish
+            } else if (notificationsClient.consentGiven()) {
                 NotificationsUiState.Finish
             } else {
                 NotificationsUiState.Default
             }
         }
+    }
+
+    internal fun finish() {
+        _uiState.value = NotificationsUiState.Finish
     }
 }

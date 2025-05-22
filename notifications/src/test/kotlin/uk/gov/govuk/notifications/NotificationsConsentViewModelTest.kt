@@ -5,6 +5,7 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -37,12 +38,16 @@ class NotificationsConsentViewModelTest {
     }
 
     @Test
-    fun `Given the permission status is not granted and consent is not given, When init, then ui state should be finish`() {
+    fun `Given the permission status is not granted, When init, then remove consent called and ui state should be finish`() {
         every { permissionStatus.isGranted } returns false
-        every { notificationsClient.consentGiven() } returns false
+        every { notificationsClient.removeConsent() } returns Unit
 
         runTest {
             viewModel.updateUiState(permissionStatus)
+
+            verify(exactly = 1) {
+                notificationsClient.removeConsent()
+            }
 
             val result = viewModel.uiState.first()
             assertTrue(result is NotificationsUiState.Finish)
@@ -50,8 +55,8 @@ class NotificationsConsentViewModelTest {
     }
 
     @Test
-    fun `Given the permission status is not granted and consent is given, When init, then ui state should be finish`() {
-        every { permissionStatus.isGranted } returns false
+    fun `Given the permission status is granted and consent is given, When init, then ui state should be finish`() {
+        every { permissionStatus.isGranted } returns true
         every { notificationsClient.consentGiven() } returns true
 
         runTest {
@@ -76,12 +81,9 @@ class NotificationsConsentViewModelTest {
     }
 
     @Test
-    fun `Given the permission status is granted and consent is given, When init, then ui state should be finish`() {
-        every { permissionStatus.isGranted } returns true
-        every { notificationsClient.consentGiven() } returns true
-
+    fun `Given finish is called, then ui state should be finish`() {
         runTest {
-            viewModel.updateUiState(permissionStatus)
+            viewModel.finish()
 
             val result = viewModel.uiState.first()
             assertTrue(result is NotificationsUiState.Finish)

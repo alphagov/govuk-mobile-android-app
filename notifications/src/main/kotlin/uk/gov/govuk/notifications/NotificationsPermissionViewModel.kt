@@ -49,4 +49,8 @@ internal class NotificationsPermissionViewModel @Inject constructor(
     internal fun onAlertButtonClick(text: String) {
         analyticsClient.buttonClick(text)
     }
+
+    internal fun finish() {
+        _uiState.value = NotificationsUiState.Finish
+    }
 }
