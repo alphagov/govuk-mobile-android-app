@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
@@ -46,7 +47,6 @@ import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.navigation.NavController
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
@@ -67,7 +67,6 @@ import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
 import uk.gov.govuk.login.navigation.loginGraph
 import uk.gov.govuk.login.navigation.navigateToLoginPostSignOut
-import uk.gov.govuk.navigation.AppLaunchNavigation
 import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_GRAPH_ROUTE
@@ -113,40 +112,11 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                             recommendUpdateSkipped = { isRecommendUpdateSkipped = true }
                         )
                     } else {
-                        val section = stringResource(R.string.homepage)
                         BottomNavScaffold(
                             intentFlow = intentFlow,
-                            appLaunchNavigation = viewModel.appLaunchNavigation,
-                            onboardingCompleted = { viewModel.onboardingCompleted() },
-                            onLogin = { isDifferentUser, navController ->
-                                viewModel.onLogin(isDifferentUser, navController)
-                            },
-                            topicSelectionCompleted = { viewModel.topicSelectionCompleted() },
+                            viewModel = viewModel,
                             shouldDisplayNotificationsOnboarding = it.shouldDisplayNotificationsOnboarding,
-                            onTabClick = { tabText -> viewModel.onTabClick(tabText) },
-                            homeWidgets = homeWidgets,
-                            onInternalWidgetClick = { text ->
-                                viewModel.onWidgetClick(
-                                    text = text,
-                                    external = false,
-                                    section = section
-                                )
-                            },
-                            onExternalWidgetClick = { text, url ->
-                                viewModel.onWidgetClick(
-                                    text = text,
-                                    url = url,
-                                    external = true,
-                                    section = section
-                                )
-                            },
-                            onSuppressWidgetClick = { text, widget ->
-                                viewModel.onSuppressWidgetClick(text, section, widget)
-                            },
-                            onSignOut = { viewModel.onSignOut() },
-                            onDeepLinkReceived = { hasDeepLink, url ->
-                                viewModel.onDeepLinkReceived(hasDeepLink, url)
-                            }
+                            homeWidgets = homeWidgets
                         )
                     }
                 }
@@ -173,44 +143,58 @@ private fun LoadingScreen(
 @Composable
 private fun BottomNavScaffold(
     intentFlow: Flow<Intent>,
-    appLaunchNavigation: AppLaunchNavigation,
-    onboardingCompleted: () -> Unit,
-    onLogin: (Boolean, NavController) -> Unit,
-    topicSelectionCompleted: () -> Unit,
+    viewModel: AppViewModel,
     shouldDisplayNotificationsOnboarding: Boolean,
-    onTabClick: (String) -> Unit,
     homeWidgets: List<HomeWidget>?,
-    onInternalWidgetClick: (String) -> Unit,
-    onExternalWidgetClick: (String, String?) -> Unit,
-    onSuppressWidgetClick: (String, HomeWidget) -> Unit,
-    onSignOut: () -> Unit,
-    onDeepLinkReceived: (hasDeepLink: Boolean, url: String) -> Unit
 ) {
     val navController = rememberNavController()
     val navBarPadding = WindowInsets.navigationBars.asPaddingValues()
+    val section = stringResource(R.string.homepage)
 
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
         bottomBar = {
-            BottomNav(navController, onTabClick)
+            BottomNav(viewModel, navController) { tabText ->
+                viewModel.onTabClick(tabText)
+            }
         },
         modifier = Modifier.padding(bottom = navBarPadding.calculateBottomPadding())
     ) { paddingValues ->
         Surface(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            awaitPointerEvent()
+                            viewModel.onUserInteraction(navController)
+                        }
+                    }
+                },
             color = GovUkTheme.colourScheme.surfaces.background
         ) {
             GovUkNavHost(
+                viewModel = viewModel,
                 navController = navController,
-                appLaunchNavigation = appLaunchNavigation,
-                onboardingCompleted = onboardingCompleted,
-                onLogin = { isDifferentUser -> onLogin(isDifferentUser, navController) },
-                topicSelectionCompleted = topicSelectionCompleted,
                 homeWidgets = homeWidgets,
-                onInternalWidgetClick = onInternalWidgetClick,
-                onExternalWidgetClick = onExternalWidgetClick,
-                onSuppressWidgetClick = onSuppressWidgetClick,
-                onSignOut = onSignOut,
+                onInternalWidgetClick = { text ->
+                    viewModel.onWidgetClick(
+                        text = text,
+                        external = false,
+                        section = section
+                    )
+                },
+                onExternalWidgetClick = { text, url ->
+                    viewModel.onWidgetClick(
+                        text = text,
+                        url = url,
+                        external = true,
+                        section = section
+                    )
+                },
+                onSuppressWidgetClick = { text, widget ->
+                    viewModel.onSuppressWidgetClick(text, section, widget)
+                },
                 paddingValues = paddingValues
             )
         }
@@ -218,8 +202,9 @@ private fun BottomNavScaffold(
     HandleReceivedIntents(
         intentFlow = intentFlow,
         navController = navController,
-        onDeepLinkReceived = onDeepLinkReceived
-    )
+    ) { hasDeepLink, url ->
+        viewModel.onDeepLinkReceived(hasDeepLink, url)
+    }
     if (shouldDisplayNotificationsOnboarding) {
         HandleNotificationsPermissionStatus(navController = navController)
     }
@@ -308,6 +293,7 @@ private fun HandleNotificationsPermissionStatus(
 
 @Composable
 private fun BottomNav(
+    viewModel: AppViewModel,
     navController: NavHostController,
     onTabClick: (String) -> Unit
 ) {
@@ -317,14 +303,17 @@ private fun BottomNav(
         mutableIntStateOf(-1)
     }
 
-    navController.addOnDestinationChangedListener { _, destination, _ ->
-        selectedIndex =
-            topLevelDestinations.indexOfFirst { topLevelDestination ->
-                topLevelDestination.route == destination.parent?.route ||
-                        topLevelDestination.associatedRoutes.any {
-                            destination.route?.startsWith(it) == true
-                        }
-            }
+    LaunchedEffect(Unit) {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            viewModel.onUserInteraction(navController)
+            selectedIndex =
+                topLevelDestinations.indexOfFirst { topLevelDestination ->
+                    topLevelDestination.route == destination.parent?.route ||
+                            topLevelDestination.associatedRoutes.any {
+                                destination.route?.startsWith(it) == true
+                            }
+                }
+        }
     }
 
     // Display the nav bar if the current destination has a tab index (is a top level destination
@@ -383,19 +372,16 @@ private fun BottomNav(
 
 @Composable
 private fun GovUkNavHost(
+    viewModel: AppViewModel,
     navController: NavHostController,
-    appLaunchNavigation: AppLaunchNavigation,
-    onboardingCompleted: () -> Unit,
-    onLogin: (Boolean) -> Unit,
-    topicSelectionCompleted: () -> Unit,
     homeWidgets: List<HomeWidget>?,
     onInternalWidgetClick: (String) -> Unit,
     onExternalWidgetClick: (String, String?) -> Unit,
     onSuppressWidgetClick: (String, HomeWidget) -> Unit,
-    onSignOut: () -> Unit,
     paddingValues: PaddingValues
 ) {
     val context = LocalContext.current
+    val appLaunchNavigation = viewModel.appLaunchNavigation
     val startDestination = appLaunchNavigation.startDestination
 
     NavHost(
@@ -409,14 +395,14 @@ private fun GovUkNavHost(
         )
         onboardingGraph(
             onboardingCompleted = {
-                onboardingCompleted()
+                viewModel.onboardingCompleted()
                 appLaunchNavigation.onNext(navController)
             }
         )
         if (homeWidgets.contains(HomeWidget.TOPICS)) {
             topicSelectionGraph(
                 topicSelectionCompleted = {
-                    topicSelectionCompleted()
+                    viewModel.topicSelectionCompleted()
                     appLaunchNavigation.onNext(navController)
                 }
             )
@@ -446,7 +432,7 @@ private fun GovUkNavHost(
         loginGraph(
             navController = navController,
             onLoginCompleted = { isDifferentUser ->
-                onLogin(isDifferentUser)
+                viewModel.onLogin(isDifferentUser, navController)
             },
             onBiometricSetupCompleted = {
                 appLaunchNavigation.onNext(navController)
@@ -485,7 +471,7 @@ private fun GovUkNavHost(
         signOutGraph(
             navController = navController,
             onSignOut = {
-                onSignOut()
+                viewModel.onSignOut()
                 navController.navigateToLoginPostSignOut()
             }
         )

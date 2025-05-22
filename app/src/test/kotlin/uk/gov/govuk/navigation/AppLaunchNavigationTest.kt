@@ -19,6 +19,7 @@ import uk.gov.govuk.login.navigation.BIOMETRIC_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
 import uk.gov.govuk.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
+import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.topics.navigation.TOPIC_SELECTION_GRAPH_ROUTE
 import java.util.Stack
 import kotlin.test.assertEquals
@@ -28,6 +29,7 @@ class AppLaunchNavigationTest {
     private val flagRepo = mockk<FlagRepo>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val appRepo = mockk<AppRepo>(relaxed = true)
+    private val topicsFeature = mockk<TopicsFeature>(relaxed = true)
     private val authRepo = mockk<AuthRepo>(relaxed = true)
     private val navController = mockk<NavController>(relaxed = true)
 
@@ -35,7 +37,7 @@ class AppLaunchNavigationTest {
 
     @Before
     fun setup() {
-        appLaunchNav = AppLaunchNavigation(flagRepo, analyticsClient, appRepo, authRepo)
+        appLaunchNav = AppLaunchNavigation(flagRepo, analyticsClient, appRepo, topicsFeature, authRepo)
 
         // Default config (simulates first time app launch)
         every { flagRepo.isNotificationsEnabled() } returns true
@@ -47,9 +49,10 @@ class AppLaunchNavigationTest {
         coEvery { flagRepo.isOnboardingEnabled() } returns true
         coEvery { appRepo.isOnboardingCompleted() } returns false
         coEvery { analyticsClient.isAnalyticsConsentRequired() } returns true
+        coEvery { topicsFeature.hasTopics() } returns true
 
         runTest {
-            appLaunchNav.buildLaunchFlow(true)
+            appLaunchNav.buildLaunchFlow()
         }
     }
 
@@ -66,7 +69,7 @@ class AppLaunchNavigationTest {
         coEvery { analyticsClient.isAnalyticsConsentRequired() } returns true
 
         runTest {
-            appLaunchNav.buildLaunchFlow(true)
+            appLaunchNav.buildLaunchFlow()
 
             assertEquals(ANALYTICS_GRAPH_ROUTE, appLaunchNav.startDestination)
 
@@ -87,7 +90,7 @@ class AppLaunchNavigationTest {
         coEvery { analyticsClient.isAnalyticsConsentRequired() } returns false
 
         runTest {
-            appLaunchNav.buildLaunchFlow(true)
+            appLaunchNav.buildLaunchFlow()
 
             assertEquals(ONBOARDING_GRAPH_ROUTE, appLaunchNav.startDestination)
 
@@ -107,7 +110,7 @@ class AppLaunchNavigationTest {
         coEvery { appRepo.isOnboardingCompleted() } returns true
 
         runTest {
-            appLaunchNav.buildLaunchFlow(true)
+            appLaunchNav.buildLaunchFlow()
 
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
@@ -125,7 +128,7 @@ class AppLaunchNavigationTest {
         coEvery { flagRepo.isOnboardingEnabled() } returns false
 
         runTest {
-            appLaunchNav.buildLaunchFlow(true)
+            appLaunchNav.buildLaunchFlow()
 
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
@@ -143,7 +146,7 @@ class AppLaunchNavigationTest {
         coEvery { flagRepo.isLoginEnabled() } returns false
 
         runTest {
-            appLaunchNav.buildLaunchFlow(true)
+            appLaunchNav.buildLaunchFlow()
 
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
@@ -160,7 +163,7 @@ class AppLaunchNavigationTest {
         coEvery { authRepo.isAuthenticationEnabled() } returns false
 
         runTest {
-            appLaunchNav.buildLaunchFlow(true)
+            appLaunchNav.buildLaunchFlow()
 
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
@@ -178,7 +181,7 @@ class AppLaunchNavigationTest {
         coEvery { authRepo.isUserSignedIn() } returns true
 
         runTest {
-            appLaunchNav.buildLaunchFlow(true)
+            appLaunchNav.buildLaunchFlow()
 
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
@@ -196,7 +199,7 @@ class AppLaunchNavigationTest {
         every { flagRepo.isTopicsEnabled() } returns false
 
         runTest {
-            appLaunchNav.buildLaunchFlow(true)
+            appLaunchNav.buildLaunchFlow()
 
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
@@ -214,7 +217,7 @@ class AppLaunchNavigationTest {
         coEvery { appRepo.isTopicSelectionCompleted() } returns true
 
         runTest {
-            appLaunchNav.buildLaunchFlow(true)
+            appLaunchNav.buildLaunchFlow()
 
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
@@ -228,9 +231,11 @@ class AppLaunchNavigationTest {
     }
 
     @Test
-    fun `Given topic init is unsuccessful, When build launch flow, builds launch routes`() {
+    fun `Given no topics, When build launch flow, builds launch routes`() {
+        coEvery { topicsFeature.hasTopics() } returns false
+
         runTest {
-            appLaunchNav.buildLaunchFlow(false)
+            appLaunchNav.buildLaunchFlow()
 
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
@@ -248,7 +253,7 @@ class AppLaunchNavigationTest {
         every { flagRepo.isNotificationsEnabled() } returns false
 
         runTest {
-            appLaunchNav.buildLaunchFlow(true)
+            appLaunchNav.buildLaunchFlow()
 
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)

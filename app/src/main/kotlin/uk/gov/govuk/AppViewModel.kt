@@ -1,5 +1,6 @@
 package uk.gov.govuk
 
+import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -12,6 +13,7 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
+import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
@@ -25,9 +27,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class AppViewModel @Inject constructor(
+    private val timeoutManager: TimeoutManager,
     private val appRepo: AppRepo,
     private val configRepo: ConfigRepo,
     private val flagRepo: FlagRepo,
+    private val authRepo: AuthRepo,
     private val topicsFeature: TopicsFeature,
     private val localFeature: LocalFeature,
     private val searchFeature: SearchFeature,
@@ -57,18 +61,12 @@ internal class AppViewModel @Inject constructor(
                 } else if (flagRepo.isForcedUpdate(BuildConfig.VERSION_NAME)) {
                     _uiState.value = AppUiState.ForcedUpdate
                 } else {
-                    val topicsInitSuccess = topicsFeature.init()
+                    topicsFeature.init()
 
-                    appLaunchNavigation.buildLaunchFlow(topicsInitSuccess)
+                    appLaunchNavigation.buildLaunchFlow()
 
                     _uiState.value = AppUiState.Default(
                         shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
-                        shouldDisplayAnalyticsConsent = analyticsClient.isAnalyticsConsentRequired(),
-                        shouldDisplayOnboarding = flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted(),
-                        shouldDisplayLogin = flagRepo.isLoginEnabled(),
-                        shouldDisplayTopicSelection = flagRepo.isTopicsEnabled()
-                                && !appRepo.isTopicSelectionCompleted()
-                                && topicsInitSuccess,
                         shouldDisplayNotificationsOnboarding = flagRepo.isNotificationsEnabled()
                     )
 
@@ -92,6 +90,21 @@ internal class AppViewModel @Inject constructor(
         _uiState.value = AppUiState.Loading
         viewModelScope.launch {
             initWithConfig()
+        }
+    }
+
+    fun onUserInteraction(
+        navController: NavController,
+        interactionTime: Long = SystemClock.elapsedRealtime()
+    ) {
+        timeoutManager.onUserInteraction(interactionTime) {
+            if (flagRepo.isLoginEnabled() && authRepo.isUserSessionActive()) {
+                viewModelScope.launch {
+                    authRepo.endUserSession()
+                    appLaunchNavigation.buildLaunchFlow()
+                    navController.navigate(appLaunchNavigation.startDestination)
+                }
+            }
         }
     }
 

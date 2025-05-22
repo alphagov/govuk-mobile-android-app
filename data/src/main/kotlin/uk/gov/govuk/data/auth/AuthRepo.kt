@@ -91,6 +91,10 @@ class AuthRepo @Inject constructor(
         return result == BiometricManager.BIOMETRIC_SUCCESS
     }
 
+    fun isUserSessionActive(): Boolean {
+        return tokens.accessToken.isNotBlank()
+    }
+
     fun isUserSignedIn(): Boolean {
         return secureStore.exists(REFRESH_TOKEN_KEY)
     }
@@ -211,5 +215,9 @@ class AuthRepo @Inject constructor(
         } catch (e: SecureStorageError) {
             return false
         }
+    }
+
+    fun endUserSession() {
+        tokens = Tokens()
     }
 }

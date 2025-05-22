@@ -11,6 +11,7 @@ import uk.gov.govuk.login.navigation.BIOMETRIC_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
 import uk.gov.govuk.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
+import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.topics.navigation.TOPIC_SELECTION_GRAPH_ROUTE
 import java.util.Stack
 import javax.inject.Inject
@@ -21,6 +22,7 @@ internal class AppLaunchNavigation @Inject constructor(
     private val flagRepo: FlagRepo,
     private val analyticsClient: AnalyticsClient,
     private val appRepo: AppRepo,
+    private val topicsFeature: TopicsFeature,
     private val authRepo: AuthRepo
 ) {
     private var _launchRoutes = Stack<String>()
@@ -31,7 +33,7 @@ internal class AppLaunchNavigation @Inject constructor(
     val startDestination
         get() = _startDestination
 
-    suspend fun buildLaunchFlow(topicsInitSuccess: Boolean) {
+    suspend fun buildLaunchFlow() {
         _launchRoutes.clear()
 
         _launchRoutes.push(HOME_GRAPH_ROUTE)
@@ -42,7 +44,7 @@ internal class AppLaunchNavigation @Inject constructor(
 
         if (flagRepo.isTopicsEnabled()
             && !appRepo.isTopicSelectionCompleted()
-            && topicsInitSuccess) {
+            && topicsFeature.hasTopics()) {
             _launchRoutes.push(TOPIC_SELECTION_GRAPH_ROUTE)
         }
 
