@@ -32,6 +32,10 @@ class NotificationsClient @Inject constructor() {
         OneSignal.consentGiven = true
     }
 
+    fun removeConsent() {
+        OneSignal.consentGiven = false
+    }
+
     fun consentGiven() = OneSignal.consentGiven
 
     fun requestPermission(
@@ -39,7 +43,8 @@ class NotificationsClient @Inject constructor() {
         onCompleted: (() -> Unit)? = null
     ) {
         CoroutineScope(dispatcher).launch {
-            OneSignal.Notifications.requestPermission(false)
+            val consentGiven = OneSignal.Notifications.requestPermission(false)
+            OneSignal.consentGiven = consentGiven
             onCompleted?.invoke()
         }
     }

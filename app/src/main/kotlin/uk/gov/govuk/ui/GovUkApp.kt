@@ -72,6 +72,7 @@ import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_ROUTE
+import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_PERMISSION_ROUTE
 import uk.gov.govuk.notifications.navigation.notificationsConsentGraph
 import uk.gov.govuk.notifications.navigation.notificationsOnboardingGraph
 import uk.gov.govuk.notifications.navigation.notificationsPermissionGraph
@@ -289,8 +290,9 @@ private fun HandleNotificationsPermissionStatus(
                 val isNotificationsEnabledOnResume =
                     NotificationManagerCompat.from(context).areNotificationsEnabled()
                 if (isNotificationsEnabledOnResume != isNotificationsEnabled) {
-                    val route = when(navController.currentDestination?.route) {
-                        NOTIFICATIONS_ONBOARDING_ROUTE -> NOTIFICATIONS_ONBOARDING_ROUTE
+                    val route = when (navController.currentDestination?.route) {
+                        NOTIFICATIONS_ONBOARDING_ROUTE,
+                        NOTIFICATIONS_PERMISSION_ROUTE -> return@LaunchedEffect
                         else -> NOTIFICATIONS_CONSENT_GRAPH_ROUTE
                     }
                     navController.navigate(route) {
@@ -299,7 +301,6 @@ private fun HandleNotificationsPermissionStatus(
                     isNotificationsEnabled = isNotificationsEnabledOnResume
                 }
             }
-
             else -> { /* Do nothing */ }
         }
     }
@@ -429,6 +430,7 @@ private fun GovUkNavHost(
             notificationsOnboardingCompleted = {
                 navController.popBackStack()
                 appLaunchNavigation.onNext(navController)
+                navController.navigate(NOTIFICATIONS_CONSENT_GRAPH_ROUTE)
             }
         )
         notificationsPermissionGraph(
@@ -438,7 +440,7 @@ private fun GovUkNavHost(
         )
         notificationsConsentGraph(
             notificationsConsentCompleted = {
-                navController.popBackStack()
+                navController.navigateUp()
             }
         )
         loginGraph(

@@ -1,5 +1,8 @@
 package uk.gov.govuk.notifications
 
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.isGranted
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -18,12 +21,13 @@ import org.junit.Test
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.notifications.data.local.NotificationsDataStore
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalPermissionsApi::class)
 class NotificationsViewModelTest {
     private val dispatcher = UnconfinedTestDispatcher()
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val notificationsClient = mockk<NotificationsClient>()
     private val notificationsDataStore = mockk<NotificationsDataStore>()
+    private val permissionStatus = mockk<PermissionStatus>()
 
     private lateinit var viewModel: NotificationsViewModel
 
@@ -36,6 +40,33 @@ class NotificationsViewModelTest {
     @After
     fun tearDown() {
         Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `Given the notifications permission status is granted, When update consent is called, then remove consent should not be called`() {
+        every { permissionStatus.isGranted } returns true
+
+        runTest {
+            viewModel.updateConsent(permissionStatus)
+
+            verify(exactly = 0) {
+                notificationsClient.removeConsent()
+            }
+        }
+    }
+
+    @Test
+    fun `Given the notifications permission status is not granted, When update consent is called, then remove consent should be called`() {
+        every { permissionStatus.isGranted } returns false
+        every { notificationsClient.removeConsent() } returns Unit
+
+        runTest {
+            viewModel.updateConsent(permissionStatus)
+
+            verify(exactly = 1) {
+                notificationsClient.removeConsent()
+            }
+        }
     }
 
     @Test

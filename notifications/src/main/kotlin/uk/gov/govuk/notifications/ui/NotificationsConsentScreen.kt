@@ -29,6 +29,7 @@ internal fun NotificationsConsentRoute(
     val permissionStatus = getNotificationsPermissionStatus()
     LaunchedEffect(Unit) {
         viewModel.updateUiState(permissionStatus)
+        notificationsViewModel.updateConsent(permissionStatus)
     }
 
     uiState?.let { state ->

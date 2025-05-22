@@ -88,6 +88,15 @@ class NotificationsClientTest {
     }
 
     @Test
+    fun `Given we have a notifications client, when remove consent is called, then One Signal consent given is false`() {
+        runTest {
+            notificationsClient.removeConsent()
+
+            assertFalse(OneSignal.consentGiven)
+        }
+    }
+
+    @Test
     fun `Given we have a notifications client, when consent given is called and One Signal consent is true, then consent given returns true`() {
         every {OneSignal.consentGiven} returns true
 
