@@ -2,9 +2,6 @@ package uk.gov.govuk.notifications
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.isGranted
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
@@ -21,13 +18,6 @@ internal open class NotificationsViewModel @Inject constructor(
     companion object {
         private const val SCREEN_CLASS = "NotificationsOnboardingScreen"
         private const val TITLE = "NotificationsOnboardingScreen"
-    }
-
-    @OptIn(ExperimentalPermissionsApi::class)
-    internal fun updateConsent(status: PermissionStatus) {
-        if (!status.isGranted) {
-            notificationsClient.removeConsent()
-        }
     }
 
     internal fun onPageView() {
