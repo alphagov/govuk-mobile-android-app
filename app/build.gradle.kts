@@ -40,6 +40,13 @@ android {
         buildConfigField("String", "PLAY_STORE_URL", "\"https://play.google.com/store/apps/details?id=$applicationId\"")
         buildConfigField("String", "ONE_SIGNAL_APP_ID", "\"4c235189-5c5f-4a71-8385-2549fc36419f\"")
         buildConfigField("String", "VERSION_NAME_USER_FACING", "\"$versionName ($versionCode)\"")
+        buildConfigField("String", "LOGIN_SERVICE_URL", "\"https://aulmirij8h.execute-api.eu-west-2.amazonaws.com/\"")
+    }
+
+    buildTypes {
+        release {
+            buildConfigField("String", "LOGIN_SERVICE_URL", "\"https://aulmirij8h.execute-api.eu-west-2.amazonaws.com/\"")
+        }
     }
 
     signingConfigs {
@@ -143,7 +150,6 @@ dependencies {
     implementation(projects.feature.search)
     implementation(projects.feature.topics)
     implementation(projects.feature.visited)
-    implementation(projects.login)
     implementation(projects.notifications)
 
     implementation(libs.androidx.activity.compose)
@@ -160,10 +166,15 @@ dependencies {
     implementation(libs.lottie.compose)
     implementation(libs.play.services.oss.licenses)
 
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.retrofit.scalars)
+
     ksp(libs.hilt.compiler)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
+    testImplementation(libs.mockwebserver)
     testImplementation(libs.coroutine.test)
 
     androidTestImplementation(libs.androidx.junit)
