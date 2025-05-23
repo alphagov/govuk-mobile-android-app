@@ -43,12 +43,6 @@ android {
         buildConfigField("String", "LOGIN_SERVICE_URL", "\"https://aulmirij8h.execute-api.eu-west-2.amazonaws.com/\"")
     }
 
-    buildTypes {
-        release {
-            buildConfigField("String", "LOGIN_SERVICE_URL", "\"https://aulmirij8h.execute-api.eu-west-2.amazonaws.com/\"")
-        }
-    }
-
     signingConfigs {
         create("alpha") {
             storeFile = file("${project.rootDir}/alpha.jks")

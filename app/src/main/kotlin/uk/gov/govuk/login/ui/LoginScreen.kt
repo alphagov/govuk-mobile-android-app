@@ -1,7 +1,7 @@
 package uk.gov.govuk.login.ui
 
 import android.app.Activity
-import android.util.Log
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,22 +55,10 @@ internal fun LoginRoute(
         modifier = modifier
     )
 
-//    val activity = LocalContext.current as FragmentActivity
-    val context = LocalContext.current
-    val activity = context as? FragmentActivity // Safe cast
-
-    if (activity != null) {
-        LaunchedEffect(Unit) {
-            viewModel.init(activity)
-        }
-    } else {
-        println("Current context is not a FragmentActivity. ViewModel initialization skipped.")
-    }
+    val activity = LocalActivity.current as FragmentActivity
 
     LaunchedEffect(Unit) {
-        if (activity != null) {
-            viewModel.init(activity)
-        }
+        viewModel.init(activity)
     }
 
     LaunchedEffect(Unit) {
