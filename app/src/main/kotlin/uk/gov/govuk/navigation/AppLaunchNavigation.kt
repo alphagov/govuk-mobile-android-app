@@ -54,10 +54,6 @@ internal class AppLaunchNavigation @Inject constructor(
             _launchRoutes.push(BIOMETRIC_ROUTE)
         }
 
-        if (flagRepo.isLoginEnabled()) {
-            _launchRoutes.push(LOGIN_GRAPH_ROUTE)
-        }
-
         if (flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted()) {
             _launchRoutes.push(ONBOARDING_GRAPH_ROUTE)
         }
