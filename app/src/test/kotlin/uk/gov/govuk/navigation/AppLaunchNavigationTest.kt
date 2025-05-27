@@ -78,7 +78,6 @@ class AppLaunchNavigationTest {
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
             expected.push(ONBOARDING_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
@@ -99,7 +98,6 @@ class AppLaunchNavigationTest {
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -117,7 +115,6 @@ class AppLaunchNavigationTest {
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -135,7 +132,6 @@ class AppLaunchNavigationTest {
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -169,7 +165,6 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
             expected.push(ONBOARDING_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
@@ -187,7 +182,6 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
             expected.push(ONBOARDING_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
@@ -205,7 +199,6 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
             expected.push(ONBOARDING_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
@@ -223,7 +216,6 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
             expected.push(ONBOARDING_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
@@ -241,7 +233,6 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
             expected.push(ONBOARDING_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
@@ -259,7 +250,6 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
             expected.push(ONBOARDING_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)

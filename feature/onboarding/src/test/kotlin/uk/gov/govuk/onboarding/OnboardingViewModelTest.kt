@@ -14,40 +14,27 @@ class OnboardingViewModelTest {
 
     @Test
     fun `Given a page view, then log analytics`() {
-        val viewModel = OnboardingViewModel(context, analyticsClient)
+        val viewModel = OnboardingViewModel(analyticsClient)
 
-        every { context.getString(R.string.getThingsDoneScreenTitle) } returns "title"
-
-        viewModel.onPageView(0)
+        viewModel.onPageView()
 
         verify {
             analyticsClient.screenView(
                 screenClass = "OnboardingScreen",
-                screenName = "Onboarding_A",
-                title = "title"
+                screenName = "Onboarding Page",
+                title = "Onboarding Page"
             )
         }
     }
 
     @Test
     fun `Given a button click, then log analytics`() {
-        val viewModel = OnboardingViewModel(context, analyticsClient)
+        val viewModel = OnboardingViewModel(analyticsClient)
 
         viewModel.onButtonClick("text")
 
         verify {
             analyticsClient.buttonClick("text")
-        }
-    }
-
-    @Test
-    fun `Given a pager indicator event, then log analytics`() {
-        val viewModel = OnboardingViewModel(context, analyticsClient)
-
-        viewModel.onPagerIndicatorClick()
-
-        verify {
-            analyticsClient.pageIndicatorClick()
         }
     }
 
