@@ -1,7 +1,6 @@
 package uk.gov.govuk.ui
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.net.toUri
 import uk.gov.govuk.BuildConfig.PLAY_STORE_URL
 import uk.gov.govuk.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
@@ -43,7 +43,7 @@ internal fun RecommendUpdateScreen(
         val context = LocalContext.current
         val onUpdateClick: () -> Unit = {
             val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse(PLAY_STORE_URL)
+            intent.data = PLAY_STORE_URL.toUri()
             context.startActivity(intent)
         }
 

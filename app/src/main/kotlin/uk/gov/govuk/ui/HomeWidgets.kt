@@ -1,14 +1,16 @@
 package uk.gov.govuk.ui
 
 import android.content.Context
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import uk.gov.govuk.BuildConfig
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
+import uk.gov.govuk.design.ui.extension.getCustomTabsIntent
 import uk.gov.govuk.notifications.ui.NotificationsPromptWidget
 import uk.gov.govuk.notifications.ui.notificationsPermissionShouldShowRationale
-import uk.gov.govuk.settings.navigation.navigateToHelpAndFeedback
 import uk.gov.govuk.settings.ui.FeedbackPromptWidget
 import uk.gov.govuk.topics.navigation.navigateToTopic
 import uk.gov.govuk.topics.navigation.navigateToTopicsAll
@@ -53,10 +55,14 @@ internal fun homeWidgets(
 
             HomeWidget.FEEDBACK_PROMPT -> {
                 widgets.add { modifier ->
+                    val launcher =
+                        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
                     FeedbackPromptWidget(
                         onClick = { text ->
                             onExternalClick(text, null)
-                            navigateToHelpAndFeedback(context, BuildConfig.VERSION_NAME_USER_FACING)
+                            val customTabsIntent =
+                                context.getCustomTabsIntent(BuildConfig.VERSION_NAME_USER_FACING)
+                            launcher.launch(customTabsIntent)
                         },
                         modifier = modifier
                     )

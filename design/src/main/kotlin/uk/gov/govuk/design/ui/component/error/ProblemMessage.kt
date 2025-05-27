@@ -1,13 +1,13 @@
 package uk.gov.govuk.design.ui.component.error
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.net.toUri
 import uk.gov.govuk.design.R
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
@@ -25,7 +25,7 @@ fun ProblemMessage(
         buttonTitle = stringResource(R.string.go_to_the_gov_uk_website),
         onButtonClick = {
             Intent(Intent.ACTION_VIEW).let { intent ->
-                intent.data = Uri.parse(ErrorConstants.GOV_UK_URL)
+                intent.data = ErrorConstants.GOV_UK_URL.toUri()
                 context.startActivity(intent)
             }
         },

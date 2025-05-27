@@ -1,8 +1,8 @@
 package uk.gov.govuk.visited.ui
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -36,6 +36,7 @@ import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.ListHeadingLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
+import uk.gov.govuk.design.ui.extension.getCustomTabsIntent
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.visited.R
 import uk.gov.govuk.visited.VisitedUiState
@@ -172,8 +173,8 @@ private fun ShowVisitedItems(
                 val lastVisited = item.lastVisited
                 val url = item.url
                 val context = LocalContext.current
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse(url)
+                val launcher =
+                    rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
                 ExternalLinkListItem(
                     title = title,
@@ -182,7 +183,8 @@ private fun ShowVisitedItems(
                             delay(500)
                             onClick(title, url)
                         }
-                        context.startActivity(intent)
+                        val customTabsIntent = context.getCustomTabsIntent(url)
+                        launcher.launch(customTabsIntent)
                     },
                     isFirst = index == 0,
                     isLast = index == visitedItems.size - 1,
