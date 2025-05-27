@@ -6,7 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import uk.gov.govuk.login.BuildConfig
+import uk.gov.govuk.BuildConfig
 import uk.gov.govuk.login.data.remote.LoginApi
 import javax.inject.Singleton
 

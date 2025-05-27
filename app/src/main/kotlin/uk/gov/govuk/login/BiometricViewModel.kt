@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import uk.gov.govuk.R
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.auth.AuthRepo
 import javax.inject.Inject
