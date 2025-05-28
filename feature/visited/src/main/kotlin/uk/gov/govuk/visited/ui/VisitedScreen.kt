@@ -34,7 +34,7 @@ import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.ListHeadingLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
-import uk.gov.govuk.design.ui.component.rememberCustomTabsLauncher
+import uk.gov.govuk.design.ui.component.rememberBrowserLauncher
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.visited.R
 import uk.gov.govuk.visited.VisitedUiState
@@ -171,7 +171,7 @@ private fun ShowVisitedItems(
                 val lastVisited = item.lastVisited
                 val url = item.url
                 val context = LocalContext.current
-                val customTabsLauncher = rememberCustomTabsLauncher()
+                val browserLauncher = rememberBrowserLauncher()
 
                 ExternalLinkListItem(
                     title = title,
@@ -180,7 +180,7 @@ private fun ShowVisitedItems(
                             delay(500)
                             onClick(title, url)
                         }
-                        customTabsLauncher.launch(context, url)
+                        browserLauncher.launch(context, url)
                     },
                     isFirst = index == 0,
                     isLast = index == visitedItems.size - 1,

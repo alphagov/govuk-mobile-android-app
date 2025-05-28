@@ -21,12 +21,12 @@ fun PrivacyPolicyLink(
     val context = LocalContext.current
     val text = stringResource(R.string.privacy_policy_read_more)
     val url = PRIVACY_POLICY_URL
-    val customTabsLauncher = rememberCustomTabsLauncher()
+    val browserLauncher = rememberBrowserLauncher()
     Row(
         modifier
             .clickable {
                 onClick?.invoke(text, url)
-                customTabsLauncher.launch(context, url)
+                browserLauncher.launch(context, url)
             }
     ) {
         BodyRegularLabel(

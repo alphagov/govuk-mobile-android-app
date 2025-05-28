@@ -10,7 +10,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import uk.gov.govuk.design.ui.component.rememberCustomTabsLauncher
+import uk.gov.govuk.design.ui.component.rememberBrowserLauncher
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_PERMISSION_GRAPH_ROUTE
 import uk.gov.govuk.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
 import uk.gov.govuk.settings.BuildConfig.ACCOUNT_URL
@@ -46,12 +46,12 @@ fun NavGraphBuilder.settingsGraph(
             SETTINGS_ROUTE, deepLinks = deepLinks("/settings")
         ) {
             val context = LocalContext.current
-            val customTabsLauncher = rememberCustomTabsLauncher()
+            val browserLauncher = rememberBrowserLauncher()
             SettingsRoute(
                 appVersion = appVersion,
                 actions = SettingsRouteActions(
                     onAccountClick = {
-                        customTabsLauncher.launch(context, ACCOUNT_URL)
+                        browserLauncher.launch(context, ACCOUNT_URL)
                     },
                     onSignOutClick = {
                         navigateTo(SIGN_OUT_GRAPH_ROUTE)
@@ -60,21 +60,21 @@ fun NavGraphBuilder.settingsGraph(
                         navigateTo(NOTIFICATIONS_PERMISSION_GRAPH_ROUTE)
                     },
                     onPrivacyPolicyClick = {
-                        customTabsLauncher.launch(context, PRIVACY_POLICY_URL)
+                        browserLauncher.launch(context, PRIVACY_POLICY_URL)
                     },
                     onHelpClick = {
                         val url = getHelpAndFeedbackUrl(appVersion)
-                        customTabsLauncher.launch(context, url)
+                        browserLauncher.launch(context, url)
                     },
                     onAccessibilityStatementClick = {
-                        customTabsLauncher.launch(context, ACCESSIBILITY_STATEMENT_URL)
+                        browserLauncher.launch(context, ACCESSIBILITY_STATEMENT_URL)
                     },
                     onOpenSourceLicenseClick = {
                         val intent = Intent(context, OssLicensesMenuActivity::class.java)
                         context.startActivity(intent)
                     },
                     onTermsAndConditionsClick = {
-                        customTabsLauncher.launch(context, TERMS_AND_CONDITIONS_URL)
+                        browserLauncher.launch(context, TERMS_AND_CONDITIONS_URL)
                     }
                 ),
                 modifier = modifier

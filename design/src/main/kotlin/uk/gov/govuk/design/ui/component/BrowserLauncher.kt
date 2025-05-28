@@ -13,15 +13,15 @@ import androidx.compose.runtime.remember
 import androidx.core.net.toUri
 
 @Composable
-fun rememberCustomTabsLauncher(): CustomTabsActivityLauncher {
+fun rememberBrowserLauncher(): BrowserActivityLauncher {
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
     return remember(launcher) {
-        CustomTabsActivityLauncher(launcher)
+        BrowserActivityLauncher(launcher)
     }
 }
 
-class CustomTabsActivityLauncher(
+class BrowserActivityLauncher(
     private val launcher: ManagedActivityResultLauncher<Intent, ActivityResult>
 ) {
     fun launch(context: Context, url: String) {

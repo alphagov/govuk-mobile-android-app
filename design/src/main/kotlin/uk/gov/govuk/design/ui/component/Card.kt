@@ -146,12 +146,12 @@ fun SearchResultCard(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val customTabsLauncher = rememberCustomTabsLauncher()
+    val browserLauncher = rememberBrowserLauncher()
     GovUkCard(
         modifier = modifier,
         onClick = {
             onClick(title, url)
-            customTabsLauncher.launch(context, url)
+            browserLauncher.launch(context, url)
         }
     ) {
         Row(

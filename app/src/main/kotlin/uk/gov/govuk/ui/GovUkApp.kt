@@ -59,7 +59,7 @@ import uk.gov.govuk.BuildConfig
 import uk.gov.govuk.R
 import uk.gov.govuk.analytics.navigation.analyticsGraph
 import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
-import uk.gov.govuk.design.ui.component.rememberCustomTabsLauncher
+import uk.gov.govuk.design.ui.component.rememberBrowserLauncher
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.extension.asDeepLinks
 import uk.gov.govuk.extension.getUrlParam
@@ -217,7 +217,7 @@ private fun HandleReceivedIntents(
     onDeepLinkReceived: (hasDeepLink: Boolean, url: String) -> Unit
 ) {
     val context = LocalContext.current
-    val customTabsLauncher = rememberCustomTabsLauncher()
+    val browserLauncher = rememberBrowserLauncher()
     LaunchedEffect(intentFlow) {
         intentFlow.collectLatest { intent ->
             intent.data?.let { uri ->
@@ -233,7 +233,7 @@ private fun HandleReceivedIntents(
                 } else {
                     uri.getUrlParam(DeepLink.allowedAppUrls, DeepLink.allowedGovUkUrls)?.let {
                         onDeepLinkReceived(true, uri.toString())
-                        customTabsLauncher.launch(context, it.toString())
+                        browserLauncher.launch(context, it.toString())
                     } ?: run {
                         onDeepLinkReceived(false, uri.toString())
                         showDeepLinkNotFoundAlert(context = context)
