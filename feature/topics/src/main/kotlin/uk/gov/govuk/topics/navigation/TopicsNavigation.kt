@@ -1,10 +1,7 @@
 package uk.gov.govuk.topics.navigation
 
-import android.content.Context
-import android.content.Intent
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.net.toUri
 import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
@@ -12,6 +9,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import uk.gov.govuk.design.ui.component.rememberBrowserLauncher
 import uk.gov.govuk.topics.ui.AllStepByStepRoute
 import uk.gov.govuk.topics.ui.AllTopicsRoute
 import uk.gov.govuk.topics.ui.EditTopicsRoute
@@ -61,11 +59,13 @@ fun NavGraphBuilder.topicsGraph(
                 navArgument(TOPIC_SUBTOPIC_ARG) { type = NavType.BoolType },
             ), deepLinks = deepLinks("/topics$topicPath")
         ) {
+            val browserLauncher = rememberBrowserLauncher()
             val context = LocalContext.current
-
             TopicRoute(
                 onBack = { navController.popBackStack() },
-                onExternalLink = { url, _ -> launchExternalLink(context, url) },
+                onExternalLink = { url, _ ->
+                    browserLauncher.launch(context, url)
+                },
                 onStepByStepSeeAll = { navController.navigate(TOPICS_ALL_STEP_BY_STEPS_ROUTE) },
                 onSubtopic = { ref -> navController.navigateToTopic(ref, true) },
                 modifier = modifier
@@ -90,21 +90,17 @@ fun NavGraphBuilder.topicsGraph(
         composable(
             TOPICS_ALL_STEP_BY_STEPS_ROUTE
         ) {
+            val browserLauncher = rememberBrowserLauncher()
             val context = LocalContext.current
-
             AllStepByStepRoute(
                 onBack = { navController.popBackStack()},
-                onClick = { url -> launchExternalLink(context, url) },
+                onClick = { url ->
+                    browserLauncher.launch(context, url)
+                 },
                 modifier = modifier
             )
         }
     }
-}
-
-private fun launchExternalLink(context: Context, url: String) {
-    val intent = Intent(Intent.ACTION_VIEW)
-    intent.data = url.toUri()
-    context.startActivity(intent)
 }
 
 fun NavController.navigateToTopic(ref: String, isSubtopic: Boolean = false) {
