@@ -1,14 +1,12 @@
 package uk.gov.govuk.ui
 
 import android.content.Context
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import uk.gov.govuk.BuildConfig
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
-import uk.gov.govuk.design.ui.extension.getCustomTabsIntent
+import uk.gov.govuk.design.ui.component.rememberCustomTabsLauncher
 import uk.gov.govuk.notifications.ui.NotificationsPromptWidget
 import uk.gov.govuk.notifications.ui.notificationsPermissionShouldShowRationale
 import uk.gov.govuk.settings.ui.FeedbackPromptWidget
@@ -55,14 +53,11 @@ internal fun homeWidgets(
 
             HomeWidget.FEEDBACK_PROMPT -> {
                 widgets.add { modifier ->
-                    val launcher =
-                        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+                    val customTabsLauncher = rememberCustomTabsLauncher()
                     FeedbackPromptWidget(
                         onClick = { text ->
                             onExternalClick(text, null)
-                            val customTabsIntent =
-                                context.getCustomTabsIntent(BuildConfig.VERSION_NAME_USER_FACING)
-                            launcher.launch(customTabsIntent)
+                            customTabsLauncher.launch(context, BuildConfig.VERSION_NAME_USER_FACING)
                         },
                         modifier = modifier
                     )

@@ -1,7 +1,5 @@
 package uk.gov.govuk.design.ui.component
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Icon
@@ -14,7 +12,6 @@ import androidx.compose.ui.res.stringResource
 import uk.gov.govuk.design.BuildConfig.PRIVACY_POLICY_URL
 import uk.gov.govuk.design.R
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-import uk.gov.govuk.design.ui.extension.getCustomTabsIntent
 
 @Composable
 fun PrivacyPolicyLink(
@@ -24,14 +21,12 @@ fun PrivacyPolicyLink(
     val context = LocalContext.current
     val text = stringResource(R.string.privacy_policy_read_more)
     val url = PRIVACY_POLICY_URL
-    val launcher =
-        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+    val customTabsLauncher = rememberCustomTabsLauncher()
     Row(
         modifier
             .clickable {
                 onClick?.invoke(text, url)
-                val customTabsIntent = context.getCustomTabsIntent(url)
-                launcher.launch(customTabsIntent)
+                customTabsLauncher.launch(context, url)
             }
     ) {
         BodyRegularLabel(

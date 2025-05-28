@@ -1,12 +1,7 @@
 package uk.gov.govuk.settings.navigation
 
-import android.content.Context
 import android.content.Intent
 import android.os.Build
-import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
@@ -15,7 +10,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import uk.gov.govuk.design.ui.extension.getCustomTabsIntent
+import uk.gov.govuk.design.ui.component.rememberCustomTabsLauncher
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_PERMISSION_GRAPH_ROUTE
 import uk.gov.govuk.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
 import uk.gov.govuk.settings.BuildConfig.ACCOUNT_URL
@@ -51,13 +46,12 @@ fun NavGraphBuilder.settingsGraph(
             SETTINGS_ROUTE, deepLinks = deepLinks("/settings")
         ) {
             val context = LocalContext.current
-            val launcher =
-                rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+            val customTabsLauncher = rememberCustomTabsLauncher()
             SettingsRoute(
                 appVersion = appVersion,
                 actions = SettingsRouteActions(
                     onAccountClick = {
-                        openInBrowser(context, launcher, ACCOUNT_URL)
+                        customTabsLauncher.launch(context, ACCOUNT_URL)
                     },
                     onSignOutClick = {
                         navigateTo(SIGN_OUT_GRAPH_ROUTE)
@@ -66,21 +60,21 @@ fun NavGraphBuilder.settingsGraph(
                         navigateTo(NOTIFICATIONS_PERMISSION_GRAPH_ROUTE)
                     },
                     onPrivacyPolicyClick = {
-                        openInBrowser(context, launcher, PRIVACY_POLICY_URL)
+                        customTabsLauncher.launch(context, PRIVACY_POLICY_URL)
                     },
                     onHelpClick = {
                         val url = getHelpAndFeedbackUrl(appVersion)
-                        openInBrowser(context, launcher, url)
+                        customTabsLauncher.launch(context, url)
                     },
                     onAccessibilityStatementClick = {
-                        openInBrowser(context, launcher, ACCESSIBILITY_STATEMENT_URL)
+                        customTabsLauncher.launch(context, ACCESSIBILITY_STATEMENT_URL)
                     },
                     onOpenSourceLicenseClick = {
                         val intent = Intent(context, OssLicensesMenuActivity::class.java)
                         context.startActivity(intent)
                     },
                     onTermsAndConditionsClick = {
-                        openInBrowser(context, launcher, TERMS_AND_CONDITIONS_URL)
+                        customTabsLauncher.launch(context, TERMS_AND_CONDITIONS_URL)
                     }
                 ),
                 modifier = modifier
@@ -127,13 +121,4 @@ fun getHelpAndFeedbackUrl(
     return "$HELP_AND_FEEDBACK_URL?" +
             "app_version=$appVersion&" +
             "phone=${URLEncoder.encode(deviceInfo, "UTF-8")}"
-}
-
-private fun openInBrowser(
-    context: Context,
-    launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
-    url: String
-) {
-    val customTabsIntent = context.getCustomTabsIntent(url)
-    launcher.launch(customTabsIntent)
 }

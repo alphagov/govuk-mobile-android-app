@@ -1,7 +1,5 @@
 package uk.gov.govuk.topics.navigation
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
@@ -11,7 +9,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import uk.gov.govuk.design.ui.extension.getCustomTabsIntent
+import uk.gov.govuk.design.ui.component.rememberCustomTabsLauncher
 import uk.gov.govuk.topics.ui.AllStepByStepRoute
 import uk.gov.govuk.topics.ui.AllTopicsRoute
 import uk.gov.govuk.topics.ui.EditTopicsRoute
@@ -61,14 +59,12 @@ fun NavGraphBuilder.topicsGraph(
                 navArgument(TOPIC_SUBTOPIC_ARG) { type = NavType.BoolType },
             ), deepLinks = deepLinks("/topics$topicPath")
         ) {
-            val launcher =
-                rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+            val customTabsLauncher = rememberCustomTabsLauncher()
             val context = LocalContext.current
             TopicRoute(
                 onBack = { navController.popBackStack() },
                 onExternalLink = { url, _ ->
-                    val customTabsIntent = context.getCustomTabsIntent(url)
-                    launcher.launch(customTabsIntent)
+                    customTabsLauncher.launch(context, url)
                 },
                 onStepByStepSeeAll = { navController.navigate(TOPICS_ALL_STEP_BY_STEPS_ROUTE) },
                 onSubtopic = { ref -> navController.navigateToTopic(ref, true) },
@@ -94,14 +90,12 @@ fun NavGraphBuilder.topicsGraph(
         composable(
             TOPICS_ALL_STEP_BY_STEPS_ROUTE
         ) {
-            val launcher =
-                rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+            val customTabsLauncher = rememberCustomTabsLauncher()
             val context = LocalContext.current
             AllStepByStepRoute(
                 onBack = { navController.popBackStack()},
                 onClick = { url ->
-                    val customTabsIntent = context.getCustomTabsIntent(url)
-                    launcher.launch(customTabsIntent)
+                    customTabsLauncher.launch(context, url)
                  },
                 modifier = modifier
             )

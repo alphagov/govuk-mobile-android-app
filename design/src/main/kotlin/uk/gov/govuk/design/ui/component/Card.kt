@@ -1,7 +1,5 @@
 package uk.gov.govuk.design.ui.component
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -29,7 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.R
-import uk.gov.govuk.design.ui.extension.getCustomTabsIntent
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -149,14 +146,12 @@ fun SearchResultCard(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val launcher =
-        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+    val customTabsLauncher = rememberCustomTabsLauncher()
     GovUkCard(
         modifier = modifier,
         onClick = {
             onClick(title, url)
-            val customTabsIntent = context.getCustomTabsIntent(url)
-            launcher.launch(customTabsIntent)
+            customTabsLauncher.launch(context, url)
         }
     ) {
         Row(
