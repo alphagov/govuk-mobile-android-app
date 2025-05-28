@@ -8,6 +8,7 @@ import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.BIOMETRIC_ROUTE
+import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
 import uk.gov.govuk.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.gov.govuk.topics.TopicsFeature
@@ -59,6 +60,10 @@ internal class AppLaunchNavigation @Inject constructor(
 
         if (analyticsClient.isAnalyticsConsentRequired()) {
             _launchRoutes.push(ANALYTICS_GRAPH_ROUTE)
+        }
+
+        if (flagRepo.isLoginEnabled()) {
+            _launchRoutes.push(LOGIN_GRAPH_ROUTE)
         }
 
         _startDestination = _launchRoutes.pop()

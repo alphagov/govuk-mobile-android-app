@@ -71,7 +71,28 @@ class AppLaunchNavigationTest {
         runTest {
             appLaunchNav.buildLaunchFlow()
 
-            assertEquals(ANALYTICS_GRAPH_ROUTE, appLaunchNav.startDestination)
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
+
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
+            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
+            expected.push(BIOMETRIC_ROUTE)
+            expected.push(ONBOARDING_GRAPH_ROUTE)
+            expected.push(ANALYTICS_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
+    }
+
+    @Test
+    fun `Given analytics consent is not required, When build launch flow, builds launch routes`() {
+        coEvery { analyticsClient.isAnalyticsConsentRequired() } returns false
+
+        runTest {
+            appLaunchNav.buildLaunchFlow()
+
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
 
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
@@ -85,36 +106,20 @@ class AppLaunchNavigationTest {
     }
 
     @Test
-    fun `Given analytics consent is not required, When build launch flow, builds launch routes`() {
-        coEvery { analyticsClient.isAnalyticsConsentRequired() } returns false
-
-        runTest {
-            appLaunchNav.buildLaunchFlow()
-
-            assertEquals(ONBOARDING_GRAPH_ROUTE, appLaunchNav.startDestination)
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(BIOMETRIC_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
     fun `Given onboarding is complete, When build launch flow, builds launch routes`() {
         coEvery { appRepo.isOnboardingCompleted() } returns true
 
         runTest {
             appLaunchNav.buildLaunchFlow()
 
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
+
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
+            expected.push(ANALYTICS_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -127,11 +132,14 @@ class AppLaunchNavigationTest {
         runTest {
             appLaunchNav.buildLaunchFlow()
 
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
+
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
+            expected.push(ANALYTICS_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -143,6 +151,8 @@ class AppLaunchNavigationTest {
 
         runTest {
             appLaunchNav.buildLaunchFlow()
+
+            assertEquals(ANALYTICS_GRAPH_ROUTE, appLaunchNav.startDestination)
 
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
@@ -161,11 +171,14 @@ class AppLaunchNavigationTest {
         runTest {
             appLaunchNav.buildLaunchFlow()
 
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
+
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
             expected.push(ONBOARDING_GRAPH_ROUTE)
+            expected.push(ANALYTICS_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -178,11 +191,14 @@ class AppLaunchNavigationTest {
         runTest {
             appLaunchNav.buildLaunchFlow()
 
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
+
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
             expected.push(ONBOARDING_GRAPH_ROUTE)
+            expected.push(ANALYTICS_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -195,11 +211,14 @@ class AppLaunchNavigationTest {
         runTest {
             appLaunchNav.buildLaunchFlow()
 
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
+
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
             expected.push(ONBOARDING_GRAPH_ROUTE)
+            expected.push(ANALYTICS_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -212,11 +231,14 @@ class AppLaunchNavigationTest {
         runTest {
             appLaunchNav.buildLaunchFlow()
 
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
+
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
             expected.push(ONBOARDING_GRAPH_ROUTE)
+            expected.push(ANALYTICS_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -229,11 +251,14 @@ class AppLaunchNavigationTest {
         runTest {
             appLaunchNav.buildLaunchFlow()
 
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
+
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
             expected.push(ONBOARDING_GRAPH_ROUTE)
+            expected.push(ANALYTICS_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -246,11 +271,14 @@ class AppLaunchNavigationTest {
         runTest {
             appLaunchNav.buildLaunchFlow()
 
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
+
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
             expected.push(ONBOARDING_GRAPH_ROUTE)
+            expected.push(ANALYTICS_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -260,6 +288,8 @@ class AppLaunchNavigationTest {
     fun `When different user login, builds all launch routes`() {
         runTest {
             appLaunchNav.onDifferentUserLogin(true)
+
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
 
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
@@ -279,6 +309,8 @@ class AppLaunchNavigationTest {
         runTest {
             appLaunchNav.onDifferentUserLogin(true)
 
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
+
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
@@ -296,6 +328,8 @@ class AppLaunchNavigationTest {
         runTest {
             appLaunchNav.onDifferentUserLogin(true)
 
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
+
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
@@ -310,6 +344,8 @@ class AppLaunchNavigationTest {
     fun `Given no topics, When different user login, build launch routes`() {
         runTest {
             appLaunchNav.onDifferentUserLogin(false)
+
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
 
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
@@ -328,6 +364,8 @@ class AppLaunchNavigationTest {
         runTest {
             appLaunchNav.onDifferentUserLogin(true)
 
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
+
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
@@ -342,6 +380,8 @@ class AppLaunchNavigationTest {
     fun `When sign out, builds all launch routes`() {
         runTest {
             appLaunchNav.onSignOut()
+
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
 
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
@@ -359,6 +399,8 @@ class AppLaunchNavigationTest {
         runTest {
             appLaunchNav.onSignOut()
 
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
+
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
@@ -373,6 +415,8 @@ class AppLaunchNavigationTest {
 
         runTest {
             appLaunchNav.onSignOut()
+
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
 
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
@@ -407,8 +451,8 @@ class AppLaunchNavigationTest {
 
         verify {
             navController.popBackStack()
-            navController.navigate(ONBOARDING_GRAPH_ROUTE)
-            assertEquals(ONBOARDING_GRAPH_ROUTE, appLaunchNav.startDestination)
+            navController.navigate(ANALYTICS_GRAPH_ROUTE)
+            assertEquals(ANALYTICS_GRAPH_ROUTE, appLaunchNav.startDestination)
         }
     }
 }
