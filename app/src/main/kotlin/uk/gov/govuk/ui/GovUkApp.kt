@@ -276,7 +276,7 @@ private fun HandleNotificationsPermissionStatus(
                     NotificationManagerCompat.from(context).areNotificationsEnabled()
                 if (isNotificationsEnabledOnResume != isNotificationsEnabled) {
                     val route = when (navController.currentDestination?.route) {
-                        NOTIFICATIONS_ONBOARDING_ROUTE,
+                        NOTIFICATIONS_ONBOARDING_ROUTE -> NOTIFICATIONS_ONBOARDING_ROUTE
                         NOTIFICATIONS_PERMISSION_ROUTE -> return@LaunchedEffect
                         else -> NOTIFICATIONS_CONSENT_GRAPH_ROUTE
                     }
