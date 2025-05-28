@@ -6,9 +6,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import uk.gov.govuk.BuildConfig
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
+import uk.gov.govuk.design.ui.component.rememberBrowserLauncher
 import uk.gov.govuk.notifications.ui.NotificationsPromptWidget
 import uk.gov.govuk.notifications.ui.notificationsPermissionShouldShowRationale
-import uk.gov.govuk.settings.navigation.navigateToHelpAndFeedback
 import uk.gov.govuk.settings.ui.FeedbackPromptWidget
 import uk.gov.govuk.topics.navigation.navigateToTopic
 import uk.gov.govuk.topics.navigation.navigateToTopicsAll
@@ -53,10 +53,11 @@ internal fun homeWidgets(
 
             HomeWidget.FEEDBACK_PROMPT -> {
                 widgets.add { modifier ->
+                    val browserLauncher = rememberBrowserLauncher()
                     FeedbackPromptWidget(
                         onClick = { text ->
                             onExternalClick(text, null)
-                            navigateToHelpAndFeedback(context, BuildConfig.VERSION_NAME_USER_FACING)
+                            browserLauncher.launch(context, BuildConfig.VERSION_NAME_USER_FACING)
                         },
                         modifier = modifier
                     )
