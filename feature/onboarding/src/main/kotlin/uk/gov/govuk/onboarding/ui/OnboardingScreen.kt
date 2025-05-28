@@ -82,9 +82,9 @@ private fun OnboardingScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            val isLogoVisible = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
+            val shouldShowLogo = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
 
-            if (isLogoVisible) {
+            if (shouldShowLogo) {
                 Image(
                     painter = painterResource(id = R.drawable.welcome_image),
                     contentDescription = null,
