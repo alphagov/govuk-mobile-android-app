@@ -6,6 +6,7 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 mockwebserver = "4.12.0"
+rootbeer = "0.1.1"
 securityCrypto = "1.0.0"
 testRules = "1.6.1"
 activityCompose = "1.10.1"
@@ -86,6 +87,7 @@ gov-securestore = { group = "uk.gov.securestore", name = "app", version.ref = "g
 # A library that provides Android runtime permissions support for Jetpack Compose
 google-accompanist = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "googleAccompanist" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
+rootbeer = { module = "com.scottyab:rootbeer-lib", version.ref = "rootbeer" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

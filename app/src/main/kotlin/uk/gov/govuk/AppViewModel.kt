@@ -4,11 +4,14 @@ import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.scottyab.rootbeer.RootBeer
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.flags.FlagRepo
@@ -27,6 +30,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class AppViewModel @Inject constructor(
+    private val rootBeer: RootBeer,
     private val timeoutManager: TimeoutManager,
     private val appRepo: AppRepo,
     private val configRepo: ConfigRepo,
@@ -48,7 +52,15 @@ internal class AppViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            initWithConfig()
+            val isRooted = withContext(Dispatchers.IO) {
+                return@withContext rootBeer.isRooted
+            }
+
+            if (isRooted) {
+                _uiState.value = AppUiState.AppUnavailable
+            } else {
+                initWithConfig()
+            }
         }
     }
 
