@@ -110,6 +110,7 @@ class NotificationsViewModelTest {
                 notificationsDataStore.firstPermissionRequestCompleted()
             }
             verify(exactly = 1) {
+                notificationsClient.giveConsent()
                 notificationsClient.requestPermission(onCompleted = any())
 
                 analyticsClient.buttonClick("Title")
