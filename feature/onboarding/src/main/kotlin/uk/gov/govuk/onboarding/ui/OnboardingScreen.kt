@@ -2,13 +2,12 @@ package uk.gov.govuk.onboarding.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -16,9 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.isTraversalGroup
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -59,30 +55,17 @@ private fun OnboardingScreen(
         onPageView()
     }
 
-    Scaffold(
-        containerColor = GovUkTheme.colourScheme.surfaces.background,
-        modifier = modifier.fillMaxSize(),
-
-        bottomBar = {
-            BottomNavBar(
-                onButtonClick = onButtonClick,
-                modifier = Modifier
-                    .semantics {
-                        isTraversalGroup = true
-                        traversalIndex = 1f
-                    }
-            )
-        }
-    ) { innerPadding ->
+    Column(modifier) {
         Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(horizontal = GovUkTheme.spacing.medium)
-                .fillMaxSize(),
+            Modifier
+                .verticalScroll(rememberScrollState())
+                .weight(1f)
+                .padding(horizontal = GovUkTheme.spacing.medium),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            val shouldShowLogo = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
+            val shouldShowLogo =
+                LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
 
             if (shouldShowLogo) {
                 Image(
@@ -108,15 +91,7 @@ private fun OnboardingScreen(
                 textAlign = TextAlign.Center
             )
         }
-    }
-}
 
-@Composable
-private fun BottomNavBar(
-    onButtonClick: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier.background(GovUkTheme.colourScheme.surfaces.background)) {
         val buttonText = stringResource(id = R.string.onboardingButton)
         FixedPrimaryButton(
             text = buttonText,
