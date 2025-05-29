@@ -1,12 +1,10 @@
 package uk.gov.govuk.ui
 
-import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import uk.gov.govuk.BuildConfig
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
-import uk.gov.govuk.design.ui.component.rememberBrowserLauncher
 import uk.gov.govuk.notifications.ui.NotificationsPromptWidget
 import uk.gov.govuk.notifications.ui.notificationsPermissionShouldShowRationale
 import uk.gov.govuk.settings.ui.FeedbackPromptWidget
@@ -24,12 +22,12 @@ import uk.govuk.app.local.ui.LocalWidget
 internal fun List<HomeWidget>?.contains(widget: HomeWidget) = this?.contains(widget) == true
 
 internal fun homeWidgets(
-    context: Context,
     navController: NavHostController,
     homeWidgets: List<HomeWidget>?,
     onInternalClick: (String) -> Unit,
     onExternalClick: (String, String?) -> Unit,
-    onSuppressClick: (String, HomeWidget) -> Unit
+    onSuppressClick: (String, HomeWidget) -> Unit,
+    launchBrowser: (url: String) -> Unit
 ): List<@Composable (Modifier) -> Unit> {
     val widgets = mutableListOf<@Composable (Modifier) -> Unit>()
     homeWidgets?.forEach {
@@ -53,11 +51,10 @@ internal fun homeWidgets(
 
             HomeWidget.FEEDBACK_PROMPT -> {
                 widgets.add { modifier ->
-                    val browserLauncher = rememberBrowserLauncher()
                     FeedbackPromptWidget(
                         onClick = { text ->
                             onExternalClick(text, null)
-                            browserLauncher.launch(context, BuildConfig.VERSION_NAME_USER_FACING)
+                            launchBrowser(BuildConfig.VERSION_NAME_USER_FACING)
                         },
                         modifier = modifier
                     )
@@ -113,6 +110,7 @@ internal fun homeWidgets(
                             onInternalClick(text)
                             navController.navigate(LOCAL_EDIT_ROUTE)
                         },
+                        launchBrowser = launchBrowser,
                         modifier = modifier
                     )
                     LargeVerticalSpacer()

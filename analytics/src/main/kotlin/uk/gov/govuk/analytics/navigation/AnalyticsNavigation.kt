@@ -11,6 +11,7 @@ private const val ANALYTICS_CONSENT_ROUTE = "analytics_consent_route"
 
 fun NavGraphBuilder.analyticsGraph(
     analyticsConsentCompleted: () -> Unit,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -20,6 +21,7 @@ fun NavGraphBuilder.analyticsGraph(
         composable(ANALYTICS_CONSENT_ROUTE) {
             AnalyticsConsentRoute(
                 analyticsConsentCompleted = analyticsConsentCompleted,
+                launchBrowser = launchBrowser,
                 modifier = modifier
             )
         }

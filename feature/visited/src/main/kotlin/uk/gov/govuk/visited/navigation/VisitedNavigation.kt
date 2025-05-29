@@ -17,6 +17,7 @@ const val EDIT_VISITED_ROUTE = "edit_visited_route"
 fun NavGraphBuilder.visitedGraph(
     navController: NavHostController,
     deepLinks: (path: String) -> List<NavDeepLink>,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -29,6 +30,7 @@ fun NavGraphBuilder.visitedGraph(
             VisitedRoute(
                 navController = navController,
                 onBack = { navController.popBackStack() },
+                launchBrowser = launchBrowser,
                 modifier = modifier
             )
         }

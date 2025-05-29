@@ -380,4 +380,18 @@ class FlagRepoTest {
 
         assertFalse(flagRepo.isLoginEnabled())
     }
+
+    @Test
+    fun `Given a debug build, When is in app browser enabled, then return false`() {
+        flagRepo = FlagRepo(true, debugFlags, configRepo)
+
+        assertFalse(flagRepo.isInAppBrowserEnabled())
+    }
+
+    @Test
+    fun `Given a release build, When is in app browser enabled, then return false`() {
+        flagRepo = FlagRepo(false, debugFlags, configRepo)
+
+        assertFalse(flagRepo.isInAppBrowserEnabled())
+    }
 }

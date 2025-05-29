@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -34,7 +33,6 @@ import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.ListHeadingLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
-import uk.gov.govuk.design.ui.component.rememberBrowserLauncher
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.visited.R
 import uk.gov.govuk.visited.VisitedUiState
@@ -46,6 +44,7 @@ import uk.gov.govuk.visited.ui.model.VisitedUi
 internal fun VisitedRoute(
     navController: NavController,
     onBack: () -> Unit,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: VisitedViewModel = hiltViewModel()
@@ -62,6 +61,7 @@ internal fun VisitedRoute(
             viewModel.onEditClick()
             navController.navigateToEditVisited()
         },
+        launchBrowser = launchBrowser,
         modifier = modifier
     )
 }
@@ -74,6 +74,7 @@ private fun VisitedScreen(
     onBack: () -> Unit,
     onClick: (title: String, url: String) -> Unit,
     onEditClick: () -> Unit,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -112,7 +113,7 @@ private fun VisitedScreen(
                 if (visitedItems.isNullOrEmpty()) {
                     NoVisitedItems(modifier)
                 } else {
-                    ShowVisitedItems(visitedItems, onClick)
+                    ShowVisitedItems(visitedItems, onClick, launchBrowser)
                 }
             }
         }
@@ -157,6 +158,7 @@ private fun NoVisitedItems(
 private fun ShowVisitedItems(
     items: Map<String, List<VisitedUi>>,
     onClick: (title: String, url: String) -> Unit,
+    launchBrowser: (url: String) -> Unit
 ) {
     val lastVisitedText = stringResource(R.string.visited_items_last_visited)
     val coroutineScope = rememberCoroutineScope()
@@ -170,8 +172,6 @@ private fun ShowVisitedItems(
                 val title = item.title
                 val lastVisited = item.lastVisited
                 val url = item.url
-                val context = LocalContext.current
-                val browserLauncher = rememberBrowserLauncher()
 
                 ExternalLinkListItem(
                     title = title,
@@ -180,7 +180,7 @@ private fun ShowVisitedItems(
                             delay(500)
                             onClick(title, url)
                         }
-                        browserLauncher.launch(context, url)
+                        launchBrowser(url)
                     },
                     isFirst = index == 0,
                     isLast = index == visitedItems.size - 1,

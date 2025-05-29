@@ -37,7 +37,6 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.adaptive.android)
     implementation(libs.androidx.ui.tooling)
-    implementation(libs.androidx.browser)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

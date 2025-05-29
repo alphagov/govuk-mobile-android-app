@@ -59,7 +59,6 @@ import uk.gov.govuk.BuildConfig
 import uk.gov.govuk.R
 import uk.gov.govuk.analytics.navigation.analyticsGraph
 import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
-import uk.gov.govuk.design.ui.component.rememberBrowserLauncher
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.extension.asDeepLinks
 import uk.gov.govuk.extension.getUrlParam
@@ -116,6 +115,7 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                             intentFlow = intentFlow,
                             viewModel = viewModel,
                             shouldDisplayNotificationsOnboarding = it.shouldDisplayNotificationsOnboarding,
+                            shouldShowInAppBrowser = it.shouldShowInAppBrowser,
                             homeWidgets = homeWidgets
                         )
                     }
@@ -145,6 +145,7 @@ private fun BottomNavScaffold(
     intentFlow: Flow<Intent>,
     viewModel: AppViewModel,
     shouldDisplayNotificationsOnboarding: Boolean,
+    shouldShowInAppBrowser: Boolean,
     homeWidgets: List<HomeWidget>?,
 ) {
     val navController = rememberNavController()
@@ -195,6 +196,7 @@ private fun BottomNavScaffold(
                 onSuppressWidgetClick = { text, widget ->
                     viewModel.onSuppressWidgetClick(text, section, widget)
                 },
+                shouldShowInAppBrowser = shouldShowInAppBrowser,
                 paddingValues = paddingValues
             )
         }
@@ -202,6 +204,7 @@ private fun BottomNavScaffold(
     HandleReceivedIntents(
         intentFlow = intentFlow,
         navController = navController,
+        shouldShowInAppBrowser = shouldShowInAppBrowser,
     ) { hasDeepLink, url ->
         viewModel.onDeepLinkReceived(hasDeepLink, url)
     }
@@ -214,10 +217,11 @@ private fun BottomNavScaffold(
 private fun HandleReceivedIntents(
     intentFlow: Flow<Intent>,
     navController: NavHostController,
+    shouldShowInAppBrowser: Boolean,
     onDeepLinkReceived: (hasDeepLink: Boolean, url: String) -> Unit
 ) {
     val context = LocalContext.current
-    val browserLauncher = rememberBrowserLauncher()
+    val browserLauncher = rememberBrowserLauncher(shouldShowInAppBrowser)
     LaunchedEffect(intentFlow) {
         intentFlow.collectLatest { intent ->
             intent.data?.let { uri ->
@@ -378,11 +382,13 @@ private fun GovUkNavHost(
     onInternalWidgetClick: (String) -> Unit,
     onExternalWidgetClick: (String, String?) -> Unit,
     onSuppressWidgetClick: (String, HomeWidget) -> Unit,
+    shouldShowInAppBrowser: Boolean,
     paddingValues: PaddingValues
 ) {
     val context = LocalContext.current
     val appLaunchNavigation = viewModel.appLaunchNavigation
     val startDestination = appLaunchNavigation.startDestination
+    val browserLauncher = rememberBrowserLauncher(shouldShowInAppBrowser)
 
     NavHost(
         navController = navController,
@@ -391,7 +397,8 @@ private fun GovUkNavHost(
         analyticsGraph(
             analyticsConsentCompleted = {
                 appLaunchNavigation.onNext(navController)
-            }
+            },
+            launchBrowser = { url -> browserLauncher.launch(context, url) }
         )
         onboardingGraph(
             onboardingCompleted = {
@@ -409,6 +416,7 @@ private fun GovUkNavHost(
             topicsGraph(
                 navController = navController,
                 deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
+                launchBrowser = { url -> browserLauncher.launch(context, url) },
                 modifier = Modifier.padding(paddingValues)
             )
         }
@@ -440,12 +448,12 @@ private fun GovUkNavHost(
         )
         homeGraph(
             widgets = homeWidgets(
-                context = context,
                 navController = navController,
                 homeWidgets = homeWidgets,
                 onInternalClick = onInternalWidgetClick,
                 onExternalClick = onExternalWidgetClick,
-                onSuppressClick = onSuppressWidgetClick
+                onSuppressClick = onSuppressWidgetClick,
+                launchBrowser = { url -> browserLauncher.launch(context, url) }
             ),
             deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
             modifier = Modifier.padding(paddingValues),
@@ -466,6 +474,7 @@ private fun GovUkNavHost(
             navigateTo = { route -> navController.navigate(route) },
             appVersion = BuildConfig.VERSION_NAME_USER_FACING,
             deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
+            launchBrowser = { url -> browserLauncher.launch(context, url) },
             modifier = Modifier.padding(paddingValues)
         )
         signOutGraph(
@@ -476,12 +485,16 @@ private fun GovUkNavHost(
             }
         )
         if (homeWidgets.contains(HomeWidget.SEARCH)) {
-            searchGraph(navController, deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) })
+            searchGraph(
+                navController,
+                deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
+                launchBrowser = { url -> browserLauncher.launch(context, url) })
         }
         if (homeWidgets.contains(HomeWidget.RECENT_ACTIVITY)) {
             visitedGraph(
                 navController = navController,
                 deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
+                launchBrowser = { url -> browserLauncher.launch(context, url) },
                 modifier = Modifier.padding(paddingValues)
             )
         }

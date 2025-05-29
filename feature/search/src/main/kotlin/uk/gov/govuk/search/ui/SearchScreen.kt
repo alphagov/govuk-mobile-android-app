@@ -39,6 +39,7 @@ import uk.gov.govuk.search.ui.component.SearchFieldActions
 @Composable
 internal fun SearchRoute(
     onBack: () -> Unit,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: SearchViewModel = hiltViewModel()
@@ -82,6 +83,7 @@ internal fun SearchRoute(
                 viewModel.onAutocompleteResultClick(searchTerm)
             }
         ),
+        launchBrowser = launchBrowser,
         modifier = modifier
     )
 }
@@ -104,6 +106,7 @@ private class SearchScreenActions(
 private fun SearchScreen(
     uiState: SearchUiState,
     actions: SearchScreenActions,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -181,7 +184,8 @@ private fun SearchScreen(
                 )
             },
             focusRequester = focusRequester,
-            keyboard = keyboard
+            keyboard = keyboard,
+            launchBrowser = launchBrowser
         )
     }
 }
@@ -193,6 +197,7 @@ private fun SearchContent(
     onSuggestionClick: (String) -> Unit,
     focusRequester: FocusRequester,
     keyboard: SoftwareKeyboardController?,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var displayKeyboard by remember { mutableStateOf(false) }
@@ -205,6 +210,7 @@ private fun SearchContent(
                 searchTerm = uiState.searchResults.searchTerm,
                 searchResults = uiState.searchResults.values,
                 onClick = actions.onResultClick,
+                launchBrowser = launchBrowser,
                 modifier = modifier
             )
         uiState.suggestions != null -> {
