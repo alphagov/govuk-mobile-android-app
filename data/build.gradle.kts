@@ -57,6 +57,9 @@ dependencies {
     implementation(libs.androidx.biometric)
     implementation(libs.androidx.security.crypto)
 
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.appcheck.play)
+
     ksp(libs.hilt.compiler)
 
     implementation(libs.retrofit)

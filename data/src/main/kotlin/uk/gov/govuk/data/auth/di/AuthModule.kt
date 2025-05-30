@@ -5,6 +5,9 @@ import android.content.SharedPreferences
 import androidx.biometric.BiometricManager
 import androidx.core.net.toUri
 import androidx.security.crypto.EncryptedSharedPreferences
+import com.google.firebase.Firebase
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.appCheck
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,6 +32,12 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 class AuthModule {
+    @Singleton
+    @Provides
+    fun provideAppCheck(): FirebaseAppCheck {
+        return Firebase.appCheck
+    }
+
     @Singleton
     @Provides
     fun provideSecureStore(@ApplicationContext context: Context): SecureStore {
