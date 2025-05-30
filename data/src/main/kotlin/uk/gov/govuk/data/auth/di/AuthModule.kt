@@ -6,7 +6,6 @@ import androidx.biometric.BiometricManager
 import androidx.core.net.toUri
 import androidx.security.crypto.EncryptedSharedPreferences
 import com.google.firebase.Firebase
-import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.appCheck
 import dagger.Module
 import dagger.Provides
@@ -26,16 +25,19 @@ import uk.gov.android.securestore.SecureStorageConfiguration
 import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.SharedPrefsStore
 import uk.gov.govuk.data.BuildConfig
+import uk.gov.govuk.data.auth.AttestationProvider
+import uk.gov.govuk.data.auth.FirebaseAttestationProvider
 import uk.gov.govuk.data.remote.AuthApi
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
 class AuthModule {
+
     @Singleton
     @Provides
-    fun provideAppCheck(): FirebaseAppCheck {
-        return Firebase.appCheck
+    fun provideAttestationProvider(): AttestationProvider {
+        return FirebaseAttestationProvider(Firebase.appCheck)
     }
 
     @Singleton

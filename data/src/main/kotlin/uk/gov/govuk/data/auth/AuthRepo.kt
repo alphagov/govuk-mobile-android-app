@@ -8,7 +8,6 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators
 import androidx.core.content.edit
 import androidx.fragment.app.FragmentActivity
-import com.google.firebase.appcheck.FirebaseAppCheck
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
@@ -31,7 +30,7 @@ import kotlin.coroutines.suspendCoroutine
 
 @Singleton
 class AuthRepo @Inject constructor(
-    private val appCheck: FirebaseAppCheck, // Todo - abstract
+    private val attestationProvider: AttestationProvider,
     private val authRequest: AuthorizationRequest,
     private val authService: AuthorizationService,
     private val tokenRequestBuilder: TokenRequest.Builder,
@@ -90,7 +89,7 @@ class AuthRepo @Inject constructor(
         tokenRequest: TokenRequest,
         refreshToken: String? = null
     ): Boolean {
-        val attestationToken = fetchAttestationToken()
+        val attestationToken = attestationProvider.getToken()
         val clientAuth = object: ClientAuthentication {
             override fun getRequestHeaders(clientId: String): MutableMap<String, String> =
                 attestationToken?.let {
@@ -110,17 +109,6 @@ class AuthRepo @Inject constructor(
                 continuation.resume(success)
             }
         }
-    }
-
-    private suspend fun fetchAttestationToken(): String? = suspendCoroutine { continuation ->
-        appCheck.getAppCheckToken(false)
-            .addOnSuccessListener { result ->
-                continuation.resume(result.token)
-            }
-            .addOnFailureListener { exception ->
-                Log.e("Blah", exception.message, exception)
-                continuation.resume(null)
-            }
     }
 
     private fun handleTokenResponse(
