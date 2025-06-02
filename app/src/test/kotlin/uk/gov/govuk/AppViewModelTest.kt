@@ -179,28 +179,28 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given in app browser enabled, When init, then should show in app browser`() {
-        every { flagRepo.isInAppBrowserEnabled() } returns true
+    fun `Given external browser enabled, When init, then should show external browser`() {
+        every { flagRepo.isExternalBrowserEnabled() } returns true
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
             localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
-            assertTrue(result.shouldShowInAppBrowser)
+            assertTrue(result.shouldShowExternalBrowser)
         }
     }
 
     @Test
-    fun `Given in app browser enabled is false, When init, then should not show in app browser`() {
-        every { flagRepo.isInAppBrowserEnabled() } returns false
+    fun `Given external browser enabled is false, When init, then should not show external browser`() {
+        every { flagRepo.isExternalBrowserEnabled() } returns false
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
             localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
-            assertFalse(result.shouldShowInAppBrowser)
+            assertFalse(result.shouldShowExternalBrowser)
         }
     }
 

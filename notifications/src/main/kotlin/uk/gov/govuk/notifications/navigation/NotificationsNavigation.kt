@@ -17,6 +17,7 @@ private const val NOTIFICATIONS_CONSENT_ROUTE = "notifications_consent_route"
 
 fun NavGraphBuilder.notificationsOnboardingGraph(
     notificationsOnboardingCompleted: () -> Unit,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -26,6 +27,7 @@ fun NavGraphBuilder.notificationsOnboardingGraph(
         composable(NOTIFICATIONS_ONBOARDING_ROUTE) {
             NotificationsOnboardingRoute(
                 notificationsOnboardingCompleted = notificationsOnboardingCompleted,
+                launchBrowser = launchBrowser,
                 modifier = modifier
             )
         }
@@ -34,6 +36,7 @@ fun NavGraphBuilder.notificationsOnboardingGraph(
 
 fun NavGraphBuilder.notificationsPermissionGraph(
     notificationsPermissionCompleted: () -> Unit,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -43,6 +46,7 @@ fun NavGraphBuilder.notificationsPermissionGraph(
         composable(NOTIFICATIONS_PERMISSION_ROUTE) {
             NotificationsPermissionRoute(
                 notificationsPermissionCompleted = notificationsPermissionCompleted,
+                launchBrowser = launchBrowser,
                 modifier = modifier
             )
         }
@@ -51,6 +55,7 @@ fun NavGraphBuilder.notificationsPermissionGraph(
 
 fun NavGraphBuilder.notificationsConsentGraph(
     notificationsConsentCompleted: () -> Unit,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -60,6 +65,7 @@ fun NavGraphBuilder.notificationsConsentGraph(
         composable(NOTIFICATIONS_CONSENT_ROUTE) {
             NotificationsConsentRoute(
                 notificationsConsentCompleted = notificationsConsentCompleted,
+                launchBrowser = launchBrowser,
                 modifier = modifier
             )
         }

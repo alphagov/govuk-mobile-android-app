@@ -382,16 +382,16 @@ class FlagRepoTest {
     }
 
     @Test
-    fun `Given a debug build, When is in app browser enabled, then return false`() {
+    fun `Given a debug build, When is external browser enabled, then return false`() {
         flagRepo = FlagRepo(true, debugFlags, configRepo)
 
-        assertFalse(flagRepo.isInAppBrowserEnabled())
+        assertFalse(flagRepo.isExternalBrowserEnabled())
     }
 
     @Test
-    fun `Given a release build, When is in app browser enabled, then return false`() {
+    fun `Given a release build, When is external browser enabled, then return false`() {
         flagRepo = FlagRepo(false, debugFlags, configRepo)
 
-        assertFalse(flagRepo.isInAppBrowserEnabled())
+        assertFalse(flagRepo.isExternalBrowserEnabled())
     }
 }

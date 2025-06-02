@@ -20,6 +20,7 @@ import uk.gov.govuk.notifications.openDeviceSettings
 @Composable
 internal fun NotificationsConsentRoute(
     notificationsConsentCompleted: () -> Unit,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val notificationsViewModel: NotificationsViewModel = hiltViewModel()
@@ -39,6 +40,7 @@ internal fun NotificationsConsentRoute(
                     body = R.string.onboarding_screen_no_consent_body,
                     onPrivacyPolicyClick = { text, url ->
                         notificationsViewModel.onPrivacyPolicyClick(text, url)
+                        launchBrowser(url)
                     },
                     modifier = modifier,
                     footer = {
