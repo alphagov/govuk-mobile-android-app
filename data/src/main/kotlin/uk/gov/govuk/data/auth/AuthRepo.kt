@@ -3,7 +3,6 @@ package uk.gov.govuk.data.auth
 import android.content.Intent
 import android.content.SharedPreferences
 import android.util.Base64
-import android.util.Log
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators
 import androidx.core.content.edit
