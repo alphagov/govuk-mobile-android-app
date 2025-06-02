@@ -40,7 +40,6 @@ android {
         buildConfigField("String", "PLAY_STORE_URL", "\"https://play.google.com/store/apps/details?id=$applicationId\"")
         buildConfigField("String", "ONE_SIGNAL_APP_ID", "\"4c235189-5c5f-4a71-8385-2549fc36419f\"")
         buildConfigField("String", "VERSION_NAME_USER_FACING", "\"$versionName ($versionCode)\"")
-        buildConfigField("String", "LOGIN_SERVICE_URL", "\"https://aulmirij8h.execute-api.eu-west-2.amazonaws.com/\"")
     }
 
     signingConfigs {
@@ -155,6 +154,10 @@ dependencies {
     implementation(libs.androidx.ui.tooling)
     implementation(libs.hilt.android)
     implementation(libs.androidx.datastore.preferences)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.appcheck.play)
+
     implementation(libs.google.accompanist)
 
     implementation(libs.lottie.compose)

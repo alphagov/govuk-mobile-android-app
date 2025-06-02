@@ -11,6 +11,7 @@ import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
+import net.openid.appauth.ClientAuthentication
 import net.openid.appauth.TokenRequest
 import net.openid.appauth.TokenResponse
 import org.json.JSONObject
@@ -28,6 +29,7 @@ import kotlin.coroutines.suspendCoroutine
 
 @Singleton
 class AuthRepo @Inject constructor(
+    private val attestationProvider: AttestationProvider,
     private val authRequest: AuthorizationRequest,
     private val authService: AuthorizationService,
     private val tokenRequestBuilder: TokenRequest.Builder,
@@ -48,55 +50,13 @@ class AuthRepo @Inject constructor(
 
     private var tokens = Tokens()
 
-    suspend fun handleAuthResponse(data: Intent?): Boolean = suspendCoroutine { continuation ->
+    suspend fun handleAuthResponse(data: Intent?): Boolean {
         val authResponse = data?.let { AuthorizationResponse.fromIntent(it) }
-        if (authResponse != null) {
-            authService.performTokenRequest(
-                authResponse.createTokenExchangeRequest()
-            ) { tokenResponse, exception ->
-                val success = handleTokenResponse(tokenResponse, exception)
-                continuation.resume(success)
-            }
+        return if (authResponse != null) {
+            performTokenRequest(authResponse.createTokenExchangeRequest())
         } else {
-            continuation.resume(false)
-        }
-    }
-
-    suspend fun persistRefreshToken(
-        activity: FragmentActivity,
-        title: String,
-        subtitle: String? = null,
-        description: String? = null
-    ): Boolean {
-        secureStore.upsert(REFRESH_TOKEN_KEY, tokens.refreshToken)
-        val result = retrieveRefreshToken(
-            activity = activity,
-            title = title,
-            subtitle = subtitle,
-            description = description
-        )
-
-        return if (result is RetrievalEvent.Success) {
-            true
-        } else {
-            secureStore.delete(REFRESH_TOKEN_KEY)
             false
         }
-    }
-
-    fun isAuthenticationEnabled(): Boolean {
-        val result  = biometricManager.canAuthenticate(
-            Authenticators.BIOMETRIC_STRONG or Authenticators.DEVICE_CREDENTIAL
-        )
-        return result == BiometricManager.BIOMETRIC_SUCCESS
-    }
-
-    fun isUserSessionActive(): Boolean {
-        return tokens.accessToken.isNotBlank()
-    }
-
-    fun isUserSignedIn(): Boolean {
-        return secureStore.exists(REFRESH_TOKEN_KEY)
     }
 
     suspend fun refreshTokens(
@@ -111,38 +71,43 @@ class AuthRepo @Inject constructor(
             subtitle = subtitle,
             description = description
         )
-        return suspendCoroutine { continuation ->
-            if (result is RetrievalEvent.Success) {
-                val refreshToken = result.value[REFRESH_TOKEN_KEY]
-                val tokenRequest = tokenRequestBuilder
-                    .setRefreshToken(refreshToken)
-                    .build()
 
-                authService.performTokenRequest(tokenRequest) { tokenResponse, exception ->
-                    val success = handleTokenResponse(tokenResponse, exception, refreshToken)
-                    continuation.resume(success)
-                }
-            } else {
-                continuation.resume(false)
-            }
+        return if (result is RetrievalEvent.Success) {
+            val refreshToken = result.value[REFRESH_TOKEN_KEY]
+            val tokenRequest = tokenRequestBuilder
+                .setRefreshToken(refreshToken)
+                .build()
+
+            performTokenRequest(tokenRequest, refreshToken)
+        } else {
+            false
         }
     }
 
-    private suspend fun retrieveRefreshToken(
-        activity: FragmentActivity,
-        title: String,
-        subtitle: String? = null,
-        description: String? = null
-    ): RetrievalEvent {
-        return secureStore.retrieveWithAuthentication(
-            key = arrayOf(REFRESH_TOKEN_KEY),
-            authPromptConfig = AuthenticatorPromptConfiguration(
-                title = title,
-                subTitle = subtitle,
-                description = description
-            ),
-            context = activity
-        )
+    private suspend fun performTokenRequest(
+        tokenRequest: TokenRequest,
+        refreshToken: String? = null
+    ): Boolean {
+        val attestationToken = attestationProvider.getToken()
+        val clientAuth = object: ClientAuthentication {
+            override fun getRequestHeaders(clientId: String): MutableMap<String, String> =
+                attestationToken?.let {
+                    mutableMapOf("X-Attestation-Token" to it)
+                } ?: mutableMapOf()
+
+            override fun getRequestParameters(clientId: String): MutableMap<String, String>
+                    = mutableMapOf("client_id" to BuildConfig.AUTH_CLIENT_ID)
+        }
+
+        return suspendCoroutine { continuation ->
+            authService.performTokenRequest(
+                tokenRequest,
+                clientAuth
+            ) { tokenResponse, exception ->
+                val success = handleTokenResponse(tokenResponse, exception, refreshToken)
+                continuation.resume(success)
+            }
+        }
     }
 
     private fun handleTokenResponse(
@@ -170,6 +135,60 @@ class AuthRepo @Inject constructor(
         } else {
             false
         }
+    }
+
+    suspend fun persistRefreshToken(
+        activity: FragmentActivity,
+        title: String,
+        subtitle: String? = null,
+        description: String? = null
+    ): Boolean {
+        secureStore.upsert(REFRESH_TOKEN_KEY, tokens.refreshToken)
+        val result = retrieveRefreshToken(
+            activity = activity,
+            title = title,
+            subtitle = subtitle,
+            description = description
+        )
+
+        return if (result is RetrievalEvent.Success) {
+            true
+        } else {
+            secureStore.delete(REFRESH_TOKEN_KEY)
+            false
+        }
+    }
+
+    private suspend fun retrieveRefreshToken(
+        activity: FragmentActivity,
+        title: String,
+        subtitle: String? = null,
+        description: String? = null
+    ): RetrievalEvent {
+        return secureStore.retrieveWithAuthentication(
+            key = arrayOf(REFRESH_TOKEN_KEY),
+            authPromptConfig = AuthenticatorPromptConfiguration(
+                title = title,
+                subTitle = subtitle,
+                description = description
+            ),
+            context = activity
+        )
+    }
+
+    fun isAuthenticationEnabled(): Boolean {
+        val result  = biometricManager.canAuthenticate(
+            Authenticators.BIOMETRIC_STRONG or Authenticators.DEVICE_CREDENTIAL
+        )
+        return result == BiometricManager.BIOMETRIC_SUCCESS
+    }
+
+    fun isUserSessionActive(): Boolean {
+        return tokens.accessToken.isNotBlank()
+    }
+
+    fun isUserSignedIn(): Boolean {
+        return secureStore.exists(REFRESH_TOKEN_KEY)
     }
 
     fun isDifferentUser(): Boolean {
