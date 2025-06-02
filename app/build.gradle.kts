@@ -155,6 +155,10 @@ dependencies {
     implementation(libs.androidx.ui.tooling)
     implementation(libs.hilt.android)
     implementation(libs.androidx.datastore.preferences)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.appcheck.play)
+
     implementation(libs.google.accompanist)
 
     implementation(libs.lottie.compose)

@@ -66,6 +66,7 @@ androidx-security-crypto = { module = "androidx.security:security-crypto", versi
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+firebase-appcheck-play = { group = "com.google.firebase", name = "firebase-appcheck-playintegrity" }
 
 mockk = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutineTest" }

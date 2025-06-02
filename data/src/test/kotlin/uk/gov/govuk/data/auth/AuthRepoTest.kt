@@ -11,6 +11,7 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.slot
 import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
@@ -19,10 +20,12 @@ import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationService.TokenResponseCallback
+import net.openid.appauth.ClientAuthentication
 import net.openid.appauth.TokenRequest
 import net.openid.appauth.TokenResponse
 import okio.IOException
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -31,10 +34,12 @@ import uk.gov.android.securestore.RetrievalEvent
 import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.error.SecureStorageError
 import uk.gov.android.securestore.error.SecureStoreErrorType
+import uk.gov.govuk.data.BuildConfig
 import uk.gov.govuk.data.remote.AuthApi
 
 class AuthRepoTest {
 
+    private val attestationProvider = mockk<AttestationProvider>(relaxed = true)
     private val authRequest = mockk<AuthorizationRequest>(relaxed = true)
     private val authService = mockk<AuthorizationService>(relaxed = true)
     private val tokenRequestBuilder = mockk<TokenRequest.Builder>(relaxed = true)
@@ -55,8 +60,8 @@ class AuthRepoTest {
     fun setup() {
         mockkStatic(AuthorizationResponse::class)
 
-        authRepo = AuthRepo(authRequest, authService, tokenRequestBuilder, tokenResponseMapper,
-            secureStore, biometricManager, sharedPrefs, authApi)
+        authRepo = AuthRepo(attestationProvider, authRequest, authService, tokenRequestBuilder,
+            tokenResponseMapper, secureStore, biometricManager, sharedPrefs, authApi)
     }
 
     @After
@@ -82,10 +87,60 @@ class AuthRepoTest {
     }
 
     @Test
+    fun `Given attestation provider returns a null token then do not add header`() {
+        every { AuthorizationResponse.fromIntent(any()) } returns authResponse
+        coEvery { attestationProvider.getToken() } returns null
+
+        val slot = slot<ClientAuthentication>()
+        every {
+            authService.performTokenRequest(
+                any(),
+                capture(slot),
+                any()
+            )
+        } answers {
+            val callback = thirdArg<TokenResponseCallback>()
+            callback.onTokenRequestCompleted(tokenResponse, null)
+        }
+
+        runTest {
+            authRepo.handleAuthResponse(intent)
+
+            assertFalse(slot.captured.getRequestHeaders("").containsKey("X-Attestation-Token"))
+            assertEquals(BuildConfig.AUTH_CLIENT_ID, slot.captured.getRequestParameters("")["client_id"])
+        }
+    }
+
+    @Test
+    fun `Given attestation provider returns a token then add header`() {
+        every { AuthorizationResponse.fromIntent(any()) } returns authResponse
+        coEvery { attestationProvider.getToken() } returns "attestation_token"
+
+        val slot = slot<ClientAuthentication>()
+        every {
+            authService.performTokenRequest(
+                any(),
+                capture(slot),
+                any()
+            )
+        } answers {
+            val callback = thirdArg<TokenResponseCallback>()
+            callback.onTokenRequestCompleted(tokenResponse, null)
+        }
+
+        runTest {
+            authRepo.handleAuthResponse(intent)
+
+            assertEquals("attestation_token", slot.captured.getRequestHeaders("")["X-Attestation-Token"])
+            assertEquals(BuildConfig.AUTH_CLIENT_ID, slot.captured.getRequestParameters("")["client_id"])
+        }
+    }
+
+    @Test
     fun `Given the token request returns an exception, when handle auth response, return false`() {
         every { AuthorizationResponse.fromIntent(any()) } returns authResponse
-        every { authService.performTokenRequest(any(), any()) } answers {
-            val callback = secondArg<TokenResponseCallback>()
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
             callback.onTokenRequestCompleted(null, authException)
         }
 
@@ -97,8 +152,8 @@ class AuthRepoTest {
     @Test
     fun `Given the token request returns a null access token, when handle auth response, return false`() {
         every { AuthorizationResponse.fromIntent(any()) } returns authResponse
-        every { authService.performTokenRequest(any(), any()) } answers {
-            val callback = secondArg<TokenResponseCallback>()
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
             callback.onTokenRequestCompleted(tokenResponse, null)
         }
         every { tokenResponseMapper.map(any()) } returns
@@ -116,8 +171,8 @@ class AuthRepoTest {
     @Test
     fun `Given the token request returns a null id token, when handle auth response, return false`() {
         every { AuthorizationResponse.fromIntent(any()) } returns authResponse
-        every { authService.performTokenRequest(any(), any()) } answers {
-            val callback = secondArg<TokenResponseCallback>()
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
             callback.onTokenRequestCompleted(tokenResponse, null)
         }
         every { tokenResponseMapper.map(any()) } returns
@@ -135,8 +190,8 @@ class AuthRepoTest {
     @Test
     fun `Given the token request returns a null refresh token, when handle auth response, return false`() {
         every { AuthorizationResponse.fromIntent(any()) } returns authResponse
-        every { authService.performTokenRequest(any(), any()) } answers {
-            val callback = secondArg<TokenResponseCallback>()
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
             callback.onTokenRequestCompleted(tokenResponse, null)
         }
         every { tokenResponseMapper.map(any()) } returns
@@ -154,8 +209,8 @@ class AuthRepoTest {
     @Test
     fun `Given the token request is successful, when handle auth response, return true`() {
         every { AuthorizationResponse.fromIntent(any()) } returns authResponse
-        every { authService.performTokenRequest(any(), any()) } answers {
-            val callback = secondArg<TokenResponseCallback>()
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
             callback.onTokenRequestCompleted(tokenResponse, null)
         }
         every { tokenResponseMapper.map(any()) } returns
@@ -173,8 +228,8 @@ class AuthRepoTest {
     @Test
     fun `Given a successful retrieval, when persist refresh token, return true`() {
         every { AuthorizationResponse.fromIntent(any()) } returns authResponse
-        every { authService.performTokenRequest(any(), any()) } answers {
-            val callback = secondArg<TokenResponseCallback>()
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
             callback.onTokenRequestCompleted(tokenResponse, null)
         }
         every { tokenResponseMapper.map(any()) } returns
@@ -204,8 +259,8 @@ class AuthRepoTest {
     @Test
     fun `Given a failed retrieval, when persist refresh token, return false and delete token`() {
         every { AuthorizationResponse.fromIntent(any()) } returns authResponse
-        every { authService.performTokenRequest(any(), any()) } answers {
-            val callback = secondArg<TokenResponseCallback>()
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
             callback.onTokenRequestCompleted(tokenResponse, null)
         }
         every { tokenResponseMapper.map(any()) } returns
@@ -320,8 +375,8 @@ class AuthRepoTest {
             )
         } returns RetrievalEvent.Success(mapOf("refreshToken" to "token"))
 
-        every { authService.performTokenRequest(any(), any()) } answers {
-            val callback = secondArg<TokenResponseCallback>()
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
             callback.onTokenRequestCompleted(null, authException)
         }
 
@@ -340,8 +395,8 @@ class AuthRepoTest {
             )
         } returns RetrievalEvent.Success(mapOf("refreshToken" to "token"))
 
-        every { authService.performTokenRequest(any(), any()) } answers {
-            val callback = secondArg<TokenResponseCallback>()
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
             callback.onTokenRequestCompleted(tokenResponse, null)
         }
 
@@ -367,8 +422,8 @@ class AuthRepoTest {
             )
         } returns RetrievalEvent.Success(mapOf("refreshToken" to "token"))
 
-        every { authService.performTokenRequest(any(), any()) } answers {
-            val callback = secondArg<TokenResponseCallback>()
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
             callback.onTokenRequestCompleted(tokenResponse, null)
         }
 
@@ -394,8 +449,8 @@ class AuthRepoTest {
             )
         } returns RetrievalEvent.Success(mapOf("refreshToken" to "token"))
 
-        every { authService.performTokenRequest(any(), any()) } answers {
-            val callback = secondArg<TokenResponseCallback>()
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
             callback.onTokenRequestCompleted(tokenResponse, null)
         }
 
@@ -464,8 +519,8 @@ class AuthRepoTest {
     @Test
     fun `Given a user session is active, when is user session active, return true`() {
         every { AuthorizationResponse.fromIntent(any()) } returns authResponse
-        every { authService.performTokenRequest(any(), any()) } answers {
-            val callback = secondArg<TokenResponseCallback>()
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
             callback.onTokenRequestCompleted(tokenResponse, null)
         }
         every { tokenResponseMapper.map(any()) } returns
@@ -485,8 +540,8 @@ class AuthRepoTest {
     @Test
     fun `Given a user session is ended, when end user session, then user session is no longer active`() {
         every { AuthorizationResponse.fromIntent(any()) } returns authResponse
-        every { authService.performTokenRequest(any(), any()) } answers {
-            val callback = secondArg<TokenResponseCallback>()
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
             callback.onTokenRequestCompleted(tokenResponse, null)
         }
         every { tokenResponseMapper.map(any()) } returns
