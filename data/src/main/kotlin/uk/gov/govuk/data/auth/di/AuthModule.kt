@@ -68,7 +68,7 @@ class AuthModule {
     fun provideAuthServiceConfig(): AuthorizationServiceConfiguration {
         return AuthorizationServiceConfiguration(
             "${BuildConfig.AUTH_BASE_URL}${BuildConfig.AUTHORIZE_ENDPOINT}".toUri(),
-            "${BuildConfig.AUTH_BASE_URL}${BuildConfig.TOKEN_ENDPOINT}".toUri()
+            "${BuildConfig.TOKEN_BASE_URL}${BuildConfig.TOKEN_ENDPOINT}".toUri()
         )
     }
 
