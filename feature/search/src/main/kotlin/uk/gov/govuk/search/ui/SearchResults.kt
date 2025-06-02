@@ -33,6 +33,7 @@ internal fun SearchResults(
     searchTerm: String,
     searchResults: List<SearchResult>,
     onClick: (String, String) -> Unit,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -53,6 +54,7 @@ internal fun SearchResults(
                 description = searchResult.description?.let { StringUtils.collapseWhitespace(it) },
                 url = StringUtils.buildFullUrl(searchResult.link),
                 onClick = onClick,
+                launchBrowser = launchBrowser,
                 modifier = Modifier.padding(
                     GovUkTheme.spacing.medium,
                     GovUkTheme.spacing.medium,

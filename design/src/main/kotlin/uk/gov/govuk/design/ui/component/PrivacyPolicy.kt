@@ -6,7 +6,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import uk.gov.govuk.design.BuildConfig.PRIVACY_POLICY_URL
@@ -18,15 +17,12 @@ fun PrivacyPolicyLink(
     modifier: Modifier = Modifier,
     onClick: ((text: String, url: String) -> Unit)? = null
 ) {
-    val context = LocalContext.current
     val text = stringResource(R.string.privacy_policy_read_more)
     val url = PRIVACY_POLICY_URL
-    val browserLauncher = rememberBrowserLauncher()
     Row(
         modifier
             .clickable {
                 onClick?.invoke(text, url)
-                browserLauncher.launch(context, url)
             }
     ) {
         BodyRegularLabel(

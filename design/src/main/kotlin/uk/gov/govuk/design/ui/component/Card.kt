@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -143,15 +142,14 @@ fun SearchResultCard(
     description: String?,
     url: String,
     onClick: (String, String) -> Unit,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    val browserLauncher = rememberBrowserLauncher()
     GovUkCard(
         modifier = modifier,
         onClick = {
             onClick(title, url)
-            browserLauncher.launch(context, url)
+            launchBrowser(url)
         }
     ) {
         Row(
@@ -240,7 +238,8 @@ private fun SearchResultWithDescriptionPreview() {
             title = "Card title",
             description = "Description",
             url = "",
-            onClick = { _, _ -> }
+            onClick = { _, _ -> },
+            launchBrowser = {}
         )
     }
 }
@@ -253,7 +252,8 @@ private fun SearchResultWithoutDescriptionPreview() {
             title = "Card title",
             description = null,
             url = "",
-            onClick = { _, _ -> }
+            onClick = { _, _ -> },
+            launchBrowser = {}
         )
     }
 }

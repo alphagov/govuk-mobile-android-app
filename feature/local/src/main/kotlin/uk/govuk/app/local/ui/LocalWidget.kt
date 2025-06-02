@@ -48,6 +48,7 @@ fun LocalWidget(
     onLookupClick: (String) -> Unit,
     onLocalAuthorityClick: (String, String) -> Unit,
     onEditClick: (String) -> Unit,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: LocalWidgetViewModel = hiltViewModel()
@@ -60,6 +61,7 @@ fun LocalWidget(
                     it.localAuthority,
                     onLocalAuthorityClick,
                     onEditClick,
+                    launchBrowser,
                     modifier
                 )
             is NoLocalAuthority -> NoLocalAuthorityCard(onLookupClick, modifier)
@@ -72,6 +74,7 @@ private fun LocalAuthorityCard(
     localAuthority: LocalAuthorityUi,
     onClick: (String, String) -> Unit,
     onEditClick: (String) -> Unit,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
@@ -120,7 +123,8 @@ private fun LocalAuthorityCard(
                     parent.name
                 ),
                 url = parent.url,
-                onClick = onClick
+                onClick = onClick,
+                launchBrowser = launchBrowser
             )
             LargeVerticalSpacer()
         }
@@ -129,7 +133,8 @@ private fun LocalAuthorityCard(
             title = localAuthority.name,
             description = description,
             url = localAuthority.url,
-            onClick = onClick
+            onClick = onClick,
+            launchBrowser = launchBrowser
         )
     }
 }
@@ -225,7 +230,8 @@ private fun UnitaryLocalAuthorityPreview() {
                 slug = ""
             ),
             onClick = { _, _ -> },
-            onEditClick = { }
+            onEditClick = { },
+            launchBrowser = {}
         )
     }
 }
@@ -246,7 +252,8 @@ private fun TwoTierLocalAuthorityPreview() {
                 )
             ),
             onClick = { _, _ -> },
-            onEditClick = { }
+            onEditClick = { },
+            launchBrowser = {}
         )
     }
 }

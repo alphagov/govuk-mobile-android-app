@@ -16,6 +16,7 @@ private const val SEARCH_ROUTE = "search_route"
 fun NavGraphBuilder.searchGraph(
     navController: NavHostController,
     deepLinks: (path: String) -> List<NavDeepLink>,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -31,6 +32,7 @@ fun NavGraphBuilder.searchGraph(
         ) {
             SearchRoute(
                 onBack = { navController.popBackStack() },
+                launchBrowser = launchBrowser,
                 modifier = modifier
             )
         }

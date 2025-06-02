@@ -10,7 +10,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import uk.gov.govuk.design.ui.component.rememberBrowserLauncher
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_PERMISSION_GRAPH_ROUTE
 import uk.gov.govuk.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
 import uk.gov.govuk.settings.BuildConfig.ACCOUNT_URL
@@ -36,6 +35,7 @@ fun NavGraphBuilder.settingsGraph(
     navigateTo: (String) -> Unit,
     appVersion: String,
     deepLinks: (path: String) -> List<NavDeepLink>,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -46,12 +46,11 @@ fun NavGraphBuilder.settingsGraph(
             SETTINGS_ROUTE, deepLinks = deepLinks("/settings")
         ) {
             val context = LocalContext.current
-            val browserLauncher = rememberBrowserLauncher()
             SettingsRoute(
                 appVersion = appVersion,
                 actions = SettingsRouteActions(
                     onAccountClick = {
-                        browserLauncher.launch(context, ACCOUNT_URL)
+                        launchBrowser(ACCOUNT_URL)
                     },
                     onSignOutClick = {
                         navigateTo(SIGN_OUT_GRAPH_ROUTE)
@@ -60,21 +59,21 @@ fun NavGraphBuilder.settingsGraph(
                         navigateTo(NOTIFICATIONS_PERMISSION_GRAPH_ROUTE)
                     },
                     onPrivacyPolicyClick = {
-                        browserLauncher.launch(context, PRIVACY_POLICY_URL)
+                        launchBrowser(PRIVACY_POLICY_URL)
                     },
                     onHelpClick = {
                         val url = getHelpAndFeedbackUrl(appVersion)
-                        browserLauncher.launch(context, url)
+                        launchBrowser(url)
                     },
                     onAccessibilityStatementClick = {
-                        browserLauncher.launch(context, ACCESSIBILITY_STATEMENT_URL)
+                        launchBrowser(ACCESSIBILITY_STATEMENT_URL)
                     },
                     onOpenSourceLicenseClick = {
                         val intent = Intent(context, OssLicensesMenuActivity::class.java)
                         context.startActivity(intent)
                     },
                     onTermsAndConditionsClick = {
-                        browserLauncher.launch(context, TERMS_AND_CONDITIONS_URL)
+                        launchBrowser(TERMS_AND_CONDITIONS_URL)
                     }
                 ),
                 modifier = modifier

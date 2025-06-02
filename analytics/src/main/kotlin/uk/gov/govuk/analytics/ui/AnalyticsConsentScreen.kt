@@ -34,6 +34,7 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 @Composable
 internal fun AnalyticsConsentRoute(
     analyticsConsentCompleted: () -> Unit,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: AnalyticsViewModel = hiltViewModel()
@@ -47,6 +48,7 @@ internal fun AnalyticsConsentRoute(
             viewModel.onConsentDenied()
             analyticsConsentCompleted()
         },
+        launchBrowser = launchBrowser,
         modifier = modifier
     )
 }
@@ -55,6 +57,7 @@ internal fun AnalyticsConsentRoute(
 private fun AnalyticsConsentScreen(
     onConsentGranted: () -> Unit,
     onConsentDenied: () -> Unit,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -81,7 +84,7 @@ private fun AnalyticsConsentScreen(
             MediumVerticalSpacer()
             BodyRegularLabel(stringResource(R.string.analytics_consent_stop))
             MediumVerticalSpacer()
-            PrivacyPolicyLink()
+            PrivacyPolicyLink(onClick = { _, url -> launchBrowser(url) })
             MediumVerticalSpacer()
         }
 
@@ -138,7 +141,8 @@ private fun AnalyticsConsentPreview() {
     GovUkTheme {
         AnalyticsConsentScreen(
             onConsentGranted = { },
-            onConsentDenied = { }
+            onConsentDenied = { },
+            launchBrowser = { }
         )
     }
 }

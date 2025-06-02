@@ -179,6 +179,32 @@ class AppViewModelTest {
     }
 
     @Test
+    fun `Given in app browser enabled, When init, then should show in app browser`() {
+        every { flagRepo.isInAppBrowserEnabled() } returns true
+
+        val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
+            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+
+        runTest {
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertTrue(result.shouldShowInAppBrowser)
+        }
+    }
+
+    @Test
+    fun `Given in app browser enabled is false, When init, then should not show in app browser`() {
+        every { flagRepo.isInAppBrowserEnabled() } returns false
+
+        val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
+            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+
+        runTest {
+            val result = viewModel.uiState.first() as AppUiState.Default
+            assertFalse(result.shouldShowInAppBrowser)
+        }
+    }
+
+    @Test
     fun `Given notifications are enabled, When init, then emit notifications enabled state`() {
         every { flagRepo.isNotificationsEnabled() } returns true
 

@@ -94,6 +94,14 @@ class FlagRepo @Inject constructor(
             remoteFlag = false // Dev only flag, always off for production builds!!!
         )
     }
+
+    fun isInAppBrowserEnabled(): Boolean {
+        return isEnabled(
+            debugEnabled = debugEnabled,
+            debugFlag = debugFlags.isInAppBrowserEnabled,
+            remoteFlag = false // Dev only flag, always off for production builds!!!
+        )
+    }
 }
 
 internal fun isEnabled(

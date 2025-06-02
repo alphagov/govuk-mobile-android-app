@@ -1,7 +1,6 @@
 package uk.gov.govuk.topics.navigation
 
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
@@ -9,7 +8,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import uk.gov.govuk.design.ui.component.rememberBrowserLauncher
 import uk.gov.govuk.topics.ui.AllStepByStepRoute
 import uk.gov.govuk.topics.ui.AllTopicsRoute
 import uk.gov.govuk.topics.ui.EditTopicsRoute
@@ -45,6 +43,7 @@ fun NavGraphBuilder.topicSelectionGraph(
 fun NavGraphBuilder.topicsGraph(
     navController: NavController,
     deepLinks: (path: String) -> List<NavDeepLink>,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -59,12 +58,10 @@ fun NavGraphBuilder.topicsGraph(
                 navArgument(TOPIC_SUBTOPIC_ARG) { type = NavType.BoolType },
             ), deepLinks = deepLinks("/topics$topicPath")
         ) {
-            val browserLauncher = rememberBrowserLauncher()
-            val context = LocalContext.current
             TopicRoute(
                 onBack = { navController.popBackStack() },
                 onExternalLink = { url, _ ->
-                    browserLauncher.launch(context, url)
+                    launchBrowser(url)
                 },
                 onStepByStepSeeAll = { navController.navigate(TOPICS_ALL_STEP_BY_STEPS_ROUTE) },
                 onSubtopic = { ref -> navController.navigateToTopic(ref, true) },
@@ -90,12 +87,10 @@ fun NavGraphBuilder.topicsGraph(
         composable(
             TOPICS_ALL_STEP_BY_STEPS_ROUTE
         ) {
-            val browserLauncher = rememberBrowserLauncher()
-            val context = LocalContext.current
             AllStepByStepRoute(
                 onBack = { navController.popBackStack()},
                 onClick = { url ->
-                    browserLauncher.launch(context, url)
+                    launchBrowser(url)
                  },
                 modifier = modifier
             )
