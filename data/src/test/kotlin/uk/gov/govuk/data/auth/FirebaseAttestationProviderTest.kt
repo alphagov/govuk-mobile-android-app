@@ -7,10 +7,7 @@ import com.google.firebase.appcheck.AppCheckToken
 import com.google.firebase.appcheck.FirebaseAppCheck
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.slot
-import kotlinx.coroutines.async
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.yield
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -24,42 +21,28 @@ class FirebaseAttestationProviderTest {
 
     @Test
     fun `Given app check failure return null`() = runTest {
-        val slot = slot<OnFailureListener>()
-
         every { appCheck.getAppCheckToken(any()) } returns task
         every { task.addOnSuccessListener(any()) } returns task
-        every { task.addOnFailureListener(capture(slot)) } returns task
-
-        val provider = FirebaseAttestationProvider(appCheck)
-
-        val deferred = async {
-            provider.getToken()
+        every { task.addOnFailureListener(any()) } answers {
+            firstArg<OnFailureListener>().onFailure(IOException())
+            task
         }
 
-        yield()
-
-        slot.captured.onFailure(IOException())
-        assertNull(deferred.await())
+        val provider = FirebaseAttestationProvider(appCheck)
+        assertNull(provider.getToken())
     }
 
     @Test
     fun `Given app check success return token`() = runTest {
-        val slot = slot<OnSuccessListener<AppCheckToken>>()
-
         every { appCheck.getAppCheckToken(any()) } returns task
-        every { task.addOnSuccessListener(capture(slot)) } returns task
+        every { task.addOnSuccessListener(any()) } answers {
+            firstArg<OnSuccessListener<AppCheckToken>>().onSuccess(appCheckToken)
+            task
+        }
         every { task.addOnFailureListener(any()) } returns task
         every { appCheckToken.token } returns "token"
 
         val provider = FirebaseAttestationProvider(appCheck)
-
-        val deferred = async {
-            provider.getToken()
-        }
-
-        yield()
-
-        slot.captured.onSuccess(appCheckToken)
-        assertEquals("token", deferred.await())
+        assertEquals("token", provider.getToken())
     }
 }
