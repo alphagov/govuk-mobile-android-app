@@ -27,7 +27,7 @@ android {
         minSdk = Version.MIN_SDK
         targetSdk = Version.TARGET_SDK
         versionCode = buildNumber
-        versionName = "$majorVersion.$minorVersion.$patchVersion"
+        versionName = "$majorVersion.$minorVersion.$patchVersion - PEN"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
