@@ -13,14 +13,14 @@ import androidx.compose.runtime.remember
 import androidx.core.net.toUri
 
 @Composable
-internal fun rememberBrowserLauncher(shouldShowInAppBrowser: Boolean): BrowserActivityLauncher {
+internal fun rememberBrowserLauncher(shouldShowExternalBrowser: Boolean): BrowserActivityLauncher {
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
     return remember(launcher) {
-        if (shouldShowInAppBrowser) {
-            BrowserActivityLauncher.InApp(launcher)
-        } else {
+        if (shouldShowExternalBrowser) {
             BrowserActivityLauncher.External(launcher)
+        } else {
+            BrowserActivityLauncher.InApp(launcher)
         }
     }
 }

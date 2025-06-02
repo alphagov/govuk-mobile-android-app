@@ -4,7 +4,7 @@ internal sealed class AppUiState {
     internal class Default(
         val shouldDisplayRecommendUpdate: Boolean = false,
         val shouldDisplayNotificationsOnboarding: Boolean = false,
-        val shouldShowInAppBrowser: Boolean = false
+        val shouldShowExternalBrowser: Boolean = false
     ) : AppUiState()
 
     internal data object Loading : AppUiState()

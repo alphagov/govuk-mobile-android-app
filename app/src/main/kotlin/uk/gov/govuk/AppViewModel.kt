@@ -68,7 +68,7 @@ internal class AppViewModel @Inject constructor(
                     _uiState.value = AppUiState.Default(
                         shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
                         shouldDisplayNotificationsOnboarding = flagRepo.isNotificationsEnabled(),
-                        shouldShowInAppBrowser = flagRepo.isInAppBrowserEnabled()
+                        shouldShowExternalBrowser = flagRepo.isExternalBrowserEnabled()
                     )
 
                     combine(
