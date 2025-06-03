@@ -1,4 +1,4 @@
-package uk.gov.govuk.onboarding
+package uk.gov.govuk.welcome
 
 import android.content.Intent
 import androidx.fragment.app.FragmentActivity
@@ -15,15 +15,15 @@ import uk.gov.govuk.data.auth.ErrorEvent
 import javax.inject.Inject
 
 @HiltViewModel
-internal class OnboardingViewModel @Inject constructor(
+internal class WelcomeViewModel @Inject constructor(
     private val authRepo: AuthRepo,
     private val analyticsClient: AnalyticsClient
 ): ViewModel() {
 
     companion object {
-        private const val ONBOARDING_SCREEN_CLASS = "OnboardingScreen"
-        private const val ONBOARDING_SCREEN_NAME = "Onboarding Page"
-        private const val ONBOARDING_TITLE = "Onboarding Page"
+        private const val WELCOME_SCREEN_CLASS = "WelcomeScreen"
+        private const val WELCOME_SCREEN_NAME = "Welcome Page"
+        private const val WELCOME_TITLE = "Welcome Page"
     }
 
     private val _loginCompleted = MutableSharedFlow<Boolean>()
@@ -55,9 +55,9 @@ internal class OnboardingViewModel @Inject constructor(
 
     fun onPageView() {
         analyticsClient.screenView(
-            screenClass = ONBOARDING_SCREEN_CLASS,
-            screenName = ONBOARDING_SCREEN_NAME,
-            title = ONBOARDING_TITLE
+            screenClass = WELCOME_SCREEN_CLASS,
+            screenName = WELCOME_SCREEN_NAME,
+            title = WELCOME_TITLE
         )
     }
 

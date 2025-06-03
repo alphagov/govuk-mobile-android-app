@@ -1,4 +1,4 @@
-package uk.gov.govuk.onboarding
+package uk.gov.govuk.welcome
 
 import androidx.fragment.app.FragmentActivity
 import io.mockk.coEvery
@@ -23,19 +23,19 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.auth.AuthRepo
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class OnboardingViewModelTest {
+class WelcomeViewModelTest {
 
     private val authRepo = mockk<AuthRepo>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val activity = mockk<FragmentActivity>(relaxed = true)
     private val dispatcher = UnconfinedTestDispatcher()
 
-    private lateinit var viewModel: OnboardingViewModel
+    private lateinit var viewModel: WelcomeViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = OnboardingViewModel(authRepo, analyticsClient)
+        viewModel = WelcomeViewModel(authRepo, analyticsClient)
     }
 
     @After
@@ -49,9 +49,9 @@ class OnboardingViewModelTest {
 
         verify {
             analyticsClient.screenView(
-                screenClass = "OnboardingScreen",
-                screenName = "Onboarding Page",
-                title = "Onboarding Page"
+                screenClass = "WelcomeScreen",
+                screenName = "Welcome Page",
+                title = "Welcome Page"
             )
         }
     }

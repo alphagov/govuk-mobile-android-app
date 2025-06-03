@@ -9,7 +9,7 @@ import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.BIOMETRIC_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
-import uk.gov.govuk.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
+import uk.gov.govuk.welcome.navigation.WELCOME_GRAPH_ROUTE
 import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.topics.navigation.TOPIC_SELECTION_GRAPH_ROUTE
 import java.util.Stack
@@ -54,7 +54,7 @@ internal class AppLaunchNavigation @Inject constructor(
         }
 
         if (flagRepo.isOnboardingEnabled() && !appRepo.isOnboardingCompleted()) {
-            _launchRoutes.push(ONBOARDING_GRAPH_ROUTE)
+            _launchRoutes.push(WELCOME_GRAPH_ROUTE)
         }
 
         if (analyticsClient.isAnalyticsConsentRequired()) {

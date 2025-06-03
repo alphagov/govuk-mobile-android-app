@@ -1,4 +1,4 @@
-package uk.gov.govuk.onboarding.ui
+package uk.gov.govuk.welcome.ui
 
 import android.app.Activity
 import android.content.res.Configuration
@@ -31,18 +31,18 @@ import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title1RegularLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-import uk.gov.govuk.onboarding.OnboardingViewModel
+import uk.gov.govuk.welcome.WelcomeViewModel
 import uk.gov.govuk.R
 import uk.gov.govuk.login.navigation.navigateToErrorScreen
 
 @Composable
-internal fun OnboardingRoute(
+internal fun WelcomeRoute(
     navController: NavController,
     onboardingCompleted: () -> Unit,
     onLoginCompleted: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: OnboardingViewModel = hiltViewModel()
+    val viewModel: WelcomeViewModel = hiltViewModel()
 
     val authLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -50,7 +50,7 @@ internal fun OnboardingRoute(
         }
     }
 
-    OnboardingScreen(
+    WelcomeScreen(
         onPageView = { viewModel.onPageView() },
         onButtonClick = { text ->
             viewModel.onButtonClick(text)
@@ -80,7 +80,7 @@ internal fun OnboardingRoute(
 }
 
 @Composable
-private fun OnboardingScreen(
+private fun WelcomeScreen(
     onPageView: () -> Unit,
     onButtonClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -111,7 +111,7 @@ private fun OnboardingScreen(
             }
 
             LargeTitleBoldLabel(
-                text = stringResource(id = R.string.onboardingTitle),
+                text = stringResource(id = R.string.welcomeTitle),
                 color = GovUkTheme.colourScheme.textAndIcons.primary,
                 textAlign = TextAlign.Center
             )
@@ -119,14 +119,14 @@ private fun OnboardingScreen(
             MediumVerticalSpacer()
 
             Title1RegularLabel(
-                text = stringResource(id = R.string.onboardingBody),
+                text = stringResource(id = R.string.welcomeBody),
                 color = GovUkTheme.colourScheme.textAndIcons.primary,
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.extraLarge),
                 textAlign = TextAlign.Center
             )
         }
 
-        val buttonText = stringResource(id = R.string.onboardingButton)
+        val buttonText = stringResource(id = R.string.welcomeButton)
         FixedPrimaryButton(
             text = buttonText,
             onClick = { onButtonClick(buttonText) },
@@ -138,7 +138,7 @@ private fun OnboardingScreen(
 @Composable
 private fun OnboardingScreenPreview() {
     GovUkTheme {
-        OnboardingScreen(
+        WelcomeScreen(
             onPageView = { },
             onButtonClick = { _ -> },
         )

@@ -75,7 +75,7 @@ import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_PERMISSION_ROUTE
 import uk.gov.govuk.notifications.navigation.notificationsConsentGraph
 import uk.gov.govuk.notifications.navigation.notificationsOnboardingGraph
 import uk.gov.govuk.notifications.navigation.notificationsPermissionGraph
-import uk.gov.govuk.onboarding.navigation.onboardingGraph
+import uk.gov.govuk.welcome.navigation.welcomeGraph
 import uk.gov.govuk.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.gov.govuk.search.navigation.searchGraph
 import uk.gov.govuk.search.ui.widget.SearchWidget
@@ -393,7 +393,7 @@ private fun GovUkNavHost(
                 appLaunchNavigation.onNext(navController)
             }
         )
-        onboardingGraph(
+        welcomeGraph(
             navController = navController,
             onboardingCompleted = {
                 viewModel.onboardingCompleted()

@@ -1,27 +1,27 @@
-package uk.gov.govuk.onboarding.navigation
+package uk.gov.govuk.welcome.navigation
 
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import uk.gov.govuk.onboarding.ui.OnboardingRoute
+import uk.gov.govuk.welcome.ui.WelcomeRoute
 
-const val ONBOARDING_GRAPH_ROUTE = "onboarding_graph_route"
-private const val ONBOARDING_ROUTE = "onboarding_route"
+const val WELCOME_GRAPH_ROUTE = "welcome_graph_route"
+private const val WELCOME_ROUTE = "welcome_route"
 
-fun NavGraphBuilder.onboardingGraph(
+fun NavGraphBuilder.welcomeGraph(
     navController: NavHostController,
     onboardingCompleted: () -> Unit,
     onLoginCompleted: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
-        route = ONBOARDING_GRAPH_ROUTE,
-        startDestination = ONBOARDING_ROUTE
+        route = WELCOME_GRAPH_ROUTE,
+        startDestination = WELCOME_ROUTE
     ) {
-        composable(ONBOARDING_ROUTE) {
-            OnboardingRoute(
+        composable(WELCOME_ROUTE) {
+            WelcomeRoute(
                 navController = navController,
                 onboardingCompleted = onboardingCompleted,
                 onLoginCompleted = onLoginCompleted,
