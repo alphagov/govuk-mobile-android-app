@@ -3,7 +3,9 @@ package uk.gov.govuk.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -13,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
@@ -56,12 +59,15 @@ internal fun SplashScreen(
 
         val altText: String = stringResource(id = uk.gov.govuk.design.R.string.gov_uk_alt_text)
 
-        LottieAnimation(
-            composition = composition,
-            progress = { state.progress },
-            modifier = Modifier.semantics {
-                contentDescription = altText
-            }
-        )
+        Column {
+            LottieAnimation(
+                composition = composition,
+                progress = { state.progress },
+                modifier = Modifier.semantics {
+                    contentDescription = altText
+                }
+            )
+            Spacer(Modifier.height(20.dp))
+        }
     }
 }
