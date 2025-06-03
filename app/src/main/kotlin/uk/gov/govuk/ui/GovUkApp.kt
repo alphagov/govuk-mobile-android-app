@@ -394,9 +394,13 @@ private fun GovUkNavHost(
             }
         )
         onboardingGraph(
+            navController = navController,
             onboardingCompleted = {
                 viewModel.onboardingCompleted()
                 appLaunchNavigation.onNext(navController)
+            },
+            onLoginCompleted = { isDifferentUser ->
+                viewModel.onLogin(isDifferentUser, navController)
             }
         )
         if (homeWidgets.contains(HomeWidget.TOPICS)) {

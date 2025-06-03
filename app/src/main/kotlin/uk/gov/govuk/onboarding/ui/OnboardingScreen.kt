@@ -1,6 +1,10 @@
 package uk.gov.govuk.onboarding.ui
 
+import android.app.Activity
 import android.content.res.Configuration
+import androidx.activity.compose.LocalActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,7 +22,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
@@ -27,22 +33,50 @@ import uk.gov.govuk.design.ui.component.Title1RegularLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.onboarding.OnboardingViewModel
 import uk.gov.govuk.R
+import uk.gov.govuk.login.navigation.navigateToErrorScreen
 
 @Composable
 internal fun OnboardingRoute(
+    navController: NavController,
     onboardingCompleted: () -> Unit,
+    onLoginCompleted: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: OnboardingViewModel = hiltViewModel()
+
+    val authLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            viewModel.onAuthResponse(result.data)
+        }
+    }
 
     OnboardingScreen(
         onPageView = { viewModel.onPageView() },
         onButtonClick = { text ->
             viewModel.onButtonClick(text)
+            authLauncher.launch(viewModel.authIntent)
             onboardingCompleted()
         },
         modifier
     )
+
+    val activity = LocalActivity.current as FragmentActivity
+
+    LaunchedEffect(Unit) {
+        viewModel.init(activity)
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.loginCompleted.collect { isDifferentUser ->
+            onLoginCompleted(isDifferentUser)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.errorEvent.collect {
+            navController.navigateToErrorScreen()
+        }
+    }
 }
 
 @Composable
