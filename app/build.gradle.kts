@@ -139,7 +139,6 @@ dependencies {
     implementation(projects.data)
     implementation(projects.feature.home)
     implementation(projects.feature.local)
-    implementation(projects.feature.onboarding)
     implementation(projects.feature.settings)
     implementation(projects.feature.search)
     implementation(projects.feature.topics)

@@ -26,7 +26,7 @@ import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title1RegularLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.onboarding.OnboardingViewModel
-import uk.gov.govuk.onboarding.R
+import uk.gov.govuk.R
 
 @Composable
 internal fun OnboardingRoute(
