@@ -73,7 +73,10 @@ internal fun NotificationsPermissionRoute(
             }
             NotificationsUiState.Alert -> {
                 val context = LocalContext.current
-                showNotificationsAlert(context) { viewModel.onAlertButtonClick(it) }
+                showNotificationsAlert(
+                    context,
+                    onCancelButtonClick = { viewModel.onCancelButtonClick(it) },
+                    onContinueButtonClick = { viewModel.onContinueButtonClick(it) })
                 viewModel.finish()
             }
 
@@ -85,24 +88,28 @@ internal fun NotificationsPermissionRoute(
     }
 }
 
-private fun showNotificationsAlert(context: Context, onAlertButtonClick: (String) -> Unit) {
+private fun showNotificationsAlert(
+    context: Context,
+    onContinueButtonClick: (String) -> Unit,
+    onCancelButtonClick: (String) -> Unit
+) {
     val isNotificationsOn = NotificationManagerCompat.from(context).areNotificationsEnabled()
     val alertTitle =
         if (isNotificationsOn) R.string.notifications_alert_title_off else R.string.notifications_alert_title_on
     val alertMessage =
         if (isNotificationsOn) R.string.notifications_alert_message_off else R.string.notifications_alert_message_on
-    val neutralButton = context.getString(R.string.cancel_button)
-    val positiveButton = context.getString(R.string.continue_button)
+    val cancelButton = context.getString(R.string.cancel_button)
+    val continueButton = context.getString(R.string.continue_button)
 
     AlertDialog.Builder(context).apply {
         setTitle(context.getString(alertTitle))
         setMessage(context.getString(alertMessage))
-        setNeutralButton(neutralButton) { dialog, _ ->
-            onAlertButtonClick(neutralButton)
+        setNeutralButton(cancelButton) { dialog, _ ->
+            onCancelButtonClick(cancelButton)
             dialog.dismiss()
         }
-        setPositiveButton(positiveButton) { dialog, _ ->
-            onAlertButtonClick(positiveButton)
+        setPositiveButton(continueButton) { dialog, _ ->
+            onContinueButtonClick(continueButton)
             openDeviceSettings(context)
             dialog.dismiss()
         }

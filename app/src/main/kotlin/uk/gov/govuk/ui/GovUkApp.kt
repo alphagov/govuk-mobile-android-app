@@ -266,28 +266,17 @@ private fun HandleNotificationsPermissionStatus(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
-    val context = LocalContext.current
-    var isNotificationsEnabled by rememberSaveable { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        isNotificationsEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
-    }
 
     LaunchedEffect(lifecycleState) {
         when (lifecycleState) {
             Lifecycle.State.RESUMED -> {
-                val isNotificationsEnabledOnResume =
-                    NotificationManagerCompat.from(context).areNotificationsEnabled()
-                if (isNotificationsEnabledOnResume != isNotificationsEnabled) {
-                    val route = when (navController.currentDestination?.route) {
-                        NOTIFICATIONS_ONBOARDING_ROUTE -> NOTIFICATIONS_ONBOARDING_ROUTE
-                        NOTIFICATIONS_PERMISSION_ROUTE -> return@LaunchedEffect
-                        else -> NOTIFICATIONS_CONSENT_GRAPH_ROUTE
-                    }
-                    navController.navigate(route) {
-                        launchSingleTop = true
-                    }
-                    isNotificationsEnabled = isNotificationsEnabledOnResume
+                val route = when (navController.currentDestination?.route) {
+                    NOTIFICATIONS_ONBOARDING_ROUTE -> NOTIFICATIONS_ONBOARDING_ROUTE
+                    NOTIFICATIONS_PERMISSION_ROUTE -> return@LaunchedEffect
+                    else -> NOTIFICATIONS_CONSENT_GRAPH_ROUTE
+                }
+                navController.navigate(route) {
+                    launchSingleTop = true
                 }
             }
             else -> { /* Do nothing */ }
