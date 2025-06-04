@@ -74,6 +74,10 @@ class AuthRepo @Inject constructor(
 
         return if (result is RetrievalEvent.Success) {
             val refreshToken = result.value[REFRESH_TOKEN_KEY]
+            if (refreshToken.isNullOrEmpty()) {
+                return false
+            }
+
             val tokenRequest = tokenRequestBuilder
                 .setRefreshToken(refreshToken)
                 .build()
