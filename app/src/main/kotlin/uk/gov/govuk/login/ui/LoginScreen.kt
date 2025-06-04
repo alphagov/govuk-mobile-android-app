@@ -55,7 +55,9 @@ internal fun LoginRoute(
     }
 
     if (isPostSignOut) {
-        LoggedOutScreen(
+        LoginScreen(
+            isWelcome = false,
+            buttonText = stringResource(R.string.login_post_sign_out_continue_button),
             onPageView = { viewModel.onPageView() },
             onContinueClick = { text ->
                 viewModel.onContinue(text)
@@ -63,7 +65,9 @@ internal fun LoginRoute(
             },
         )
     } else {
-        WelcomeScreen(
+        LoginScreen(
+            isWelcome = true,
+            buttonText = stringResource(R.string.login_continue_button),
             onPageView = { viewModel.onPageView() },
             onContinueClick = { text ->
                 viewModel.onContinue(text)
@@ -94,7 +98,9 @@ internal fun LoginRoute(
 }
 
 @Composable
-private fun WelcomeScreen(
+private fun LoginScreen(
+    isWelcome: Boolean,
+    buttonText: String,
     onPageView: () -> Unit,
     onContinueClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -116,35 +122,20 @@ private fun WelcomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                val shouldShowLogo =
-                    LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
-
-                if (shouldShowLogo) {
-                    Image(
-                        painter = painterResource(id = R.drawable.welcome_image),
-                        contentDescription = null,
-                        modifier = Modifier.height(209.dp)
+                if (isWelcome) {
+                    WelcomeScreen(
+                        modifier = modifier
                     )
-                    ExtraLargeVerticalSpacer()
+                } else {
+                    LoggedOutScreen(
+                        modifier = modifier
+                    )
                 }
-
-                LargeTitleBoldLabel(
-                    text = stringResource(R.string.welcomeTitle),
-                    textAlign = TextAlign.Center
-                )
-
-                MediumVerticalSpacer()
-
-                Title1RegularLabel(
-                    text = stringResource(R.string.welcomeBody),
-                    textAlign = TextAlign.Center
-                )
             }
 
             Spacer(Modifier.weight(1F))
         }
 
-        val buttonText = stringResource(R.string.login_continue_button)
         FixedPrimaryButton(
             text = buttonText,
             onClick = { onContinueClick(buttonText) }
@@ -153,56 +144,58 @@ private fun WelcomeScreen(
 }
 
 @Composable
-private fun LoggedOutScreen(
-    onPageView: () -> Unit,
-    onContinueClick: (String) -> Unit,
+private fun WelcomeScreen(
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(Unit) {
-        onPageView()
-    }
+    val shouldShowLogo =
+        LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
 
-    Column(modifier.fillMaxSize()) {
-        Column(Modifier.weight(1f)) {
-            Spacer(Modifier.weight(1F))
-
-            Column(
-                modifier = modifier
-                    .verticalScroll(rememberScrollState())
-                    .fillMaxWidth()
-                    .padding(horizontal = GovUkTheme.spacing.medium)
-                    .padding(vertical = GovUkTheme.spacing.large),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                LargeTitleBoldLabel(
-                    text = stringResource(R.string.login_post_sign_out_title),
-                    textAlign = TextAlign.Center
-                )
-
-                MediumVerticalSpacer()
-
-                BodyRegularLabel(
-                    text = stringResource(R.string.login_post_sign_out_sub_text),
-                    textAlign = TextAlign.Center
-                )
-            }
-
-            Spacer(Modifier.weight(1F))
-        }
-
-        val buttonText = stringResource(R.string.login_post_sign_out_continue_button)
-        FixedPrimaryButton(
-            text = buttonText,
-            onClick = { onContinueClick(buttonText) }
+    if (shouldShowLogo) {
+        Image(
+            painter = painterResource(id = R.drawable.welcome_image),
+            contentDescription = null,
+            modifier = Modifier.height(209.dp)
         )
+        ExtraLargeVerticalSpacer()
     }
+
+    LargeTitleBoldLabel(
+        text = stringResource(R.string.welcomeTitle),
+        textAlign = TextAlign.Center
+    )
+
+    MediumVerticalSpacer()
+
+    Title1RegularLabel(
+        text = stringResource(R.string.welcomeBody),
+        textAlign = TextAlign.Center
+    )
+}
+
+@Composable
+private fun LoggedOutScreen(
+    modifier: Modifier = Modifier
+) {
+    LargeTitleBoldLabel(
+        text = stringResource(R.string.login_post_sign_out_title),
+        textAlign = TextAlign.Center
+    )
+
+    MediumVerticalSpacer()
+
+    BodyRegularLabel(
+        text = stringResource(R.string.login_post_sign_out_sub_text),
+        textAlign = TextAlign.Center
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun WelcomeScreenPreview() {
     GovUkTheme {
-        WelcomeScreen(
+        LoginScreen(
+            isWelcome = true,
+            buttonText = "Continue",
             onPageView = { },
             onContinueClick = { }
         )
@@ -213,7 +206,9 @@ private fun WelcomeScreenPreview() {
 @Composable
 private fun LoggedOutScreenPreview() {
     GovUkTheme {
-        LoggedOutScreen(
+        LoginScreen(
+            isWelcome = false,
+            buttonText = "Sign in",
             onPageView = { },
             onContinueClick = { }
         )
