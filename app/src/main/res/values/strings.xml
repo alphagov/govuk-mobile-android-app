@@ -44,4 +44,6 @@
 
     <string name="login_biometric_prompt_title">Confirm that it\'s you</string>
 
+    <string name="welcomeTitle">Your GOV.UK app</string>
+    <string name="welcomeBody">Government information and services for you</string>
 </resources>
