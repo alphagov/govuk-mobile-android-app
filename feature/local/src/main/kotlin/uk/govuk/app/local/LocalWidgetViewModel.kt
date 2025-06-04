@@ -9,13 +9,13 @@ import kotlinx.coroutines.launch
 import uk.govuk.app.local.LocalWidgetUiState.LocalAuthoritySelected
 import uk.govuk.app.local.LocalWidgetUiState.NoLocalAuthority
 import uk.govuk.app.local.data.LocalRepo
-import uk.govuk.app.local.ui.LocalAuthorityUi
+import uk.govuk.app.local.domain.model.LocalAuthority
 import javax.inject.Inject
 
 internal sealed class LocalWidgetUiState {
     internal data object NoLocalAuthority : LocalWidgetUiState()
     internal data class LocalAuthoritySelected(
-        val localAuthority: LocalAuthorityUi
+        val localAuthority: LocalAuthority
     ): LocalWidgetUiState()
 }
 
@@ -31,21 +31,7 @@ internal class LocalWidgetViewModel @Inject constructor(
         viewModelScope.launch {
             localRepo.localAuthority.collect { localAuthority ->
                 if (localAuthority != null) {
-                    _uiState.value = LocalAuthoritySelected(
-                        LocalAuthorityUi(
-                            name = localAuthority.name,
-                            url = localAuthority.url,
-                            slug = localAuthority.slug,
-                            parent =
-                                localAuthority.parent?.let { parent ->
-                                    LocalAuthorityUi(
-                                        name = parent.name,
-                                        url = parent.url,
-                                        slug = parent.slug
-                                    )
-                                }
-                        )
-                    )
+                    _uiState.value = LocalAuthoritySelected(localAuthority)
                 } else {
                     _uiState.value = NoLocalAuthority
                 }

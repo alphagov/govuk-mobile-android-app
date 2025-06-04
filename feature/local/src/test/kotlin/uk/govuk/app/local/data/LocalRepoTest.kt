@@ -31,7 +31,7 @@ class LocalRepoTest {
     @Test
     fun `Perform postcode lookup returns an unsuccessful response`() = runTest {
         coEvery {
-            localApi.getLocalPostcode("SW1")
+            localApi.fromPostcode("SW1")
         } returns apiResponse
 
         every { apiResponse.code() } returns 500
@@ -48,7 +48,7 @@ class LocalRepoTest {
     @Test
     fun `Perform get local authority returns an unsuccessful response`() = runTest {
         coEvery {
-            localApi.getLocalAuthority("slug")
+            localApi.fromSlug("slug")
         } returns apiResponse
 
         every { apiResponse.code() } returns 500
@@ -73,12 +73,12 @@ class LocalRepoTest {
         val remoteLocalAuthority2 = RemoteLocalAuthority("Authority 2", "url2", "unitary", "slug-two")
 
         coEvery {
-            localApi.getLocalAuthority("slug-one")
+            localApi.fromSlug("slug-one")
         } returns Response.success(
             LocalAuthorityResponse(remoteLocalAuthority1, addresses = null)
         )
         coEvery {
-            localApi.getLocalAuthority("slug-two")
+            localApi.fromSlug("slug-two")
         } returns Response.success(
             LocalAuthorityResponse(remoteLocalAuthority2, addresses = null)
         )
@@ -91,8 +91,8 @@ class LocalRepoTest {
             localRepo.localAuthorities
         )
 
-        coVerify(exactly = 1) { localApi.getLocalAuthority("slug-one") }
-        coVerify(exactly = 1) { localApi.getLocalAuthority("slug-two") }
+        coVerify(exactly = 1) { localApi.fromSlug("slug-one") }
+        coVerify(exactly = 1) { localApi.fromSlug("slug-two") }
     }
 
 
@@ -103,7 +103,7 @@ class LocalRepoTest {
         assertEquals(emptyList<RemoteAddress>(), localRepo.addresses)
         assertEquals(emptyList<RemoteLocalAuthority>(), localRepo.localAuthorities)
 
-        coVerify(exactly = 0) { localApi.getLocalAuthority(any()) }
+        coVerify(exactly = 0) { localApi.fromSlug(any()) }
     }
 
     @Test
@@ -113,7 +113,7 @@ class LocalRepoTest {
         )
 
         coEvery {
-            localApi.getLocalAuthority("slug-one")
+            localApi.fromSlug("slug-one")
         } returns Response.success(
             LocalAuthorityResponse(localAuthority = null, addresses = null)
         )
@@ -123,7 +123,7 @@ class LocalRepoTest {
         assertEquals(addresses, localRepo.addresses)
         assertEquals(emptyList<RemoteLocalAuthority>(), localRepo.localAuthorities)
 
-        coVerify(exactly = 1) { localApi.getLocalAuthority("slug-one") }
+        coVerify(exactly = 1) { localApi.fromSlug("slug-one") }
     }
 
     @Test

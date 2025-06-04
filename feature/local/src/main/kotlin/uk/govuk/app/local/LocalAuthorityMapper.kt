@@ -1,4 +1,4 @@
-package uk.govuk.app.local.domain
+package uk.govuk.app.local
 
 import uk.govuk.app.local.data.local.model.StoredLocalAuthority
 import uk.govuk.app.local.data.remote.model.RemoteAddress

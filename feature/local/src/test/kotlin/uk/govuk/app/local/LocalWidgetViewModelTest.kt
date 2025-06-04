@@ -17,7 +17,6 @@ import uk.govuk.app.local.LocalWidgetUiState.LocalAuthoritySelected
 import uk.govuk.app.local.LocalWidgetUiState.NoLocalAuthority
 import uk.govuk.app.local.data.LocalRepo
 import uk.govuk.app.local.domain.model.LocalAuthority
-import uk.govuk.app.local.ui.LocalAuthorityUi
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LocalWidgetViewModelTest {

@@ -11,12 +11,12 @@ import androidx.navigation.navigation
 import uk.govuk.app.local.ui.LocalAddressSelectRoute
 import uk.govuk.app.local.ui.LocalAuthoritySelectRoute
 import uk.govuk.app.local.ui.LocalConfirmationRoute
-import uk.govuk.app.local.ui.LocalEntryRoute
-import uk.govuk.app.local.ui.LocalRoute
+import uk.govuk.app.local.ui.LocalExplainerRoute
+import uk.govuk.app.local.ui.LocalLookupRoute
 
 const val LOCAL_GRAPH_ROUTE = "local_graph_route"
-private const val LOCAL_ROUTE = "local_route"
-const val LOCAL_EDIT_ROUTE = "local_entry_route"
+private const val LOCAL_EXPLAINER_ROUTE = "local_explainer_route"
+const val LOCAL_LOOKUP_ROUTE = "local_lookup_route"
 private const val LOCAL_AUTHORITY_SELECT_ROUTE = "local_authority_select_route"
 private const val LOCAL_ADDRESS_SELECT_ROUTE = "local_address_select_route"
 private const val LOCAL_CONFIRMATION_ROUTE = "local_confirmation_route"
@@ -29,17 +29,17 @@ fun NavGraphBuilder.localGraph(
 ) {
     navigation(
         route = LOCAL_GRAPH_ROUTE,
-        startDestination = LOCAL_ROUTE
+        startDestination = LOCAL_EXPLAINER_ROUTE
     ) {
-        composable(LOCAL_ROUTE) {
-            LocalRoute(
+        composable(LOCAL_EXPLAINER_ROUTE) {
+            LocalExplainerRoute(
                 onBack = { navController.popBackStack() },
                 onContinue = { navController.navigateToLocalEdit() },
                 modifier = modifier,
             )
         }
-        composable(LOCAL_EDIT_ROUTE) {
-            LocalEntryRoute(
+        composable(LOCAL_LOOKUP_ROUTE) {
+            LocalLookupRoute(
                 onBack = { navController.popBackStack() },
                 onCancel = onCancel,
                 onLocalAuthoritySelected = { navController.navigate(LOCAL_CONFIRMATION_ROUTE) },
@@ -87,7 +87,7 @@ fun NavGraphBuilder.localGraph(
 }
 
 fun NavController.navigateToLocalEdit() {
-    navigate(LOCAL_EDIT_ROUTE)
+    navigate(LOCAL_LOOKUP_ROUTE)
 }
 
 fun NavController.navigateToLocalAuthoritySelect(postcode: String) {

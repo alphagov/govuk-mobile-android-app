@@ -63,7 +63,7 @@ internal fun LocalAuthoritySelectRoute(
             onLocalAuthoritySelected()
         },
         postcode = postcode,
-        localAuthorities = viewModel.localAuthorities(),
+        localAuthorities = viewModel.localAuthorities,
         modifier = modifier
     )
 }

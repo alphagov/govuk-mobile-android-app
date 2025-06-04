@@ -27,22 +27,16 @@ sealed class NavigationEvent {
 }
 
 @HiltViewModel
-internal class LocalViewModel @Inject constructor(
+internal class LocalLookupViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient,
     private val localRepo: LocalRepo,
     @ApplicationContext private val context: Context
 ): ViewModel() {
 
     companion object {
-        private const val EXPLAINER_SCREEN_CLASS = "LocalExplainerScreen"
-        private const val EXPLAINER_SCREEN_NAME = "Local Explainer"
-        private const val EXPLAINER_TITLE = "Local Explainer"
-
-        private const val LOOKUP_SCREEN_CLASS = "LocalLookupScreen"
-        private const val LOOKUP_SCREEN_NAME = "Local Lookup"
-        private const val LOOKUP_TITLE = "Local Lookup"
-
-        private const val SECTION = "Local"
+        private const val SCREEN_CLASS = "LocalLookupScreen"
+        private const val SCREEN_NAME = "Local Lookup"
+        private const val TITLE = "Local Lookup"
     }
 
     private val _uiState: MutableStateFlow<LocalUiState?> = MutableStateFlow(null)
@@ -51,25 +45,10 @@ internal class LocalViewModel @Inject constructor(
     private val _navigationEvent = MutableSharedFlow<NavigationEvent>()
     val navigationEvent: SharedFlow<NavigationEvent> = _navigationEvent
 
-    fun onExplainerPageView() {
+    fun onPageView(title: String = TITLE) {
         analyticsClient.screenView(
-            screenClass = EXPLAINER_SCREEN_CLASS,
-            screenName = EXPLAINER_SCREEN_NAME,
-            title = EXPLAINER_TITLE
-        )
-    }
-
-    fun onExplainerButtonClick(text: String) {
-        analyticsClient.buttonClick(
-            text = text,
-            section = SECTION
-        )
-    }
-
-    fun onLookupPageView(title: String = LOOKUP_TITLE) {
-        analyticsClient.screenView(
-            screenClass = LOOKUP_SCREEN_CLASS,
-            screenName = LOOKUP_SCREEN_NAME,
+            screenClass = SCREEN_CLASS,
+            screenName = SCREEN_NAME,
             title = title
         )
     }
@@ -109,7 +88,7 @@ internal class LocalViewModel @Inject constructor(
     }
 
     private fun createAndLogError(@StringRes errorMessage: Int): LocalUiState.Error {
-        onLookupPageView(context.getString(errorMessage))
+        onPageView(context.getString(errorMessage))
         return LocalUiState.Error(errorMessage)
     }
 

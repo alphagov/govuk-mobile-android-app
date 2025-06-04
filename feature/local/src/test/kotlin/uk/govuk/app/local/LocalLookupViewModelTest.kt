@@ -23,18 +23,18 @@ import uk.govuk.app.local.data.LocalRepo
 import uk.govuk.app.local.data.remote.model.LocalAuthorityResult
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class LocalViewModelTest {
+class LocalLookupViewModelTest {
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val localRepo = mockk<LocalRepo>(relaxed = true)
     private val context = mockk<Context>(relaxed = true)
     private val dispatcher = UnconfinedTestDispatcher()
 
-    private lateinit var viewModel: LocalViewModel
+    private lateinit var viewModel: LocalLookupViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = LocalViewModel(analyticsClient, localRepo, context)
+        viewModel = LocalLookupViewModel(analyticsClient, localRepo, context)
     }
 
     @After

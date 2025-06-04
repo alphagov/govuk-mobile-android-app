@@ -12,8 +12,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,7 +42,7 @@ internal fun LocalConfirmationRoute(
     modifier: Modifier = Modifier
 ) {
     val viewModel: LocalConfirmationViewModel = hiltViewModel()
-    val localAuthority by viewModel.localAuthority.collectAsState()
+    val localAuthority = viewModel.localAuthority
 
     LocalConfirmationScreen(
         onBack = onBack,
@@ -194,7 +192,7 @@ private fun UnitaryLocalAuthorityPreview() {
             localAuthority = LocalAuthority(
                 name = "Bristol City Council",
                 url = "",
-                slug = "",
+                slug = ""
             ),
             onDone = { }
         )
@@ -215,7 +213,7 @@ private fun TwoTierLocalAuthorityPreview() {
                 parent = LocalAuthority(
                     name = "Derbyshire Dales District Council",
                     url = "",
-                    slug = ""
+                    slug = "",
                 )
             ),
             onDone = { }

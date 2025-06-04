@@ -42,6 +42,7 @@ import uk.govuk.app.local.LocalWidgetUiState.LocalAuthoritySelected
 import uk.govuk.app.local.LocalWidgetUiState.NoLocalAuthority
 import uk.govuk.app.local.LocalWidgetViewModel
 import uk.govuk.app.local.R
+import uk.govuk.app.local.domain.model.LocalAuthority
 
 @Composable
 fun LocalWidget(
@@ -71,7 +72,7 @@ fun LocalWidget(
 
 @Composable
 private fun LocalAuthorityCard(
-    localAuthority: LocalAuthorityUi,
+    localAuthority: LocalAuthority,
     onClick: (String, String) -> Unit,
     onEditClick: (String) -> Unit,
     launchBrowser: (url: String) -> Unit,
@@ -224,7 +225,7 @@ private fun NoLocalAuthorityPreview() {
 private fun UnitaryLocalAuthorityPreview() {
     GovUkTheme {
         LocalAuthorityCard(
-            localAuthority = LocalAuthorityUi(
+            localAuthority = LocalAuthority(
                 name = "London Borough of Tower Hamlets",
                 url = "",
                 slug = ""
@@ -241,11 +242,11 @@ private fun UnitaryLocalAuthorityPreview() {
 private fun TwoTierLocalAuthorityPreview() {
     GovUkTheme {
         LocalAuthorityCard(
-            localAuthority = LocalAuthorityUi(
+            localAuthority = LocalAuthority(
                 name = "Derbyshire Dales District Council",
                 url = "",
                 slug = "",
-                parent = LocalAuthorityUi(
+                parent = LocalAuthority(
                     name = "Derbyshire County Council",
                     url = "",
                     slug = ""

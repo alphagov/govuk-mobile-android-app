@@ -28,22 +28,22 @@ import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-import uk.govuk.app.local.LocalViewModel
+import uk.govuk.app.local.LocalExplainerViewModel
 import uk.govuk.app.local.R
 
 @Composable
-internal fun LocalRoute(
+internal fun LocalExplainerRoute(
     onBack: () -> Unit,
     onContinue: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: LocalViewModel = hiltViewModel()
+    val viewModel: LocalExplainerViewModel = hiltViewModel()
 
-    LocalScreen(
+    LocalExplainerScreen(
         onBack = onBack,
-        onPageView = { viewModel.onExplainerPageView() },
+        onPageView = { viewModel.onPageView() },
         onContinueClick = { text ->
-            viewModel.onExplainerButtonClick(text)
+            viewModel.onButtonClick(text)
             onContinue()
         },
         modifier = modifier
@@ -51,7 +51,7 @@ internal fun LocalRoute(
 }
 
 @Composable
-private fun LocalScreen(
+private fun LocalExplainerScreen(
     onBack: () -> Unit,
     onPageView: () -> Unit,
     onContinueClick: (String) -> Unit,
@@ -136,7 +136,7 @@ private fun BottomNavBar(
 @Composable
 private fun LocalScreenPreview() {
     GovUkTheme {
-        LocalScreen(
+        LocalExplainerScreen(
             onBack = {},
             onPageView = {},
             onContinueClick = {}

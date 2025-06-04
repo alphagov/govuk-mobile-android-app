@@ -39,28 +39,28 @@ import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title1BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
+import uk.govuk.app.local.LocalLookupViewModel
 import uk.govuk.app.local.LocalUiState
-import uk.govuk.app.local.LocalViewModel
 import uk.govuk.app.local.NavigationEvent
 import uk.govuk.app.local.R
 import uk.govuk.app.local.domain.PostcodeSanitizer
 
 @Composable
-internal fun LocalEntryRoute(
+internal fun LocalLookupRoute(
     onBack: () -> Unit,
     onCancel: () -> Unit,
     onLocalAuthoritySelected: () -> Unit,
     onAddresses: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel: LocalViewModel = hiltViewModel()
+    val viewModel: LocalLookupViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
-    LocalEntryScreen(
+    LocalLookupScreen(
         uiState = uiState,
         onBack = onBack,
         onCancel = onCancel,
-        onPageView = { viewModel.onLookupPageView() },
+        onPageView = { viewModel.onPageView() },
         onPostcodeLookup = { buttonText, postcode ->
             viewModel.onSearchPostcode(
                 buttonText = buttonText,
@@ -82,7 +82,7 @@ internal fun LocalEntryRoute(
 }
 
 @Composable
-private fun LocalEntryScreen(
+private fun LocalLookupScreen(
     uiState: LocalUiState?,
     onBack: () -> Unit,
     onCancel: () -> Unit,
@@ -226,7 +226,7 @@ private fun BottomNavBar(
 @Composable
 private fun LocalEntryScreenPreview() {
     GovUkTheme {
-        LocalEntryScreen(
+        LocalLookupScreen(
             onBack = {},
             onPageView = {},
             onCancel = {},

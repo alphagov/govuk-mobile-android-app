@@ -58,7 +58,7 @@ internal fun LocalAddressSelectRoute(
             viewModel.updateLocalAuthority(buttonText, slug)
             onLocalAuthoritySelected()
         },
-        addresses = viewModel.addresses(),
+        addresses = viewModel.addresses,
         modifier = modifier
     )
 }

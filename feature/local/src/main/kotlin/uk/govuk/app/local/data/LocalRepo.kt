@@ -10,8 +10,8 @@ import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
 import uk.govuk.app.local.data.remote.safeLocalApiCall
 import uk.govuk.app.local.domain.model.Address
 import uk.govuk.app.local.domain.model.LocalAuthority
-import uk.govuk.app.local.domain.toAddress
-import uk.govuk.app.local.domain.toLocalAuthority
+import uk.govuk.app.local.toAddress
+import uk.govuk.app.local.toLocalAuthority
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -39,7 +39,7 @@ internal class LocalRepo @Inject constructor(
     suspend fun fetchLocalAuthority(
         postcode: String
     ): Result<LocalAuthorityResult> {
-        val result = safeLocalApiCall { localApi.getLocalPostcode(postcode) }
+        val result = safeLocalApiCall { localApi.fromPostcode(postcode) }
 
         ((result as? Result.Success)?.value
                 as? LocalAuthorityResult.LocalAuthority)?.localAuthority?.let { remoteLocalAuthority ->
@@ -52,11 +52,11 @@ internal class LocalRepo @Inject constructor(
     suspend fun cacheAddresses(
         addresses: List<RemoteAddress>
     ) {
-        val slugList = addresses.distinctBy { it.slug }.map { it.slug }
+        val slugs = addresses.distinctBy { it.slug }.map { it.slug }
 
         val localAuthorities = emptyList<RemoteLocalAuthority>().toMutableList()
-        slugList.forEach { slug ->
-            val result = safeLocalApiCall { localApi.getLocalAuthority(slug) }
+        slugs.forEach { slug ->
+            val result = safeLocalApiCall { localApi.fromSlug(slug) }
 
             ((result as? Result.Success)?.value
                 as? LocalAuthorityResult.LocalAuthority)?.localAuthority?.let { localAuthority ->

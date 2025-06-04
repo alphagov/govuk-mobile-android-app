@@ -43,7 +43,7 @@ class LocalApiCallTest {
         )
 
         coEvery {
-            localApi.getLocalPostcode("E18QS")
+            localApi.fromPostcode("E18QS")
         } returns Response.success(
             LocalAuthorityResponse(
                 remoteLocalAuthority,
@@ -51,7 +51,7 @@ class LocalApiCallTest {
             )
         )
 
-        val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
+        val actual = safeLocalApiCall { localApi.fromPostcode("E18QS") }
 
         assertEquals(
             Result.Success(
@@ -77,7 +77,7 @@ class LocalApiCallTest {
         )
 
         coEvery {
-            localApi.getLocalPostcode("BH228UB")
+            localApi.fromPostcode("BH228UB")
         } returns Response.success(
             LocalAuthorityResponse(
                 localAuthority = null,
@@ -85,7 +85,7 @@ class LocalApiCallTest {
             )
         )
 
-        val actual = safeLocalApiCall { localApi.getLocalPostcode("BH228UB") }
+        val actual = safeLocalApiCall { localApi.fromPostcode("BH228UB") }
 
         assertEquals(
             Result.Success(
@@ -98,7 +98,7 @@ class LocalApiCallTest {
     @Test
     fun `API call returns Error`() = runTest {
         coEvery {
-            localApi.getLocalPostcode("E18QS")
+            localApi.fromPostcode("E18QS")
         } returns Response.success(
             LocalAuthorityResponse(
                 localAuthority = null,
@@ -106,7 +106,7 @@ class LocalApiCallTest {
             )
         )
 
-        val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
+        val actual = safeLocalApiCall { localApi.fromPostcode("E18QS") }
 
         assertEquals("Error", actual.javaClass.kotlin.simpleName)
     }
@@ -116,10 +116,10 @@ class LocalApiCallTest {
         val apiResponse = LocalAuthorityResult.InvalidPostcode
 
         coEvery {
-            localApi.getLocalPostcode("E18QS")
+            localApi.fromPostcode("E18QS")
         } returns Response.error(400, "Error".toResponseBody(null))
 
-        val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
+        val actual = safeLocalApiCall { localApi.fromPostcode("E18QS") }
 
         assertEquals(Result.Success(apiResponse), actual)
     }
@@ -129,10 +129,10 @@ class LocalApiCallTest {
         val apiResponse = LocalAuthorityResult.PostcodeNotFound
 
         coEvery {
-            localApi.getLocalPostcode("E18QS")
+            localApi.fromPostcode("E18QS")
         } returns Response.error(404, "Error".toResponseBody(null))
 
-        val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
+        val actual = safeLocalApiCall { localApi.fromPostcode("E18QS") }
 
         assertEquals(Result.Success(apiResponse), actual)
     }
@@ -142,10 +142,10 @@ class LocalApiCallTest {
         val apiResponse = LocalAuthorityResult.PostcodeEmptyOrNull
 
         coEvery {
-            localApi.getLocalPostcode("")
+            localApi.fromPostcode("")
         } returns Response.error(418, "Error".toResponseBody(null))
 
-        val actual = safeLocalApiCall { localApi.getLocalPostcode("") }
+        val actual = safeLocalApiCall { localApi.fromPostcode("") }
 
         assertEquals(Result.Success(apiResponse), actual)
     }
@@ -155,10 +155,10 @@ class LocalApiCallTest {
         val apiResponse = LocalAuthorityResult.ApiNotResponding
 
         coEvery {
-            localApi.getLocalPostcode("")
+            localApi.fromPostcode("")
         } returns Response.error(429, "Error".toResponseBody(null))
 
-        val actual = safeLocalApiCall { localApi.getLocalPostcode("") }
+        val actual = safeLocalApiCall { localApi.fromPostcode("") }
 
         assertEquals(Result.Success(apiResponse), actual)
     }
@@ -166,10 +166,10 @@ class LocalApiCallTest {
     @Test
     fun `API call returns 500`() = runTest {
         coEvery {
-            localApi.getLocalPostcode("E18QS")
+            localApi.fromPostcode("E18QS")
         } returns Response.error(500, "Error".toResponseBody(null))
 
-        val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
+        val actual = safeLocalApiCall { localApi.fromPostcode("E18QS") }
 
         assertEquals("Error", actual.javaClass.kotlin.simpleName)
     }
@@ -179,10 +179,10 @@ class LocalApiCallTest {
         val apiResponse = LocalAuthorityResult.DeviceNotConnected
 
         coEvery {
-            localApi.getLocalPostcode("E18QS")
+            localApi.fromPostcode("E18QS")
         } throws UnknownHostException()
 
-        val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
+        val actual = safeLocalApiCall { localApi.fromPostcode("E18QS") }
 
         assertEquals(Result.Success(apiResponse), actual)
     }
@@ -192,7 +192,7 @@ class LocalApiCallTest {
         val apiResponse = LocalAuthorityResult.ApiNotResponding
 
         coEvery {
-            localApi.getLocalPostcode("E18QS")
+            localApi.fromPostcode("E18QS")
         } throws retrofit2.HttpException(
             Response.error<Any>(
                 500,
@@ -200,7 +200,7 @@ class LocalApiCallTest {
             )
         )
 
-        val actual = safeLocalApiCall { localApi.getLocalPostcode("E18QS") }
+        val actual = safeLocalApiCall { localApi.fromPostcode("E18QS") }
 
         assertEquals(Result.Success(apiResponse), actual)
     }
