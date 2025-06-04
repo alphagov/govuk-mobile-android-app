@@ -17,7 +17,7 @@ import uk.govuk.app.local.data.local.LocalDataSource
 import uk.govuk.app.local.data.local.LocalRealmProvider
 import uk.govuk.app.local.data.local.model.StoredLocalAuthority
 import uk.govuk.app.local.data.local.model.StoredLocalAuthorityParent
-import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
+import uk.govuk.app.local.domain.model.LocalAuthority
 
 class LocalDataSourceTest {
     private val realmProvider = mockk<LocalRealmProvider>(relaxed = true)
@@ -86,15 +86,13 @@ class LocalDataSourceTest {
             val localDataSource = LocalDataSource(realmProvider)
 
             localDataSource.insertOrReplace(
-                RemoteLocalAuthority(
+                LocalAuthority(
                     "name",
                     "url",
-                    "tier",
                     "slug",
-                    RemoteLocalAuthority(
+                    LocalAuthority(
                         "parentName",
                         "parentUrl",
-                        "parentTier",
                         "parentSlug"
                     )
                 )
@@ -118,25 +116,22 @@ class LocalDataSourceTest {
             val localDataSource = LocalDataSource(realmProvider)
 
             localDataSource.insertOrReplace(
-                RemoteLocalAuthority(
+                LocalAuthority(
                     "name",
                     "url",
-                    "tier",
                     "slug",
-                    RemoteLocalAuthority(
+                    LocalAuthority(
                         "parentName",
                         "parentUrl",
-                        "parentTier",
                         "parentSlug"
                     )
                 )
             )
 
             localDataSource.insertOrReplace(
-                RemoteLocalAuthority(
+                LocalAuthority(
                     "newName",
                     "newUrl",
-                    "newTier",
                     "newSlug"
                 )
             )

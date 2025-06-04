@@ -41,15 +41,19 @@ internal class LocalRepo @Inject constructor(
     ): Result<LocalAuthorityResult> {
         val result = safeLocalApiCall { localApi.fromPostcode(postcode) }
 
-        ((result as? Result.Success)?.value
-                as? LocalAuthorityResult.LocalAuthority)?.localAuthority?.let { remoteLocalAuthority ->
-            _cachedLocalAuthority = remoteLocalAuthority.toLocalAuthority()
+        if (result is Result.Success) {
+            when (val value = result.value) {
+                is LocalAuthorityResult.Addresses -> cacheAddresses(value.addresses)
+                is LocalAuthorityResult.LocalAuthority ->
+                    _cachedLocalAuthority = value.localAuthority.toLocalAuthority()
+                else -> { } // Do nothing
+            }
         }
 
         return result
     }
 
-    suspend fun cacheAddresses(
+    private suspend fun cacheAddresses(
         addresses: List<RemoteAddress>
     ) {
         val slugs = addresses.distinctBy { it.slug }.map { it.slug }

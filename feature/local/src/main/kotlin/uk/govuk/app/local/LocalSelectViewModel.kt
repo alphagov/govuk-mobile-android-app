@@ -20,8 +20,11 @@ internal class LocalSelectViewModel @Inject constructor(
         private const val SELECT_TITLE = "Local Select"
     }
 
-    val localAuthorities = localRepo.localAuthorities.sortedBy { it.name }
-    val addresses = localRepo.addresses.sortedBy { it.address }
+    val localAuthorities
+        get() = localRepo.localAuthorities.sortedBy { it.name }
+
+    val addresses
+        get() = localRepo.addresses.sortedBy { it.address }
 
     fun onSelectByLocalAuthorityPageView() {
         analyticsClient.screenView(

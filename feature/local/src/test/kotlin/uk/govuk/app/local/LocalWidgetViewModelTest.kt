@@ -62,21 +62,8 @@ class LocalWidgetViewModelTest {
 
         val viewModel = LocalWidgetViewModel(localRepo)
 
-        val expected = LocalAuthoritySelected(
-                LocalAuthorityUi(
-                    name = "name",
-                    url = "url",
-                    slug = "slug",
-                    parent = LocalAuthorityUi(
-                        name = "parentName",
-                        url = "parentUrl",
-                        slug = "parentSlug"
-                    )
-                )
-            )
-
         runTest {
-            assertEquals(expected, viewModel.uiState.value)
+            assertEquals(LocalAuthoritySelected(localAuthority), viewModel.uiState.value)
         }
     }
 }

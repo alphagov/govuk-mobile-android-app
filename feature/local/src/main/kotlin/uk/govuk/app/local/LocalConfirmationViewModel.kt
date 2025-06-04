@@ -20,7 +20,8 @@ internal class LocalConfirmationViewModel @Inject constructor(
         private const val TITLE = "Local Confirmation"
     }
 
-    internal val localAuthority = localRepo.cachedLocalAuthority
+    internal val localAuthority
+        get() = localRepo.cachedLocalAuthority
 
     fun onPageView() {
         analyticsClient.screenView(

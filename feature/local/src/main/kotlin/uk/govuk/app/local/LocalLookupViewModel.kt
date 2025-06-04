@@ -98,10 +98,7 @@ internal class LocalLookupViewModel @Inject constructor(
     ) {
         when (result) {
             is LocalAuthorityResult.LocalAuthority -> _navigationEvent.emit(NavigationEvent.LocalAuthoritySelected)
-            is LocalAuthorityResult.Addresses -> {
-                localRepo.cacheAddresses(result.addresses)
-                _navigationEvent.emit(NavigationEvent.Addresses(postcode))
-            }
+            is LocalAuthorityResult.Addresses -> _navigationEvent.emit(NavigationEvent.Addresses(postcode))
             is LocalAuthorityResult.InvalidPostcode ->
                 _uiState.value = createAndLogError(R.string.local_invalid_postcode_message)
             is LocalAuthorityResult.PostcodeNotFound ->
