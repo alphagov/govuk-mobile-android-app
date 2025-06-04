@@ -60,7 +60,6 @@ class NotificationsConsentViewModelTest {
     @Test
     fun `Given the permission status is granted and onboarding is not completed, When init, then ui state should be finish`() {
         every { permissionStatus.isGranted } returns true
-        every { notificationsClient.consentGiven() } returns true
         coEvery { notificationsDataStore.isOnboardingCompleted() } returns false
 
         runTest {
