@@ -43,6 +43,7 @@ internal fun LoginRoute(
     navController: NavController,
     isPostSignOut: Boolean,
     onLoginCompleted: (Boolean) -> Unit,
+    isComplete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: LoginViewModel = hiltViewModel()
@@ -67,6 +68,7 @@ internal fun LoginRoute(
             onContinueClick = { text ->
                 viewModel.onContinue(text)
                 authLauncher.launch(viewModel.authIntent)
+                isComplete()
             },
             modifier = modifier
         )

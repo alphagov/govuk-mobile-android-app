@@ -19,6 +19,7 @@ const val ERROR_ROUTE = "login_error_route"
 
 fun NavGraphBuilder.loginGraph(
     navController: NavController,
+    isComplete: () -> Unit,
     onLoginCompleted: (Boolean) -> Unit,
     onBiometricSetupCompleted: () -> Unit,
     modifier: Modifier = Modifier
@@ -41,6 +42,7 @@ fun NavGraphBuilder.loginGraph(
             LoginRoute(
                 navController = navController,
                 isPostSignOut = isPostSignOut,
+                isComplete = isComplete,
                 onLoginCompleted = { isDifferentUser ->
                     onLoginCompleted(isDifferentUser)
                 },

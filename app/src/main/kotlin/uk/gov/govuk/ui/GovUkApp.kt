@@ -435,6 +435,9 @@ private fun GovUkNavHost(
         )
         loginGraph(
             navController = navController,
+            isComplete = {
+                appLaunchNavigation.onNext(navController)
+            },
             onLoginCompleted = { isDifferentUser ->
                 viewModel.onLogin(isDifferentUser, navController)
             },
