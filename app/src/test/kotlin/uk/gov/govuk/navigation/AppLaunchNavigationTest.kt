@@ -46,7 +46,6 @@ class AppLaunchNavigationTest {
         coEvery { authRepo.isUserSignedIn() } returns false
         coEvery { flagRepo.isLoginEnabled() } returns true
         coEvery { flagRepo.isOnboardingEnabled() } returns true
-        coEvery { appRepo.isOnboardingCompleted() } returns false
         coEvery { analyticsClient.isAnalyticsConsentRequired() } returns true
         coEvery { topicsFeature.hasTopics() } returns true
 
@@ -64,7 +63,6 @@ class AppLaunchNavigationTest {
         coEvery { authRepo.isUserSignedIn() } returns false
         coEvery { flagRepo.isLoginEnabled() } returns true
         coEvery { flagRepo.isOnboardingEnabled() } returns true
-        coEvery { appRepo.isOnboardingCompleted() } returns false
         coEvery { analyticsClient.isAnalyticsConsentRequired() } returns true
 
         runTest {
@@ -97,24 +95,6 @@ class AppLaunchNavigationTest {
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `Given onboarding is complete, When build launch flow, builds launch routes`() {
-        coEvery { appRepo.isOnboardingCompleted() } returns true
-
-        runTest {
-            appLaunchNav.buildLaunchFlow()
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }

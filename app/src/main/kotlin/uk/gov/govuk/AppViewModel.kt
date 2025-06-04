@@ -109,12 +109,6 @@ internal class AppViewModel @Inject constructor(
         }
     }
 
-    fun onboardingCompleted() {
-        viewModelScope.launch {
-            appRepo.onboardingCompleted()
-        }
-    }
-
     fun onLogin(isDifferentUser: Boolean, navController: NavController) {
         viewModelScope.launch {
             if (isDifferentUser) {

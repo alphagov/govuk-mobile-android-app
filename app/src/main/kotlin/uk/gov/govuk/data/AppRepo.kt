@@ -9,10 +9,6 @@ import javax.inject.Singleton
 internal class AppRepo @Inject constructor(
     private val appDataStore: AppDataStore
 ) {
-    internal suspend fun isOnboardingCompleted() = appDataStore.isOnboardingCompleted()
-
-    internal suspend fun onboardingCompleted() = appDataStore.onboardingCompleted()
-
     internal suspend fun isTopicSelectionCompleted() = appDataStore.isTopicSelectionCompleted()
 
     internal suspend fun topicSelectionCompleted() = appDataStore.topicSelectionCompleted()
@@ -21,7 +17,6 @@ internal class AppRepo @Inject constructor(
 
     internal suspend fun suppressHomeWidget(widget: HomeWidget) = appDataStore.suppressHomeWidget(widget)
 
-    // Clear everything other than onboarding
     internal suspend fun clear() = appDataStore.clear()
 
 }

@@ -363,15 +363,6 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `When onboarding completed, then call repo onboarding completed`() {
-        runTest {
-            viewModel.onboardingCompleted()
-
-            coVerify { appRepo.onboardingCompleted() }
-        }
-    }
-
-    @Test
     fun `When topic selection completed, then call repo topic selection completed`() {
         runTest {
             viewModel.topicSelectionCompleted()
