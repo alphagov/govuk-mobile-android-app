@@ -4,11 +4,14 @@ import kotlinx.coroutines.flow.map
 import uk.gov.govuk.data.model.Result
 import uk.govuk.app.local.data.local.LocalDataSource
 import uk.govuk.app.local.data.remote.LocalApi
-import uk.govuk.app.local.data.remote.model.Address
 import uk.govuk.app.local.data.remote.model.LocalAuthorityResult
+import uk.govuk.app.local.data.remote.model.RemoteAddress
 import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
 import uk.govuk.app.local.data.remote.safeLocalApiCall
+import uk.govuk.app.local.domain.model.Address
 import uk.govuk.app.local.domain.model.LocalAuthority
+import uk.govuk.app.local.domain.toAddress
+import uk.govuk.app.local.domain.toLocalAuthority
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,32 +21,36 @@ internal class LocalRepo @Inject constructor(
     private val localDataSource: LocalDataSource
 ) {
     val localAuthority = localDataSource.localAuthority.map {
-        it?.let { storedLocalAuthority ->
-            LocalAuthority(
-                name = storedLocalAuthority.name,
-                url = storedLocalAuthority.url,
-                slug = storedLocalAuthority.slug,
-                parent = storedLocalAuthority.parent ?.let { parent ->
-                    LocalAuthority(
-                        name = parent.name,
-                        url = parent.url,
-                        slug = parent.slug
-                    )
-                }
-            )
-        }
+        it?.toLocalAuthority()
     }
 
-    private var _addressList: List<Address> = emptyList()
-    val addressList: List<Address>
-        get() = _addressList
+    private lateinit var _cachedLocalAuthority: LocalAuthority
+    val cachedLocalAuthority
+        get() = _cachedLocalAuthority
 
-    private var _localAuthorityList: List<RemoteLocalAuthority> = emptyList()
-    val localAuthorityList: List<RemoteLocalAuthority>
-        get() = _localAuthorityList.toList()
+    private var _addresses: List<Address> = emptyList()
+    val addresses: List<Address>
+        get() = _addresses
+
+    private var _localAuthorities: List<LocalAuthority> = emptyList()
+    val localAuthorities: List<LocalAuthority>
+        get() = _localAuthorities.toList()
+
+    suspend fun fetchLocalAuthority(
+        postcode: String
+    ): Result<LocalAuthorityResult> {
+        val result = safeLocalApiCall { localApi.getLocalPostcode(postcode) }
+
+        ((result as? Result.Success)?.value
+                as? LocalAuthorityResult.LocalAuthority)?.localAuthority?.let { remoteLocalAuthority ->
+            _cachedLocalAuthority = remoteLocalAuthority.toLocalAuthority()
+        }
+
+        return result
+    }
 
     suspend fun cacheAddresses(
-        addresses: List<Address>
+        addresses: List<RemoteAddress>
     ) {
         val slugList = addresses.distinctBy { it.slug }.map { it.slug }
 
@@ -57,37 +64,18 @@ internal class LocalRepo @Inject constructor(
             }
         }
 
-        _addressList = addresses
-        _localAuthorityList = localAuthorities
+        _addresses = addresses.map { it.toAddress() }
+        _localAuthorities = localAuthorities.map { it.toLocalAuthority() }
     }
 
-    suspend fun updateLocalAuthority(slug: String) {
-        localAuthorityList.find { it.slug == slug }?.let { localAuthority ->
-            localDataSource.insertOrReplace(localAuthority)
+    fun cacheLocalAuthority(slug: String) {
+        localAuthorities.find { it.slug == slug }?.let { localAuthority ->
+            _cachedLocalAuthority = localAuthority
         }
     }
 
-    suspend fun performGetLocalPostcode(
-        postcode: String
-    ): Result<LocalAuthorityResult> {
-        val result = safeLocalApiCall { localApi.getLocalPostcode(postcode) }
-        processResult(result)
-        return result
-    }
-
-    suspend fun performGetLocalAuthority(
-        slug: String
-    ): Result<LocalAuthorityResult> {
-        val result = safeLocalApiCall { localApi.getLocalAuthority(slug) }
-        processResult(result)
-        return result
-    }
-
-    private suspend fun processResult(result: Result<LocalAuthorityResult>) {
-        ((result as? Result.Success)?.value
-                as? LocalAuthorityResult.LocalAuthority)?.localAuthority?.let { localAuthority ->
-            localDataSource.insertOrReplace(localAuthority)
-        }
+    suspend fun selectLocalAuthority() {
+        localDataSource.insertOrReplace(cachedLocalAuthority)
     }
 
     suspend fun clear() {

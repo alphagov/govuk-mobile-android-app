@@ -12,6 +12,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,6 +23,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.FullScreenHeader
@@ -29,17 +32,28 @@ import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title1BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
+import uk.govuk.app.local.LocalConfirmationViewModel
 import uk.govuk.app.local.R
+import uk.govuk.app.local.domain.model.LocalAuthority
 
 @Composable
 internal fun LocalConfirmationRoute(
     onBack: () -> Unit,
     onCancel: () -> Unit,
+    onDone: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val viewModel: LocalConfirmationViewModel = hiltViewModel()
+    val localAuthority by viewModel.localAuthority.collectAsState()
+
     LocalConfirmationScreen(
         onBack = onBack,
         onCancel = onCancel,
+        localAuthority = localAuthority,
+        onDone = {
+            viewModel.onDone()
+            onDone()
+        },
         modifier = modifier
     )
 }
@@ -48,6 +62,8 @@ internal fun LocalConfirmationRoute(
 private fun LocalConfirmationScreen(
     onBack: () -> Unit,
     onCancel: () -> Unit,
+    localAuthority: LocalAuthority,
+    onDone: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -68,8 +84,8 @@ private fun LocalConfirmationScreen(
         },
         bottomBar = {
             FixedPrimaryButton(
-                text = "Blah blah blah!!!",
-                onClick = { }
+                text = stringResource(R.string.local_confirmation_button),
+                onClick = onDone
             )
         }
     ) { innerPadding ->
@@ -82,9 +98,11 @@ private fun LocalConfirmationScreen(
         ) {
             SmallVerticalSpacer()
 
-//            Unitary()
-
-            TwoTier()
+            if (localAuthority.parent == null) {
+                Unitary(localAuthority)
+            } else {
+                TwoTier(localAuthority)
+            }
 
             MediumVerticalSpacer()
         }
@@ -92,10 +110,13 @@ private fun LocalConfirmationScreen(
 }
 
 @Composable
-private fun Unitary(modifier: Modifier = Modifier) {
+private fun Unitary(
+    localAuthority: LocalAuthority,
+    modifier: Modifier = Modifier
+) {
     Column(modifier) {
         Title1BoldLabel(
-            text = stringResource(R.string.local_confirmation_unitary_title, "Bristol City Council")
+            text = stringResource(R.string.local_confirmation_unitary_title, localAuthority.name)
         )
 
         MediumVerticalSpacer()
@@ -107,7 +128,10 @@ private fun Unitary(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun TwoTier(modifier: Modifier = Modifier) {
+private fun TwoTier(
+    localAuthority: LocalAuthority,
+    modifier: Modifier = Modifier
+) {
     Column(modifier) {
         Title1BoldLabel(
             text = stringResource(R.string.local_confirmation_two_tier_title)
@@ -128,8 +152,8 @@ private fun TwoTier(modifier: Modifier = Modifier) {
         MediumVerticalSpacer()
 
         Column(Modifier.padding(start = GovUkTheme.spacing.small)) {
-            BulletItem(stringResource(R.string.local_confirmation_two_tier_bullet_1))
-            BulletItem(stringResource(R.string.local_confirmation_two_tier_bullet_2))
+            BulletItem(localAuthority.parent?.name ?: "")
+            BulletItem(localAuthority.name)
         }
 
         MediumVerticalSpacer()
@@ -162,11 +186,39 @@ private fun BulletItem(
 
 @Preview
 @Composable
-private fun LocalAuthoritySelectScreenPreview() {
+private fun UnitaryLocalAuthorityPreview() {
     GovUkTheme {
         LocalConfirmationScreen(
             onBack = { },
-            onCancel = { }
+            onCancel = { },
+            localAuthority = LocalAuthority(
+                name = "Bristol City Council",
+                url = "",
+                slug = "",
+            ),
+            onDone = { }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun TwoTierLocalAuthorityPreview() {
+    GovUkTheme {
+        LocalConfirmationScreen(
+            onBack = { },
+            onCancel = { },
+            localAuthority = LocalAuthority(
+                name = "Derbyshire City Council",
+                url = "",
+                slug = "",
+                parent = LocalAuthority(
+                    name = "Derbyshire Dales District Council",
+                    url = "",
+                    slug = ""
+                )
+            ),
+            onDone = { }
         )
     }
 }

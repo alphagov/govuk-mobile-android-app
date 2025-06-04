@@ -39,7 +39,7 @@ import uk.gov.govuk.design.ui.component.Title1BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.govuk.app.local.LocalSelectViewModel
 import uk.govuk.app.local.R
-import uk.govuk.app.local.data.remote.model.Address
+import uk.govuk.app.local.domain.model.Address
 
 @Composable
 internal fun LocalAddressSelectRoute(

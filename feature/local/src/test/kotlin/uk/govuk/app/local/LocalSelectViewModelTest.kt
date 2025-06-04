@@ -14,7 +14,7 @@ import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.govuk.app.local.data.LocalRepo
-import uk.govuk.app.local.data.remote.model.Address
+import uk.govuk.app.local.data.remote.model.RemoteAddress
 import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -84,7 +84,7 @@ class LocalSelectViewModelTest {
                 section = "Local"
             )
 
-            localRepo.updateLocalAuthority("dorset")
+            localRepo.cacheLocalAuthority("dorset")
         }
     }
 
@@ -94,7 +94,7 @@ class LocalSelectViewModelTest {
         val remoteLocalAuthorityA = RemoteLocalAuthority("A Authority", "url2", "unitary", "slug-two")
 
         coEvery {
-            localRepo.localAuthorityList
+            localRepo.localAuthorities
         } returns listOf(remoteLocalAuthorityZ, remoteLocalAuthorityA)
 
         val actual = viewModel.localAuthorities()
@@ -106,11 +106,11 @@ class LocalSelectViewModelTest {
 
     @Test
     fun `Given addresses, then sort by address`() {
-        val addressZ = Address("Z Test Street, AB1C1DE", "slug-one", "Slug One")
-        val addressA = Address("A Test Street, AB1C1DE", "slug-two", "Slug Two")
+        val addressZ = RemoteAddress("Z Test Street, AB1C1DE", "slug-one", "Slug One")
+        val addressA = RemoteAddress("A Test Street, AB1C1DE", "slug-two", "Slug Two")
 
         coEvery {
-            localRepo.addressList
+            localRepo.addresses
         } returns listOf(addressZ, addressA)
 
         val actual = viewModel.addresses()

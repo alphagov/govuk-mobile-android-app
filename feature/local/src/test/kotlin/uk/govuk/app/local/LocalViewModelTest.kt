@@ -107,12 +107,12 @@ class LocalViewModelTest {
         val postcode = "E18QS"
         val localAuthorityResult: LocalAuthorityResult = mockk<LocalAuthorityResult>(relaxed = true)
 
-        coEvery { localRepo.performGetLocalPostcode(postcode) } returns Success(localAuthorityResult)
+        coEvery { localRepo.fetchLocalAuthority(postcode) } returns Success(localAuthorityResult)
 
         viewModel.onSearchPostcode(buttonText, postcode)
 
         verify { analyticsClient.buttonClick(text = buttonText, section = "Local") }
-        coVerify { localRepo.performGetLocalPostcode(postcode) }
+        coVerify { localRepo.fetchLocalAuthority(postcode) }
     }
 
     @Test
@@ -121,7 +121,7 @@ class LocalViewModelTest {
         val postcode = "E18QS"
 
         coEvery {
-            localRepo.performGetLocalPostcode(postcode)
+            localRepo.fetchLocalAuthority(postcode)
         } returns Success(LocalAuthorityResult.InvalidPostcode)
 
         val errorMessage = "invalid postcode error"
@@ -138,7 +138,7 @@ class LocalViewModelTest {
                 title = errorMessage
             )
         }
-        coVerify { localRepo.performGetLocalPostcode(postcode) }
+        coVerify { localRepo.fetchLocalAuthority(postcode) }
         val uiState = viewModel.uiState.value as LocalUiState.Error
         assertEquals(R.string.local_invalid_postcode_message, uiState.message)
     }
@@ -149,7 +149,7 @@ class LocalViewModelTest {
         val postcode = "E18QS"
 
         coEvery {
-            localRepo.performGetLocalPostcode(postcode)
+            localRepo.fetchLocalAuthority(postcode)
         } returns Success(LocalAuthorityResult.PostcodeNotFound)
 
         val errorMessage = "postcode not found error"
@@ -159,7 +159,7 @@ class LocalViewModelTest {
         viewModel.onSearchPostcode(buttonText, postcode)
 
         verify { analyticsClient.buttonClick(text = buttonText, section = "Local") }
-        coVerify { localRepo.performGetLocalPostcode(postcode) }
+        coVerify { localRepo.fetchLocalAuthority(postcode) }
         val uiState = viewModel.uiState.value as LocalUiState.Error
         assertEquals(R.string.local_not_found_postcode_message, uiState.message)
     }
@@ -183,7 +183,7 @@ class LocalViewModelTest {
                 title = errorMessage
             )
         }
-        coVerify(exactly = 0) { localRepo.performGetLocalPostcode(any()) }
+        coVerify(exactly = 0) { localRepo.fetchLocalAuthority(any()) }
         val uiState = viewModel.uiState.value as LocalUiState.Error
         assertEquals(R.string.local_no_postcode_message, uiState.message)
     }
@@ -206,7 +206,7 @@ class LocalViewModelTest {
         val postcode = ""
 
         coEvery {
-            localRepo.performGetLocalPostcode(postcode)
+            localRepo.fetchLocalAuthority(postcode)
         } returns Success(LocalAuthorityResult.PostcodeEmptyOrNull)
 
         val errorMessage = "postcode empty or null error"
@@ -216,7 +216,7 @@ class LocalViewModelTest {
         viewModel.onSearchPostcode(buttonText, postcode)
 
         verify { analyticsClient.buttonClick(text = buttonText, section = "Local") }
-        coVerify(exactly = 0) { localRepo.performGetLocalPostcode(postcode) }
+        coVerify(exactly = 0) { localRepo.fetchLocalAuthority(postcode) }
         val uiState = viewModel.uiState.value as LocalUiState.Error
         assertEquals(R.string.local_no_postcode_message, uiState.message)
     }
@@ -227,7 +227,7 @@ class LocalViewModelTest {
         val postcode = "E18QS"
 
         coEvery {
-            localRepo.performGetLocalPostcode(postcode)
+            localRepo.fetchLocalAuthority(postcode)
         } returns Success(LocalAuthorityResult.ApiNotResponding)
 
         val errorMessage = "rate limiting error"
@@ -237,7 +237,7 @@ class LocalViewModelTest {
         viewModel.onSearchPostcode(buttonText, postcode)
 
         verify { analyticsClient.buttonClick(text = buttonText, section = "Local") }
-        coVerify { localRepo.performGetLocalPostcode(postcode) }
+        coVerify { localRepo.fetchLocalAuthority(postcode) }
         val uiState = viewModel.uiState.value as LocalUiState.Error
         assertEquals(R.string.local_rate_limit_message, uiState.message)
     }
@@ -248,7 +248,7 @@ class LocalViewModelTest {
         val postcode = "E18QS"
 
         coEvery {
-            localRepo.performGetLocalPostcode(postcode)
+            localRepo.fetchLocalAuthority(postcode)
         } returns Success(LocalAuthorityResult.DeviceNotConnected)
 
         val errorMessage = "not connected error"
@@ -258,7 +258,7 @@ class LocalViewModelTest {
         viewModel.onSearchPostcode(buttonText, postcode)
 
         verify { analyticsClient.buttonClick(text = buttonText, section = "Local") }
-        coVerify { localRepo.performGetLocalPostcode(postcode) }
+        coVerify { localRepo.fetchLocalAuthority(postcode) }
         val uiState = viewModel.uiState.value as LocalUiState.Error
         assertEquals(R.string.local_not_connected_message, uiState.message)
     }

@@ -45,9 +45,9 @@ internal class LocalSelectViewModel @Inject constructor(
         )
     }
 
-    fun localAuthorities() = localRepo.localAuthorityList.sortedBy { it.name }
+    fun localAuthorities() = localRepo.localAuthorities.sortedBy { it.name }
 
-    fun addresses() = localRepo.addressList.sortedBy { it.address }
+    fun addresses() = localRepo.addresses.sortedBy { it.address }
 
     fun updateLocalAuthority(buttonText: String, slug: String) {
         analyticsClient.buttonClick(
@@ -56,7 +56,7 @@ internal class LocalSelectViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            localRepo.updateLocalAuthority(slug)
+            localRepo.cacheLocalAuthority(slug)
         }
     }
 }

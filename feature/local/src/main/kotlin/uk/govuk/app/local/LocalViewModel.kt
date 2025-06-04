@@ -85,12 +85,6 @@ internal class LocalViewModel @Inject constructor(
         }
     }
 
-    fun onSearchLocalAuthority(slug: String) {
-        viewModelScope.launch {
-            fetchLocalAuthorityResult(slug)
-        }
-    }
-
     fun onPostcodeChange() {
          _uiState.value = null
     }
@@ -104,23 +98,12 @@ internal class LocalViewModel @Inject constructor(
             _uiState.value = createAndLogError(R.string.local_no_postcode_message)
         } else {
             viewModelScope.launch {
-                when (val response = localRepo.performGetLocalPostcode(postcode)) {
+                when (val response = localRepo.fetchLocalAuthority(postcode)) {
                     is Success -> {
                         emitErrorOrNavigate(response.value, postcode)
                     }
                     else -> println(response)
                 }
-            }
-        }
-    }
-
-    private fun fetchLocalAuthorityResult(slug: String) {
-        viewModelScope.launch {
-            when (val response = localRepo.performGetLocalAuthority(slug)) {
-                is Success -> {
-                    emitErrorOrNavigate(response.value)
-                }
-                else -> println(response)
             }
         }
     }

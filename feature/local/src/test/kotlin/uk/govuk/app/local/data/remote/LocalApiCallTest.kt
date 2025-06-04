@@ -11,7 +11,7 @@ import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
 import uk.gov.govuk.data.model.Result
-import uk.govuk.app.local.data.remote.model.Address
+import uk.govuk.app.local.data.remote.model.RemoteAddress
 import uk.govuk.app.local.data.remote.model.LocalAuthorityResponse
 import uk.govuk.app.local.data.remote.model.LocalAuthorityResult
 import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
@@ -64,12 +64,12 @@ class LocalApiCallTest {
     @Test
     fun `API call returns 200 - address list`() = runTest {
         val addresses = listOf(
-            Address(
+            RemoteAddress(
                 address = "BH22 8UB",
                 slug = "dorset",
                 name = "Dorset County Council"
             ),
-            Address(
+            RemoteAddress(
                 address = "BH22 8UB",
                 slug = "bournemouth-christchurch-poole",
                 name = "Bournemouth, Christchurch, and Poole"

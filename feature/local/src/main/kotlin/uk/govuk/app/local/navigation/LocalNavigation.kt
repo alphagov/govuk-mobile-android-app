@@ -79,6 +79,7 @@ fun NavGraphBuilder.localGraph(
             LocalConfirmationRoute(
                 onBack = { navController.popBackStack() },
                 onCancel = onCancel,
+                onDone = onLocalAuthoritySelected,
                 modifier = modifier
             )
         }

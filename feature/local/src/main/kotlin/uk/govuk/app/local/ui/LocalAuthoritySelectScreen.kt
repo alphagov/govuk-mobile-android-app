@@ -38,7 +38,7 @@ import uk.gov.govuk.design.ui.component.Title1BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.govuk.app.local.LocalSelectViewModel
 import uk.govuk.app.local.R
-import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
+import uk.govuk.app.local.domain.model.LocalAuthority
 
 @Composable
 internal fun LocalAuthoritySelectRoute(
@@ -76,7 +76,7 @@ private fun LocalAuthoritySelectScreen(
     onSelectByAddress: (String) -> Unit,
     onSlugSelect: (String, String) -> Unit,
     postcode: String,
-    localAuthorities: List<RemoteLocalAuthority>,
+    localAuthorities: List<LocalAuthority>,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -165,7 +165,7 @@ private fun BottomNavBar(
 
 @Composable
 private fun RadioButtonGroup(
-    radioOptions: List<RemoteLocalAuthority>,
+    radioOptions: List<LocalAuthority>,
     onSlugChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -234,18 +234,16 @@ private fun LocalAuthoritySelectScreenPreview() {
             onSlugSelect = { _, _ ->},
             postcode = "E18QS",
             localAuthorities = listOf(
-                RemoteLocalAuthority(
+                LocalAuthority(
                     name = "Dorset County Council",
-                    homePageUrl = "https://www.example.com",
+                    url = "https://www.example.com",
                     slug = "dorset",
-                    tier = "unitary",
                     parent = null
                 ),
-                RemoteLocalAuthority(
+                LocalAuthority(
                     name = "Bournemouth, Christchurch, and Poole",
-                    homePageUrl = "https://www.example.com",
+                    url = "https://www.example.com",
                     slug = "bournemouth-christchurch-poole",
-                    tier = "unitary",
                     parent = null
                 )
             )
