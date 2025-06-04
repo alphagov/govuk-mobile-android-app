@@ -44,6 +44,7 @@ import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
 internal fun LocalAuthoritySelectRoute(
     onBack: () -> Unit,
     onCancel: () -> Unit,
+    onLocalAuthoritySelected: () -> Unit,
     onSelectByAddress: () -> Unit,
     postcode: String,
     modifier: Modifier = Modifier,
@@ -59,7 +60,8 @@ internal fun LocalAuthoritySelectRoute(
             onSelectByAddress() },
         onSlugSelect = { buttonText, slug ->
             viewModel.updateLocalAuthority(buttonText, slug)
-            onCancel() },
+            onLocalAuthoritySelected()
+        },
         postcode = postcode,
         localAuthorities = viewModel.localAuthorities(),
         modifier = modifier

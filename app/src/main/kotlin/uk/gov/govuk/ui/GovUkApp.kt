@@ -502,9 +502,13 @@ private fun GovUkNavHost(
             )
         }
         if (homeWidgets.contains(HomeWidget.LOCAL)) {
+            val exitLocalAuth: () -> Unit =
+                { navController.popBackStack(HOME_GRAPH_START_DESTINATION, false) }
+
             localGraph(
                 navController = navController,
-                onCancel = { navController.popBackStack(HOME_GRAPH_START_DESTINATION, false) },
+                onLocalAuthoritySelected = exitLocalAuth,
+                onCancel = exitLocalAuth,
                 modifier = Modifier.padding(paddingValues)
             )
         }

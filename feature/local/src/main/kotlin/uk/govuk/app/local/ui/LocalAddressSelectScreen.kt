@@ -45,6 +45,7 @@ import uk.govuk.app.local.data.remote.model.Address
 internal fun LocalAddressSelectRoute(
     onBack: () -> Unit,
     onCancel: () -> Unit,
+    onLocalAuthoritySelected: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: LocalSelectViewModel = hiltViewModel()
@@ -55,7 +56,8 @@ internal fun LocalAddressSelectRoute(
         onCancel = onCancel,
         onSlugSelect = { buttonText, slug ->
             viewModel.updateLocalAuthority(buttonText, slug)
-            onCancel() },
+            onLocalAuthoritySelected()
+        },
         addresses = viewModel.addresses(),
         modifier = modifier
     )

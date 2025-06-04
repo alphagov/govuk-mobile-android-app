@@ -33,4 +33,12 @@
   <string name="local_select_address_description">We’ll use your address to find your local council</string>
   <string name="local_select_address_error">Select your address</string>
   <string name="local_select_address_confirm">Confirm address</string>
+  <string name="local_confirmation_unitary_title">Your local council is %1%1$s</string>
+  <string name="local_confirmation_unitary_description">You can now access your local council\'s website from the bottom of the app home page.</string>
+  <string name="local_confirmation_two_tier_title">Services in your area are provided by 2 local councils</string>
+  <string name="local_confirmation_two_tier_description_1">Different local councils are responsible for different services.</string>
+  <string name="local_confirmation_two_tier_bullet_title">Your local councils are:</string>
+  <string name="local_confirmation_two_tier_bullet_1">Derbyshire County Council</string>
+  <string name="local_confirmation_two_tier_bullet_2">Derbyshire Dales District Council</string>
+  <string name="local_confirmation_two_tier_description_2">You can now access your local council\'s websites from the bottom of the app home page.</string>
 </resources>

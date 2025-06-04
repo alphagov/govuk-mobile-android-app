@@ -10,17 +10,20 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import uk.govuk.app.local.ui.LocalAddressSelectRoute
 import uk.govuk.app.local.ui.LocalAuthoritySelectRoute
+import uk.govuk.app.local.ui.LocalConfirmationRoute
 import uk.govuk.app.local.ui.LocalEntryRoute
 import uk.govuk.app.local.ui.LocalRoute
 
 const val LOCAL_GRAPH_ROUTE = "local_graph_route"
 private const val LOCAL_ROUTE = "local_route"
 const val LOCAL_EDIT_ROUTE = "local_entry_route"
-const val LOCAL_AUTHORITY_SELECT_ROUTE = "local_authority_select_route"
-const val LOCAL_ADDRESS_SELECT_ROUTE = "local_address_select_route"
+private const val LOCAL_AUTHORITY_SELECT_ROUTE = "local_authority_select_route"
+private const val LOCAL_ADDRESS_SELECT_ROUTE = "local_address_select_route"
+private const val LOCAL_CONFIRMATION_ROUTE = "local_confirmation_route"
 
 fun NavGraphBuilder.localGraph(
     navController: NavHostController,
+    onLocalAuthoritySelected: () -> Unit,
     onCancel: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -28,22 +31,19 @@ fun NavGraphBuilder.localGraph(
         route = LOCAL_GRAPH_ROUTE,
         startDestination = LOCAL_ROUTE
     ) {
-        composable(
-            LOCAL_ROUTE,
-        ) {
+        composable(LOCAL_ROUTE) {
             LocalRoute(
-                navController = navController,
                 onBack = { navController.popBackStack() },
+                onContinue = { navController.navigateToLocalEdit() },
                 modifier = modifier,
             )
         }
-        composable(
-            LOCAL_EDIT_ROUTE,
-        ) {
+        composable(LOCAL_EDIT_ROUTE) {
             LocalEntryRoute(
                 onBack = { navController.popBackStack() },
                 onCancel = onCancel,
-                onSelect = { postcode ->
+                onLocalAuthoritySelected = { navController.navigate(LOCAL_CONFIRMATION_ROUTE) },
+                onAddresses = { postcode ->
                     navController.navigateToLocalAuthoritySelect(postcode)
                 },
                 modifier = modifier
@@ -61,15 +61,22 @@ fun NavGraphBuilder.localGraph(
             LocalAuthoritySelectRoute(
                 onBack = { navController.popBackStack() },
                 onCancel = onCancel,
+                onLocalAuthoritySelected = { navController.navigate(LOCAL_CONFIRMATION_ROUTE) },
                 onSelectByAddress = { navController.navigateToLocalAddressSelect() },
                 postcode = postcode,
                 modifier = modifier
             )
         }
-        composable(
-            LOCAL_ADDRESS_SELECT_ROUTE,
-        ) {
+        composable(LOCAL_ADDRESS_SELECT_ROUTE) {
             LocalAddressSelectRoute(
+                onBack = { navController.popBackStack() },
+                onCancel = onCancel,
+                onLocalAuthoritySelected = { navController.navigate(LOCAL_CONFIRMATION_ROUTE) },
+                modifier = modifier
+            )
+        }
+        composable(LOCAL_CONFIRMATION_ROUTE) {
+            LocalConfirmationRoute(
                 onBack = { navController.popBackStack() },
                 onCancel = onCancel,
                 modifier = modifier

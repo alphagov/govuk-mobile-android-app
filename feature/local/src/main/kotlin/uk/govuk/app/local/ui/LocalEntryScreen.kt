@@ -49,7 +49,8 @@ import uk.govuk.app.local.domain.PostcodeSanitizer
 internal fun LocalEntryRoute(
     onBack: () -> Unit,
     onCancel: () -> Unit,
-    onSelect: (String) -> Unit,
+    onLocalAuthoritySelected: () -> Unit,
+    onAddresses: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: LocalViewModel = hiltViewModel()
@@ -73,8 +74,8 @@ internal fun LocalEntryRoute(
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
-                is NavigationEvent.LocalAuthoritySelected -> onCancel()
-                is NavigationEvent.Addresses -> onSelect(event.postcode)
+                is NavigationEvent.LocalAuthoritySelected -> onLocalAuthoritySelected()
+                is NavigationEvent.Addresses -> onAddresses(event.postcode)
             }
         }
     }

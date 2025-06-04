@@ -21,7 +21,6 @@ import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.FullScreenHeader
@@ -31,12 +30,11 @@ import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.govuk.app.local.LocalViewModel
 import uk.govuk.app.local.R
-import uk.govuk.app.local.navigation.navigateToLocalEdit
 
 @Composable
 internal fun LocalRoute(
-    navController: NavController,
     onBack: () -> Unit,
+    onContinue: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: LocalViewModel = hiltViewModel()
@@ -46,7 +44,7 @@ internal fun LocalRoute(
         onPageView = { viewModel.onExplainerPageView() },
         onContinueClick = { text ->
             viewModel.onExplainerButtonClick(text)
-            navController.navigateToLocalEdit()
+            onContinue()
         },
         modifier = modifier
     )
