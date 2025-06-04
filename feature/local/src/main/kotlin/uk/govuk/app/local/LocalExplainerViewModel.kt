@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class LocalExplainerViewModel @Inject constructor(
-    private val analyticsClient: AnalyticsClient,
+    private val analyticsClient: AnalyticsClient
 ): ViewModel() {
 
     companion object {

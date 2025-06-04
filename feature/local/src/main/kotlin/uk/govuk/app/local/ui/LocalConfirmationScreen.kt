@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,9 +48,10 @@ internal fun LocalConfirmationRoute(
     LocalConfirmationScreen(
         onBack = onBack,
         onCancel = onCancel,
+        onPageView = { viewModel.onPageView() },
         localAuthority = localAuthority,
-        onDone = {
-            viewModel.onDone()
+        onDone = { text ->
+            viewModel.onDone(text)
             onDone()
         },
         modifier = modifier
@@ -60,10 +62,15 @@ internal fun LocalConfirmationRoute(
 private fun LocalConfirmationScreen(
     onBack: () -> Unit,
     onCancel: () -> Unit,
+    onPageView: () -> Unit,
     localAuthority: LocalAuthority,
-    onDone: () -> Unit,
+    onDone: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(Unit) {
+        onPageView()
+    }
+
     Scaffold(
         containerColor = GovUkTheme.colourScheme.surfaces.background,
         modifier = modifier.fillMaxWidth(),
@@ -81,10 +88,17 @@ private fun LocalConfirmationScreen(
             )
         },
         bottomBar = {
-            FixedPrimaryButton(
-                text = stringResource(R.string.local_confirmation_button),
-                onClick = onDone
-            )
+            val buttonText = stringResource(R.string.local_confirmation_button)
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .background(GovUkTheme.colourScheme.surfaces.background)
+            ) {
+                FixedPrimaryButton(
+                    text = buttonText,
+                    onClick = { onDone(buttonText) }
+                )
+            }
         }
     ) { innerPadding ->
         Column(
@@ -189,6 +203,7 @@ private fun UnitaryLocalAuthorityPreview() {
         LocalConfirmationScreen(
             onBack = { },
             onCancel = { },
+            onPageView = { },
             localAuthority = LocalAuthority(
                 name = "Bristol City Council",
                 url = "",
@@ -206,6 +221,7 @@ private fun TwoTierLocalAuthorityPreview() {
         LocalConfirmationScreen(
             onBack = { },
             onCancel = { },
+            onPageView = { },
             localAuthority = LocalAuthority(
                 name = "Derbyshire City Council",
                 url = "",
