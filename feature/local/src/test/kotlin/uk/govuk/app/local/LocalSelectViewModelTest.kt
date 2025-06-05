@@ -14,8 +14,8 @@ import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.govuk.app.local.data.LocalRepo
-import uk.govuk.app.local.data.remote.model.Address
-import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
+import uk.govuk.app.local.domain.model.Address
+import uk.govuk.app.local.domain.model.LocalAuthority
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LocalSelectViewModelTest {
@@ -75,7 +75,7 @@ class LocalSelectViewModelTest {
     }
 
     @Test
-    fun `Given slug selection, then log analytics`() {
+    fun `Given slug selection, then log analytics and cache local authority`() {
         viewModel.updateLocalAuthority("button text", "dorset")
 
         coVerify {
@@ -84,23 +84,23 @@ class LocalSelectViewModelTest {
                 section = "Local"
             )
 
-            localRepo.updateLocalAuthority("dorset")
+            localRepo.cacheLocalAuthority("dorset")
         }
     }
 
     @Test
     fun `Given local authorities, then sort by name`() {
-        val remoteLocalAuthorityZ = RemoteLocalAuthority("Z Authority", "url1", "unitary", "slug-one")
-        val remoteLocalAuthorityA = RemoteLocalAuthority("A Authority", "url2", "unitary", "slug-two")
+        val localAuthorityZ = LocalAuthority("Z Authority", "url1", "slug-one")
+        val localAuthorityA = LocalAuthority("A Authority", "url2", "slug-two")
 
         coEvery {
-            localRepo.localAuthorityList
-        } returns listOf(remoteLocalAuthorityZ, remoteLocalAuthorityA)
+            localRepo.localAuthorities
+        } returns listOf(localAuthorityZ, localAuthorityA)
 
-        val actual = viewModel.localAuthorities()
+        val actual = viewModel.localAuthorities
 
-        assert(actual[0] == remoteLocalAuthorityA)
-        assert(actual[1] == remoteLocalAuthorityZ)
+        assert(actual[0] == localAuthorityA)
+        assert(actual[1] == localAuthorityZ)
     }
 
 
@@ -110,10 +110,10 @@ class LocalSelectViewModelTest {
         val addressA = Address("A Test Street, AB1C1DE", "slug-two", "Slug Two")
 
         coEvery {
-            localRepo.addressList
+            localRepo.addresses
         } returns listOf(addressZ, addressA)
 
-        val actual = viewModel.addresses()
+        val actual = viewModel.addresses
 
         assert(actual[0] == addressA)
         assert(actual[1] == addressZ)

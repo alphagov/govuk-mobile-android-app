@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import uk.govuk.app.local.data.local.model.StoredLocalAuthority
 import uk.govuk.app.local.data.local.model.StoredLocalAuthorityParent
-import uk.govuk.app.local.data.remote.model.RemoteLocalAuthority
+import uk.govuk.app.local.domain.model.LocalAuthority
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,7 +29,7 @@ internal class LocalDataSource @Inject constructor(
     }
 
     suspend fun insertOrReplace(
-        localAuthority: RemoteLocalAuthority
+        localAuthority: LocalAuthority
     ) {
         realmProvider.open().write {
             query<StoredLocalAuthority>().find {
@@ -39,12 +39,12 @@ internal class LocalDataSource @Inject constructor(
             copyToRealm(
                 StoredLocalAuthority().apply {
                     this.name = localAuthority.name
-                    this.url = localAuthority.homePageUrl
+                    this.url = localAuthority.url
                     this.slug = localAuthority.slug
                     this.parent = localAuthority.parent?.let { parent ->
                         StoredLocalAuthorityParent().apply {
                             this.name = parent.name
-                            this.url = parent.homePageUrl
+                            this.url = parent.url
                             this.slug = parent.slug
                         }
                     }

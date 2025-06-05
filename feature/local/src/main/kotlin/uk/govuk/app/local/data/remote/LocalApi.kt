@@ -8,12 +8,12 @@ import uk.govuk.app.local.data.remote.model.LocalAuthorityResponse
 
 interface LocalApi {
     @GET("api/local-authority")
-    suspend fun getLocalPostcode(
+    suspend fun fromPostcode(
         @Query("postcode") postcode: String
     ) : Response<LocalAuthorityResponse>
 
     @GET("api/local-authority/{slug}")
-    suspend fun getLocalAuthority(
+    suspend fun fromSlug(
         @Path("slug") slug: String
     ) : Response<LocalAuthorityResponse>
 }

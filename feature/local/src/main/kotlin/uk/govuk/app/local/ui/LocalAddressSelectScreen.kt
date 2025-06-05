@@ -39,12 +39,13 @@ import uk.gov.govuk.design.ui.component.Title1BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.govuk.app.local.LocalSelectViewModel
 import uk.govuk.app.local.R
-import uk.govuk.app.local.data.remote.model.Address
+import uk.govuk.app.local.domain.model.Address
 
 @Composable
 internal fun LocalAddressSelectRoute(
     onBack: () -> Unit,
     onCancel: () -> Unit,
+    onLocalAuthoritySelected: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: LocalSelectViewModel = hiltViewModel()
@@ -55,8 +56,9 @@ internal fun LocalAddressSelectRoute(
         onCancel = onCancel,
         onSlugSelect = { buttonText, slug ->
             viewModel.updateLocalAuthority(buttonText, slug)
-            onCancel() },
-        addresses = viewModel.addresses(),
+            onLocalAuthoritySelected()
+        },
+        addresses = viewModel.addresses,
         modifier = modifier
     )
 }

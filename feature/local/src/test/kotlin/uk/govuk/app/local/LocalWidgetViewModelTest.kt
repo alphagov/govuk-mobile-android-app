@@ -17,7 +17,6 @@ import uk.govuk.app.local.LocalWidgetUiState.LocalAuthoritySelected
 import uk.govuk.app.local.LocalWidgetUiState.NoLocalAuthority
 import uk.govuk.app.local.data.LocalRepo
 import uk.govuk.app.local.domain.model.LocalAuthority
-import uk.govuk.app.local.ui.LocalAuthorityUi
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LocalWidgetViewModelTest {
@@ -63,21 +62,8 @@ class LocalWidgetViewModelTest {
 
         val viewModel = LocalWidgetViewModel(localRepo)
 
-        val expected = LocalAuthoritySelected(
-                LocalAuthorityUi(
-                    name = "name",
-                    url = "url",
-                    slug = "slug",
-                    parent = LocalAuthorityUi(
-                        name = "parentName",
-                        url = "parentUrl",
-                        slug = "parentSlug"
-                    )
-                )
-            )
-
         runTest {
-            assertEquals(expected, viewModel.uiState.value)
+            assertEquals(LocalAuthoritySelected(localAuthority), viewModel.uiState.value)
         }
     }
 }

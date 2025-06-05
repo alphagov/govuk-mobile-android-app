@@ -18,9 +18,13 @@ internal class LocalSelectViewModel @Inject constructor(
         private const val SELECT_BY_ADDRESS_SCREEN_CLASS = "LocalAddressSelectScreen"
         private const val SELECT_SCREEN_NAME = "Local Select"
         private const val SELECT_TITLE = "Local Select"
-
-        private const val SECTION = "Local"
     }
+
+    val localAuthorities
+        get() = localRepo.localAuthorities.sortedBy { it.name }
+
+    val addresses
+        get() = localRepo.addresses.sortedBy { it.address }
 
     fun onSelectByLocalAuthorityPageView() {
         analyticsClient.screenView(
@@ -45,10 +49,6 @@ internal class LocalSelectViewModel @Inject constructor(
         )
     }
 
-    fun localAuthorities() = localRepo.localAuthorityList.sortedBy { it.name }
-
-    fun addresses() = localRepo.addressList.sortedBy { it.address }
-
     fun updateLocalAuthority(buttonText: String, slug: String) {
         analyticsClient.buttonClick(
             text = buttonText,
@@ -56,7 +56,7 @@ internal class LocalSelectViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            localRepo.updateLocalAuthority(slug)
+            localRepo.cacheLocalAuthority(slug)
         }
     }
 }

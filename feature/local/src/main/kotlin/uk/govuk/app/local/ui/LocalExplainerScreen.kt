@@ -21,7 +21,6 @@ import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.FullScreenHeader
@@ -29,31 +28,30 @@ import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-import uk.govuk.app.local.LocalViewModel
+import uk.govuk.app.local.LocalExplainerViewModel
 import uk.govuk.app.local.R
-import uk.govuk.app.local.navigation.navigateToLocalEdit
 
 @Composable
-internal fun LocalRoute(
-    navController: NavController,
+internal fun LocalExplainerRoute(
     onBack: () -> Unit,
+    onContinue: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: LocalViewModel = hiltViewModel()
+    val viewModel: LocalExplainerViewModel = hiltViewModel()
 
-    LocalScreen(
+    LocalExplainerScreen(
         onBack = onBack,
-        onPageView = { viewModel.onExplainerPageView() },
+        onPageView = { viewModel.onPageView() },
         onContinueClick = { text ->
-            viewModel.onExplainerButtonClick(text)
-            navController.navigateToLocalEdit()
+            viewModel.onButtonClick(text)
+            onContinue()
         },
         modifier = modifier
     )
 }
 
 @Composable
-private fun LocalScreen(
+private fun LocalExplainerScreen(
     onBack: () -> Unit,
     onPageView: () -> Unit,
     onContinueClick: (String) -> Unit,
@@ -138,7 +136,7 @@ private fun BottomNavBar(
 @Composable
 private fun LocalScreenPreview() {
     GovUkTheme {
-        LocalScreen(
+        LocalExplainerScreen(
             onBack = {},
             onPageView = {},
             onContinueClick = {}
