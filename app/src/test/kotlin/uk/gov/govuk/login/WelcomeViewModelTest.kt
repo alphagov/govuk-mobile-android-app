@@ -23,19 +23,19 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.auth.AuthRepo
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class LoginViewModelTest {
+class WelcomeViewModelTest {
 
     private val authRepo = mockk<AuthRepo>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val activity = mockk<FragmentActivity>(relaxed = true)
     private val dispatcher = UnconfinedTestDispatcher()
 
-    private lateinit var viewModel: LoginViewModel
+    private lateinit var viewModel: WelcomeViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = LoginViewModel(authRepo, analyticsClient)
+        viewModel = WelcomeViewModel(authRepo, analyticsClient)
     }
 
     @After
@@ -92,9 +92,9 @@ class LoginViewModelTest {
 
         verify {
             analyticsClient.screenView(
-                screenClass = "LoginScreen",
-                screenName = "Login",
-                title = "Login"
+                screenClass = "WelcomeScreen",
+                screenName = "Welcome",
+                title = "Welcome"
             )
         }
     }
@@ -106,7 +106,7 @@ class LoginViewModelTest {
         verify {
             analyticsClient.buttonClick(
                 text = "button text",
-                section = "Login"
+                section = "Welcome"
             )
         }
     }

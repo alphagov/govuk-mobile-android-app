@@ -15,17 +15,17 @@ import uk.gov.govuk.data.auth.ErrorEvent
 import javax.inject.Inject
 
 @HiltViewModel
-internal class LoginViewModel @Inject constructor(
+internal class WelcomeViewModel @Inject constructor(
     private val authRepo: AuthRepo,
     private val analyticsClient: AnalyticsClient
 ) : ViewModel() {
 
     companion object {
-        private const val SCREEN_CLASS = "LoginScreen"
-        private const val SCREEN_NAME = "Login"
-        private const val TITLE = "Login"
+        private const val SCREEN_CLASS = "WelcomeScreen"
+        private const val SCREEN_NAME = "Welcome"
+        private const val TITLE = "Welcome"
 
-        private const val SECTION = "Login"
+        private const val SECTION = "Welcome"
     }
 
     private val _loginCompleted = MutableSharedFlow<Boolean>()
@@ -50,6 +50,7 @@ internal class LoginViewModel @Inject constructor(
                     _loginCompleted.emit(false)
                 } else {
                     // Todo - handle failure!!!
+                    //_errorEvent.emit(ErrorEvent.UnableToSignInError)
                 }
             }
         }
