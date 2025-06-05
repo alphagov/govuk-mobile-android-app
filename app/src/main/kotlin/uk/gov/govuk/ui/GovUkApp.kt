@@ -64,8 +64,8 @@ import uk.gov.govuk.extension.asDeepLinks
 import uk.gov.govuk.extension.getUrlParam
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
+import uk.gov.govuk.login.navigation.LOGIN_ROUTE
 import uk.gov.govuk.login.navigation.loginGraph
-import uk.gov.govuk.login.navigation.navigateToLoginPostSignOut
 import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_GRAPH_ROUTE
@@ -484,7 +484,9 @@ private fun GovUkNavHost(
             navController = navController,
             onSignOut = {
                 viewModel.onSignOut()
-                navController.navigateToLoginPostSignOut()
+                navController.navigate(LOGIN_ROUTE) {
+                    popUpTo(0) { inclusive = true }
+                }
             }
         )
         if (homeWidgets.contains(HomeWidget.SEARCH)) {
