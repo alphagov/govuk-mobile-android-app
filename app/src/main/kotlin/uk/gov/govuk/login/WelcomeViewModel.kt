@@ -49,8 +49,7 @@ internal class WelcomeViewModel @Inject constructor(
                 ) {
                     _loginCompleted.emit(false)
                 } else {
-                    // Todo - handle failure!!!
-                    //_errorEvent.emit(ErrorEvent.UnableToSignInError)
+                    _errorEvent.emit(ErrorEvent.UnableToSignInError)
                 }
             }
         }

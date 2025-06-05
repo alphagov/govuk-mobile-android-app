@@ -75,6 +75,7 @@ class AuthRepo @Inject constructor(
         return if (result is RetrievalEvent.Success) {
             val refreshToken = result.value[REFRESH_TOKEN_KEY]
             if (refreshToken.isNullOrEmpty()) {
+                println("Refresh token is null or empty")
                 return false
             }
 
