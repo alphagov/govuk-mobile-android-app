@@ -74,7 +74,7 @@ class FlagRepo @Inject constructor(
     fun isNotificationsEnabled(): Boolean {
         return isEnabled(
             debugEnabled = debugEnabled,
-            debugFlag = false, // Dev only flag, only set to true when actively working on notifications
+            debugFlag = debugFlags.isNotificationsEnabled,
             remoteFlag = false // Dev only flag, always off for production builds!!!
         )
     }

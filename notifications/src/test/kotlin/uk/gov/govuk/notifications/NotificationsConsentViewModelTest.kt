@@ -3,6 +3,7 @@ package uk.gov.govuk.notifications
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -17,19 +18,21 @@ import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import uk.gov.govuk.notifications.data.local.NotificationsDataStore
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalCoroutinesApi::class)
 class NotificationsConsentViewModelTest {
     private val dispatcher = UnconfinedTestDispatcher()
     private val permissionStatus = mockk<PermissionStatus>()
     private val notificationsClient = mockk<NotificationsClient>()
+    private val notificationsDataStore = mockk<NotificationsDataStore>()
 
     private lateinit var viewModel: NotificationsConsentViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = NotificationsConsentViewModel(notificationsClient)
+        viewModel = NotificationsConsentViewModel(notificationsClient, notificationsDataStore)
     }
 
     @After
@@ -55,8 +58,22 @@ class NotificationsConsentViewModelTest {
     }
 
     @Test
-    fun `Given the permission status is granted and consent is given, When init, then ui state should be finish`() {
+    fun `Given the permission status is granted and onboarding is not completed, When init, then ui state should be finish`() {
         every { permissionStatus.isGranted } returns true
+        coEvery { notificationsDataStore.isOnboardingCompleted() } returns false
+
+        runTest {
+            viewModel.updateUiState(permissionStatus)
+
+            val result = viewModel.uiState.first()
+            assertTrue(result is NotificationsUiState.Finish)
+        }
+    }
+
+    @Test
+    fun `Given the permission status is granted, onboarding is completed and consent is given, When init, then ui state should be finish`() {
+        every { permissionStatus.isGranted } returns true
+        coEvery { notificationsDataStore.isOnboardingCompleted() } returns true
         every { notificationsClient.consentGiven() } returns true
 
         runTest {
@@ -68,8 +85,9 @@ class NotificationsConsentViewModelTest {
     }
 
     @Test
-    fun `Given the permission status is granted and consent is not given, When init, then ui state should be default`() {
+    fun `Given the permission status is granted, onboarding is completed and consent is not given, When init, then ui state should be default`() {
         every { permissionStatus.isGranted } returns true
+        coEvery { notificationsDataStore.isOnboardingCompleted() } returns true
         every { notificationsClient.consentGiven() } returns false
 
         runTest {

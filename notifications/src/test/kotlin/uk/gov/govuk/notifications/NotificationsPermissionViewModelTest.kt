@@ -28,6 +28,7 @@ class NotificationsPermissionViewModelTest {
     private val dispatcher = UnconfinedTestDispatcher()
     private val permissionStatus = mockk<PermissionStatus>()
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
+    private val notificationsClient = mockk<NotificationsClient>(relaxed = true)
     private val notificationsDataStore = mockk<NotificationsDataStore>()
 
     private lateinit var viewModel: NotificationsPermissionViewModel
@@ -35,7 +36,11 @@ class NotificationsPermissionViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = NotificationsPermissionViewModel(analyticsClient, notificationsDataStore)
+        viewModel = NotificationsPermissionViewModel(
+            analyticsClient,
+            notificationsClient,
+            notificationsDataStore
+        )
     }
 
     @After
@@ -44,8 +49,24 @@ class NotificationsPermissionViewModelTest {
     }
 
     @Test
-    fun `Given Alert button click, then log analytics`() {
-        viewModel.onAlertButtonClick("Text")
+    fun `Given Continue button click, then remove consent and log analytics`() {
+        every { notificationsClient.removeConsent() } returns Unit
+
+        viewModel.onContinueButtonClick("Text")
+
+        runTest {
+            verify(exactly = 1) {
+                notificationsClient.removeConsent()
+                analyticsClient.buttonClick(
+                    text = "Text"
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `Given Cancel button click, then log analytics`() {
+        viewModel.onCancelButtonClick("Text")
 
         runTest {
             verify(exactly = 1) {
