@@ -227,6 +227,59 @@ class LocalRepoTest {
     }
 
     @Test
+    fun `Cache local authority caches local authority and select updates local data source`() = runTest {
+        val remoteAddresses = listOf(
+            RemoteAddress("address 1", "slug 1", "name 1"),
+            RemoteAddress("address 2", "slug 2", "name 2")
+        )
+
+        val remoteLocalAuthority1 = RemoteLocalAuthority(
+            name = "name 1",
+            homePageUrl = "url 1",
+            tier = "tier 1",
+            slug = "slug 1"
+        )
+
+        val remoteLocalAuthority2 = RemoteLocalAuthority(
+            name = "name 2",
+            homePageUrl = "url 2",
+            tier = "tier 2",
+            slug = "slug 2"
+        )
+
+        coEvery {
+            localApi.fromPostcode(any())
+        } returns apiResponse
+
+        every { apiResponse.code() } returns 200
+        every { apiResponse.isSuccessful } returns true
+        every { apiResponse.body() } returns LocalAuthorityResponse(null, remoteAddresses)
+
+        coEvery {
+            localApi.fromSlug("slug 1")
+        } returns Response.success(
+            LocalAuthorityResponse(remoteLocalAuthority1, addresses = null)
+        )
+        coEvery {
+            localApi.fromSlug("slug 2")
+        } returns Response.success(
+            LocalAuthorityResponse(remoteLocalAuthority2, addresses = null)
+        )
+
+        localRepo.fetchLocalAuthority("postcode")
+        localRepo.cacheLocalAuthority("slug 2")
+
+        val expected = remoteLocalAuthority2.toLocalAuthority()
+
+        assertEquals(expected, localRepo.cachedLocalAuthority)
+
+        localRepo.selectLocalAuthority()
+        coVerify {
+            localDataSource.insertOrReplace(expected)
+        }
+    }
+
+    @Test
     fun `Clear clears local data source`() {
         runTest {
             localRepo.clear()
