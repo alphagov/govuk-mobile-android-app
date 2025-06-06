@@ -58,6 +58,7 @@ import uk.gov.govuk.AppViewModel
 import uk.gov.govuk.BuildConfig
 import uk.gov.govuk.R
 import uk.gov.govuk.analytics.navigation.analyticsGraph
+import uk.gov.govuk.chat.navigation.chatGraph
 import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.extension.asDeepLinks
@@ -509,6 +510,12 @@ private fun GovUkNavHost(
                 navController = navController,
                 onLocalAuthoritySelected = exitLocalAuth,
                 onCancel = exitLocalAuth,
+                modifier = Modifier.padding(paddingValues)
+            )
+        }
+        if (homeWidgets.contains(HomeWidget.CHAT)) {
+            chatGraph(
+                navController = navController,
                 modifier = Modifier.padding(paddingValues)
             )
         }

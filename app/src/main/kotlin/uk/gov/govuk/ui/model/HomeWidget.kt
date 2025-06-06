@@ -6,5 +6,6 @@ enum class HomeWidget(val serializedName: String) {
     SEARCH("search"),
     RECENT_ACTIVITY("recent_activity"),
     TOPICS("topics"),
-    LOCAL("local")
+    LOCAL("local"),
+    CHAT("chat")
 }
