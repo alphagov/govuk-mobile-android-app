@@ -95,8 +95,11 @@ class AuthRepo @Inject constructor(
                     mutableMapOf("X-Attestation-Token" to it)
                 } ?: mutableMapOf()
 
-            override fun getRequestParameters(clientId: String): MutableMap<String, String>
-                    = mutableMapOf("client_id" to BuildConfig.AUTH_CLIENT_ID)
+            override fun getRequestParameters(clientId: String): MutableMap<String, String> =
+                mutableMapOf(
+                    "client_id" to clientId,
+                    "scope" to "openid%20email"
+                )
         }
 
         return suspendCoroutine { continuation ->

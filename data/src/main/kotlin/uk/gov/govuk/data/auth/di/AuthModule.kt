@@ -83,7 +83,7 @@ class AuthModule {
         )
 
         return authRequestBuilder
-            .setScopes("openid")
+            .setScopes("openid", "email")
             .build()
     }
 
