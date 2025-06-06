@@ -41,41 +41,6 @@ class AppDataStoreTest {
     }
 
     @Test
-    fun `Given the data store is empty, When is onboarding completed, then return false`() {
-        val appDatastore = AppDataStore(dataStore)
-
-        every { dataStore.data } returns emptyFlow()
-
-        runTest {
-            assertFalse(appDatastore.isOnboardingCompleted())
-        }
-    }
-
-    @Test
-    fun `Given the onboarding completed flag is false in the data store, When is onboarding completed, then return false`() {
-        val appDatastore = AppDataStore(dataStore)
-
-        every { dataStore.data } returns flowOf(preferences)
-        every { preferences[booleanPreferencesKey(AppDataStore.ONBOARDING_COMPLETED_KEY)] } returns false
-
-        runTest {
-            assertFalse(appDatastore.isOnboardingCompleted())
-        }
-    }
-
-    @Test
-    fun `Given the onboarding completed flag is true in the data store, When is onboarding completed, then return true`() {
-        val appDatastore = AppDataStore(dataStore)
-
-        every { dataStore.data } returns flowOf(preferences)
-        every { preferences[booleanPreferencesKey(AppDataStore.ONBOARDING_COMPLETED_KEY)] } returns true
-
-        runTest {
-            assertTrue(appDatastore.isOnboardingCompleted())
-        }
-    }
-
-    @Test
     fun `Given the data store is empty, When is topic selection completed, then return false`() {
         val appDatastore = AppDataStore(dataStore)
 

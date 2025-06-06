@@ -63,8 +63,8 @@ import uk.gov.govuk.extension.asDeepLinks
 import uk.gov.govuk.extension.getUrlParam
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
+import uk.gov.govuk.login.navigation.LOGIN_ROUTE
 import uk.gov.govuk.login.navigation.loginGraph
-import uk.gov.govuk.login.navigation.navigateToLoginPostSignOut
 import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_GRAPH_ROUTE
@@ -73,7 +73,6 @@ import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_PERMISSION_ROUTE
 import uk.gov.govuk.notifications.navigation.notificationsConsentGraph
 import uk.gov.govuk.notifications.navigation.notificationsOnboardingGraph
 import uk.gov.govuk.notifications.navigation.notificationsPermissionGraph
-import uk.gov.govuk.onboarding.navigation.onboardingGraph
 import uk.gov.govuk.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.gov.govuk.search.navigation.searchGraph
 import uk.gov.govuk.search.ui.widget.SearchWidget
@@ -388,12 +387,6 @@ private fun GovUkNavHost(
             },
             launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
         )
-        onboardingGraph(
-            onboardingCompleted = {
-                viewModel.onboardingCompleted()
-                appLaunchNavigation.onNext(navController)
-            }
-        )
         if (homeWidgets.contains(HomeWidget.TOPICS)) {
             topicSelectionGraph(
                 topicSelectionCompleted = {
@@ -472,7 +465,9 @@ private fun GovUkNavHost(
             navController = navController,
             onSignOut = {
                 viewModel.onSignOut()
-                navController.navigateToLoginPostSignOut()
+                navController.navigate(LOGIN_ROUTE) {
+                    popUpTo(0) { inclusive = true }
+                }
             }
         )
         if (homeWidgets.contains(HomeWidget.SEARCH)) {

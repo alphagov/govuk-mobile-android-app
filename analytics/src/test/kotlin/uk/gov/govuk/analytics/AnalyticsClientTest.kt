@@ -154,22 +154,6 @@ class AnalyticsClientTest {
     }
 
     @Test
-    fun `Given a page indicator click, then log event`() {
-        analyticsClient.pageIndicatorClick()
-
-        verify {
-            firebaseAnalyticClient.logEvent(
-                "Navigation",
-                mapOf(
-                    "type" to "Dot",
-                    "external" to false,
-                    "language" to Locale.getDefault().language,
-                )
-            )
-        }
-    }
-
-    @Test
     fun `Given a button click, then log event`() {
         analyticsClient.buttonClick("text")
 

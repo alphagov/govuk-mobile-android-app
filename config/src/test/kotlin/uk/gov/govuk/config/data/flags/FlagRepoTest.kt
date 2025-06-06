@@ -272,22 +272,6 @@ class FlagRepoTest {
     }
 
     @Test
-    fun `Given onboarding is enabled, When is onboarding enabled, then return true`() {
-        mockkStatic(::isEnabled)
-        every { isEnabled(any(), any(), any()) } returns true
-
-        assertTrue(flagRepo.isOnboardingEnabled())
-    }
-
-    @Test
-    fun `Given onboarding is disabled, When is onboarding enabled, then return false`() {
-        mockkStatic(::isEnabled)
-        every { isEnabled(any(), any(), any()) } returns false
-
-        assertFalse(flagRepo.isOnboardingEnabled())
-    }
-
-    @Test
     fun `Given search is enabled, When is search enabled, then return true`() {
         mockkStatic(::isEnabled)
         every { isEnabled(any(), any(), any()) } returns true

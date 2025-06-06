@@ -39,14 +39,6 @@ class FlagRepo @Inject constructor(
         )
     }
 
-    fun isOnboardingEnabled(): Boolean {
-        return isEnabled(
-            debugEnabled = debugEnabled,
-            debugFlag = debugFlags.isOnboardingEnabled,
-            remoteFlag = configRepo.config.releaseFlags.onboarding
-        )
-    }
-
     fun isSearchEnabled(): Boolean {
         return isEnabled(
             debugEnabled = debugEnabled,

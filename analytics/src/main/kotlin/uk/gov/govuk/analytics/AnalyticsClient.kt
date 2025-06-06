@@ -46,10 +46,6 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    fun pageIndicatorClick() {
-        navigation(type = "Dot")
-    }
-
     fun buttonClick(
         text: String,
         url: String? = null,
