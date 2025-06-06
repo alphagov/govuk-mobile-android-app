@@ -136,6 +136,10 @@ class AuthRepo @Inject constructor(
 
             true
         } else {
+            if (exception?.type == AuthorizationException.TYPE_OAUTH_TOKEN_ERROR) {
+                secureStore.delete(REFRESH_TOKEN_KEY)
+            }
+
             false
         }
     }
