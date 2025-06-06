@@ -152,7 +152,7 @@ class AnalyticsClientTest {
             )
         }
     }
-    
+
     @Test
     fun `Given a button click, then log event`() {
         analyticsClient.buttonClick("text")
