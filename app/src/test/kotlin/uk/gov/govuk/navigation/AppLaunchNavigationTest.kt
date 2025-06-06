@@ -18,7 +18,6 @@ import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.BIOMETRIC_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
-import uk.gov.govuk.onboarding.navigation.ONBOARDING_GRAPH_ROUTE
 import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.topics.navigation.TOPIC_SELECTION_GRAPH_ROUTE
 import java.util.Stack
@@ -46,8 +45,6 @@ class AppLaunchNavigationTest {
         coEvery { authRepo.isAuthenticationEnabled() } returns true
         coEvery { authRepo.isUserSignedIn() } returns false
         coEvery { flagRepo.isLoginEnabled() } returns true
-        coEvery { flagRepo.isOnboardingEnabled() } returns true
-        coEvery { appRepo.isOnboardingCompleted() } returns false
         coEvery { analyticsClient.isAnalyticsConsentRequired() } returns true
         coEvery { topicsFeature.hasTopics() } returns true
 
@@ -64,8 +61,6 @@ class AppLaunchNavigationTest {
         coEvery { authRepo.isAuthenticationEnabled() } returns true
         coEvery { authRepo.isUserSignedIn() } returns false
         coEvery { flagRepo.isLoginEnabled() } returns true
-        coEvery { flagRepo.isOnboardingEnabled() } returns true
-        coEvery { appRepo.isOnboardingCompleted() } returns false
         coEvery { analyticsClient.isAnalyticsConsentRequired() } returns true
 
         runTest {
@@ -78,7 +73,7 @@ class AppLaunchNavigationTest {
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(ONBOARDING_GRAPH_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -91,41 +86,7 @@ class AppLaunchNavigationTest {
         runTest {
             appLaunchNav.buildLaunchFlow()
 
-            assertEquals(ONBOARDING_GRAPH_ROUTE, appLaunchNav.startDestination)
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(BIOMETRIC_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `Given onboarding is complete, When build launch flow, builds launch routes`() {
-        coEvery { appRepo.isOnboardingCompleted() } returns true
-
-        runTest {
-            appLaunchNav.buildLaunchFlow()
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(BIOMETRIC_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `Given onboarding is disabled, When build launch flow, builds launch routes`() {
-        coEvery { flagRepo.isOnboardingEnabled() } returns false
-
-        runTest {
-            appLaunchNav.buildLaunchFlow()
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
 
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
@@ -148,7 +109,6 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(ONBOARDING_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -165,7 +125,7 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(ONBOARDING_GRAPH_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -182,7 +142,7 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(ONBOARDING_GRAPH_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -199,7 +159,7 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(ONBOARDING_GRAPH_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -216,7 +176,7 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(ONBOARDING_GRAPH_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -233,7 +193,7 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(ONBOARDING_GRAPH_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -250,7 +210,7 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(ONBOARDING_GRAPH_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -407,8 +367,8 @@ class AppLaunchNavigationTest {
 
         verify {
             navController.popBackStack()
-            navController.navigate(ONBOARDING_GRAPH_ROUTE)
-            assertEquals(ONBOARDING_GRAPH_ROUTE, appLaunchNav.startDestination)
+            navController.navigate(LOGIN_GRAPH_ROUTE)
+            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
         }
     }
 }
