@@ -1,7 +1,7 @@
 package uk.gov.govuk.chat.data
 
-import uk.gov.govuk.chat.BuildConfig
 import uk.gov.govuk.chat.data.remote.ChatApi
+import uk.gov.govuk.chat.data.remote.model.ConversationQuestionRequest
 import uk.gov.govuk.chat.ui.model.AnswerUi
 import uk.gov.govuk.chat.ui.model.AnsweredQuestionUi
 import uk.gov.govuk.chat.ui.model.ConversationUi
@@ -13,11 +13,53 @@ internal class ChatRepo @Inject constructor(
     private val chatApi: ChatApi
 ) {
     // TODO: set and get the conversation id from the datastore
-    private var _conversationId: String = BuildConfig.CHAT_CONVERSATION_ID
-    private val conversationId: String
+    private var _conversationId: String = ""
+    val conversationId: String
         get() = _conversationId
 
-    suspend fun getConversation() : ConversationUi {
+    suspend fun startConversation(question: String): ConversationUi? {
+        val requestBody = ConversationQuestionRequest(
+            userQuestion = question
+        )
+
+        try {
+            // "200": Success
+            val response = chatApi.startConversation(requestBody)
+            _conversationId = response.conversationId
+            println(response)
+        } catch (e: Exception) {
+            // TODO: handle errors
+            // "422": Validation error on question submission (such as PII in question)
+            // "429": Too many requests to read endpoints from an Api User or Device ID
+            println(e.message)
+        }
+
+        // TODO: add polling for response...
+        return getConversation()
+    }
+
+    suspend fun updateConversation(question: String): ConversationUi? {
+        val requestBody = ConversationQuestionRequest(
+            userQuestion = question
+        )
+
+        try {
+            // "201": Success
+            val response = chatApi.updateConversation(conversationId, requestBody)
+            println(response)
+        } catch (e: Exception) {
+            // TODO: handle errors
+            // "422": Validation error on question submission (such as PII in question
+            //            or user already has a pending question)
+            // "429": Too many requests to read endpoints from an Api User or Device ID
+            println(e.message)
+        }
+
+        // TODO: add polling for response...
+        return getConversation()
+    }
+
+    suspend fun getConversation(): ConversationUi? {
         try {
             // "200": Success
             val response = chatApi.getConversation(conversationId)
@@ -48,10 +90,6 @@ internal class ChatRepo @Inject constructor(
             println(e.message)
         }
 
-        return ConversationUi(
-            id = "",
-            answeredQuestions = emptyList(),
-            createdAt = ""
-        )
+        return null
     }
 }

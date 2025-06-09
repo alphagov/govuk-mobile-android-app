@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="widget_title">Chat</string>
+  <string name="input_label">Ask your question here…</string>
+  <string name="button_text">Go</string>
 </resources>

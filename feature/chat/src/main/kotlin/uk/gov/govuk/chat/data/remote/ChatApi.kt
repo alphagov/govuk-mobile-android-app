@@ -1,6 +1,5 @@
 package uk.gov.govuk.chat.data.remote
 
-import com.google.gson.JsonObject
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -10,6 +9,7 @@ import retrofit2.http.Path
 import uk.gov.govuk.chat.BuildConfig
 import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
 import uk.gov.govuk.chat.data.remote.model.Conversation
+import uk.gov.govuk.chat.data.remote.model.ConversationQuestionRequest
 
 interface ChatApi {
     @Headers(
@@ -18,7 +18,7 @@ interface ChatApi {
     )
     @POST("conversation")
     suspend fun startConversation(
-        @Body request: JsonObject
+        @Body requestBody: ConversationQuestionRequest
     ): AnsweredQuestion
 
     @Headers(
@@ -37,6 +37,6 @@ interface ChatApi {
     @PUT("conversation/{conversationId}")
     suspend fun updateConversation(
         @Path("conversationId") conversationId: String,
-        @Body request: JsonObject
+        @Body requestBody: ConversationQuestionRequest
     ): AnsweredQuestion
 }

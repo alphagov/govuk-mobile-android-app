@@ -20,11 +20,20 @@ internal class ChatViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            _conversation.value = getConversation()
+            if (chatRepo.conversationId.isNotEmpty()) {
+                _conversation.value = chatRepo.getConversation()
+            }
         }
     }
 
-    private suspend fun getConversation(): ConversationUi {
-        return chatRepo.getConversation()
+    fun onSubmit(question: String) {
+        println("onSubmit: $question")
+        viewModelScope.launch {
+            if (chatRepo.conversationId.isEmpty()) {
+                chatRepo.startConversation(question)
+            } else {
+                chatRepo.updateConversation(question)
+            }
+        }
     }
 }
