@@ -503,8 +503,10 @@ class AppViewModelTest {
 
     @Test
     fun `Given a new user or the same user has logged in, When on login, then navigate to next nav destination`() {
+        every { authRepo.isDifferentUser() } returns false
+
         runTest {
-            viewModel.onLogin(false, navController)
+            viewModel.onLogin(navController)
 
             coVerify(exactly = 0) {
                 appRepo.clear()
@@ -523,8 +525,10 @@ class AppViewModelTest {
 
     @Test
     fun `Given a different user has logged in, When on login, then clear data, reconfigure nav and navigate to next destination`() {
+        every { authRepo.isDifferentUser() } returns true
+
         runTest {
-            viewModel.onLogin(true, navController)
+            viewModel.onLogin(navController)
 
             coVerify {
                 appRepo.clear()

@@ -8,15 +8,17 @@ import androidx.navigation.navigation
 import uk.gov.govuk.login.ui.BiometricRoute
 import uk.gov.govuk.login.ui.ErrorRoute
 import uk.gov.govuk.login.ui.LoginRoute
+import uk.gov.govuk.login.ui.LoginSuccessRoute
 
 const val LOGIN_GRAPH_ROUTE = "login_graph_route"
 const val LOGIN_ROUTE = "login_route"
+private const val LOGIN_SUCCESS_ROUTE = "login_success_route"
 const val BIOMETRIC_ROUTE = "biometric_route"
 const val ERROR_ROUTE = "login_error_route"
 
 fun NavGraphBuilder.loginGraph(
     navController: NavController,
-    onLoginCompleted: (Boolean) -> Unit,
+    onLoginCompleted: () -> Unit,
     onBiometricSetupCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -26,11 +28,24 @@ fun NavGraphBuilder.loginGraph(
     ) {
         composable(route = LOGIN_ROUTE) {
             LoginRoute(
-                navController = navController,
-                onLoginCompleted = { isDifferentUser ->
-                    onLoginCompleted(isDifferentUser)
+                onLoginCompleted = { loginEvent ->
+                    if (loginEvent.isBiometricLogin) {
+                        onLoginCompleted()
+                    } else {
+                        navController.popBackStack()
+                        navController.navigate(LOGIN_SUCCESS_ROUTE)
+                    }
+                },
+                onError = {
+                    navController.navigate(ERROR_ROUTE)
                 },
                 modifier = modifier,
+            )
+        }
+        composable(route = LOGIN_SUCCESS_ROUTE) {
+            LoginSuccessRoute(
+                onContinue = onLoginCompleted,
+                modifier = modifier
             )
         }
         composable(BIOMETRIC_ROUTE) {
@@ -39,17 +54,11 @@ fun NavGraphBuilder.loginGraph(
                 modifier = modifier
             )
         }
-        composable(
-            route = ERROR_ROUTE,
-        ) {
+        composable(route = ERROR_ROUTE) {
             ErrorRoute(
                 onBack = { navController.popBackStack() },
                 modifier = modifier
             )
         }
     }
-}
-
-fun NavController.navigateToErrorScreen() {
-    navigate(ERROR_ROUTE)
 }

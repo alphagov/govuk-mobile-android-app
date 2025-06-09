@@ -14,6 +14,8 @@ import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.auth.ErrorEvent
 import javax.inject.Inject
 
+internal data class LoginEvent(val isBiometricLogin: Boolean)
+
 @HiltViewModel
 internal class LoginViewModel @Inject constructor(
     private val authRepo: AuthRepo,
@@ -24,12 +26,10 @@ internal class LoginViewModel @Inject constructor(
         private const val SCREEN_CLASS = "LoginScreen"
         private const val SCREEN_NAME = "Login"
         private const val TITLE = "Login"
-
-        private const val SECTION = "Login"
     }
 
-    private val _loginCompleted = MutableSharedFlow<Boolean>()
-    val loginCompleted: SharedFlow<Boolean> = _loginCompleted
+    private val _loginCompleted = MutableSharedFlow<LoginEvent>()
+    val loginCompleted: SharedFlow<LoginEvent> = _loginCompleted
 
     private val _errorEvent = MutableSharedFlow<ErrorEvent>()
     val errorEvent: SharedFlow<ErrorEvent> = _errorEvent
@@ -47,7 +47,7 @@ internal class LoginViewModel @Inject constructor(
                         title = activity.getString(R.string.login_biometric_prompt_title)
                     )
                 ) {
-                    _loginCompleted.emit(false)
+                    _loginCompleted.emit(LoginEvent(isBiometricLogin = true))
                 } else {
                     // Todo - handle failure!!!
                 }
@@ -74,7 +74,7 @@ internal class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             val result = authRepo.handleAuthResponse(data)
             if (result) {
-                _loginCompleted.emit(authRepo.isDifferentUser())
+                _loginCompleted.emit(LoginEvent(isBiometricLogin = false))
             } else {
                 _errorEvent.emit(ErrorEvent.UnableToSignInError)
             }

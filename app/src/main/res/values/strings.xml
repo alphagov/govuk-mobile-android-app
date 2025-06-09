@@ -32,6 +32,8 @@
     <string name="login_continue_button">Continue</string>
     <string name="login_back_and_try_again_button">Go back and try again</string>
 
+    <string name="login_success_title">You have successfully signed in</string>
+
     <string name="login_biometrics_title">Unlock the app with biometrics</string>
     <string name="login_biometrics_description_1">You can unlock the app with your face, fingerprint or iris.</string>
     <string name="login_biometrics_description_2">If you do not want to use your biometrics, you can unlock the app with your phone’s pin or pattern, or with your email address and password.</string>

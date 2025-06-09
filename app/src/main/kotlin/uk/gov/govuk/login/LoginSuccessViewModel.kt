@@ -7,13 +7,14 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-internal class ErrorViewModel @Inject constructor(
+internal class LoginSuccessViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient
 ) : ViewModel() {
+
     companion object {
-        private const val SCREEN_CLASS = "LoginErrorScreen"
-        private const val SCREEN_NAME = "Login Error"
-        private const val TITLE = "Login Error"
+        private const val SCREEN_CLASS = "LoginSuccessScreen"
+        private const val SCREEN_NAME = "Login Success"
+        private const val TITLE = "Login Success"
     }
 
     fun onPageView() {
@@ -24,7 +25,7 @@ internal class ErrorViewModel @Inject constructor(
         )
     }
 
-    fun onBack(text: String) {
+    fun onContinue(text: String) {
         analyticsClient.buttonClick(
             text = text,
             section = SECTION
