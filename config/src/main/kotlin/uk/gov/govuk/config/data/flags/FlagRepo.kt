@@ -102,6 +102,14 @@ class FlagRepo @Inject constructor(
             remoteFlag = configRepo.config.releaseFlags.externalBrowser
         )
     }
+
+    fun isChatServiceEnabled(): Boolean {
+        return isEnabled(
+            debugEnabled = debugEnabled,
+            debugFlag = false, // Dev only flag, only set to true when actively working on chat
+            remoteFlag = false // Dev only flag, always off for production builds!!!
+        )
+    }
 }
 
 internal fun isEnabled(

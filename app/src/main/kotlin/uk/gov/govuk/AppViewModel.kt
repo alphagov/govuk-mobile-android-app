@@ -163,8 +163,7 @@ internal class AppViewModel @Inject constructor(
                 if (isLocalServicesEnabled() && hasLocalAuthority) {
                     widgets.add(HomeWidget.LOCAL)
                 }
-                if (true) {
-//                    TODO: create chat feature flag
+                if (isChatServiceEnabled()) {
                     widgets.add(HomeWidget.CHAT)
                 }
                 _homeWidgets.value = widgets
