@@ -29,6 +29,8 @@ import dev.jeziellago.compose.markdowntext.MarkdownText
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.chat.domain.StringCleaner
+import uk.gov.govuk.chat.ui.model.AnswerUi
+import uk.gov.govuk.chat.ui.model.AnsweredQuestionUi
 import uk.gov.govuk.chat.ui.model.ConversationUi
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
@@ -95,6 +97,7 @@ private fun ChatScreen(
                     val answer = StringCleaner.removeInParagraphNewlines(question.answer.message)
                     MarkdownText(
                         markdown = answer,
+                        style = GovUkTheme.typography.bodyRegular,
                         modifier = modifier
                     )
                     MediumVerticalSpacer()
@@ -172,9 +175,61 @@ private fun ChatScreen(
 private fun OnboardingScreenPreview() {
     GovUkTheme {
         ChatScreen(
-            conversation = null,
+            conversation = conversation(),
             onSubmit = { _ -> },
             onBack = {},
         )
     }
 }
+
+private fun conversation() = ConversationUi(
+    id = "210d1a18-7b77-4418-9938-ad1b5700b9fd",
+    answeredQuestions = listOf(
+        AnsweredQuestionUi(
+            id = "ca615e61-d1ad-4787-b0c9-ae5aed19d12b",
+            answer = AnswerUi(
+                id = "9642d765-cb44-4c87-b959-0109aa5bcead",
+                createdAt = "2025-06-10T15:19:58+01:00",
+                message = """
+                    To apply for Universal Credit, you can follow these steps:
+                    1.  **Apply Online**: You can apply for Universal Credit online by
+                        creating an account. You must complete your claim within 28 days of
+                        creating your account, or you will have to start again. Your claim
+                        starts on the date you submit it in your account. If you live with
+                        your partner, both of you will need to create accounts and link them
+                        together when you claim. [Apply now][1].
+
+                    2.  **Required Information**: To apply online, you’ll need your bank,
+                        building society, or credit union account details, an email address,
+                        and access to a phone. You’ll also need to prove your identity using
+                        documents such as a driving licence, passport, debit or credit card,
+                        payslip, or P60. Additionally, you will need to provide information
+                        about your housing, earnings, National Insurance number, other
+                        benefits, any disability or health condition affecting your work,
+                        childcare costs, and savings or investments.
+
+                    3.  **Help with Your Claim**: If you need assistance, you can get free
+                        support from trained advisers through the Help to Claim service
+                        provided by Citizens Advice. This service is confidential, and they
+                        will not share your personal information without your consent. You
+                        can also call the Universal Credit helpline for assistance.
+
+                    4.  **Alternative Application Methods**: If you cannot claim online, you
+                        can claim by phone through the Universal Credit helpline.
+
+                    For more detailed information on how to apply for Universal Credit,
+                    visit the [GOV.UK page on Universal Credit][2].
+
+
+
+                    [1]: https://www.universal-credit.service.gov.uk/postcode-checker
+                    [2]: https://www.integration.publishing.service.gov.uk/universal-credit/how-to-claim
+                """.trimIndent()
+            ),
+            conversationId = "210d1a18-7b77-4418-9938-ad1b5700b9fd",
+            createdAt = "2025-06-10T15:18:47+01:00",
+            message = "How can I apply for universal credit?"
+        )
+    ),
+    createdAt = "2025-06-10T15:18:47+01:00"
+)
