@@ -2,8 +2,7 @@ package uk.gov.govuk.chat.domain
 
 object StringCleaner {
     fun removeInParagraphNewlines(string: String): String {
-        return string.replace("([a-zA-Z])\n  (\\()".toRegex(RegexOption.MULTILINE), "$1 $2")
-          .replace("([a-zA-Z]) *\n *([a-zA-Z])".toRegex(RegexOption.MULTILINE), "$1 $2")
+        return string.replace("([a-zA-Z,]) *\n *([\\[(a-zA-Z])".toRegex(RegexOption.MULTILINE), "$1 $2")
     }
 
     /*

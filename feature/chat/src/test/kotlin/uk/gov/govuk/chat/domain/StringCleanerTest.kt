@@ -59,6 +59,22 @@ class StringCleanerTest {
         }
 
         @Test
+        fun `strips newlines between list items`() {
+            val actual = "one, two, three,\nfour, five, six"
+            val expected = "one, two, three, four, five, six"
+
+            assertEquals(StringCleaner.removeInParagraphNewlines(actual), expected)
+        }
+
+        @Test
+        fun `strips newlines before bracket`() {
+            val actual = "visit the\n[GOV.UK page on Universal Credit][2]."
+            val expected = "visit the [GOV.UK page on Universal Credit][2]."
+
+            assertEquals(StringCleaner.removeInParagraphNewlines(actual), expected)
+        }
+
+        @Test
         fun `real response test`() {
             val actual = """
                 Yes, you can keep a micropig, but you must follow specific regulations
