@@ -8,7 +8,6 @@ import com.google.accompanist.permissions.shouldShowRationale
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -20,15 +19,12 @@ import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.notifications.data.local.NotificationsDataStore
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalCoroutinesApi::class)
 class NotificationsPermissionViewModelTest {
     private val dispatcher = UnconfinedTestDispatcher()
     private val permissionStatus = mockk<PermissionStatus>()
-    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
-    private val notificationsClient = mockk<NotificationsClient>(relaxed = true)
     private val notificationsDataStore = mockk<NotificationsDataStore>()
 
     private lateinit var viewModel: NotificationsPermissionViewModel
@@ -37,8 +33,6 @@ class NotificationsPermissionViewModelTest {
     fun setup() {
         Dispatchers.setMain(dispatcher)
         viewModel = NotificationsPermissionViewModel(
-            analyticsClient,
-            notificationsClient,
             notificationsDataStore
         )
     }
@@ -46,35 +40,6 @@ class NotificationsPermissionViewModelTest {
     @After
     fun tearDown() {
         Dispatchers.resetMain()
-    }
-
-    @Test
-    fun `Given Continue button click, then remove consent and log analytics`() {
-        every { notificationsClient.removeConsent() } returns Unit
-
-        viewModel.onContinueButtonClick("Text")
-
-        runTest {
-            verify(exactly = 1) {
-                notificationsClient.removeConsent()
-                analyticsClient.buttonClick(
-                    text = "Text"
-                )
-            }
-        }
-    }
-
-    @Test
-    fun `Given Cancel button click, then log analytics`() {
-        viewModel.onCancelButtonClick("Text")
-
-        runTest {
-            verify(exactly = 1) {
-                analyticsClient.buttonClick(
-                    text = "Text"
-                )
-            }
-        }
     }
 
     @Test

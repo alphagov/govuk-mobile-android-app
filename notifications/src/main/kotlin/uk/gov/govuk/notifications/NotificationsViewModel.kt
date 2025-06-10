@@ -81,4 +81,13 @@ internal open class NotificationsViewModel @Inject constructor(
             external = true
         )
     }
+
+    internal fun onContinueButtonClick(text: String) {
+        notificationsClient.removeConsent()
+        analyticsClient.buttonClick(text)
+    }
+
+    internal fun onCancelButtonClick(text: String) {
+        analyticsClient.buttonClick(text)
+    }
 }
