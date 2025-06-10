@@ -25,11 +25,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import dev.jeziellago.compose.markdowntext.MarkdownText
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
+import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.chat.ui.model.ConversationUi
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
-import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.FixedContainerDivider
 import uk.gov.govuk.design.ui.component.FullScreenHeader
@@ -91,11 +92,9 @@ private fun ChatScreen(
                     )
                     MediumVerticalSpacer()
 
-                    // TODO: parse this as markdown...
-                    val answer = question.answer.message
-
-                    BodyRegularLabel(
-                        text = answer,
+                    val answer = StringCleaner.removeInParagraphNewlines(question.answer.message)
+                    MarkdownText(
+                        markdown = answer,
                         modifier = modifier
                     )
                     MediumVerticalSpacer()
