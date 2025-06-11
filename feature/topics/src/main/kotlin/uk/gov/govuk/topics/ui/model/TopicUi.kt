@@ -6,6 +6,7 @@ import androidx.annotation.StringRes
 internal data class TopicUi(
     val title: String,
     val description: String?,
+    val testWebViews: List<WebViewContent>,
     val popularPages: List<TopicContent>,
     val stepBySteps: List<TopicContent>,
     val displayStepByStepSeeAll: Boolean,
@@ -26,5 +27,10 @@ internal data class TopicUi(
     data class TopicContent(
         val url: String,
         val title: String
+    )
+
+    data class WebViewContent(
+        val title: String,
+        val contentItemUrl: String,
     )
 }

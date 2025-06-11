@@ -14,6 +14,10 @@ internal fun RemoteTopic.toTopicUi(maxStepBySteps: Int, isSubtopic: Boolean): To
     return TopicUi(
         title = title,
         description = description,
+        testWebViews = listOf(TopicUi.WebViewContent(
+            title = "Sign in Universal Credit",
+            contentItemUrl = "https://www.gov.uk/api/content/sign-in-universal-credit"
+        )),
         popularPages = content
             .filter { it.isPopular }
             .map { it.toTopicContent() },

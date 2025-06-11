@@ -43,6 +43,7 @@ import uk.gov.govuk.topics.ui.model.TopicUi
 @Composable
 internal fun TopicRoute(
     onBack: () -> Unit,
+    onNativeContentItemLink: (contentItemUrl: String) -> Unit,
     onExternalLink: (url: String, onExternalLink: Int) -> Unit,
     onStepByStepSeeAll: () -> Unit,
     onSubtopic: (ref: String) -> Unit,
@@ -80,6 +81,7 @@ internal fun TopicRoute(
                                 selectedItemIndex = selectedItemIndex
                             )
                         },
+                        onNativeContentItemLink = onNativeContentItemLink,
                         onSubtopic = { text, ref, selectedItemIndex ->
                             viewModel.onSubtopicClick(text, selectedItemIndex)
                             onSubtopic(ref)
@@ -110,6 +112,7 @@ internal fun TopicRoute(
 private fun TopicScreen(
     topic: TopicUi,
     onPageView: (String) -> Unit,
+    onNativeContentItemLink: (String) -> Unit,
     onBack: () -> Unit,
     onExternalLink: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit,
     onStepByStepSeeAll: (section: String, text: String, selectedItemIndex: Int) -> Unit,
@@ -125,6 +128,10 @@ private fun TopicScreen(
             onBack = onBack
         )
 
+        val testWebviewsSection = TopicUi.Section(
+            title = R.string.testWebViewsTitle,
+            icon = R.drawable.ic_topic_popular
+        )
         val popularPagesSection = TopicUi.Section(
             title = R.string.popularPagesTitle,
             icon = R.drawable.ic_topic_popular
@@ -173,6 +180,32 @@ private fun TopicScreen(
             item {
                 MediumVerticalSpacer()
             }
+
+            item {
+                ListHeader(
+                    title = testWebviewsSection.title,
+                    icon = testWebviewsSection.icon,
+                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+                )
+            }
+
+            val lastIndex = topic.testWebViews.lastIndex
+            itemsIndexed(topic.testWebViews) { index, testWebview ->
+                InternalLinkListItem(
+                    title = testWebview.title,
+                    onClick = {
+                        onNativeContentItemLink(testWebview.contentItemUrl)
+                    },
+                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
+                    isFirst = false,
+                    isLast = index == lastIndex
+                )
+            }
+
+            item {
+                MediumVerticalSpacer()
+            }
+
 
             contentItems(
                 currentItemIndex = currentItemIndex,

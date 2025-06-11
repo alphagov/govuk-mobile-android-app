@@ -11,8 +11,11 @@ import androidx.navigation.navigation
 import uk.gov.govuk.topics.ui.AllStepByStepRoute
 import uk.gov.govuk.topics.ui.AllTopicsRoute
 import uk.gov.govuk.topics.ui.EditTopicsRoute
+import uk.gov.govuk.topics.ui.ExampleContentItemRoute
 import uk.gov.govuk.topics.ui.TopicRoute
 import uk.gov.govuk.topics.ui.TopicSelectionRoute
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 const val TOPIC_SELECTION_GRAPH_ROUTE = "topic_selection_graph_route"
 private const val TOPIC_SELECTION_ROUTE = "topic_selection_route"
@@ -23,6 +26,7 @@ internal const val TOPIC_SUBTOPIC_ARG = "isSubtopic"
 private const val TOPICS_EDIT_ROUTE = "topics_edit_route"
 const val TOPICS_ALL_ROUTE = "topics_all_route"
 const val TOPICS_ALL_STEP_BY_STEPS_ROUTE = "topics_all_step_by_steps_route"
+const val NATIVE_CONTENT_ITEM_ROUTE = "native_content_item_route"
 
 fun NavGraphBuilder.topicSelectionGraph(
     topicSelectionCompleted: () -> Unit,
@@ -60,6 +64,7 @@ fun NavGraphBuilder.topicsGraph(
         ) {
             TopicRoute(
                 onBack = { navController.popBackStack() },
+                onNativeContentItemLink = { contentItemUrl -> navController.navigateToNativeContentItem(contentItemUrl) },
                 onExternalLink = { url, _ ->
                     launchBrowser(url)
                 },
@@ -84,6 +89,26 @@ fun NavGraphBuilder.topicsGraph(
                 modifier = modifier
             )
         }
+
+        composable(
+            "$NATIVE_CONTENT_ITEM_ROUTE/{contentItemUrl}",
+            arguments = listOf(
+                navArgument("contentItemUrl") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val contentItemUrl = backStackEntry.arguments?.getString("contentItemUrl")
+            if (contentItemUrl != null) {
+                ExampleContentItemRoute(
+                    contentItemUrl = contentItemUrl,
+                    onBack = { navController.popBackStack() },
+                    launchBrowser = launchBrowser,
+                    modifier = modifier
+                )
+            } else {
+                throw Exception("Error: no ref")
+            }
+        }
+
         composable(
             TOPICS_ALL_STEP_BY_STEPS_ROUTE
         ) {
@@ -100,6 +125,11 @@ fun NavGraphBuilder.topicsGraph(
 
 fun NavController.navigateToTopic(ref: String, isSubtopic: Boolean = false) {
     navigate("$TOPIC_ROUTE/$ref?$TOPIC_SUBTOPIC_ARG=$isSubtopic")
+}
+
+fun NavController.navigateToNativeContentItem(contentItemUrl: String) {
+    val encodedUrl = URLEncoder.encode(contentItemUrl, StandardCharsets.UTF_8.toString())
+    navigate("$NATIVE_CONTENT_ITEM_ROUTE/$encodedUrl")
 }
 
 fun NavController.navigateToTopicsEdit() {
