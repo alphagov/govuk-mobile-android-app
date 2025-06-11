@@ -38,7 +38,6 @@ internal fun ExampleContentItemRoute(
     // TODO: this assumes the content item is of type "transaction"
     // TODO: loading state
     // TODO: error state
-    // TODO: font
 
     val context = LocalContext.current
     val cssVariables = """
@@ -58,8 +57,24 @@ internal fun ExampleContentItemRoute(
       --govuk-link-hover-colour-inverse: ${hex(GovUkTheme.colourScheme.textAndIcons.link)};
       --govuk-link-visited-colour: ${hex(GovUkTheme.colourScheme.textAndIcons.link)};
       --govuk-link-visited-colour-inverse: ${hex(GovUkTheme.colourScheme.textAndIcons.link)};
-      --govspeak-info-notice-border-colour: ${hex(GovUkTheme.colourScheme.strokes.fixedContainer)};
+      --govspeak-info-notice-border-colour: ${hex(GovUkTheme.colourScheme.strokes.govspeakInfoCalloutBorder)};
     }
+    """.trimIndent()
+    val cssFontFace = """
+        @font-face {
+          font-family: "GDS Transport";
+          font-style: normal;
+          font-weight: normal;
+          src: url("file:///android_asset/fonts/transport_light.ttf");
+          font-display: fallback;
+        }
+        @font-face {
+          font-family: "GDS Transport";
+          font-style: normal;
+          font-weight: bold;
+          src: url("file:///android_asset/fonts/transport_bold.ttf");
+          font-display: fallback;
+        }
     """.trimIndent()
 
     var title by remember { mutableStateOf("") }
@@ -71,7 +86,9 @@ internal fun ExampleContentItemRoute(
         withContext(Dispatchers.IO) {
             val cssStream = context.resources.openRawResource(R.raw.govspeak)
             val cssReader = BufferedReader(InputStreamReader(cssStream))
-            val cssStringBuilder = StringBuilder(cssVariables)
+            val cssStringBuilder = StringBuilder()
+            cssStringBuilder.append(cssVariables)
+            cssStringBuilder.append(cssFontFace)
             var line = cssReader.readLine()
             while (line != null) {
                 cssStringBuilder.append(line)
