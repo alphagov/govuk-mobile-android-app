@@ -1,10 +1,14 @@
 package uk.gov.govuk.topics.ui
 
+import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -22,6 +27,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
 import uk.gov.govuk.design.ui.component.ChildPageHeader
+import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.PrimaryButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.R
@@ -81,6 +87,8 @@ internal fun ExampleContentItemRoute(
     var startButtonText by remember { mutableStateOf("") }
     var transactionStartLink by remember { mutableStateOf("") }
     var webView by remember { mutableStateOf<WebView?>(null) }
+    var webViewHeight by remember { mutableStateOf(0) }
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(contentItemUrl) {
         withContext(Dispatchers.IO) {
@@ -122,27 +130,45 @@ internal fun ExampleContentItemRoute(
             }
         }
     }
-    Column(modifier.fillMaxWidth()) {
+    Column(modifier.fillMaxSize().verticalScroll(scrollState)) {
         ChildPageHeader(
             text = title,
             onBack = onBack
         )
-        Box {
-            AndroidView(factory = { context ->
-                WebView(context).apply {
-                    webViewClient = WebViewClient()
-                    settings.javaScriptEnabled = false
-                    webView = this
-                    loadDataWithBaseURL(
-                        null,
-                        "",
-                        "text/html; charset=utf-8",
-                        "utf-8",
-                        null
-                    )
+        AndroidView(factory = { context ->
+            WebView(context).apply {
+                settings.javaScriptEnabled = true
+                webViewClient = object : WebViewClient() {
+                    override fun onPageFinished(view: WebView, url: String) {
+                        super.onPageFinished(view, url)
+
+                        evaluateJavascript(
+                            "(function() { return document.body.scrollHeight }())"
+                        ) { value ->
+                            val contentHeight = value.toFloatOrNull() ?: 0f
+                            val density = resources.displayMetrics.density
+                            webViewHeight = (contentHeight * density).toInt()
+                        }
+                    }
                 }
-            })
-        }
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+                isVerticalScrollBarEnabled = false
+                isHorizontalScrollBarEnabled = false
+                webView = this
+                loadDataWithBaseURL(
+                    null,
+                    "",
+                    "text/html; charset=utf-8",
+                    "utf-8",
+                    null
+                )
+            }
+        }, modifier = Modifier
+            .fillMaxWidth()
+            .height(with(LocalDensity.current) { webViewHeight.toDp() }))
         PrimaryButton(
             text = startButtonText,
             onClick = {
@@ -150,6 +176,7 @@ internal fun ExampleContentItemRoute(
             },
             externalLink = true,
         )
+        MediumVerticalSpacer()
     }
 }
 
