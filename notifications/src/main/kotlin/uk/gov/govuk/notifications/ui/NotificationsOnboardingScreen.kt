@@ -15,7 +15,6 @@ import uk.gov.govuk.notifications.NotificationsOnboardingViewModel
 import uk.gov.govuk.notifications.NotificationsUiState
 import uk.gov.govuk.notifications.NotificationsViewModel
 import uk.gov.govuk.notifications.R
-import uk.gov.govuk.notifications.openDeviceSettings
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -56,7 +55,10 @@ internal fun NotificationsOnboardingRoute(
                                 secondaryText = secondaryText,
                                 onSecondary = {
                                     notificationsViewModel.onTurnOffNotificationsClick(secondaryText)
-                                    openDeviceSettings(context)
+                                    showNotificationsAlert(
+                                        context,
+                                        onCancelButtonClick = { notificationsViewModel.onCancelButtonClick(it) },
+                                        onContinueButtonClick = { notificationsViewModel.onContinueButtonClick(it) })
                                 }
                             )
                         } else {

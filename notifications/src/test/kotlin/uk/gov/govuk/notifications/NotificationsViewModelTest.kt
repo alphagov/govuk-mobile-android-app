@@ -148,4 +148,33 @@ class NotificationsViewModelTest {
             }
         }
     }
+
+    @Test
+    fun `Given Continue button click, then remove consent and log analytics`() {
+        every { notificationsClient.removeConsent() } returns Unit
+
+        viewModel.onContinueButtonClick("Text")
+
+        runTest {
+            verify(exactly = 1) {
+                notificationsClient.removeConsent()
+                analyticsClient.buttonClick(
+                    text = "Text"
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `Given Cancel button click, then log analytics`() {
+        viewModel.onCancelButtonClick("Text")
+
+        runTest {
+            verify(exactly = 1) {
+                analyticsClient.buttonClick(
+                    text = "Text"
+                )
+            }
+        }
+    }
 }
