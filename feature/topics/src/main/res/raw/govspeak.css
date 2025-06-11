@@ -1,0 +1,200 @@
+body{
+    padding: 20px;
+    background: var(--background-colour);
+}
+.gem-c-govspeak {
+  color: var(--govspeak-text-colour);
+  font-family: "GDS Transport", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.25;
+}
+.gem-c-govspeak ol,
+.gem-c-govspeak ul,
+.gem-c-govspeak p {
+  margin: 0 0 20px 0;
+  font-size: 1.1875rem;
+  line-height: 1.3157894737;
+}
+.gem-c-govspeak * + h2,
+.gem-c-govspeak * + h3 {
+  padding-top: 20px;
+}
+.gem-c-govspeak h1 {
+  margin: 0;
+  padding: 0;
+  font-size: 1.1875rem;
+  line-height: 1.3157894737;
+}
+.gem-c-govspeak h2 {
+  margin: 0 0 20px 0;
+  font-size: 1.3125rem;
+  line-height: 1.1904761905;
+  font-weight: 700;
+}
+@media (min-width: 40.0625em) {
+  .gem-c-govspeak h2 {
+    font-size: 1.6875rem;
+    line-height: 1.1111111111;
+  }
+}
+.gem-c-govspeak h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.1875rem;
+  line-height: 1.3157894737;
+  font-weight: 700;
+}
+.gem-c-govspeak h4,
+.gem-c-govspeak h5,
+.gem-c-govspeak h6 {
+  margin: 0;
+  font-size: 1.1875rem;
+  line-height: 1.3157894737;
+  font-weight: 700;
+}
+.gem-c-govspeak a {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+.gem-c-govspeak a:link {
+  color: var(--govuk-link-colour);
+}
+.gem-c-govspeak a:visited {
+  color: var(--govuk-link-visited-colour);
+}
+.gem-c-govspeak a:hover {
+  color: var(--govuk-link-hover-colour);
+}
+.gem-c-govspeak a:active {
+  color: var(--govuk-link-active-colour);
+}
+.gem-c-govspeak a:focus {
+  color: var(--govuk-focus-text-colour);
+}
+.gem-c-govspeak a:focus {
+  outline: 3px solid transparent;
+  color: var(--govuk-focus-text-colour);
+  background-color: var(--govuk-focus-colour);
+  box-shadow: 0 -2px var(--govuk-focus-colour), 0 4px var(--govuk-focus-text-colour);
+  text-decoration: none;
+}
+.gem-c-govspeak ol,
+.gem-c-govspeak ul {
+  list-style-position: outside;
+  margin: 0 0 20px 20px;
+  padding: 0;
+}
+.gem-c-govspeak ul {
+  list-style: disc;
+}
+.gem-c-govspeak li {
+  margin: 0 0 10px;
+  padding: 0;
+}
+.gem-c-govspeak li p {
+  margin: 0 0 10px;
+}
+.gem-c-govspeak sup {
+  font-size: 0.8em;
+  line-height: 0.7em;
+  vertical-align: super;
+}
+.gem-c-govspeak abbr {
+  cursor: help;
+  text-decoration: none;
+}
+.gem-c-govspeak hr {
+  margin-top: 29px;
+  margin-bottom: 30px;
+  border-top: 1px solid var(--govuk-border-colour);
+}
+.gem-c-govspeak.gem-c-govspeak--direction-rtl ol, .gem-c-govspeak.gem-c-govspeak--direction-rtl ul {
+  margin-left: 0;
+  margin-right: 20px;
+}
+.gem-c-govspeak.gem-c-govspeak--direction-rtl ol a, .gem-c-govspeak.gem-c-govspeak--direction-rtl ul a {
+  overflow-wrap: break-word;
+}
+.gem-c-govspeak.gem-c-govspeak--direction-rtl ol ul,
+.gem-c-govspeak.gem-c-govspeak--direction-rtl ol ol, .gem-c-govspeak.gem-c-govspeak--direction-rtl ul ul,
+.gem-c-govspeak.gem-c-govspeak--direction-rtl ul ol {
+  margin-bottom: 0;
+}
+.gem-c-govspeak blockquote {
+  padding: 0 0 0 30px;
+  margin: 0 0 20px 0;
+  border: 0;
+}
+.gem-c-govspeak blockquote p {
+  position: relative;
+}
+.gem-c-govspeak blockquote p::before {
+  content: "“";
+  position: absolute;
+  right: 100%;
+}
+.gem-c-govspeak blockquote p:last-of-type::after {
+  content: "”";
+}
+.gem-c-govspeak.gem-c-govspeak--direction-rtl blockquote {
+  padding: 0 20px 0 0;
+}
+@media (min-width: 48.0625em) {
+  .gem-c-govspeak.gem-c-govspeak--direction-rtl blockquote {
+    margin: 0 -30px 0 0;
+  }
+}
+.gem-c-govspeak.gem-c-govspeak--direction-rtl blockquote p {
+  padding-right: 15px;
+  padding-left: 0;
+}
+@media (min-width: 40.0625em) {
+  .gem-c-govspeak.gem-c-govspeak--direction-rtl blockquote p {
+    padding-right: 30px;
+    padding-left: 0;
+  }
+}
+.gem-c-govspeak.gem-c-govspeak--direction-rtl blockquote p::before {
+  content: "”";
+  float: right;
+  margin-right: -15px;
+  margin-left: 0;
+}
+.gem-c-govspeak.gem-c-govspeak--direction-rtl blockquote p:last-child::after {
+  content: "“";
+}
+.gem-c-govspeak em,
+.gem-c-govspeak i {
+  font-style: normal;
+  font-weight: inherit;
+}
+
+.gem-c-govspeak--inverse {
+  color: var(--govspeak-text-colour-inverse);
+}
+.gem-c-govspeak--inverse a:link {
+  color: var(--govuk-link-colour-inverse);
+}
+.gem-c-govspeak--inverse a:visited {
+  color: var(--govuk-link-visited-colour-inverse);
+}
+.gem-c-govspeak--inverse a:hover {
+  color: var(--govuk-link-hover-colour-inverse);
+}
+.gem-c-govspeak--inverse a:active {
+  color: var(--govuk-link-active-colour-inverse);
+}
+
+.govspeak.gem-c-govspeak--direction-rtl,
+.gem-c-govspeak.gem-c-govspeak--direction-rtl {
+  direction: rtl;
+  text-align: start;
+}
+.govspeak .info-notice,
+.gem-c-govspeak .info-notice {
+  border-left: 10px solid var(--govspeak-info-notice-border-colour);
+  padding: 20px 0 0.1234px 20px;
+  margin: 0 0 20px 0;
+}
