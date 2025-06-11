@@ -423,8 +423,8 @@ private fun GovUkNavHost(
         )
         loginGraph(
             navController = navController,
-            onLoginCompleted = { isDifferentUser ->
-                viewModel.onLogin(isDifferentUser, navController)
+            onLoginCompleted = {
+                viewModel.onLogin(navController)
             },
             onBiometricSetupCompleted = {
                 appLaunchNavigation.onNext(navController)

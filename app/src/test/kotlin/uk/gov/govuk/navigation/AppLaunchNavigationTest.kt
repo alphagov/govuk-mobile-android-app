@@ -349,6 +349,7 @@ class AppLaunchNavigationTest {
 
         appLaunchNav.onSignOut()
         appLaunchNav.onNext(navController)
+        appLaunchNav.onNext(navController)
 
         clearAllMocks()
 
