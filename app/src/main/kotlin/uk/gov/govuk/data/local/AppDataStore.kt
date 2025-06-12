@@ -18,8 +18,20 @@ internal class AppDataStore @Inject constructor(
     @Named("app_prefs") private val dataStore: DataStore<Preferences>
 ) {
     companion object {
+        internal const val SKIPPED_BIOMETRICS_KEY = "skipped_biometrics"
         internal const val TOPIC_SELECTION_COMPLETED_KEY = "topic_selection_completed"
         internal const val SUPPRESSED_HOME_WIDGETS = "suppressed_home_widgets"
+    }
+
+    internal suspend fun hasSkippedBiometrics(): Boolean {
+        return dataStore.data.firstOrNull()
+            ?.get(booleanPreferencesKey(SKIPPED_BIOMETRICS_KEY)) == true
+    }
+
+    internal suspend fun skipBiometrics() {
+        dataStore.edit { prefs ->
+            prefs[booleanPreferencesKey(SKIPPED_BIOMETRICS_KEY)] = true
+        }
     }
 
     internal suspend fun isTopicSelectionCompleted(): Boolean {

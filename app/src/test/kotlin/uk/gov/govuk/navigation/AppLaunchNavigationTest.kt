@@ -43,6 +43,7 @@ class AppLaunchNavigationTest {
         every { flagRepo.isTopicsEnabled() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
         coEvery { authRepo.isAuthenticationEnabled() } returns true
+        coEvery { appRepo.hasSkippedBiometrics() } returns false
         coEvery { authRepo.isUserSignedIn() } returns false
         coEvery { flagRepo.isLoginEnabled() } returns true
         coEvery { analyticsClient.isAnalyticsConsentRequired() } returns true
@@ -117,6 +118,23 @@ class AppLaunchNavigationTest {
     @Test
     fun `Given authentication is not enabled, When build launch flow, builds launch routes`() {
         coEvery { authRepo.isAuthenticationEnabled() } returns false
+
+        runTest {
+            appLaunchNav.buildLaunchFlow()
+
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
+            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
+            expected.push(LOGIN_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
+    }
+
+    @Test
+    fun `Given biometrics has been skipped, When build launch flow, builds launch routes`() {
+        coEvery { appRepo.hasSkippedBiometrics() } returns true
 
         runTest {
             appLaunchNav.buildLaunchFlow()
@@ -328,6 +346,21 @@ class AppLaunchNavigationTest {
     }
 
     @Test
+    fun `Given biometrics has been skipped, When sign out, build launch routes`() {
+        coEvery { appRepo.hasSkippedBiometrics() } returns true
+
+        runTest {
+            appLaunchNav.onSignOut()
+
+            val expected = Stack<String>()
+            expected.push(HOME_GRAPH_ROUTE)
+            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
+
+            assertEquals(expected, appLaunchNav.launchRoutes)
+        }
+    }
+
+    @Test
     fun `Given notifications are disabled, When sign out, build launch routes`() {
         every { flagRepo.isNotificationsEnabled() } returns false
 
@@ -347,18 +380,20 @@ class AppLaunchNavigationTest {
         every { flagRepo.isNotificationsEnabled() } returns false
         every { authRepo.isAuthenticationEnabled() } returns false
 
-        appLaunchNav.onSignOut()
-        appLaunchNav.onNext(navController)
-        appLaunchNav.onNext(navController)
+        runTest {
+            appLaunchNav.onSignOut()
+            appLaunchNav.onNext(navController)
+            appLaunchNav.onNext(navController)
 
-        clearAllMocks()
+            clearAllMocks()
 
-        appLaunchNav.onNext(navController)
-        verify {
-            navController.popBackStack()
-        }
-        verify(exactly = 0) {
-            navController.navigate(any<String>())
+            appLaunchNav.onNext(navController)
+            verify {
+                navController.popBackStack()
+            }
+            verify(exactly = 0) {
+                navController.navigate(any<String>())
+            }
         }
     }
 

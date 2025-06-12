@@ -9,12 +9,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.gov.govuk.R
 import uk.gov.govuk.analytics.AnalyticsClient
+import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import javax.inject.Inject
 
 @HiltViewModel
 internal class BiometricViewModel @Inject constructor(
     private val authRepo: AuthRepo,
+    private val appRepo: AppRepo,
     private val analyticsClient: AnalyticsClient
 ) : ViewModel() {
 
@@ -56,5 +58,9 @@ internal class BiometricViewModel @Inject constructor(
             text = text,
             section = SECTION
         )
+
+        viewModelScope.launch {
+            appRepo.skipBiometrics()
+        }
     }
 }

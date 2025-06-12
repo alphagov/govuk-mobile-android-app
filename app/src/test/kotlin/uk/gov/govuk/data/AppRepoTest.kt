@@ -18,6 +18,40 @@ class AppRepoTest {
     private val appDataStore = mockk<AppDataStore>(relaxed = true)
 
     @Test
+    fun `Given the user has not skipped biometrics, When has skipped biometrics, then return false`() {
+        val repo = AppRepo(appDataStore)
+
+        coEvery { appDataStore.hasSkippedBiometrics() } returns false
+
+        runTest {
+
+            assertFalse(repo.hasSkippedBiometrics())
+        }
+    }
+
+    @Test
+    fun `Given the user has skipped biometrics, When has skipped biometrics, then return true`() {
+        val repo = AppRepo(appDataStore)
+
+        coEvery { appDataStore.hasSkippedBiometrics() } returns true
+
+        runTest {
+            assertTrue(repo.hasSkippedBiometrics())
+        }
+    }
+
+    @Test
+    fun `Given the user skips biometrics, When skip biometrics, then update data store`() {
+        val repo = AppRepo(appDataStore)
+
+        runTest {
+            repo.skipBiometrics()
+
+            coVerify { appDataStore.skipBiometrics() }
+        }
+    }
+
+    @Test
     fun `Given the user has not previously completed topic selection, When is topic selection completed, then return false`() {
         val repo = AppRepo(appDataStore)
 

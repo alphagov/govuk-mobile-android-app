@@ -2,6 +2,7 @@ package uk.gov.govuk.login
 
 import androidx.fragment.app.FragmentActivity
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +14,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.analytics.AnalyticsClient
+import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -21,6 +23,7 @@ import kotlin.test.assertTrue
 class BiometricViewModelTest {
 
     private val authRepo = mockk<AuthRepo>(relaxed = true)
+    private val appRepo = mockk<AppRepo>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val activity = mockk<FragmentActivity>(relaxed = true)
     private val dispatcher = UnconfinedTestDispatcher()
@@ -30,7 +33,7 @@ class BiometricViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = BiometricViewModel(authRepo, analyticsClient)
+        viewModel = BiometricViewModel(authRepo, appRepo, analyticsClient)
     }
 
     @After
@@ -64,14 +67,16 @@ class BiometricViewModelTest {
     }
 
     @Test
-    fun `Given skip, then log analytics`() {
+    fun `Given skip, then log analytics and update repo`() {
         viewModel.onSkip("button text")
 
-        verify {
+        coVerify {
             analyticsClient.buttonClick(
                 text = "button text",
                 section = "Biometrics"
             )
+
+            appRepo.skipBiometrics()
         }
     }
 
