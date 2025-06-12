@@ -1,17 +1,14 @@
 package uk.gov.govuk.data.local
 
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -22,29 +19,38 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import uk.gov.govuk.data.local.AppDataStore.Companion.SKIPPED_BIOMETRICS_KEY
+import uk.gov.govuk.data.local.AppDataStore.Companion.SUPPRESSED_HOME_WIDGETS
+import uk.gov.govuk.data.local.AppDataStore.Companion.TOPIC_SELECTION_COMPLETED_KEY
+import java.io.File
+import kotlin.io.path.createTempDirectory
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AppDataStoreTest {
 
     private val dispatcher = UnconfinedTestDispatcher()
-    private val dataStore = mockk<DataStore<Preferences>>(relaxed = true)
-    private val preferences = mockk<Preferences>()
+
+    private lateinit var tempDir: File
+    private lateinit var dataStore: DataStore<Preferences>
 
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
+        tempDir = File(createTempDirectory().toString())
+        dataStore = PreferenceDataStoreFactory.create(
+            produceFile = { File(tempDir, "test.preferences_pb") }
+        )
     }
 
     @After
     fun tearDown() {
         Dispatchers.resetMain()
+        tempDir.deleteRecursively()
     }
 
     @Test
     fun `Given the data store is empty, When has skipped biometrics, then return false`() {
         val appDatastore = AppDataStore(dataStore)
-
-        every { dataStore.data } returns emptyFlow()
 
         runTest {
             assertFalse(appDatastore.hasSkippedBiometrics())
@@ -55,10 +61,11 @@ class AppDataStoreTest {
     fun `Given the skipped biometrics flag is false in the data store, When has skipped biometrics, then return false`() {
         val appDatastore = AppDataStore(dataStore)
 
-        every { dataStore.data } returns flowOf(preferences)
-        every { preferences[booleanPreferencesKey(AppDataStore.SKIPPED_BIOMETRICS_KEY)] } returns false
-
         runTest {
+            dataStore.edit { prefs ->
+                prefs[booleanPreferencesKey(SKIPPED_BIOMETRICS_KEY)] = false
+            }
+
             assertFalse(appDatastore.hasSkippedBiometrics())
         }
     }
@@ -67,19 +74,31 @@ class AppDataStoreTest {
     fun `Given the skipped biometrics flag is true in the data store, When has skipped biometrics, then return true`() {
         val appDatastore = AppDataStore(dataStore)
 
-        every { dataStore.data } returns flowOf(preferences)
-        every { preferences[booleanPreferencesKey(AppDataStore.SKIPPED_BIOMETRICS_KEY)] } returns true
+        runTest {
+            dataStore.edit { prefs ->
+                prefs[booleanPreferencesKey(SKIPPED_BIOMETRICS_KEY)] = true
+            }
+
+            assertTrue(appDatastore.hasSkippedBiometrics())
+        }
+    }
+
+    @Test
+    fun `Given the user skips biometrics, When skip biometrics, then update the prefs`() {
+        val appDatastore = AppDataStore(dataStore)
 
         runTest {
-            assertTrue(appDatastore.hasSkippedBiometrics())
+            assertFalse(appDatastore.hasSkippedBiometrics())
+
+            appDatastore.skipBiometrics()
+
+            assertTrue(dataStore.data.first().get(booleanPreferencesKey(SKIPPED_BIOMETRICS_KEY)) == true)
         }
     }
 
     @Test
     fun `Given the data store is empty, When is topic selection completed, then return false`() {
         val appDatastore = AppDataStore(dataStore)
-
-        every { dataStore.data } returns emptyFlow()
 
         runTest {
             assertFalse(appDatastore.isTopicSelectionCompleted())
@@ -90,10 +109,11 @@ class AppDataStoreTest {
     fun `Given the topic selection completed flag is false in the data store, When is topic selection completed, then return false`() {
         val appDatastore = AppDataStore(dataStore)
 
-        every { dataStore.data } returns flowOf(preferences)
-        every { preferences[booleanPreferencesKey(AppDataStore.TOPIC_SELECTION_COMPLETED_KEY)] } returns false
-
         runTest {
+            dataStore.edit { prefs ->
+                prefs[booleanPreferencesKey(TOPIC_SELECTION_COMPLETED_KEY)] = false
+            }
+
             assertFalse(appDatastore.isTopicSelectionCompleted())
         }
     }
@@ -102,81 +122,70 @@ class AppDataStoreTest {
     fun `Given the topic selection completed flag is true in the data store, When is topic selection completed, then return true`() {
         val appDatastore = AppDataStore(dataStore)
 
-        every { dataStore.data } returns flowOf(preferences)
-        every { preferences[booleanPreferencesKey(AppDataStore.TOPIC_SELECTION_COMPLETED_KEY)] } returns true
-
         runTest {
+            dataStore.edit { prefs ->
+                prefs[booleanPreferencesKey(TOPIC_SELECTION_COMPLETED_KEY)] = true
+            }
+
             assertTrue(appDatastore.isTopicSelectionCompleted())
         }
     }
 
     @Test
     fun `Given the data store is empty, when collecting suppressed home widgets, then flow is empty`() {
-        every { dataStore.data } returns emptyFlow()
-
         val appDatastore = AppDataStore(dataStore)
         
         runTest {
-            val suppressedWidgets = mutableListOf<Set<String>>()
-            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                appDatastore.suppressedHomeWidgets.toList(suppressedWidgets)
-            }
-
-            assertTrue(suppressedWidgets.isEmpty())
-        }
-    }
-
-    @Test
-    fun `Given the suppressed widgets is null, when collecting suppressed home widgets, then flow emits an empty set`() {
-        every { dataStore.data } returns flowOf(preferences)
-        every { preferences[stringSetPreferencesKey(AppDataStore.SUPPRESSED_HOME_WIDGETS)] } returns null
-
-        val appDatastore = AppDataStore(dataStore)
-
-        runTest {
-            val suppressedWidgets = mutableListOf<Set<String>>()
-            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                appDatastore.suppressedHomeWidgets.toList(suppressedWidgets)
-            }
-
-            assertTrue(suppressedWidgets[0].isEmpty())
+            assertTrue(appDatastore.suppressedHomeWidgets.first().isEmpty())
         }
     }
 
     @Test
     fun `Given the suppressed widgets are empty, when collecting suppressed home widgets, then flow emits an empty set`() {
-        every { dataStore.data } returns flowOf(preferences)
-        every { preferences[stringSetPreferencesKey(AppDataStore.SUPPRESSED_HOME_WIDGETS)] } returns emptySet()
-
         val appDatastore = AppDataStore(dataStore)
 
         runTest {
-            val suppressedWidgets = mutableListOf<Set<String>>()
-            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                appDatastore.suppressedHomeWidgets.toList(suppressedWidgets)
+            dataStore.edit { prefs ->
+                prefs[stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS)] = emptySet()
             }
 
-            assertTrue(suppressedWidgets[0].isEmpty())
+            assertTrue(appDatastore.suppressedHomeWidgets.first().isEmpty())
         }
     }
 
     @Test
     fun `Given the suppressed widgets are present, when collecting suppressed home widgets, then flow emits a set containing suppressed widgets`() {
-        every { dataStore.data } returns flowOf(preferences)
-        every { preferences[stringSetPreferencesKey(AppDataStore.SUPPRESSED_HOME_WIDGETS)] } returns setOf("Widget 1", "Widget 2")
-
         val appDatastore = AppDataStore(dataStore)
 
         runTest {
-            val flowResults = mutableListOf<Set<String>>()
-            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                appDatastore.suppressedHomeWidgets.toList(flowResults)
+            dataStore.edit { prefs ->
+                prefs[stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS)] = setOf("Widget 1", "Widget 2")
             }
 
-            val suppressedWidgets = flowResults[0]
+            val suppressedWidgets = appDatastore.suppressedHomeWidgets.first()
             assertEquals(2, suppressedWidgets.size)
             assertTrue(suppressedWidgets.contains("Widget 1"))
             assertTrue(suppressedWidgets.contains("Widget 2"))
+        }
+    }
+
+    @Test
+    fun `Given the data store is cleared, when clear, then the data store is cleared`() {
+        val appDatastore = AppDataStore(dataStore)
+
+        runTest {
+            dataStore.edit { prefs ->
+                prefs[booleanPreferencesKey(SKIPPED_BIOMETRICS_KEY)] = true
+                prefs[booleanPreferencesKey(TOPIC_SELECTION_COMPLETED_KEY)] = true
+                prefs[stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS)] =
+                    setOf("Widget 1", "Widget 2")
+            }
+
+            assertTrue(dataStore.data.first().asMap().isNotEmpty())
+
+            appDatastore.clear()
+
+            assertTrue(dataStore.data.first().asMap().isEmpty())
         }
     }
 }
