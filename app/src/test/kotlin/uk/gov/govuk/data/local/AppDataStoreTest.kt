@@ -41,6 +41,41 @@ class AppDataStoreTest {
     }
 
     @Test
+    fun `Given the data store is empty, When has skipped biometrics, then return false`() {
+        val appDatastore = AppDataStore(dataStore)
+
+        every { dataStore.data } returns emptyFlow()
+
+        runTest {
+            assertFalse(appDatastore.hasSkippedBiometrics())
+        }
+    }
+
+    @Test
+    fun `Given the skipped biometrics flag is false in the data store, When has skipped biometrics, then return false`() {
+        val appDatastore = AppDataStore(dataStore)
+
+        every { dataStore.data } returns flowOf(preferences)
+        every { preferences[booleanPreferencesKey(AppDataStore.SKIPPED_BIOMETRICS_KEY)] } returns false
+
+        runTest {
+            assertFalse(appDatastore.hasSkippedBiometrics())
+        }
+    }
+
+    @Test
+    fun `Given the skipped biometrics flag is true in the data store, When has skipped biometrics, then return true`() {
+        val appDatastore = AppDataStore(dataStore)
+
+        every { dataStore.data } returns flowOf(preferences)
+        every { preferences[booleanPreferencesKey(AppDataStore.SKIPPED_BIOMETRICS_KEY)] } returns true
+
+        runTest {
+            assertTrue(appDatastore.hasSkippedBiometrics())
+        }
+    }
+
+    @Test
     fun `Given the data store is empty, When is topic selection completed, then return false`() {
         val appDatastore = AppDataStore(dataStore)
 

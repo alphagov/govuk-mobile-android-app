@@ -49,7 +49,8 @@ internal class AppLaunchNavigation @Inject constructor(
 
         if (flagRepo.isLoginEnabled()) {
             if (authRepo.isAuthenticationEnabled()
-                && !authRepo.isUserSignedIn()) {
+                && !authRepo.isUserSignedIn()
+                && !appRepo.hasSkippedBiometrics()) {
                 _launchRoutes.push(BIOMETRIC_ROUTE)
             }
 
@@ -84,7 +85,7 @@ internal class AppLaunchNavigation @Inject constructor(
         _launchRoutes.push(ANALYTICS_GRAPH_ROUTE)
     }
 
-    fun onSignOut() {
+    suspend fun onSignOut() {
         _launchRoutes.clear()
 
         _launchRoutes.push(HOME_GRAPH_ROUTE)
@@ -93,7 +94,8 @@ internal class AppLaunchNavigation @Inject constructor(
             _launchRoutes.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
         }
 
-        if (authRepo.isAuthenticationEnabled()) {
+        if (authRepo.isAuthenticationEnabled()
+            && !appRepo.hasSkippedBiometrics()) {
             _launchRoutes.push(BIOMETRIC_ROUTE)
         }
     }

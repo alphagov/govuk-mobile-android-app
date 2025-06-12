@@ -546,12 +546,11 @@ class AppViewModelTest {
     fun `Given a user has signed out, When on sign out, then call app launch nav`() {
         viewModel.onSignOut()
 
-        verify {
+        coVerify {
             appLaunchNavigation.onSignOut()
         }
     }
 
-    // Todo - timeout tests!!!
     @Test
     fun `Given a user has interacted with the app, When on user interaction, then call timeout manager`() {
         viewModel.onUserInteraction(navController, 0L)
