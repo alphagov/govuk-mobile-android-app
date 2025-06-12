@@ -92,4 +92,26 @@ internal class ChatRepo @Inject constructor(
 
         return null
     }
+
+    suspend fun getAnswer(questionId: String): AnswerUi? {
+        try {
+            // "200": Success
+            // "202": The answer is still being generated
+            val response = chatApi.getAnswer(conversationId, questionId)
+            println(response)
+
+            return AnswerUi(
+                id = response.id,
+                createdAt = response.createdAt,
+                message = response.message
+            )
+        } catch (e: Exception) {
+            // TODO: handle errors
+            // "404": Either a conversation never existed with this id or has now expired
+            // "429": Too many requests to read endpoints from an Api User or Device ID
+            println(e.message)
+        }
+
+        return null
+    }
 }
