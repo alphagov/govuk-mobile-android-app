@@ -160,7 +160,10 @@ private fun ChatScreen(
 
             PrimaryButton(
                 text = stringResource(id = R.string.button_text),
-                onClick = { onSubmit(question) },
+                onClick = {
+                    onSubmit(question)
+                    question = ""
+                },
                 modifier = Modifier.fillMaxWidth()
                     .padding(horizontal = GovUkTheme.spacing.medium),
             )
