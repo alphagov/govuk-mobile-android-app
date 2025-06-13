@@ -71,7 +71,8 @@ fun SearchField(
                 )
             }
 
-            val contentDescSearchEntry = stringResource(uk.gov.govuk.search.R.string.content_desc_search_entry)
+            val contentDescSearchEntry =
+                stringResource(uk.gov.govuk.search.R.string.content_desc_search_entry)
             BasicTextField(
                 value = searchTerm,
                 onValueChange = {
