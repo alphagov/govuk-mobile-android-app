@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
@@ -229,7 +230,10 @@ fun ToggleListItem(
             ToggleSwitch(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
-                testDescription = title
+                testDescription = title,
+                modifier = Modifier.semantics {
+                    contentDescription = title
+                }
             )
         }
     }
