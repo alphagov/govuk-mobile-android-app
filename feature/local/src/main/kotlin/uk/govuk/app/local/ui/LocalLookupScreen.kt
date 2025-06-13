@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
@@ -149,8 +150,13 @@ private fun LocalLookupScreen(
                     postcode = PostcodeSanitizer.sanitize(it)
                 },
                 label = {
+                    val contentDescPostcodeEntry =
+                        stringResource(R.string.local_content_desc_postcode_entry)
                     Text(
-                        text = stringResource(R.string.local_postcode_default_text)
+                        text = stringResource(R.string.local_postcode_default_text),
+                        Modifier.semantics {
+                            contentDescription = contentDescPostcodeEntry
+                        }
                     )
                 },
                 modifier = Modifier.fillMaxWidth()
