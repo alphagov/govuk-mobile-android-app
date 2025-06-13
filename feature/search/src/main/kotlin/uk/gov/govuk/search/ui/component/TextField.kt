@@ -21,6 +21,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -69,6 +71,7 @@ fun SearchField(
                 )
             }
 
+            val contentDescSearchEntry = stringResource(uk.gov.govuk.search.R.string.content_desc_search_entry)
             BasicTextField(
                 value = searchTerm,
                 onValueChange = {
@@ -76,7 +79,10 @@ fun SearchField(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequester(focusRequester),
+                    .focusRequester(focusRequester)
+                    .semantics {
+                        contentDescription = contentDescSearchEntry
+                    },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { actions.onSearch() }),
                 singleLine = true,
