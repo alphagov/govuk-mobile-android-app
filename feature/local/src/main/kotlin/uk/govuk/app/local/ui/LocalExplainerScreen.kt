@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
@@ -105,7 +106,8 @@ private fun LocalExplainerScreen(
             LargeTitleBoldLabel(
                 text = stringResource(R.string.local_title),
                 color = GovUkTheme.colourScheme.textAndIcons.primary,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                modifier = Modifier.semantics { heading() }
             )
             SmallVerticalSpacer()
             BodyRegularLabel(
