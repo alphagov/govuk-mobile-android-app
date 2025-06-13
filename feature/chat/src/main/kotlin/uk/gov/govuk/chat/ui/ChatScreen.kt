@@ -32,6 +32,7 @@ import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.chat.ui.model.AnswerUi
 import uk.gov.govuk.chat.ui.model.AnsweredQuestionUi
 import uk.gov.govuk.chat.ui.model.ConversationUi
+import uk.gov.govuk.chat.ui.model.SourceUi
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.FixedContainerDivider
@@ -100,7 +101,21 @@ private fun ChatScreen(
                         style = GovUkTheme.typography.bodyRegular,
                         modifier = modifier
                     )
-                    MediumVerticalSpacer()
+
+                    if (question.answer.sources.isNotEmpty()) {
+                        BodyBoldLabel(
+                            text = stringResource(id = R.string.sources_header)
+                        )
+                        MediumVerticalSpacer()
+
+                        question.answer.sources.forEach { source ->
+                            MarkdownText(
+                                markdown = "* [${source.title}](${source.url})",
+                                style = GovUkTheme.typography.bodyRegular
+                            )
+                            MediumVerticalSpacer()
+                        }
+                    }
                 }
             }
         }
@@ -227,7 +242,13 @@ private fun conversation() = ConversationUi(
 
                     [1]: https://www.universal-credit.service.gov.uk/postcode-checker
                     [2]: https://www.integration.publishing.service.gov.uk/universal-credit/how-to-claim
-                """.trimIndent()
+                """.trimIndent(),
+                sources = listOf(
+                    SourceUi(
+                        url = "https://www.universal-credit.service.gov.uk/postcode-checker",
+                        title = "Universal Credit"
+                    ),
+                )
             ),
             conversationId = "210d1a18-7b77-4418-9938-ad1b5700b9fd",
             createdAt = "2025-06-10T15:18:47+01:00",

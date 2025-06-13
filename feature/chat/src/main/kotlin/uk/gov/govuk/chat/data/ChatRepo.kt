@@ -5,6 +5,7 @@ import uk.gov.govuk.chat.data.remote.model.ConversationQuestionRequest
 import uk.gov.govuk.chat.ui.model.AnswerUi
 import uk.gov.govuk.chat.ui.model.AnsweredQuestionUi
 import uk.gov.govuk.chat.ui.model.ConversationUi
+import uk.gov.govuk.chat.ui.model.SourceUi
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -74,7 +75,13 @@ internal class ChatRepo @Inject constructor(
                         answer = AnswerUi(
                             id = it.answer.id,
                             createdAt = it.answer.createdAt,
-                            message = it.answer.message
+                            message = it.answer.message,
+                            sources = it.answer.sources.map { source ->
+                                SourceUi(
+                                    url = source.url,
+                                    title = source.title
+                                )
+                            }
                         ),
                         conversationId = it.conversationId,
                         createdAt = it.createdAt,
@@ -103,7 +110,13 @@ internal class ChatRepo @Inject constructor(
             return AnswerUi(
                 id = response.id,
                 createdAt = response.createdAt,
-                message = response.message
+                message = response.message,
+                sources = response.sources.map { source ->
+                    SourceUi(
+                        url = source.url,
+                        title = source.title
+                    )
+                }
             )
         } catch (e: Exception) {
             // TODO: handle errors
