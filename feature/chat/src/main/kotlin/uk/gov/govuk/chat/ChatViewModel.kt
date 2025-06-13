@@ -3,6 +3,7 @@ package uk.gov.govuk.chat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,12 +28,20 @@ internal class ChatViewModel @Inject constructor(
     }
 
     fun onSubmit(question: String) {
-        println("onSubmit: $question")
         viewModelScope.launch {
             if (chatRepo.conversationId.isEmpty()) {
                 chatRepo.startConversation(question)
             } else {
                 chatRepo.updateConversation(question)
+            }
+
+            // TODO: add proper polling for response...
+            for (i in 1..6) {
+                delay(3000)
+
+                if (chatRepo.conversationId.isNotEmpty()) {
+                    _conversation.value = chatRepo.getConversation()
+                }
             }
         }
     }

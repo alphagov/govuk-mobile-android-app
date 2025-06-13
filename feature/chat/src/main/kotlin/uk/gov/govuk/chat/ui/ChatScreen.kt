@@ -11,14 +11,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
@@ -26,6 +30,7 @@ import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
+import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.chat.domain.StringCleaner
@@ -67,7 +72,22 @@ private fun ChatScreen(
     modifier: Modifier = Modifier
 ) {
     var question by remember { mutableStateOf("") }
+    var scrollPosition by remember { mutableIntStateOf(0) }
     val focusRequester = remember { FocusRequester() }
+    val scrollState = rememberScrollState()
+
+    LaunchedEffect(conversation?.answeredQuestions?.size) {
+        val answerCount = conversation?.answeredQuestions?.size ?: 0
+        if (answerCount > 0) {
+            delay(150)
+            println("Attempted scroll. Position: $scrollPosition MaxValue: ${scrollState.maxValue}, CurrentValue: ${scrollState.value}, ItemCount: ${conversation?.answeredQuestions?.size}")
+            if (scrollPosition > 0 && scrollPosition <= scrollState.maxValue) {
+                scrollState.animateScrollTo(scrollPosition)
+            } else if (scrollPosition == 0 && scrollState.maxValue > 0) {
+                println("Warning: scrollPosition was 0. Could not scroll to specific question.")
+            }
+        }
+    }
 
     Column(modifier) {
         FullScreenHeader(
@@ -81,39 +101,53 @@ private fun ChatScreen(
 
         Column(
             Modifier
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
+                .fillMaxWidth()
                 .weight(1f)
                 .padding(horizontal = GovUkTheme.spacing.medium)
         ) {
-            if (conversation != null) {
+            if (conversation != null && conversation.answeredQuestions.isNotEmpty()) {
                 MediumVerticalSpacer()
 
-                conversation.answeredQuestions.forEach { question ->
-                    BodyBoldLabel(
-                        text = question.message,
-                        modifier = modifier
-                    )
-                    MediumVerticalSpacer()
+                conversation.answeredQuestions.forEachIndexed { index, question ->
+                    val isLastQuestion = index == conversation.answeredQuestions.size - 1
 
-                    val answer = StringCleaner.removeInParagraphNewlines(question.answer.message)
-                    MarkdownText(
-                        markdown = answer,
-                        style = GovUkTheme.typography.bodyRegular,
-                        modifier = modifier
-                    )
-
-                    if (question.answer.sources.isNotEmpty()) {
+                    Column(
+                        modifier = if (isLastQuestion) {
+                            Modifier.onGloballyPositioned { layoutCoordinates ->
+                                val positionInScrollableContent = layoutCoordinates.positionInParent().y
+                                scrollPosition = positionInScrollableContent.toInt()
+                                println("Position: $scrollPosition")
+                            }
+                        } else {
+                            Modifier
+                        }
+                    ) {
                         BodyBoldLabel(
-                            text = stringResource(id = R.string.sources_header)
+                            text = question.message
                         )
                         MediumVerticalSpacer()
 
-                        question.answer.sources.forEach { source ->
-                            MarkdownText(
-                                markdown = "* [${source.title}](${source.url})",
-                                style = GovUkTheme.typography.bodyRegular
+                        val answer =
+                            StringCleaner.removeInParagraphNewlines(question.answer.message)
+                        MarkdownText(
+                            markdown = answer,
+                            style = GovUkTheme.typography.bodyRegular
+                        )
+
+                        if (question.answer.sources.isNotEmpty()) {
+                            BodyBoldLabel(
+                                text = stringResource(id = R.string.sources_header)
                             )
                             MediumVerticalSpacer()
+
+                            question.answer.sources.forEach { source ->
+                                MarkdownText(
+                                    markdown = "* [${source.title}](${source.url})",
+                                    style = GovUkTheme.typography.bodyRegular
+                                )
+                                MediumVerticalSpacer()
+                            }
                         }
                     }
                 }
@@ -138,7 +172,8 @@ private fun ChatScreen(
                         text = stringResource(id = R.string.input_label)
                     )
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .focusRequester(focusRequester)
                     .focusable(true)
                     .padding(horizontal = GovUkTheme.spacing.medium),
@@ -176,10 +211,12 @@ private fun ChatScreen(
             PrimaryButton(
                 text = stringResource(id = R.string.button_text),
                 onClick = {
-                    onSubmit(question)
+                    val currentQuestion = question
+                    onSubmit(currentQuestion)
                     question = ""
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = GovUkTheme.spacing.medium),
             )
 
