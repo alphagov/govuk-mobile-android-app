@@ -118,6 +118,13 @@ internal class SettingsViewModel @Inject constructor(
         )
     }
 
+    fun onBiometricsClick(text: String) {
+        analyticsClient.settingsItemClick(
+            text = text,
+            external = false
+        )
+    }
+
     fun onTermsAndConditionsView() {
         analyticsClient.settingsItemClick(
             text = TERMS_AND_CONDITIONS_EVENT,

@@ -9,11 +9,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.gov.govuk.R
 import uk.gov.govuk.analytics.AnalyticsClient
+import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import javax.inject.Inject
 
 @HiltViewModel
 internal class BiometricSettingsViewModel @Inject constructor(
+    private val appRepo: AppRepo,
     private val authRepo: AuthRepo,
     private val analyticsClient: AnalyticsClient
 ) : ViewModel() {
@@ -35,18 +37,29 @@ internal class BiometricSettingsViewModel @Inject constructor(
         )
     }
 
-    fun onToggle(activity: FragmentActivity) {
+    fun onToggle(text: String, activity: FragmentActivity) {
         viewModelScope.launch {
-            if (authRepo.isUserSignedIn()) {
+            val action = if (authRepo.isUserSignedIn()) {
                 authRepo.signOut()
+                BIOMETRICS_SETTINGS_DISABLE
             } else {
+                appRepo.clearBiometricsSkipped()
                 authRepo.persistRefreshToken(
                     activity = activity,
                     title = activity.getString(R.string.login_biometric_prompt_title)
                 )
+                BIOMETRICS_SETTINGS_ENABLE
             }
+
+            analyticsClient.toggleFunction(
+                text = text,
+                section = BIOMETRICS_SECTION,
+                action = action
+            )
 
             _uiState.value = authRepo.isUserSignedIn()
         }
+
+
     }
 }

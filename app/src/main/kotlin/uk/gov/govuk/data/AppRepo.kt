@@ -14,6 +14,8 @@ internal class AppRepo @Inject constructor(
 
     internal suspend fun skipBiometrics() = appDataStore.skipBiometrics()
 
+    internal suspend fun clearBiometricsSkipped() = appDataStore.clearBiometricsSkipped()
+
     internal suspend fun isTopicSelectionCompleted() = appDataStore.isTopicSelectionCompleted()
 
     internal suspend fun topicSelectionCompleted() = appDataStore.topicSelectionCompleted()

@@ -80,7 +80,10 @@ internal fun SettingsRoute(
                     viewModel.onNotificationsClick()
                     actions.onNotificationsClick()
                 },
-                onBiometricsClick = actions.onBiometricsClick,
+                onBiometricsClick = { text ->
+                    viewModel.onBiometricsClick(text)
+                    actions.onBiometricsClick()
+                },
                 onAnalyticsConsentChange = { enabled -> viewModel.onAnalyticsConsentChanged(enabled) },
                 onPrivacyPolicyClick = {
                     viewModel.onPrivacyPolicyView()
@@ -113,7 +116,7 @@ private class SettingsActions(
     val onAccountClick: () -> Unit,
     val onSignOutClick: () -> Unit,
     val onNotificationsClick: () -> Unit,
-    val onBiometricsClick: () -> Unit,
+    val onBiometricsClick: (String) -> Unit,
     val onAnalyticsConsentChange: (Boolean) -> Unit,
     val onPrivacyPolicyClick: () -> Unit,
     val onHelpClick: () -> Unit,
@@ -255,9 +258,10 @@ private fun NotificationsAndPrivacy(
         }
 
         if (uiState.isAuthenticationEnabled) {
+            val biometricTitle = stringResource(R.string.biometric_title)
             InternalLinkListItem(
-                title = stringResource(R.string.biometric_title),
-                onClick = actions.onBiometricsClick,
+                title = biometricTitle,
+                onClick = { actions.onBiometricsClick(biometricTitle) },
                 isFirst = !uiState.isNotificationsEnabled,
                 isLast = false
             )

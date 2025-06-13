@@ -43,7 +43,7 @@ internal fun BiometricSettingsRoute(
         onBack = onBack,
         onPageView = { viewModel.onPageView() },
         isUserSignedIn = uiState,
-        onToggle = { viewModel.onToggle(activity) },
+        onToggle = { text -> viewModel.onToggle(text, activity) },
         modifier = modifier
     )
 }
@@ -53,7 +53,7 @@ private fun BiometricSettingsScreen(
     onBack: () -> Unit,
     onPageView: () -> Unit,
     isUserSignedIn: Boolean,
-    onToggle: () -> Unit,
+    onToggle: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -88,10 +88,11 @@ private fun BiometricSettingsScreen(
             LargeVerticalSpacer()
 
             Column(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
+                val title = stringResource(R.string.biometric_settings_toggle)
                 ToggleListItem(
-                    title = stringResource(R.string.biometric_settings_toggle),
+                    title = title,
                     checked = isUserSignedIn,
-                    onCheckedChange = { onToggle() }
+                    onCheckedChange = { onToggle(title) }
                 )
 
                 MediumVerticalSpacer()
