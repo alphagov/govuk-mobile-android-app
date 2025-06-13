@@ -97,6 +97,22 @@ class AppDataStoreTest {
     }
 
     @Test
+    fun `Given skip biometrics is cleared, then update the prefs`() {
+        val appDatastore = AppDataStore(dataStore)
+
+        runTest {
+            appDatastore.skipBiometrics()
+
+            assertTrue(appDatastore.hasSkippedBiometrics())
+
+            appDatastore.clearBiometricsSkipped()
+
+            assertFalse(appDatastore.hasSkippedBiometrics())
+            assertFalse(dataStore.data.first().contains(booleanPreferencesKey(SKIPPED_BIOMETRICS_KEY)))
+        }
+    }
+
+    @Test
     fun `Given the data store is empty, When is topic selection completed, then return false`() {
         val appDatastore = AppDataStore(dataStore)
 

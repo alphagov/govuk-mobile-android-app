@@ -50,7 +50,7 @@ class LoginSuccessViewModelTest {
         verify {
             analyticsClient.buttonClick(
                 text = "button text",
-                section = "Login"
+                section = LOGIN_SECTION
             )
         }
     }

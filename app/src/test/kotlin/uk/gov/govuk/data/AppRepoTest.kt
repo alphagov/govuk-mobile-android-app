@@ -52,6 +52,17 @@ class AppRepoTest {
     }
 
     @Test
+    fun `Given skip biometrics is cleared, then update data store`() {
+        val repo = AppRepo(appDataStore)
+
+        runTest {
+            repo.clearBiometricsSkipped()
+
+            coVerify { appDataStore.clearBiometricsSkipped() }
+        }
+    }
+
+    @Test
     fun `Given the user has not previously completed topic selection, When is topic selection completed, then return false`() {
         val repo = AppRepo(appDataStore)
 

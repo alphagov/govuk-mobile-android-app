@@ -40,7 +40,7 @@ internal class BiometricSettingsViewModel @Inject constructor(
     fun onToggle(text: String, activity: FragmentActivity) {
         viewModelScope.launch {
             val action = if (authRepo.isUserSignedIn()) {
-                authRepo.signOut()
+                authRepo.clearLocalAuth()
                 BIOMETRICS_SETTINGS_DISABLE
             } else {
                 appRepo.clearBiometricsSkipped()
@@ -59,7 +59,5 @@ internal class BiometricSettingsViewModel @Inject constructor(
 
             _uiState.value = authRepo.isUserSignedIn()
         }
-
-
     }
 }
