@@ -33,6 +33,7 @@ const val SIGN_OUT_ERROR_ROUTE = "sign_out_error_route"
 
 fun NavGraphBuilder.settingsGraph(
     navigateTo: (String) -> Unit,
+    onBiometricsClick: () -> Unit,
     appVersion: String,
     deepLinks: (path: String) -> List<NavDeepLink>,
     launchBrowser: (url: String) -> Unit,
@@ -58,6 +59,7 @@ fun NavGraphBuilder.settingsGraph(
                     onNotificationsClick = {
                         navigateTo(NOTIFICATIONS_PERMISSION_GRAPH_ROUTE)
                     },
+                    onBiometricsClick = onBiometricsClick,
                     onPrivacyPolicyClick = {
                         launchBrowser(PRIVACY_POLICY_URL)
                     },

@@ -29,6 +29,7 @@ internal data class SettingsUiState(
     val userEmail: String,
     val isLoginEnabled: Boolean,
     val isNotificationsEnabled: Boolean,
+    val isAuthenticationEnabled: Boolean,
     val isAnalyticsEnabled: Boolean
 )
 
@@ -53,6 +54,7 @@ internal class SettingsViewModel @Inject constructor(
             userEmail = authRepo.getUserEmail(),
             isLoginEnabled = flagRepo.isLoginEnabled(),
             isNotificationsEnabled = flagRepo.isNotificationsEnabled(),
+            isAuthenticationEnabled = flagRepo.isLoginEnabled() && authRepo.isAuthenticationEnabled(),
             isAnalyticsEnabled = analyticsClient.isAnalyticsEnabled()
         )
     }

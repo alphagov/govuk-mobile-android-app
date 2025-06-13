@@ -63,6 +63,7 @@ import uk.gov.govuk.extension.asDeepLinks
 import uk.gov.govuk.extension.getUrlParam
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
+import uk.gov.govuk.login.navigation.BIOMETRIC_SETTINGS_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_ROUTE
 import uk.gov.govuk.login.navigation.loginGraph
 import uk.gov.govuk.navigation.DeepLink
@@ -456,6 +457,7 @@ private fun GovUkNavHost(
         )
         settingsGraph(
             navigateTo = { route -> navController.navigate(route) },
+            onBiometricsClick = { navController.navigate(BIOMETRIC_SETTINGS_ROUTE) },
             appVersion = BuildConfig.VERSION_NAME_USER_FACING,
             deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
             launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) },

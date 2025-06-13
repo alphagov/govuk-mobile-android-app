@@ -24,8 +24,6 @@ internal class BiometricViewModel @Inject constructor(
         private const val SCREEN_CLASS = "BiometricScreen"
         private const val SCREEN_NAME = "Biometrics"
         private const val TITLE = "Biometrics"
-
-        private const val SECTION = "Biometrics"
     }
 
     private val _uiState: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -42,7 +40,7 @@ internal class BiometricViewModel @Inject constructor(
     fun onContinue(activity: FragmentActivity, text: String) {
         analyticsClient.buttonClick(
             text = text,
-            section = SECTION
+            section = BIOMETRICS_SECTION
         )
 
         viewModelScope.launch {
@@ -56,7 +54,7 @@ internal class BiometricViewModel @Inject constructor(
     fun onSkip(text: String) {
         analyticsClient.buttonClick(
             text = text,
-            section = SECTION
+            section = BIOMETRICS_SECTION
         )
 
         viewModelScope.launch {
