@@ -51,6 +51,7 @@ class SettingsViewModelTest {
 
         every { authRepo.getUserEmail() } returns "user@email.com"
         coEvery { flagRepo.isLoginEnabled() } returns true
+        coEvery { authRepo.isAuthenticationEnabled() } returns true
         coEvery { analyticsClient.isAnalyticsEnabled() } returns true
         coEvery { flagRepo.isNotificationsEnabled() } returns true
 
@@ -117,6 +118,38 @@ class SettingsViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertFalse(result!!.isNotificationsEnabled)
+        }
+    }
+
+    @Test
+    fun `Given login and authentication are enabled, When init, then return authentication enabled`() {
+        runTest {
+            val result = viewModel.uiState.first()
+            assertTrue(result!!.isAuthenticationEnabled)
+        }
+    }
+
+    @Test
+    fun `Given login is enabled and authentication is disabled, When init, then return authentication disabled`() {
+        every { authRepo.isAuthenticationEnabled() } returns false
+
+        val viewModel = SettingsViewModel(authRepo, flagRepo, analyticsClient)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.isAuthenticationEnabled)
+        }
+    }
+
+    @Test
+    fun `Given login is disabled and authentication is enabled, When init, then return authentication disabled`() {
+        every { flagRepo.isLoginEnabled() } returns false
+
+        val viewModel = SettingsViewModel(authRepo, flagRepo, analyticsClient)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.isAuthenticationEnabled)
         }
     }
 
@@ -235,6 +268,18 @@ class SettingsViewModelTest {
             screenName = NOTIFICATIONS_PERMISSION_EVENT,
             title = NOTIFICATIONS_PERMISSION_EVENT
         )
+    }
+
+    @Test
+    fun `Given a biometrics click, then log analytics`() {
+        viewModel.onBiometricsClick("text")
+
+        verify {
+            analyticsClient.settingsItemClick(
+                text = "text",
+                external = false
+            )
+        }
     }
 
     @Test

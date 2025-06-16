@@ -224,6 +224,10 @@ class AuthRepo @Inject constructor(
     }
 
     suspend fun signOut(): Boolean {
+        return clearLocalAuth()
+    }
+
+    suspend fun clearLocalAuth(): Boolean {
         try {
             secureStore.delete(REFRESH_TOKEN_KEY)
 

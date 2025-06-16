@@ -66,7 +66,7 @@ internal class LoginViewModel @Inject constructor(
     fun onContinue(text: String) {
         analyticsClient.buttonClick(
             text = text,
-            section = SECTION
+            section = LOGIN_SECTION
         )
     }
 

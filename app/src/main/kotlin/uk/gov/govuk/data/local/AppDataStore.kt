@@ -34,6 +34,12 @@ internal class AppDataStore @Inject constructor(
         }
     }
 
+    internal suspend fun clearBiometricsSkipped() {
+        dataStore.edit { prefs ->
+            prefs.remove(booleanPreferencesKey(SKIPPED_BIOMETRICS_KEY))
+        }
+    }
+
     internal suspend fun isTopicSelectionCompleted(): Boolean {
         return dataStore.data.firstOrNull()
             ?.get(booleanPreferencesKey(TOPIC_SELECTION_COMPLETED_KEY)) == true

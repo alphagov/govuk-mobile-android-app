@@ -27,7 +27,7 @@ internal class ErrorViewModel @Inject constructor(
     fun onBack(text: String) {
         analyticsClient.buttonClick(
             text = text,
-            section = SECTION
+            section = LOGIN_SECTION
         )
     }
 }

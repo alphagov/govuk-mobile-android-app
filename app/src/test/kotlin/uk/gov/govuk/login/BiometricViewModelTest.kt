@@ -61,7 +61,7 @@ class BiometricViewModelTest {
         verify {
             analyticsClient.buttonClick(
                 text = "button text",
-                section = "Biometrics"
+                section = BIOMETRICS_SECTION
             )
         }
     }
@@ -73,7 +73,7 @@ class BiometricViewModelTest {
         coVerify {
             analyticsClient.buttonClick(
                 text = "button text",
-                section = "Biometrics"
+                section = BIOMETRICS_SECTION
             )
 
             appRepo.skipBiometrics()

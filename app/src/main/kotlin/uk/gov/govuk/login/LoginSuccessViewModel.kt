@@ -28,7 +28,7 @@ internal class LoginSuccessViewModel @Inject constructor(
     fun onContinue(text: String) {
         analyticsClient.buttonClick(
             text = text,
-            section = SECTION
+            section = LOGIN_SECTION
         )
     }
 }
