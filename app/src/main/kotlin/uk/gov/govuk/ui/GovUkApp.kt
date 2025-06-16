@@ -302,7 +302,11 @@ private fun BottomNav(
     navController: NavHostController,
     onTabClick: (String) -> Unit
 ) {
-    val topLevelDestinations = listOf(TopLevelDestination.Home, TopLevelDestination.Settings)
+    val topLevelDestinations = listOf(
+        TopLevelDestination.Home,
+        TopLevelDestination.Chat,
+        TopLevelDestination.Settings
+    )
 
     var selectedIndex by rememberSaveable {
         mutableIntStateOf(-1)
@@ -513,12 +517,10 @@ private fun GovUkNavHost(
                 modifier = Modifier.padding(paddingValues)
             )
         }
-        if (homeWidgets.contains(HomeWidget.CHAT)) {
-            chatGraph(
-                navController = navController,
-                modifier = Modifier.padding(paddingValues)
-            )
-        }
+        chatGraph(
+            navController = navController,
+            modifier = Modifier.padding(paddingValues)
+        )
     }
 }
 

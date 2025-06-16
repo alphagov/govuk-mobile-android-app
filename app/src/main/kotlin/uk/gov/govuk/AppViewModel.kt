@@ -163,9 +163,6 @@ internal class AppViewModel @Inject constructor(
                 if (isLocalServicesEnabled() && hasLocalAuthority) {
                     widgets.add(HomeWidget.LOCAL)
                 }
-                if (isChatServiceEnabled()) {
-                    widgets.add(HomeWidget.CHAT)
-                }
                 _homeWidgets.value = widgets
             }
         }

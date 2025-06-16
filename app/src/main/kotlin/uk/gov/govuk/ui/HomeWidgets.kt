@@ -4,8 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import uk.gov.govuk.BuildConfig
-import uk.gov.govuk.chat.navigation.CHAT_GRAPH_ROUTE
-import uk.gov.govuk.chat.ui.widget.ChatWidget
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.notifications.ui.NotificationsPromptWidget
 import uk.gov.govuk.notifications.ui.notificationsPermissionShouldShowRationale
@@ -17,8 +15,8 @@ import uk.gov.govuk.topics.ui.widget.TopicsWidget
 import uk.gov.govuk.ui.model.HomeWidget
 import uk.gov.govuk.visited.navigation.VISITED_GRAPH_ROUTE
 import uk.gov.govuk.visited.ui.widget.VisitedWidget
-import uk.govuk.app.local.navigation.LOCAL_LOOKUP_ROUTE
 import uk.govuk.app.local.navigation.LOCAL_GRAPH_ROUTE
+import uk.govuk.app.local.navigation.LOCAL_LOOKUP_ROUTE
 import uk.govuk.app.local.ui.LocalWidget
 
 internal fun List<HomeWidget>?.contains(widget: HomeWidget) = this?.contains(widget) == true
@@ -113,18 +111,6 @@ internal fun homeWidgets(
                             navController.navigate(LOCAL_LOOKUP_ROUTE)
                         },
                         launchBrowser = launchBrowser,
-                        modifier = modifier
-                    )
-                    LargeVerticalSpacer()
-                }
-            }
-
-            HomeWidget.CHAT -> {
-                widgets.add { modifier ->
-                    ChatWidget(
-                        onClick = {
-                            navController.navigate(CHAT_GRAPH_ROUTE)
-                        },
                         modifier = modifier
                     )
                     LargeVerticalSpacer()
