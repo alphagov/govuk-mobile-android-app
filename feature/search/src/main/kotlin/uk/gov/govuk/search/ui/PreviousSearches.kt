@@ -49,12 +49,13 @@ internal fun PreviousSearches(
     if (previousSearches.isNotEmpty()) {
         var showDialog by remember { mutableStateOf(false) }
         val localView = LocalView.current
-        val heading = stringResource(R.string.previous_searches_heading)
+        val headingPlural = stringResource(R.string.previous_searches_heading)
+        val headingSingular = stringResource(R.string.previous_search_heading)
 
         LaunchedEffect(previousSearches) {
-            val formattedHeading =
-                if (previousSearches.size == 1) heading.dropLast(1) else heading
-            localView.announceForAccessibility("${previousSearches.size} $formattedHeading")
+            val heading =
+                if (previousSearches.size == 1) headingSingular else headingPlural
+            localView.announceForAccessibility("${previousSearches.size} $heading")
         }
 
         LazyColumn(
@@ -64,7 +65,7 @@ internal fun PreviousSearches(
         ) {
             item {
                 Header(
-                    heading = heading,
+                    heading = headingPlural,
                     onRemoveAll = {
                         showDialog = true
                     }

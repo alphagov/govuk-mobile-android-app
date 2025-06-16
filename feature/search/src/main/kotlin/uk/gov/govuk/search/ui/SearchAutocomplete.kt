@@ -46,12 +46,13 @@ internal fun SearchAutocomplete(
     modifier: Modifier = Modifier
 ) {
     val localView = LocalView.current
-    val heading = stringResource(R.string.search_autocomplete_heading)
+    val headingPlural = stringResource(R.string.suggested_searches_heading)
+    val headingSingular = stringResource(R.string.suggested_search_heading)
 
     LaunchedEffect(suggestions) {
-        val formattedHeading =
-            if (suggestions.size == 1) heading.dropLast(1) else heading
-        localView.announceForAccessibility("${suggestions.size} $formattedHeading")
+        val heading =
+            if (suggestions.size == 1) headingSingular else headingPlural
+        localView.announceForAccessibility("${suggestions.size} $heading")
     }
 
     if (suggestions.isNotEmpty()) {
@@ -73,7 +74,7 @@ internal fun SearchAutocomplete(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     BodyBoldLabel(
-                        text = heading,
+                        text = headingPlural,
                         modifier = Modifier
                             .semantics { heading() }
                     )

@@ -41,12 +41,13 @@ internal fun SearchResults(
     val focusRequester = remember { FocusRequester() }
     var previousSearchTerm by rememberSaveable { mutableStateOf("") }
     val localView = LocalView.current
-    val heading = stringResource(R.string.search_results_heading)
+    val headingPlural = stringResource(R.string.search_results_heading)
+    val headingSingular = stringResource(R.string.search_result_heading)
 
     LaunchedEffect(searchResults) {
-        val formattedHeading =
-            if (searchResults.size == 1) heading.dropLast(1) else heading
-        localView.announceForAccessibility("${searchResults.size} $formattedHeading")
+        val heading =
+            if (searchResults.size == 1) headingSingular else headingPlural
+        localView.announceForAccessibility("${searchResults.size} $heading")
     }
 
     LazyColumn(
@@ -55,7 +56,7 @@ internal fun SearchResults(
     ) {
         item {
             Header(
-                heading = heading,
+                heading = headingPlural,
                 focusRequester = focusRequester
             )
         }
