@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -31,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import kotlinx.coroutines.delay
+import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.chat.domain.StringCleaner
@@ -39,7 +41,6 @@ import uk.gov.govuk.chat.ui.model.AnsweredQuestionUi
 import uk.gov.govuk.chat.ui.model.ConversationUi
 import uk.gov.govuk.chat.ui.model.SourceUi
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
-import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.FixedContainerDivider
 import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
@@ -52,10 +53,10 @@ internal fun ChatRoute(
     modifier: Modifier = Modifier,
 ) {
     val viewModel: ChatViewModel = hiltViewModel()
-    val conversation by viewModel.conversation.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     ChatScreen(
-        conversation = conversation,
+        uiState = uiState,
         onSubmit = { question ->
             viewModel.onSubmit(question)
         },
@@ -66,7 +67,7 @@ internal fun ChatRoute(
 
 @Composable
 private fun ChatScreen(
-    conversation: ConversationUi?,
+    uiState: ChatUiState?,
     onSubmit: (String) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
@@ -76,11 +77,11 @@ private fun ChatScreen(
     val focusRequester = remember { FocusRequester() }
     val scrollState = rememberScrollState()
 
-    LaunchedEffect(conversation?.answeredQuestions?.size) {
-        val answerCount = conversation?.answeredQuestions?.size ?: 0
+    LaunchedEffect(uiState?.conversation?.answeredQuestions?.size) {
+        val answerCount = uiState?.conversation?.answeredQuestions?.size ?: 0
         if (answerCount > 0) {
             delay(150)
-            println("Attempted scroll. Position: $scrollPosition MaxValue: ${scrollState.maxValue}, CurrentValue: ${scrollState.value}, ItemCount: ${conversation?.answeredQuestions?.size}")
+            println("Attempted scroll. Position: $scrollPosition MaxValue: ${scrollState.maxValue}, CurrentValue: ${scrollState.value}, ItemCount: ${uiState?.conversation?.answeredQuestions?.size}")
             if (scrollPosition > 0 && scrollPosition <= scrollState.maxValue) {
                 scrollState.animateScrollTo(scrollPosition)
             } else if (scrollPosition == 0 && scrollState.maxValue > 0) {
@@ -106,11 +107,11 @@ private fun ChatScreen(
                 .weight(1f)
                 .padding(horizontal = GovUkTheme.spacing.medium)
         ) {
-            if (conversation != null && conversation.answeredQuestions.isNotEmpty()) {
+            if (uiState?.conversation != null && uiState.conversation.answeredQuestions.isNotEmpty()) {
                 MediumVerticalSpacer()
 
-                conversation.answeredQuestions.forEachIndexed { index, question ->
-                    val isLastQuestion = index == conversation.answeredQuestions.size - 1
+                uiState.conversation.answeredQuestions.forEachIndexed { index, question ->
+                    val isLastQuestion = index == uiState.conversation.answeredQuestions.size - 1
 
                     Column(
                         modifier = if (isLastQuestion) {
@@ -158,6 +159,20 @@ private fun ChatScreen(
             modifier.fillMaxWidth()
         ) {
             FixedContainerDivider()
+            MediumVerticalSpacer()
+
+            if (uiState != null) {
+                if (uiState.loading) {
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = GovUkTheme.spacing.medium),
+                        color = GovUkTheme.colourScheme.surfaces.primary,
+                        trackColor = GovUkTheme.colourScheme.surfaces.textFieldBackground
+                    )
+                }
+            }
+
             MediumVerticalSpacer()
 
             // TODO: display any error messages...
@@ -219,8 +234,6 @@ private fun ChatScreen(
                     .fillMaxWidth()
                     .padding(horizontal = GovUkTheme.spacing.medium),
             )
-
-            ExtraLargeVerticalSpacer()
         }
     }
 }
@@ -230,7 +243,11 @@ private fun ChatScreen(
 private fun OnboardingScreenPreview() {
     GovUkTheme {
         ChatScreen(
-            conversation = conversation(),
+            uiState = ChatUiState(
+                conversation = conversation(),
+                conversationId = "210d1a18-7b77-4418-9938-ad1b5700b9fd",
+                loading = false
+            ),
             onSubmit = { _ -> },
             onBack = {},
         )
