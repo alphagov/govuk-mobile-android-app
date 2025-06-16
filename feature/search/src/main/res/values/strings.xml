@@ -19,4 +19,5 @@
     <string name="content_desc_remove_from_search_history">Remove from search history</string>
     <string name="suggested_searches_heading">Suggested searches</string>
     <string name="suggested_search_heading">Suggested search</string>
+    <string name="content_desc_search_entry">Search entry field</string>
 </resources>
