@@ -35,7 +35,6 @@ import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
-import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.chat.ui.model.AnswerUi
 import uk.gov.govuk.chat.ui.model.AnsweredQuestionUi
 import uk.gov.govuk.chat.ui.model.ConversationUi
@@ -129,11 +128,10 @@ private fun ChatScreen(
                         )
                         MediumVerticalSpacer()
 
-                        val answer =
-                            StringCleaner.removeInParagraphNewlines(question.answer.message)
                         MarkdownText(
-                            markdown = answer,
-                            style = GovUkTheme.typography.bodyRegular
+                            markdown = question.answer.message,
+                            style = GovUkTheme.typography.bodyRegular,
+                            enableSoftBreakAddsNewLine = false
                         )
 
                         if (question.answer.sources.isNotEmpty()) {
@@ -145,7 +143,8 @@ private fun ChatScreen(
                             question.answer.sources.forEach { source ->
                                 MarkdownText(
                                     markdown = "* [${source.title}](${source.url})",
-                                    style = GovUkTheme.typography.bodyRegular
+                                    style = GovUkTheme.typography.bodyRegular,
+                                    enableSoftBreakAddsNewLine = false
                                 )
                                 MediumVerticalSpacer()
                             }

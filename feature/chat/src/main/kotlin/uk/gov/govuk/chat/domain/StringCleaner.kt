@@ -3,13 +3,6 @@ package uk.gov.govuk.chat.domain
 import kotlin.text.toRegex
 
 object StringCleaner {
-    fun removeInParagraphNewlines(string: String): String {
-        return string.replace(
-            "([a-zA-Z,.]) *\n *([(a-zA-Z])".toRegex(RegexOption.MULTILINE),
-            "$1 $2"
-        )
-    }
-
     /*
      * Based on: https://github.com/alphagov/govuk-chat/blob/main/app/validators/pii_validator.rb
      */
