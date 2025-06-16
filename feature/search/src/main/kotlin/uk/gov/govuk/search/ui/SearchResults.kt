@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -38,15 +39,25 @@ internal fun SearchResults(
 ) {
     val listState = rememberLazyListState()
     val focusRequester = remember { FocusRequester() }
-
     var previousSearchTerm by rememberSaveable { mutableStateOf("") }
+    val localView = LocalView.current
+    val heading = stringResource(R.string.search_results_heading)
+
+    LaunchedEffect(searchResults) {
+        val formattedHeading =
+            if (searchResults.size == 1) heading.dropLast(1) else heading
+        localView.announceForAccessibility("${searchResults.size} $formattedHeading")
+    }
 
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
         state = listState
     ) {
         item {
-            Header(focusRequester)
+            Header(
+                heading = heading,
+                focusRequester = focusRequester
+            )
         }
         items(searchResults) { searchResult ->
             SearchResultCard(
@@ -80,11 +91,12 @@ internal fun SearchResults(
 
 @Composable
 private fun Header(
+    heading: String,
     focusRequester: FocusRequester,
     modifier: Modifier = Modifier
 ) {
     Title3BoldLabel(
-        text = stringResource(R.string.search_results_heading),
+        text = heading,
         modifier = modifier
             .padding(horizontal = GovUkTheme.spacing.extraLarge)
             .padding(top = GovUkTheme.spacing.medium)

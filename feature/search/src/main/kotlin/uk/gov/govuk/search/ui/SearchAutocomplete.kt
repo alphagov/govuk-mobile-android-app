@@ -13,9 +13,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.onClick
@@ -43,6 +45,15 @@ internal fun SearchAutocomplete(
     onSearch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val localView = LocalView.current
+    val heading = stringResource(R.string.search_autocomplete_heading)
+
+    LaunchedEffect(suggestions) {
+        val formattedHeading =
+            if (suggestions.size == 1) heading.dropLast(1) else heading
+        localView.announceForAccessibility("${suggestions.size} $formattedHeading")
+    }
+
     if (suggestions.isNotEmpty()) {
         val context = LocalContext.current
 
@@ -62,7 +73,7 @@ internal fun SearchAutocomplete(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     BodyBoldLabel(
-                        text = stringResource(R.string.search_autocomplete_heading),
+                        text = heading,
                         modifier = Modifier
                             .semantics { heading() }
                     )

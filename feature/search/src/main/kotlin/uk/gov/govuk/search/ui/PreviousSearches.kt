@@ -15,6 +15,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -46,6 +48,14 @@ internal fun PreviousSearches(
 ) {
     if (previousSearches.isNotEmpty()) {
         var showDialog by remember { mutableStateOf(false) }
+        val localView = LocalView.current
+        val heading = stringResource(R.string.previous_searches_heading)
+
+        LaunchedEffect(previousSearches) {
+            val formattedHeading =
+                if (previousSearches.size == 1) heading.dropLast(1) else heading
+            localView.announceForAccessibility("${previousSearches.size} $formattedHeading")
+        }
 
         LazyColumn(
             modifier
@@ -54,6 +64,7 @@ internal fun PreviousSearches(
         ) {
             item {
                 Header(
+                    heading = heading,
                     onRemoveAll = {
                         showDialog = true
                     }
@@ -82,6 +93,7 @@ internal fun PreviousSearches(
 
 @Composable
 private fun Header(
+    heading: String,
     onRemoveAll: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -96,7 +108,7 @@ private fun Header(
         verticalAlignment = Alignment.CenterVertically
     ) {
         BodyBoldLabel(
-            text = stringResource(R.string.previous_searches_heading),
+            text = heading,
             modifier = Modifier
                 .weight(1f)
                 .semantics { heading() }
