@@ -6,11 +6,11 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -44,17 +44,12 @@ fun SearchWidget(
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        TextButton(
-            onClick = {
-                onClick(searchBarText)
-            }
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Search,
-                contentDescription = null,
-                tint = GovUkTheme.colourScheme.textAndIcons.secondary
-            )
-        }
+        Icon(
+            imageVector = Icons.Filled.Search,
+            contentDescription = null,
+            tint = GovUkTheme.colourScheme.textAndIcons.secondary,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
 
         BodyRegularLabel(
             text = searchBarText,
