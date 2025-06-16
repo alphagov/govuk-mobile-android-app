@@ -26,6 +26,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
@@ -136,7 +137,8 @@ private fun LocalLookupScreen(
         ) {
             SmallVerticalSpacer()
             Title1BoldLabel(
-                text = stringResource(R.string.local_whats_your_postcode)
+                text = stringResource(R.string.local_whats_your_postcode),
+                modifier = Modifier.semantics { heading() }
             )
             SmallVerticalSpacer()
             BodyRegularLabel(
