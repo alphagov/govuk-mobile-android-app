@@ -352,7 +352,24 @@ class FlagRepoTest {
     }
 
     @Test
-    fun `Given a debug build, When is login enabled, then return false`() {
+    fun `Given a debug build and login debug flag is false, When is login enabled, then return false`() {
+        every { debugFlags.isLoginEnabled } returns false
+        flagRepo = FlagRepo(true, debugFlags, configRepo)
+
+        assertFalse(flagRepo.isLoginEnabled())
+    }
+
+    @Test
+    fun `Given a debug build and login debug flag is true, When is login enabled, then return false`() {
+        every { debugFlags.isLoginEnabled } returns true
+        flagRepo = FlagRepo(true, debugFlags, configRepo)
+
+        assertTrue(flagRepo.isLoginEnabled())
+    }
+
+    @Test
+    fun `Given a debug build and login debug flag is null, When is login enabled, then return false`() {
+        every { debugFlags.isLoginEnabled } returns null
         flagRepo = FlagRepo(true, debugFlags, configRepo)
 
         assertFalse(flagRepo.isLoginEnabled())
@@ -360,6 +377,7 @@ class FlagRepoTest {
 
     @Test
     fun `Given a release build, When is login enabled, then return false`() {
+        every { debugFlags.isLoginEnabled } returns false
         flagRepo = FlagRepo(false, debugFlags, configRepo)
 
         assertFalse(flagRepo.isLoginEnabled())

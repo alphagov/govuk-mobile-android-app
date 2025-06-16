@@ -82,7 +82,7 @@ class FlagRepo @Inject constructor(
     fun isLoginEnabled(): Boolean {
         return isEnabled(
             debugEnabled = debugEnabled,
-            debugFlag = false, // Dev only flag, only set to true when actively working on login
+            debugFlag = debugFlags.isLoginEnabled,
             remoteFlag = false // Dev only flag, always off for production builds!!!
         )
     }
