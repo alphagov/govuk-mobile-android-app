@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.onClick
@@ -45,17 +46,19 @@ internal fun SearchAutocomplete(
     onSearch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val localView = LocalView.current
-    val headingPlural = stringResource(R.string.suggested_searches_heading)
-    val headingSingular = stringResource(R.string.suggested_search_heading)
-
-    LaunchedEffect(suggestions) {
-        val heading =
-            if (suggestions.size == 1) headingSingular else headingPlural
-        localView.announceForAccessibility("${suggestions.size} $heading")
-    }
-
     if (suggestions.isNotEmpty()) {
+        val localView = LocalView.current
+        val numberOfSuggestedSearches =
+            pluralStringResource(
+                id = R.plurals.number_of_suggested_searches,
+                count = suggestions.size,
+                suggestions.size
+            )
+
+        LaunchedEffect(suggestions) {
+            localView.announceForAccessibility(numberOfSuggestedSearches)
+        }
+
         val context = LocalContext.current
 
         LazyColumn(
@@ -74,7 +77,7 @@ internal fun SearchAutocomplete(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     BodyBoldLabel(
-                        text = headingPlural,
+                        text = stringResource(R.string.search_autocomplete_heading),
                         modifier = Modifier
                             .semantics { heading() }
                     )

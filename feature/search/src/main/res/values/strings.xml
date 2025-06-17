@@ -7,9 +7,7 @@
     <string name="search_no_results">No results for</string>
     <string name="search_not_working">Search is not working. Try again later, or search on the GOV.UK website.</string>
     <string name="search_results_heading">Search results</string>
-    <string name="search_result_heading">Search result</string>
     <string name="previous_searches_heading">Previous searches</string>
-    <string name="previous_search_heading">Previous search</string>
     <string name="remove_all_button">Delete all</string>
     <string name="remove_confirmation_dialog_button">Delete</string>
     <string name="remove_confirmation_dialog_title">Delete previous searches?</string>
@@ -17,7 +15,18 @@
     <string name="content_desc_delete_all">Delete all previous searches</string>
     <string name="content_desc_search">search</string>
     <string name="content_desc_remove_from_search_history">Remove from search history</string>
-    <string name="suggested_searches_heading">Suggested searches</string>
-    <string name="suggested_search_heading">Suggested search</string>
+    <string name="search_autocomplete_heading">Suggested searches</string>
     <string name="content_desc_search_entry">Search entry field</string>
+    <plurals name="number_of_suggested_searches">
+        <item quantity="one">One suggested search</item>
+        <item quantity="other">%d suggested searches</item>
+    </plurals>
+    <plurals name="number_of_search_results">
+        <item quantity="one">One search result</item>
+        <item quantity="other">%d search results</item>
+    </plurals>
+    <plurals name="number_of_previous_searches">
+        <item quantity="one">One previous search</item>
+        <item quantity="other">%d previous searches</item>
+    </plurals>
 </resources>

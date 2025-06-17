@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -41,13 +42,15 @@ internal fun SearchResults(
     val focusRequester = remember { FocusRequester() }
     var previousSearchTerm by rememberSaveable { mutableStateOf("") }
     val localView = LocalView.current
-    val headingPlural = stringResource(R.string.search_results_heading)
-    val headingSingular = stringResource(R.string.search_result_heading)
+    val numberOfSearchResults =
+        pluralStringResource(
+            id = R.plurals.number_of_search_results,
+            count = searchResults.size,
+            searchResults.size
+        )
 
     LaunchedEffect(searchResults) {
-        val heading =
-            if (searchResults.size == 1) headingSingular else headingPlural
-        localView.announceForAccessibility("${searchResults.size} $heading")
+        localView.announceForAccessibility(numberOfSearchResults)
     }
 
     LazyColumn(
@@ -55,10 +58,7 @@ internal fun SearchResults(
         state = listState
     ) {
         item {
-            Header(
-                heading = headingPlural,
-                focusRequester = focusRequester
-            )
+            Header(focusRequester)
         }
         items(searchResults) { searchResult ->
             SearchResultCard(
@@ -92,12 +92,11 @@ internal fun SearchResults(
 
 @Composable
 private fun Header(
-    heading: String,
     focusRequester: FocusRequester,
     modifier: Modifier = Modifier
 ) {
     Title3BoldLabel(
-        text = heading,
+        text = stringResource(R.string.search_results_heading),
         modifier = modifier
             .padding(horizontal = GovUkTheme.spacing.extraLarge)
             .padding(top = GovUkTheme.spacing.medium)
