@@ -46,7 +46,7 @@ class AuthModule {
         val secureStore = SharedPrefsStore()
         secureStore.init(
             context,
-            SecureStorageConfiguration("gov-uk-secure-store", AccessControlLevel.PASSCODE_AND_CURRENT_BIOMETRICS)
+            SecureStorageConfiguration("gov-uk-secure-store", AccessControlLevel.PASSCODE_AND_BIOMETRICS)
         )
         return secureStore
     }
