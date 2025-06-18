@@ -69,6 +69,7 @@ dependencies {
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.appcheck.play)
+    implementation(libs.androidx.browser)
 
     ksp(libs.hilt.compiler)
 
