@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import android.util.Base64
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.ExperimentalEphemeralBrowsing
 import androidx.core.content.edit
 import androidx.fragment.app.FragmentActivity
 import net.openid.appauth.AuthorizationException
@@ -44,8 +46,12 @@ class AuthRepo @Inject constructor(
         private const val SUB_ID_KEY = "subId"
     }
 
+    @ExperimentalEphemeralBrowsing
     val authIntent: Intent by lazy {
-        authService.getAuthorizationRequestIntent(authRequest)
+        val intent = CustomTabsIntent.Builder()
+            .setEphemeralBrowsingEnabled(true)
+            .build()
+        authService.getAuthorizationRequestIntent(authRequest, intent)
     }
 
     private var tokens = Tokens()
