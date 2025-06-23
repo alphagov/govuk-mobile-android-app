@@ -67,7 +67,7 @@ class FlagRepo @Inject constructor(
         return isEnabled(
             debugEnabled = debugEnabled,
             debugFlag = debugFlags.isNotificationsEnabled,
-            remoteFlag = false // Dev only flag, always off for production builds!!!
+            remoteFlag = configRepo.config.releaseFlags.notifications
         )
     }
 
@@ -75,7 +75,7 @@ class FlagRepo @Inject constructor(
         return isEnabled(
             debugEnabled = debugEnabled,
             debugFlag = debugFlags.isLocalServicesEnabled,
-            remoteFlag = false // TODO - Hardcoded off
+            remoteFlag = configRepo.config.releaseFlags.localServices
         )
     }
 
@@ -83,7 +83,7 @@ class FlagRepo @Inject constructor(
         return isEnabled(
             debugEnabled = debugEnabled,
             debugFlag = debugFlags.isLoginEnabled,
-            remoteFlag = false // Dev only flag, always off for production builds!!!
+            remoteFlag = true // Hardcoded on
         )
     }
 
