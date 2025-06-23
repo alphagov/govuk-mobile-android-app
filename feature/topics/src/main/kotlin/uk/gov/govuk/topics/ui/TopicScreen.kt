@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -124,6 +125,7 @@ private fun TopicScreen(
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
+    val lazyListState = rememberLazyListState()
 
     Column(modifier.fillMaxWidth()) {
 
@@ -146,7 +148,7 @@ private fun TopicScreen(
 
         var currentItemIndex = 1
 
-        LazyColumn {
+        LazyColumn(state = lazyListState) {
             item {
                 Column(
                     Modifier.fillMaxWidth()
@@ -222,9 +224,11 @@ private fun TopicScreen(
     }
     LaunchedEffect(Unit) {
         onPageView(topic.title)
-        focusManager.clearFocus(true)
-        delay(500)
-        focusRequester.requestFocus()
+        if (lazyListState.firstVisibleItemIndex == 0) {
+            focusManager.clearFocus(true)
+            delay(500)
+            focusRequester.requestFocus()
+        }
     }
 }
 
