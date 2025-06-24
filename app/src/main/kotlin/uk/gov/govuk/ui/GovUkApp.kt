@@ -200,6 +200,8 @@ private fun BottomNavScaffold(
             )
         }
     }
+
+    /* TODO Uncomment when deep links are live
     HandleReceivedIntents(
         intentFlow = intentFlow,
         navController = navController,
@@ -207,6 +209,8 @@ private fun BottomNavScaffold(
     ) { hasDeepLink, url ->
         viewModel.onDeepLinkReceived(hasDeepLink, url)
     }
+    */
+
     if (shouldDisplayNotificationsOnboarding) {
         HandleNotificationsPermissionStatus(navController = navController)
     }
@@ -224,7 +228,6 @@ private fun HandleReceivedIntents(
     LaunchedEffect(intentFlow) {
         intentFlow.collectLatest { intent ->
             intent.data?.let { uri ->
-                return@let // TODO Remove return when deep links is live
                 if (navController.graph.hasDeepLink(uri)) {
                     onDeepLinkReceived(true, uri.toString())
                     val request = NavDeepLinkRequest.Builder
