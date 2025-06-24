@@ -9,6 +9,7 @@ import androidx.navigation.navDeepLink
  * Returns a collection of NavDeepLink objects for each formatted uri pattern.
  */
 internal fun String.asDeepLinks(urls: List<String>): List<NavDeepLink> {
+    return listOf() // TODO Remove return when deep links is live
     val path = this
     val navDeepLinks = mutableListOf<NavDeepLink>()
     urls.forEach {

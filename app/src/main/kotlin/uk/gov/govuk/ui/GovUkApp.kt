@@ -224,6 +224,7 @@ private fun HandleReceivedIntents(
     LaunchedEffect(intentFlow) {
         intentFlow.collectLatest { intent ->
             intent.data?.let { uri ->
+                return@let // TODO Remove return when deep links is live
                 if (navController.graph.hasDeepLink(uri)) {
                     onDeepLinkReceived(true, uri.toString())
                     val request = NavDeepLinkRequest.Builder
