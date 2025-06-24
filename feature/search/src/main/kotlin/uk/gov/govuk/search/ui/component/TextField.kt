@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -89,7 +90,8 @@ fun SearchField(
                 singleLine = true,
                 textStyle = GovUkTheme.typography.bodyRegular.copy(
                     color = GovUkTheme.colourScheme.textAndIcons.primary
-                )
+                ),
+                cursorBrush = SolidColor(GovUkTheme.colourScheme.textAndIcons.primary)
             )
         }
 
