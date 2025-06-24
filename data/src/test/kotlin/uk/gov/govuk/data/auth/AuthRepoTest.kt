@@ -226,6 +226,25 @@ class AuthRepoTest {
     }
 
     @Test
+    fun `Given the refresh token is blank, when handle auth response, return false`() {
+        every { AuthorizationResponse.fromIntent(any()) } returns authResponse
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
+            callback.onTokenRequestCompleted(tokenResponse, null)
+        }
+        every { tokenResponseMapper.map(any()) } returns
+                TokenResponseMapper.Tokens(
+                    accessToken = "accessToken",
+                    idToken = "idToken",
+                    refreshToken = " "
+                )
+
+        runTest {
+            assertFalse(authRepo.handleAuthResponse(intent))
+        }
+    }
+
+    @Test
     fun `Given a successful retrieval, when persist refresh token, return true`() {
         every { AuthorizationResponse.fromIntent(any()) } returns authResponse
         every { authService.performTokenRequest(any(), any(), any()) } answers {
@@ -445,6 +464,33 @@ class AuthRepoTest {
     }
 
     @Test
+    fun `Given the token request returns a blank access token, when refresh tokens, then return false`() {
+        coEvery {
+            secureStore.retrieveWithAuthentication(
+                key = arrayOf("refreshToken"),
+                authPromptConfig = any(),
+                context = any()
+            )
+        } returns RetrievalEvent.Success(mapOf("refreshToken" to "token"))
+
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
+            callback.onTokenRequestCompleted(tokenResponse, null)
+        }
+
+        every { tokenResponseMapper.map(any()) } returns
+                TokenResponseMapper.Tokens(
+                    accessToken = " ",
+                    idToken = "idToken",
+                    refreshToken = "refreshToken"
+                )
+
+        runTest {
+            assertFalse(authRepo.refreshTokens(activity, ""))
+        }
+    }
+
+    @Test
     fun `Given the token request returns a null id token, when refresh tokens, then return false`() {
         coEvery {
             secureStore.retrieveWithAuthentication(
@@ -463,6 +509,33 @@ class AuthRepoTest {
                 TokenResponseMapper.Tokens(
                     accessToken = "accessToken",
                     idToken = null,
+                    refreshToken = "refreshToken"
+                )
+
+        runTest {
+            assertFalse(authRepo.refreshTokens(activity, ""))
+        }
+    }
+
+    @Test
+    fun `Given the token request returns a blank id token, when refresh tokens, then return false`() {
+        coEvery {
+            secureStore.retrieveWithAuthentication(
+                key = arrayOf("refreshToken"),
+                authPromptConfig = any(),
+                context = any()
+            )
+        } returns RetrievalEvent.Success(mapOf("refreshToken" to "token"))
+
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
+            callback.onTokenRequestCompleted(tokenResponse, null)
+        }
+
+        every { tokenResponseMapper.map(any()) } returns
+                TokenResponseMapper.Tokens(
+                    accessToken = "accessToken",
+                    idToken = " ",
                     refreshToken = "refreshToken"
                 )
 
