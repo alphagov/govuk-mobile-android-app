@@ -12,10 +12,8 @@ class StringExtensionTest {
 
         runTest {
             val deepLinks = "/path".asDeepLinks(allowedUrls)
-            /* TODO Uncomment when deep links are live
             assertEquals(1, deepLinks.size)
             assertEquals("scheme://host/path", deepLinks[0].uriPattern)
-            */
         }
     }
 

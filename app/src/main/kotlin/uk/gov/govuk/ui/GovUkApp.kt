@@ -201,7 +201,7 @@ private fun BottomNavScaffold(
         }
     }
 
-    /* TODO Uncomment when deep links are live
+    /* Uncomment when deep links are live
     HandleReceivedIntents(
         intentFlow = intentFlow,
         navController = navController,
