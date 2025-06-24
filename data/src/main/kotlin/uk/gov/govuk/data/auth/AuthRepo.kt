@@ -130,9 +130,9 @@ class AuthRepo @Inject constructor(
         val mappedRefreshToken = refreshToken ?: mappedTokenResponse.refreshToken
 
         return if (exception == null &&
-            accessToken != null &&
-            idToken != null &&
-            mappedRefreshToken != null
+            !accessToken.isNullOrBlank() &&
+            !idToken.isNullOrBlank() &&
+            !mappedRefreshToken.isNullOrBlank()
         ) {
             tokens = Tokens(
                 accessToken = accessToken,
