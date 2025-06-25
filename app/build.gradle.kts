@@ -130,6 +130,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.auth)
     implementation(projects.analytics)
     implementation(projects.config)
     implementation(projects.design)

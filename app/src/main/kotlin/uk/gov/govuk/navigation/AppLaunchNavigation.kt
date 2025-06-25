@@ -7,7 +7,7 @@ import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
-import uk.gov.govuk.login.navigation.BIOMETRIC_ROUTE
+import uk.gov.govuk.login.navigation.BIOMETRIC_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
 import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.topics.navigation.TOPIC_SELECTION_GRAPH_ROUTE
@@ -50,7 +50,7 @@ internal class AppLaunchNavigation @Inject constructor(
             if (authRepo.isAuthenticationEnabled()
                 && !authRepo.isUserSignedIn()
                 && !appRepo.hasSkippedBiometrics()) {
-                _launchRoutes.push(BIOMETRIC_ROUTE)
+                _launchRoutes.push(BIOMETRIC_GRAPH_ROUTE)
             }
         }
 
@@ -76,7 +76,7 @@ internal class AppLaunchNavigation @Inject constructor(
         }
 
         if (authRepo.isAuthenticationEnabled()) {
-            _launchRoutes.push(BIOMETRIC_ROUTE)
+            _launchRoutes.push(BIOMETRIC_GRAPH_ROUTE)
         }
 
         _launchRoutes.push(ANALYTICS_GRAPH_ROUTE)
@@ -93,7 +93,7 @@ internal class AppLaunchNavigation @Inject constructor(
 
         if (authRepo.isAuthenticationEnabled()
             && !appRepo.hasSkippedBiometrics()) {
-            _launchRoutes.push(BIOMETRIC_ROUTE)
+            _launchRoutes.push(BIOMETRIC_GRAPH_ROUTE)
         }
     }
 

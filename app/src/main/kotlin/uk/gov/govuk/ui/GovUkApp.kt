@@ -64,7 +64,9 @@ import uk.gov.govuk.extension.getUrlParam
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
 import uk.gov.govuk.login.navigation.BIOMETRIC_SETTINGS_ROUTE
+import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_ROUTE
+import uk.gov.govuk.login.navigation.biometricGraph
 import uk.gov.govuk.login.navigation.loginGraph
 import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
@@ -437,10 +439,13 @@ private fun GovUkNavHost(
             navController = navController,
             onLoginCompleted = {
                 viewModel.onLogin(navController)
-            },
+            }
+        )
+        biometricGraph(
             onBiometricSetupCompleted = {
                 appLaunchNavigation.onNext(navController)
-            }
+            },
+            showLogin = showLogin
         )
         homeGraph(
             widgets = homeWidgets(
