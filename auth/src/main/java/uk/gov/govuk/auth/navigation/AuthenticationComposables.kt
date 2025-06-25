@@ -40,7 +40,7 @@ fun NavGraphBuilder.authenticatedComposable(
     ) { backStackEntry ->
         val viewModel: AuthenticationViewModel = hiltViewModel()
 
-        when (viewModel.getAuthenticationState()) {
+        when (viewModel.authenticationState) {
             AuthenticationState.LoggedIn -> content(backStackEntry)
             AuthenticationState.NotLoggedIn -> {
                 LaunchedEffect(Unit) {

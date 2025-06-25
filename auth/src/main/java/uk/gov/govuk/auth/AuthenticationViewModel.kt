@@ -10,9 +10,10 @@ internal class AuthenticationViewModel @Inject constructor(
     private val authRepo: AuthRepo
 ) : ViewModel() {
 
-    fun getAuthenticationState() = if (authRepo.isUserSessionActive()) {
-        AuthenticationState.LoggedIn
-    } else {
-        AuthenticationState.NotLoggedIn
-    }
+    val authenticationState
+        get() = if (authRepo.isUserSessionActive()) {
+            AuthenticationState.LoggedIn
+        } else {
+            AuthenticationState.NotLoggedIn
+        }
 }
