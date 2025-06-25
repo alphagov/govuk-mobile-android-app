@@ -383,10 +383,11 @@ private fun GovUkNavHost(
     val context = LocalContext.current
 
     val showLogin: () -> Unit = {
-        navController.navigate(
-            LOGIN_ROUTE,
-            navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
-        )
+        navController.navigate(LOGIN_GRAPH_ROUTE) {
+            popUpTo(LOGIN_GRAPH_ROUTE) {
+                inclusive = true
+            }
+        }
     }
 
     NavHost(
