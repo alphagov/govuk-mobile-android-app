@@ -6,7 +6,7 @@ import uk.gov.govuk.data.auth.AuthRepo
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthenticationViewModel @Inject constructor(
+internal class AuthenticationViewModel @Inject constructor(
     private val authRepo: AuthRepo
 ) : ViewModel() {
 

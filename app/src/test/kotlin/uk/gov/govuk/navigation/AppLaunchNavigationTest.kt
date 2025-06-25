@@ -16,7 +16,6 @@ import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.BIOMETRIC_ROUTE
-import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
 import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.topics.navigation.TOPIC_SELECTION_GRAPH_ROUTE
@@ -74,7 +73,6 @@ class AppLaunchNavigationTest {
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -87,13 +85,12 @@ class AppLaunchNavigationTest {
         runTest {
             appLaunchNav.buildLaunchFlow()
 
-            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
+            assertEquals(BIOMETRIC_ROUTE, appLaunchNav.startDestination)
 
             val expected = Stack<String>()
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(BIOMETRIC_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -126,7 +123,6 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -143,7 +139,6 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -160,7 +155,6 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -177,7 +171,6 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -194,7 +187,6 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -211,7 +203,6 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -228,7 +219,6 @@ class AppLaunchNavigationTest {
             expected.push(HOME_GRAPH_ROUTE)
             expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
             expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
 
             assertEquals(expected, appLaunchNav.launchRoutes)
         }
@@ -403,8 +393,8 @@ class AppLaunchNavigationTest {
 
         verify {
             navController.popBackStack()
-            navController.navigate(LOGIN_GRAPH_ROUTE)
-            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
+            navController.navigate(BIOMETRIC_ROUTE)
+            assertEquals(BIOMETRIC_ROUTE, appLaunchNav.startDestination)
         }
     }
 }

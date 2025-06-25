@@ -34,6 +34,7 @@ import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.model.Result.Error
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
+import uk.gov.govuk.login.navigation.LOGIN_ROUTE
 import uk.gov.govuk.navigation.AppLaunchNavigation
 import uk.gov.govuk.search.SearchFeature
 import uk.gov.govuk.topics.TopicsFeature
@@ -502,7 +503,7 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given a new user or the same user has logged in, When on login, then navigate to next nav destination`() {
+    fun `Given a new user or the same user has logged in, When on login, then pop back stack`() {
         every { authRepo.isDifferentUser() } returns false
 
         runTest {
@@ -517,14 +518,17 @@ class AppViewModelTest {
                 appLaunchNavigation.onDifferentUserLogin(any())
             }
 
-            coVerify {
-                appLaunchNavigation.onNext(navController)
+            verify {
+                navController.popBackStack(
+                    route = LOGIN_ROUTE,
+                    inclusive = true
+                )
             }
         }
     }
 
     @Test
-    fun `Given a different user has logged in, When on login, then clear data, reconfigure nav and navigate to next destination`() {
+    fun `Given a different user has logged in, When on login, then clear data, reconfigure nav and pop back stack`() {
         every { authRepo.isDifferentUser() } returns true
 
         runTest {
@@ -537,7 +541,10 @@ class AppViewModelTest {
                 searchFeature.clear()
                 visited.clear()
                 appLaunchNavigation.onDifferentUserLogin(any())
-                appLaunchNavigation.onNext(navController)
+                navController.popBackStack(
+                    route = LOGIN_ROUTE,
+                    inclusive = true
+                )
             }
         }
     }

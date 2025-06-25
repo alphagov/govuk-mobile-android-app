@@ -1,6 +1,6 @@
 package uk.gov.govuk.auth
 
-sealed interface AuthenticationState {
+internal sealed interface AuthenticationState {
     data object NotLoggedIn : AuthenticationState
     data object LoggedIn : AuthenticationState
 }
