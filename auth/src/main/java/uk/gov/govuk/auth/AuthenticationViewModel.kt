@@ -11,11 +11,9 @@ internal class AuthenticationViewModel @Inject constructor(
 ) : ViewModel() {
 
     val authenticationState: AuthenticationState
-        get() {
-            return if (authRepo.isUserSessionActive()) {
-                AuthenticationState.LoggedIn
-            } else {
-                AuthenticationState.NotLoggedIn
-            }
+        get() = if (authRepo.isUserSessionActive()) {
+            AuthenticationState.LoggedIn
+        } else {
+            AuthenticationState.NotLoggedIn
         }
 }
