@@ -15,7 +15,7 @@ import uk.gov.govuk.login.ui.LoginSuccessRoute
 const val BIOMETRIC_GRAPH_ROUTE = "biometric_graph_route"
 private const val BIOMETRIC_ROUTE = "biometric_route"
 const val LOGIN_GRAPH_ROUTE = "login_graph_route"
-const val LOGIN_ROUTE = "login_route"
+private const val LOGIN_ROUTE = "login_route"
 private const val LOGIN_SUCCESS_ROUTE = "login_success_route"
 const val BIOMETRIC_SETTINGS_ROUTE = "biometric_settings_route"
 const val ERROR_ROUTE = "login_error_route"

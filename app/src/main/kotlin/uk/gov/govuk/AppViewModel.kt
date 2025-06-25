@@ -18,7 +18,6 @@ import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
-import uk.gov.govuk.login.navigation.LOGIN_ROUTE
 import uk.gov.govuk.navigation.AppLaunchNavigation
 import uk.gov.govuk.search.SearchFeature
 import uk.gov.govuk.topics.TopicsFeature

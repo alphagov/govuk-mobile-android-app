@@ -61,11 +61,11 @@ import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.extension.asDeepLinks
 import uk.gov.govuk.extension.getUrlParam
+import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
 import uk.gov.govuk.login.navigation.BIOMETRIC_SETTINGS_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
-import uk.gov.govuk.login.navigation.LOGIN_ROUTE
 import uk.gov.govuk.login.navigation.biometricGraph
 import uk.gov.govuk.login.navigation.loginGraph
 import uk.gov.govuk.navigation.DeepLink
@@ -486,8 +486,10 @@ private fun GovUkNavHost(
             navController = navController,
             onSignOut = {
                 viewModel.onSignOut()
-                navController.navigate(LOGIN_ROUTE) {
-                    popUpTo(0) { inclusive = true }
+                navController.navigate(HOME_GRAPH_ROUTE) {
+                    popUpTo(0) {
+                        inclusive = true
+                    }
                 }
             }
         )
