@@ -7,6 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import uk.gov.govuk.auth.navigation.authenticatedComposable
 import uk.gov.govuk.visited.ui.EditVisitedRoute
 import uk.gov.govuk.visited.ui.VisitedRoute
 
@@ -18,14 +19,17 @@ fun NavGraphBuilder.visitedGraph(
     navController: NavHostController,
     deepLinks: (path: String) -> List<NavDeepLink>,
     launchBrowser: (url: String) -> Unit,
+    showLogin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
         route = VISITED_GRAPH_ROUTE,
         startDestination = VISITED_ROUTE
     ) {
-        composable(
-            VISITED_ROUTE, deepLinks = deepLinks("/visited")
+        authenticatedComposable(
+            route = VISITED_ROUTE,
+            deepLinks = deepLinks("/visited"),
+            showLogin = showLogin
         ) {
             VisitedRoute(
                 navController = navController,
@@ -34,8 +38,10 @@ fun NavGraphBuilder.visitedGraph(
                 modifier = modifier
             )
         }
-        composable(
-            EDIT_VISITED_ROUTE, deepLinks = deepLinks("/visited/edit")
+        authenticatedComposable(
+            route = EDIT_VISITED_ROUTE,
+            deepLinks = deepLinks("/visited/edit"),
+            showLogin = showLogin
         ) {
             EditVisitedRoute(
                 onBack = { navController.popBackStack() },

@@ -10,6 +10,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import uk.gov.govuk.auth.navigation.authenticatedComposable
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_PERMISSION_GRAPH_ROUTE
 import uk.gov.govuk.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
 import uk.gov.govuk.settings.BuildConfig.ACCOUNT_URL
@@ -37,14 +38,17 @@ fun NavGraphBuilder.settingsGraph(
     appVersion: String,
     deepLinks: (path: String) -> List<NavDeepLink>,
     launchBrowser: (url: String) -> Unit,
+    showLogin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
         route = SETTINGS_GRAPH_ROUTE,
         startDestination = SETTINGS_ROUTE
     ) {
-        composable(
-            SETTINGS_ROUTE, deepLinks = deepLinks("/settings")
+        authenticatedComposable(
+            route = SETTINGS_ROUTE,
+            deepLinks = deepLinks("/settings"),
+            showLogin = showLogin
         ) {
             val context = LocalContext.current
             SettingsRoute(

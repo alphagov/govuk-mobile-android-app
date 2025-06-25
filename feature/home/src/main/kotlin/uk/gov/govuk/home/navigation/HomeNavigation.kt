@@ -8,6 +8,7 @@ import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import uk.gov.govuk.auth.navigation.authenticatedComposable
 import uk.gov.govuk.home.ui.HomeRoute
 
 const val HOME_GRAPH_ROUTE = "home_graph_route"
@@ -19,14 +20,14 @@ fun NavGraphBuilder.homeGraph(
     deepLinks: (path: String) -> List<NavDeepLink>,
     modifier: Modifier = Modifier,
     headerWidget: (@Composable (Modifier) -> Unit)? = null,
-    transitionOverrideRoutes: List<String> = emptyList()
+    transitionOverrideRoutes: List<String> = emptyList(),
+    showLogin: () -> Unit
 ) {
     navigation(
         route = HOME_GRAPH_ROUTE,
         startDestination = HOME_GRAPH_START_DESTINATION
     ) {
-        composable(
-            HOME_ROUTE, deepLinks = deepLinks("/home"),
+        authenticatedComposable(HOME_ROUTE, deepLinks = deepLinks("/home"),
             exitTransition = {
                 if (transitionOverrideRoutes.contains(this.targetState.destination.parent?.route)) {
                     ExitTransition.None
@@ -41,6 +42,7 @@ fun NavGraphBuilder.homeGraph(
                     null
                 }
             },
+            showLogin = showLogin
         ) {
             HomeRoute(
                 widgets = widgets,

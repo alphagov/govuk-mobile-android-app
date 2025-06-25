@@ -46,6 +46,7 @@ rootProject.name = "govuk-mobile-android-app"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":analytics")
 include(":app")
+include(":auth")
 include(":config")
 include(":design")
 include(":feature:home")

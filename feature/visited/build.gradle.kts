@@ -44,6 +44,7 @@ sonar {
 }
 
 dependencies {
+    implementation(projects.auth)
     implementation(projects.design)
     implementation(projects.analytics)
     implementation(projects.data)

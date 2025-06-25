@@ -201,7 +201,6 @@ private fun BottomNavScaffold(
         }
     }
 
-    /* Uncomment when deep links are live
     HandleReceivedIntents(
         intentFlow = intentFlow,
         navController = navController,
@@ -209,7 +208,6 @@ private fun BottomNavScaffold(
     ) { hasDeepLink, url ->
         viewModel.onDeepLinkReceived(hasDeepLink, url)
     }
-    */
 
     if (shouldDisplayNotificationsOnboarding) {
         HandleNotificationsPermissionStatus(navController = navController)
@@ -382,6 +380,13 @@ private fun GovUkNavHost(
     val browserLauncher = rememberBrowserLauncher(shouldShowExternalBrowser)
     val context = LocalContext.current
 
+    val showLogin: () -> Unit = {
+        navController.navigate(
+            LOGIN_ROUTE,
+            navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
+        )
+    }
+
     NavHost(
         navController = navController,
         startDestination = startDestination
@@ -397,12 +402,14 @@ private fun GovUkNavHost(
                 topicSelectionCompleted = {
                     viewModel.topicSelectionCompleted()
                     appLaunchNavigation.onNext(navController)
-                }
+                },
+                showLogin = showLogin
             )
             topicsGraph(
                 navController = navController,
                 deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
                 launchBrowser = { url -> browserLauncher.launch(url) },
+                showLogin = showLogin,
                 modifier = Modifier.padding(paddingValues)
             )
         }
@@ -457,7 +464,8 @@ private fun GovUkNavHost(
                     )
                 }
             } else null,
-            transitionOverrideRoutes = listOf(SEARCH_GRAPH_ROUTE)
+            transitionOverrideRoutes = listOf(SEARCH_GRAPH_ROUTE),
+            showLogin = showLogin
         )
         settingsGraph(
             navigateTo = { route -> navController.navigate(route) },
@@ -465,6 +473,7 @@ private fun GovUkNavHost(
             appVersion = BuildConfig.VERSION_NAME_USER_FACING,
             deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
             launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) },
+            showLogin = showLogin,
             modifier = Modifier.padding(paddingValues)
         )
         signOutGraph(
@@ -480,13 +489,15 @@ private fun GovUkNavHost(
             searchGraph(
                 navController,
                 deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
-                launchBrowser = { url -> browserLauncher.launch(url) })
+                launchBrowser = { url -> browserLauncher.launch(url) },
+                showLogin = showLogin)
         }
         if (homeWidgets.contains(HomeWidget.RECENT_ACTIVITY)) {
             visitedGraph(
                 navController = navController,
                 deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
                 launchBrowser = { url -> browserLauncher.launch(url) },
+                showLogin = showLogin,
                 modifier = Modifier.padding(paddingValues)
             )
         }

@@ -8,6 +8,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import uk.gov.govuk.auth.navigation.authenticatedComposable
 import uk.gov.govuk.search.ui.SearchRoute
 
 const val SEARCH_GRAPH_ROUTE = "search_graph_route"
@@ -17,18 +18,20 @@ fun NavGraphBuilder.searchGraph(
     navController: NavHostController,
     deepLinks: (path: String) -> List<NavDeepLink>,
     launchBrowser: (url: String) -> Unit,
+    showLogin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
         route = SEARCH_GRAPH_ROUTE,
         startDestination = SEARCH_ROUTE
     ) {
-        composable(
+        authenticatedComposable(
             SEARCH_ROUTE, deepLinks = deepLinks("/search"),
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
             popEnterTransition = { EnterTransition.None },
-            popExitTransition = { ExitTransition.None }
+            popExitTransition = { ExitTransition.None },
+            showLogin = showLogin
         ) {
             SearchRoute(
                 onBack = { navController.popBackStack() },

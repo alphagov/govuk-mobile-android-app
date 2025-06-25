@@ -8,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import uk.gov.govuk.auth.navigation.authenticatedComposable
 import uk.gov.govuk.topics.ui.AllStepByStepRoute
 import uk.gov.govuk.topics.ui.AllTopicsRoute
 import uk.gov.govuk.topics.ui.EditTopicsRoute
@@ -26,12 +27,16 @@ const val TOPICS_ALL_STEP_BY_STEPS_ROUTE = "topics_all_step_by_steps_route"
 
 fun NavGraphBuilder.topicSelectionGraph(
     topicSelectionCompleted: () -> Unit,
+    showLogin: () -> Unit
 ) {
     navigation(
         route = TOPIC_SELECTION_GRAPH_ROUTE,
         startDestination = TOPIC_SELECTION_ROUTE
     ) {
-        composable(TOPIC_SELECTION_ROUTE) {
+        authenticatedComposable(
+            route = TOPIC_SELECTION_ROUTE,
+            showLogin = showLogin
+        ) {
             TopicSelectionRoute(
                 onDone = topicSelectionCompleted,
                 onSkip = topicSelectionCompleted
@@ -44,6 +49,7 @@ fun NavGraphBuilder.topicsGraph(
     navController: NavController,
     deepLinks: (path: String) -> List<NavDeepLink>,
     launchBrowser: (url: String) -> Unit,
+    showLogin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -51,12 +57,13 @@ fun NavGraphBuilder.topicsGraph(
         startDestination = TOPICS_ALL_ROUTE
     ) {
         val topicPath = "/{$TOPIC_REF_ARG}?$TOPIC_SUBTOPIC_ARG={$TOPIC_SUBTOPIC_ARG}"
-        composable(
-            "$TOPIC_ROUTE$topicPath",
+        authenticatedComposable(
+            route = "$TOPIC_ROUTE$topicPath",
             arguments = listOf(
                 navArgument(TOPIC_REF_ARG) { type = NavType.StringType },
                 navArgument(TOPIC_SUBTOPIC_ARG) { type = NavType.BoolType },
-            ), deepLinks = deepLinks("/topics$topicPath")
+            ), deepLinks = deepLinks("/topics$topicPath"),
+            showLogin = showLogin
         ) {
             TopicRoute(
                 onBack = { navController.popBackStack() },
@@ -68,15 +75,19 @@ fun NavGraphBuilder.topicsGraph(
                 modifier = modifier
             )
         }
-        composable(
-            TOPICS_EDIT_ROUTE, deepLinks = deepLinks("/topics/edit")
+        authenticatedComposable(
+            route = TOPICS_EDIT_ROUTE,
+            deepLinks = deepLinks("/topics/edit"),
+            showLogin = showLogin
         ) {
             EditTopicsRoute(
                 onBack = { navController.popBackStack() }
             )
         }
-        composable(
-            TOPICS_ALL_ROUTE, deepLinks = deepLinks("/topics/all")
+        authenticatedComposable(
+            route = TOPICS_ALL_ROUTE,
+            deepLinks = deepLinks("/topics/all"),
+            showLogin = showLogin
         ) {
             AllTopicsRoute(
                 onBack = { navController.popBackStack() },
@@ -84,8 +95,9 @@ fun NavGraphBuilder.topicsGraph(
                 modifier = modifier
             )
         }
-        composable(
-            TOPICS_ALL_STEP_BY_STEPS_ROUTE
+        authenticatedComposable(
+            route = TOPICS_ALL_STEP_BY_STEPS_ROUTE,
+            showLogin = showLogin
         ) {
             AllStepByStepRoute(
                 onBack = { navController.popBackStack()},

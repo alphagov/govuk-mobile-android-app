@@ -54,6 +54,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.auth)
     implementation(projects.analytics)
     implementation(projects.design)
     implementation(projects.config)

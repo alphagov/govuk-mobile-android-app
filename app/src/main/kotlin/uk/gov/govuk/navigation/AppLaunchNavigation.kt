@@ -53,8 +53,6 @@ internal class AppLaunchNavigation @Inject constructor(
                 && !appRepo.hasSkippedBiometrics()) {
                 _launchRoutes.push(BIOMETRIC_ROUTE)
             }
-
-            _launchRoutes.push(LOGIN_GRAPH_ROUTE)
         }
 
         if (analyticsClient.isAnalyticsConsentRequired()) {
