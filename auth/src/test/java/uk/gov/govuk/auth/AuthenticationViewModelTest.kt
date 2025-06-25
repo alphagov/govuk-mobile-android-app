@@ -3,6 +3,7 @@ package uk.gov.govuk.auth
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Test
+import org.junit.Assert.assertEquals
 import uk.gov.govuk.data.auth.AuthRepo
 
 class AuthenticationViewModelTest {
@@ -15,7 +16,7 @@ class AuthenticationViewModelTest {
         val viewModel = AuthenticationViewModel(authRepo)
         val state = viewModel.authenticationState
 
-        assert(state == AuthenticationState.LoggedIn)
+        assertEquals(AuthenticationState.LoggedIn, state)
     }
 
     @Test
@@ -25,6 +26,6 @@ class AuthenticationViewModelTest {
         val viewModel = AuthenticationViewModel(authRepo)
         val state = viewModel.authenticationState
 
-        assert(state == AuthenticationState.NotLoggedIn)
+        assertEquals(AuthenticationState.NotLoggedIn, state)
     }
 }
