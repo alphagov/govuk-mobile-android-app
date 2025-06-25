@@ -14,9 +14,9 @@ class AuthenticationViewModelTest {
         every { authRepo.isUserSessionActive() } returns true
 
         val viewModel = AuthenticationViewModel(authRepo)
-        val state = viewModel.authenticationState
+        val authenticationState = viewModel.getAuthenticationState()
 
-        assertEquals(AuthenticationState.LoggedIn, state)
+        assertEquals(AuthenticationState.LoggedIn, authenticationState)
     }
 
     @Test
@@ -24,8 +24,8 @@ class AuthenticationViewModelTest {
         every { authRepo.isUserSessionActive() } returns false
 
         val viewModel = AuthenticationViewModel(authRepo)
-        val state = viewModel.authenticationState
+        val authenticationState = viewModel.getAuthenticationState()
 
-        assertEquals(AuthenticationState.NotLoggedIn, state)
+        assertEquals(AuthenticationState.NotLoggedIn, authenticationState)
     }
 }
