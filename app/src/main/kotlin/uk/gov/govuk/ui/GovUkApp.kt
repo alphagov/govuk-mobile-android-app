@@ -200,6 +200,8 @@ private fun BottomNavScaffold(
             )
         }
     }
+
+    /* Uncomment when deep links are live
     HandleReceivedIntents(
         intentFlow = intentFlow,
         navController = navController,
@@ -207,6 +209,8 @@ private fun BottomNavScaffold(
     ) { hasDeepLink, url ->
         viewModel.onDeepLinkReceived(hasDeepLink, url)
     }
+    */
+
     if (shouldDisplayNotificationsOnboarding) {
         HandleNotificationsPermissionStatus(navController = navController)
     }
