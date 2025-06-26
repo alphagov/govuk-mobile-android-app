@@ -103,7 +103,7 @@ class FlagRepo @Inject constructor(
         )
     }
 
-    fun isChatServiceEnabled(): Boolean {
+    fun isChatEnabled(): Boolean {
         return isEnabled(
             debugEnabled = debugEnabled,
             debugFlag = false, // Dev only flag, only set to true when actively working on chat

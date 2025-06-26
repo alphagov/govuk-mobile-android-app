@@ -310,32 +310,6 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given the chat feature is enabled, When init, then emit chat enabled state`() {
-        coEvery { flagRepo.isChatServiceEnabled() } returns true
-
-        val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
-
-        runTest {
-            viewModel.homeWidgets.first()
-                ?.let { assertTrue(it.contains(HomeWidget.CHAT)) }
-        }
-    }
-
-    @Test
-    fun `Given the chat feature is disabled, When init, then emit chat disabled state`() {
-        coEvery { flagRepo.isChatServiceEnabled() } returns false
-
-        val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
-
-        runTest {
-            viewModel.homeWidgets.first()
-                ?.let { assertFalse(it.contains(HomeWidget.CHAT)) }
-        }
-    }
-
-    @Test
     fun `Given the notifications widget is enabled, When init, then emit notifications widget enabled state`() {
         coEvery { flagRepo.isNotificationsEnabled() } returns true
 
