@@ -8,6 +8,7 @@ import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.BIOMETRIC_GRAPH_ROUTE
+import uk.gov.govuk.login.navigation.BIOMETRIC_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
 import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.topics.navigation.TOPIC_SELECTION_GRAPH_ROUTE
@@ -100,7 +101,7 @@ internal class AppLaunchNavigation @Inject constructor(
         if (_launchRoutes.isNotEmpty()) {
             val route = _launchRoutes.pop()
             // Todo - temp fix for refresh token expiry
-            if (route == BIOMETRIC_GRAPH_ROUTE && authRepo.isUserSignedIn()) {
+            if (route == BIOMETRIC_ROUTE && authRepo.isUserSignedIn()) {
                 onNext(navController)
             } else {
                 navController.popBackStack()
