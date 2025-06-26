@@ -5,7 +5,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import uk.gov.govuk.auth.navigation.authenticatedComposable
 import uk.gov.govuk.visited.ui.EditVisitedRoute

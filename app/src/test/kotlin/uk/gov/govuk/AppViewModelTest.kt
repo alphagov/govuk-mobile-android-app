@@ -541,10 +541,7 @@ class AppViewModelTest {
                 searchFeature.clear()
                 visited.clear()
                 appLaunchNavigation.onDifferentUserLogin(any())
-                navController.popBackStack(
-                    route = LOGIN_GRAPH_ROUTE,
-                    inclusive = true
-                )
+                appLaunchNavigation.onNext(navController)
             }
         }
     }

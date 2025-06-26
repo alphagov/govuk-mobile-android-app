@@ -120,11 +120,14 @@ internal class AppViewModel @Inject constructor(
                 visitedFeature.clear()
 
                 appLaunchNavigation.onDifferentUserLogin(topicsFeature.hasTopics())
+
+                appLaunchNavigation.onNext(navController)
+            } else {
+                navController.popBackStack(
+                    route = LOGIN_GRAPH_ROUTE,
+                    inclusive = true
+                )
             }
-            navController.popBackStack(
-                route = LOGIN_GRAPH_ROUTE,
-                inclusive = true
-            )
         }
     }
 
