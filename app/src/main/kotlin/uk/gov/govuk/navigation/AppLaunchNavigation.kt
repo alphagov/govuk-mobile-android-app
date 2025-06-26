@@ -48,7 +48,6 @@ internal class AppLaunchNavigation @Inject constructor(
 
         if (flagRepo.isLoginEnabled()) {
             if (authRepo.isAuthenticationEnabled()
-                && !authRepo.isUserSignedIn()
                 && !appRepo.hasSkippedBiometrics()) {
                 _launchRoutes.push(BIOMETRIC_GRAPH_ROUTE)
             }
@@ -98,11 +97,16 @@ internal class AppLaunchNavigation @Inject constructor(
     }
 
     fun onNext(navController: NavController) {
-        navController.popBackStack()
         if (_launchRoutes.isNotEmpty()) {
             val route = _launchRoutes.pop()
-            _startDestination = route
-            navController.navigate(route)
+            // Todo - temp fix for refresh token expiry
+            if (route == BIOMETRIC_GRAPH_ROUTE && authRepo.isUserSignedIn()) {
+                onNext(navController)
+            } else {
+                navController.popBackStack()
+                _startDestination = route
+                navController.navigate(route)
+            }
         }
     }
 }

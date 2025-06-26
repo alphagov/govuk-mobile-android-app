@@ -113,6 +113,7 @@ internal class AppViewModel @Inject constructor(
     fun onLogin(navController: NavController) {
         viewModelScope.launch {
             if (authRepo.isDifferentUser()) {
+                authRepo.clear()
                 appRepo.clear()
                 topicsFeature.clear()
                 localFeature.clear()

@@ -57,6 +57,7 @@ class AuthRepo @Inject constructor(
     private var tokens = Tokens()
 
     suspend fun handleAuthResponse(data: Intent?): Boolean {
+        clear()
         val authResponse = data?.let { AuthorizationResponse.fromIntent(it) }
         return if (authResponse != null) {
             performTokenRequest(authResponse.createTokenExchangeRequest())
@@ -229,19 +230,17 @@ class AuthRepo @Inject constructor(
         }
     }
 
-    suspend fun signOut(): Boolean {
-        return clearLocalAuth()
-    }
-
-    suspend fun clearLocalAuth(): Boolean {
+    suspend fun clear(): Boolean {
         try {
             secureStore.delete(REFRESH_TOKEN_KEY)
 
             try {
-                authApi.revoke(
-                    refreshToken = tokens.refreshToken,
-                    clientId = BuildConfig.AUTH_CLIENT_ID
-                )
+                if (tokens.refreshToken.isNotBlank()) {
+                    authApi.revoke(
+                        refreshToken = tokens.refreshToken,
+                        clientId = BuildConfig.AUTH_CLIENT_ID
+                    )
+                }
             } catch (e: Exception) {
                 // Ignore API failure
             }
