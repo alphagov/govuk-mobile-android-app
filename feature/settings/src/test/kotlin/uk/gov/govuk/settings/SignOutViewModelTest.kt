@@ -83,7 +83,7 @@ class SignOutViewModelTest {
 
     @Test
     fun `Given a user signs out successfully, then log analytics and emit nav event`() {
-        coEvery { authRepo.signOut() } returns true
+        coEvery { authRepo.clear() } returns true
 
         runTest {
             val navEvents = mutableListOf<NavigationEvent>()
@@ -103,7 +103,7 @@ class SignOutViewModelTest {
                 section = "Settings"
             )
 
-            authRepo.signOut()
+            authRepo.clear()
         }
 
         coVerify(exactly = 0) {
@@ -113,7 +113,7 @@ class SignOutViewModelTest {
 
     @Test
     fun `Given a user signs out unsuccessfully, then log analytics and emit error`() {
-        coEvery { authRepo.signOut() } returns false
+        coEvery { authRepo.clear() } returns false
 
         runTest {
             val navEvents = mutableListOf<NavigationEvent>()
@@ -133,7 +133,7 @@ class SignOutViewModelTest {
                 section = "Settings"
             )
 
-            authRepo.signOut()
+            authRepo.clear()
         }
 
         coVerify (exactly = 0) { analyticsClient.disable() }

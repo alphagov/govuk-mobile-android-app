@@ -23,7 +23,6 @@ import net.openid.appauth.AuthorizationService.TokenResponseCallback
 import net.openid.appauth.ClientAuthentication
 import net.openid.appauth.TokenRequest
 import net.openid.appauth.TokenResponse
-import okio.IOException
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -35,6 +34,7 @@ import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.error.SecureStorageError
 import uk.gov.android.securestore.error.SecureStoreErrorType
 import uk.gov.govuk.data.remote.AuthApi
+import java.io.IOException
 
 class AuthRepoTest {
 
@@ -66,6 +66,14 @@ class AuthRepoTest {
     fun tearDown() {
         // Remove mocks to prevent side effects
         unmockkAll()
+    }
+
+    @Test
+    fun `Given an auth response, when handle auth response, then clear`() {
+        runTest {
+            authRepo.handleAuthResponse(null)
+            coVerify { authRepo.clear() }
+        }
     }
 
     @Test
@@ -572,9 +580,22 @@ class AuthRepoTest {
     }
 
     @Test
-    fun `Given the user signs out, when sign out, delete token from secure store, revoke token and return true`() {
+    fun `Given no exceptions when deleting or revoking, when clear, then delete, revoke and return true`() {
+        every { AuthorizationResponse.fromIntent(any()) } returns authResponse
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
+            callback.onTokenRequestCompleted(tokenResponse, null)
+        }
+        every { tokenResponseMapper.map(any()) } returns
+                TokenResponseMapper.Tokens(
+                    accessToken = "accessToken",
+                    idToken = "idToken",
+                    refreshToken = "refreshToken"
+                )
+
         runTest {
-            assertTrue(authRepo.signOut())
+            authRepo.handleAuthResponse(intent)
+            assertTrue(authRepo.clear())
         }
 
         coVerify {
@@ -584,22 +605,33 @@ class AuthRepoTest {
     }
 
     @Test
-    fun `Given the user signs out and the auth api throws an exception, when sign out, return true`() {
-        coEvery {
-            authApi.revoke(any(), any())
-        } throws IOException()
-
+    fun `Given a blank refresh token, when clear, then delete token from secure store, do not revoke token and return true`() {
         runTest {
-            assertTrue(authRepo.signOut())
+            assertTrue(authRepo.clear())
         }
 
-        verify {
+        coVerify {
             secureStore.delete("refreshToken")
+        }
+
+        coVerify(exactly = 0) {
+            authApi.revoke(any(), any())
         }
     }
 
     @Test
-    fun `Given the user signs out, when a SecureStorageError is thrown, do not revoke token and return false`() {
+    fun `Given an exception deleting from secure store, when clear, then do not revoke token and return false`() {
+        every { AuthorizationResponse.fromIntent(any()) } returns authResponse
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
+            callback.onTokenRequestCompleted(tokenResponse, null)
+        }
+        every { tokenResponseMapper.map(any()) } returns
+                TokenResponseMapper.Tokens(
+                    accessToken = "accessToken",
+                    idToken = "idToken",
+                    refreshToken = "refreshToken"
+                )
         every {
             secureStore.delete("refreshToken")
         } throws SecureStorageError(
@@ -608,11 +640,43 @@ class AuthRepoTest {
         )
 
         runTest {
-            assertFalse(authRepo.signOut())
+            authRepo.handleAuthResponse(intent)
+            assertFalse(authRepo.clear())
+        }
+
+        coVerify {
+            secureStore.delete("refreshToken")
         }
 
         coVerify(exactly = 0) {
             authApi.revoke(any(), any())
+        }
+    }
+
+    @Test
+    fun `Given an exception revoking the token, when clear, then return true`() {
+        every { AuthorizationResponse.fromIntent(any()) } returns authResponse
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
+            callback.onTokenRequestCompleted(tokenResponse, null)
+        }
+        every { tokenResponseMapper.map(any()) } returns
+                TokenResponseMapper.Tokens(
+                    accessToken = "accessToken",
+                    idToken = "idToken",
+                    refreshToken = "refreshToken"
+                )
+        coEvery {
+            authApi.revoke(any(), any())
+        } throws IOException()
+
+        runTest {
+            authRepo.handleAuthResponse(intent)
+            assertTrue(authRepo.clear())
+        }
+
+        coVerify {
+            secureStore.delete("refreshToken")
         }
     }
 
