@@ -150,23 +150,6 @@ class AppLaunchNavigationTest {
     }
 
     @Test
-    fun `Given user is signed in, When build launch flow, builds launch routes`() {
-        coEvery { authRepo.isUserSignedIn() } returns true
-
-        runTest {
-            appLaunchNav.buildLaunchFlow()
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
     fun `Given topics are disabled, When build launch flow, builds launch routes`() {
         every { flagRepo.isTopicsEnabled() } returns false
 
@@ -376,7 +359,7 @@ class AppLaunchNavigationTest {
     }
 
     @Test
-    fun `Given launch routes are empty, When on Next, pop back stack but don't navigate`() {
+    fun `Given launch routes are empty, When on Next, do nothing`() {
         every { flagRepo.isNotificationsEnabled() } returns false
         every { authRepo.isAuthenticationEnabled() } returns false
 
@@ -388,10 +371,9 @@ class AppLaunchNavigationTest {
             clearAllMocks()
 
             appLaunchNav.onNext(navController)
-            verify {
-                navController.popBackStack()
-            }
+
             verify(exactly = 0) {
+                navController.popBackStack()
                 navController.navigate(any<String>())
             }
         }
@@ -405,6 +387,40 @@ class AppLaunchNavigationTest {
             navController.popBackStack()
             navController.navigate(LOGIN_GRAPH_ROUTE)
             assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
+        }
+    }
+
+    @Test
+    fun `Given biometric route and user is signed in, navigate to next route`() {
+        every { authRepo.isUserSignedIn() } returns true
+
+        runTest {
+            appLaunchNav.onSignOut()
+            appLaunchNav.onNext(navController)
+
+            verify {
+                navController.popBackStack()
+                navController.navigate(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
+            }
+
+            verify(exactly = 0) {
+                navController.navigate(BIOMETRIC_ROUTE)
+            }
+        }
+    }
+
+    @Test
+    fun `Given biometric route and user is not signed in, navigate to biometric route`() {
+        every { authRepo.isUserSignedIn() } returns false
+
+        runTest {
+            appLaunchNav.onSignOut()
+            appLaunchNav.onNext(navController)
+
+            verify {
+                navController.popBackStack()
+                navController.navigate(BIOMETRIC_ROUTE)
+            }
         }
     }
 }
