@@ -58,7 +58,7 @@ class BiometricSettingsViewModelTest {
     }
 
     @Test
-    fun `Given a user is signed in, when toggle, then clear local auth, log analytics and emit ui state`() {
+    fun `Given a user is signed in, when toggle, then clear auth repo, log analytics and emit ui state`() {
         every { authRepo.isUserSignedIn() } returns true andThen true andThen false
 
         val viewModel = BiometricSettingsViewModel(appRepo, authRepo, analyticsClient)
@@ -78,7 +78,7 @@ class BiometricSettingsViewModelTest {
                     BIOMETRICS_SETTINGS_DISABLE
                 )
             }
-            coVerify { authRepo.clearLocalAuth() }
+            coVerify { authRepo.clear() }
 
             assertFalse(uiStates.last())
         }

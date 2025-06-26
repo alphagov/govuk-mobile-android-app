@@ -509,6 +509,7 @@ class AppViewModelTest {
             viewModel.onLogin(navController)
 
             coVerify(exactly = 0) {
+                authRepo.clear()
                 appRepo.clear()
                 topicsFeature.clear()
                 localFeature.clear()
@@ -531,6 +532,7 @@ class AppViewModelTest {
             viewModel.onLogin(navController)
 
             coVerify {
+                authRepo.clear()
                 appRepo.clear()
                 topicsFeature.clear()
                 localFeature.clear()
