@@ -26,9 +26,9 @@ android {
 
     buildTypes {
         release {
-            buildConfigField("String", "AUTH_BASE_URL", "\"https://govukapp-integration.auth.eu-west-2.amazoncognito.com/oauth2/\"")
-            buildConfigField("String", "TOKEN_BASE_URL", "\"https://g0s70cfqng.execute-api.eu-west-2.amazonaws.com/integration/oauth2/\"")
-            buildConfigField("String", "AUTH_CLIENT_ID", "\"35vb4qv5kigloongjg4snabius\"")
+            buildConfigField("String", "AUTH_BASE_URL", "\"https://govukapp.auth.eu-west-2.amazoncognito.com/oauth2/\"")
+            buildConfigField("String", "TOKEN_BASE_URL", "\"https://em5hkfc46k.execute-api.eu-west-2.amazonaws.com/production/oauth2/\"")
+            buildConfigField("String", "AUTH_CLIENT_ID", "\"40grlhknon5palderi2j1a1bte\"")
         }
     }
 
