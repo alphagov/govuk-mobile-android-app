@@ -21,6 +21,7 @@ import uk.gov.android.securestore.RetrievalEvent
 import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.authentication.AuthenticatorPromptConfiguration
 import uk.gov.android.securestore.error.SecureStorageError
+import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.BuildConfig
 import uk.gov.govuk.data.auth.model.Tokens
 import uk.gov.govuk.data.remote.AuthApi
@@ -39,7 +40,8 @@ class AuthRepo @Inject constructor(
     private val secureStore: SecureStore,
     private val biometricManager: BiometricManager,
     private val sharedPreferences: SharedPreferences,
-    private val authApi: AuthApi
+    private val authApi: AuthApi,
+    private val analyticsClient: AnalyticsClient
 ) {
     companion object {
         private const val REFRESH_TOKEN_KEY = "refreshToken"
@@ -81,11 +83,18 @@ class AuthRepo @Inject constructor(
 
         return if (result is RetrievalEvent.Success) {
             val refreshToken = result.value[REFRESH_TOKEN_KEY]
-            val tokenRequest = tokenRequestBuilder
-                .setRefreshToken(refreshToken)
-                .build()
 
-            performTokenRequest(tokenRequest, refreshToken)
+            if (refreshToken.isNullOrBlank()) {
+                secureStore.delete(REFRESH_TOKEN_KEY)
+                analyticsClient.logException(IllegalArgumentException("refresh token is null or blank"))
+                false
+            } else {
+                val tokenRequest = tokenRequestBuilder
+                    .setRefreshToken(refreshToken)
+                    .build()
+
+                performTokenRequest(tokenRequest, refreshToken)
+            }
         } else {
             false
         }

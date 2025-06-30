@@ -33,6 +33,7 @@ import uk.gov.android.securestore.RetrievalEvent
 import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.error.SecureStorageError
 import uk.gov.android.securestore.error.SecureStoreErrorType
+import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.remote.AuthApi
 import java.io.IOException
 
@@ -50,6 +51,7 @@ class AuthRepoTest {
     private val tokenResponse = mockk<TokenResponse>(relaxed = true)
     private val sharedPrefs = mockk<SharedPreferences>(relaxed = true)
     private val authApi = mockk<AuthApi>(relaxed = true)
+    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val activity = mockk<FragmentActivity>(relaxed = true)
 
     private lateinit var authRepo: AuthRepo
@@ -59,7 +61,7 @@ class AuthRepoTest {
         mockkStatic(AuthorizationResponse::class)
 
         authRepo = AuthRepo(attestationProvider, authRequest, authService, tokenRequestBuilder,
-            tokenResponseMapper, secureStore, biometricManager, sharedPrefs, authApi)
+            tokenResponseMapper, secureStore, biometricManager, sharedPrefs, authApi, analyticsClient)
     }
 
     @After
@@ -375,6 +377,46 @@ class AuthRepoTest {
         } returns BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED
 
         assertFalse(authRepo.isAuthenticationEnabled())
+    }
+
+    @Test
+    fun `Given the refresh token retrieval returns a null refresh token, when refresh tokens, then clear secure store and return false`() {
+        coEvery {
+            secureStore.retrieveWithAuthentication(
+                key = arrayOf("refreshToken"),
+                authPromptConfig = any(),
+                context = any()
+            )
+        } returns RetrievalEvent.Success(emptyMap())
+
+        runTest {
+            assertFalse(authRepo.refreshTokens(activity, ""))
+
+            coVerify {
+                secureStore.delete("refreshToken")
+                analyticsClient.logException(any())
+            }
+        }
+    }
+
+    @Test
+    fun `Given the refresh token retrieval returns a blank refresh token, when refresh tokens, then clear secure store and return false`() {
+        coEvery {
+            secureStore.retrieveWithAuthentication(
+                key = arrayOf("refreshToken"),
+                authPromptConfig = any(),
+                context = any()
+            )
+        } returns RetrievalEvent.Success(mapOf("refreshToken" to " "))
+
+        runTest {
+            assertFalse(authRepo.refreshTokens(activity, ""))
+
+            coVerify {
+                secureStore.delete("refreshToken")
+                analyticsClient.logException(any())
+            }
+        }
     }
 
     @Test

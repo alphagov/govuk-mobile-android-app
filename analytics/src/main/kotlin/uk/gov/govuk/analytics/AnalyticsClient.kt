@@ -167,6 +167,10 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
+    fun logException(exception: Exception) {
+        firebaseAnalyticsClient.logException(exception)
+    }
+
     private fun redactedEvent(name: String, type: String, inputString: String) {
         logEvent(
             name,
