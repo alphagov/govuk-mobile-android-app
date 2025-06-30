@@ -58,6 +58,10 @@ class FirebaseAnalyticsClient @Inject constructor(
         firebaseAnalytics.setUserProperty(name, value)
     }
 
+    fun logException(exception: Exception) {
+        firebaseCrashlytics.recordException(exception)
+    }
+
     private fun mapToBundle(map: Map<String, Any>): Bundle {
         val bundle = Bundle()
         for ((key, value) in map) {
