@@ -17,7 +17,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-internal class AppLaunchNavigation @Inject constructor(
+internal class AppNavigation @Inject constructor(
     private val flagRepo: FlagRepo,
     private val analyticsClient: AnalyticsClient,
     private val appRepo: AppRepo,

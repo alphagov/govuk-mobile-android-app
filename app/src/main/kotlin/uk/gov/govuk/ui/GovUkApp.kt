@@ -391,7 +391,7 @@ private fun GovUkNavHost(
     shouldShowExternalBrowser: Boolean,
     paddingValues: PaddingValues
 ) {
-    val appLaunchNavigation = viewModel.appLaunchNavigation
+    val appLaunchNavigation = viewModel.appNavigation
     val startDestination = appLaunchNavigation.startDestination
     val browserLauncher = rememberBrowserLauncher(shouldShowExternalBrowser)
     val context = LocalContext.current

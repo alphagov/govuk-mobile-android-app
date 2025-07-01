@@ -23,7 +23,7 @@ import uk.gov.govuk.topics.navigation.TOPIC_SELECTION_GRAPH_ROUTE
 import java.util.Stack
 import kotlin.test.assertEquals
 
-class AppLaunchNavigationTest {
+class AppNavigationTest {
 
     private val flagRepo = mockk<FlagRepo>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
@@ -32,11 +32,11 @@ class AppLaunchNavigationTest {
     private val authRepo = mockk<AuthRepo>(relaxed = true)
     private val navController = mockk<NavController>(relaxed = true)
 
-    private lateinit var appLaunchNav: AppLaunchNavigation
+    private lateinit var appLaunchNav: AppNavigation
 
     @Before
     fun setup() {
-        appLaunchNav = AppLaunchNavigation(flagRepo, analyticsClient, appRepo, topicsFeature, authRepo)
+        appLaunchNav = AppNavigation(flagRepo, analyticsClient, appRepo, topicsFeature, authRepo)
 
         // Default config (simulates first time app launch)
         every { flagRepo.isNotificationsEnabled() } returns true

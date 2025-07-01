@@ -17,7 +17,7 @@ import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
-import uk.gov.govuk.navigation.AppLaunchNavigation
+import uk.gov.govuk.navigation.AppNavigation
 import uk.gov.govuk.search.SearchFeature
 import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.ui.model.HomeWidget
@@ -37,7 +37,7 @@ internal class AppViewModel @Inject constructor(
     private val searchFeature: SearchFeature,
     private val visitedFeature: Visited,
     private val analyticsClient: AnalyticsClient,
-    val appLaunchNavigation: AppLaunchNavigation
+    val appNavigation: AppNavigation
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<AppUiState?> = MutableStateFlow(null)
@@ -63,7 +63,7 @@ internal class AppViewModel @Inject constructor(
                 } else {
                     topicsFeature.init()
 
-                    appLaunchNavigation.buildLaunchFlow()
+                    appNavigation.buildLaunchFlow()
 
                     _uiState.value = AppUiState.Default(
                         shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
@@ -102,8 +102,8 @@ internal class AppViewModel @Inject constructor(
             if (flagRepo.isLoginEnabled() && authRepo.isUserSessionActive()) {
                 viewModelScope.launch {
                     authRepo.endUserSession()
-                    appLaunchNavigation.buildLaunchFlow()
-                    navController.navigate(appLaunchNavigation.startDestination)
+                    appNavigation.buildLaunchFlow()
+                    navController.navigate(appNavigation.startDestination)
                 }
             }
         }
@@ -119,9 +119,9 @@ internal class AppViewModel @Inject constructor(
                 searchFeature.clear()
                 visitedFeature.clear()
 
-                appLaunchNavigation.onDifferentUserLogin(topicsFeature.hasTopics())
+                appNavigation.onDifferentUserLogin(topicsFeature.hasTopics())
             }
-            appLaunchNavigation.onNext(navController)
+            appNavigation.onNext(navController)
         }
     }
 
@@ -199,7 +199,7 @@ internal class AppViewModel @Inject constructor(
 
     fun onSignOut() {
         viewModelScope.launch {
-            appLaunchNavigation.onSignOut()
+            appNavigation.onSignOut()
         }
     }
 }
