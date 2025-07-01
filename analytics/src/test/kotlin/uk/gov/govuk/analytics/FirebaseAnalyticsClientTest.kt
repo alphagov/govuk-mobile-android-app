@@ -48,4 +48,14 @@ class FirebaseAnalyticsClientTest {
         }
     }
 
+    @Test
+    fun `Given an exception is logged, then log an exception`() {
+        val exception = IllegalArgumentException()
+
+        firebaseAnalyticsClient.logException(exception)
+
+        verify {
+            firebaseCrashlytics.recordException(exception)
+        }
+    }
 }
