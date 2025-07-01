@@ -198,8 +198,6 @@ internal class AppViewModel @Inject constructor(
     }
 
     fun onSignOut() {
-        viewModelScope.launch {
-            appNavigation.onSignOut()
-        }
+        appNavigation.onSignOut()
     }
 }

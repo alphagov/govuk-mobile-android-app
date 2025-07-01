@@ -23,7 +23,7 @@ import uk.gov.govuk.login.LoginSuccessViewModel
 
 @Composable
 internal fun LoginSuccessRoute(
-    onContinue: () -> Unit,
+    onLoginSuccessCompleted: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: LoginSuccessViewModel = hiltViewModel()
@@ -32,10 +32,15 @@ internal fun LoginSuccessRoute(
         onPageView = { viewModel.onPageView() },
         onContinueClick = { text ->
             viewModel.onContinue(text)
-            onContinue()
         },
         modifier = modifier
     )
+
+    LaunchedEffect(Unit) {
+        viewModel.loginSuccessCompleted.collect { loginSuccessEvent ->
+            onLoginSuccessCompleted(loginSuccessEvent.isBiometricsEnabled)
+        }
+    }
 }
 
 @Composable

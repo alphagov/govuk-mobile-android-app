@@ -14,9 +14,9 @@ import uk.gov.govuk.login.ui.LoginSuccessRoute
 const val LOGIN_GRAPH_ROUTE = "login_graph_route"
 const val LOGIN_ROUTE = "login_route"
 private const val LOGIN_SUCCESS_ROUTE = "login_success_route"
-const val BIOMETRIC_ROUTE = "biometric_route"
+private const val BIOMETRIC_ROUTE = "biometric_route"
 const val BIOMETRIC_SETTINGS_ROUTE = "biometric_settings_route"
-const val ERROR_ROUTE = "login_error_route"
+private const val ERROR_ROUTE = "login_error_route"
 
 fun NavGraphBuilder.loginGraph(
     navController: NavController,
@@ -45,8 +45,16 @@ fun NavGraphBuilder.loginGraph(
             )
         }
         composable(route = LOGIN_SUCCESS_ROUTE) {
+            // Todo - not sure I like the login success screen knowing/caring about biometrics!!!
             LoginSuccessRoute(
-                onContinue = onLoginCompleted,
+                onLoginSuccessCompleted = { isBiometricsEnabled ->
+                    if (isBiometricsEnabled) {
+                        navController.popBackStack()
+                        navController.navigate(BIOMETRIC_ROUTE)
+                    } else {
+                        onLoginCompleted()
+                    }
+                },
                 modifier = modifier
             )
         }

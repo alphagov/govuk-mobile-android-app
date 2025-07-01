@@ -5,9 +5,7 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.analytics.navigation.ANALYTICS_GRAPH_ROUTE
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
-import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
-import uk.gov.govuk.login.navigation.BIOMETRIC_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
 import uk.gov.govuk.topics.TopicsFeature
@@ -21,8 +19,7 @@ internal class AppNavigation @Inject constructor(
     private val flagRepo: FlagRepo,
     private val analyticsClient: AnalyticsClient,
     private val appRepo: AppRepo,
-    private val topicsFeature: TopicsFeature,
-    private val authRepo: AuthRepo
+    private val topicsFeature: TopicsFeature
 ) {
     private var _launchRoutes = Stack<String>()
     val launchRoutes
@@ -48,11 +45,6 @@ internal class AppNavigation @Inject constructor(
         }
 
         if (flagRepo.isLoginEnabled()) {
-            if (authRepo.isAuthenticationEnabled()
-                && !appRepo.hasSkippedBiometrics()) {
-                _launchRoutes.push(BIOMETRIC_ROUTE)
-            }
-
             _launchRoutes.push(LOGIN_GRAPH_ROUTE)
         }
 
@@ -77,14 +69,10 @@ internal class AppNavigation @Inject constructor(
             _launchRoutes.push(TOPIC_SELECTION_GRAPH_ROUTE)
         }
 
-        if (authRepo.isAuthenticationEnabled()) {
-            _launchRoutes.push(BIOMETRIC_ROUTE)
-        }
-
         _launchRoutes.push(ANALYTICS_GRAPH_ROUTE)
     }
 
-    suspend fun onSignOut() {
+    fun onSignOut() {
         _launchRoutes.clear()
 
         _launchRoutes.push(HOME_GRAPH_ROUTE)
@@ -92,24 +80,14 @@ internal class AppNavigation @Inject constructor(
         if (flagRepo.isNotificationsEnabled()) {
             _launchRoutes.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
         }
-
-        if (authRepo.isAuthenticationEnabled()
-            && !appRepo.hasSkippedBiometrics()) {
-            _launchRoutes.push(BIOMETRIC_ROUTE)
-        }
     }
 
     fun onNext(navController: NavController) {
         if (_launchRoutes.isNotEmpty()) {
             val route = _launchRoutes.pop()
-            // Todo - temp fix for refresh token expiry
-            if (route == BIOMETRIC_ROUTE && authRepo.isUserSignedIn()) {
-                onNext(navController)
-            } else {
-                navController.popBackStack()
-                _startDestination = route
-                navController.navigate(route)
-            }
+            navController.popBackStack()
+            _startDestination = route
+            navController.navigate(route)
         }
     }
 }
