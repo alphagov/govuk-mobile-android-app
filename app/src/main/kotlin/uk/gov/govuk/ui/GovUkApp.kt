@@ -204,7 +204,7 @@ private fun BottomNavScaffold(
     /* Uncomment when deep links are live
     HandleReceivedIntents(
         intentFlow = intentFlow,
-        navController = navController,
+        navController = { navController },
         shouldShowExternalBrowser = shouldShowExternalBrowser,
     ) { hasDeepLink, url ->
         viewModel.onDeepLinkReceived(hasDeepLink, url)
@@ -212,14 +212,14 @@ private fun BottomNavScaffold(
     */
 
     if (shouldDisplayNotificationsOnboarding) {
-        HandleNotificationsPermissionStatus(navController = navController)
+        HandleNotificationsPermissionStatus(navController = { navController })
     }
 }
 
 @Composable
 private fun HandleReceivedIntents(
     intentFlow: Flow<Intent>,
-    navController: NavHostController,
+    navController: () -> NavHostController,
     shouldShowExternalBrowser: Boolean,
     onDeepLinkReceived: (hasDeepLink: Boolean, url: String) -> Unit
 ) {
@@ -228,12 +228,12 @@ private fun HandleReceivedIntents(
     LaunchedEffect(intentFlow) {
         intentFlow.collectLatest { intent ->
             intent.data?.let { uri ->
-                if (navController.graph.hasDeepLink(uri)) {
+                if (navController().graph.hasDeepLink(uri)) {
                     onDeepLinkReceived(true, uri.toString())
                     val request = NavDeepLinkRequest.Builder
                         .fromUri(uri)
                         .build()
-                    navController.navigate(
+                    navController().navigate(
                         request,
                         navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
                     )
@@ -265,7 +265,7 @@ private fun showDeepLinkNotFoundAlert(context: Context) {
 
 @Composable
 private fun HandleNotificationsPermissionStatus(
-    navController: NavHostController
+    navController: () -> NavHostController
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
@@ -273,12 +273,12 @@ private fun HandleNotificationsPermissionStatus(
     LaunchedEffect(lifecycleState) {
         when (lifecycleState) {
             Lifecycle.State.RESUMED -> {
-                val route = when (navController.currentDestination?.route) {
+                val route = when (navController().currentDestination?.route) {
                     NOTIFICATIONS_ONBOARDING_ROUTE -> NOTIFICATIONS_ONBOARDING_ROUTE
                     NOTIFICATIONS_PERMISSION_ROUTE -> return@LaunchedEffect
                     else -> NOTIFICATIONS_CONSENT_GRAPH_ROUTE
                 }
-                navController.navigate(route) {
+                navController().navigate(route) {
                     launchSingleTop = true
                 }
             }
