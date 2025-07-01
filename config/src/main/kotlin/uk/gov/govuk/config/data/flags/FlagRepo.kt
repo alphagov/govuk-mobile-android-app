@@ -79,14 +79,6 @@ class FlagRepo @Inject constructor(
         )
     }
 
-    fun isLoginEnabled(): Boolean {
-        return isEnabled(
-            debugEnabled = debugEnabled,
-            debugFlag = debugFlags.isLoginEnabled,
-            remoteFlag = true // Hardcoded on
-        )
-    }
-
     fun isExternalBrowserEnabled(): Boolean {
         return isEnabled(
             debugEnabled = debugEnabled,

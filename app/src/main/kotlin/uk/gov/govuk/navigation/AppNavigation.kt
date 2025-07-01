@@ -44,9 +44,7 @@ internal class AppNavigation @Inject constructor(
             _launchRoutes.push(TOPIC_SELECTION_GRAPH_ROUTE)
         }
 
-        if (flagRepo.isLoginEnabled()) {
-            _launchRoutes.push(LOGIN_GRAPH_ROUTE)
-        }
+        _launchRoutes.push(LOGIN_GRAPH_ROUTE)
 
         if (analyticsClient.isAnalyticsConsentRequired()) {
             _launchRoutes.push(ANALYTICS_GRAPH_ROUTE)

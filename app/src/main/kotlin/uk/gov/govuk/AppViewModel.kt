@@ -99,7 +99,7 @@ internal class AppViewModel @Inject constructor(
         interactionTime: Long = SystemClock.elapsedRealtime()
     ) {
         timeoutManager.onUserInteraction(interactionTime) {
-            if (flagRepo.isLoginEnabled() && authRepo.isUserSessionActive()) {
+            if (authRepo.isUserSessionActive()) {
                 viewModelScope.launch {
                     authRepo.endUserSession()
                     appNavigation.buildLaunchFlow()
