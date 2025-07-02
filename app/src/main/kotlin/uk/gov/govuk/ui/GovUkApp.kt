@@ -70,12 +70,10 @@ import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.loginGraph
 import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
-import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_GRAPH_ROUTE
+import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_PERMISSION_ROUTE
-import uk.gov.govuk.notifications.navigation.notificationsConsentGraph
-import uk.gov.govuk.notifications.navigation.notificationsOnboardingGraph
-import uk.gov.govuk.notifications.navigation.notificationsPermissionGraph
+import uk.gov.govuk.notifications.navigation.notificationsGraph
 import uk.gov.govuk.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.gov.govuk.search.navigation.searchGraph
 import uk.gov.govuk.search.ui.widget.SearchWidget
@@ -292,7 +290,7 @@ private fun HandleNotificationsPermissionStatus(
                 val route = when (controller.currentDestination?.route) {
                     NOTIFICATIONS_ONBOARDING_ROUTE -> NOTIFICATIONS_ONBOARDING_ROUTE
                     NOTIFICATIONS_PERMISSION_ROUTE -> return@LaunchedEffect
-                    else -> NOTIFICATIONS_CONSENT_GRAPH_ROUTE
+                    else -> NOTIFICATIONS_CONSENT_ROUTE
                 }
                 controller.navigate(route) {
                     launchSingleTop = true
@@ -431,27 +429,16 @@ private fun GovUkNavHost(
             launchBrowser = { url -> browserLauncher.launch(url) },
             modifier = Modifier.padding(paddingValues)
         )
-        notificationsOnboardingGraph(
+        notificationsGraph(
             notificationsOnboardingCompleted = {
                 appNavigation.onNotificationsOnboardingCompleted(navController)
-                // Todo - WTF!!?!?!?!
-                /*
-                navController.popBackStack()
-                appNavigation.onNext(navController)
-                navController.navigate(NOTIFICATIONS_CONSENT_GRAPH_ROUTE)
-                 */
+                navController.navigate(NOTIFICATIONS_CONSENT_ROUTE)
             },
-            launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
-        )
-        notificationsPermissionGraph(
-            notificationsPermissionCompleted = {
-                navController.popBackStack()
-            },
-            launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
-        )
-        notificationsConsentGraph(
             notificationsConsentCompleted = {
                 navController.navigateUp()
+            },
+            notificationsPermissionCompleted = {
+                navController.popBackStack()
             },
             launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
         )

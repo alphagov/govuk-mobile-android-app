@@ -10,7 +10,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_PERMISSION_GRAPH_ROUTE
+import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_PERMISSION_ROUTE
 import uk.gov.govuk.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
 import uk.gov.govuk.settings.BuildConfig.ACCOUNT_URL
 import uk.gov.govuk.settings.BuildConfig.HELP_AND_FEEDBACK_URL
@@ -57,7 +57,7 @@ fun NavGraphBuilder.settingsGraph(
                         navigateTo(SIGN_OUT_GRAPH_ROUTE)
                     },
                     onNotificationsClick = {
-                        navigateTo(NOTIFICATIONS_PERMISSION_GRAPH_ROUTE)
+                        navigateTo(NOTIFICATIONS_PERMISSION_ROUTE)
                     },
                     onBiometricsClick = onBiometricsClick,
                     onPrivacyPolicyClick = {
