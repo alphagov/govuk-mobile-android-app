@@ -25,8 +25,8 @@ const val TOPICS_ALL_STEP_BY_STEPS_ROUTE = "topics_all_step_by_steps_route"
 
 val topicsDeepLinks = mapOf(
     // Todo - individual topic with args
-    "/topics/edit" to TOPICS_EDIT_ROUTE,
-    "/topics/all" to TOPICS_ALL_ROUTE
+    "/topics/edit" to listOf(TOPICS_EDIT_ROUTE),
+    "/topics/all" to listOf(TOPICS_ALL_ROUTE)
 )
 
 fun NavGraphBuilder.topicSelectionGraph(

@@ -81,8 +81,10 @@ internal class AppNavigation @Inject constructor(
 
     private fun handleDeeplink(navController: NavController) {
         // Todo - deeplinks with args are going to be tricky e.g. topics!!!
-        deepLinks[deepLink]?.let {
-            navController.navigate(it)
+        deepLinks[deepLink]?.let { routes ->
+            for (route in routes) {
+                navController.navigate(route)
+            }
             deepLink = null
         }
     }

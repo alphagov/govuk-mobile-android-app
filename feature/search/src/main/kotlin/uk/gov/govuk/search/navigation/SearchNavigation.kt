@@ -12,7 +12,7 @@ import uk.gov.govuk.search.ui.SearchRoute
 const val SEARCH_GRAPH_ROUTE = "search_graph_route"
 private const val SEARCH_ROUTE = "search_route"
 
-val searchDeepLinks = mapOf("/search" to SEARCH_ROUTE)
+val searchDeepLinks = mapOf("/search" to listOf(SEARCH_ROUTE))
 
 fun NavGraphBuilder.searchGraph(
     navController: NavHostController,

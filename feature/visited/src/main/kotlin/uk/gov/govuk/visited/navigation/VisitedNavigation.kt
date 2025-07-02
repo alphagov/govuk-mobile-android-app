@@ -14,8 +14,8 @@ const val VISITED_ROUTE = "visited_route"
 const val EDIT_VISITED_ROUTE = "edit_visited_route"
 
 val visitedDeepLinks = mapOf(
-    "/visited" to VISITED_ROUTE,
-    "/visited/edit" to EDIT_VISITED_ROUTE
+    "/visited" to listOf(VISITED_ROUTE),
+    "/visited/edit" to listOf(VISITED_ROUTE, EDIT_VISITED_ROUTE)
 )
 
 fun NavGraphBuilder.visitedGraph(

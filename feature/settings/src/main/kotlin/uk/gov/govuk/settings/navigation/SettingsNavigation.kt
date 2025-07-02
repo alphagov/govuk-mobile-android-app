@@ -30,7 +30,7 @@ private const val SIGN_OUT_ROUTE = "sign_out_route"
 
 const val SIGN_OUT_ERROR_ROUTE = "sign_out_error_route"
 
-val settingsDeepLinks = mapOf("/settings" to SETTINGS_ROUTE)
+val settingsDeepLinks = mapOf("/settings" to listOf(SETTINGS_ROUTE))
 
 fun NavGraphBuilder.settingsGraph(
     navigateTo: (String) -> Unit,
