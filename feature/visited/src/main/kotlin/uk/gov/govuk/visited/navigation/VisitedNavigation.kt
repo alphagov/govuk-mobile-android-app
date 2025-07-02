@@ -2,7 +2,6 @@ package uk.gov.govuk.visited.navigation
 
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -14,9 +13,13 @@ const val VISITED_GRAPH_ROUTE = "visited_graph_route"
 const val VISITED_ROUTE = "visited_route"
 const val EDIT_VISITED_ROUTE = "edit_visited_route"
 
+val visitedDeepLinks = mapOf(
+    "/visited" to VISITED_ROUTE,
+    "/visited/edit" to EDIT_VISITED_ROUTE
+)
+
 fun NavGraphBuilder.visitedGraph(
     navController: NavHostController,
-    deepLinks: (path: String) -> List<NavDeepLink>,
     launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -24,9 +27,7 @@ fun NavGraphBuilder.visitedGraph(
         route = VISITED_GRAPH_ROUTE,
         startDestination = VISITED_ROUTE
     ) {
-        composable(
-            VISITED_ROUTE, deepLinks = deepLinks("/visited")
-        ) {
+        composable(VISITED_ROUTE) {
             VisitedRoute(
                 navController = navController,
                 onBack = { navController.popBackStack() },
@@ -34,9 +35,7 @@ fun NavGraphBuilder.visitedGraph(
                 modifier = modifier
             )
         }
-        composable(
-            EDIT_VISITED_ROUTE, deepLinks = deepLinks("/visited/edit")
-        ) {
+        composable(EDIT_VISITED_ROUTE) {
             EditVisitedRoute(
                 onBack = { navController.popBackStack() },
                 modifier = modifier

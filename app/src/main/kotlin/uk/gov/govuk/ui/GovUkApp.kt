@@ -61,7 +61,6 @@ import uk.gov.govuk.R
 import uk.gov.govuk.analytics.navigation.analyticsGraph
 import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-import uk.gov.govuk.extension.asDeepLinks
 import uk.gov.govuk.extension.getUrlParam
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
@@ -151,6 +150,12 @@ private fun BottomNavScaffold(
     val navBarPadding = WindowInsets.navigationBars.asPaddingValues()
     val section = stringResource(R.string.homepage)
 
+    LaunchedEffect(Unit) {
+        intentFlow.collectLatest { intent ->
+            viewModel.appNavigation.setDeeplink(intent.data)
+        }
+    }
+
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
         bottomBar = {
@@ -199,10 +204,11 @@ private fun BottomNavScaffold(
                 paddingValues = paddingValues
             )
 
+            // Todo - log this at the point of executing the deeplink!!!
             /* Uncomment when deep links are live
             HandleReceivedIntents(
                 intentFlow = intentFlow,
-                navController = { navController },
+                navController = navController,
                 shouldShowExternalBrowser = shouldShowExternalBrowser,
             ) { hasDeepLink, url ->
                 viewModel.onDeepLinkReceived(hasDeepLink, url)
@@ -425,7 +431,6 @@ private fun GovUkNavHost(
         )
         topicsGraph(
             navController = navController,
-            deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
             launchBrowser = { url -> browserLauncher.launch(url) },
             modifier = Modifier.padding(paddingValues)
         )
@@ -451,7 +456,6 @@ private fun GovUkNavHost(
                 onSuppressClick = onSuppressWidgetClick,
                 launchBrowser = { url -> browserLauncher.launch(url) }
             ),
-            deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
             modifier = Modifier.padding(paddingValues),
             headerWidget = if (homeWidgets.contains(HomeWidget.SEARCH)) {
                 { modifier ->
@@ -470,7 +474,6 @@ private fun GovUkNavHost(
             navigateTo = { route -> navController.navigate(route) },
             onBiometricsClick = { navController.navigate(BIOMETRIC_SETTINGS_ROUTE) },
             appVersion = BuildConfig.VERSION_NAME_USER_FACING,
-            deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
             launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) },
             modifier = Modifier.padding(paddingValues)
         )
@@ -482,12 +485,10 @@ private fun GovUkNavHost(
         )
         searchGraph(
             navController,
-            deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
-            launchBrowser = { url -> browserLauncher.launch(url) })
-
+            launchBrowser = { url -> browserLauncher.launch(url) }
+        )
         visitedGraph(
             navController = navController,
-            deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
             launchBrowser = { url -> browserLauncher.launch(url) },
             modifier = Modifier.padding(paddingValues)
         )
