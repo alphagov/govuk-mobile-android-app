@@ -13,6 +13,8 @@ const val HOME_GRAPH_ROUTE = "home_graph_route"
 private const val HOME_ROUTE = "home_route"
 const val HOME_GRAPH_START_DESTINATION = HOME_ROUTE
 
+val homeDeepLinks = mapOf("/home" to listOf(HOME_ROUTE))
+
 fun NavGraphBuilder.homeGraph(
     widgets: List<@Composable (Modifier) -> Unit>,
     modifier: Modifier = Modifier,

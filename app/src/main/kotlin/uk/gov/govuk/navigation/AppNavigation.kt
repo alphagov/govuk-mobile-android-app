@@ -8,6 +8,7 @@ import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
+import uk.gov.govuk.home.navigation.homeDeepLinks
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
 import uk.gov.govuk.search.navigation.searchDeepLinks
@@ -28,7 +29,7 @@ internal class AppNavigation @Inject constructor(
     private val topicsFeature: TopicsFeature
 ) {
     private val deepLinks =
-        settingsDeepLinks + searchDeepLinks + topicsDeepLinks + visitedDeepLinks
+        homeDeepLinks + settingsDeepLinks + searchDeepLinks + topicsDeepLinks + visitedDeepLinks
 
     private var deepLink: String? = null
 
@@ -88,8 +89,14 @@ internal class AppNavigation @Inject constructor(
     private fun handleDeeplink(navController: NavController) {
         // Todo - deeplinks with args are going to be tricky e.g. topics!!!
         deepLinks[deepLink]?.let { routes ->
+            navController.navigate(HOME_GRAPH_ROUTE) {
+                popUpTo(0) { inclusive = true  }
+            }
+
             for (route in routes) {
-                navController.navigate(route)
+                navController.navigate(route) {
+                    launchSingleTop = true
+                }
             }
             deepLink = null
         }
