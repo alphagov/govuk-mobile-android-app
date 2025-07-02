@@ -35,10 +35,10 @@ import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
-import uk.gov.govuk.chat.ui.model.AnswerUi
-import uk.gov.govuk.chat.ui.model.AnsweredQuestionUi
-import uk.gov.govuk.chat.ui.model.ConversationUi
-import uk.gov.govuk.chat.ui.model.SourceUi
+import uk.gov.govuk.chat.data.remote.model.Answer
+import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
+import uk.gov.govuk.chat.data.remote.model.Conversation
+import uk.gov.govuk.chat.data.remote.model.Source
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.FixedContainerDivider
 import uk.gov.govuk.design.ui.component.FullScreenHeader
@@ -245,6 +245,7 @@ private fun OnboardingScreenPreview() {
             uiState = ChatUiState(
                 conversation = conversation(),
                 conversationId = "210d1a18-7b77-4418-9938-ad1b5700b9fd",
+                questionId = "ca615e61-d1ad-4787-b0c9-ae5aed19d12b",
                 loading = false
             ),
             onSubmit = { _ -> },
@@ -253,12 +254,12 @@ private fun OnboardingScreenPreview() {
     }
 }
 
-private fun conversation() = ConversationUi(
+private fun conversation() = Conversation(
     id = "210d1a18-7b77-4418-9938-ad1b5700b9fd",
     answeredQuestions = listOf(
-        AnsweredQuestionUi(
+        AnsweredQuestion(
             id = "ca615e61-d1ad-4787-b0c9-ae5aed19d12b",
-            answer = AnswerUi(
+            answer = Answer(
                 id = "9642d765-cb44-4c87-b959-0109aa5bcead",
                 createdAt = "2025-06-10T15:19:58+01:00",
                 message = """
@@ -297,7 +298,7 @@ private fun conversation() = ConversationUi(
                     [2]: https://www.integration.publishing.service.gov.uk/universal-credit/how-to-claim
                 """.trimIndent(),
                 sources = listOf(
-                    SourceUi(
+                    Source(
                         url = "https://www.universal-credit.service.gov.uk/postcode-checker",
                         title = "Universal Credit"
                     ),
