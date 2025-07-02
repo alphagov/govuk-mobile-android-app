@@ -21,7 +21,6 @@ private const val ERROR_ROUTE = "login_error_route"
 fun NavGraphBuilder.loginGraph(
     navController: NavController,
     onLoginCompleted: () -> Unit,
-    onBiometricSetupCompleted: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -60,7 +59,7 @@ fun NavGraphBuilder.loginGraph(
         }
         composable(BIOMETRIC_ROUTE) {
             BiometricRoute(
-                onCompleted = { onBiometricSetupCompleted() },
+                onCompleted = { onLoginCompleted() },
                 modifier = modifier
             )
         }

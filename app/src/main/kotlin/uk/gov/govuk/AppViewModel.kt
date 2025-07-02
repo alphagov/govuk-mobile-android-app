@@ -63,8 +63,6 @@ internal class AppViewModel @Inject constructor(
                 } else {
                     topicsFeature.init()
 
-                    appNavigation.buildLaunchFlow()
-
                     _uiState.value = AppUiState.Default(
                         shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
                         shouldDisplayNotificationsOnboarding = flagRepo.isNotificationsEnabled(),
@@ -100,11 +98,8 @@ internal class AppViewModel @Inject constructor(
     ) {
         timeoutManager.onUserInteraction(interactionTime) {
             if (authRepo.isUserSessionActive()) {
-                viewModelScope.launch {
-                    authRepo.endUserSession()
-                    appNavigation.buildLaunchFlow()
-                    navController.navigate(appNavigation.startDestination)
-                }
+                authRepo.endUserSession()
+                appNavigation.onSignOut(navController)
             }
         }
     }
@@ -118,10 +113,8 @@ internal class AppViewModel @Inject constructor(
                 localFeature.clear()
                 searchFeature.clear()
                 visitedFeature.clear()
-
-                appNavigation.onDifferentUserLogin(topicsFeature.hasTopics())
             }
-            appNavigation.onNext(navController)
+            appNavigation.onLoginCompleted(navController)
         }
     }
 
@@ -195,9 +188,5 @@ internal class AppViewModel @Inject constructor(
             hasDeepLink,
             url
         )
-    }
-
-    fun onSignOut() {
-        appNavigation.onSignOut()
     }
 }

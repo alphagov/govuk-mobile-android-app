@@ -35,12 +35,6 @@ internal class LoginSuccessViewModel @Inject constructor(
             screenName = SCREEN_NAME,
             title = TITLE
         )
-        viewModelScope.launch {
-            _loginSuccessCompleted.emit(
-                LoginSuccessEvent(authRepo.isAuthenticationEnabled()
-                        && !appRepo.hasSkippedBiometrics())
-            )
-        }
     }
 
     fun onContinue(text: String) {
@@ -48,5 +42,11 @@ internal class LoginSuccessViewModel @Inject constructor(
             text = text,
             section = LOGIN_SECTION
         )
+        viewModelScope.launch {
+            _loginSuccessCompleted.emit(
+                LoginSuccessEvent(authRepo.isAuthenticationEnabled()
+                        && !appRepo.hasSkippedBiometrics())
+            )
+        }
     }
 }

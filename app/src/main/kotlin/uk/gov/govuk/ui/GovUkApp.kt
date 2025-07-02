@@ -29,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -52,6 +53,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import uk.gov.govuk.AppUiState
 import uk.gov.govuk.AppViewModel
 import uk.gov.govuk.BuildConfig
@@ -64,7 +66,7 @@ import uk.gov.govuk.extension.getUrlParam
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
 import uk.gov.govuk.login.navigation.BIOMETRIC_SETTINGS_ROUTE
-import uk.gov.govuk.login.navigation.LOGIN_ROUTE
+import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.loginGraph
 import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
@@ -391,25 +393,36 @@ private fun GovUkNavHost(
     shouldShowExternalBrowser: Boolean,
     paddingValues: PaddingValues
 ) {
-    val appLaunchNavigation = viewModel.appNavigation
-    val startDestination = appLaunchNavigation.startDestination
+    val appNavigation = viewModel.appNavigation
     val browserLauncher = rememberBrowserLauncher(shouldShowExternalBrowser)
     val context = LocalContext.current
 
+    val coroutineScope = rememberCoroutineScope()
+
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = LOGIN_GRAPH_ROUTE
     ) {
+        loginGraph(
+            navController = navController,
+            onLoginCompleted = {
+                viewModel.onLogin(navController)
+            }
+        )
         analyticsGraph(
             analyticsConsentCompleted = {
-                appLaunchNavigation.onNext(navController)
+                coroutineScope.launch {
+                    appNavigation.onAnalyticsConsentCompleted(navController)
+                }
             },
             launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
         )
         topicSelectionGraph(
             topicSelectionCompleted = {
                 viewModel.topicSelectionCompleted()
-                appLaunchNavigation.onNext(navController)
+                coroutineScope.launch {
+                    appNavigation.onTopicSelectionCompleted(navController)
+                }
             }
         )
         topicsGraph(
@@ -420,9 +433,13 @@ private fun GovUkNavHost(
         )
         notificationsOnboardingGraph(
             notificationsOnboardingCompleted = {
+                appNavigation.onNotificationsOnboardingCompleted(navController)
+                // Todo - WTF!!?!?!?!
+                /*
                 navController.popBackStack()
-                appLaunchNavigation.onNext(navController)
+                appNavigation.onNext(navController)
                 navController.navigate(NOTIFICATIONS_CONSENT_GRAPH_ROUTE)
+                 */
             },
             launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
         )
@@ -437,15 +454,6 @@ private fun GovUkNavHost(
                 navController.navigateUp()
             },
             launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
-        )
-        loginGraph(
-            navController = navController,
-            onLoginCompleted = {
-                viewModel.onLogin(navController)
-            },
-            onBiometricSetupCompleted = {
-                appLaunchNavigation.onNext(navController)
-            }
         )
         homeGraph(
             widgets = homeWidgets(
@@ -482,10 +490,7 @@ private fun GovUkNavHost(
         signOutGraph(
             navController = navController,
             onSignOut = {
-                viewModel.onSignOut()
-                navController.navigate(LOGIN_ROUTE) {
-                    popUpTo(0) { inclusive = true }
-                }
+                appNavigation.onSignOut(navController)
             }
         )
         searchGraph(
