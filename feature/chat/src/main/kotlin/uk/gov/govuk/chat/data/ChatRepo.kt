@@ -52,9 +52,7 @@ internal class ChatRepo @Inject constructor(
         return response.body()
     }
 
-    suspend fun getAnswer(): Answer? {
-        val wait = 4
-        val retries = 12
+    suspend fun getAnswer(wait: Int = 4, retries: Int = 12): Answer? {
         var counter = 0
 
         while (counter < retries) {
