@@ -6,6 +6,7 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.analytics.navigation.ANALYTICS_GRAPH_ROUTE
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
+import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
@@ -23,6 +24,7 @@ internal class AppNavigation @Inject constructor(
     private val flagRepo: FlagRepo,
     private val analyticsClient: AnalyticsClient,
     private val appRepo: AppRepo,
+    private val authRepo: AuthRepo,
     private val topicsFeature: TopicsFeature
 ) {
     private val deepLinks =
@@ -30,9 +32,13 @@ internal class AppNavigation @Inject constructor(
 
     private var deepLink: String? = null
 
-    fun setDeeplink(uri: Uri?) {
+    fun setDeeplink(navController: NavController, uri: Uri?) {
         uri?.path?.let { path ->
             deepLink = path
+
+            if (authRepo.isUserSessionActive()) {
+                handleDeeplink(navController)
+            }
         }
     }
 

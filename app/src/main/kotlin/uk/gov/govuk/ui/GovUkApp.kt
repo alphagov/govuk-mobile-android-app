@@ -152,7 +152,7 @@ private fun BottomNavScaffold(
 
     LaunchedEffect(Unit) {
         intentFlow.collectLatest { intent ->
-            viewModel.appNavigation.setDeeplink(intent.data)
+            viewModel.appNavigation.setDeeplink(navController, intent.data)
         }
     }
 
