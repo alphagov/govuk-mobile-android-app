@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#FF000000</color>
+
+    <bool name="lightStatusBar">false</bool>
+
+    <color name="colorPrimary">#FF000000</color>
+    <color name="colorPrimaryDark">#FF000000</color>
+    <color name="colorAccent">#FF259AFF</color>
+    <color name="textColorPrimary">#FFFFFFFF</color>
+    <color name="titleTextColor">#FFFFFFFF</color>
+    <color name="tint">#FF259AFF</color>
+</resources>

@@ -1,0 +1,40 @@
+<resources>
+
+    <string name="topicsWidgetTitle">Topics</string>
+    <string name="customisedTopicsWidgetTitle">Your topics</string>
+    <string name="editButton">Edit</string>
+    <string name="editButtonAltText">Edit your topics</string>
+    <string name="editTitle">Edit your topics</string>
+    <string name="editMessage">Topics you select will be shown on the app home page so you can find them more easily</string>
+    <string name="allTopicsButton">See all topics</string>
+    <string name="allTopicsTitle">All topics</string>
+    <string name="stepByStepGuidesTitle">Step by step guides</string>
+    <string name="popularPagesTitle">Popular pages in this topic</string>
+    <string name="servicesTitle">Services and information</string>
+    <string name="seeAllButton">See all</string>
+    <string name="browseTitle">Browse</string>
+    <string name="relatedTitle">Related</string>
+    <string name="topicSelectionTitle">Select relevant topics</string>
+    <string name="topicSelectionDescription">Topics you select will be shown on the app home page so you can find them more easily</string>
+    <string name="selectButton">Select</string>
+    <string name="selectedButton">Selected</string>
+    <string name="doneButton">Done</string>
+    <string name="skipButton">Skip</string>
+    <string name="removed_alt_text">Removed</string>
+    <string name="selected_alt_text">Selected</string>
+    <string name="empty_topics">No topics selected</string>
+    <string name="topics_error_message">Topics are not working at the moment. Try again later, or go to the GOV.UK website to find the page you\'re looking for.</string>
+
+    <!-- Topic names -->
+    <string name="benefits">Benefits</string>
+    <string name="business">Business</string>
+    <string name="care">Care</string>
+    <string name="driving_and_transport">Driving and Transport</string>
+    <string name="employment">Employment</string>
+    <string name="health_and_disability">Health and disability</string>
+    <string name="money_and_tax">Money and tax</string>
+    <string name="parenting_and_guardianship">Parenting and guardianship</string>
+    <string name="retirement">Retirement</string>
+    <string name="studying_and_training">Studying and training</string>
+    <string name="travel_abroad">Travel abroad</string>
+</resources>

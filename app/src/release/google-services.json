@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1089984429349",
+    "project_id": "govuk-app-production",
+    "storage_bucket": "govuk-app-production.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1089984429349:android:c347d5e69b4cf01f35aecc",
+        "android_client_info": {
+          "package_name": "uk.gov.govuk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-Gg2cliG-acELmYUq8PZyMkRIHJgDyqQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
