@@ -400,8 +400,10 @@ private fun GovUkNavHost(
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
+        appNavigation.browserLauncher = browserLauncher
+
         intentFlow.collectLatest { intent ->
-            viewModel.appNavigation.setDeeplink(navController, browserLauncher, intent.data)
+            appNavigation.setDeeplink(navController, intent.data)
         }
     }
 
@@ -418,7 +420,7 @@ private fun GovUkNavHost(
         analyticsGraph(
             analyticsConsentCompleted = {
                 coroutineScope.launch {
-                    appNavigation.onAnalyticsConsentCompleted(navController, browserLauncher)
+                    appNavigation.onAnalyticsConsentCompleted(navController)
                 }
             },
             launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
@@ -427,7 +429,7 @@ private fun GovUkNavHost(
             topicSelectionCompleted = {
                 viewModel.topicSelectionCompleted()
                 coroutineScope.launch {
-                    appNavigation.onTopicSelectionCompleted(navController, browserLauncher)
+                    appNavigation.onTopicSelectionCompleted(navController)
                 }
             }
         )
@@ -438,7 +440,7 @@ private fun GovUkNavHost(
         )
         notificationsGraph(
             notificationsOnboardingCompleted = {
-                appNavigation.onNotificationsOnboardingCompleted(navController, browserLauncher)
+                appNavigation.onNotificationsOnboardingCompleted(navController)
                 navController.navigate(NOTIFICATIONS_CONSENT_ROUTE)
             },
             notificationsConsentCompleted = {

@@ -115,7 +115,7 @@ internal class AppViewModel @Inject constructor(
                 searchFeature.clear()
                 visitedFeature.clear()
             }
-            appNavigation.onLoginCompleted(navController, browserLauncher)
+            appNavigation.onLoginCompleted(navController)
         }
     }
 

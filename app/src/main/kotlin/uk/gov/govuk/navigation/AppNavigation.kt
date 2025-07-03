@@ -52,85 +52,59 @@ internal class AppNavigation @Inject constructor(
 
     private var deepLink: Uri? = null
 
-    fun setDeeplink(
-        navController: NavController,
-        browserLauncher: BrowserActivityLauncher,
-        uri: Uri?
-    ) {
+    var browserLauncher: BrowserActivityLauncher? = null
+
+    fun setDeeplink(navController: NavController, uri: Uri?) {
         deepLink = uri
         if (authRepo.isUserSessionActive()) {
-            handleDeeplink(navController, browserLauncher)
+            handleDeeplink(navController)
         }
     }
 
-    suspend fun onLoginCompleted(
-        navController: NavController,
-        browserLauncher: BrowserActivityLauncher
-    ) {
-        navigateToAnalyticsConsent(navController, browserLauncher)
+    suspend fun onLoginCompleted(navController: NavController) {
+        navigateToAnalyticsConsent(navController)
     }
 
-    private suspend fun navigateToAnalyticsConsent(
-        navController: NavController,
-        browserLauncher: BrowserActivityLauncher
-    ) {
+    private suspend fun navigateToAnalyticsConsent(navController: NavController) {
         if (analyticsClient.isAnalyticsConsentRequired()) {
             navigate(navController, ANALYTICS_GRAPH_ROUTE)
         } else {
-            onAnalyticsConsentCompleted(navController, browserLauncher)
+            onAnalyticsConsentCompleted(navController)
         }
     }
 
-    suspend fun onAnalyticsConsentCompleted(
-        navController: NavController,
-        browserLauncher: BrowserActivityLauncher
-    ) {
-        navigateToTopicSelection(navController, browserLauncher)
+    suspend fun onAnalyticsConsentCompleted(navController: NavController) {
+        navigateToTopicSelection(navController)
     }
 
-    private suspend fun navigateToTopicSelection(
-        navController: NavController,
-        browserLauncher: BrowserActivityLauncher,
-    ) {
+    private suspend fun navigateToTopicSelection(navController: NavController) {
         if (flagRepo.isTopicsEnabled()
             && !appRepo.isTopicSelectionCompleted()
             && topicsFeature.hasTopics()) {
             navigate(navController, TOPIC_SELECTION_GRAPH_ROUTE)
         } else {
-            onTopicSelectionCompleted(navController, browserLauncher)
+            onTopicSelectionCompleted(navController)
         }
     }
 
-    fun onTopicSelectionCompleted(
-        navController: NavController,
-        browserLauncher: BrowserActivityLauncher,
-    ) {
-        navigateToNotificationsOnboarding(navController, browserLauncher)
+    fun onTopicSelectionCompleted(navController: NavController) {
+        navigateToNotificationsOnboarding(navController)
     }
 
-    private fun navigateToNotificationsOnboarding(
-        navController: NavController,
-        browserLauncher: BrowserActivityLauncher,
-    ) {
+    private fun navigateToNotificationsOnboarding(navController: NavController) {
         if (flagRepo.isNotificationsEnabled()) {
             navigate(navController, NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
         } else {
-            onNotificationsOnboardingCompleted(navController, browserLauncher)
+            onNotificationsOnboardingCompleted(navController)
         }
     }
 
-    fun onNotificationsOnboardingCompleted(
-        navController: NavController,
-        browserLauncher: BrowserActivityLauncher,
-    ) {
+    fun onNotificationsOnboardingCompleted(navController: NavController) {
         navigate(navController, HOME_GRAPH_ROUTE)
-        handleDeeplink(navController, browserLauncher)
+        handleDeeplink(navController)
     }
 
-    private fun handleDeeplink(
-        navController: NavController,
-        browserLauncher: BrowserActivityLauncher
-    ) {
+    private fun handleDeeplink(navController: NavController) {
         deepLink?.let {
             deepLinks[it.path]?.let { routes ->
                 navController.navigate(HOME_GRAPH_ROUTE) {
@@ -145,7 +119,7 @@ internal class AppNavigation @Inject constructor(
                 }
             } ?: run {
                 it.getUrlParam(DeepLink.allowedGovUkUrls)?.let { uri ->
-                    browserLauncher.launch(uri.toString())
+                    browserLauncher?.launch(uri.toString())
                 } ?: run {
                     Log.d("Blah", "Broken deeplink: $it")
                 }
