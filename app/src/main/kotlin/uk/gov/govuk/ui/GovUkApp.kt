@@ -57,6 +57,7 @@ import uk.gov.govuk.AppViewModel
 import uk.gov.govuk.BuildConfig
 import uk.gov.govuk.R
 import uk.gov.govuk.analytics.navigation.analyticsGraph
+import uk.gov.govuk.chat.navigation.chatGraph
 import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.extension.asDeepLinks
@@ -293,7 +294,11 @@ private fun BottomNav(
     navController: NavHostController,
     onTabClick: (String) -> Unit
 ) {
-    val topLevelDestinations = listOf(TopLevelDestination.Home, TopLevelDestination.Settings)
+    val topLevelDestinations = listOf(
+        TopLevelDestination.Home,
+        TopLevelDestination.Chat,
+        TopLevelDestination.Settings
+    )
 
     var selectedIndex by rememberSaveable {
         mutableIntStateOf(-1)
@@ -501,6 +506,10 @@ private fun GovUkNavHost(
                 modifier = Modifier.padding(paddingValues)
             )
         }
+        chatGraph(
+            navController = navController,
+            modifier = Modifier.padding(paddingValues)
+        )
     }
 }
 

@@ -3,6 +3,8 @@ package uk.gov.govuk.navigation
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import uk.gov.govuk.R
+import uk.gov.govuk.chat.navigation.CHAT_GRAPH_ROUTE
+import uk.gov.govuk.design.R.drawable.ic_chat
 import uk.gov.govuk.design.R.drawable.ic_home
 import uk.gov.govuk.design.R.drawable.ic_settings
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
@@ -29,6 +31,13 @@ internal sealed class TopLevelDestination(
             TOPIC_ROUTE,
             TOPICS_ALL_STEP_BY_STEPS_ROUTE
         )
+    )
+
+    // TODO: only show if isChatServiceEnabled()
+    internal data object Chat : TopLevelDestination(
+        route = CHAT_GRAPH_ROUTE,
+        stringResId = R.string.chat,
+        icon = ic_chat
     )
 
     internal data object Settings : TopLevelDestination(

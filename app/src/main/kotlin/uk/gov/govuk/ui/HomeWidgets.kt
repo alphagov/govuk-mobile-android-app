@@ -15,8 +15,8 @@ import uk.gov.govuk.topics.ui.widget.TopicsWidget
 import uk.gov.govuk.ui.model.HomeWidget
 import uk.gov.govuk.visited.navigation.VISITED_GRAPH_ROUTE
 import uk.gov.govuk.visited.ui.widget.VisitedWidget
-import uk.govuk.app.local.navigation.LOCAL_LOOKUP_ROUTE
 import uk.govuk.app.local.navigation.LOCAL_GRAPH_ROUTE
+import uk.govuk.app.local.navigation.LOCAL_LOOKUP_ROUTE
 import uk.govuk.app.local.ui.LocalWidget
 
 internal fun List<HomeWidget>?.contains(widget: HomeWidget) = this?.contains(widget) == true
