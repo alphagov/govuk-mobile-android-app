@@ -105,6 +105,8 @@ internal class AppNavigation @Inject constructor(
 
     private fun handleDeeplink(navController: NavController) {
         deepLink?.let {
+            var validDeeplink = true
+
             deepLinks[it.path]?.let { routes ->
                 navController.navigate(HOME_GRAPH_ROUTE) {
                     popUpTo(0) { inclusive = true }
@@ -120,10 +122,12 @@ internal class AppNavigation @Inject constructor(
                 it.getUrlParam(DeepLink.allowedGovUkUrls)?.let { uri ->
                     onLaunchBrowser?.invoke(uri.toString())
                 } ?: run {
+                    validDeeplink = false
                     onDeeplinkNotFound?.invoke()
                 }
             }
 
+            analyticsClient.deepLinkEvent(validDeeplink, it.toString())
             deepLink = null
         }
     }

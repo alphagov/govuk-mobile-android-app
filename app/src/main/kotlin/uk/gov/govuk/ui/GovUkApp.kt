@@ -46,9 +46,7 @@ import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.Flow
@@ -61,13 +59,11 @@ import uk.gov.govuk.R
 import uk.gov.govuk.analytics.navigation.analyticsGraph
 import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-import uk.gov.govuk.extension.getUrlParam
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
 import uk.gov.govuk.login.navigation.BIOMETRIC_SETTINGS_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.loginGraph
-import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_ROUTE
@@ -199,75 +195,10 @@ private fun BottomNavScaffold(
                 paddingValues = paddingValues
             )
 
-            // Todo - log this at the point of executing the deeplink!!!
-            /* Uncomment when deep links are live
-            HandleReceivedIntents(
-                intentFlow = intentFlow,
-                navController = navController,
-                shouldShowExternalBrowser = shouldShowExternalBrowser,
-            ) { hasDeepLink, url ->
-                viewModel.onDeepLinkReceived(hasDeepLink, url)
-            }
-            */
-
             if (shouldDisplayNotificationsOnboarding) {
                 HandleNotificationsPermissionStatus(navController = { navController })
             }
         }
-    }
-}
-
-@Composable
-private fun HandleReceivedIntents(
-    intentFlow: Flow<Intent>,
-    navController: () -> NavHostController,
-    shouldShowExternalBrowser: Boolean,
-    onDeepLinkReceived: (hasDeepLink: Boolean, url: String) -> Unit
-) {
-    val context = LocalContext.current
-    val browserLauncher = rememberBrowserLauncher(shouldShowExternalBrowser)
-    LaunchedEffect(intentFlow) {
-        intentFlow.collectLatest { intent ->
-            intent.data?.let { uri ->
-                val controller = navController()
-                try {
-                    controller.graph
-                } catch (e: IllegalStateException) {
-                    // Nav graph has not been set
-                    return@collectLatest
-                }
-                if (controller.graph.hasDeepLink(uri)) {
-                    onDeepLinkReceived(true, uri.toString())
-                    val request = NavDeepLinkRequest.Builder
-                        .fromUri(uri)
-                        .build()
-                    controller.navigate(
-                        request,
-                        navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
-                    )
-                } else {
-                    uri.getUrlParam(DeepLink.allowedAppUrls, DeepLink.allowedGovUkUrls)?.let {
-                        onDeepLinkReceived(true, uri.toString())
-                        browserLauncher.launch(it.toString())
-                    } ?: run {
-                        onDeepLinkReceived(false, uri.toString())
-                        showDeepLinkNotFoundAlert(context = context)
-                    }
-                }
-            }
-        }
-    }
-}
-
-private fun showDeepLinkNotFoundAlert(context: Context) {
-    AlertDialog.Builder(context).apply {
-        setTitle(context.getString(R.string.deep_link_not_found_alert_title))
-        setMessage(context.getString(R.string.deep_link_not_found_alert_message))
-        setPositiveButton(context.getString(R.string.deep_link_not_found_alert_button)) { dialog, _ ->
-            dialog.dismiss()
-        }
-    }.also { deepLinkNotFoundAlert ->
-        deepLinkNotFoundAlert.show()
     }
 }
 
@@ -420,7 +351,7 @@ private fun GovUkNavHost(
         loginGraph(
             navController = navController,
             onLoginCompleted = {
-                viewModel.onLogin(navController, browserLauncher)
+                viewModel.onLogin(navController)
             }
         )
         analyticsGraph(
@@ -511,6 +442,18 @@ private fun GovUkNavHost(
             onCancel = exitLocalAuth,
             modifier = Modifier.padding(paddingValues)
         )
+    }
+}
+
+private fun showDeepLinkNotFoundAlert(context: Context) {
+    AlertDialog.Builder(context).apply {
+        setTitle(context.getString(R.string.deep_link_not_found_alert_title))
+        setMessage(context.getString(R.string.deep_link_not_found_alert_message))
+        setPositiveButton(context.getString(R.string.deep_link_not_found_alert_button)) { dialog, _ ->
+            dialog.dismiss()
+        }
+    }.also { deepLinkNotFoundAlert ->
+        deepLinkNotFoundAlert.show()
     }
 }
 
