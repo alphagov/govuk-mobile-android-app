@@ -400,7 +400,13 @@ private fun GovUkNavHost(
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        appNavigation.browserLauncher = browserLauncher
+        appNavigation.onLaunchBrowser = { url ->
+            browserLauncher.launch(url)
+        }
+
+        appNavigation.onDeeplinkNotFound = {
+            showDeepLinkNotFoundAlert(context)
+        }
 
         intentFlow.collectLatest { intent ->
             appNavigation.setDeeplink(navController, intent.data)

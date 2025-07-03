@@ -1,7 +1,6 @@
 package uk.gov.govuk.navigation
 
 import android.net.Uri
-import android.util.Log
 import androidx.navigation.NavController
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.analytics.navigation.ANALYTICS_GRAPH_ROUTE
@@ -18,7 +17,6 @@ import uk.gov.govuk.settings.navigation.settingsDeepLinks
 import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.topics.navigation.TOPIC_SELECTION_GRAPH_ROUTE
 import uk.gov.govuk.topics.navigation.topicsDeepLinks
-import uk.gov.govuk.ui.BrowserActivityLauncher
 import uk.gov.govuk.visited.navigation.visitedDeepLinks
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -52,7 +50,8 @@ internal class AppNavigation @Inject constructor(
 
     private var deepLink: Uri? = null
 
-    var browserLauncher: BrowserActivityLauncher? = null
+    var onLaunchBrowser: ((String) -> Unit)? = null
+    var onDeeplinkNotFound: (() -> Unit)? = null
 
     fun setDeeplink(navController: NavController, uri: Uri?) {
         deepLink = uri
@@ -119,9 +118,9 @@ internal class AppNavigation @Inject constructor(
                 }
             } ?: run {
                 it.getUrlParam(DeepLink.allowedGovUkUrls)?.let { uri ->
-                    browserLauncher?.launch(uri.toString())
+                    onLaunchBrowser?.invoke(uri.toString())
                 } ?: run {
-                    Log.d("Blah", "Broken deeplink: $it")
+                    onDeeplinkNotFound?.invoke()
                 }
             }
 
