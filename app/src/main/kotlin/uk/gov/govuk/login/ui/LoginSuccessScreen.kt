@@ -29,9 +29,8 @@ internal fun LoginSuccessRoute(
     val viewModel: LoginSuccessViewModel = hiltViewModel()
 
     LoginSuccessScreen(
-        onPageView = { viewModel.onPageView() },
-        onContinueClick = { text ->
-            viewModel.onContinue(text)
+        onContinueClick = {
+            viewModel.onContinue()
         },
         modifier = modifier
     )
@@ -45,14 +44,9 @@ internal fun LoginSuccessRoute(
 
 @Composable
 private fun LoginSuccessScreen(
-    onPageView: () -> Unit,
-    onContinueClick: (String) -> Unit,
+    onContinueClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(Unit) {
-        onPageView()
-    }
-
     CentreAlignedScreen(
         modifier = modifier,
         screenContent = {
@@ -75,10 +69,9 @@ private fun LoginSuccessScreen(
             )
         },
         footerContent = {
-            val buttonText = stringResource(R.string.login_continue_button)
             FixedPrimaryButton(
-                text = buttonText,
-                onClick = { onContinueClick(buttonText) }
+                text = stringResource(R.string.login_continue_button),
+                onClick = { onContinueClick() }
             )
         }
     )
@@ -89,7 +82,6 @@ private fun LoginSuccessScreen(
 private fun LoginSuccessPreview() {
     GovUkTheme {
         LoginSuccessScreen(
-            onPageView = { },
             onContinueClick = { }
         )
     }
