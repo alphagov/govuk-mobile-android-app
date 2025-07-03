@@ -198,28 +198,28 @@ private fun BottomNavScaffold(
                 shouldShowExternalBrowser = shouldShowExternalBrowser,
                 paddingValues = paddingValues
             )
+
+            /* Uncomment when deep links are live
+            HandleReceivedIntents(
+                intentFlow = intentFlow,
+                navController = { navController },
+                shouldShowExternalBrowser = shouldShowExternalBrowser,
+            ) { hasDeepLink, url ->
+                viewModel.onDeepLinkReceived(hasDeepLink, url)
+            }
+            */
+
+            if (shouldDisplayNotificationsOnboarding) {
+                HandleNotificationsPermissionStatus(navController = { navController })
+            }
         }
-    }
-
-    /* Uncomment when deep links are live
-    HandleReceivedIntents(
-        intentFlow = intentFlow,
-        navController = navController,
-        shouldShowExternalBrowser = shouldShowExternalBrowser,
-    ) { hasDeepLink, url ->
-        viewModel.onDeepLinkReceived(hasDeepLink, url)
-    }
-    */
-
-    if (shouldDisplayNotificationsOnboarding) {
-        HandleNotificationsPermissionStatus(navController = navController)
     }
 }
 
 @Composable
 private fun HandleReceivedIntents(
     intentFlow: Flow<Intent>,
-    navController: NavHostController,
+    navController: () -> NavHostController,
     shouldShowExternalBrowser: Boolean,
     onDeepLinkReceived: (hasDeepLink: Boolean, url: String) -> Unit
 ) {
@@ -228,12 +228,19 @@ private fun HandleReceivedIntents(
     LaunchedEffect(intentFlow) {
         intentFlow.collectLatest { intent ->
             intent.data?.let { uri ->
-                if (navController.graph.hasDeepLink(uri)) {
+                val controller = navController()
+                try {
+                    controller.graph
+                } catch (e: IllegalStateException) {
+                    // Nav graph has not been set
+                    return@collectLatest
+                }
+                if (controller.graph.hasDeepLink(uri)) {
                     onDeepLinkReceived(true, uri.toString())
                     val request = NavDeepLinkRequest.Builder
                         .fromUri(uri)
                         .build()
-                    navController.navigate(
+                    controller.navigate(
                         request,
                         navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
                     )
@@ -265,7 +272,7 @@ private fun showDeepLinkNotFoundAlert(context: Context) {
 
 @Composable
 private fun HandleNotificationsPermissionStatus(
-    navController: NavHostController
+    navController: () -> NavHostController
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
@@ -273,12 +280,19 @@ private fun HandleNotificationsPermissionStatus(
     LaunchedEffect(lifecycleState) {
         when (lifecycleState) {
             Lifecycle.State.RESUMED -> {
-                val route = when (navController.currentDestination?.route) {
+                val controller = navController()
+                try {
+                    controller.graph
+                } catch (e: IllegalStateException) {
+                    // Nav graph has not been set
+                    return@LaunchedEffect
+                }
+                val route = when (controller.currentDestination?.route) {
                     NOTIFICATIONS_ONBOARDING_ROUTE -> NOTIFICATIONS_ONBOARDING_ROUTE
                     NOTIFICATIONS_PERMISSION_ROUTE -> return@LaunchedEffect
                     else -> NOTIFICATIONS_CONSENT_GRAPH_ROUTE
                 }
-                navController.navigate(route) {
+                controller.navigate(route) {
                     launchSingleTop = true
                 }
             }
