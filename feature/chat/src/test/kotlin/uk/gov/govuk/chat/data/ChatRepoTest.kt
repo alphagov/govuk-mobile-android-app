@@ -24,7 +24,7 @@ class ChatRepoTest {
     }
 
     @Test
-    fun `start conversation returns 201`() = runTest {
+    fun `Successful start conversation returns 201`() = runTest {
         val question = "question"
         val requestBody = ConversationQuestionRequest(
             userQuestion = question
@@ -57,17 +57,7 @@ class ChatRepoTest {
     }
 
     @Test
-    fun `start conversation returns 422`() = runTest {
-//        TODO
-    }
-
-    @Test
-    fun `start conversation returns 429`() = runTest {
-//        TODO
-    }
-
-    @Test
-    fun `update conversation returns 201`() = runTest {
+    fun `Successful update conversation returns 201`() = runTest {
         val conversationId = "conversationId"
         val question = "question"
         val requestBody = ConversationQuestionRequest(
@@ -101,17 +91,7 @@ class ChatRepoTest {
     }
 
     @Test
-    fun `update conversation returns 422`() = runTest {
-//        TODO
-    }
-
-    @Test
-    fun `update conversation returns 429`() = runTest {
-//        TODO
-    }
-
-    @Test
-    fun `get answer returns 200`() = runTest {
+    fun `Successful get answer returns 200`() = runTest {
         val answer = Answer(
             id = "id",
             createdAt = "createdAt",
@@ -129,22 +109,12 @@ class ChatRepoTest {
     }
 
     @Test
-    fun `get answer returns 202`() = runTest {
+    fun `Successful get answer returns 202`() = runTest {
 //        TODO
     }
 
     @Test
-    fun `get answer returns 404`() = runTest {
-//        TODO
-    }
-
-    @Test
-    fun `get answer returns 429`() = runTest {
-//        TODO
-    }
-
-    @Test
-    fun `get conversation returns 200`() = runTest {
+    fun `Successful get conversation returns 200`() = runTest {
         val conversation = Conversation(
             id = "id",
             answeredQuestions = emptyList(),
@@ -160,12 +130,27 @@ class ChatRepoTest {
     }
 
     @Test
-    fun `get conversation returns 404`() = runTest {
+    fun `API call returns 404`() = runTest {
 //        TODO
     }
 
     @Test
-    fun `get conversation returns 429`() = runTest {
+    fun `API call returns 429`() = runTest {
+//        TODO
+    }
+
+    @Test
+    fun `API call returns 500`() = runTest {
+//        TODO
+    }
+
+    @Test
+    fun `API call throws UnknownHostException`() = runTest {
+//        TODO
+    }
+
+    @Test
+    fun `API call throws HttpException`() = runTest {
 //        TODO
     }
 }

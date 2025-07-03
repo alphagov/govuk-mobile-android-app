@@ -76,16 +76,11 @@ private fun ChatScreen(
     val focusRequester = remember { FocusRequester() }
     val scrollState = rememberScrollState()
 
-    LaunchedEffect(uiState?.conversation?.answeredQuestions?.size) {
-        val answerCount = uiState?.conversation?.answeredQuestions?.size ?: 0
+    LaunchedEffect(uiState?.chatEntries?.size) {
+        val answerCount = uiState?.chatEntries?.size ?: 0
         if (answerCount > 0) {
             delay(150)
-            println("Attempted scroll. Position: $scrollPosition MaxValue: ${scrollState.maxValue}, CurrentValue: ${scrollState.value}, ItemCount: ${uiState?.conversation?.answeredQuestions?.size}")
-            if (scrollPosition > 0 && scrollPosition <= scrollState.maxValue) {
-                scrollState.animateScrollTo(scrollPosition)
-            } else if (scrollPosition == 0 && scrollState.maxValue > 0) {
-                println("Warning: scrollPosition was 0. Could not scroll to specific question.")
-            }
+            scrollState.animateScrollTo(scrollState.maxValue)
         }
     }
 
@@ -106,43 +101,41 @@ private fun ChatScreen(
                 .weight(1f)
                 .padding(horizontal = GovUkTheme.spacing.medium)
         ) {
-            if (uiState?.conversation != null && uiState.conversation.answeredQuestions.isNotEmpty()) {
+            if (uiState?.chatEntries != null && uiState.chatEntries.isNotEmpty()) {
                 MediumVerticalSpacer()
 
-                uiState.conversation.answeredQuestions.forEachIndexed { index, question ->
-                    val isLastQuestion = index == uiState.conversation.answeredQuestions.size - 1
-
+                uiState.chatEntries.entries.forEachIndexed { index, chatEntry ->
+                    val isLastQuestion = index == uiState.chatEntries.size - 1
                     Column(
                         modifier = if (isLastQuestion) {
                             Modifier.onGloballyPositioned { layoutCoordinates ->
                                 val positionInScrollableContent = layoutCoordinates.positionInParent().y
                                 scrollPosition = positionInScrollableContent.toInt()
-                                println("Position: $scrollPosition")
                             }
                         } else {
                             Modifier
                         }
                     ) {
                         BodyBoldLabel(
-                            text = question.message
+                            text = chatEntry.value.question
                         )
                         MediumVerticalSpacer()
 
                         MarkdownText(
-                            markdown = question.answer.message,
+                            markdown = chatEntry.value.answer,
                             style = GovUkTheme.typography.bodyRegular,
                             enableSoftBreakAddsNewLine = false
                         )
 
-                        if (question.answer.sources.isNotEmpty()) {
+                        if (chatEntry.value.sources.isNotEmpty()) {
                             BodyBoldLabel(
                                 text = stringResource(id = R.string.sources_header)
                             )
                             MediumVerticalSpacer()
 
-                            question.answer.sources.forEach { source ->
+                            chatEntry.value.sources.forEach { source ->
                                 MarkdownText(
-                                    markdown = "* [${source.title}](${source.url})",
+                                    markdown = source,
                                     style = GovUkTheme.typography.bodyRegular,
                                     enableSoftBreakAddsNewLine = false
                                 )
@@ -243,9 +236,7 @@ private fun OnboardingScreenPreview() {
     GovUkTheme {
         ChatScreen(
             uiState = ChatUiState(
-                conversation = conversation(),
                 conversationId = "210d1a18-7b77-4418-9938-ad1b5700b9fd",
-                questionId = "ca615e61-d1ad-4787-b0c9-ae5aed19d12b",
                 loading = false
             ),
             onSubmit = { _ -> },

@@ -7,13 +7,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.gov.govuk.chat.data.ChatRepo
-import uk.gov.govuk.chat.data.remote.model.Conversation
+import uk.gov.govuk.chat.data.remote.model.Answer
+import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
+import uk.gov.govuk.chat.ui.model.ChatEntry
 import javax.inject.Inject
 
 internal data class ChatUiState(
-    val conversation: Conversation?,
+    val chatEntries: Map<String, ChatEntry>? = emptyMap(),
     val conversationId: String?,
-    val questionId: String?,
     val loading: Boolean = false
 )
 
@@ -21,69 +22,93 @@ internal data class ChatUiState(
 internal class ChatViewModel @Inject constructor(
     private val chatRepo: ChatRepo
 ): ViewModel() {
-    private val _uiState: MutableStateFlow<ChatUiState?> = MutableStateFlow(null)
+    private val _uiState: MutableStateFlow<ChatUiState?> = MutableStateFlow(
+        ChatUiState(
+            chatEntries = emptyMap(),
+            conversationId = "",
+            loading = false
+        )
+    )
     val uiState = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-//            if (chatRepo.conversationId.isNotEmpty()) {
-//                _uiState.value = ChatUiState(
-//                    conversation = chatRepo.getConversation(),
-//                    conversationId = chatRepo.conversationId,
-//                    questionId = chatRepo.questionId,
-//                    loading = false
-//                )
-//            }
+            if (chatRepo.conversationId.isNotEmpty()) {
+                _uiState.value = ChatUiState(
+                    chatEntries = emptyMap(),
+                    conversationId = chatRepo.conversationId,
+                    loading = true
+                )
+
+                val conversation = chatRepo.getConversation()
+                if (conversation != null && conversation.answeredQuestions.isNotEmpty()) {
+                    conversation.answeredQuestions.forEach { question ->
+                        addChatEntry(question)
+                        updateChatEntry(question.id, question.answer)
+                    }
+                }
+
+                _uiState.value = _uiState.value?.copy(
+                    loading = false
+                )
+            }
         }
     }
 
     fun onSubmit(question: String) {
         viewModelScope.launch {
-//            val question1 = chatRepo.startConversation("Can fred@example.com keep micropigs?")
-            val question1 = chatRepo.startConversation("Can I keep micropigs?")
-            println("===> Question : ${question1!!.message}")
-            val answer1 = chatRepo.getAnswer()
-            println("===> Answer : ${answer1!!.message}")
-            println("===> Sources :")
-            answer1!!.sources.forEach { source ->
-                println("    * ${source.title} [${source.url}]")
+            _uiState.value = _uiState.value?.copy(
+                conversationId = null,
+                loading = true
+            )
+
+            if (chatRepo.conversationId.isEmpty()) {
+                val question = chatRepo.startConversation(question)
+                addChatEntry(question)
+                val answer = chatRepo.getAnswer()
+                updateChatEntry(question!!.id, answer)
+            } else {
+                _uiState.value = _uiState.value?.copy(
+                    conversationId = chatRepo.conversationId
+                )
+
+                val question = chatRepo.updateConversation(question)
+                addChatEntry(question)
+                val answer = chatRepo.getAnswer()
+                updateChatEntry(question!!.id, answer)
             }
 
-            val question2 = chatRepo.updateConversation("Where can I keep them?")
-            println("===> Question : ${question2!!.message}")
-            val answer2 = chatRepo.getAnswer()
-            println("===> Answer : ${answer2!!.message}")
-            println("===> Sources :")
-            answer2!!.sources.forEach { source ->
-                println("    * ${source.title} [${source.url}]")
+            _uiState.value = _uiState.value?.copy(
+                loading = false
+            )
+        }
+    }
+
+    private fun addChatEntry(question: AnsweredQuestion?) {
+        if (question != null) {
+            _uiState.value = _uiState.value?.copy(
+                chatEntries = _uiState.value?.chatEntries?.plus(
+                    mapOf(
+                        question.id to ChatEntry(
+                            question = question.message,
+                            answer = "",
+                            sources = emptyList()
+                        )
+                    )
+                )
+            )
+        }
+    }
+
+    private fun updateChatEntry(questionId: String, answer: Answer?) {
+        if (answer != null) {
+            val chatEntry = _uiState.value?.chatEntries?.get(questionId)
+            if (chatEntry != null) {
+                chatEntry.answer = answer.message
+                chatEntry.sources = answer.sources.map { source ->
+                    "* [${source.title}](${source.url})"
+                }
             }
-
-            val conversation = chatRepo.getConversation()
-            println("===> Conversation : $conversation")
-
-//            if (chatRepo.conversationId.isEmpty()) {
-//                _uiState.value = ChatUiState(
-//                    conversation = null,
-//                    conversationId = "",
-//                    questionId = "",
-//                    loading = true
-//                )
-//                chatRepo.startConversation(question)
-//            } else {
-//                _uiState.value = _uiState.value?.copy(
-//                    loading = true
-//                )
-//                chatRepo.updateConversation(question)
-//            }
-//
-//            val conversation = chatRepo.getAnswer()
-//
-//            _uiState.value = ChatUiState(
-//                conversation = conversation,
-//                conversationId = chatRepo.conversationId,
-//                questionId = "",
-//                loading = false
-//            )
         }
     }
 }
