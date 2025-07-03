@@ -426,20 +426,20 @@ private fun GovUkNavHost(
         )
         searchGraph(
             navController,
-            launchBrowser = { url -> browserLauncher.launch(url) }
-        )
+            launchBrowser = { url -> browserLauncher.launch(url) })
         visitedGraph(
             navController = navController,
             launchBrowser = { url -> browserLauncher.launch(url) },
             modifier = Modifier.padding(paddingValues)
         )
 
-        val exitLocalAuth: () -> Unit =
+        val exitLocal: () -> Unit =
             { navController.popBackStack(HOME_GRAPH_START_DESTINATION, false) }
+
         localGraph(
             navController = navController,
-            onLocalAuthoritySelected = exitLocalAuth,
-            onCancel = exitLocalAuth,
+            onLocalAuthoritySelected = exitLocal,
+            onCancel = exitLocal,
             modifier = Modifier.padding(paddingValues)
         )
     }
