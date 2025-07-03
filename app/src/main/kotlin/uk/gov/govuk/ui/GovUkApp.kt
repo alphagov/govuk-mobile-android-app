@@ -150,12 +150,6 @@ private fun BottomNavScaffold(
     val navBarPadding = WindowInsets.navigationBars.asPaddingValues()
     val section = stringResource(R.string.homepage)
 
-    LaunchedEffect(Unit) {
-        intentFlow.collectLatest { intent ->
-            viewModel.appNavigation.setDeeplink(navController, intent.data)
-        }
-    }
-
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
         bottomBar = {
@@ -179,6 +173,7 @@ private fun BottomNavScaffold(
             color = GovUkTheme.colourScheme.surfaces.background
         ) {
             GovUkNavHost(
+                intentFlow = intentFlow,
                 viewModel = viewModel,
                 navController = navController,
                 homeWidgets = homeWidgets,
@@ -388,6 +383,7 @@ private fun BottomNav(
 
 @Composable
 private fun GovUkNavHost(
+    intentFlow: Flow<Intent>,
     viewModel: AppViewModel,
     navController: NavHostController,
     homeWidgets: List<HomeWidget>?,
@@ -403,6 +399,12 @@ private fun GovUkNavHost(
 
     val coroutineScope = rememberCoroutineScope()
 
+    LaunchedEffect(Unit) {
+        intentFlow.collectLatest { intent ->
+            viewModel.appNavigation.setDeeplink(navController, browserLauncher, intent.data)
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = LOGIN_GRAPH_ROUTE
@@ -410,13 +412,13 @@ private fun GovUkNavHost(
         loginGraph(
             navController = navController,
             onLoginCompleted = {
-                viewModel.onLogin(navController)
+                viewModel.onLogin(navController, browserLauncher)
             }
         )
         analyticsGraph(
             analyticsConsentCompleted = {
                 coroutineScope.launch {
-                    appNavigation.onAnalyticsConsentCompleted(navController)
+                    appNavigation.onAnalyticsConsentCompleted(navController, browserLauncher)
                 }
             },
             launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
@@ -425,7 +427,7 @@ private fun GovUkNavHost(
             topicSelectionCompleted = {
                 viewModel.topicSelectionCompleted()
                 coroutineScope.launch {
-                    appNavigation.onTopicSelectionCompleted(navController)
+                    appNavigation.onTopicSelectionCompleted(navController, browserLauncher)
                 }
             }
         )
@@ -436,7 +438,7 @@ private fun GovUkNavHost(
         )
         notificationsGraph(
             notificationsOnboardingCompleted = {
-                appNavigation.onNotificationsOnboardingCompleted(navController)
+                appNavigation.onNotificationsOnboardingCompleted(navController, browserLauncher)
                 navController.navigate(NOTIFICATIONS_CONSENT_ROUTE)
             },
             notificationsConsentCompleted = {

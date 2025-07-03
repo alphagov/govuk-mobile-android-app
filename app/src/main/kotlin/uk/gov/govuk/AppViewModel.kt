@@ -20,6 +20,7 @@ import uk.gov.govuk.data.model.Result.Success
 import uk.gov.govuk.navigation.AppNavigation
 import uk.gov.govuk.search.SearchFeature
 import uk.gov.govuk.topics.TopicsFeature
+import uk.gov.govuk.ui.BrowserActivityLauncher
 import uk.gov.govuk.ui.model.HomeWidget
 import uk.gov.govuk.visited.Visited
 import uk.govuk.app.local.LocalFeature
@@ -104,7 +105,7 @@ internal class AppViewModel @Inject constructor(
         }
     }
 
-    fun onLogin(navController: NavController) {
+    fun onLogin(navController: NavController, browserLauncher: BrowserActivityLauncher) {
         viewModelScope.launch {
             if (authRepo.isDifferentUser()) {
                 authRepo.clear()
@@ -114,7 +115,7 @@ internal class AppViewModel @Inject constructor(
                 searchFeature.clear()
                 visitedFeature.clear()
             }
-            appNavigation.onLoginCompleted(navController)
+            appNavigation.onLoginCompleted(navController, browserLauncher)
         }
     }
 
