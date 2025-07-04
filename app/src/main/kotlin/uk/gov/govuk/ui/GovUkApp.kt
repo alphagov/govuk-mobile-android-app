@@ -331,11 +331,11 @@ private fun GovUkNavHost(
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        appNavigation.onLaunchBrowser = { url ->
+        appNavigation.setOnLaunchBrowser { url ->
             browserLauncher.launch(url)
         }
 
-        appNavigation.onDeeplinkNotFound = {
+        appNavigation.setOnDeeplinkNotFound {
             showDeepLinkNotFoundAlert(context)
         }
 
