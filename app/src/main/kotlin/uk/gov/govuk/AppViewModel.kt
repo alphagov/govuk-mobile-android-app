@@ -113,15 +113,14 @@ internal class AppViewModel @Inject constructor(
                 localFeature.clear()
                 searchFeature.clear()
                 visitedFeature.clear()
+                analyticsClient.clear()
             }
-            appNavigation.onLoginCompleted(navController)
+            appNavigation.onNext(navController)
         }
     }
 
-    fun topicSelectionCompleted() {
-        viewModelScope.launch {
-            appRepo.topicSelectionCompleted()
-        }
+    suspend fun topicSelectionCompleted() {
+        appRepo.topicSelectionCompleted()
     }
 
     private fun updateHomeWidgets(

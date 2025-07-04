@@ -25,6 +25,8 @@ internal class AppNavigation @Inject constructor(
     private val deeplinkHandler: DeeplinkHandler
 ) {
 
+    private var hasCompletedNotificationsOnboarding = false
+
     fun setOnLaunchBrowser(onLaunchBrowser: (String) -> Unit) {
         deeplinkHandler.onLaunchBrowser = onLaunchBrowser
     }
@@ -40,47 +42,25 @@ internal class AppNavigation @Inject constructor(
         }
     }
 
-    suspend fun onLoginCompleted(navController: NavController) {
-        navigateToAnalyticsConsent(navController)
-    }
-
-    private suspend fun navigateToAnalyticsConsent(navController: NavController) {
-        if (analyticsClient.isAnalyticsConsentRequired()) {
-            navigate(navController, ANALYTICS_GRAPH_ROUTE)
-        } else {
-            onAnalyticsConsentCompleted(navController)
+    suspend fun onNext(navController: NavController) {
+        when {
+            analyticsClient.isAnalyticsConsentRequired() -> navigate(navController, ANALYTICS_GRAPH_ROUTE)
+            flagRepo.isTopicsEnabled() &&
+                    !appRepo.isTopicSelectionCompleted() &&
+                    topicsFeature.hasTopics() -> navigate(navController, TOPIC_SELECTION_GRAPH_ROUTE)
+            flagRepo.isNotificationsEnabled() &&
+                 !hasCompletedNotificationsOnboarding -> navigate(navController, NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
+            else -> {
+                hasCompletedNotificationsOnboarding = false
+                navigate(navController, HOME_GRAPH_ROUTE)
+                deeplinkHandler.handleDeeplink(navController)
+            }
         }
     }
 
-    suspend fun onAnalyticsConsentCompleted(navController: NavController) {
-        navigateToTopicSelection(navController)
-    }
-
-    private suspend fun navigateToTopicSelection(navController: NavController) {
-        if (flagRepo.isTopicsEnabled()
-            && !appRepo.isTopicSelectionCompleted()
-            && topicsFeature.hasTopics()) {
-            navigate(navController, TOPIC_SELECTION_GRAPH_ROUTE)
-        } else {
-            onTopicSelectionCompleted(navController)
-        }
-    }
-
-    fun onTopicSelectionCompleted(navController: NavController) {
-        navigateToNotificationsOnboarding(navController)
-    }
-
-    private fun navigateToNotificationsOnboarding(navController: NavController) {
-        if (flagRepo.isNotificationsEnabled()) {
-            navigate(navController, NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-        } else {
-            onNotificationsOnboardingCompleted(navController)
-        }
-    }
-
-    fun onNotificationsOnboardingCompleted(navController: NavController) {
-        navigate(navController, HOME_GRAPH_ROUTE)
-        deeplinkHandler.handleDeeplink(navController)
+    suspend fun onNotificationsOnboardingCompleted(navController: NavController) {
+        hasCompletedNotificationsOnboarding = true
+        onNext(navController)
     }
 
     private fun navigate(navController: NavController, route: String) {

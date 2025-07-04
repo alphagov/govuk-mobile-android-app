@@ -357,16 +357,16 @@ private fun GovUkNavHost(
         analyticsGraph(
             analyticsConsentCompleted = {
                 coroutineScope.launch {
-                    appNavigation.onAnalyticsConsentCompleted(navController)
+                    appNavigation.onNext(navController)
                 }
             },
             launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
         )
         topicSelectionGraph(
             topicSelectionCompleted = {
-                viewModel.topicSelectionCompleted()
                 coroutineScope.launch {
-                    appNavigation.onTopicSelectionCompleted(navController)
+                    viewModel.topicSelectionCompleted()
+                    appNavigation.onNext(navController)
                 }
             }
         )
@@ -377,8 +377,10 @@ private fun GovUkNavHost(
         )
         notificationsGraph(
             notificationsOnboardingCompleted = {
-                appNavigation.onNotificationsOnboardingCompleted(navController)
-                navController.navigate(NOTIFICATIONS_CONSENT_ROUTE)
+                coroutineScope.launch {
+                    appNavigation.onNotificationsOnboardingCompleted(navController)
+                    navController.navigate(NOTIFICATIONS_CONSENT_ROUTE)
+                }
             },
             notificationsConsentCompleted = {
                 navController.navigateUp()

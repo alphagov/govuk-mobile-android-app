@@ -35,6 +35,10 @@ class AnalyticsClient @Inject constructor(
         firebaseAnalyticsClient.disable()
     }
 
+    suspend fun clear() {
+        analyticsRepo.clear()
+    }
+
     fun screenView(screenClass: String, screenName: String, title: String) {
         logEvent(
             FirebaseAnalytics.Event.SCREEN_VIEW,
