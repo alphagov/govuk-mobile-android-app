@@ -462,7 +462,7 @@ class AppViewModelTest {
                 localFeature.clear()
                 searchFeature.clear()
                 visited.clear()
-                appNavigation.onDifferentUserLogin(any())
+                analyticsClient.clear()
             }
 
             coVerify {
@@ -472,7 +472,7 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given a different user has logged in, When on login, then clear data, reconfigure nav and navigate to next destination`() {
+    fun `Given a different user has logged in, When on login, then clear data and navigate to next destination`() {
         every { authRepo.isDifferentUser() } returns true
 
         runTest {
@@ -485,18 +485,9 @@ class AppViewModelTest {
                 localFeature.clear()
                 searchFeature.clear()
                 visited.clear()
-                appNavigation.onDifferentUserLogin(any())
+                analyticsClient.clear()
                 appNavigation.onNext(navController)
             }
-        }
-    }
-
-    @Test
-    fun `Given a user has signed out, When on sign out, then call app launch nav`() {
-        viewModel.onSignOut()
-
-        coVerify {
-            appNavigation.onSignOut()
         }
     }
 
@@ -510,30 +501,11 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given login is disabled, When the app times out, do nothing`() {
-        clearAllMocks()
-
-        val slot = slot<(() -> Unit)>()
-        every { timeoutManager.onUserInteraction(any(), onTimeout = capture(slot)) } returns Unit
-        every { flagRepo.isLoginEnabled() } returns false
-
-        viewModel.onUserInteraction(navController, 0L)
-        slot.captured.invoke()
-
-        coVerify(exactly = 0) {
-            authRepo.endUserSession()
-            appNavigation.buildLaunchFlow()
-            navController.navigate(route = any())
-        }
-    }
-
-    @Test
     fun `Given user session is not active, When the app times out, do nothing`() {
         clearAllMocks()
 
         val slot = slot<(() -> Unit)>()
         every { timeoutManager.onUserInteraction(any(), onTimeout = capture(slot)) } returns Unit
-        every { flagRepo.isLoginEnabled() } returns true
         every { authRepo.isUserSessionActive() } returns false
 
         viewModel.onUserInteraction(navController, 0L)
@@ -541,28 +513,24 @@ class AppViewModelTest {
 
         coVerify(exactly = 0) {
             authRepo.endUserSession()
-            appNavigation.buildLaunchFlow()
-            navController.navigate(route = any())
+            appNavigation.onSignOut(any())
         }
     }
 
     @Test
-    fun `Given login is enabled and a user session is active, When the app times out, end user session and navigate`() {
+    fun `Given a user session is active, When the app times out, end user session and navigate`() {
         clearAllMocks()
 
         val slot = slot<(() -> Unit)>()
         every { timeoutManager.onUserInteraction(any(), onTimeout = capture(slot)) } returns Unit
-        every { flagRepo.isLoginEnabled() } returns true
         every { authRepo.isUserSessionActive() } returns true
-        every { appNavigation.startDestination } returns "start"
 
         viewModel.onUserInteraction(navController, 0L)
         slot.captured.invoke()
 
         coVerify {
             authRepo.endUserSession()
-            appNavigation.buildLaunchFlow()
-            navController.navigate("start")
+            appNavigation.onSignOut(any())
         }
     }
 }

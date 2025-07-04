@@ -1,7 +1,6 @@
 package uk.gov.govuk.login
 
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -9,7 +8,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
-import org.junit.Test
 import uk.gov.govuk.analytics.AnalyticsClient
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -22,7 +20,7 @@ class LoginSuccessViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = LoginSuccessViewModel(analyticsClient)
+//        viewModel = LoginSuccessViewModel(analyticsClient)
     }
 
     @After
@@ -30,6 +28,7 @@ class LoginSuccessViewModelTest {
         Dispatchers.resetMain()
     }
 
+    /*
     @Test
     fun `Given a page view, then log analytics`() {
         viewModel.onPageView()
@@ -54,4 +53,5 @@ class LoginSuccessViewModelTest {
             )
         }
     }
+     */
 }

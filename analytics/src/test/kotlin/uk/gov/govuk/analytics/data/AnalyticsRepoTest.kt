@@ -63,4 +63,15 @@ class AnalyticsRepoTest {
             coVerify { dataStore.analyticsDisabled() }
         }
     }
+
+    @Test
+    fun `Given analytics have been cleared, then update data store`() {
+        val repo = AnalyticsRepo(dataStore)
+
+        runTest {
+            repo.clear()
+
+            coVerify { dataStore.clear() }
+        }
+    }
 }

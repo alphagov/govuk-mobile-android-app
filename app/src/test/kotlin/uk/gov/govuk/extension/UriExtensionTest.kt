@@ -17,7 +17,6 @@ class UriExtensionTest {
     private val uri = mockk<Uri>(relaxed = true)
     private val uriParam = mockk<Uri>(relaxed = true)
 
-    private val allowedUrls = listOf("scheme://host")
     private val allowedUrlParams = listOf("paramScheme://paramHost")
 
     @Before
@@ -32,51 +31,32 @@ class UriExtensionTest {
 
     @Test
     fun `Given a Uri, When getUrlParam() is called on it with allowed urls, should return a Uri of the url param`() {
-        every { uri.scheme } returns "scheme"
-        every { uri.host } returns "host"
         every { uriParam.scheme } returns "paramScheme"
         every { uriParam.host } returns "paramHost"
         every { uri.getQueryParameter("url")?.toUri() } returns uriParam
 
         runTest {
-            assertEquals(uriParam, uri.getUrlParam(allowedUrls, allowedUrlParams))
-        }
-    }
-
-    @Test
-    fun `Given a Uri, When getUrlParam() is called on it with a url that is not in the allowed list, should return null`() {
-        every { uri.scheme } returns "notAllowedScheme"
-        every { uri.host } returns "notAllowedHost"
-        every { uriParam.scheme } returns "paramScheme"
-        every { uriParam.host } returns "paramHost"
-        every { uri.getQueryParameter("url")?.toUri() } returns uriParam
-
-        runTest {
-            assertNull(uri.getUrlParam(allowedUrls, allowedUrlParams))
+            assertEquals(uriParam, uri.getUrlParam(allowedUrlParams))
         }
     }
 
     @Test
     fun `Given a Uri, When getUrlParam() is called on it with a url param that is not in the allowed list, should return null`() {
-        every { uri.scheme } returns "scheme"
-        every { uri.host } returns "host"
         every { uriParam.scheme } returns "notAllowedParamScheme"
         every { uriParam.host } returns "notAllowedParamHost"
         every { uri.getQueryParameter("url")?.toUri() } returns uriParam
 
         runTest {
-            assertNull(uri.getUrlParam(allowedUrls, allowedUrlParams))
+            assertNull(uri.getUrlParam(allowedUrlParams))
         }
     }
 
     @Test
-    fun `Given a Uri, When getUrlParam() is called on it with no a url that cannot be parsed, should return null`() {
-        every { uri.scheme } returns "scheme"
-        every { uri.host } returns "host"
+    fun `Given a Uri, When getUrlParam() is called on it with a url that cannot be parsed, should return null`() {
         every { uri.getQueryParameter("url")?.toUri() } returns null
 
         runTest {
-            assertNull(uri.getUrlParam(allowedUrls, allowedUrlParams))
+            assertNull(uri.getUrlParam(allowedUrlParams))
         }
     }
 
@@ -87,7 +67,7 @@ class UriExtensionTest {
         every { uri.getQueryParameter("url") } returns null
 
         runTest {
-            assertNull(uri.getUrlParam(allowedUrls, allowedUrlParams))
+            assertNull(uri.getUrlParam(allowedUrlParams))
         }
     }
 }

@@ -1,6 +1,8 @@
 package uk.gov.govuk.navigation
 
+import android.net.Uri
 import androidx.navigation.NavController
+import androidx.navigation.NavOptionsBuilder
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.every
@@ -15,412 +17,223 @@ import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
-import uk.gov.govuk.login.navigation.BIOMETRIC_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
 import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.topics.navigation.TOPIC_SELECTION_GRAPH_ROUTE
-import java.util.Stack
-import kotlin.test.assertEquals
 
 class AppNavigationTest {
 
     private val flagRepo = mockk<FlagRepo>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val appRepo = mockk<AppRepo>(relaxed = true)
-    private val topicsFeature = mockk<TopicsFeature>(relaxed = true)
     private val authRepo = mockk<AuthRepo>(relaxed = true)
+    private val topicsFeature = mockk<TopicsFeature>(relaxed = true)
+    private val deeplinkHandler = mockk<DeeplinkHandler>(relaxed = true)
     private val navController = mockk<NavController>(relaxed = true)
+    private val deeplink = mockk<Uri>(relaxed = true)
 
     private lateinit var appLaunchNav: AppNavigation
 
     @Before
     fun setup() {
-        appLaunchNav = AppNavigation(flagRepo, analyticsClient, appRepo, topicsFeature, authRepo)
+        appLaunchNav = AppNavigation(flagRepo, analyticsClient, appRepo, authRepo, topicsFeature, deeplinkHandler)
+    }
 
-        // Default config (simulates first time app launch)
-        every { flagRepo.isNotificationsEnabled() } returns true
-        every { flagRepo.isTopicsEnabled() } returns true
-        coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { authRepo.isAuthenticationEnabled() } returns true
-        coEvery { appRepo.hasSkippedBiometrics() } returns false
-        coEvery { authRepo.isUserSignedIn() } returns false
-        coEvery { flagRepo.isLoginEnabled() } returns true
-        coEvery { analyticsClient.isAnalyticsConsentRequired() } returns true
-        coEvery { topicsFeature.hasTopics() } returns true
-
-        runTest {
-            appLaunchNav.buildLaunchFlow()
+    @Test
+    fun `Set launch browser on deeplink handler`() {
+        val onLaunchBrowser: (String) -> Unit = { }
+        appLaunchNav.setOnLaunchBrowser(onLaunchBrowser)
+        verify {
+            deeplinkHandler.onLaunchBrowser = onLaunchBrowser
         }
     }
 
     @Test
-    fun `When build launch flow, builds all launch routes`() {
-        every { flagRepo.isNotificationsEnabled() } returns true
-        every { flagRepo.isTopicsEnabled() } returns true
-        coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { authRepo.isAuthenticationEnabled() } returns true
-        coEvery { authRepo.isUserSignedIn() } returns false
-        coEvery { flagRepo.isLoginEnabled() } returns true
-        coEvery { analyticsClient.isAnalyticsConsentRequired() } returns true
-
-        runTest {
-            appLaunchNav.buildLaunchFlow()
-
-            assertEquals(ANALYTICS_GRAPH_ROUTE, appLaunchNav.startDestination)
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
+    fun `Set deeplink not found on deeplink handler`() {
+        val onDeeplinkNotFound: () -> Unit = { }
+        appLaunchNav.setOnDeeplinkNotFound(onDeeplinkNotFound)
+        verify {
+            deeplinkHandler.onDeeplinkNotFound = onDeeplinkNotFound
         }
     }
 
     @Test
-    fun `Given analytics consent is not required, When build launch flow, builds launch routes`() {
-        coEvery { analyticsClient.isAnalyticsConsentRequired() } returns false
+    fun `Set deeplink when user session not active`() {
+        every { authRepo.isUserSessionActive() } returns false
+        appLaunchNav.setDeeplink(navController, deeplink)
 
-        runTest {
-            appLaunchNav.buildLaunchFlow()
+        verify {
+            deeplinkHandler.deepLink = deeplink
+        }
 
-            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(BIOMETRIC_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
+        verify(exactly = 0) {
+            deeplinkHandler.handleDeeplink(any())
         }
     }
 
     @Test
-    fun `Given login is disabled, When build launch flow, builds launch routes`() {
-        coEvery { flagRepo.isLoginEnabled() } returns false
+    fun `Set deeplink when user session active`() {
+        every { authRepo.isUserSessionActive() } returns true
+        appLaunchNav.setDeeplink(navController, deeplink)
 
-        runTest {
-            appLaunchNav.buildLaunchFlow()
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
+        verify {
+            deeplinkHandler.deepLink = deeplink
+            deeplinkHandler.handleDeeplink(navController)
         }
     }
 
     @Test
-    fun `Given authentication is not enabled, When build launch flow, builds launch routes`() {
-        coEvery { authRepo.isAuthenticationEnabled() } returns false
-
+    fun `On next navigates to analytics consent`() {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns true
         runTest {
-            appLaunchNav.buildLaunchFlow()
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `Given biometrics has been skipped, When build launch flow, builds launch routes`() {
-        coEvery { appRepo.hasSkippedBiometrics() } returns true
-
-        runTest {
-            appLaunchNav.buildLaunchFlow()
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `Given topics are disabled, When build launch flow, builds launch routes`() {
-        every { flagRepo.isTopicsEnabled() } returns false
-
-        runTest {
-            appLaunchNav.buildLaunchFlow()
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `Given topic selection is complete, When build launch flow, builds launch routes`() {
-        coEvery { appRepo.isTopicSelectionCompleted() } returns true
-
-        runTest {
-            appLaunchNav.buildLaunchFlow()
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `Given no topics, When build launch flow, builds launch routes`() {
-        coEvery { topicsFeature.hasTopics() } returns false
-
-        runTest {
-            appLaunchNav.buildLaunchFlow()
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `Given notifications are disabled, When build launch flow, builds launch routes`() {
-        every { flagRepo.isNotificationsEnabled() } returns false
-
-        runTest {
-            appLaunchNav.buildLaunchFlow()
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(BIOMETRIC_ROUTE)
-            expected.push(LOGIN_GRAPH_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `When different user login, builds all launch routes`() {
-        runTest {
-            appLaunchNav.onDifferentUserLogin(true)
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(BIOMETRIC_ROUTE)
-            expected.push(ANALYTICS_GRAPH_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `Given authentication is not enabled, When different user login, build launch routes`() {
-        every { authRepo.isAuthenticationEnabled() } returns false
-
-        runTest {
-            appLaunchNav.onDifferentUserLogin(true)
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(ANALYTICS_GRAPH_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `Given topics are disabled, When different user login, build launch routes`() {
-        every { flagRepo.isTopicsEnabled() } returns false
-
-        runTest {
-            appLaunchNav.onDifferentUserLogin(true)
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(BIOMETRIC_ROUTE)
-            expected.push(ANALYTICS_GRAPH_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `Given no topics, When different user login, build launch routes`() {
-        runTest {
-            appLaunchNav.onDifferentUserLogin(false)
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(BIOMETRIC_ROUTE)
-            expected.push(ANALYTICS_GRAPH_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `Given notifications are disabled, When different user login, build launch routes`() {
-        every { flagRepo.isNotificationsEnabled() } returns false
-
-        runTest {
-            appLaunchNav.onDifferentUserLogin(true)
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(TOPIC_SELECTION_GRAPH_ROUTE)
-            expected.push(BIOMETRIC_ROUTE)
-            expected.push(ANALYTICS_GRAPH_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `When sign out, builds all launch routes`() {
-        runTest {
-            appLaunchNav.onSignOut()
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            expected.push(BIOMETRIC_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `Given authentication is not enabled, When sign out, build launch routes`() {
-        every { authRepo.isAuthenticationEnabled() } returns false
-
-        runTest {
-            appLaunchNav.onSignOut()
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `Given biometrics has been skipped, When sign out, build launch routes`() {
-        coEvery { appRepo.hasSkippedBiometrics() } returns true
-
-        runTest {
-            appLaunchNav.onSignOut()
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `Given notifications are disabled, When sign out, build launch routes`() {
-        every { flagRepo.isNotificationsEnabled() } returns false
-
-        runTest {
-            appLaunchNav.onSignOut()
-
-            val expected = Stack<String>()
-            expected.push(HOME_GRAPH_ROUTE)
-            expected.push(BIOMETRIC_ROUTE)
-
-            assertEquals(expected, appLaunchNav.launchRoutes)
-        }
-    }
-
-    @Test
-    fun `Given launch routes are empty, When on Next, do nothing`() {
-        every { flagRepo.isNotificationsEnabled() } returns false
-        every { authRepo.isAuthenticationEnabled() } returns false
-
-        runTest {
-            appLaunchNav.onSignOut()
-            appLaunchNav.onNext(navController)
             appLaunchNav.onNext(navController)
 
-            clearAllMocks()
-
-            appLaunchNav.onNext(navController)
-
-            verify(exactly = 0) {
+            verify {
                 navController.popBackStack()
-                navController.navigate(any<String>())
+                navController.navigate(ANALYTICS_GRAPH_ROUTE)
             }
         }
     }
 
     @Test
-    fun `Given launch routes are not empty, When on Next, pop back stack and navigate`() {
-        appLaunchNav.onNext(navController)
+    fun `On next navigates to topic selection`() {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns true
+        coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        coEvery { topicsFeature.hasTopics() } returns true
 
-        verify {
-            navController.popBackStack()
-            navController.navigate(LOGIN_GRAPH_ROUTE)
-            assertEquals(LOGIN_GRAPH_ROUTE, appLaunchNav.startDestination)
+        runTest {
+            appLaunchNav.onNext(navController)
+
+            verify {
+                navController.popBackStack()
+                navController.navigate(TOPIC_SELECTION_GRAPH_ROUTE)
+            }
         }
     }
 
     @Test
-    fun `Given biometric route and user is signed in, navigate to next route`() {
-        every { authRepo.isUserSignedIn() } returns true
+    fun `On next navigates to notifications onboarding - topics disabled`() {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns false
+        coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        coEvery { topicsFeature.hasTopics() } returns true
+        every { flagRepo.isNotificationsEnabled() } returns true
 
         runTest {
-            appLaunchNav.onSignOut()
             appLaunchNav.onNext(navController)
 
             verify {
                 navController.popBackStack()
                 navController.navigate(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             }
+        }
+    }
 
-            verify(exactly = 0) {
-                navController.navigate(BIOMETRIC_ROUTE)
+    @Test
+    fun `On next navigates to notifications onboarding - topic selection completed`() {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns true
+        coEvery { appRepo.isTopicSelectionCompleted() } returns true
+        coEvery { topicsFeature.hasTopics() } returns true
+        every { flagRepo.isNotificationsEnabled() } returns true
+
+        runTest {
+            appLaunchNav.onNext(navController)
+
+            verify {
+                navController.popBackStack()
+                navController.navigate(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             }
         }
     }
 
     @Test
-    fun `Given biometric route and user is not signed in, navigate to biometric route`() {
-        every { authRepo.isUserSignedIn() } returns false
+    fun `On next navigates to notifications onboarding - no topics`() {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns true
+        coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        coEvery { topicsFeature.hasTopics() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns true
 
         runTest {
-            appLaunchNav.onSignOut()
             appLaunchNav.onNext(navController)
 
             verify {
                 navController.popBackStack()
-                navController.navigate(BIOMETRIC_ROUTE)
+                navController.navigate(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             }
+        }
+    }
+
+    @Test
+    fun `On next navigates to home - notifications disabled`() {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns true
+        coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        coEvery { topicsFeature.hasTopics() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns false
+
+        runTest {
+            appLaunchNav.onNext(navController)
+
+            verify {
+                navController.popBackStack()
+                navController.navigate(HOME_GRAPH_ROUTE)
+                deeplinkHandler.handleDeeplink(navController)
+            }
+        }
+    }
+
+    @Test
+    fun `On next navigates to home - notifications onboarding completed`() {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns true
+        coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        coEvery { topicsFeature.hasTopics() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns true
+
+        runTest {
+            appLaunchNav.onNotificationsOnboardingCompleted(navController)
+
+            clearAllMocks()
+
+            appLaunchNav.onNext(navController)
+
+            verify {
+                navController.popBackStack()
+                navController.navigate(HOME_GRAPH_ROUTE)
+                deeplinkHandler.handleDeeplink(navController)
+            }
+        }
+    }
+
+    @Test
+    fun `On notifications onboarding completed navigates to home`() {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns true
+        coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        coEvery { topicsFeature.hasTopics() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns true
+
+        runTest {
+            appLaunchNav.onNotificationsOnboardingCompleted(navController)
+
+            verify {
+                navController.popBackStack()
+                navController.navigate(HOME_GRAPH_ROUTE)
+                deeplinkHandler.handleDeeplink(navController)
+            }
+        }
+    }
+
+    @Test
+    fun `On sign out navigates to login`() {
+        appLaunchNav.onSignOut(navController)
+
+        verify {
+            navController.navigate(LOGIN_GRAPH_ROUTE, any<NavOptionsBuilder.() -> Unit>())
         }
     }
 }
