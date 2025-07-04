@@ -406,20 +406,18 @@ private fun GovUkNavHost(
             },
             launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
         )
-        if (homeWidgets.contains(HomeWidget.TOPICS)) {
-            topicSelectionGraph(
-                topicSelectionCompleted = {
-                    viewModel.topicSelectionCompleted()
-                    appLaunchNavigation.onNext(navController)
-                }
-            )
-            topicsGraph(
-                navController = navController,
-                deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
-                launchBrowser = { url -> browserLauncher.launch(url) },
-                modifier = Modifier.padding(paddingValues)
-            )
-        }
+        topicSelectionGraph(
+            topicSelectionCompleted = {
+                viewModel.topicSelectionCompleted()
+                appLaunchNavigation.onNext(navController)
+            }
+        )
+        topicsGraph(
+            navController = navController,
+            deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
+            launchBrowser = { url -> browserLauncher.launch(url) },
+            modifier = Modifier.padding(paddingValues)
+        )
         notificationsOnboardingGraph(
             notificationsOnboardingCompleted = {
                 navController.popBackStack()
@@ -490,31 +488,26 @@ private fun GovUkNavHost(
                 }
             }
         )
-        if (homeWidgets.contains(HomeWidget.SEARCH)) {
-            searchGraph(
-                navController,
-                deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
-                launchBrowser = { url -> browserLauncher.launch(url) })
-        }
-        if (homeWidgets.contains(HomeWidget.RECENT_ACTIVITY)) {
-            visitedGraph(
-                navController = navController,
-                deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
-                launchBrowser = { url -> browserLauncher.launch(url) },
-                modifier = Modifier.padding(paddingValues)
-            )
-        }
-        if (homeWidgets.contains(HomeWidget.LOCAL)) {
-            val exitLocalAuth: () -> Unit =
-                { navController.popBackStack(HOME_GRAPH_START_DESTINATION, false) }
+        searchGraph(
+            navController,
+            deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
+            launchBrowser = { url -> browserLauncher.launch(url) })
 
-            localGraph(
-                navController = navController,
-                onLocalAuthoritySelected = exitLocalAuth,
-                onCancel = exitLocalAuth,
-                modifier = Modifier.padding(paddingValues)
-            )
-        }
+        visitedGraph(
+            navController = navController,
+            deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
+            launchBrowser = { url -> browserLauncher.launch(url) },
+            modifier = Modifier.padding(paddingValues)
+        )
+
+        val exitLocalAuth: () -> Unit =
+            { navController.popBackStack(HOME_GRAPH_START_DESTINATION, false) }
+        localGraph(
+            navController = navController,
+            onLocalAuthoritySelected = exitLocalAuth,
+            onCancel = exitLocalAuth,
+            modifier = Modifier.padding(paddingValues)
+        )
     }
 }
 
