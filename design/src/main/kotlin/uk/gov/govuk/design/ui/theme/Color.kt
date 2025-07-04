@@ -129,6 +129,7 @@ data class GovUkColourScheme(
     data class Strokes(
         val fixedContainer: Color,
         val listDivider: Color,
+        val govspeakInfoCalloutBorder: Color,
         val pageControlsInactive: Color,
         val cardBlue: Color,
         val cardSelected: Color,
@@ -225,7 +226,8 @@ internal val LightColorScheme = GovUkColourScheme(
         cardGreen = GreenLighter50,
         textFieldCursor = Grey700,
         textFieldError = RedPrimary,
-        radioDivider = Grey300
+        radioDivider = Grey300,
+        govspeakInfoCalloutBorder = Grey500
     )
 )
 
@@ -311,7 +313,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         cardGreen = GreenLighter25,
         textFieldCursor = Grey300,
         textFieldError = RedAccent,
-        radioDivider = Grey500
+        radioDivider = Grey500,
+        govspeakInfoCalloutBorder = Grey300
     )
 )
 
@@ -398,7 +401,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             cardGreen = Color.Unspecified,
             textFieldCursor = Color.Unspecified,
             textFieldError = Color.Unspecified,
-            radioDivider = Color.Unspecified
+            radioDivider = Color.Unspecified,
+            govspeakInfoCalloutBorder = Color.Unspecified
         )
     )
 }
