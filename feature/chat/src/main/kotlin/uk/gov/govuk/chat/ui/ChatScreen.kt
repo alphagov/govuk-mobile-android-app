@@ -39,12 +39,14 @@ import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
 import uk.gov.govuk.chat.data.remote.model.Conversation
 import uk.gov.govuk.chat.data.remote.model.Source
+import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.FixedContainerDivider
 import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.PrimaryButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
+import kotlin.math.abs
 
 @Composable
 internal fun ChatRoute(
@@ -73,6 +75,9 @@ private fun ChatScreen(
 ) {
     var question by remember { mutableStateOf("") }
     var scrollPosition by remember { mutableIntStateOf(0) }
+    var isError by remember { mutableStateOf(false) }
+    var characterCount by remember { mutableIntStateOf(0) }
+    var buttonDisabled by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val scrollState = rememberScrollState()
 
@@ -167,12 +172,13 @@ private fun ChatScreen(
 
             MediumVerticalSpacer()
 
-            // TODO: display any error messages...
             TextField(
                 value = question,
                 onValueChange = {
-                    // TODO: check for PII
+                    buttonDisabled = false
+                    isError = false
                     question = it
+                    characterCount = it.length
                 },
                 label = {
                     Text(
@@ -185,6 +191,17 @@ private fun ChatScreen(
                     .focusable(true)
                     .padding(horizontal = GovUkTheme.spacing.medium),
                 singleLine = false,
+                isError = isError,
+                supportingText = {
+                    if (isError) {
+                        focusRequester.requestFocus()
+                        val errorMessage = stringResource(id = R.string.pii_error_message)
+                        BodyBoldLabel(
+                            color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
+                            text = errorMessage
+                        )
+                    }
+                },
                 colors = TextFieldDefaults.colors(
                     cursorColor = GovUkTheme.colourScheme.strokes.textFieldCursor,
                     errorContainerColor = GovUkTheme.colourScheme.surfaces.textFieldBackground,
@@ -219,13 +236,47 @@ private fun ChatScreen(
                 text = stringResource(id = R.string.button_text),
                 onClick = {
                     val currentQuestion = question
-                    onSubmit(currentQuestion)
-                    question = ""
+                    isError = StringCleaner.includesPII(currentQuestion)
+                    if (!isError) {
+                        onSubmit(currentQuestion)
+                        question = ""
+                    }
                 },
+                enabled = question.isNotBlank() && !buttonDisabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = GovUkTheme.spacing.medium),
             )
+
+            // TODO: add these to config somewhere!
+            val characterLimit = 300
+            val characterNotify = 250
+
+            if (characterCount in characterNotify..<characterLimit) {
+                buttonDisabled = false
+                Text(
+                    text = "${characterLimit - characterCount} characters remaining",
+                    color = GovUkTheme.colourScheme.textAndIcons.primary,
+                    style = GovUkTheme.typography.bodyBold,
+                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+                )
+            } else if (characterCount == characterLimit) {
+                buttonDisabled = false
+                Text(
+                    text = "0 characters remaining",
+                    color = GovUkTheme.colourScheme.textAndIcons.primary,
+                    style = GovUkTheme.typography.bodyBold,
+                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+                )
+            } else if (characterCount > characterLimit) {
+                buttonDisabled = true
+                Text(
+                    text = "${abs(characterLimit - characterCount)} characters too many",
+                    color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
+                    style = GovUkTheme.typography.bodyBold,
+                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+                )
+            }
         }
     }
 }
