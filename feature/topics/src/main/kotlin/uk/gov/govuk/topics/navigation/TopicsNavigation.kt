@@ -19,7 +19,7 @@ const val TOPICS_GRAPH_ROUTE = "topics_graph_route"
 const val TOPIC_ROUTE = "topic_route"
 internal const val TOPIC_REF_ARG = "ref"
 internal const val TOPIC_SUBTOPIC_ARG = "isSubtopic"
-private const val TOPICS_EDIT_ROUTE = "topics_edit_route"
+const val TOPICS_EDIT_ROUTE = "topics_edit_route"
 const val TOPICS_ALL_ROUTE = "topics_all_route"
 const val TOPICS_ALL_STEP_BY_STEPS_ROUTE = "topics_all_step_by_steps_route"
 
