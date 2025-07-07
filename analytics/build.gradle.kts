@@ -29,6 +29,10 @@ android {
     buildFeatures {
         compose = true
     }
+
+    lint {
+        checkDependencies = false
+    }
 }
 
 sonar {
