@@ -5,17 +5,17 @@ import uk.gov.govuk.analytics.data.AnalyticsRepo
 import uk.gov.govuk.analytics.data.local.AnalyticsEnabledState
 import uk.gov.govuk.analytics.data.local.model.EcommerceEvent
 import uk.gov.govuk.analytics.extension.redactPii
-import uk.gov.govuk.data.auth.AuthRepo
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AnalyticsClient @Inject constructor(
-    private val authRepo: AuthRepo,
     private val analyticsRepo: AnalyticsRepo,
     private val firebaseAnalyticsClient: FirebaseAnalyticsClient
 ) {
+
+    lateinit var isUserSessionActive: () -> Boolean
 
     fun isAnalyticsConsentRequired(): Boolean {
         return analyticsRepo.analyticsEnabledState == AnalyticsEnabledState.NOT_SET
@@ -230,13 +230,13 @@ class AnalyticsClient @Inject constructor(
     }
 
     private fun logEvent(name: String, parameters: Map<String, Any>) {
-        if (isAnalyticsEnabled() && authRepo.isUserSessionActive()) {
+        if (isAnalyticsEnabled() && isUserSessionActive()) {
             firebaseAnalyticsClient.logEvent(name, parameters)
         }
     }
 
     private fun logEcommerceEvent(event: String, ecommerceEvent: EcommerceEvent, selectedItemIndex: Int? = null) {
-        if (isAnalyticsEnabled() && authRepo.isUserSessionActive()) {
+        if (isAnalyticsEnabled() && isUserSessionActive()) {
             firebaseAnalyticsClient.logEcommerceEvent(event, ecommerceEvent, selectedItemIndex)
         }
     }

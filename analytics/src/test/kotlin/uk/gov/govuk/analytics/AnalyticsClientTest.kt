@@ -16,12 +16,10 @@ import uk.gov.govuk.analytics.data.local.AnalyticsEnabledState.DISABLED
 import uk.gov.govuk.analytics.data.local.AnalyticsEnabledState.ENABLED
 import uk.gov.govuk.analytics.data.local.AnalyticsEnabledState.NOT_SET
 import uk.gov.govuk.analytics.data.local.model.EcommerceEvent
-import uk.gov.govuk.data.auth.AuthRepo
 import java.util.Locale
 
 class AnalyticsClientTest {
 
-    private val authRepo = mockk<AuthRepo>(relaxed = true)
     private val analyticsRepo = mockk<AnalyticsRepo>(relaxed = true)
     private val firebaseAnalyticClient = mockk<FirebaseAnalyticsClient>(relaxed = true)
 
@@ -29,10 +27,10 @@ class AnalyticsClientTest {
 
     @Before
     fun setup() {
-        analyticsClient = AnalyticsClient(authRepo, analyticsRepo, firebaseAnalyticClient)
+        analyticsClient = AnalyticsClient(analyticsRepo, firebaseAnalyticClient)
 
         every { analyticsRepo.analyticsEnabledState } returns ENABLED
-        every { authRepo.isUserSessionActive() } returns true
+        analyticsClient.isUserSessionActive = { true }
     }
 
     @Test
@@ -52,7 +50,7 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given analytics are not set, when an event is logged, then do not log to firebase`() = runTest {
-        every { authRepo.isUserSessionActive() } returns false
+        analyticsClient.isUserSessionActive = { false }
 
         analyticsClient.screenView(
             screenClass = "screenClass",
@@ -152,8 +150,8 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a user session is not active, when an ecommerce event is logged, then do not log to firebase`() = runTest {
-        coEvery { authRepo.isUserSessionActive() } returns false
-
+        analyticsClient.isUserSessionActive = { false }
+        
         analyticsClient.selectItemEvent(
             ecommerceEvent = EcommerceEvent(
                 itemListName = "Topics",

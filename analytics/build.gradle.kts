@@ -29,10 +29,6 @@ android {
     buildFeatures {
         compose = true
     }
-
-    lint {
-        checkDependencies = false
-    }
 }
 
 sonar {
@@ -47,7 +43,6 @@ sonar {
 
 dependencies {
     implementation(projects.design)
-    implementation(projects.data)
 
     implementation(libs.androidx.navigation.compose)
     implementation(platform(libs.androidx.compose.bom))

@@ -47,6 +47,8 @@ internal class AppViewModel @Inject constructor(
     internal val homeWidgets = _homeWidgets.asStateFlow()
 
     init {
+        analyticsClient.isUserSessionActive = { authRepo.isUserSessionActive() }
+
         viewModelScope.launch {
             initWithConfig()
         }
