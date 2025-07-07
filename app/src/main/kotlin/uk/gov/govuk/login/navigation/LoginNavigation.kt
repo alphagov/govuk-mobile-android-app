@@ -44,7 +44,6 @@ fun NavGraphBuilder.loginGraph(
             )
         }
         composable(route = LOGIN_SUCCESS_ROUTE) {
-            // Todo - not sure I like the login success screen knowing/caring about biometrics!!!
             LoginSuccessRoute(
                 onLoginSuccessCompleted = { isBiometricsEnabled ->
                     if (isBiometricsEnabled) {
