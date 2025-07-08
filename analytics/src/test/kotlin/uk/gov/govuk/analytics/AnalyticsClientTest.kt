@@ -30,6 +30,7 @@ class AnalyticsClientTest {
         analyticsClient = AnalyticsClient(analyticsRepo, firebaseAnalyticClient)
 
         every { analyticsRepo.analyticsEnabledState } returns ENABLED
+        analyticsClient.isUserSessionActive = { true }
     }
 
     @Test
@@ -49,6 +50,21 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given analytics are not set, when an event is logged, then do not log to firebase`() = runTest {
+        analyticsClient.isUserSessionActive = { false }
+
+        analyticsClient.screenView(
+            screenClass = "screenClass",
+            screenName = "screenName",
+            title = "title"
+        )
+
+        verify(exactly = 0) {
+            firebaseAnalyticClient.logEvent(any(), any())
+        }
+    }
+
+    @Test
+    fun `Given user session is not active, when an event is logged, then do not log to firebase`() = runTest {
         coEvery { analyticsRepo.analyticsEnabledState } returns NOT_SET
 
         analyticsClient.screenView(
@@ -125,6 +141,24 @@ class AnalyticsClientTest {
                 itemListId = "Benefits",
                 items = emptyList()
             )
+        )
+
+        verify(exactly = 0) {
+            firebaseAnalyticClient.logEcommerceEvent(any(), any())
+        }
+    }
+
+    @Test
+    fun `Given a user session is not active, when an ecommerce event is logged, then do not log to firebase`() = runTest {
+        analyticsClient.isUserSessionActive = { false }
+        
+        analyticsClient.selectItemEvent(
+            ecommerceEvent = EcommerceEvent(
+                itemListName = "Topics",
+                itemListId = "Benefits",
+                items = emptyList()
+            ),
+            selectedItemIndex = 42
         )
 
         verify(exactly = 0) {
@@ -680,6 +714,17 @@ class AnalyticsClientTest {
             coVerify {
                 analyticsRepo.analyticsDisabled()
                 firebaseAnalyticClient.disable()
+            }
+        }
+    }
+
+    @Test
+    fun `Given analytics have been cleared, then clear`() {
+        runTest {
+            analyticsClient.clear()
+
+            coVerify {
+                analyticsRepo.clear()
             }
         }
     }

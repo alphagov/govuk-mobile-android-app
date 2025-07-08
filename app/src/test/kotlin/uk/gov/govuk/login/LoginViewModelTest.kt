@@ -5,7 +5,6 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
@@ -19,14 +18,12 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.auth.AuthRepo
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginViewModelTest {
 
     private val authRepo = mockk<AuthRepo>(relaxed = true)
-    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val activity = mockk<FragmentActivity>(relaxed = true)
     private val dispatcher = UnconfinedTestDispatcher()
 
@@ -35,7 +32,7 @@ class LoginViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = LoginViewModel(authRepo, analyticsClient)
+        viewModel = LoginViewModel(authRepo)
     }
 
     @After
@@ -83,31 +80,6 @@ class LoginViewModelTest {
             viewModel.init(activity)
 
             assertTrue(events.isEmpty())
-        }
-    }
-
-    @Test
-    fun `Given a page view, then log analytics`() {
-        viewModel.onPageView()
-
-        verify {
-            analyticsClient.screenView(
-                screenClass = "LoginScreen",
-                screenName = "Login",
-                title = "Login"
-            )
-        }
-    }
-
-    @Test
-    fun `Given continue, then log analytics`() {
-        viewModel.onContinue("button text")
-
-        verify {
-            analyticsClient.buttonClick(
-                text = "button text",
-                section = LOGIN_SECTION
-            )
         }
     }
 

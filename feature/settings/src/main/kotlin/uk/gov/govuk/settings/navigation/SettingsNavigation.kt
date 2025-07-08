@@ -5,12 +5,11 @@ import android.os.Build
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
-import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_PERMISSION_GRAPH_ROUTE
+import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_PERMISSION_ROUTE
 import uk.gov.govuk.settings.BuildConfig.ACCESSIBILITY_STATEMENT_URL
 import uk.gov.govuk.settings.BuildConfig.ACCOUNT_URL
 import uk.gov.govuk.settings.BuildConfig.HELP_AND_FEEDBACK_URL
@@ -31,11 +30,12 @@ private const val SIGN_OUT_ROUTE = "sign_out_route"
 
 const val SIGN_OUT_ERROR_ROUTE = "sign_out_error_route"
 
+val settingsDeepLinks = mapOf("/settings" to listOf(SETTINGS_ROUTE))
+
 fun NavGraphBuilder.settingsGraph(
     navigateTo: (String) -> Unit,
     onBiometricsClick: () -> Unit,
     appVersion: String,
-    deepLinks: (path: String) -> List<NavDeepLink>,
     launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -43,9 +43,7 @@ fun NavGraphBuilder.settingsGraph(
         route = SETTINGS_GRAPH_ROUTE,
         startDestination = SETTINGS_ROUTE
     ) {
-        composable(
-            SETTINGS_ROUTE, deepLinks = deepLinks("/settings")
-        ) {
+        composable(SETTINGS_ROUTE) {
             val context = LocalContext.current
             SettingsRoute(
                 appVersion = appVersion,
@@ -57,7 +55,7 @@ fun NavGraphBuilder.settingsGraph(
                         navigateTo(SIGN_OUT_GRAPH_ROUTE)
                     },
                     onNotificationsClick = {
-                        navigateTo(NOTIFICATIONS_PERMISSION_GRAPH_ROUTE)
+                        navigateTo(NOTIFICATIONS_PERMISSION_ROUTE)
                     },
                     onBiometricsClick = onBiometricsClick,
                     onPrivacyPolicyClick = {

@@ -23,31 +23,30 @@ import uk.gov.govuk.login.LoginSuccessViewModel
 
 @Composable
 internal fun LoginSuccessRoute(
-    onContinue: () -> Unit,
+    onLoginSuccessCompleted: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: LoginSuccessViewModel = hiltViewModel()
 
     LoginSuccessScreen(
-        onPageView = { viewModel.onPageView() },
-        onContinueClick = { text ->
-            viewModel.onContinue(text)
-            onContinue()
+        onContinueClick = {
+            viewModel.onContinue()
         },
         modifier = modifier
     )
+
+    LaunchedEffect(Unit) {
+        viewModel.loginSuccessCompleted.collect { loginSuccessEvent ->
+            onLoginSuccessCompleted(loginSuccessEvent.isBiometricsEnabled)
+        }
+    }
 }
 
 @Composable
 private fun LoginSuccessScreen(
-    onPageView: () -> Unit,
-    onContinueClick: (String) -> Unit,
+    onContinueClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(Unit) {
-        onPageView()
-    }
-
     CentreAlignedScreen(
         modifier = modifier,
         screenContent = {
@@ -70,10 +69,9 @@ private fun LoginSuccessScreen(
             )
         },
         footerContent = {
-            val buttonText = stringResource(R.string.login_continue_button)
             FixedPrimaryButton(
-                text = buttonText,
-                onClick = { onContinueClick(buttonText) }
+                text = stringResource(R.string.login_continue_button),
+                onClick = { onContinueClick() }
             )
         }
     )
@@ -84,7 +82,6 @@ private fun LoginSuccessScreen(
 private fun LoginSuccessPreview() {
     GovUkTheme {
         LoginSuccessScreen(
-            onPageView = { },
             onContinueClick = { }
         )
     }
