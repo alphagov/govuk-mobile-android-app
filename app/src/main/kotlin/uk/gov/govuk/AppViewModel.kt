@@ -138,11 +138,6 @@ internal class AppViewModel @Inject constructor(
         viewModelScope.launch {
             with(flagRepo) {
                 val widgets = mutableListOf<HomeWidget>()
-                if (isNotificationsEnabled()
-                    && !suppressedWidgets.contains(HomeWidget.NOTIFICATIONS.serializedName)
-                ) {
-                    widgets.add(HomeWidget.NOTIFICATIONS)
-                }
                 if (isSearchEnabled()) {
                     widgets.add(HomeWidget.SEARCH)
                 }
