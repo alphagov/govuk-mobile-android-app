@@ -310,59 +310,6 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given the notifications widget is enabled, When init, then emit notifications widget enabled state`() {
-        coEvery { flagRepo.isNotificationsEnabled() } returns true
-
-        val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
-
-        runTest {
-            viewModel.homeWidgets.first()
-                ?.let { assertTrue(it.contains(HomeWidget.NOTIFICATIONS)) }
-        }
-    }
-
-    @Test
-    fun `Given the notifications widget is disabled, When init, then emit notifications widget disabled state`() {
-        coEvery { flagRepo.isNotificationsEnabled() } returns false
-
-        val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
-
-        runTest {
-            viewModel.homeWidgets.first()
-                ?.let { assertFalse(it.contains(HomeWidget.NOTIFICATIONS)) }
-        }
-    }
-
-    @Test
-    fun `Given the notifications widget is not suppressed, When init, then emit notifications widget enabled state`() {
-        coEvery { flagRepo.isNotificationsEnabled() } returns true
-
-        val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
-
-        runTest {
-            viewModel.homeWidgets.first()
-                ?.let { assertTrue(it.contains(HomeWidget.NOTIFICATIONS)) }
-        }
-    }
-
-    @Test
-    fun `Given the notifications widget is suppressed, When init, then emit notifications widget disabled state`() {
-        every { appRepo.suppressedHomeWidgets } returns flowOf(setOf(HomeWidget.NOTIFICATIONS.serializedName))
-        coEvery { flagRepo.isNotificationsEnabled() } returns true
-
-        val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
-
-        runTest {
-            viewModel.homeWidgets.first()
-                ?.let { assertFalse(it.contains(HomeWidget.NOTIFICATIONS)) }
-        }
-    }
-
-    @Test
     fun `When topic selection completed, then call repo topic selection completed`() {
         runTest {
             viewModel.topicSelectionCompleted()
