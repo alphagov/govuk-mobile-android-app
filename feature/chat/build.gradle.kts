@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -20,11 +23,21 @@ android {
         consumerProguardFiles("consumer-rules.pro")
 
         buildConfigField("String", "CHAT_BASE_URL", "\"https://chat.integration.publishing.service.gov.uk/api/v0/\"")
+
+        if (file("${rootProject.projectDir.path}/github.properties").exists()) {
+            val propsFile = File("${rootProject.projectDir.path}/github.properties")
+            val props = Properties().also { it.load(FileInputStream(propsFile)) }
+            val chatToken = props["chatToken"] as String?
+            buildConfigField("String", "CHAT_TOKEN", "\"$chatToken\"")
+        } else {
+            buildConfigField("String", "CHAT_TOKEN", "\"${System.getenv("CHAT_TOKEN")}\"")
+        }
     }
 
     buildTypes {
         release {
             buildConfigField("String", "CHAT_BASE_URL", "\"https://chat.integration.publishing.service.gov.uk/api/v0/\"")
+            buildConfigField("String", "CHAT_TOKEN", "\"\"")
         }
     }
 
@@ -39,17 +52,6 @@ android {
 
     buildFeatures {
         buildConfig = true
-    }
-}
-
-sonar {
-    properties {
-        property(
-            "sonar.coverage.exclusions"
-        )
-        property(
-            "sonar.cpd.exclusions"
-        )
     }
 }
 
