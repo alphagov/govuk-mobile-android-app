@@ -6,7 +6,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import retrofit2.Response
 import uk.gov.govuk.chat.data.remote.ChatApi
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
@@ -42,7 +41,6 @@ class ChatRepoTest {
             message = "question"
         )
 
-        coEvery { chatApi.startConversation(requestBody) } returns Response.success(answeredQuestion)
         coEvery { chatRepo.startConversation(question) } returns answeredQuestion
 
         assertEquals(requestBody.userQuestion, question)
@@ -76,7 +74,6 @@ class ChatRepoTest {
             message = "question"
         )
 
-        coEvery { chatApi.updateConversation(conversationId, requestBody) } returns Response.success(answeredQuestion)
         coEvery { chatRepo.updateConversation(question) } returns answeredQuestion
 
         assertEquals(requestBody.userQuestion, question)
@@ -99,7 +96,6 @@ class ChatRepoTest {
             sources = emptyList()
         )
 
-        coEvery { chatApi.getAnswer(any(), any()) } returns Response.success(answer)
         coEvery { chatRepo.getAnswer(wait = 0, retries = 1) } returns answer
 
         assertEquals("id", answer.id)
@@ -110,7 +106,8 @@ class ChatRepoTest {
 
     @Test
     fun `Successful get answer returns 202`() = runTest {
-//        TODO
+//        TODO - should try again until 200 or retries limit is reached
+//        TODO - when the retry limit is reached, I suggest we return a fake Answer with a suitable message
     }
 
     @Test
@@ -121,7 +118,6 @@ class ChatRepoTest {
             createdAt = "createdAt"
         )
 
-        coEvery { chatApi.getConversation(any()) } returns Response.success(conversation)
         coEvery { chatRepo.getConversation() } returns conversation
 
         assertEquals("id", conversation.id)
@@ -130,27 +126,46 @@ class ChatRepoTest {
     }
 
     @Test
+    fun `API call returns 400`() = runTest {
+//        TODO - should show full page generic "There's a problem" message
+    }
+
+    @Test
+    fun `API call returns 403`() = runTest {
+//        TODO - should show full page generic "There's a problem" message
+//        We should never see this - especially once the API gateway is in place
+    }
+
+    @Test
     fun `API call returns 404`() = runTest {
-//        TODO
+//        TODO - should show full page generic "There's a problem" message
+    }
+
+    @Test
+    fun `API call returns 422`() = runTest {
+//        TODO - should show input field error "There's a problem" message
+//        I suggest we don't need this as it indicates PII or blank input,
+//        both of these issues should be handled on the UI
     }
 
     @Test
     fun `API call returns 429`() = runTest {
-//        TODO
+//        TODO - should show full page generic "There's a problem" message
+//        We should never see this - especially once the API gateway is in place
     }
 
     @Test
     fun `API call returns 500`() = runTest {
-//        TODO
+//        TODO - should show full page generic "There's a problem" message
     }
 
     @Test
     fun `API call throws UnknownHostException`() = runTest {
-//        TODO
+//        TODO - should show full page device not connected message
     }
 
     @Test
     fun `API call throws HttpException`() = runTest {
-//        TODO
+//        TODO - should show full page Api not responding message
     }
 }

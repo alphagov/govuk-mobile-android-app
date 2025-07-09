@@ -105,8 +105,10 @@ internal class ChatViewModel @Inject constructor(
             val chatEntry = _uiState.value?.chatEntries?.get(questionId)
             if (chatEntry != null) {
                 chatEntry.answer = answer.message
-                chatEntry.sources = answer.sources.map { source ->
-                    "* [${source.title}](${source.url})"
+                if (answer.sources != null) {
+                    chatEntry.sources = answer.sources.map { source ->
+                        "* [${source.title}](${source.url})"
+                    }
                 }
             }
         }
