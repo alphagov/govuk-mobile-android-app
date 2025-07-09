@@ -29,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,18 +42,16 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import uk.gov.govuk.AppUiState
 import uk.gov.govuk.AppViewModel
 import uk.gov.govuk.BuildConfig
@@ -61,21 +60,16 @@ import uk.gov.govuk.analytics.navigation.analyticsGraph
 import uk.gov.govuk.chat.navigation.chatGraph
 import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-import uk.gov.govuk.extension.asDeepLinks
-import uk.gov.govuk.extension.getUrlParam
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
 import uk.gov.govuk.home.navigation.homeGraph
+import uk.gov.govuk.login.navigation.BIOMETRIC_SETTINGS_ROUTE
+import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.loginGraph
-import uk.gov.govuk.login.navigation.navigateToLoginPostSignOut
-import uk.gov.govuk.navigation.DeepLink
 import uk.gov.govuk.navigation.TopLevelDestination
-import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_GRAPH_ROUTE
+import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_PERMISSION_ROUTE
-import uk.gov.govuk.notifications.navigation.notificationsConsentGraph
-import uk.gov.govuk.notifications.navigation.notificationsOnboardingGraph
-import uk.gov.govuk.notifications.navigation.notificationsPermissionGraph
-import uk.gov.govuk.onboarding.navigation.onboardingGraph
+import uk.gov.govuk.notifications.navigation.notificationsGraph
 import uk.gov.govuk.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.gov.govuk.search.navigation.searchGraph
 import uk.gov.govuk.search.ui.widget.SearchWidget
@@ -176,6 +170,7 @@ private fun BottomNavScaffold(
             color = GovUkTheme.colourScheme.surfaces.background
         ) {
             GovUkNavHost(
+                intentFlow = intentFlow,
                 viewModel = viewModel,
                 navController = navController,
                 homeWidgets = homeWidgets,
@@ -200,95 +195,38 @@ private fun BottomNavScaffold(
                 shouldShowExternalBrowser = shouldShowExternalBrowser,
                 paddingValues = paddingValues
             )
-        }
-    }
-    HandleReceivedIntents(
-        intentFlow = intentFlow,
-        navController = navController,
-        shouldShowExternalBrowser = shouldShowExternalBrowser,
-    ) { hasDeepLink, url ->
-        viewModel.onDeepLinkReceived(hasDeepLink, url)
-    }
-    if (shouldDisplayNotificationsOnboarding) {
-        HandleNotificationsPermissionStatus(navController = navController)
-    }
-}
 
-@Composable
-private fun HandleReceivedIntents(
-    intentFlow: Flow<Intent>,
-    navController: NavHostController,
-    shouldShowExternalBrowser: Boolean,
-    onDeepLinkReceived: (hasDeepLink: Boolean, url: String) -> Unit
-) {
-    val context = LocalContext.current
-    val browserLauncher = rememberBrowserLauncher(shouldShowExternalBrowser)
-    LaunchedEffect(intentFlow) {
-        intentFlow.collectLatest { intent ->
-            intent.data?.let { uri ->
-                if (navController.graph.hasDeepLink(uri)) {
-                    onDeepLinkReceived(true, uri.toString())
-                    val request = NavDeepLinkRequest.Builder
-                        .fromUri(uri)
-                        .build()
-                    navController.navigate(
-                        request,
-                        navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
-                    )
-                } else {
-                    uri.getUrlParam(DeepLink.allowedAppUrls, DeepLink.allowedGovUkUrls)?.let {
-                        onDeepLinkReceived(true, uri.toString())
-                        browserLauncher.launch(it.toString())
-                    } ?: run {
-                        onDeepLinkReceived(false, uri.toString())
-                        showDeepLinkNotFoundAlert(context = context)
-                    }
-                }
+            if (shouldDisplayNotificationsOnboarding) {
+                HandleNotificationsPermissionStatus(navController = { navController })
             }
         }
     }
 }
 
-private fun showDeepLinkNotFoundAlert(context: Context) {
-    AlertDialog.Builder(context).apply {
-        setTitle(context.getString(R.string.deep_link_not_found_alert_title))
-        setMessage(context.getString(R.string.deep_link_not_found_alert_message))
-        setPositiveButton(context.getString(R.string.deep_link_not_found_alert_button)) { dialog, _ ->
-            dialog.dismiss()
-        }
-    }.also { deepLinkNotFoundAlert ->
-        deepLinkNotFoundAlert.show()
-    }
-}
-
 @Composable
 private fun HandleNotificationsPermissionStatus(
-    navController: NavHostController
+    navController: () -> NavHostController
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
-    val context = LocalContext.current
-    var isNotificationsEnabled by rememberSaveable { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        isNotificationsEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
-    }
 
     LaunchedEffect(lifecycleState) {
         when (lifecycleState) {
             Lifecycle.State.RESUMED -> {
-                val isNotificationsEnabledOnResume =
-                    NotificationManagerCompat.from(context).areNotificationsEnabled()
-                if (isNotificationsEnabledOnResume != isNotificationsEnabled) {
-                    val route = when (navController.currentDestination?.route) {
-                        NOTIFICATIONS_ONBOARDING_ROUTE -> NOTIFICATIONS_ONBOARDING_ROUTE
-                        NOTIFICATIONS_PERMISSION_ROUTE -> return@LaunchedEffect
-                        else -> NOTIFICATIONS_CONSENT_GRAPH_ROUTE
-                    }
-                    navController.navigate(route) {
-                        launchSingleTop = true
-                    }
-                    isNotificationsEnabled = isNotificationsEnabledOnResume
+                val controller = navController()
+                try {
+                    controller.graph
+                } catch (e: IllegalStateException) {
+                    // Nav graph has not been set
+                    return@LaunchedEffect
+                }
+                val route = when (controller.currentDestination?.route) {
+                    NOTIFICATIONS_ONBOARDING_ROUTE -> NOTIFICATIONS_ONBOARDING_ROUTE
+                    NOTIFICATIONS_PERMISSION_ROUTE -> return@LaunchedEffect
+                    else -> NOTIFICATIONS_CONSENT_ROUTE
+                }
+                controller.navigate(route) {
+                    launchSingleTop = true
                 }
             }
             else -> { /* Do nothing */ }
@@ -383,6 +321,7 @@ private fun BottomNav(
 
 @Composable
 private fun GovUkNavHost(
+    intentFlow: Flow<Intent>,
     viewModel: AppViewModel,
     navController: NavHostController,
     homeWidgets: List<HomeWidget>?,
@@ -392,69 +331,71 @@ private fun GovUkNavHost(
     shouldShowExternalBrowser: Boolean,
     paddingValues: PaddingValues
 ) {
-    val appLaunchNavigation = viewModel.appLaunchNavigation
-    val startDestination = appLaunchNavigation.startDestination
+    val appNavigation = viewModel.appNavigation
     val browserLauncher = rememberBrowserLauncher(shouldShowExternalBrowser)
     val context = LocalContext.current
 
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        appNavigation.setOnLaunchBrowser { url ->
+            browserLauncher.launch(url)
+        }
+
+        appNavigation.setOnDeeplinkNotFound {
+            showDeepLinkNotFoundAlert(context)
+        }
+
+        intentFlow.collectLatest { intent ->
+            appNavigation.setDeeplink(navController, intent.data)
+        }
+    }
+
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = LOGIN_GRAPH_ROUTE
     ) {
-        analyticsGraph(
-            analyticsConsentCompleted = {
-                appLaunchNavigation.onNext(navController)
-            },
-            launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
-        )
-        onboardingGraph(
-            onboardingCompleted = {
-                viewModel.onboardingCompleted()
-                appLaunchNavigation.onNext(navController)
+        loginGraph(
+            navController = navController,
+            onLoginCompleted = {
+                viewModel.onLogin(navController)
             }
         )
-        if (homeWidgets.contains(HomeWidget.TOPICS)) {
-            topicSelectionGraph(
-                topicSelectionCompleted = {
-                    viewModel.topicSelectionCompleted()
-                    appLaunchNavigation.onNext(navController)
+        analyticsGraph(
+            analyticsConsentCompleted = {
+                coroutineScope.launch {
+                    appNavigation.onNext(navController)
                 }
-            )
-            topicsGraph(
-                navController = navController,
-                deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
-                launchBrowser = { url -> browserLauncher.launch(url) },
-                modifier = Modifier.padding(paddingValues)
-            )
-        }
-        notificationsOnboardingGraph(
-            notificationsOnboardingCompleted = {
-                navController.popBackStack()
-                appLaunchNavigation.onNext(navController)
-                navController.navigate(NOTIFICATIONS_CONSENT_GRAPH_ROUTE)
             },
             launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
         )
-        notificationsPermissionGraph(
+        topicSelectionGraph(
+            topicSelectionCompleted = {
+                coroutineScope.launch {
+                    viewModel.topicSelectionCompleted()
+                    appNavigation.onNext(navController)
+                }
+            }
+        )
+        topicsGraph(
+            navController = navController,
+            launchBrowser = { url -> browserLauncher.launch(url) },
+            modifier = Modifier.padding(paddingValues)
+        )
+        notificationsGraph(
+            notificationsOnboardingCompleted = {
+                coroutineScope.launch {
+                    appNavigation.onNotificationsOnboardingCompleted(navController)
+                    navController.navigate(NOTIFICATIONS_CONSENT_ROUTE)
+                }
+            },
+            notificationsConsentCompleted = {
+                navController.navigateUp()
+            },
             notificationsPermissionCompleted = {
                 navController.popBackStack()
             },
             launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
-        )
-        notificationsConsentGraph(
-            notificationsConsentCompleted = {
-                navController.navigateUp()
-            },
-            launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
-        )
-        loginGraph(
-            navController = navController,
-            onLoginCompleted = { isDifferentUser ->
-                viewModel.onLogin(isDifferentUser, navController)
-            },
-            onBiometricSetupCompleted = {
-                appLaunchNavigation.onNext(navController)
-            }
         )
         homeGraph(
             widgets = homeWidgets(
@@ -465,7 +406,6 @@ private fun GovUkNavHost(
                 onSuppressClick = onSuppressWidgetClick,
                 launchBrowser = { url -> browserLauncher.launch(url) }
             ),
-            deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
             modifier = Modifier.padding(paddingValues),
             headerWidget = if (homeWidgets.contains(HomeWidget.SEARCH)) {
                 { modifier ->
@@ -482,47 +422,52 @@ private fun GovUkNavHost(
         )
         settingsGraph(
             navigateTo = { route -> navController.navigate(route) },
+            onBiometricsClick = { navController.navigate(BIOMETRIC_SETTINGS_ROUTE) },
             appVersion = BuildConfig.VERSION_NAME_USER_FACING,
-            deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
             launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) },
             modifier = Modifier.padding(paddingValues)
         )
         signOutGraph(
             navController = navController,
             onSignOut = {
-                viewModel.onSignOut()
-                navController.navigateToLoginPostSignOut()
+                appNavigation.onSignOut(navController)
             }
         )
-        if (homeWidgets.contains(HomeWidget.SEARCH)) {
-            searchGraph(
-                navController,
-                deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
-                launchBrowser = { url -> browserLauncher.launch(url) })
-        }
-        if (homeWidgets.contains(HomeWidget.RECENT_ACTIVITY)) {
-            visitedGraph(
-                navController = navController,
-                deepLinks = { it.asDeepLinks(DeepLink.allowedAppUrls) },
-                launchBrowser = { url -> browserLauncher.launch(url) },
-                modifier = Modifier.padding(paddingValues)
-            )
-        }
-        if (homeWidgets.contains(HomeWidget.LOCAL)) {
-            val exitLocalAuth: () -> Unit =
-                { navController.popBackStack(HOME_GRAPH_START_DESTINATION, false) }
+        searchGraph(
+            navController,
+            launchBrowser = { url -> browserLauncher.launch(url) })
+        visitedGraph(
+            navController = navController,
+            launchBrowser = { url -> browserLauncher.launch(url) },
+            modifier = Modifier.padding(paddingValues)
+        )
 
-            localGraph(
-                navController = navController,
-                onLocalAuthoritySelected = exitLocalAuth,
-                onCancel = exitLocalAuth,
-                modifier = Modifier.padding(paddingValues)
-            )
-        }
+        val exitLocal: () -> Unit =
+            { navController.popBackStack(HOME_GRAPH_START_DESTINATION, false) }
+
+        localGraph(
+            navController = navController,
+            onLocalAuthoritySelected = exitLocal,
+            onCancel = exitLocal,
+            modifier = Modifier.padding(paddingValues)
+        )
+
         chatGraph(
             navController = navController,
             modifier = Modifier.padding(paddingValues)
         )
+    }
+}
+
+private fun showDeepLinkNotFoundAlert(context: Context) {
+    AlertDialog.Builder(context).apply {
+        setTitle(context.getString(R.string.deep_link_not_found_alert_title))
+        setMessage(context.getString(R.string.deep_link_not_found_alert_message))
+        setPositiveButton(context.getString(R.string.deep_link_not_found_alert_button)) { dialog, _ ->
+            dialog.dismiss()
+        }
+    }.also { deepLinkNotFoundAlert ->
+        deepLinkNotFoundAlert.show()
     }
 }
 

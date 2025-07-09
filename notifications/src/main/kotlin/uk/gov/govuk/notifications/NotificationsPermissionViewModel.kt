@@ -11,13 +11,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.notifications.data.local.NotificationsDataStore
 import javax.inject.Inject
 
 @HiltViewModel
 internal class NotificationsPermissionViewModel @Inject constructor(
-    private val analyticsClient: AnalyticsClient,
     private val notificationsDataStore: NotificationsDataStore
 ) : ViewModel() {
 
@@ -44,10 +42,6 @@ internal class NotificationsPermissionViewModel @Inject constructor(
                 NotificationsUiState.Alert
             }
         }
-    }
-
-    internal fun onAlertButtonClick(text: String) {
-        analyticsClient.buttonClick(text)
     }
 
     internal fun finish() {

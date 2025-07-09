@@ -34,7 +34,7 @@ import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.model.Result.Error
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
-import uk.gov.govuk.navigation.AppLaunchNavigation
+import uk.gov.govuk.navigation.AppNavigation
 import uk.gov.govuk.search.SearchFeature
 import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.ui.model.HomeWidget
@@ -55,7 +55,7 @@ class AppViewModelTest {
     private val searchFeature = mockk<SearchFeature>(relaxed = true)
     private val visited = mockk<Visited>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
-    private val appLaunchNavigation = mockk<AppLaunchNavigation>(relaxed = true)
+    private val appNavigation = mockk<AppNavigation>(relaxed = true)
     private val navController = mockk<NavController>(relaxed = true)
 
     private lateinit var viewModel: AppViewModel
@@ -71,7 +71,7 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns true
 
         viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
     }
 
     @After
@@ -84,7 +84,7 @@ class AppViewModelTest {
         coEvery { configRepo.initConfig() } returns Error()
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -97,7 +97,7 @@ class AppViewModelTest {
         coEvery { configRepo.initConfig() } returns InvalidSignature()
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -110,7 +110,7 @@ class AppViewModelTest {
         every { flagRepo.isAppAvailable() } returns false
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -131,7 +131,7 @@ class AppViewModelTest {
         every { flagRepo.isForcedUpdate(any()) } returns true
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -144,7 +144,7 @@ class AppViewModelTest {
         every { flagRepo.isForcedUpdate(any()) } returns false
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             val result = viewModel.uiState.first()
@@ -157,7 +157,7 @@ class AppViewModelTest {
         every { flagRepo.isRecommendUpdate(any()) } returns true
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -170,7 +170,7 @@ class AppViewModelTest {
         every { flagRepo.isRecommendUpdate(any()) } returns false
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -183,7 +183,7 @@ class AppViewModelTest {
         every { flagRepo.isExternalBrowserEnabled() } returns true
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -196,7 +196,7 @@ class AppViewModelTest {
         every { flagRepo.isExternalBrowserEnabled() } returns false
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -209,7 +209,7 @@ class AppViewModelTest {
         every { flagRepo.isNotificationsEnabled() } returns true
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -222,7 +222,7 @@ class AppViewModelTest {
         every { flagRepo.isNotificationsEnabled() } returns false
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             val result = viewModel.uiState.first() as AppUiState.Default
@@ -235,7 +235,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isSearchEnabled() } returns true
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
@@ -249,7 +249,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isSearchEnabled() } returns false
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
@@ -262,7 +262,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isRecentActivityEnabled() } returns true
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
@@ -275,7 +275,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isRecentActivityEnabled() } returns false
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
@@ -288,7 +288,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isTopicsEnabled() } returns true
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
@@ -301,73 +301,11 @@ class AppViewModelTest {
         coEvery { flagRepo.isTopicsEnabled() } returns false
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
+            localFeature, searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
                 ?.let { assertFalse(it.contains(HomeWidget.TOPICS)) }
-        }
-    }
-
-    @Test
-    fun `Given the notifications widget is enabled, When init, then emit notifications widget enabled state`() {
-        coEvery { flagRepo.isNotificationsEnabled() } returns true
-
-        val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
-
-        runTest {
-            viewModel.homeWidgets.first()
-                ?.let { assertTrue(it.contains(HomeWidget.NOTIFICATIONS)) }
-        }
-    }
-
-    @Test
-    fun `Given the notifications widget is disabled, When init, then emit notifications widget disabled state`() {
-        coEvery { flagRepo.isNotificationsEnabled() } returns false
-
-        val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
-
-        runTest {
-            viewModel.homeWidgets.first()
-                ?.let { assertFalse(it.contains(HomeWidget.NOTIFICATIONS)) }
-        }
-    }
-
-    @Test
-    fun `Given the notifications widget is not suppressed, When init, then emit notifications widget enabled state`() {
-        coEvery { flagRepo.isNotificationsEnabled() } returns true
-
-        val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
-
-        runTest {
-            viewModel.homeWidgets.first()
-                ?.let { assertTrue(it.contains(HomeWidget.NOTIFICATIONS)) }
-        }
-    }
-
-    @Test
-    fun `Given the notifications widget is suppressed, When init, then emit notifications widget disabled state`() {
-        every { appRepo.suppressedHomeWidgets } returns flowOf(setOf(HomeWidget.NOTIFICATIONS.serializedName))
-        coEvery { flagRepo.isNotificationsEnabled() } returns true
-
-        val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appLaunchNavigation)
-
-        runTest {
-            viewModel.homeWidgets.first()
-                ?.let { assertFalse(it.contains(HomeWidget.NOTIFICATIONS)) }
-        }
-    }
-
-    @Test
-    fun `When onboarding completed, then call repo onboarding completed`() {
-        runTest {
-            viewModel.onboardingCompleted()
-
-            coVerify { appRepo.onboardingCompleted() }
         }
     }
 
@@ -471,7 +409,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isLocalServicesEnabled() } returns false
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
-            searchFeature, visited, analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             viewModel.homeWidgets.first()
@@ -485,7 +423,7 @@ class AppViewModelTest {
         coEvery { flagRepo.isTopicsEnabled() } returns true
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
-            searchFeature, visited, analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             val homeWidgets = viewModel.homeWidgets.value!!
@@ -501,7 +439,7 @@ class AppViewModelTest {
         every { localFeature.hasLocalAuthority() } returns flowOf(true)
 
         val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
-            searchFeature, visited, analyticsClient, appLaunchNavigation)
+            searchFeature, visited, analyticsClient, appNavigation)
 
         runTest {
             val homeWidgets = viewModel.homeWidgets.value!!
@@ -512,51 +450,47 @@ class AppViewModelTest {
 
     @Test
     fun `Given a new user or the same user has logged in, When on login, then navigate to next nav destination`() {
+        every { authRepo.isDifferentUser() } returns false
+
         runTest {
-            viewModel.onLogin(false, navController)
+            viewModel.onLogin(navController)
 
             coVerify(exactly = 0) {
+                authRepo.clear()
                 appRepo.clear()
                 topicsFeature.clear()
                 localFeature.clear()
                 searchFeature.clear()
                 visited.clear()
-                appLaunchNavigation.onDifferentUserLogin(any())
+                analyticsClient.clear()
             }
 
             coVerify {
-                appLaunchNavigation.onNext(navController)
+                appNavigation.onNext(navController)
             }
         }
     }
 
     @Test
-    fun `Given a different user has logged in, When on login, then clear data, reconfigure nav and navigate to next destination`() {
+    fun `Given a different user has logged in, When on login, then clear data and navigate to next destination`() {
+        every { authRepo.isDifferentUser() } returns true
+
         runTest {
-            viewModel.onLogin(true, navController)
+            viewModel.onLogin(navController)
 
             coVerify {
+                authRepo.clear()
                 appRepo.clear()
                 topicsFeature.clear()
                 localFeature.clear()
                 searchFeature.clear()
                 visited.clear()
-                appLaunchNavigation.onDifferentUserLogin(any())
-                appLaunchNavigation.onNext(navController)
+                analyticsClient.clear()
+                appNavigation.onNext(navController)
             }
         }
     }
 
-    @Test
-    fun `Given a user has signed out, When on sign out, then call app launch nav`() {
-        viewModel.onSignOut()
-
-        verify {
-            appLaunchNavigation.onSignOut()
-        }
-    }
-
-    // Todo - timeout tests!!!
     @Test
     fun `Given a user has interacted with the app, When on user interaction, then call timeout manager`() {
         viewModel.onUserInteraction(navController, 0L)
@@ -567,30 +501,11 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given login is disabled, When the app times out, do nothing`() {
-        clearAllMocks()
-
-        val slot = slot<(() -> Unit)>()
-        every { timeoutManager.onUserInteraction(any(), onTimeout = capture(slot)) } returns Unit
-        every { flagRepo.isLoginEnabled() } returns false
-
-        viewModel.onUserInteraction(navController, 0L)
-        slot.captured.invoke()
-
-        coVerify(exactly = 0) {
-            authRepo.endUserSession()
-            appLaunchNavigation.buildLaunchFlow()
-            navController.navigate(route = any())
-        }
-    }
-
-    @Test
     fun `Given user session is not active, When the app times out, do nothing`() {
         clearAllMocks()
 
         val slot = slot<(() -> Unit)>()
         every { timeoutManager.onUserInteraction(any(), onTimeout = capture(slot)) } returns Unit
-        every { flagRepo.isLoginEnabled() } returns true
         every { authRepo.isUserSessionActive() } returns false
 
         viewModel.onUserInteraction(navController, 0L)
@@ -598,28 +513,24 @@ class AppViewModelTest {
 
         coVerify(exactly = 0) {
             authRepo.endUserSession()
-            appLaunchNavigation.buildLaunchFlow()
-            navController.navigate(route = any())
+            appNavigation.onSignOut(any())
         }
     }
 
     @Test
-    fun `Given login is enabled and a user session is active, When the app times out, end user session and navigate`() {
+    fun `Given a user session is active, When the app times out, end user session and navigate`() {
         clearAllMocks()
 
         val slot = slot<(() -> Unit)>()
         every { timeoutManager.onUserInteraction(any(), onTimeout = capture(slot)) } returns Unit
-        every { flagRepo.isLoginEnabled() } returns true
         every { authRepo.isUserSessionActive() } returns true
-        every { appLaunchNavigation.startDestination } returns "start"
 
         viewModel.onUserInteraction(navController, 0L)
         slot.captured.invoke()
 
         coVerify {
             authRepo.endUserSession()
-            appLaunchNavigation.buildLaunchFlow()
-            navController.navigate("start")
+            appNavigation.onSignOut(any())
         }
     }
 }

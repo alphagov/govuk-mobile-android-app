@@ -18,36 +18,47 @@ class AppRepoTest {
     private val appDataStore = mockk<AppDataStore>(relaxed = true)
 
     @Test
-    fun `Given the user has not previously completed onboarding, When is onboarding completed, then return false`() {
+    fun `Given the user has not skipped biometrics, When has skipped biometrics, then return false`() {
         val repo = AppRepo(appDataStore)
 
-        coEvery { appDataStore.isOnboardingCompleted() } returns false
+        coEvery { appDataStore.hasSkippedBiometrics() } returns false
 
         runTest {
 
-            assertFalse(repo.isOnboardingCompleted())
+            assertFalse(repo.hasSkippedBiometrics())
         }
     }
 
     @Test
-    fun `Given the user has previously completed onboarding, When is onboarding completed, then return true`() {
+    fun `Given the user has skipped biometrics, When has skipped biometrics, then return true`() {
         val repo = AppRepo(appDataStore)
 
-        coEvery { appDataStore.isOnboardingCompleted() } returns true
+        coEvery { appDataStore.hasSkippedBiometrics() } returns true
 
         runTest {
-            assertTrue(repo.isOnboardingCompleted())
+            assertTrue(repo.hasSkippedBiometrics())
         }
     }
 
     @Test
-    fun `Given the user has completed onboarding, When onboarding completed, then update data store`() {
+    fun `Given the user skips biometrics, When skip biometrics, then update data store`() {
         val repo = AppRepo(appDataStore)
 
         runTest {
-            repo.onboardingCompleted()
+            repo.skipBiometrics()
 
-            coVerify { appDataStore.onboardingCompleted() }
+            coVerify { appDataStore.skipBiometrics() }
+        }
+    }
+
+    @Test
+    fun `Given skip biometrics is cleared, then update data store`() {
+        val repo = AppRepo(appDataStore)
+
+        runTest {
+            repo.clearBiometricsSkipped()
+
+            coVerify { appDataStore.clearBiometricsSkipped() }
         }
     }
 

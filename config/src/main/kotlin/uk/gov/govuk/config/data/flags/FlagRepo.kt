@@ -39,14 +39,6 @@ class FlagRepo @Inject constructor(
         )
     }
 
-    fun isOnboardingEnabled(): Boolean {
-        return isEnabled(
-            debugEnabled = debugEnabled,
-            debugFlag = debugFlags.isOnboardingEnabled,
-            remoteFlag = configRepo.config.releaseFlags.onboarding
-        )
-    }
-
     fun isSearchEnabled(): Boolean {
         return isEnabled(
             debugEnabled = debugEnabled,
@@ -74,8 +66,8 @@ class FlagRepo @Inject constructor(
     fun isNotificationsEnabled(): Boolean {
         return isEnabled(
             debugEnabled = debugEnabled,
-            debugFlag = false, // Dev only flag, only set to true when actively working on notifications
-            remoteFlag = false // Dev only flag, always off for production builds!!!
+            debugFlag = debugFlags.isNotificationsEnabled,
+            remoteFlag = configRepo.config.releaseFlags.notifications
         )
     }
 
@@ -83,15 +75,7 @@ class FlagRepo @Inject constructor(
         return isEnabled(
             debugEnabled = debugEnabled,
             debugFlag = debugFlags.isLocalServicesEnabled,
-            remoteFlag = false // TODO - Hardcoded off
-        )
-    }
-
-    fun isLoginEnabled(): Boolean {
-        return isEnabled(
-            debugEnabled = debugEnabled,
-            debugFlag = false, // Dev only flag, only set to true when actively working on login
-            remoteFlag = false // Dev only flag, always off for production builds!!!
+            remoteFlag = configRepo.config.releaseFlags.localServices
         )
     }
 

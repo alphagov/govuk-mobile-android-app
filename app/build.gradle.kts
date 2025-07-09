@@ -11,9 +11,9 @@ plugins {
     alias(libs.plugins.kover)
 }
 
-val majorVersion = "0"
-val minorVersion = "1"
-val patchVersion = "0"
+val majorVersion = "1"
+val minorVersion = "0"
+val patchVersion = "2"
 
 android {
     namespace = "uk.gov.govuk"
@@ -34,9 +34,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
-        manifestPlaceholders["appAuthRedirectScheme"] = "govuk"
-
+        
         buildConfigField("String", "PLAY_STORE_URL", "\"https://play.google.com/store/apps/details?id=$applicationId\"")
         buildConfigField("String", "ONE_SIGNAL_APP_ID", "\"4c235189-5c5f-4a71-8385-2549fc36419f\"")
         buildConfigField("String", "VERSION_NAME_USER_FACING", "\"$versionName ($versionCode)\"")
@@ -139,7 +137,6 @@ dependencies {
     implementation(projects.feature.chat)
     implementation(projects.feature.home)
     implementation(projects.feature.local)
-    implementation(projects.feature.onboarding)
     implementation(projects.feature.settings)
     implementation(projects.feature.search)
     implementation(projects.feature.topics)

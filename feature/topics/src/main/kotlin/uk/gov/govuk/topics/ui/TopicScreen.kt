@@ -1,6 +1,7 @@
 package uk.gov.govuk.topics.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,19 +11,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.delay
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.ExternalLinkListItem
@@ -116,10 +123,11 @@ private fun TopicScreen(
     onSubtopic: (text: String, ref: String, selectedItemIndex: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
+    val lazyListState = rememberLazyListState()
+
     Column(modifier.fillMaxWidth()) {
-        LaunchedEffect(Unit) {
-            onPageView(topic.title)
-        }
 
         ChildPageHeader(
             onBack = onBack
@@ -140,7 +148,7 @@ private fun TopicScreen(
 
         var currentItemIndex = 1
 
-        LazyColumn {
+        LazyColumn(state = lazyListState) {
             item {
                 Column(
                     Modifier.fillMaxWidth()
@@ -154,7 +162,9 @@ private fun TopicScreen(
                             text = topic.title,
                             modifier = Modifier
                                 .padding(horizontal = GovUkTheme.spacing.medium)
-                                .semantics { heading() },
+                                .semantics { heading() }
+                                .focusRequester(focusRequester)
+                                .focusable(),
                             color = GovUkTheme.colourScheme.textAndIcons.header
                         )
                     }
@@ -210,6 +220,14 @@ private fun TopicScreen(
                 section = topic.subtopicsSection,
                 onClick = onSubtopic
             )
+        }
+    }
+    LaunchedEffect(Unit) {
+        onPageView(topic.title)
+        if (lazyListState.firstVisibleItemIndex == 0) {
+            focusManager.clearFocus(true)
+            delay(500)
+            focusRequester.requestFocus()
         }
     }
 }

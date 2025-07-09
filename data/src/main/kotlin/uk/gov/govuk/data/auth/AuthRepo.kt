@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import android.util.Base64
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.ExperimentalEphemeralBrowsing
 import androidx.core.content.edit
 import androidx.fragment.app.FragmentActivity
 import net.openid.appauth.AuthorizationException
@@ -19,6 +21,7 @@ import uk.gov.android.securestore.RetrievalEvent
 import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.authentication.AuthenticatorPromptConfiguration
 import uk.gov.android.securestore.error.SecureStorageError
+import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.BuildConfig
 import uk.gov.govuk.data.auth.model.Tokens
 import uk.gov.govuk.data.remote.AuthApi
@@ -37,20 +40,26 @@ class AuthRepo @Inject constructor(
     private val secureStore: SecureStore,
     private val biometricManager: BiometricManager,
     private val sharedPreferences: SharedPreferences,
-    private val authApi: AuthApi
+    private val authApi: AuthApi,
+    private val analyticsClient: AnalyticsClient
 ) {
     companion object {
         private const val REFRESH_TOKEN_KEY = "refreshToken"
         private const val SUB_ID_KEY = "subId"
     }
 
+    @ExperimentalEphemeralBrowsing
     val authIntent: Intent by lazy {
-        authService.getAuthorizationRequestIntent(authRequest)
+        val intent = CustomTabsIntent.Builder()
+            .setEphemeralBrowsingEnabled(true)
+            .build()
+        authService.getAuthorizationRequestIntent(authRequest, intent)
     }
 
     private var tokens = Tokens()
 
     suspend fun handleAuthResponse(data: Intent?): Boolean {
+        clear()
         val authResponse = data?.let { AuthorizationResponse.fromIntent(it) }
         return if (authResponse != null) {
             performTokenRequest(authResponse.createTokenExchangeRequest())
@@ -74,11 +83,18 @@ class AuthRepo @Inject constructor(
 
         return if (result is RetrievalEvent.Success) {
             val refreshToken = result.value[REFRESH_TOKEN_KEY]
-            val tokenRequest = tokenRequestBuilder
-                .setRefreshToken(refreshToken)
-                .build()
 
-            performTokenRequest(tokenRequest, refreshToken)
+            if (refreshToken.isNullOrBlank()) {
+                secureStore.delete(REFRESH_TOKEN_KEY)
+                analyticsClient.logException(IllegalArgumentException("refresh token is null or blank"))
+                false
+            } else {
+                val tokenRequest = tokenRequestBuilder
+                    .setRefreshToken(refreshToken)
+                    .build()
+
+                performTokenRequest(tokenRequest, refreshToken)
+            }
         } else {
             false
         }
@@ -95,8 +111,11 @@ class AuthRepo @Inject constructor(
                     mutableMapOf("X-Attestation-Token" to it)
                 } ?: mutableMapOf()
 
-            override fun getRequestParameters(clientId: String): MutableMap<String, String>
-                    = mutableMapOf("client_id" to BuildConfig.AUTH_CLIENT_ID)
+            override fun getRequestParameters(clientId: String): MutableMap<String, String> =
+                mutableMapOf(
+                    "client_id" to clientId,
+                    "scope" to "openid%20email"
+                )
         }
 
         return suspendCoroutine { continuation ->
@@ -121,9 +140,9 @@ class AuthRepo @Inject constructor(
         val mappedRefreshToken = refreshToken ?: mappedTokenResponse.refreshToken
 
         return if (exception == null &&
-            accessToken != null &&
-            idToken != null &&
-            mappedRefreshToken != null
+            !accessToken.isNullOrBlank() &&
+            !idToken.isNullOrBlank() &&
+            !mappedRefreshToken.isNullOrBlank()
         ) {
             tokens = Tokens(
                 accessToken = accessToken,
@@ -133,6 +152,10 @@ class AuthRepo @Inject constructor(
 
             true
         } else {
+            if (exception?.type == AuthorizationException.TYPE_OAUTH_TOKEN_ERROR) {
+                secureStore.delete(REFRESH_TOKEN_KEY)
+            }
+
             false
         }
     }
@@ -216,15 +239,17 @@ class AuthRepo @Inject constructor(
         }
     }
 
-    suspend fun signOut(): Boolean {
+    suspend fun clear(): Boolean {
         try {
             secureStore.delete(REFRESH_TOKEN_KEY)
 
             try {
-                authApi.revoke(
-                    refreshToken = tokens.refreshToken,
-                    clientId = BuildConfig.AUTH_CLIENT_ID
-                )
+                if (tokens.refreshToken.isNotBlank()) {
+                    authApi.revoke(
+                        refreshToken = tokens.refreshToken,
+                        clientId = BuildConfig.AUTH_CLIENT_ID
+                    )
+                }
             } catch (e: Exception) {
                 // Ignore API failure
             }

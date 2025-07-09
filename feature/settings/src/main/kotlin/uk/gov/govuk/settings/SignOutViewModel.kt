@@ -67,7 +67,7 @@ class SignOutViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            if (authRepo.signOut()) {
+            if (authRepo.clear()) {
                 _navigationEvent.emit(Success)
             } else {
                 _navigationEvent.emit(Error(UnableToSignOutError))

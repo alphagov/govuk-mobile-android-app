@@ -15,6 +15,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,6 +23,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -46,6 +49,17 @@ internal fun PreviousSearches(
 ) {
     if (previousSearches.isNotEmpty()) {
         var showDialog by remember { mutableStateOf(false) }
+        val localView = LocalView.current
+        val numberOfPreviousSearches =
+            pluralStringResource(
+                id = R.plurals.number_of_previous_searches,
+                count = previousSearches.size,
+                previousSearches.size
+            )
+
+        LaunchedEffect(previousSearches) {
+            localView.announceForAccessibility(numberOfPreviousSearches)
+        }
 
         LazyColumn(
             modifier

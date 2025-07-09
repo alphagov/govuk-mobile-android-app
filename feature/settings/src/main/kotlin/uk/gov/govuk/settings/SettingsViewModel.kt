@@ -27,8 +27,8 @@ import javax.inject.Inject
 
 internal data class SettingsUiState(
     val userEmail: String,
-    val isLoginEnabled: Boolean,
     val isNotificationsEnabled: Boolean,
+    val isAuthenticationEnabled: Boolean,
     val isAnalyticsEnabled: Boolean
 )
 
@@ -51,8 +51,8 @@ internal class SettingsViewModel @Inject constructor(
     init {
         _uiState.value = SettingsUiState(
             userEmail = authRepo.getUserEmail(),
-            isLoginEnabled = flagRepo.isLoginEnabled(),
             isNotificationsEnabled = flagRepo.isNotificationsEnabled(),
+            isAuthenticationEnabled = authRepo.isAuthenticationEnabled(),
             isAnalyticsEnabled = analyticsClient.isAnalyticsEnabled()
         )
     }
@@ -113,6 +113,13 @@ internal class SettingsViewModel @Inject constructor(
             screenClass = NOTIFICATIONS_PERMISSION_EVENT,
             screenName = NOTIFICATIONS_PERMISSION_EVENT,
             title = NOTIFICATIONS_PERMISSION_EVENT
+        )
+    }
+
+    fun onBiometricsClick(text: String) {
+        analyticsClient.settingsItemClick(
+            text = text,
+            external = false
         )
     }
 

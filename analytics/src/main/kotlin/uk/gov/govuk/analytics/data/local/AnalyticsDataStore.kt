@@ -51,4 +51,11 @@ class AnalyticsDataStore @Inject constructor(
             preferences[booleanPreferencesKey(ANALYTICS_ENABLED_KEY)] = false
         }
     }
+
+    internal suspend fun clear() {
+        _analyticsEnabledState = NOT_SET
+        dataStore.edit { preferences ->
+            preferences.remove(booleanPreferencesKey(ANALYTICS_ENABLED_KEY))
+        }
+    }
 }

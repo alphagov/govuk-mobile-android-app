@@ -1,40 +1,39 @@
 package uk.gov.govuk.login.ui
 
 import android.app.Activity
+import android.content.res.Configuration
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import uk.gov.govuk.R
-import uk.gov.govuk.design.ui.component.BodyRegularLabel
+import uk.gov.govuk.design.ui.component.CentreAlignedScreen
+import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.component.Title1RegularLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
+import uk.gov.govuk.login.LoginEvent
 import uk.gov.govuk.login.LoginViewModel
-import uk.gov.govuk.login.navigation.navigateToErrorScreen
 
 @Composable
 internal fun LoginRoute(
-    navController: NavController,
-    isPostSignOut: Boolean,
-    onLoginCompleted: (Boolean) -> Unit,
+    onLoginCompleted: (LoginEvent) -> Unit,
+    onError: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: LoginViewModel = hiltViewModel()
@@ -46,10 +45,7 @@ internal fun LoginRoute(
     }
 
     LoginScreen(
-        isPostSignOut = isPostSignOut,
-        onPageView = { viewModel.onPageView() },
-        onContinueClick = { text ->
-            viewModel.onContinue(text)
+        onContinueClick = {
             authLauncher.launch(viewModel.authIntent)
         },
         modifier = modifier
@@ -62,78 +58,60 @@ internal fun LoginRoute(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.loginCompleted.collect { isDifferentUser ->
-            onLoginCompleted(isDifferentUser)
+        viewModel.loginCompleted.collect { loginEvent ->
+            onLoginCompleted(loginEvent)
         }
     }
 
     LaunchedEffect(Unit) {
         viewModel.errorEvent.collect {
-            navController.navigateToErrorScreen()
+            onError()
         }
     }
 }
 
 @Composable
 private fun LoginScreen(
-    isPostSignOut: Boolean,
-    onPageView: () -> Unit,
-    onContinueClick: (String) -> Unit,
+    onContinueClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(Unit) {
-        onPageView()
-    }
+    CentreAlignedScreen(
+        modifier = modifier,
+        screenContent = {
+            val shouldShowLogo =
+                LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
 
-    Column(modifier.fillMaxSize()) {
-        Column(Modifier.weight(1f)) {
-            Spacer(Modifier.weight(1F))
-
-            Column(
-                modifier = modifier
-                    .verticalScroll(rememberScrollState())
-                    .fillMaxWidth()
-                    .padding(horizontal = GovUkTheme.spacing.medium)
-                    .padding(vertical = GovUkTheme.spacing.large),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                val title = if (isPostSignOut) {
-                    stringResource(R.string.login_post_sign_out_title)
-                } else {
-                    stringResource(R.string.login_sign_in_with_gov_uk)
-                }
-                LargeTitleBoldLabel(
-                    text = title,
-                    textAlign = TextAlign.Center
+            if (shouldShowLogo) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_welcome),
+                    contentDescription = null,
+                    modifier = Modifier.height(209.dp)
                 )
-
-                MediumVerticalSpacer()
-
-                val subtitle = if (isPostSignOut) {
-                    stringResource(R.string.login_post_sign_out_sub_text)
-                } else {
-                    stringResource(R.string.login_sign_sub_text)
-                }
-
-                BodyRegularLabel(
-                    text = subtitle,
-                    textAlign = TextAlign.Center
-                )
+                ExtraLargeVerticalSpacer()
             }
 
-            Spacer(Modifier.weight(1F))
-        }
+            LargeTitleBoldLabel(
+                text = stringResource(id = R.string.login_title),
+                color = GovUkTheme.colourScheme.textAndIcons.primary,
+                textAlign = TextAlign.Center
+            )
 
-        val buttonText = if (isPostSignOut) {
-            stringResource(R.string.login_post_sign_out_continue_button)
-        } else {
-            stringResource(R.string.login_continue_button)
+            MediumVerticalSpacer()
+
+            Title1RegularLabel(
+                text = stringResource(id = R.string.login_description),
+                color = GovUkTheme.colourScheme.textAndIcons.primary,
+                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.extraLarge),
+                textAlign = TextAlign.Center
+            )
+        },
+        footerContent = {
+            FixedPrimaryButton(
+                text = stringResource(R.string.login_continue_button),
+                onClick = { onContinueClick() }
+            )
         }
-        FixedPrimaryButton(
-            text = buttonText,
-            onClick = { onContinueClick(buttonText) }
-        )
-    }
+    )
 }
 
 @Preview(showBackground = true)
@@ -141,20 +119,6 @@ private fun LoginScreen(
 private fun LoginPreview() {
     GovUkTheme {
         LoginScreen(
-            isPostSignOut = false,
-            onPageView = { },
-            onContinueClick = { }
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun LoginPostSignOutPreview() {
-    GovUkTheme {
-        LoginScreen(
-            isPostSignOut = true,
-            onPageView = { },
             onContinueClick = { }
         )
     }

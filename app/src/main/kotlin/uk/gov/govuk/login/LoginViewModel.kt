@@ -9,27 +9,19 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import uk.gov.govuk.R
-import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.auth.ErrorEvent
 import javax.inject.Inject
 
+internal data class LoginEvent(val isBiometricLogin: Boolean)
+
 @HiltViewModel
 internal class LoginViewModel @Inject constructor(
-    private val authRepo: AuthRepo,
-    private val analyticsClient: AnalyticsClient
+    private val authRepo: AuthRepo
 ) : ViewModel() {
 
-    companion object {
-        private const val SCREEN_CLASS = "LoginScreen"
-        private const val SCREEN_NAME = "Login"
-        private const val TITLE = "Login"
-
-        private const val SECTION = "Login"
-    }
-
-    private val _loginCompleted = MutableSharedFlow<Boolean>()
-    val loginCompleted: SharedFlow<Boolean> = _loginCompleted
+    private val _loginCompleted = MutableSharedFlow<LoginEvent>()
+    val loginCompleted: SharedFlow<LoginEvent> = _loginCompleted
 
     private val _errorEvent = MutableSharedFlow<ErrorEvent>()
     val errorEvent: SharedFlow<ErrorEvent> = _errorEvent
@@ -47,7 +39,7 @@ internal class LoginViewModel @Inject constructor(
                         title = activity.getString(R.string.login_biometric_prompt_title)
                     )
                 ) {
-                    _loginCompleted.emit(false)
+                    _loginCompleted.emit(LoginEvent(isBiometricLogin = true))
                 } else {
                     // Todo - handle failure!!!
                 }
@@ -55,26 +47,11 @@ internal class LoginViewModel @Inject constructor(
         }
     }
 
-    fun onPageView() {
-        analyticsClient.screenView(
-            screenClass = SCREEN_CLASS,
-            screenName = SCREEN_NAME,
-            title = TITLE
-        )
-    }
-
-    fun onContinue(text: String) {
-        analyticsClient.buttonClick(
-            text = text,
-            section = SECTION
-        )
-    }
-
     fun onAuthResponse(data: Intent?) {
         viewModelScope.launch {
             val result = authRepo.handleAuthResponse(data)
             if (result) {
-                _loginCompleted.emit(authRepo.isDifferentUser())
+                _loginCompleted.emit(LoginEvent(isBiometricLogin = false))
             } else {
                 _errorEvent.emit(ErrorEvent.UnableToSignInError)
             }

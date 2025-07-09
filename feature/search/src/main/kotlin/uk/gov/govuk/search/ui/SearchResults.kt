@@ -16,6 +16,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -38,8 +40,18 @@ internal fun SearchResults(
 ) {
     val listState = rememberLazyListState()
     val focusRequester = remember { FocusRequester() }
-
     var previousSearchTerm by rememberSaveable { mutableStateOf("") }
+    val localView = LocalView.current
+    val numberOfSearchResults =
+        pluralStringResource(
+            id = R.plurals.number_of_search_results,
+            count = searchResults.size,
+            searchResults.size
+        )
+
+    LaunchedEffect(searchResults) {
+        localView.announceForAccessibility(numberOfSearchResults)
+    }
 
     LazyColumn(
         modifier = modifier.fillMaxWidth(),

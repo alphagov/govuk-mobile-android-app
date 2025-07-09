@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
@@ -123,7 +124,8 @@ private fun LocalAuthoritySelectScreen(
         ) {
             SmallVerticalSpacer()
             Title1BoldLabel(
-                text = stringResource(R.string.local_select_council_title)
+                text = stringResource(R.string.local_select_council_title),
+                modifier = Modifier.semantics { heading() }
             )
             SmallVerticalSpacer()
 

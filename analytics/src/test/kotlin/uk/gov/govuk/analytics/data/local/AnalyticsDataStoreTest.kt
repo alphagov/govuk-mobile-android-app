@@ -89,4 +89,20 @@ class AnalyticsDataStoreTest {
             assertEquals(DISABLED, datastore.analyticsEnabledState)
         }
     }
+
+    @Test
+    fun `Given the user clears analytics, then return not set`() {
+        every { dataStore.data } returns flowOf(preferences)
+        every { preferences[booleanPreferencesKey(AnalyticsDataStore.ANALYTICS_ENABLED_KEY)] } returns true
+
+        val datastore = AnalyticsDataStore(dataStore)
+
+        runTest {
+            assertEquals(ENABLED, datastore.analyticsEnabledState)
+
+            datastore.clear()
+
+            assertEquals(NOT_SET, datastore.analyticsEnabledState)
+        }
+    }
 }

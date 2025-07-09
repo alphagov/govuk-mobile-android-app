@@ -46,6 +46,7 @@ internal class SettingsRouteActions(
     val onAccountClick: () -> Unit,
     val onSignOutClick: () -> Unit,
     val onNotificationsClick: () -> Unit,
+    val onBiometricsClick: () -> Unit,
     val onPrivacyPolicyClick: () -> Unit,
     val onHelpClick: () -> Unit,
     val onAccessibilityStatementClick: () -> Unit,
@@ -79,6 +80,10 @@ internal fun SettingsRoute(
                     viewModel.onNotificationsClick()
                     actions.onNotificationsClick()
                 },
+                onBiometricsClick = { text ->
+                    viewModel.onBiometricsClick(text)
+                    actions.onBiometricsClick()
+                },
                 onAnalyticsConsentChange = { enabled -> viewModel.onAnalyticsConsentChanged(enabled) },
                 onPrivacyPolicyClick = {
                     viewModel.onPrivacyPolicyView()
@@ -111,6 +116,7 @@ private class SettingsActions(
     val onAccountClick: () -> Unit,
     val onSignOutClick: () -> Unit,
     val onNotificationsClick: () -> Unit,
+    val onBiometricsClick: (String) -> Unit,
     val onAnalyticsConsentChange: (Boolean) -> Unit,
     val onPrivacyPolicyClick: () -> Unit,
     val onHelpClick: () -> Unit,
@@ -142,22 +148,17 @@ private fun SettingsScreen(
         ) {
             MediumVerticalSpacer()
 
-            if (uiState.isLoginEnabled) {
-                ManageLogin(
-                    userEmail = uiState.userEmail,
-                    onAccountClick = actions.onAccountClick,
-                    onSignOutClick = actions.onSignOutClick
-                )
+            ManageLogin(
+                userEmail = uiState.userEmail,
+                onAccountClick = actions.onAccountClick,
+                onSignOutClick = actions.onSignOutClick
+            )
 
-                LargeVerticalSpacer()
-            }
+            LargeVerticalSpacer()
 
             NotificationsAndPrivacy(
-                isNotificationsEnabled = uiState.isNotificationsEnabled,
-                isAnalyticsEnabled = uiState.isAnalyticsEnabled,
-                onNotificationsClick = actions.onNotificationsClick,
-                onAnalyticsConsentChange = actions.onAnalyticsConsentChange,
-                onPrivacyPolicyClick = actions.onPrivacyPolicyClick
+                uiState = uiState,
+                actions = actions
             )
 
             MediumVerticalSpacer()
@@ -241,27 +242,34 @@ private fun ManageLogin(
 
 @Composable
 private fun NotificationsAndPrivacy(
-    isNotificationsEnabled: Boolean,
-    isAnalyticsEnabled: Boolean,
-    onNotificationsClick: () -> Unit,
-    onAnalyticsConsentChange: (Boolean) -> Unit,
-    onPrivacyPolicyClick: () -> Unit,
+    uiState: SettingsUiState,
+    actions: SettingsActions,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
     ) {
-        if (isNotificationsEnabled) {
+        if (uiState.isNotificationsEnabled) {
             Notifications(
-                onNotificationsClick = onNotificationsClick
+                onNotificationsClick = actions.onNotificationsClick
+            )
+        }
+
+        if (uiState.isAuthenticationEnabled) {
+            val biometricTitle = stringResource(R.string.biometric_title)
+            InternalLinkListItem(
+                title = biometricTitle,
+                onClick = { actions.onBiometricsClick(biometricTitle) },
+                isFirst = !uiState.isNotificationsEnabled,
+                isLast = false
             )
         }
 
         ToggleListItem(
             title = stringResource(R.string.share_setting),
-            checked = isAnalyticsEnabled,
-            onCheckedChange = onAnalyticsConsentChange,
-            isFirst = !isNotificationsEnabled
+            checked = uiState.isAnalyticsEnabled,
+            onCheckedChange = actions.onAnalyticsConsentChange,
+            isFirst = !uiState.isAuthenticationEnabled && !uiState.isNotificationsEnabled
         )
 
         SmallVerticalSpacer()
@@ -282,7 +290,7 @@ private fun NotificationsAndPrivacy(
                     contentDescription = altText
                 }
                 .padding(horizontal = GovUkTheme.spacing.medium)
-                .clickable(onClick = onPrivacyPolicyClick),
+                .clickable(onClick = actions.onPrivacyPolicyClick),
             color = GovUkTheme.colourScheme.textAndIcons.link,
         )
     }

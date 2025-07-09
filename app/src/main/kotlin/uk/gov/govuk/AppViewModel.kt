@@ -17,7 +17,7 @@ import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
-import uk.gov.govuk.navigation.AppLaunchNavigation
+import uk.gov.govuk.navigation.AppNavigation
 import uk.gov.govuk.search.SearchFeature
 import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.ui.model.HomeWidget
@@ -37,7 +37,7 @@ internal class AppViewModel @Inject constructor(
     private val searchFeature: SearchFeature,
     private val visitedFeature: Visited,
     private val analyticsClient: AnalyticsClient,
-    val appLaunchNavigation: AppLaunchNavigation
+    val appNavigation: AppNavigation
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<AppUiState?> = MutableStateFlow(null)
@@ -47,6 +47,8 @@ internal class AppViewModel @Inject constructor(
     internal val homeWidgets = _homeWidgets.asStateFlow()
 
     init {
+        analyticsClient.isUserSessionActive = { authRepo.isUserSessionActive() }
+
         viewModelScope.launch {
             initWithConfig()
         }
@@ -62,8 +64,6 @@ internal class AppViewModel @Inject constructor(
                     _uiState.value = AppUiState.ForcedUpdate
                 } else {
                     topicsFeature.init()
-
-                    appLaunchNavigation.buildLaunchFlow()
 
                     _uiState.value = AppUiState.Default(
                         shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
@@ -99,41 +99,30 @@ internal class AppViewModel @Inject constructor(
         interactionTime: Long = SystemClock.elapsedRealtime()
     ) {
         timeoutManager.onUserInteraction(interactionTime) {
-            if (flagRepo.isLoginEnabled() && authRepo.isUserSessionActive()) {
-                viewModelScope.launch {
-                    authRepo.endUserSession()
-                    appLaunchNavigation.buildLaunchFlow()
-                    navController.navigate(appLaunchNavigation.startDestination)
-                }
+            if (authRepo.isUserSessionActive()) {
+                authRepo.endUserSession()
+                appNavigation.onSignOut(navController)
             }
         }
     }
 
-    fun onboardingCompleted() {
+    fun onLogin(navController: NavController) {
         viewModelScope.launch {
-            appRepo.onboardingCompleted()
-        }
-    }
-
-    fun onLogin(isDifferentUser: Boolean, navController: NavController) {
-        viewModelScope.launch {
-            if (isDifferentUser) {
+            if (authRepo.isDifferentUser()) {
+                authRepo.clear()
                 appRepo.clear()
                 topicsFeature.clear()
                 localFeature.clear()
                 searchFeature.clear()
                 visitedFeature.clear()
-
-                appLaunchNavigation.onDifferentUserLogin(topicsFeature.hasTopics())
+                analyticsClient.clear()
             }
-            appLaunchNavigation.onNext(navController)
+            appNavigation.onNext(navController)
         }
     }
 
-    fun topicSelectionCompleted() {
-        viewModelScope.launch {
-            appRepo.topicSelectionCompleted()
-        }
+    suspend fun topicSelectionCompleted() {
+        appRepo.topicSelectionCompleted()
     }
 
     private fun updateHomeWidgets(
@@ -143,11 +132,6 @@ internal class AppViewModel @Inject constructor(
         viewModelScope.launch {
             with(flagRepo) {
                 val widgets = mutableListOf<HomeWidget>()
-                if (isNotificationsEnabled()
-                    && !suppressedWidgets.contains(HomeWidget.NOTIFICATIONS.serializedName)
-                ) {
-                    widgets.add(HomeWidget.NOTIFICATIONS)
-                }
                 if (isSearchEnabled()) {
                     widgets.add(HomeWidget.SEARCH)
                 }
@@ -207,9 +191,5 @@ internal class AppViewModel @Inject constructor(
             hasDeepLink,
             url
         )
-    }
-
-    fun onSignOut() {
-        appLaunchNavigation.onSignOut()
     }
 }

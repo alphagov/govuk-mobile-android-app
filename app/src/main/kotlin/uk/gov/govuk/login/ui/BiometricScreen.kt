@@ -1,16 +1,9 @@
 package uk.gov.govuk.login.ui
 
 import androidx.activity.compose.LocalActivity
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -28,6 +21,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
+import uk.gov.govuk.design.ui.component.CentreAlignedScreen
 import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
 import uk.gov.govuk.design.ui.component.LargeHorizontalSpacer
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
@@ -46,12 +40,11 @@ internal fun BiometricRoute(
     val activity = LocalActivity.current as FragmentActivity
 
     BiometricScreen(
-        onPageView = { viewModel.onPageView() },
-        onSetupBiometrics = { text ->
-            viewModel.onContinue(activity, text)
+        onSetupBiometrics = {
+            viewModel.onContinue(activity)
         },
-        onSkip = { text ->
-            viewModel.onSkip(text)
+        onSkip = {
+            viewModel.onSkip()
             onCompleted()
         },
         modifier = modifier
@@ -66,64 +59,45 @@ internal fun BiometricRoute(
 
 @Composable
 private fun BiometricScreen(
-    onPageView: () -> Unit,
-    onSetupBiometrics: (String) -> Unit,
-    onSkip: (String) -> Unit,
+    onSetupBiometrics: () -> Unit,
+    onSkip: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(Unit) {
-        onPageView()
-    }
+    CentreAlignedScreen(
+        modifier = modifier,
+        screenContent = {
+            IconRow()
 
-    Column(modifier.fillMaxSize()) {
-        Column(Modifier.weight(1f)) {
-            Spacer(Modifier.weight(1F))
+            MediumVerticalSpacer()
 
-            Column(
-                modifier = modifier
-                    .verticalScroll(rememberScrollState())
-                    .fillMaxWidth()
-                    .padding(horizontal = GovUkTheme.spacing.medium)
-                    .padding(vertical = GovUkTheme.spacing.large),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                IconRow()
+            LargeTitleBoldLabel(
+                text = stringResource(R.string.login_biometrics_title),
+                textAlign = TextAlign.Center
+            )
 
-                MediumVerticalSpacer()
+            MediumVerticalSpacer()
 
-                LargeTitleBoldLabel(
-                    text = stringResource(R.string.login_biometrics_title),
-                    textAlign = TextAlign.Center
-                )
+            BodyRegularLabel(
+                text = stringResource(R.string.login_biometrics_description_1),
+                textAlign = TextAlign.Center
+            )
 
-                MediumVerticalSpacer()
+            MediumVerticalSpacer()
 
-                BodyRegularLabel(
-                    text = stringResource(R.string.login_biometrics_description_1),
-                    textAlign = TextAlign.Center
-                )
-
-                MediumVerticalSpacer()
-
-                BodyRegularLabel(
-                    text = stringResource(R.string.login_biometrics_description_2),
-                    textAlign = TextAlign.Center
-                )
-            }
-
-            Spacer(Modifier.weight(1F))
+            BodyRegularLabel(
+                text = stringResource(R.string.login_biometrics_description_2),
+                textAlign = TextAlign.Center
+            )
+        },
+        footerContent = {
+            FixedDoubleButtonGroup(
+                primaryText = stringResource(R.string.login_biometrics_button),
+                onPrimary = { onSetupBiometrics() },
+                secondaryText = stringResource(R.string.login_biometrics_skip_button),
+                onSecondary = { onSkip() }
+            )
         }
-
-        val primaryButtonText = stringResource(R.string.login_biometrics_button)
-        val secondaryButtonText = stringResource(R.string.login_biometrics_skip_button)
-
-        FixedDoubleButtonGroup(
-            primaryText = primaryButtonText,
-            onPrimary = { onSetupBiometrics(primaryButtonText) },
-            secondaryText = secondaryButtonText,
-            onSecondary = { onSkip(secondaryButtonText) }
-        )
-    }
+    )
 }
 
 @Composable
@@ -177,7 +151,6 @@ private fun IconRow(
 private fun BiometricPreview() {
     GovUkTheme {
         BiometricScreen(
-            onPageView = { },
             onSetupBiometrics = { },
             onSkip = { }
         )

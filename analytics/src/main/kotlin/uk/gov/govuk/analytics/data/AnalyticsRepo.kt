@@ -15,4 +15,6 @@ class AnalyticsRepo @Inject constructor(
     internal suspend fun analyticsEnabled() = dataStore.analyticsEnabled()
 
     internal suspend fun analyticsDisabled() = dataStore.analyticsDisabled()
+
+    internal suspend fun clear() = dataStore.clear()
 }

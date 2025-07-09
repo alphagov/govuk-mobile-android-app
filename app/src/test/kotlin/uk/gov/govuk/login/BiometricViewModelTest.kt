@@ -2,8 +2,8 @@ package uk.gov.govuk.login
 
 import androidx.fragment.app.FragmentActivity
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -12,7 +12,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import uk.gov.govuk.analytics.AnalyticsClient
+import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -21,7 +21,7 @@ import kotlin.test.assertTrue
 class BiometricViewModelTest {
 
     private val authRepo = mockk<AuthRepo>(relaxed = true)
-    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
+    private val appRepo = mockk<AppRepo>(relaxed = true)
     private val activity = mockk<FragmentActivity>(relaxed = true)
     private val dispatcher = UnconfinedTestDispatcher()
 
@@ -30,7 +30,7 @@ class BiometricViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = BiometricViewModel(authRepo, analyticsClient)
+        viewModel = BiometricViewModel(authRepo, appRepo)
     }
 
     @After
@@ -39,39 +39,11 @@ class BiometricViewModelTest {
     }
 
     @Test
-    fun `Given a page view, then log analytics`() {
-        viewModel.onPageView()
+    fun `Given skip, then update repo`() {
+        viewModel.onSkip()
 
-        verify {
-            analyticsClient.screenView(
-                screenClass = "BiometricScreen",
-                screenName = "Biometrics",
-                title = "Biometrics"
-            )
-        }
-    }
-
-    @Test
-    fun `Given continue, then log analytics`() {
-        viewModel.onContinue(activity, "button text")
-
-        verify {
-            analyticsClient.buttonClick(
-                text = "button text",
-                section = "Biometrics"
-            )
-        }
-    }
-
-    @Test
-    fun `Given skip, then log analytics`() {
-        viewModel.onSkip("button text")
-
-        verify {
-            analyticsClient.buttonClick(
-                text = "button text",
-                section = "Biometrics"
-            )
+        coVerify {
+            appRepo.skipBiometrics()
         }
     }
 
@@ -79,7 +51,7 @@ class BiometricViewModelTest {
     fun `Given continue, when persist token success, then emit ui state`() {
         coEvery { authRepo.persistRefreshToken(any(), any()) } returns true
 
-        viewModel.onContinue(activity, "button text")
+        viewModel.onContinue(activity)
 
         assertTrue(viewModel.uiState.value)
     }
@@ -88,7 +60,7 @@ class BiometricViewModelTest {
     fun `Given continue, when persist token failure, then emit ui state`() {
         coEvery { authRepo.persistRefreshToken(any(), any()) } returns false
 
-        viewModel.onContinue(activity, "button text")
+        viewModel.onContinue(activity)
 
         assertFalse(viewModel.uiState.value)
     }

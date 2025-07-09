@@ -41,6 +41,19 @@ android {
     }
 }
 
+sonar {
+    properties {
+        property(
+            "sonar.coverage.exclusions",
+            properties["sonar.coverage.exclusions"].toString() + ",**/DebugFlags.*"
+        )
+        property(
+            "sonar.cpd.exclusions",
+            properties["sonar.cpd.exclusions"].toString() + ",**/DebugFlags.*"
+        )
+    }
+}
+
 dependencies {
     implementation(projects.data)
 

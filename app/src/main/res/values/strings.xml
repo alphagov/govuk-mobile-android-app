@@ -25,17 +25,15 @@
     <string name="deep_link_not_found_alert_message">Update the app to the latest version.\n\nIf you’re already using the latest version, try again later.</string>
     <string name="deep_link_not_found_alert_button">Close</string>
 
-    <string name="login_sign_in_with_gov_uk">Sign in with GOV.UK One Login</string>
-    <string name="login_sign_sub_text">You’ll need to create a GOV.UK One Login account if you do not already have one</string>
     <string name="login_sign_in_error_header">There was a problem signing you in</string>
     <string name="login_sign_in_error_sub_text">Try to sign in again</string>
 
+    <string name="login_title">Your GOV.UK app</string>
+    <string name="login_description">Government information and services for you</string>
     <string name="login_continue_button">Continue</string>
     <string name="login_back_and_try_again_button">Go back and try again</string>
 
-    <string name="login_post_sign_out_title">You\'ve signed out</string>
-    <string name="login_post_sign_out_sub_text">You need to sign in again to use the app</string>
-    <string name="login_post_sign_out_continue_button">Sign in with GOV.UK One Login</string>
+    <string name="login_success_title">You have successfully signed in</string>
 
     <string name="login_biometrics_title">Unlock the app with biometrics</string>
     <string name="login_biometrics_description_1">You can unlock the app with your face, fingerprint or iris.</string>
@@ -44,5 +42,12 @@
     <string name="login_biometrics_skip_button">Skip</string>
 
     <string name="login_biometric_prompt_title">Confirm that it\'s you</string>
+
+    <string name="biometric_settings_title">Biometrics</string>
+    <string name="biometric_settings_toggle">Unlock app with biometrics</string>
+    <string name="biometric_settings_description_1">If you have biometrics turned on, you’ll be able to use your fingerprint, face or iris to unlock the app.</string>
+    <string name="biometric_settings_description_2">If you do not want to use biometrics, you can use your phone’s pin or pattern instead.</string>
+    <string name="biometric_settings_description_3">Anyone who can unlock your phone with their fingerprint, face or iris or with your phone’s pin or pattern might be able to access your app.</string>
+    <string name="biometric_settings_description_4">You can turn off biometrics at any time.</string>
 
 </resources>

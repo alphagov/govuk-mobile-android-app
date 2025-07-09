@@ -5,7 +5,6 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
@@ -19,14 +18,12 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.auth.AuthRepo
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginViewModelTest {
 
     private val authRepo = mockk<AuthRepo>(relaxed = true)
-    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val activity = mockk<FragmentActivity>(relaxed = true)
     private val dispatcher = UnconfinedTestDispatcher()
 
@@ -35,7 +32,7 @@ class LoginViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = LoginViewModel(authRepo, analyticsClient)
+        viewModel = LoginViewModel(authRepo)
     }
 
     @After
@@ -60,13 +57,13 @@ class LoginViewModelTest {
         coEvery { authRepo.refreshTokens(any(), any()) } returns true
 
         runTest {
-            val events = mutableListOf<Boolean>()
+            val events = mutableListOf<LoginEvent>()
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
                 viewModel.loginCompleted.toList(events)
             }
             viewModel.init(activity)
 
-            assertFalse(events.first())
+            assertTrue(events.first().isBiometricLogin)
         }
     }
 
@@ -76,7 +73,7 @@ class LoginViewModelTest {
         coEvery { authRepo.refreshTokens(any(), any()) } returns false
 
         runTest {
-            val events = mutableListOf<Boolean>()
+            val events = mutableListOf<LoginEvent>()
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
                 viewModel.loginCompleted.toList(events)
             }
@@ -87,59 +84,17 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Given a page view, then log analytics`() {
-        viewModel.onPageView()
-
-        verify {
-            analyticsClient.screenView(
-                screenClass = "LoginScreen",
-                screenName = "Login",
-                title = "Login"
-            )
-        }
-    }
-
-    @Test
-    fun `Given continue, then log analytics`() {
-        viewModel.onContinue("button text")
-
-        verify {
-            analyticsClient.buttonClick(
-                text = "button text",
-                section = "Login"
-            )
-        }
-    }
-
-    @Test
-    fun `Given an auth response and a different user, when success, then emit ui state`() {
+    fun `Given an auth response, when success, then emit ui state`() {
         coEvery { authRepo.handleAuthResponse(any()) } returns true
-        every { authRepo.isDifferentUser() } returns true
 
         runTest {
-            val events = mutableListOf<Boolean>()
+            val events = mutableListOf<LoginEvent>()
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
                 viewModel.loginCompleted.toList(events)
             }
             viewModel.onAuthResponse(null)
 
-            assertTrue(events.first())
-        }
-    }
-
-    @Test
-    fun `Given an auth response and the same user, when success, then emit ui state`() {
-        coEvery { authRepo.handleAuthResponse(any()) } returns true
-        every { authRepo.isAuthenticationEnabled() } returns false
-
-        runTest {
-            val events = mutableListOf<Boolean>()
-            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                viewModel.loginCompleted.toList(events)
-            }
-            viewModel.onAuthResponse(null)
-
-            assertFalse(events.first())
+            assertFalse(events.first().isBiometricLogin)
         }
     }
 
@@ -148,7 +103,7 @@ class LoginViewModelTest {
         coEvery { authRepo.handleAuthResponse(any()) } returns false
 
         runTest {
-            val events = mutableListOf<Boolean>()
+            val events = mutableListOf<LoginEvent>()
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
                 viewModel.loginCompleted.toList(events)
             }

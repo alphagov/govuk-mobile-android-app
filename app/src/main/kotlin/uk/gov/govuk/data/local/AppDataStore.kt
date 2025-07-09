@@ -18,19 +18,25 @@ internal class AppDataStore @Inject constructor(
     @Named("app_prefs") private val dataStore: DataStore<Preferences>
 ) {
     companion object {
-        internal const val ONBOARDING_COMPLETED_KEY = "onboarding_completed"
+        internal const val SKIPPED_BIOMETRICS_KEY = "skipped_biometrics"
         internal const val TOPIC_SELECTION_COMPLETED_KEY = "topic_selection_completed"
         internal const val SUPPRESSED_HOME_WIDGETS = "suppressed_home_widgets"
     }
 
-    internal suspend fun isOnboardingCompleted(): Boolean {
+    internal suspend fun hasSkippedBiometrics(): Boolean {
         return dataStore.data.firstOrNull()
-            ?.get(booleanPreferencesKey(ONBOARDING_COMPLETED_KEY)) == true
+            ?.get(booleanPreferencesKey(SKIPPED_BIOMETRICS_KEY)) == true
     }
 
-    internal suspend fun onboardingCompleted() {
+    internal suspend fun skipBiometrics() {
         dataStore.edit { prefs ->
-            prefs[booleanPreferencesKey(ONBOARDING_COMPLETED_KEY)] = true
+            prefs[booleanPreferencesKey(SKIPPED_BIOMETRICS_KEY)] = true
+        }
+    }
+
+    internal suspend fun clearBiometricsSkipped() {
+        dataStore.edit { prefs ->
+            prefs.remove(booleanPreferencesKey(SKIPPED_BIOMETRICS_KEY))
         }
     }
 
@@ -60,11 +66,9 @@ internal class AppDataStore @Inject constructor(
     private suspend fun getSuppressedHomeWidgets() = dataStore.data.firstOrNull()
         ?.get(stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS))
 
-    // Clear everything other than onboarding
     internal suspend fun clear() {
         dataStore.edit { prefs ->
-            prefs.remove(booleanPreferencesKey(TOPIC_SELECTION_COMPLETED_KEY))
-            prefs.remove(stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS))
+            prefs.clear()
         }
     }
 }

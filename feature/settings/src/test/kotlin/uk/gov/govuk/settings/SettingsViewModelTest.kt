@@ -50,7 +50,7 @@ class SettingsViewModelTest {
         Dispatchers.setMain(dispatcher)
 
         every { authRepo.getUserEmail() } returns "user@email.com"
-        coEvery { flagRepo.isLoginEnabled() } returns true
+        coEvery { authRepo.isAuthenticationEnabled() } returns true
         coEvery { analyticsClient.isAnalyticsEnabled() } returns true
         coEvery { flagRepo.isNotificationsEnabled() } returns true
 
@@ -60,24 +60,6 @@ class SettingsViewModelTest {
     @After
     fun tearDown() {
         Dispatchers.resetMain()
-    }
-
-    @Test
-    fun `Given login is enabled, When init, then return login enabled`() {
-        runTest {
-            val result = viewModel.uiState.first()
-            assertTrue(result!!.isLoginEnabled)
-        }
-    }
-
-    @Test
-    fun `Given login is disabled, When init, then return login disable`() {
-        coEvery { flagRepo.isLoginEnabled() } returns false
-
-        runTest {
-            val result = viewModel.uiState.first()
-            assertTrue(result!!.isLoginEnabled)
-        }
     }
 
     @Test
@@ -117,6 +99,26 @@ class SettingsViewModelTest {
         runTest {
             val result = viewModel.uiState.first()
             assertFalse(result!!.isNotificationsEnabled)
+        }
+    }
+
+    @Test
+    fun `Given authentication is enabled, When init, then return authentication enabled`() {
+        runTest {
+            val result = viewModel.uiState.first()
+            assertTrue(result!!.isAuthenticationEnabled)
+        }
+    }
+
+    @Test
+    fun `Given authentication is disabled, When init, then return authentication disabled`() {
+        every { authRepo.isAuthenticationEnabled() } returns false
+
+        val viewModel = SettingsViewModel(authRepo, flagRepo, analyticsClient)
+
+        runTest {
+            val result = viewModel.uiState.first()
+            assertFalse(result!!.isAuthenticationEnabled)
         }
     }
 
@@ -235,6 +237,18 @@ class SettingsViewModelTest {
             screenName = NOTIFICATIONS_PERMISSION_EVENT,
             title = NOTIFICATIONS_PERMISSION_EVENT
         )
+    }
+
+    @Test
+    fun `Given a biometrics click, then log analytics`() {
+        viewModel.onBiometricsClick("text")
+
+        verify {
+            analyticsClient.settingsItemClick(
+                text = "text",
+                external = false
+            )
+        }
     }
 
     @Test

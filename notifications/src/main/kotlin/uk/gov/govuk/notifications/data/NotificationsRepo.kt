@@ -8,10 +8,6 @@ import javax.inject.Singleton
 internal class NotificationsRepo @Inject constructor(
     private val notificationsDataStore: NotificationsDataStore
 ) {
-    internal suspend fun isOnboardingCompleted() = notificationsDataStore.isOnboardingCompleted()
-
-    internal suspend fun onboardingCompleted() = notificationsDataStore.onboardingCompleted()
-
     internal suspend fun isFirstPermissionRequestCompleted() =
         notificationsDataStore.isFirstPermissionRequestCompleted()
 

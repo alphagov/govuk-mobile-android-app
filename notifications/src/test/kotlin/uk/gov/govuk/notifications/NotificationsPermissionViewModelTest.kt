@@ -8,7 +8,6 @@ import com.google.accompanist.permissions.shouldShowRationale
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -20,14 +19,12 @@ import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.notifications.data.local.NotificationsDataStore
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalCoroutinesApi::class)
 class NotificationsPermissionViewModelTest {
     private val dispatcher = UnconfinedTestDispatcher()
     private val permissionStatus = mockk<PermissionStatus>()
-    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val notificationsDataStore = mockk<NotificationsDataStore>()
 
     private lateinit var viewModel: NotificationsPermissionViewModel
@@ -35,25 +32,14 @@ class NotificationsPermissionViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = NotificationsPermissionViewModel(analyticsClient, notificationsDataStore)
+        viewModel = NotificationsPermissionViewModel(
+            notificationsDataStore
+        )
     }
 
     @After
     fun tearDown() {
         Dispatchers.resetMain()
-    }
-
-    @Test
-    fun `Given Alert button click, then log analytics`() {
-        viewModel.onAlertButtonClick("Text")
-
-        runTest {
-            verify(exactly = 1) {
-                analyticsClient.buttonClick(
-                    text = "Text"
-                )
-            }
-        }
     }
 
     @Test

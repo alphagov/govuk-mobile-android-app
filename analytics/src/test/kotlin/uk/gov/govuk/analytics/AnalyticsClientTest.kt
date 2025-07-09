@@ -30,6 +30,7 @@ class AnalyticsClientTest {
         analyticsClient = AnalyticsClient(analyticsRepo, firebaseAnalyticClient)
 
         every { analyticsRepo.analyticsEnabledState } returns ENABLED
+        analyticsClient.isUserSessionActive = { true }
     }
 
     @Test
@@ -49,6 +50,21 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given analytics are not set, when an event is logged, then do not log to firebase`() = runTest {
+        analyticsClient.isUserSessionActive = { false }
+
+        analyticsClient.screenView(
+            screenClass = "screenClass",
+            screenName = "screenName",
+            title = "title"
+        )
+
+        verify(exactly = 0) {
+            firebaseAnalyticClient.logEvent(any(), any())
+        }
+    }
+
+    @Test
+    fun `Given user session is not active, when an event is logged, then do not log to firebase`() = runTest {
         coEvery { analyticsRepo.analyticsEnabledState } returns NOT_SET
 
         analyticsClient.screenView(
@@ -133,6 +149,24 @@ class AnalyticsClientTest {
     }
 
     @Test
+    fun `Given a user session is not active, when an ecommerce event is logged, then do not log to firebase`() = runTest {
+        analyticsClient.isUserSessionActive = { false }
+        
+        analyticsClient.selectItemEvent(
+            ecommerceEvent = EcommerceEvent(
+                itemListName = "Topics",
+                itemListId = "Benefits",
+                items = emptyList()
+            ),
+            selectedItemIndex = 42
+        )
+
+        verify(exactly = 0) {
+            firebaseAnalyticClient.logEcommerceEvent(any(), any())
+        }
+    }
+
+    @Test
     fun `Given a screen view, then log event`() {
         analyticsClient.screenView(
             screenClass = "screenClass",
@@ -148,22 +182,6 @@ class AnalyticsClientTest {
                     FirebaseAnalytics.Param.SCREEN_NAME to "screenName",
                     "screen_title" to "title",
                     "language" to Locale.getDefault().language
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `Given a page indicator click, then log event`() {
-        analyticsClient.pageIndicatorClick()
-
-        verify {
-            firebaseAnalyticClient.logEvent(
-                "Navigation",
-                mapOf(
-                    "type" to "Dot",
-                    "external" to false,
-                    "language" to Locale.getDefault().language,
                 )
             )
         }
@@ -701,6 +719,17 @@ class AnalyticsClientTest {
     }
 
     @Test
+    fun `Given analytics have been cleared, then clear`() {
+        runTest {
+            analyticsClient.clear()
+
+            coVerify {
+                analyticsRepo.clear()
+            }
+        }
+    }
+
+    @Test
     fun `Given topics have been customised, then set user property`() {
         analyticsClient.topicsCustomised()
 
@@ -798,6 +827,17 @@ class AnalyticsClientTest {
                 event = FirebaseAnalytics.Event.VIEW_ITEM_LIST,
                 ecommerceEvent = ecommerceEvent
             )
+        }
+    }
+
+    @Test
+    fun `Given an exception is logged, then log an exception`() {
+        val exception = IllegalArgumentException()
+
+        analyticsClient.logException(exception)
+
+        verify {
+            firebaseAnalyticClient.logException(exception)
         }
     }
 }
