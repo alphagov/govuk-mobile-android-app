@@ -13,7 +13,7 @@ plugins {
 
 val majorVersion = "1"
 val minorVersion = "0"
-val patchVersion = "2"
+val patchVersion = "3"
 
 android {
     namespace = "uk.gov.govuk"
