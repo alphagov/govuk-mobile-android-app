@@ -168,6 +168,8 @@ internal class AppViewModel @Inject constructor(
         }
     }
 
+    fun isChatEnabled() = flagRepo.isChatEnabled()
+
     fun onWidgetClick(
         text: String,
         url: String? = null,

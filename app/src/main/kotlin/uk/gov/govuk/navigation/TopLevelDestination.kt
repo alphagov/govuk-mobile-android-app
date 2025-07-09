@@ -33,7 +33,6 @@ internal sealed class TopLevelDestination(
         )
     )
 
-    // TODO: only show if isChatServiceEnabled()
     internal data object Chat : TopLevelDestination(
         route = CHAT_GRAPH_ROUTE,
         stringResId = R.string.chat,

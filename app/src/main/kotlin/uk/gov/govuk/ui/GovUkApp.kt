@@ -302,11 +302,13 @@ private fun BottomNav(
     navController: NavHostController,
     onTabClick: (String) -> Unit
 ) {
-    val topLevelDestinations = listOf(
-        TopLevelDestination.Home,
-        TopLevelDestination.Chat,
-        TopLevelDestination.Settings
-    )
+    val topLevelDestinations = buildList {
+        add(TopLevelDestination.Home)
+        if (viewModel.isChatEnabled()) {
+            add(TopLevelDestination.Chat)
+        }
+        add(TopLevelDestination.Settings)
+    }
 
     var selectedIndex by rememberSaveable {
         mutableIntStateOf(-1)
