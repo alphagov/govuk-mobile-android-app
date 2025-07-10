@@ -50,8 +50,7 @@ internal class LocalRepo @Inject constructor(
                     is LocalAuthorityResult.Addresses -> cacheAddresses(value.addresses)
                     is LocalAuthorityResult.LocalAuthority ->
                         _cachedLocalAuthority = value.localAuthority.toLocalAuthority()
-
-                    else -> {} // Do nothing
+                    else -> { /* Do nothing */ }
                 }
             }
             return result
