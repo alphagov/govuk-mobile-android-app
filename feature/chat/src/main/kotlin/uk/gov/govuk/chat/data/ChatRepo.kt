@@ -98,7 +98,8 @@ internal class ChatRepo @Inject constructor(
         return Conversation(
             id = conversationId,
             answeredQuestions = emptyList(),
-            createdAt = ""
+            createdAt = "",
+            pendingQuestion = null
         )
     }
 

@@ -351,5 +351,6 @@ private fun conversation() = Conversation(
             message = "How can I apply for universal credit?"
         )
     ),
-    createdAt = "2025-06-10T15:18:47+01:00"
+    createdAt = "2025-06-10T15:18:47+01:00",
+    pendingQuestion = null
 )

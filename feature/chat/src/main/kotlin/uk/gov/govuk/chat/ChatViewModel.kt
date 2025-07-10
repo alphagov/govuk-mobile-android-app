@@ -41,10 +41,19 @@ internal class ChatViewModel @Inject constructor(
                 )
 
                 val conversation = chatRepo.getConversation()
-                if (conversation != null && conversation.answeredQuestions.isNotEmpty()) {
-                    conversation.answeredQuestions.forEach { question ->
-                        addChatEntry(question)
-                        updateChatEntry(question.id, question.answer)
+                if (conversation != null) {
+                    if (conversation.answeredQuestions.isNotEmpty()) {
+                        conversation.answeredQuestions.forEach { question ->
+                            addChatEntry(question)
+                            updateChatEntry(question.id, question.answer)
+                        }
+                    }
+
+                    val hasPendingQuestion = conversation?.pendingQuestion != null
+                    if (hasPendingQuestion) {
+                        val pendingQuestionId = conversation?.pendingQuestion?.id
+                        // TODO: set the question id and poll for the answer
+                        // Might need to re-think the uiState and chatRepo stored params
                     }
                 }
 

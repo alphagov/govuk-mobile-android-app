@@ -115,7 +115,8 @@ class ChatRepoTest {
         val conversation = Conversation(
             id = "id",
             answeredQuestions = emptyList(),
-            createdAt = "createdAt"
+            createdAt = "createdAt",
+            pendingQuestion = null
         )
 
         coEvery { chatRepo.getConversation() } returns conversation
