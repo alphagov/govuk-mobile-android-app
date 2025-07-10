@@ -1,6 +1,8 @@
 package uk.govuk.app.local.data
 
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import uk.gov.govuk.data.model.Result
 import uk.govuk.app.local.data.local.LocalDataSource
 import uk.govuk.app.local.data.remote.LocalApi
@@ -20,6 +22,8 @@ internal class LocalRepo @Inject constructor(
     private val localApi: LocalApi,
     private val localDataSource: LocalDataSource
 ) {
+    private val mutex = Mutex()
+
     val localAuthority = localDataSource.localAuthority.map {
         it?.toLocalAuthority()
     }
@@ -39,18 +43,19 @@ internal class LocalRepo @Inject constructor(
     suspend fun fetchLocalAuthority(
         postcode: String
     ): Result<LocalAuthorityResult> {
-        val result = safeLocalApiCall { localApi.fromPostcode(postcode) }
+        mutex.withLock {
+            val result = safeLocalApiCall { localApi.fromPostcode(postcode) }
+            if (result is Result.Success) {
+                when (val value = result.value) {
+                    is LocalAuthorityResult.Addresses -> cacheAddresses(value.addresses)
+                    is LocalAuthorityResult.LocalAuthority ->
+                        _cachedLocalAuthority = value.localAuthority.toLocalAuthority()
 
-        if (result is Result.Success) {
-            when (val value = result.value) {
-                is LocalAuthorityResult.Addresses -> cacheAddresses(value.addresses)
-                is LocalAuthorityResult.LocalAuthority ->
-                    _cachedLocalAuthority = value.localAuthority.toLocalAuthority()
-                else -> { } // Do nothing
+                    else -> {} // Do nothing
+                }
             }
+            return result
         }
-
-        return result
     }
 
     private suspend fun cacheAddresses(
@@ -58,13 +63,14 @@ internal class LocalRepo @Inject constructor(
     ) {
         val slugs = addresses.distinctBy { it.slug }.map { it.slug }
 
-        val localAuthorities = emptyList<RemoteLocalAuthority>().toMutableList()
+        val localAuthorities = mutableListOf<RemoteLocalAuthority>()
         slugs.forEach { slug ->
-            val result = safeLocalApiCall { localApi.fromSlug(slug) }
-
-            ((result as? Result.Success)?.value
-                as? LocalAuthorityResult.LocalAuthority)?.localAuthority?.let { localAuthority ->
-                localAuthorities += localAuthority
+            safeLocalApiCall { localApi.fromSlug(slug) }.let { result ->
+                (result as? Result.Success)?.value?.let { value ->
+                    (value as? LocalAuthorityResult.LocalAuthority)?.localAuthority?.let { localAuthority ->
+                        localAuthorities += localAuthority
+                    }
+                }
             }
         }
 
