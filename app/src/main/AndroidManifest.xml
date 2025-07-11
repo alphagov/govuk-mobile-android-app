@@ -17,7 +17,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.GovUkMobileApp"
-            android:launchMode="singleTop">
+            android:launchMode="singleInstance">
             <intent-filter>
                 <data android:scheme="govuk" />
                 <data android:host="gov.uk" />
