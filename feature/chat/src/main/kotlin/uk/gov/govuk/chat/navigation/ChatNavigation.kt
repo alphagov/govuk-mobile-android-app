@@ -20,7 +20,6 @@ fun NavGraphBuilder.chatGraph(
     ) {
         composable(CHAT_ROUTE) {
             ChatRoute(
-                onBack = { navController.popBackStack() },
                 modifier = modifier
             )
         }
