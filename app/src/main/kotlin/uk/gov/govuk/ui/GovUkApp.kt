@@ -339,7 +339,7 @@ private fun GovUkNavHost(
 
     LaunchedEffect(Unit) {
         appNavigation.setOnLaunchBrowser { url ->
-            browserLauncher.launch(url)
+            browserLauncher.launch(url) { showBrowserNotFoundAlert(context) }
         }
 
         appNavigation.setOnDeeplinkNotFound {
@@ -367,7 +367,12 @@ private fun GovUkNavHost(
                     appNavigation.onNext(navController)
                 }
             },
-            launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
+            launchBrowser = { url ->
+                browserLauncher.launchPartial(
+                    context = context,
+                    url = url
+                ) { showBrowserNotFoundAlert(context) }
+            }
         )
         topicSelectionGraph(
             topicSelectionCompleted = {
@@ -379,7 +384,7 @@ private fun GovUkNavHost(
         )
         topicsGraph(
             navController = navController,
-            launchBrowser = { url -> browserLauncher.launch(url) },
+            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } },
             modifier = Modifier.padding(paddingValues)
         )
         notificationsGraph(
@@ -395,7 +400,12 @@ private fun GovUkNavHost(
             notificationsPermissionCompleted = {
                 navController.popBackStack()
             },
-            launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
+            launchBrowser = { url ->
+                browserLauncher.launchPartial(
+                    context = context,
+                    url = url
+                ) { showBrowserNotFoundAlert(context) }
+            }
         )
         homeGraph(
             widgets = homeWidgets(
@@ -404,7 +414,13 @@ private fun GovUkNavHost(
                 onInternalClick = onInternalWidgetClick,
                 onExternalClick = onExternalWidgetClick,
                 onSuppressClick = onSuppressWidgetClick,
-                launchBrowser = { url -> browserLauncher.launch(url) }
+                launchBrowser = { url ->
+                    browserLauncher.launch(url) {
+                        showBrowserNotFoundAlert(
+                            context
+                        )
+                    }
+                }
             ),
             modifier = Modifier.padding(paddingValues),
             headerWidget = if (homeWidgets.contains(HomeWidget.SEARCH)) {
@@ -424,7 +440,12 @@ private fun GovUkNavHost(
             navigateTo = { route -> navController.navigate(route) },
             onBiometricsClick = { navController.navigate(BIOMETRIC_SETTINGS_ROUTE) },
             appVersion = BuildConfig.VERSION_NAME_USER_FACING,
-            launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) },
+            launchBrowser = { url ->
+                browserLauncher.launchPartial(
+                    context = context,
+                    url = url
+                ) { showBrowserNotFoundAlert(context) }
+            },
             modifier = Modifier.padding(paddingValues)
         )
         signOutGraph(
@@ -435,10 +456,10 @@ private fun GovUkNavHost(
         )
         searchGraph(
             navController,
-            launchBrowser = { url -> browserLauncher.launch(url) })
+            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } })
         visitedGraph(
             navController = navController,
-            launchBrowser = { url -> browserLauncher.launch(url) },
+            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } },
             modifier = Modifier.padding(paddingValues)
         )
 
@@ -464,6 +485,18 @@ private fun showDeepLinkNotFoundAlert(context: Context) {
         setTitle(context.getString(R.string.deep_link_not_found_alert_title))
         setMessage(context.getString(R.string.deep_link_not_found_alert_message))
         setPositiveButton(context.getString(R.string.deep_link_not_found_alert_button)) { dialog, _ ->
+            dialog.dismiss()
+        }
+    }.also { deepLinkNotFoundAlert ->
+        deepLinkNotFoundAlert.show()
+    }
+}
+
+private fun showBrowserNotFoundAlert(context: Context) {
+    AlertDialog.Builder(context).apply {
+        setTitle(context.getString(R.string.browser_not_found_alert_title))
+        setMessage(context.getString(R.string.browser_not_found_alert_message))
+        setPositiveButton(context.getString(R.string.browser_not_found_alert_button)) { dialog, _ ->
             dialog.dismiss()
         }
     }.also { deepLinkNotFoundAlert ->
