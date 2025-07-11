@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="widget_title">Chat</string>
-  <string name="input_label">Ask your question here…</string>
+  <string name="input_label">Type your message here</string>
   <string name="button_text">Go</string>
   <string name="sources_header">Sources</string>
   <string name="pii_error_message">Personal data has been detected in your question. Please remove it and try again.</string>
+  <string name="characters_remaining_message">%1$s characters remaining</string>
+  <string name="characters_too_many_message">%1$s characters too many</string>
 </resources>

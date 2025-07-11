@@ -11,6 +11,7 @@ private val BlueAccent = Color(0xFF11E0F1)
 private val Blue2 = Color(0xFF259AFF)
 private val BlueLighter25 = Color(0xFF5694CA)
 private val BlueLighter50 = Color(0xFF8EB8DC)
+private val BlueLighter90 = Color(0xFFE8F1F8)
 private val BlueLighter95 = Color(0xFFF4F8FB)
 private val BlueDarker25 = Color(0xFF16548A)
 private val BlueDarker50 = Color(0xFF0F385C)
@@ -84,7 +85,9 @@ data class GovUkColourScheme(
         val logoDot: Color,
         val logoCrown: Color,
         val iconGreen: Color,
-        val textFieldError: Color
+        val textFieldError: Color,
+        val chatButtonIconDisabled: Color,
+        val chatButtonIconEnabled: Color
     )
 
     data class Surfaces(
@@ -123,7 +126,11 @@ data class GovUkColourScheme(
         val textFieldBackground: Color,
         val textFieldHighlighted: Color,
         val radioSelected: Color,
-        val radioUnselected: Color
+        val radioUnselected: Color,
+        val chatBackground: Color,
+        val chatTextFieldBackground: Color,
+        val chatButtonBackgroundDisabled: Color,
+        val chatButtonBackgroundEnabled: Color
     )
 
     data class Strokes(
@@ -139,7 +146,8 @@ data class GovUkColourScheme(
         val cardGreen: Color,
         val textFieldCursor: Color,
         val textFieldError: Color,
-        val radioDivider: Color
+        val radioDivider: Color,
+        val chatTextFieldBorder: Color
     )
 }
 
@@ -172,7 +180,9 @@ internal val LightColorScheme = GovUkColourScheme(
         logoDot = TealAccent,
         logoCrown = BlackLighter50,
         iconGreen = GreenDarker25,
-        textFieldError = RedPrimary
+        textFieldError = RedPrimary,
+        chatButtonIconDisabled = Grey600,
+        chatButtonIconEnabled = White
     ),
     surfaces = Surfaces(
         background = White,
@@ -210,7 +220,11 @@ internal val LightColorScheme = GovUkColourScheme(
         textFieldBackground = Grey60,
         textFieldHighlighted = BlueLighter50,
         radioSelected = GreenPrimary,
-        radioUnselected = Grey300
+        radioUnselected = Grey300,
+        chatBackground = BlueLighter90,
+        chatTextFieldBackground = White,
+        chatButtonBackgroundDisabled = Grey100,
+        chatButtonBackgroundEnabled = BluePrimary
     ),
     strokes = Strokes(
         fixedContainer = BlackAlpha30,
@@ -225,7 +239,8 @@ internal val LightColorScheme = GovUkColourScheme(
         cardGreen = GreenLighter50,
         textFieldCursor = Grey700,
         textFieldError = RedPrimary,
-        radioDivider = Grey300
+        radioDivider = Grey300,
+        chatTextFieldBorder = Grey300
     )
 )
 
@@ -258,7 +273,9 @@ internal val DarkColorScheme = GovUkColourScheme(
         logoDot = TealAccent,
         logoCrown = BlackLighter50,
         iconGreen = White,
-        textFieldError = RedAccent
+        textFieldError = RedAccent,
+        chatButtonIconDisabled = Black,
+        chatButtonIconEnabled = BlueDarker80
     ),
     surfaces = Surfaces(
         background = Black,
@@ -296,7 +313,11 @@ internal val DarkColorScheme = GovUkColourScheme(
         textFieldBackground = Grey800,
         textFieldHighlighted = BlueDarker25,
         radioSelected = GreenAccent,
-        radioUnselected = Grey500
+        radioUnselected = Grey500,
+        chatBackground = BlueDarker80,
+        chatTextFieldBackground = BlueDarker50,
+        chatButtonBackgroundDisabled = Grey400,
+        chatButtonBackgroundEnabled = BlueAccent
     ),
     strokes = Strokes(
         fixedContainer = WhiteAlpha30,
@@ -311,7 +332,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         cardGreen = GreenLighter25,
         textFieldCursor = Grey300,
         textFieldError = RedAccent,
-        radioDivider = Grey500
+        radioDivider = Grey500,
+        chatTextFieldBorder = BlueLighter25
     )
 )
 
@@ -345,7 +367,9 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             logoDot = Color.Unspecified,
             logoCrown = Color.Unspecified,
             iconGreen = Color.Unspecified,
-            textFieldError = Color.Unspecified
+            textFieldError = Color.Unspecified,
+            chatButtonIconDisabled = Color.Unspecified,
+            chatButtonIconEnabled = Color.Unspecified
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,
@@ -383,7 +407,11 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             textFieldBackground = Color.Unspecified,
             textFieldHighlighted = Color.Unspecified,
             radioSelected = Color.Unspecified,
-            radioUnselected = Color.Unspecified
+            radioUnselected = Color.Unspecified,
+            chatBackground = Color.Unspecified,
+            chatTextFieldBackground = Color.Unspecified,
+            chatButtonBackgroundDisabled = Color.Unspecified,
+            chatButtonBackgroundEnabled = Color.Unspecified
         ),
         strokes = Strokes(
             fixedContainer = Color.Unspecified,
@@ -398,7 +426,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             cardGreen = Color.Unspecified,
             textFieldCursor = Color.Unspecified,
             textFieldError = Color.Unspecified,
-            radioDivider = Color.Unspecified
+            radioDivider = Color.Unspecified,
+            chatTextFieldBorder = Color.Unspecified
         )
     )
 }

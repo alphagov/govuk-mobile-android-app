@@ -1,16 +1,23 @@
 package uk.gov.govuk.chat.ui
 
+import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,14 +31,14 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.isTraversalGroup
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import kotlinx.coroutines.delay
+import uk.gov.govuk.chat.BuildConfig
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
@@ -41,16 +48,13 @@ import uk.gov.govuk.chat.data.remote.model.Conversation
 import uk.gov.govuk.chat.data.remote.model.Source
 import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
-import uk.gov.govuk.design.ui.component.FixedContainerDivider
-import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
-import uk.gov.govuk.design.ui.component.PrimaryButton
+import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import kotlin.math.abs
 
 @Composable
 internal fun ChatRoute(
-    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: ChatViewModel = hiltViewModel()
@@ -61,7 +65,6 @@ internal fun ChatRoute(
         onSubmit = { question ->
             viewModel.onSubmit(question)
         },
-        onBack = onBack,
         modifier = modifier
     )
 }
@@ -70,7 +73,6 @@ internal fun ChatRoute(
 private fun ChatScreen(
     uiState: ChatUiState?,
     onSubmit: (String) -> Unit,
-    onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var question by remember { mutableStateOf("") }
@@ -89,16 +91,9 @@ private fun ChatScreen(
         }
     }
 
-    Column(modifier) {
-        FullScreenHeader(
-            modifier = Modifier
-                .semantics {
-                    isTraversalGroup = true
-                    traversalIndex = -1f
-                },
-            onBack = { onBack() }
-        )
-
+    Column(
+        Modifier.background(color = GovUkTheme.colourScheme.surfaces.chatBackground)
+    ) {
         Column(
             Modifier
                 .verticalScroll(scrollState)
@@ -113,12 +108,13 @@ private fun ChatScreen(
                     val isLastQuestion = index == uiState.chatEntries.size - 1
                     Column(
                         modifier = if (isLastQuestion) {
-                            Modifier.onGloballyPositioned { layoutCoordinates ->
-                                val positionInScrollableContent = layoutCoordinates.positionInParent().y
+                            modifier.onGloballyPositioned { layoutCoordinates ->
+                                val positionInScrollableContent =
+                                    layoutCoordinates.positionInParent().y
                                 scrollPosition = positionInScrollableContent.toInt()
                             }
                         } else {
-                            Modifier
+                            modifier
                         }
                     ) {
                         BodyBoldLabel(
@@ -153,10 +149,9 @@ private fun ChatScreen(
         }
 
         Column(
-            modifier.fillMaxWidth()
+            modifier
         ) {
-            FixedContainerDivider()
-            MediumVerticalSpacer()
+            SmallVerticalSpacer()
 
             if (uiState != null) {
                 if (uiState.loading) {
@@ -170,9 +165,7 @@ private fun ChatScreen(
                 }
             }
 
-            MediumVerticalSpacer()
-
-            TextField(
+            OutlinedTextField(
                 value = question,
                 onValueChange = {
                     buttonDisabled = false
@@ -180,6 +173,7 @@ private fun ChatScreen(
                     question = it
                     characterCount = it.length
                 },
+                shape = RoundedCornerShape(40.dp),
                 label = {
                     Text(
                         text = stringResource(id = R.string.input_label)
@@ -202,19 +196,22 @@ private fun ChatScreen(
                         )
                     }
                 },
-                colors = TextFieldDefaults.colors(
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = GovUkTheme.colourScheme.strokes.chatTextFieldBorder,
+                    unfocusedBorderColor = GovUkTheme.colourScheme.strokes.chatTextFieldBorder,
+                    errorBorderColor = GovUkTheme.colourScheme.strokes.chatTextFieldBorder,
+                    disabledBorderColor = GovUkTheme.colourScheme.strokes.chatTextFieldBorder,
                     cursorColor = GovUkTheme.colourScheme.strokes.textFieldCursor,
-                    errorContainerColor = GovUkTheme.colourScheme.surfaces.textFieldBackground,
+                    errorContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
+                    focusedContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
+                    unfocusedContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
                     errorCursorColor = GovUkTheme.colourScheme.strokes.textFieldCursor,
-                    errorIndicatorColor = GovUkTheme.colourScheme.strokes.textFieldError,
                     errorLabelColor = GovUkTheme.colourScheme.textAndIcons.primary,
                     errorPrefixColor = GovUkTheme.colourScheme.textAndIcons.textFieldError,
                     errorPlaceholderColor = GovUkTheme.colourScheme.textAndIcons.textFieldError,
                     errorSuffixColor = GovUkTheme.colourScheme.textAndIcons.textFieldError,
                     errorSupportingTextColor = GovUkTheme.colourScheme.textAndIcons.textFieldError,
                     errorTextColor = GovUkTheme.colourScheme.textAndIcons.primary,
-                    focusedContainerColor = GovUkTheme.colourScheme.surfaces.textFieldBackground,
-                    focusedIndicatorColor = GovUkTheme.colourScheme.textAndIcons.secondary,
                     focusedLabelColor = GovUkTheme.colourScheme.textAndIcons.secondary,
                     focusedPlaceholderColor = GovUkTheme.colourScheme.textAndIcons.secondary,
                     focusedTextColor = GovUkTheme.colourScheme.textAndIcons.primary,
@@ -222,76 +219,141 @@ private fun ChatScreen(
                         handleColor = GovUkTheme.colourScheme.surfaces.textFieldHighlighted,
                         backgroundColor = GovUkTheme.colourScheme.surfaces.textFieldHighlighted
                     ),
-                    unfocusedContainerColor = GovUkTheme.colourScheme.surfaces.textFieldBackground,
-                    unfocusedIndicatorColor = GovUkTheme.colourScheme.textAndIcons.secondary,
                     unfocusedLabelColor = GovUkTheme.colourScheme.textAndIcons.secondary,
                     unfocusedPlaceholderColor = GovUkTheme.colourScheme.textAndIcons.secondary,
                     unfocusedTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
                 )
             )
 
-            MediumVerticalSpacer()
-
-            PrimaryButton(
-                text = stringResource(id = R.string.button_text),
-                onClick = {
-                    val currentQuestion = question
-                    isError = StringCleaner.includesPII(currentQuestion)
-                    if (!isError) {
-                        onSubmit(currentQuestion)
-                        question = ""
-                    }
-                },
-                enabled = question.isNotBlank() && !buttonDisabled,
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = GovUkTheme.spacing.medium),
-            )
-
-            // TODO: add these to config somewhere!
-            val characterLimit = 300
-            val characterNotify = 250
-
-            if (characterCount in characterNotify..<characterLimit) {
-                buttonDisabled = false
-                Text(
-                    text = "${characterLimit - characterCount} characters remaining",
-                    color = GovUkTheme.colourScheme.textAndIcons.primary,
-                    style = GovUkTheme.typography.bodyBold,
-                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+            ) {
+                buttonDisabled = CharacterCountText(
+                    characterCount = characterCount,
+                    buttonDisabled = buttonDisabled,
+                    modifier = Modifier.weight(1f)
                 )
-            } else if (characterCount == characterLimit) {
-                buttonDisabled = false
-                Text(
-                    text = "0 characters remaining",
-                    color = GovUkTheme.colourScheme.textAndIcons.primary,
-                    style = GovUkTheme.typography.bodyBold,
-                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
-                )
-            } else if (characterCount > characterLimit) {
-                buttonDisabled = true
-                Text(
-                    text = "${abs(characterLimit - characterCount)} characters too many",
-                    color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
-                    style = GovUkTheme.typography.bodyBold,
-                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+
+                ChatButton(
+                    onClick = {
+                        val currentQuestion = question
+                        isError = StringCleaner.includesPII(currentQuestion)
+                        if (!isError) {
+                            onSubmit(currentQuestion)
+                            question = ""
+                        }
+                    },
+                    enabled = question.isNotBlank() && !buttonDisabled,
+                    modifier = Modifier
+                        .padding(horizontal = GovUkTheme.spacing.medium),
                 )
             }
+
+            SmallVerticalSpacer()
         }
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-private fun OnboardingScreenPreview() {
+private fun CharacterCountText(
+    characterCount: Int,
+    buttonDisabled: Boolean,
+    modifier: Modifier = Modifier
+): Boolean {
+    val characterLimit = BuildConfig.CHARACTER_COUNT_LIMIT
+    val characterNotify = BuildConfig.CHARACTER_COUNT_NOTIFY
+
+    var color = GovUkTheme.colourScheme.textAndIcons.primary
+    var style = GovUkTheme.typography.bodyBold
+    var disabled = buttonDisabled
+    var text = ""
+
+    if (characterCount in characterNotify..<characterLimit) {
+        text = stringResource(
+            R.string.characters_remaining_message,
+            "${characterLimit - characterCount}"
+        )
+        disabled = false
+    } else if (characterCount == characterLimit) {
+        text = stringResource(
+            R.string.characters_remaining_message,
+            "0"
+        )
+        disabled = false
+    } else if (characterCount > characterLimit) {
+        text = stringResource(
+            R.string.characters_too_many_message,
+            "${abs(characterLimit - characterCount)}"
+        )
+        color = GovUkTheme.colourScheme.textAndIcons.textFieldError
+        disabled = true
+    }
+
+    Text(
+        text = text,
+        color = color,
+        style = style,
+        modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium)
+    )
+    return disabled
+}
+
+@Composable
+private fun ChatButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        colors = IconButtonColors(
+            containerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
+            contentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconEnabled,
+            disabledContainerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundDisabled,
+            disabledContentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconDisabled
+        )
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.outline_arrow_upward_24),
+            contentDescription = ""
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO
+)
+@Composable
+private fun LightModeChatScreenPreview() {
     GovUkTheme {
         ChatScreen(
             uiState = ChatUiState(
-                conversationId = "210d1a18-7b77-4418-9938-ad1b5700b9fd",
+                conversationId = "",
                 loading = false
             ),
             onSubmit = { _ -> },
-            onBack = {},
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun DarkModeChatScreenPreview() {
+    GovUkTheme {
+        ChatScreen(
+            uiState = ChatUiState(
+                conversationId = "",
+                loading = false
+            ),
+            onSubmit = { _ -> },
         )
     }
 }
