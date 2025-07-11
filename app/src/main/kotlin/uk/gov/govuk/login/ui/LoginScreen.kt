@@ -1,6 +1,7 @@
 package uk.gov.govuk.login.ui
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.res.Configuration
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -46,7 +47,11 @@ internal fun LoginRoute(
 
     LoginScreen(
         onContinueClick = {
-            authLauncher.launch(viewModel.authIntent)
+            try {
+                authLauncher.launch(viewModel.authIntent)
+            } catch (e: ActivityNotFoundException) {
+                onError()
+            }
         },
         modifier = modifier
     )
