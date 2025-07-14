@@ -265,7 +265,6 @@ private fun characterCountText(
     val characterNotify = 250
 
     var color = GovUkTheme.colourScheme.textAndIcons.primary
-    var style = GovUkTheme.typography.bodyBold
     var disabled = buttonDisabled
     var text = ""
 
@@ -293,7 +292,7 @@ private fun characterCountText(
     Text(
         text = text,
         color = color,
-        style = style,
+        style = GovUkTheme.typography.bodyBold,
         modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium)
     )
     return disabled
