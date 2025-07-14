@@ -5,6 +5,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
+import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.chat.data.remote.ChatApi
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
@@ -16,7 +17,8 @@ import kotlin.time.Duration.Companion.seconds
 
 @Singleton
 internal class ChatRepo @Inject constructor(
-    private val chatApi: ChatApi
+    private val chatApi: ChatApi,
+    private val dataStore: ChatDataStore
 ) {
     // TODO: set and get the conversation id from the datastore
     private var _conversationId: String = ""
@@ -35,27 +37,16 @@ internal class ChatRepo @Inject constructor(
         )
 
         val response = safeChatApiCall { chatApi.startConversation(requestBody) }
-        if (response.isSuccessful) {
-            _conversationId = response.body()?.conversationId ?: ""
-            _questionId = response.body()?.id ?: ""
+        val responseBody = response.body()
+        return if (response.isSuccessful && responseBody != null) {
+            _conversationId = responseBody.conversationId
+            dataStore.saveConversationId(_conversationId)
+            _questionId = responseBody.id
             return response.body()
+        } else {
+            // Todo - handle error!!!
+            null
         }
-
-//        Currently not considered!
-//        This seems the most sensible approach to me ATM, but needs content
-//        and product agreement
-        return AnsweredQuestion(
-            id = questionId,
-            answer = Answer(
-                id = "",
-                createdAt = "",
-                message = "",
-                sources = emptyList()
-            ),
-            conversationId = conversationId,
-            createdAt = "",
-            message = "Sorry, unable to start your conversation at the moment"
-        )
     }
 
     suspend fun updateConversation(question: String): AnsweredQuestion? {
@@ -64,43 +55,23 @@ internal class ChatRepo @Inject constructor(
         )
 
         val response = safeChatApiCall { chatApi.updateConversation(conversationId, requestBody) }
-        if (response.isSuccessful) {
+        return if (response.isSuccessful) {
             _questionId = response.body()?.id ?: ""
             return response.body()
+        } else {
+            // Todo - handle error!!!
+            null
         }
-
-//        Currently not considered!
-//        This seems the most sensible approach to me ATM, but needs content
-//        and product agreement
-        return AnsweredQuestion(
-            id = questionId,
-            answer = Answer(
-                id = "",
-                createdAt = "",
-                message = "",
-                sources = emptyList()
-            ),
-            conversationId = conversationId,
-            createdAt = "",
-            message = "Sorry, unable to update your conversation at the moment"
-        )
     }
 
     suspend fun getConversation(): Conversation? {
         val response = safeChatApiCall { chatApi.getConversation(conversationId) }
-        if (response.isSuccessful) {
+        return if (response.isSuccessful) {
             return response.body()
+        } else {
+            // Todo - handle error!!!
+            null
         }
-
-//        Currently not considered!
-//        This seems the most sensible approach to me ATM, but needs content
-//        and product agreement
-        return Conversation(
-            id = conversationId,
-            answeredQuestions = emptyList(),
-            createdAt = "",
-            pendingQuestion = null
-        )
     }
 
 //    wait and retry set as defaults, but can be overridden for testing
@@ -120,15 +91,8 @@ internal class ChatRepo @Inject constructor(
             counter++
         }
 
-//        Currently not considered!
-//        This seems the most sensible approach to me ATM, but needs content
-//        and product agreement
-        return Answer(
-            id = "",
-            createdAt = "",
-            message = "Sorry, unable to answer to your question at the moment",
-            sources = emptyList()
-        )
+        // Todo - handle error!!!
+        return null
     }
 
     private suspend fun <T> safeChatApiCall(apiCall: suspend () -> Response<T>): Response<T> {
