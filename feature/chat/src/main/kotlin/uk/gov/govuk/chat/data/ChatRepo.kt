@@ -20,18 +20,33 @@ internal class ChatRepo @Inject constructor(
     private val chatApi: ChatApi,
     private val dataStore: ChatDataStore
 ) {
-    // TODO: set and get the conversation id from the datastore
-    private var _conversationId: String = ""
-    val conversationId: String
-        get() = _conversationId
 
-    // We do not need to store this in the datastore, it's only needed
-    // until an question is answered, then it's removed
-    private var _questionId: String = ""
-    val questionId: String
-        get() = _questionId
+    suspend fun getConversation(): Conversation? {
+        val conversationId = dataStore.conversationId()
+        if (conversationId != null) {
+            val response = safeChatApiCall { chatApi.getConversation(conversationId) }
+            if (response.isSuccessful) {
+                return response.body()
+            }
+        }
 
-    suspend fun startConversation(question: String): AnsweredQuestion? {
+        // Todo - handle error!!!
+        return null
+    }
+
+    suspend fun askQuestion(question: String): AnsweredQuestion? {
+        val conversationId = dataStore.conversationId()
+        return if (conversationId != null) {
+            updateConversation(
+                conversationId = conversationId,
+                question = question
+            )
+        } else {
+            startConversation(question)
+        }
+    }
+
+    private suspend fun startConversation(question: String): AnsweredQuestion? {
         val requestBody = ConversationQuestionRequest(
             userQuestion = question
         )
@@ -39,9 +54,7 @@ internal class ChatRepo @Inject constructor(
         val response = safeChatApiCall { chatApi.startConversation(requestBody) }
         val responseBody = response.body()
         return if (response.isSuccessful && responseBody != null) {
-            _conversationId = responseBody.conversationId
-            dataStore.saveConversationId(_conversationId)
-            _questionId = responseBody.id
+            dataStore.saveConversationId(responseBody.conversationId)
             return response.body()
         } else {
             // Todo - handle error!!!
@@ -49,14 +62,13 @@ internal class ChatRepo @Inject constructor(
         }
     }
 
-    suspend fun updateConversation(question: String): AnsweredQuestion? {
+    private suspend fun updateConversation(conversationId: String, question: String): AnsweredQuestion? {
         val requestBody = ConversationQuestionRequest(
             userQuestion = question
         )
 
         val response = safeChatApiCall { chatApi.updateConversation(conversationId, requestBody) }
         return if (response.isSuccessful) {
-            _questionId = response.body()?.id ?: ""
             return response.body()
         } else {
             // Todo - handle error!!!
@@ -64,18 +76,13 @@ internal class ChatRepo @Inject constructor(
         }
     }
 
-    suspend fun getConversation(): Conversation? {
-        val response = safeChatApiCall { chatApi.getConversation(conversationId) }
-        return if (response.isSuccessful) {
-            return response.body()
-        } else {
-            // Todo - handle error!!!
-            null
-        }
-    }
-
-//    wait and retry set as defaults, but can be overridden for testing
-    suspend fun getAnswer(wait: Int = 4, retries: Int = 12): Answer? {
+    //    wait and retry set as defaults, but can be overridden for testing
+    suspend fun getAnswer(
+        conversationId: String,
+        questionId: String,
+        wait: Int = 4,
+        retries: Int = 12
+    ): Answer? {
         var counter = 0
 
         while (counter < retries) {

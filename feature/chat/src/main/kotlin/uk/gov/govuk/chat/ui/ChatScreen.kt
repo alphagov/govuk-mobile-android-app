@@ -129,19 +129,21 @@ private fun ChatScreen(
                             enableSoftBreakAddsNewLine = false
                         )
 
-                        if (chatEntry.value.sources.isNotEmpty()) {
-                            BodyBoldLabel(
-                                text = stringResource(id = R.string.sources_header)
-                            )
-                            MediumVerticalSpacer()
-
-                            chatEntry.value.sources.forEach { source ->
-                                MarkdownText(
-                                    markdown = source,
-                                    style = GovUkTheme.typography.bodyRegular,
-                                    enableSoftBreakAddsNewLine = false
+                        chatEntry.value.sources?.let { sources ->
+                            if (sources.isNotEmpty()) {
+                                BodyBoldLabel(
+                                    text = stringResource(id = R.string.sources_header)
                                 )
                                 MediumVerticalSpacer()
+
+                                sources.forEach { source ->
+                                    MarkdownText(
+                                        markdown = source,
+                                        style = GovUkTheme.typography.bodyRegular,
+                                        enableSoftBreakAddsNewLine = false
+                                    )
+                                    MediumVerticalSpacer()
+                                }
                             }
                         }
                     }
@@ -338,10 +340,7 @@ private fun ChatButton(
 private fun LightModeChatScreenPreview() {
     GovUkTheme {
         ChatScreen(
-            uiState = ChatUiState(
-                conversationId = "",
-                loading = false
-            ),
+            uiState = ChatUiState(loading = false),
             onSubmit = { _ -> },
         )
     }
