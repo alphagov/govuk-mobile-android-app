@@ -319,7 +319,7 @@ private fun ChatButton(
     ) {
         Icon(
             painter = painterResource(R.drawable.outline_arrow_upward_24),
-            contentDescription = ""
+            contentDescription = null
         )
     }
 }
