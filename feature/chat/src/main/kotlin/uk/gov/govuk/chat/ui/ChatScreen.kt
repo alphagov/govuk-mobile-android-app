@@ -230,7 +230,7 @@ private fun ChatScreen(
                     .fillMaxWidth()
                     .padding(horizontal = GovUkTheme.spacing.medium),
             ) {
-                buttonDisabled = CharacterCountText(
+                buttonDisabled = characterCountText(
                     characterCount = characterCount,
                     buttonDisabled = buttonDisabled,
                     modifier = Modifier.weight(1f)
@@ -257,7 +257,7 @@ private fun ChatScreen(
 }
 
 @Composable
-private fun CharacterCountText(
+private fun characterCountText(
     characterCount: Int,
     buttonDisabled: Boolean,
     modifier: Modifier = Modifier
