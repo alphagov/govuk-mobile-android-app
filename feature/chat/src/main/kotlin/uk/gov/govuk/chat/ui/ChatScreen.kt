@@ -25,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -75,11 +76,11 @@ private fun ChatScreen(
     onSubmit: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var question by remember { mutableStateOf("") }
+    var question by rememberSaveable { mutableStateOf("") }
     var scrollPosition by remember { mutableIntStateOf(0) }
-    var isError by remember { mutableStateOf(false) }
-    var characterCount by remember { mutableIntStateOf(0) }
-    var buttonDisabled by remember { mutableStateOf(false) }
+    var isError by rememberSaveable { mutableStateOf(false) }
+    var characterCount by rememberSaveable { mutableIntStateOf(0) }
+    var buttonDisabled by rememberSaveable { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val scrollState = rememberScrollState()
 
