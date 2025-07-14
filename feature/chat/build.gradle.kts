@@ -24,9 +24,6 @@ android {
 
         buildConfigField("String", "CHAT_BASE_URL", "\"https://chat.integration.publishing.service.gov.uk/api/v0/\"")
 
-        buildConfigField("Integer", "CHARACTER_COUNT_LIMIT", "300")
-        buildConfigField("Integer", "CHARACTER_COUNT_NOTIFY", "250")
-
         if (file("${rootProject.projectDir.path}/github.properties").exists()) {
             val propsFile = File("${rootProject.projectDir.path}/github.properties")
             val props = Properties().also { it.load(FileInputStream(propsFile)) }

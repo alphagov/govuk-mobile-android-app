@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import kotlinx.coroutines.delay
-import uk.gov.govuk.chat.BuildConfig
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
@@ -262,8 +261,8 @@ private fun characterCountText(
     buttonDisabled: Boolean,
     modifier: Modifier = Modifier
 ): Boolean {
-    val characterLimit = BuildConfig.CHARACTER_COUNT_LIMIT
-    val characterNotify = BuildConfig.CHARACTER_COUNT_NOTIFY
+    val characterLimit = 300
+    val characterNotify = 250
 
     var color = GovUkTheme.colourScheme.textAndIcons.primary
     var style = GovUkTheme.typography.bodyBold
