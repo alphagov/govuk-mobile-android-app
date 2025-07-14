@@ -5,6 +5,12 @@
   <string name="button_text">Go</string>
   <string name="sources_header">Sources</string>
   <string name="pii_error_message">Personal data has been detected in your question. Please remove it and try again.</string>
-  <string name="characters_remaining_message">%1$s characters remaining</string>
-  <string name="characters_too_many_message">%1$s characters too many</string>
+  <plurals name="characterCountUnderOrAtLimit">
+    <item quantity="one">1 character remaining</item>
+    <item quantity="other">%d characters remaining</item>
+  </plurals>
+  <plurals name="characterCountOverLimit">
+    <item quantity="one">1 character too many</item>
+    <item quantity="other">%d characters too many</item>
+  </plurals>
 </resources>

@@ -32,6 +32,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -269,21 +270,27 @@ private fun characterCountText(
     var text = ""
 
     if (characterCount in characterNotify..<characterLimit) {
-        text = stringResource(
-            R.string.characters_remaining_message,
-            "${characterLimit - characterCount}"
+        val characterDifference = (characterLimit - characterCount)
+        text = pluralStringResource(
+            id = R.plurals.characterCountUnderOrAtLimit,
+            count = characterDifference,
+            characterDifference
         )
         disabled = false
     } else if (characterCount == characterLimit) {
-        text = stringResource(
-            R.string.characters_remaining_message,
-            "0"
+        val characterDifference = 0
+        text = pluralStringResource(
+            id = R.plurals.characterCountUnderOrAtLimit,
+            count = characterDifference,
+            characterDifference
         )
         disabled = false
     } else if (characterCount > characterLimit) {
-        text = stringResource(
-            R.string.characters_too_many_message,
-            "${abs(characterLimit - characterCount)}"
+        val characterDifference = abs(characterLimit - characterCount)
+        text = pluralStringResource(
+            id = R.plurals.characterCountOverLimit,
+            count = characterDifference,
+            characterDifference
         )
         color = GovUkTheme.colourScheme.textAndIcons.textFieldError
         disabled = true
