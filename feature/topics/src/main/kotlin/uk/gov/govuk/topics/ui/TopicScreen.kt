@@ -57,6 +57,7 @@ internal fun TopicRoute(
 ) {
     val viewModel: TopicViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
+    val focusRequester = remember { FocusRequester() }
 
     Box(modifier.fillMaxSize()) {
         uiState?.let {
@@ -90,7 +91,8 @@ internal fun TopicRoute(
                         onSubtopic = { text, ref, selectedItemIndex ->
                             viewModel.onSubtopicClick(text, selectedItemIndex)
                             onSubtopic(ref)
-                        }
+                        },
+                        focusRequester = focusRequester
                     )
                 }
 
@@ -121,10 +123,10 @@ private fun TopicScreen(
     onExternalLink: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit,
     onStepByStepSeeAll: (section: String, text: String, selectedItemIndex: Int) -> Unit,
     onSubtopic: (text: String, ref: String, selectedItemIndex: Int) -> Unit,
+    focusRequester: FocusRequester,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
-    val focusRequester = remember { FocusRequester() }
     val lazyListState = rememberLazyListState()
 
     Column(modifier.fillMaxWidth()) {
@@ -224,9 +226,9 @@ private fun TopicScreen(
     }
     LaunchedEffect(Unit) {
         onPageView(topic.title)
+        focusManager.clearFocus(true)
+        delay(500)
         if (lazyListState.firstVisibleItemIndex == 0) {
-            focusManager.clearFocus(true)
-            delay(500)
             focusRequester.requestFocus()
         }
     }
