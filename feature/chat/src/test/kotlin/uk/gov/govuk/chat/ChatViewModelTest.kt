@@ -167,7 +167,7 @@ class ChatViewModelTest {
 
         val states = mutableListOf<ChatUiState>()
 
-        val viewModel = ChatViewModel(chatRepo)
+        val viewModel = ChatViewModel(chatRepo, Dispatchers.Main)
 
         val job = launch {
             viewModel.uiState
@@ -233,7 +233,7 @@ class ChatViewModelTest {
 
         val states = mutableListOf<ChatUiState>()
 
-        val viewModel = ChatViewModel(chatRepo)
+        val viewModel = ChatViewModel(chatRepo, Dispatchers.Main)
 
         val job = launch {
             viewModel.uiState
@@ -275,7 +275,7 @@ class ChatViewModelTest {
 
         val states = mutableListOf<ChatUiState>()
 
-        val viewModel = ChatViewModel(chatRepo)
+        val viewModel = ChatViewModel(chatRepo, Dispatchers.Main)
 
         val job = launch {
             viewModel.uiState
