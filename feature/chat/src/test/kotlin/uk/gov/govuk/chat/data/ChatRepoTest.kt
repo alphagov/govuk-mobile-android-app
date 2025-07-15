@@ -1,172 +1,154 @@
 package uk.gov.govuk.chat.data
 
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
+import retrofit2.Response
+import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.chat.data.remote.ChatApi
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
 import uk.gov.govuk.chat.data.remote.model.Conversation
-import uk.gov.govuk.chat.data.remote.model.ConversationQuestionRequest
-import uk.gov.govuk.chat.data.remote.model.Source
 
 class ChatRepoTest {
+
     private val chatApi = mockk<ChatApi>(relaxed = true)
+    private val dataStore = mockk<ChatDataStore>(relaxed = true)
+    private val conversationResponse = mockk<Response<Conversation>>(relaxed = true)
+    private val conversation = mockk<Conversation>(relaxed = true)
+    private val questionResponse = mockk<Response<AnsweredQuestion>>(relaxed = true)
+    private val answeredQuestion = mockk<AnsweredQuestion>(relaxed = true)
+    private val answerResponse = mockk<Response<Answer>>(relaxed = true)
+    private val answer = mockk<Answer>(relaxed = true)
+
     private lateinit var chatRepo: ChatRepo
 
     @Before
     fun setup() {
-        chatRepo = ChatRepo(chatApi)
+        chatRepo = ChatRepo(chatApi, dataStore)
     }
 
     @Test
-    fun `Successful start conversation returns 201`() = runTest {
-        val question = "question"
-        val requestBody = ConversationQuestionRequest(
-            userQuestion = question
-        )
-        val answeredQuestion = AnsweredQuestion(
-            id = "questionId",
-            answer = Answer(
-                id = "answerId",
-                createdAt = "createdAt",
-                message = "message",
-                sources = emptyList()
-            ),
-            conversationId = "conversationId",
-            createdAt = "createdAt",
-            message = "question"
-        )
+    fun `Get conversation returns null when there is no conversation id`() = runTest {
+        coEvery { dataStore.conversationId() } returns null
 
-        coEvery { chatRepo.startConversation(question) } returns answeredQuestion
-
-        assertEquals(requestBody.userQuestion, question)
-        assertEquals("questionId", answeredQuestion.id)
-        assertEquals("answerId", answeredQuestion.answer.id)
-        assertEquals("createdAt", answeredQuestion.answer.createdAt)
-        assertEquals("message", answeredQuestion.answer.message)
-        assertEquals(emptyList<Source>(), answeredQuestion.answer.sources)
-        assertEquals("conversationId", answeredQuestion.conversationId)
-        assertEquals("createdAt", answeredQuestion.createdAt)
-        assertEquals(question, answeredQuestion.message)
+        assertNull(chatRepo.getConversation())
     }
 
     @Test
-    fun `Successful update conversation returns 201`() = runTest {
-        val conversationId = "conversationId"
-        val question = "question"
-        val requestBody = ConversationQuestionRequest(
-            userQuestion = question
-        )
-        val answeredQuestion = AnsweredQuestion(
-            id = "questionId",
-            answer = Answer(
-                id = "answerId",
-                createdAt = "createdAt",
-                message = "message",
-                sources = emptyList()
-            ),
-            conversationId = conversationId,
-            createdAt = "createdAt",
-            message = "question"
-        )
+    fun `Get conversation returns null when api call is not successful`() = runTest {
+        coEvery { dataStore.conversationId() } returns "123"
+        coEvery { chatApi.getConversation(any()) } returns conversationResponse
+        every { conversationResponse.isSuccessful } returns false
 
-        coEvery { chatRepo.updateConversation(question) } returns answeredQuestion
-
-        assertEquals(requestBody.userQuestion, question)
-        assertEquals("questionId", answeredQuestion.id)
-        assertEquals("answerId", answeredQuestion.answer.id)
-        assertEquals("createdAt", answeredQuestion.answer.createdAt)
-        assertEquals("message", answeredQuestion.answer.message)
-        assertEquals(emptyList<Source>(), answeredQuestion.answer.sources)
-        assertEquals("conversationId", answeredQuestion.conversationId)
-        assertEquals("createdAt", answeredQuestion.createdAt)
-        assertEquals(question, answeredQuestion.message)
+        assertNull(chatRepo.getConversation())
     }
 
     @Test
-    fun `Successful get answer returns 200`() = runTest {
-        val answer = Answer(
-            id = "id",
-            createdAt = "createdAt",
-            message = "message",
-            sources = emptyList()
-        )
+    fun `Get conversation returns conversation`() = runTest {
+        coEvery { dataStore.conversationId() } returns "123"
+        coEvery { chatApi.getConversation(any()) } returns conversationResponse
+        every { conversationResponse.isSuccessful } returns true
+        every { conversationResponse.body() } returns conversation
 
-        coEvery { chatRepo.getAnswer(wait = 0, retries = 1) } returns answer
-
-        assertEquals("id", answer.id)
-        assertEquals("createdAt", answer.createdAt)
-        assertEquals("message", answer.message)
-        assertEquals(emptyList<Source>(), answer.sources)
+        assertEquals(conversation, chatRepo.getConversation())
     }
 
     @Test
-    fun `Successful get answer returns 202`() = runTest {
-//        TODO - should try again until 200 or retries limit is reached
-//        TODO - when the retry limit is reached, I suggest we return a fake Answer with a suitable message
+    fun `Ask question returns null when api call is not successful after starting a conversation`() = runTest {
+        coEvery { dataStore.conversationId() } returns null
+        coEvery { chatApi.startConversation(any()) } returns questionResponse
+        every { questionResponse.isSuccessful } returns false
+
+        assertNull(chatRepo.askQuestion("abc"))
     }
 
     @Test
-    fun `Successful get conversation returns 200`() = runTest {
-        val conversation = Conversation(
-            id = "id",
-            answeredQuestions = emptyList(),
-            createdAt = "createdAt",
-            pendingQuestion = null
-        )
+    fun `Ask question returns null when response body is null after starting a conversation`() = runTest {
+        coEvery { dataStore.conversationId() } returns null
+        coEvery { chatApi.startConversation(any()) } returns questionResponse
+        every { questionResponse.isSuccessful } returns true
+        every { questionResponse.body() } returns null
 
-        coEvery { chatRepo.getConversation() } returns conversation
-
-        assertEquals("id", conversation.id)
-        assertEquals(emptyList<Source>(), conversation.answeredQuestions)
-        assertEquals("createdAt", conversation.createdAt)
+        assertNull(chatRepo.askQuestion("abc"))
     }
 
     @Test
-    fun `API call returns 400`() = runTest {
-//        TODO - should show full page generic "There's a problem" message
+    fun `Ask question returns answered question and persists conversation id after starting a conversation`() = runTest {
+        coEvery { dataStore.conversationId() } returns null
+        coEvery { chatApi.startConversation(any()) } returns questionResponse
+        every { questionResponse.isSuccessful } returns true
+        every { questionResponse.body() } returns answeredQuestion
+        every { answeredQuestion.conversationId } returns "123"
+
+        assertEquals(answeredQuestion, chatRepo.askQuestion("abc"))
+
+        coVerify {
+            dataStore.saveConversationId("123")
+        }
     }
 
     @Test
-    fun `API call returns 403`() = runTest {
-//        TODO - should show full page generic "There's a problem" message
-//        We should never see this - especially once the API gateway is in place
+    fun `Ask question returns null when api call is not successful after updating a conversation`() = runTest {
+        coEvery { dataStore.conversationId() } returns "123"
+        coEvery { chatApi.updateConversation("123", any()) } returns questionResponse
+        every { questionResponse.isSuccessful } returns false
+
+        assertNull(chatRepo.askQuestion("abc"))
     }
 
     @Test
-    fun `API call returns 404`() = runTest {
-//        TODO - should show full page generic "There's a problem" message
+    fun `Ask question returns null when response body is null after updating a conversation`() = runTest {
+        coEvery { dataStore.conversationId() } returns "123"
+        coEvery { chatApi.updateConversation("123", any()) } returns questionResponse
+        every { questionResponse.isSuccessful } returns true
+        every { questionResponse.body() } returns null
+
+        assertNull(chatRepo.askQuestion("abc"))
     }
 
     @Test
-    fun `API call returns 422`() = runTest {
-//        TODO - should show input field error "There's a problem" message
-//        I suggest we don't need this as it indicates PII or blank input,
-//        both of these issues should be handled on the UI
+    fun `Ask question returns answered question after updating a conversation`() = runTest {
+        coEvery { dataStore.conversationId() } returns "123"
+        coEvery { chatApi.updateConversation("123", any()) } returns questionResponse
+        every { questionResponse.isSuccessful } returns true
+        every { questionResponse.body() } returns answeredQuestion
+
+        assertEquals(answeredQuestion, chatRepo.askQuestion("abc"))
     }
 
     @Test
-    fun `API call returns 429`() = runTest {
-//        TODO - should show full page generic "There's a problem" message
-//        We should never see this - especially once the API gateway is in place
+    fun `Get answer retries and returns null when api does not return an answer`() = runTest {
+        coEvery { chatApi.getAnswer(any(), any()) } returns answerResponse
+        every { answerResponse.isSuccessful } returns false andThen true
+        every { answerResponse.code() } returns 202
+
+        val answer = chatRepo.getAnswer("123", "abc", wait = 1, retries = 2)
+
+        assertNull(answer)
+
+        coVerify(exactly = 2) {
+            chatApi.getAnswer("123", "abc")
+        }
     }
 
     @Test
-    fun `API call returns 500`() = runTest {
-//        TODO - should show full page generic "There's a problem" message
-    }
+    fun `Get answer retries and returns answer when api does returns an answer`() = runTest {
+        coEvery { chatApi.getAnswer(any(), any()) } returns answerResponse
+        every { answerResponse.isSuccessful } returns false andThen true
+        every { answerResponse.code() } returns 202 andThen 202 andThen 202 andThen 202 andThen 200 andThen 200
+        every { answerResponse.body() } returns answer
 
-    @Test
-    fun `API call throws UnknownHostException`() = runTest {
-//        TODO - should show full page device not connected message
-    }
+        assertEquals(answer, chatRepo.getAnswer("123", "abc", wait = 1))
 
-    @Test
-    fun `API call throws HttpException`() = runTest {
-//        TODO - should show full page Api not responding message
+        coVerify(exactly = 3) {
+            chatApi.getAnswer("123", "abc")
+        }
     }
 }

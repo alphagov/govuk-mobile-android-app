@@ -3,100 +3,74 @@ package uk.gov.govuk.chat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uk.gov.govuk.chat.data.ChatRepo
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
 import uk.gov.govuk.chat.ui.model.ChatEntry
 import javax.inject.Inject
+import javax.inject.Named
 
 internal data class ChatUiState(
-    val chatEntries: Map<String, ChatEntry>? = emptyMap(),
-    val conversationId: String?,
+    val chatEntries: Map<String, ChatEntry> = emptyMap(),
     val loading: Boolean = false
 )
 
 @HiltViewModel
 internal class ChatViewModel @Inject constructor(
-    private val chatRepo: ChatRepo
+    private val chatRepo: ChatRepo,
+    @Named("main") dispatcher: CoroutineDispatcher
 ): ViewModel() {
-    private val _uiState: MutableStateFlow<ChatUiState?> = MutableStateFlow(
+    private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
         ChatUiState(
             chatEntries = emptyMap(),
-            conversationId = "",
             loading = false
         )
     )
     val uiState = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            if (chatRepo.conversationId.isNotEmpty()) {
-                _uiState.value = ChatUiState(
-                    chatEntries = emptyMap(),
-                    conversationId = chatRepo.conversationId,
-                    loading = true
-                )
+        viewModelScope.launch(dispatcher) {
+            _uiState.update { it.copy(loading = true) }
 
-                val conversation = chatRepo.getConversation()
-                if (conversation != null) {
-                    if (conversation.answeredQuestions.isNotEmpty()) {
-                        conversation.answeredQuestions.forEach { question ->
-                            addChatEntry(question)
-                            updateChatEntry(question.id, question.answer)
-                        }
-                    }
-
-                    val hasPendingQuestion = conversation?.pendingQuestion != null
-                    if (hasPendingQuestion) {
-                        val pendingQuestionId = conversation?.pendingQuestion?.id
-                        // TODO: set the question id and poll for the answer
-                        // Might need to re-think the uiState and chatRepo stored params
-                    }
+            chatRepo.getConversation()?.let { conversation ->
+                conversation.answeredQuestions.forEach { question ->
+                    addChatEntry(question)
+                    updateChatEntry(question.id, question.answer)
                 }
 
-                _uiState.value = _uiState.value?.copy(
-                    loading = false
-                )
+                // Todo - handle pending questions!!!
             }
+
+            _uiState.update { it.copy(loading = false) }
         }
     }
 
     fun onSubmit(question: String) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value?.copy(
-                conversationId = null,
-                loading = true
-            )
+            _uiState.update { it.copy(loading = true) }
 
-            if (chatRepo.conversationId.isEmpty()) {
-                val question = chatRepo.startConversation(question)
-                addChatEntry(question)
-                val answer = chatRepo.getAnswer()
-                updateChatEntry(question!!.id, answer)
-            } else {
-                _uiState.value = _uiState.value?.copy(
-                    conversationId = chatRepo.conversationId
+            chatRepo.askQuestion(question)?.let {
+                addChatEntry(it)
+                val answer = chatRepo.getAnswer(
+                    conversationId = it.conversationId,
+                    questionId = it.id
                 )
-
-                val question = chatRepo.updateConversation(question)
-                addChatEntry(question)
-                val answer = chatRepo.getAnswer()
-                updateChatEntry(question!!.id, answer)
+                updateChatEntry(it.id, answer)
             }
 
-            _uiState.value = _uiState.value?.copy(
-                loading = false
-            )
+            _uiState.update { it.copy(loading = false) }
         }
     }
 
-    private fun addChatEntry(question: AnsweredQuestion?) {
-        if (question != null) {
-            _uiState.value = _uiState.value?.copy(
-                chatEntries = _uiState.value?.chatEntries?.plus(
+    private fun addChatEntry(question: AnsweredQuestion) {
+        _uiState.update {
+            it.copy(
+                chatEntries = it.chatEntries.plus(
                     mapOf(
                         question.id to ChatEntry(
                             question = question.message,
@@ -111,13 +85,10 @@ internal class ChatViewModel @Inject constructor(
 
     private fun updateChatEntry(questionId: String, answer: Answer?) {
         if (answer != null) {
-            val chatEntry = _uiState.value?.chatEntries?.get(questionId)
-            if (chatEntry != null) {
+            _uiState.value.chatEntries[questionId]?.let { chatEntry ->
                 chatEntry.answer = answer.message
-                if (answer.sources != null) {
-                    chatEntry.sources = answer.sources.map { source ->
-                        "* [${source.title}](${source.url})"
-                    }
+                chatEntry.sources = answer.sources?.map { source ->
+                    "* [${source.title}](${source.url})"
                 }
             }
         }
