@@ -351,7 +351,6 @@ private fun DarkModeChatScreenPreview() {
     GovUkTheme {
         ChatScreen(
             uiState = ChatUiState(
-                conversationId = "",
                 loading = false
             ),
             onSubmit = { _ -> },
