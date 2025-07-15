@@ -12,6 +12,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import uk.gov.govuk.chat.BuildConfig
@@ -42,5 +44,12 @@ internal class ChatModule {
             ),
             produceFile = { context.preferencesDataStoreFile("chat_preferences") }
         )
+    }
+
+    @Singleton
+    @Provides
+    @Named("main")
+    fun providesMainDispatcher(): CoroutineDispatcher {
+        return Dispatchers.Main
     }
 }

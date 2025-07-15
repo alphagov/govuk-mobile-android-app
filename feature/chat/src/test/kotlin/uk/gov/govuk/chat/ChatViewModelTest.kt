@@ -1,36 +1,38 @@
 package uk.gov.govuk.chat
 
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.chat.data.ChatRepo
-import uk.gov.govuk.chat.data.remote.ChatApi
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
-import uk.gov.govuk.chat.ui.model.ChatEntry
+import uk.gov.govuk.chat.data.remote.model.Conversation
+import uk.gov.govuk.chat.data.remote.model.Source
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ChatViewModelTest {
+    private val chatRepo = mockk<ChatRepo>(relaxed = true)
+
     private val dispatcher = StandardTestDispatcher()
-    private lateinit var chatApi: ChatApi
-    private lateinit var chatRepo: ChatRepo
-    private lateinit var viewModel: ChatViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        chatApi = mockk<ChatApi>(relaxed = true)
-        chatRepo = mockk<ChatRepo>(relaxed = true)
     }
 
     @After
@@ -38,118 +40,267 @@ class ChatViewModelTest {
         Dispatchers.resetMain()
     }
 
-//    @Test
-//    fun `On init uiState, when conversationId is empty, getConversation is not called`() = runTest {
-//        coEvery { chatRepo.conversationId } returns ""
-//
-//        viewModel = ChatViewModel(chatRepo)
-//
-//        assertEquals(false, chatRepo.conversationId.isNotEmpty())
-//        assertEquals("", chatRepo.conversationId)
-//        assertEquals(emptyMap<String, ChatEntry>(), viewModel.uiState.value?.chatEntries)
-//        assertEquals(false, viewModel.uiState.value?.loading)
-//
-//        coVerify(exactly = 0) { chatRepo.getConversation() }
-//    }
-//
-//    @Test
-//    fun `On init uiState, when conversationId is not empty, getConversation is called`() = runTest {
-//        coEvery { chatRepo.conversationId } returns "conversationId"
-//        coEvery { chatRepo.getConversation() } returns Conversation(
-//            id = "conversationId",
-//            answeredQuestions = emptyList(),
-//            createdAt = "createdAt"
-//        )
-//
-//        viewModel = ChatViewModel(chatRepo)
-//
-//        assertEquals(true, chatRepo.conversationId.isNotEmpty())
-//        assertEquals("conversationId", chatRepo.conversationId)
-//        assertEquals(emptyMap<String, ChatEntry>(), viewModel.uiState.value?.chatEntries)
-//        assertEquals(false, viewModel.uiState.value?.loading)
-//
-//        coVerify(exactly = 1) { chatRepo.getConversation() }
-//    }
-//
-//    @Test
-//    fun `onSubmit when conversationId is empty, startConversation is called`() = runTest {
-//        coEvery { chatRepo.conversationId } returns ""
-//        coEvery { chatRepo.startConversation(any()) } returns AnsweredQuestion(
-//            id = "questionId",
-//            answer = Answer(
-//                id = "answerId",
-//                createdAt = "createdAt",
-//                message = "message",
-//                sources = emptyList()
-//            ),
-//            conversationId = "conversationId",
-//            createdAt = "createdAt",
-//            message = "question"
-//        )
-//        coEvery { chatRepo.getAnswer(any(), any()) } returns Answer(
-//            id = "answerId",
-//            createdAt = "createdAt",
-//            message = "message",
-//            sources = emptyList()
-//        )
-//
-//        viewModel = ChatViewModel(chatRepo)
-//
-//        assertEquals(true, chatRepo.conversationId.isEmpty())
-//        assertEquals("", chatRepo.conversationId)
-//        assertEquals(emptyMap<String, ChatEntry>(), viewModel.uiState.value?.chatEntries)
-//        assertEquals(false, viewModel.uiState.value?.loading)
-//
-//        viewModel.onSubmit("question")
-//
-//        coVerify(exactly = 1) { chatRepo.startConversation("question") }
-//        assertEquals("conversationId", viewModel.uiState.value?.conversationId)
-//        assertEquals(
-//            mapOf(
-//                "questionId" to ChatEntry(
-//                    question = "question",
-//                    answer = "message",
-//                    sources = emptyList()
-//                )
-//            ), viewModel.uiState.value?.chatEntries
-//        )
-//        assertEquals(false, viewModel.uiState.value?.loading)
-//    }
-//
-//    @Test
-//    fun `onSubmit when conversationId is not empty, updateConversation is called`() = runTest {
-//        coEvery { chatRepo.conversationId } returns "conversationId"
-//        coEvery { chatRepo.updateConversation(any()) } returns AnsweredQuestion(
-//            id = "questionId",
-//            answer = Answer(
-//                id = "answerId",
-//                createdAt = "createdAt",
-//                message = "message",
-//                sources = emptyList()
-//            ),
-//            conversationId = "conversationId",
-//            createdAt = "createdAt",
-//            message = "question"
-//        )
-//        coEvery { chatRepo.getAnswer(any(), any()) } returns Answer(
-//            id = "answerId",
-//            createdAt = "createdAt",
-//            message = "message",
-//            sources = emptyList()
-//        )
-//
-//        viewModel = ChatViewModel(chatRepo)
-//
-//        assertEquals(true, chatRepo.conversationId.isNotEmpty())
-//        assertEquals("conversationId", chatRepo.conversationId)
-//        assertEquals(emptyMap<String, ChatEntry>(), viewModel.uiState.value?.chatEntries)
-//        assertEquals(false, viewModel.uiState.value?.loading)
-//
-//        viewModel.onSubmit("question")
-//
-//        coVerify { chatRepo.updateConversation("question") }
-////        assertEquals("conversationId", viewModel.uiState.value?.conversationId)
-//        assertEquals(emptyMap<String, ChatEntry>(), viewModel.uiState.value?.chatEntries)
-//        assertEquals(false, viewModel.uiState.value?.loading)
-//    }
+    @Test
+    fun `Init emits loading and conversation`() = runTest {
+        val conversation = Conversation(
+            id = "123",
+            answeredQuestions =
+                listOf(
+                    AnsweredQuestion(
+                        "abc",
+                        Answer(
+                            "",
+                            "",
+                            "Answer 1",
+                            listOf(
+                                Source(
+                                    "url",
+                                    "title"
+                                )
+                            )
+                        ),
+                        "",
+                        "",
+                        "Question 1"
+
+                    )
+                ),
+            "",
+            null
+        )
+
+        coEvery { chatRepo.getConversation() } coAnswers {
+            delay(100)
+            conversation
+        }
+
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val states = mutableListOf<ChatUiState>()
+
+        val job = launch {
+            val viewModel = ChatViewModel(chatRepo, dispatcher = testDispatcher)
+            viewModel.uiState
+                .toList(states)
+        }
+
+        advanceUntilIdle()
+
+        val initialState = states[0]
+
+        assertFalse(initialState.loading)
+        assertEquals(0, initialState.chatEntries.size)
+
+        val loadingState = states[1]
+
+        assertTrue(loadingState.loading)
+        assertEquals(0, loadingState.chatEntries.size)
+
+        val finalState = states[2]
+        val chatEntries = finalState.chatEntries
+        val chatEntry = chatEntries["abc"]
+        val question = chatEntry?.question
+        val answer = chatEntry?.answer
+
+        assertFalse(finalState.loading)
+        assertEquals("Question 1", question)
+        assertEquals("Answer 1", answer)
+        assertEquals("* [title](url)", chatEntry?.sources?.first())
+
+        job.cancel()
+    }
+
+    @Test
+    fun `Init emits loading and no conversation`() = runTest {
+        coEvery { chatRepo.getConversation() } coAnswers {
+            delay(100)
+            null
+        }
+
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val states = mutableListOf<ChatUiState>()
+
+        val job = launch {
+            val viewModel = ChatViewModel(chatRepo, dispatcher = testDispatcher)
+            viewModel.uiState
+                .toList(states)
+        }
+
+        advanceUntilIdle()
+
+        val initialState = states[0]
+
+        assertFalse(initialState.loading)
+        assertEquals(0, initialState.chatEntries.size)
+
+        val loadingState = states[1]
+
+        assertTrue(loadingState.loading)
+        assertEquals(0, loadingState.chatEntries.size)
+
+        val finalState = states[2]
+
+        assertFalse(finalState.loading)
+        assertEquals(0, finalState.chatEntries.size)
+
+        job.cancel()
+    }
+
+    @Test
+    fun `Submit emits question`() = runTest {
+        val question = AnsweredQuestion(
+            "abc",
+            Answer(
+                "",
+                "",
+                "",
+                null
+            ),
+            "",
+            "",
+            "Question 1"
+        )
+
+        coEvery { chatRepo.askQuestion(any()) } coAnswers {
+            delay(100)
+            question
+        }
+
+        val states = mutableListOf<ChatUiState>()
+
+        val viewModel = ChatViewModel(chatRepo)
+
+        val job = launch {
+            viewModel.uiState
+                .toList(states)
+        }
+
+        viewModel.onSubmit("First Question")
+
+        advanceUntilIdle()
+
+        val initialState = states[0]
+
+        assertFalse(initialState.loading)
+        assertEquals(0, initialState.chatEntries.size)
+
+        val loadingState = states[1]
+
+        assertTrue(loadingState.loading)
+        assertEquals(0, loadingState.chatEntries.size)
+
+        val finalState = states[2]
+        val chatEntries = finalState.chatEntries
+        val chatEntry = chatEntries["abc"]
+
+        assertFalse(finalState.loading)
+        assertEquals("Question 1", chatEntry?.question)
+
+        job.cancel()
+    }
+
+    @Test
+    fun `Submit emits answer`() = runTest {
+        val question = AnsweredQuestion(
+            "abc",
+            Answer(
+                "",
+                "",
+                "",
+                null
+            ),
+            "",
+            "",
+            "Question 1"
+        )
+
+        coEvery { chatRepo.askQuestion(any()) } coAnswers {
+            delay(100)
+            question
+        }
+
+        coEvery { chatRepo.getAnswer(any(), any()) } returns
+                Answer(
+                    "",
+                    "",
+                    "Answer 1",
+                    listOf(
+                        Source(
+                            "url",
+                            "title"
+                        )
+                    )
+                )
+
+        val states = mutableListOf<ChatUiState>()
+
+        val viewModel = ChatViewModel(chatRepo)
+
+        val job = launch {
+            viewModel.uiState
+                .toList(states)
+        }
+
+        viewModel.onSubmit("First Question")
+
+        advanceUntilIdle()
+
+        val initialState = states[0]
+
+        assertFalse(initialState.loading)
+        assertEquals(0, initialState.chatEntries.size)
+
+        val loadingState = states[1]
+
+        assertTrue(loadingState.loading)
+        assertEquals(0, loadingState.chatEntries.size)
+
+        val finalState = states[2]
+        val chatEntries = finalState.chatEntries
+        val chatEntry = chatEntries["abc"]
+
+        assertFalse(finalState.loading)
+        assertEquals("Question 1", chatEntry?.question)
+        assertEquals("Answer 1", chatEntry?.answer)
+        assertEquals("* [title](url)", chatEntry?.sources?.first())
+
+        job.cancel()
+    }
+
+    @Test
+    fun `Submit does not emit question when repo returns null`() = runTest {
+        coEvery { chatRepo.askQuestion(any()) } coAnswers {
+            delay(100)
+            null
+        }
+
+        val states = mutableListOf<ChatUiState>()
+
+        val viewModel = ChatViewModel(chatRepo)
+
+        val job = launch {
+            viewModel.uiState
+                .toList(states)
+        }
+
+        viewModel.onSubmit("First Question")
+
+        advanceUntilIdle()
+
+        val initialState = states[0]
+
+        assertFalse(initialState.loading)
+        assertEquals(0, initialState.chatEntries.size)
+
+        val loadingState = states[1]
+
+        assertTrue(loadingState.loading)
+        assertEquals(0, loadingState.chatEntries.size)
+
+        val finalState = states[2]
+
+        assertFalse(finalState.loading)
+        assertEquals(0, finalState.chatEntries.size)
+
+        job.cancel()
+    }
 }

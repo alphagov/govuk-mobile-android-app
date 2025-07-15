@@ -3,6 +3,7 @@ package uk.gov.govuk.chat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -12,6 +13,7 @@ import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
 import uk.gov.govuk.chat.ui.model.ChatEntry
 import javax.inject.Inject
+import javax.inject.Named
 
 internal data class ChatUiState(
     val chatEntries: Map<String, ChatEntry> = emptyMap(),
@@ -20,7 +22,8 @@ internal data class ChatUiState(
 
 @HiltViewModel
 internal class ChatViewModel @Inject constructor(
-    private val chatRepo: ChatRepo
+    private val chatRepo: ChatRepo,
+    @Named("main") dispatcher: CoroutineDispatcher
 ): ViewModel() {
     private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
         ChatUiState(
@@ -31,7 +34,7 @@ internal class ChatViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) {
             _uiState.update { it.copy(loading = true) }
 
             chatRepo.getConversation()?.let { conversation ->
