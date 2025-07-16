@@ -2,6 +2,7 @@ package uk.gov.govuk.data.auth
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators
 import androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS
@@ -318,25 +319,39 @@ class AuthRepoTest {
     }
 
     @Test
-    fun `Given biometric success, when is authentication enabled, return true`() {
+    fun `Given the Android version is 30 and biometric success, when is authentication enabled, return true`() {
         every {
             biometricManager.canAuthenticate(
                 Authenticators.BIOMETRIC_STRONG or Authenticators.DEVICE_CREDENTIAL
             )
         } returns  BIOMETRIC_SUCCESS
+        val androidVersion = Build.VERSION_CODES.R
 
-        assertTrue(authRepo.isAuthenticationEnabled())
+        assertTrue(authRepo.isAuthenticationEnabled(androidVersion))
     }
 
     @Test
-    fun `Given non biometric success, when is authentication enabled, return false`() {
+    fun `Given the Android version is 29 and biometric success, when is authentication enabled, return true`() {
+        every {
+            biometricManager.canAuthenticate(
+                Authenticators.BIOMETRIC_STRONG
+            )
+        } returns  BIOMETRIC_SUCCESS
+        val androidVersion = Build.VERSION_CODES.Q
+
+        assertTrue(authRepo.isAuthenticationEnabled(androidVersion))
+    }
+
+    @Test
+    fun `Given the Android version is 30 and non biometric success, when is authentication enabled, return false`() {
         every {
             biometricManager.canAuthenticate(
                 Authenticators.BIOMETRIC_STRONG or Authenticators.DEVICE_CREDENTIAL
             )
         } returns BiometricManager.BIOMETRIC_STATUS_UNKNOWN
+        val androidVersion = Build.VERSION_CODES.R
 
-        assertFalse(authRepo.isAuthenticationEnabled())
+        assertFalse(authRepo.isAuthenticationEnabled(androidVersion))
 
         every {
             biometricManager.canAuthenticate(
@@ -344,7 +359,7 @@ class AuthRepoTest {
             )
         } returns BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED
 
-        assertFalse(authRepo.isAuthenticationEnabled())
+        assertFalse(authRepo.isAuthenticationEnabled(androidVersion))
 
         every {
             biometricManager.canAuthenticate(
@@ -352,7 +367,7 @@ class AuthRepoTest {
             )
         } returns BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE
 
-        assertFalse(authRepo.isAuthenticationEnabled())
+        assertFalse(authRepo.isAuthenticationEnabled(androidVersion))
 
         every {
             biometricManager.canAuthenticate(
@@ -360,7 +375,7 @@ class AuthRepoTest {
             )
         } returns BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED
 
-        assertFalse(authRepo.isAuthenticationEnabled())
+        assertFalse(authRepo.isAuthenticationEnabled(androidVersion))
 
         every {
             biometricManager.canAuthenticate(
@@ -368,7 +383,7 @@ class AuthRepoTest {
             )
         } returns BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
 
-        assertFalse(authRepo.isAuthenticationEnabled())
+        assertFalse(authRepo.isAuthenticationEnabled(androidVersion))
 
         every {
             biometricManager.canAuthenticate(
@@ -376,7 +391,59 @@ class AuthRepoTest {
             )
         } returns BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED
 
-        assertFalse(authRepo.isAuthenticationEnabled())
+        assertFalse(authRepo.isAuthenticationEnabled(androidVersion))
+    }
+
+    @Test
+    fun `Given the Android version is 29 and non biometric success, when is authentication enabled, return false`() {
+        every {
+            biometricManager.canAuthenticate(
+                Authenticators.BIOMETRIC_STRONG
+            )
+        } returns BiometricManager.BIOMETRIC_STATUS_UNKNOWN
+        val androidVersion = Build.VERSION_CODES.Q
+
+        assertFalse(authRepo.isAuthenticationEnabled(androidVersion))
+
+        every {
+            biometricManager.canAuthenticate(
+                Authenticators.BIOMETRIC_STRONG
+            )
+        } returns BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED
+
+        assertFalse(authRepo.isAuthenticationEnabled(androidVersion))
+
+        every {
+            biometricManager.canAuthenticate(
+                Authenticators.BIOMETRIC_STRONG
+            )
+        } returns BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE
+
+        assertFalse(authRepo.isAuthenticationEnabled(androidVersion))
+
+        every {
+            biometricManager.canAuthenticate(
+                Authenticators.BIOMETRIC_STRONG
+            )
+        } returns BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED
+
+        assertFalse(authRepo.isAuthenticationEnabled(androidVersion))
+
+        every {
+            biometricManager.canAuthenticate(
+                Authenticators.BIOMETRIC_STRONG
+            )
+        } returns BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
+
+        assertFalse(authRepo.isAuthenticationEnabled(androidVersion))
+
+        every {
+            biometricManager.canAuthenticate(
+                Authenticators.BIOMETRIC_STRONG
+            )
+        } returns BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED
+
+        assertFalse(authRepo.isAuthenticationEnabled(androidVersion))
     }
 
     @Test

@@ -2,6 +2,7 @@ package uk.gov.govuk.data.auth
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build
 import android.util.Base64
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators
@@ -199,11 +200,14 @@ class AuthRepo @Inject constructor(
         )
     }
 
-    fun isAuthenticationEnabled(): Boolean {
-        val result  = biometricManager.canAuthenticate(
+    fun isAuthenticationEnabled(androidVersion: Int = Build.VERSION.SDK_INT): Boolean {
+        val authenticators = if (androidVersion > Build.VERSION_CODES.Q) {
+            // DEVICE_CREDENTIAL only supported after Android 29
             Authenticators.BIOMETRIC_STRONG or Authenticators.DEVICE_CREDENTIAL
-        )
-        return result == BiometricManager.BIOMETRIC_SUCCESS
+        } else {
+            Authenticators.BIOMETRIC_STRONG
+        }
+        return biometricManager.canAuthenticate(authenticators) == BiometricManager.BIOMETRIC_SUCCESS
     }
 
     fun isUserSessionActive(): Boolean {
