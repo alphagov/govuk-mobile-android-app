@@ -9,14 +9,14 @@ import uk.gov.govuk.notifications.ui.NotificationsOnboardingRoute
 import uk.gov.govuk.notifications.ui.NotificationsPermissionRoute
 
 const val NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE = "notifications_onboarding_graph_route"
-const val NOTIFICATIONS_PERMISSION_GRAPH_ROUTE = "notifications_permission_graph_route"
-const val NOTIFICATIONS_CONSENT_GRAPH_ROUTE = "notifications_consent_graph_route"
 const val NOTIFICATIONS_ONBOARDING_ROUTE = "notifications_onboarding_route"
 const val NOTIFICATIONS_PERMISSION_ROUTE = "notifications_permission_route"
-private const val NOTIFICATIONS_CONSENT_ROUTE = "notifications_consent_route"
+const val NOTIFICATIONS_CONSENT_ROUTE = "notifications_consent_route"
 
-fun NavGraphBuilder.notificationsOnboardingGraph(
+fun NavGraphBuilder.notificationsGraph(
     notificationsOnboardingCompleted: () -> Unit,
+    notificationsConsentCompleted: () -> Unit,
+    notificationsPermissionCompleted: () -> Unit,
     launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -31,40 +31,16 @@ fun NavGraphBuilder.notificationsOnboardingGraph(
                 modifier = modifier
             )
         }
-    }
-}
-
-fun NavGraphBuilder.notificationsPermissionGraph(
-    notificationsPermissionCompleted: () -> Unit,
-    launchBrowser: (url: String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    navigation(
-        route = NOTIFICATIONS_PERMISSION_GRAPH_ROUTE,
-        startDestination = NOTIFICATIONS_PERMISSION_ROUTE
-    ) {
-        composable(NOTIFICATIONS_PERMISSION_ROUTE) {
-            NotificationsPermissionRoute(
-                notificationsPermissionCompleted = notificationsPermissionCompleted,
+        composable(NOTIFICATIONS_CONSENT_ROUTE) {
+            NotificationsConsentRoute(
+                notificationsConsentCompleted = notificationsConsentCompleted,
                 launchBrowser = launchBrowser,
                 modifier = modifier
             )
         }
-    }
-}
-
-fun NavGraphBuilder.notificationsConsentGraph(
-    notificationsConsentCompleted: () -> Unit,
-    launchBrowser: (url: String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    navigation(
-        route = NOTIFICATIONS_CONSENT_GRAPH_ROUTE,
-        startDestination = NOTIFICATIONS_CONSENT_ROUTE
-    ) {
-        composable(NOTIFICATIONS_CONSENT_ROUTE) {
-            NotificationsConsentRoute(
-                notificationsConsentCompleted = notificationsConsentCompleted,
+        composable(NOTIFICATIONS_PERMISSION_ROUTE) {
+            NotificationsPermissionRoute(
+                notificationsPermissionCompleted = notificationsPermissionCompleted,
                 launchBrowser = launchBrowser,
                 modifier = modifier
             )

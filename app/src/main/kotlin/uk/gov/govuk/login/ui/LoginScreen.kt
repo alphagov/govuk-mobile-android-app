@@ -45,9 +45,7 @@ internal fun LoginRoute(
     }
 
     LoginScreen(
-        onPageView = { viewModel.onPageView() },
-        onContinueClick = { text ->
-            viewModel.onContinue(text)
+        onContinueClick = {
             authLauncher.launch(viewModel.authIntent)
         },
         modifier = modifier
@@ -74,14 +72,9 @@ internal fun LoginRoute(
 
 @Composable
 private fun LoginScreen(
-    onPageView: () -> Unit,
-    onContinueClick: (String) -> Unit,
+    onContinueClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(Unit) {
-        onPageView()
-    }
-
     CentreAlignedScreen(
         modifier = modifier,
         screenContent = {
@@ -113,10 +106,9 @@ private fun LoginScreen(
             )
         },
         footerContent = {
-            val buttonText = stringResource(R.string.login_continue_button)
             FixedPrimaryButton(
-                text = buttonText,
-                onClick = { onContinueClick(buttonText) }
+                text = stringResource(R.string.login_continue_button),
+                onClick = { onContinueClick() }
             )
         }
     )
@@ -127,7 +119,6 @@ private fun LoginScreen(
 private fun LoginPreview() {
     GovUkTheme {
         LoginScreen(
-            onPageView = { },
             onContinueClick = { }
         )
     }

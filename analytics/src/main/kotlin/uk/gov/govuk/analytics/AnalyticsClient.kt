@@ -15,6 +15,8 @@ class AnalyticsClient @Inject constructor(
     private val firebaseAnalyticsClient: FirebaseAnalyticsClient
 ) {
 
+    lateinit var isUserSessionActive: () -> Boolean
+
     fun isAnalyticsConsentRequired(): Boolean {
         return analyticsRepo.analyticsEnabledState == AnalyticsEnabledState.NOT_SET
     }
@@ -31,6 +33,10 @@ class AnalyticsClient @Inject constructor(
     suspend fun disable() {
         analyticsRepo.analyticsDisabled()
         firebaseAnalyticsClient.disable()
+    }
+
+    suspend fun clear() {
+        analyticsRepo.clear()
     }
 
     fun screenView(screenClass: String, screenName: String, title: String) {
@@ -224,13 +230,13 @@ class AnalyticsClient @Inject constructor(
     }
 
     private fun logEvent(name: String, parameters: Map<String, Any>) {
-        if (isAnalyticsEnabled()) {
+        if (isAnalyticsEnabled() && isUserSessionActive()) {
             firebaseAnalyticsClient.logEvent(name, parameters)
         }
     }
 
     private fun logEcommerceEvent(event: String, ecommerceEvent: EcommerceEvent, selectedItemIndex: Int? = null) {
-        if (isAnalyticsEnabled()) {
+        if (isAnalyticsEnabled() && isUserSessionActive()) {
             firebaseAnalyticsClient.logEcommerceEvent(event, ecommerceEvent, selectedItemIndex)
         }
     }

@@ -40,12 +40,11 @@ internal fun BiometricRoute(
     val activity = LocalActivity.current as FragmentActivity
 
     BiometricScreen(
-        onPageView = { viewModel.onPageView() },
-        onSetupBiometrics = { text ->
-            viewModel.onContinue(activity, text)
+        onSetupBiometrics = {
+            viewModel.onContinue(activity)
         },
-        onSkip = { text ->
-            viewModel.onSkip(text)
+        onSkip = {
+            viewModel.onSkip()
             onCompleted()
         },
         modifier = modifier
@@ -60,15 +59,10 @@ internal fun BiometricRoute(
 
 @Composable
 private fun BiometricScreen(
-    onPageView: () -> Unit,
-    onSetupBiometrics: (String) -> Unit,
-    onSkip: (String) -> Unit,
+    onSetupBiometrics: () -> Unit,
+    onSkip: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(Unit) {
-        onPageView()
-    }
-    
     CentreAlignedScreen(
         modifier = modifier,
         screenContent = {
@@ -96,14 +90,11 @@ private fun BiometricScreen(
             )
         },
         footerContent = {
-            val primaryButtonText = stringResource(R.string.login_biometrics_button)
-            val secondaryButtonText = stringResource(R.string.login_biometrics_skip_button)
-
             FixedDoubleButtonGroup(
-                primaryText = primaryButtonText,
-                onPrimary = { onSetupBiometrics(primaryButtonText) },
-                secondaryText = secondaryButtonText,
-                onSecondary = { onSkip(secondaryButtonText) }
+                primaryText = stringResource(R.string.login_biometrics_button),
+                onPrimary = { onSetupBiometrics() },
+                secondaryText = stringResource(R.string.login_biometrics_skip_button),
+                onSecondary = { onSkip() }
             )
         }
     )
@@ -160,7 +151,6 @@ private fun IconRow(
 private fun BiometricPreview() {
     GovUkTheme {
         BiometricScreen(
-            onPageView = { },
             onSetupBiometrics = { },
             onSkip = { }
         )

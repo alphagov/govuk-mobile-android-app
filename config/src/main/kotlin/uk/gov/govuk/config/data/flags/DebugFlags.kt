@@ -16,5 +16,4 @@ class DebugFlags @Inject constructor() {
     internal val isNotificationsEnabled: Boolean? = true
     internal val isLocalServicesEnabled: Boolean? = true
     internal val isExternalBrowserEnabled: Boolean? = false
-    internal val isLoginEnabled: Boolean? = true
 }
