@@ -26,6 +26,7 @@ internal suspend fun <T> safeChatApiCall(apiCall: suspend () -> Response<T>): Ch
             }
             else -> {
                 when (code) {
+                    401 -> AuthError()
                     403 -> AuthError()
                     404 -> NotFound()
                     422 -> ValidationError()

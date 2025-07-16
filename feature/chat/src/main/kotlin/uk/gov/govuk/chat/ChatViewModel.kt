@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uk.gov.govuk.chat.data.ChatRepo
+import uk.gov.govuk.chat.data.remote.ChatResult.Success
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
 import uk.gov.govuk.chat.ui.model.ChatEntry
@@ -37,13 +38,17 @@ internal class ChatViewModel @Inject constructor(
         viewModelScope.launch(dispatcher) {
             _uiState.update { it.copy(loading = true) }
 
-            chatRepo.getConversation()?.let { conversation ->
-                conversation.answeredQuestions.forEach { question ->
-                    addChatEntry(question)
-                    updateChatEntry(question.id, question.answer)
+            chatRepo.getConversation()?.let { result ->
+                when (result) {
+                    is Success -> {
+                        result.value.answeredQuestions.forEach { question ->
+                            addChatEntry(question)
+                            updateChatEntry(question.id, question.answer)
+                        }
+                        // Todo - handle pending questions!!!
+                    }
+                    else -> { } // Todo - handle error!!!
                 }
-
-                // Todo - handle pending questions!!!
             }
 
             _uiState.update { it.copy(loading = false) }
@@ -54,16 +59,31 @@ internal class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(loading = true) }
 
-            chatRepo.askQuestion(question)?.let {
-                addChatEntry(it)
-                val answer = chatRepo.getAnswer(
-                    conversationId = it.conversationId,
-                    questionId = it.id
-                )
-                updateChatEntry(it.id, answer)
+            when (val result = chatRepo.askQuestion(question)) {
+                is Success -> {
+                    addChatEntry(result.value)
+                    getAnswer(
+                        conversationId = result.value.conversationId,
+                        questionId = result.value.id
+                    )
+                }
+                else -> { } // Todo - handle error!!!
             }
 
             _uiState.update { it.copy(loading = false) }
+        }
+    }
+
+    private suspend fun getAnswer(conversationId: String, questionId: String) {
+        val result = chatRepo.getAnswer(
+            conversationId = conversationId,
+            questionId = questionId
+        )
+        when (result) {
+            is Success -> {
+                updateChatEntry(questionId, result.value)
+            }
+            else -> { } // Todo - handle error!!!
         }
     }
 
