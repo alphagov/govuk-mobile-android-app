@@ -12,13 +12,20 @@ import uk.gov.govuk.chat.data.ChatRepo
 import uk.gov.govuk.chat.data.remote.ChatResult.Success
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
+import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.chat.ui.model.ChatEntry
 import javax.inject.Inject
 import javax.inject.Named
 
 internal data class ChatUiState(
+    val question: String = "",
     val chatEntries: Map<String, ChatEntry> = emptyMap(),
-    val loading: Boolean = false
+    val isLoading: Boolean = false,
+    val isPiiError: Boolean = false,
+    val displayCharacterWarning: Boolean = false,
+    val displayCharacterError: Boolean = false,
+    val charactersRemaining: Int = 0,
+    val isSubmitEnabled: Boolean = false
 )
 
 @HiltViewModel
@@ -29,14 +36,14 @@ internal class ChatViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
         ChatUiState(
             chatEntries = emptyMap(),
-            loading = false
+            isLoading = false
         )
     )
     val uiState = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch(dispatcher) {
-            _uiState.update { it.copy(loading = true) }
+            _uiState.update { it.copy(isLoading = true) }
 
             chatRepo.getConversation()?.let { result ->
                 when (result) {
@@ -51,26 +58,50 @@ internal class ChatViewModel @Inject constructor(
                 }
             }
 
-            _uiState.update { it.copy(loading = false) }
+            _uiState.update { it.copy(isLoading = false) }
         }
     }
 
     fun onSubmit(question: String) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(loading = true) }
+        val isPiiError = StringCleaner.includesPII(question)
+        _uiState.update { it.copy(isPiiError = isPiiError) }
 
-            when (val result = chatRepo.askQuestion(question)) {
-                is Success -> {
-                    addChatEntry(result.value)
-                    getAnswer(
-                        conversationId = result.value.conversationId,
-                        questionId = result.value.id
-                    )
+        if (!isPiiError) {
+            viewModelScope.launch {
+                _uiState.update { it.copy(isLoading = true) }
+
+                when (val result = chatRepo.askQuestion(question)) {
+                    is Success -> {
+                        addChatEntry(result.value)
+                        onQuestionUpdated("")
+                        getAnswer(
+                            conversationId = result.value.conversationId,
+                            questionId = result.value.id
+                        )
+                    }
+
+                    else -> {} // Todo - handle error!!!
                 }
-                else -> { } // Todo - handle error!!!
-            }
 
-            _uiState.update { it.copy(loading = false) }
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    fun onQuestionUpdated(question: String) {
+        val characterLimit = 300
+        val remainingCharacters = characterLimit - question.length
+        val displayCharacterError = remainingCharacters < 0
+
+        _uiState.update {
+            it.copy(
+                question = question,
+                isPiiError = false,
+                displayCharacterWarning = remainingCharacters in 0..50,
+                displayCharacterError = displayCharacterError,
+                charactersRemaining = characterLimit - question.length,
+                isSubmitEnabled = question.isNotBlank() && !displayCharacterError
+            )
         }
     }
 

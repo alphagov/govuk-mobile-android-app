@@ -87,12 +87,12 @@ class ChatViewModelTest {
 
         val initialState = states[0]
 
-        assertFalse(initialState.loading)
+        assertFalse(initialState.isLoading)
         assertEquals(0, initialState.chatEntries.size)
 
         val loadingState = states[1]
 
-        assertTrue(loadingState.loading)
+        assertTrue(loadingState.isLoading)
         assertEquals(0, loadingState.chatEntries.size)
 
         val finalState = states[2]
@@ -101,7 +101,7 @@ class ChatViewModelTest {
         val question = chatEntry?.question
         val answer = chatEntry?.answer
 
-        assertFalse(finalState.loading)
+        assertFalse(finalState.isLoading)
         assertEquals("Question 1", question)
         assertEquals("Answer 1", answer)
         assertEquals("* [title](url)", chatEntry?.sources?.first())
@@ -129,17 +129,17 @@ class ChatViewModelTest {
 
         val initialState = states[0]
 
-        assertFalse(initialState.loading)
+        assertFalse(initialState.isLoading)
         assertEquals(0, initialState.chatEntries.size)
 
         val loadingState = states[1]
 
-        assertTrue(loadingState.loading)
+        assertTrue(loadingState.isLoading)
         assertEquals(0, loadingState.chatEntries.size)
 
         val finalState = states[2]
 
-        assertFalse(finalState.loading)
+        assertFalse(finalState.isLoading)
         assertEquals(0, finalState.chatEntries.size)
 
         job.cancel()
@@ -180,19 +180,19 @@ class ChatViewModelTest {
 
         val initialState = states[0]
 
-        assertFalse(initialState.loading)
+        assertFalse(initialState.isLoading)
         assertEquals(0, initialState.chatEntries.size)
 
         val loadingState = states[1]
 
-        assertTrue(loadingState.loading)
+        assertTrue(loadingState.isLoading)
         assertEquals(0, loadingState.chatEntries.size)
 
         val finalState = states[2]
         val chatEntries = finalState.chatEntries
         val chatEntry = chatEntries["abc"]
 
-        assertFalse(finalState.loading)
+        assertFalse(finalState.isLoading)
         assertEquals("Question 1", chatEntry?.question)
 
         job.cancel()
@@ -246,19 +246,19 @@ class ChatViewModelTest {
 
         val initialState = states[0]
 
-        assertFalse(initialState.loading)
+        assertFalse(initialState.isLoading)
         assertEquals(0, initialState.chatEntries.size)
 
         val loadingState = states[1]
 
-        assertTrue(loadingState.loading)
+        assertTrue(loadingState.isLoading)
         assertEquals(0, loadingState.chatEntries.size)
 
         val finalState = states[2]
         val chatEntries = finalState.chatEntries
         val chatEntry = chatEntries["abc"]
 
-        assertFalse(finalState.loading)
+        assertFalse(finalState.isLoading)
         assertEquals("Question 1", chatEntry?.question)
         assertEquals("Answer 1", chatEntry?.answer)
         assertEquals("* [title](url)", chatEntry?.sources?.first())
@@ -288,17 +288,17 @@ class ChatViewModelTest {
 
         val initialState = states[0]
 
-        assertFalse(initialState.loading)
+        assertFalse(initialState.isLoading)
         assertEquals(0, initialState.chatEntries.size)
 
         val loadingState = states[1]
 
-        assertTrue(loadingState.loading)
+        assertTrue(loadingState.isLoading)
         assertEquals(0, loadingState.chatEntries.size)
 
         val finalState = states[2]
 
-        assertFalse(finalState.loading)
+        assertFalse(finalState.isLoading)
         assertEquals(0, finalState.chatEntries.size)
 
         job.cancel()
