@@ -147,7 +147,8 @@ data class GovUkColourScheme(
         val textFieldCursor: Color,
         val textFieldError: Color,
         val radioDivider: Color,
-        val chatTextFieldBorder: Color
+        val chatTextFieldBorder: Color,
+        val chatTextFieldBorderDisabled: Color
     )
 }
 
@@ -240,7 +241,8 @@ internal val LightColorScheme = GovUkColourScheme(
         textFieldCursor = Grey700,
         textFieldError = RedPrimary,
         radioDivider = Grey300,
-        chatTextFieldBorder = Grey300
+        chatTextFieldBorder = BluePrimary,
+        chatTextFieldBorderDisabled = Grey300
     )
 )
 
@@ -333,7 +335,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         textFieldCursor = Grey300,
         textFieldError = RedAccent,
         radioDivider = Grey500,
-        chatTextFieldBorder = BlueLighter25
+        chatTextFieldBorder = BlueAccent,
+        chatTextFieldBorderDisabled = BlueLighter25
     )
 )
 
@@ -427,7 +430,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             textFieldCursor = Color.Unspecified,
             textFieldError = Color.Unspecified,
             radioDivider = Color.Unspecified,
-            chatTextFieldBorder = Color.Unspecified
+            chatTextFieldBorder = Color.Unspecified,
+            chatTextFieldBorderDisabled = Color.Unspecified
         )
     )
 }
