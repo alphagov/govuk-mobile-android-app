@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uk.gov.govuk.chat.data.ChatRepo
+import uk.gov.govuk.chat.data.remote.ChatResult
 import uk.gov.govuk.chat.data.remote.ChatResult.Success
+import uk.gov.govuk.chat.data.remote.ChatResult.ValidationError
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
 import uk.gov.govuk.chat.domain.StringCleaner
@@ -46,15 +48,12 @@ internal class ChatViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
 
             chatRepo.getConversation()?.let { result ->
-                when (result) {
-                    is Success -> {
-                        result.value.answeredQuestions.forEach { question ->
-                            addChatEntry(question)
-                            updateChatEntry(question.id, question.answer)
-                        }
-                        // Todo - handle pending questions!!!
+                handleChatResult(result) { conversation ->
+                    conversation.answeredQuestions.forEach { question ->
+                        addChatEntry(question)
+                        updateChatEntry(question.id, question.answer)
                     }
-                    else -> { } // Todo - handle error!!!
+                    // Todo - handle pending questions!!!
                 }
             }
 
@@ -70,17 +69,13 @@ internal class ChatViewModel @Inject constructor(
             viewModelScope.launch {
                 _uiState.update { it.copy(isLoading = true) }
 
-                when (val result = chatRepo.askQuestion(question)) {
-                    is Success -> {
-                        addChatEntry(result.value)
-                        onQuestionUpdated("")
-                        getAnswer(
-                            conversationId = result.value.conversationId,
-                            questionId = result.value.id
-                        )
-                    }
-
-                    else -> {} // Todo - handle error!!!
+                handleChatResult(chatRepo.askQuestion(question)) { answeredQuestion ->
+                    addChatEntry(answeredQuestion)
+                    onQuestionUpdated("")
+                    getAnswer(
+                        conversationId = answeredQuestion.conversationId,
+                        questionId = answeredQuestion.id
+                    )
                 }
 
                 _uiState.update { it.copy(isLoading = false) }
@@ -106,15 +101,23 @@ internal class ChatViewModel @Inject constructor(
     }
 
     private suspend fun getAnswer(conversationId: String, questionId: String) {
-        val result = chatRepo.getAnswer(
-            conversationId = conversationId,
-            questionId = questionId
-        )
-        when (result) {
-            is Success -> {
-                updateChatEntry(questionId, result.value)
+        handleChatResult(
+            chatRepo.getAnswer(
+                conversationId = conversationId,
+                questionId = questionId
+            )
+        ) { answer ->
+            updateChatEntry(questionId, answer)
+        }
+    }
+
+    private suspend fun <T> handleChatResult(chatResult: ChatResult<T>, onSuccess: suspend (T) -> Unit) {
+        when (chatResult) {
+            is Success -> onSuccess(chatResult.value)
+            is ValidationError -> {
+                _uiState.update { it.copy(isPiiError = true) }
             }
-            else -> { } // Todo - handle error!!!
+            else -> { }// Todo - handle error!!!
         }
     }
 
