@@ -3,7 +3,6 @@ package uk.gov.govuk.chat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -16,7 +15,6 @@ import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.chat.ui.model.ChatEntry
 import javax.inject.Inject
-import javax.inject.Named
 
 internal data class ChatUiState(
     val question: String = "",
@@ -32,8 +30,7 @@ internal data class ChatUiState(
 
 @HiltViewModel
 internal class ChatViewModel @Inject constructor(
-    private val chatRepo: ChatRepo,
-    @Named("main") private val dispatcher: CoroutineDispatcher
+    private val chatRepo: ChatRepo
 ): ViewModel() {
     private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
         ChatUiState(
@@ -44,15 +41,11 @@ internal class ChatViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        initConversation()
+        loadConversation()
     }
 
-    fun onRetry() {
-        initConversation()
-    }
-
-    private fun initConversation() {
-        viewModelScope.launch(dispatcher) {
+    fun loadConversation() {
+        viewModelScope.launch {
             _uiState.value = ChatUiState(isLoading = true)
 
             chatRepo.getConversation()?.let { result ->
@@ -107,8 +100,11 @@ internal class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onQuestionUpdated(question: String) {
-        val characterLimit = 300
+    fun onQuestionUpdated(
+        question: String,
+        characterLimit: Int = 300,
+        characterWarningThreshold: Int = 50
+    ) {
         val remainingCharacters = characterLimit - question.length
         val displayCharacterError = remainingCharacters < 0
 
@@ -116,7 +112,7 @@ internal class ChatViewModel @Inject constructor(
             it.copy(
                 question = question,
                 isPiiError = false,
-                displayCharacterWarning = remainingCharacters in 0..50,
+                displayCharacterWarning = remainingCharacters in 0..characterWarningThreshold,
                 displayCharacterError = displayCharacterError,
                 charactersRemaining = characterLimit - question.length,
                 isSubmitEnabled = question.isNotBlank() && !displayCharacterError
