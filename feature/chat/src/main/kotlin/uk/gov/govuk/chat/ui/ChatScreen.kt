@@ -434,8 +434,8 @@ private fun characterCountText(
     characterCount: Int,
     buttonDisabled: Boolean
 ): Boolean {
-    val characterLimit = 30
-    val characterNotify = 25
+    val characterLimit = 300
+    val characterNotify = 250
 
     var color = GovUkTheme.colourScheme.textAndIcons.secondary
     var style = GovUkTheme.typography.subheadlineRegular
