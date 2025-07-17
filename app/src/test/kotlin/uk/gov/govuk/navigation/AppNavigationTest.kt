@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -18,6 +19,8 @@ import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
+import uk.gov.govuk.notifications.NotificationsClient
+import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
 import uk.gov.govuk.topics.TopicsFeature
 import uk.gov.govuk.topics.navigation.TOPIC_SELECTION_GRAPH_ROUTE
@@ -30,6 +33,7 @@ class AppNavigationTest {
     private val authRepo = mockk<AuthRepo>(relaxed = true)
     private val topicsFeature = mockk<TopicsFeature>(relaxed = true)
     private val deeplinkHandler = mockk<DeeplinkHandler>(relaxed = true)
+    private val notificationsClient = mockk<NotificationsClient>(relaxed = true)
     private val navController = mockk<NavController>(relaxed = true)
     private val deeplink = mockk<Uri>(relaxed = true)
 
@@ -37,7 +41,15 @@ class AppNavigationTest {
 
     @Before
     fun setup() {
-        appLaunchNav = AppNavigation(flagRepo, analyticsClient, appRepo, authRepo, topicsFeature, deeplinkHandler)
+        appLaunchNav = AppNavigation(
+            flagRepo,
+            analyticsClient,
+            appRepo,
+            authRepo,
+            topicsFeature,
+            deeplinkHandler,
+            notificationsClient
+        )
     }
 
     @Test
@@ -214,16 +226,118 @@ class AppNavigationTest {
         every { analyticsClient.isAnalyticsConsentRequired() } returns false
         every { flagRepo.isTopicsEnabled() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        coEvery { appRepo.isNotificationsOnboardingCompleted() } returns true
         coEvery { topicsFeature.hasTopics() } returns false
         every { flagRepo.isNotificationsEnabled() } returns true
 
         runTest {
             appLaunchNav.onNotificationsOnboardingCompleted(navController)
 
-            verify {
+            coVerify(exactly = 1) {
+                appRepo.notificationsOnboardingCompleted()
+            }
+
+            verify(exactly = 1) {
                 navController.popBackStack()
                 navController.navigate(HOME_GRAPH_ROUTE)
                 deeplinkHandler.handleDeeplink(navController)
+            }
+        }
+    }
+
+    @Test
+    fun `On navigate to notifications consent, when notifications disabled and permission granted, doesn't navigate to notifications consent`() {
+        every { flagRepo.isNotificationsEnabled() } returns false
+        every { notificationsClient.permissionGranted(any()) } returns true
+
+        runTest {
+            appLaunchNav.navigateToNotificationsConsent(navController)
+
+            verify(exactly = 0) {
+                navController.popBackStack()
+                navController.navigate(NOTIFICATIONS_CONSENT_ROUTE)
+            }
+        }
+    }
+
+    @Test
+    fun `On navigate to notifications consent, when notifications onboarding not completed and permission granted, doesn't navigate to notifications consent`() {
+        every { flagRepo.isNotificationsEnabled() } returns true
+        coEvery { appRepo.isNotificationsOnboardingCompleted() } returns false
+        every { notificationsClient.permissionGranted(any()) } returns true
+
+        runTest {
+            appLaunchNav.navigateToNotificationsConsent(navController)
+
+            verify(exactly = 0) {
+                navController.popBackStack()
+                navController.navigate(NOTIFICATIONS_CONSENT_ROUTE)
+            }
+        }
+    }
+
+    @Test
+    fun `On navigate to notifications consent, when notifications onboarding completed and permission not granted, doesn't navigate to notifications consent`() {
+        every { flagRepo.isNotificationsEnabled() } returns true
+        coEvery { appRepo.isNotificationsOnboardingCompleted() } returns true
+        every { notificationsClient.permissionGranted(any()) } returns false
+
+        runTest {
+            appLaunchNav.navigateToNotificationsConsent(navController)
+
+            verify(exactly = 0) {
+                navController.popBackStack()
+                navController.navigate(NOTIFICATIONS_CONSENT_ROUTE)
+            }
+        }
+    }
+
+    @Test
+    fun `On navigate to notifications consent, when consent given, doesn't navigate to notifications consent`() {
+        every { flagRepo.isNotificationsEnabled() } returns true
+        coEvery { appRepo.isNotificationsOnboardingCompleted() } returns true
+        every { notificationsClient.permissionGranted(any()) } returns true
+        every { notificationsClient.consentGiven() } returns true
+
+        runTest {
+            appLaunchNav.navigateToNotificationsConsent(navController)
+
+            verify(exactly = 0) {
+                navController.popBackStack()
+                navController.navigate(NOTIFICATIONS_CONSENT_ROUTE)
+            }
+        }
+    }
+
+    @Test
+    fun `On navigate to notifications consent, when permission granted, navigates to notifications consent`() {
+        every { flagRepo.isNotificationsEnabled() } returns true
+        coEvery { appRepo.isNotificationsOnboardingCompleted() } returns true
+        every { notificationsClient.permissionGranted(any()) } returns true
+        every { notificationsClient.consentGiven() } returns false
+
+        runTest {
+            appLaunchNav.navigateToNotificationsConsent(navController)
+
+            verify(exactly = 1) {
+                navController.popBackStack()
+                navController.navigate(NOTIFICATIONS_CONSENT_ROUTE)
+            }
+        }
+    }
+
+    @Test
+    fun `On navigate to notifications consent, when permission not granted, removes consent`() {
+        every { flagRepo.isNotificationsEnabled() } returns true
+        coEvery { appRepo.isNotificationsOnboardingCompleted() } returns true
+        every { notificationsClient.permissionGranted(any()) } returns false
+        every { notificationsClient.consentGiven() } returns true
+
+        runTest {
+            appLaunchNav.navigateToNotificationsConsent(navController)
+
+            verify(exactly = 1) {
+                notificationsClient.removeConsent()
             }
         }
     }

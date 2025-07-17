@@ -22,6 +22,7 @@ import org.junit.Test
 import uk.gov.govuk.data.local.AppDataStore.Companion.SKIPPED_BIOMETRICS_KEY
 import uk.gov.govuk.data.local.AppDataStore.Companion.SUPPRESSED_HOME_WIDGETS
 import uk.gov.govuk.data.local.AppDataStore.Companion.TOPIC_SELECTION_COMPLETED_KEY
+import uk.gov.govuk.data.local.AppDataStore.Companion.NOTIFICATIONS_ONBOARDING_COMPLETED_KEY
 import java.io.File
 import kotlin.io.path.createTempDirectory
 
@@ -144,6 +145,41 @@ class AppDataStoreTest {
             }
 
             assertTrue(appDatastore.isTopicSelectionCompleted())
+        }
+    }
+
+    @Test
+    fun `Given the data store is empty, then is notifications onboarding completed returns false`() {
+        val appDatastore = AppDataStore(dataStore)
+
+        runTest {
+            assertFalse(appDatastore.isNotificationsOnboardingCompleted())
+        }
+    }
+
+    @Test
+    fun `Given notifications onboarding completed is null, then return false`() {
+        val appDatastore = AppDataStore(dataStore)
+
+        runTest {
+            dataStore.edit { prefs ->
+                prefs[booleanPreferencesKey(NOTIFICATIONS_ONBOARDING_COMPLETED_KEY)] = false
+            }
+
+            assertFalse(appDatastore.isNotificationsOnboardingCompleted())
+        }
+    }
+
+    @Test
+    fun `Given notifications onboarding completed is true, then return true`() {
+        val appDatastore = AppDataStore(dataStore)
+
+        runTest {
+            dataStore.edit { prefs ->
+                prefs[booleanPreferencesKey(NOTIFICATIONS_ONBOARDING_COMPLETED_KEY)] = true
+            }
+
+            assertTrue(appDatastore.isNotificationsOnboardingCompleted())
         }
     }
 

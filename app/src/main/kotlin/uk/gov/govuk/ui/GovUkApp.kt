@@ -65,8 +65,8 @@ import uk.gov.govuk.home.navigation.homeGraph
 import uk.gov.govuk.login.navigation.BIOMETRIC_SETTINGS_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.loginGraph
+import uk.gov.govuk.navigation.AppNavigation
 import uk.gov.govuk.navigation.TopLevelDestination
-import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_PERMISSION_ROUTE
 import uk.gov.govuk.notifications.navigation.notificationsGraph
@@ -197,7 +197,10 @@ private fun BottomNavScaffold(
             )
 
             if (shouldDisplayNotificationsOnboarding) {
-                HandleNotificationsPermissionStatus(navController = { navController })
+                HandleNotificationsPermissionStatus(
+                    navController = { navController },
+                    appNavigation = viewModel.appNavigation
+                )
             }
         }
     }
@@ -205,7 +208,8 @@ private fun BottomNavScaffold(
 
 @Composable
 private fun HandleNotificationsPermissionStatus(
-    navController: () -> NavHostController
+    navController: () -> NavHostController,
+    appNavigation: AppNavigation
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
@@ -220,13 +224,14 @@ private fun HandleNotificationsPermissionStatus(
                     // Nav graph has not been set
                     return@LaunchedEffect
                 }
-                val route = when (controller.currentDestination?.route) {
-                    NOTIFICATIONS_ONBOARDING_ROUTE -> NOTIFICATIONS_ONBOARDING_ROUTE
+                when (controller.currentDestination?.route) {
+                    NOTIFICATIONS_ONBOARDING_ROUTE -> controller.navigate(
+                        NOTIFICATIONS_ONBOARDING_ROUTE
+                    ) {
+                        launchSingleTop = true
+                    }
                     NOTIFICATIONS_PERMISSION_ROUTE -> return@LaunchedEffect
-                    else -> NOTIFICATIONS_CONSENT_ROUTE
-                }
-                controller.navigate(route) {
-                    launchSingleTop = true
+                    else -> appNavigation.navigateToNotificationsConsent(navController())
                 }
             }
             else -> { /* Do nothing */ }
@@ -391,11 +396,10 @@ private fun GovUkNavHost(
             notificationsOnboardingCompleted = {
                 coroutineScope.launch {
                     appNavigation.onNotificationsOnboardingCompleted(navController)
-                    navController.navigate(NOTIFICATIONS_CONSENT_ROUTE)
                 }
             },
             notificationsConsentCompleted = {
-                navController.navigateUp()
+                navController.popBackStack()
             },
             notificationsPermissionCompleted = {
                 navController.popBackStack()

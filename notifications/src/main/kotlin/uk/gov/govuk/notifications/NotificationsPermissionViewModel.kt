@@ -43,8 +43,4 @@ internal class NotificationsPermissionViewModel @Inject constructor(
             }
         }
     }
-
-    internal fun finish() {
-        _uiState.value = NotificationsUiState.Finish
-    }
 }
