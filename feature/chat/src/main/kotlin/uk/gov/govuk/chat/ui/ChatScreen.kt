@@ -195,30 +195,27 @@ private fun ChatScreen(
                         .background(GovUkTheme.colourScheme.surfaces.chatBackground)
                         .padding(all = GovUkTheme.spacing.medium)
                         .then(
-                            if (isFocused)
-                                if (isError)
-                                    Modifier
-                                        .border(
-                                            1.dp,
-                                            GovUkTheme.colourScheme.strokes.textFieldError,
-                                            RoundedCornerShape(20.dp)
-                                        )
-                                        .clip(RoundedCornerShape(0.dp, 0.dp, 20.dp, 20.dp))
-                                else
-                                    Modifier
-                                        .border(
-                                            1.dp,
-                                            GovUkTheme.colourScheme.strokes.chatTextFieldBorder,
-                                            RoundedCornerShape(20.dp)
-                                        )
-                                        .clip(RoundedCornerShape(0.dp, 0.dp, 20.dp, 20.dp))
-                            else
+                            if (isFocused) {
+                                var color = GovUkTheme.colourScheme.strokes.chatTextFieldBorder
+                                if (isError) {
+                                    color = GovUkTheme.colourScheme.strokes.textFieldError
+                                }
+
+                                Modifier
+                                    .border(
+                                        1.dp,
+                                        color,
+                                        RoundedCornerShape(20.dp)
+                                    )
+                                    .clip(RoundedCornerShape(0.dp, 0.dp, 20.dp, 20.dp))
+                            } else {
                                 Modifier.border(0.dp, Color.Transparent)
+                            }
                         ),
                 ) {
                     Row {
                         AnimatedVisibility(!isFocused) {
-                            var expanded by remember { mutableStateOf(false) }
+                            var expanded by rememberSaveable { mutableStateOf(false) }
 
                             DropdownMenu(
                                 expanded = expanded,
@@ -247,7 +244,7 @@ private fun ChatScreen(
                                             tint = GovUkTheme.colourScheme.textAndIcons.primary
                                         )
                                     },
-                                    onClick = {},
+                                    onClick = { /* TODO: Handle action */ },
                                 )
                                 DropdownMenuItem(
                                     text = {
@@ -264,7 +261,7 @@ private fun ChatScreen(
                                             tint = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
                                         )
                                     },
-                                    onClick = {}
+                                    onClick = { /* TODO: Handle action */ }
                                 )
                             }
 
@@ -312,16 +309,17 @@ private fun ChatScreen(
                                     isFocused = it.isFocused
                                 }
                                 .then(
-                                    if (isFocused)
+                                    if (isFocused) {
                                         Modifier.padding(horizontal = 0.dp)
                                             .border(0.dp, Color.Transparent)
-                                    else
+                                    } else {
                                         Modifier.padding(start = GovUkTheme.spacing.small)
                                             .border(
                                                 1.dp,
                                                 GovUkTheme.colourScheme.strokes.chatTextFieldBorderDisabled,
                                                 RoundedCornerShape(40.dp)
                                             )
+                                    }
                                 ),
                             value = if (isFocused) question else "",
                             shape = if (isFocused)
@@ -381,9 +379,7 @@ private fun ChatScreen(
                         ) {
                             buttonDisabled = characterCountText(
                                 characterCount = characterCount,
-                                buttonDisabled = buttonDisabled,
-                                modifier = Modifier.weight(1f)
-                                    .padding(all = 0.dp)
+                                buttonDisabled = buttonDisabled
                             )
 
                             IconButton(
@@ -436,8 +432,7 @@ private fun ChatScreen(
 @Composable
 private fun characterCountText(
     characterCount: Int,
-    buttonDisabled: Boolean,
-    modifier: Modifier = Modifier
+    buttonDisabled: Boolean
 ): Boolean {
     val characterLimit = 30
     val characterNotify = 25
