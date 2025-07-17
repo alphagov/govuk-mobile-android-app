@@ -344,10 +344,14 @@ private fun ChatScreen(
                             placeholder = {
                                 if (!isFocused) {
                                     if (question.isEmpty()) {
-                                        Text(text = stringResource(id = R.string.input_label))
+                                        Text(
+                                            text = stringResource(id = R.string.input_label),
+                                            color = GovUkTheme.colourScheme.textAndIcons.secondary
+                                        )
                                     } else {
                                         Text(
                                             text = question,
+                                            color = GovUkTheme.colourScheme.textAndIcons.secondary,
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis
                                         )
