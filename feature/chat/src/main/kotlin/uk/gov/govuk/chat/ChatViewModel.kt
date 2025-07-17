@@ -26,13 +26,14 @@ internal data class ChatUiState(
     val displayCharacterWarning: Boolean = false,
     val displayCharacterError: Boolean = false,
     val charactersRemaining: Int = 0,
-    val isSubmitEnabled: Boolean = false
+    val isSubmitEnabled: Boolean = false,
+    val isError: Boolean = false
 )
 
 @HiltViewModel
 internal class ChatViewModel @Inject constructor(
     private val chatRepo: ChatRepo,
-    @Named("main") dispatcher: CoroutineDispatcher
+    @Named("main") private val dispatcher: CoroutineDispatcher
 ): ViewModel() {
     private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
         ChatUiState(
@@ -43,8 +44,16 @@ internal class ChatViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
+        initConversation()
+    }
+
+    fun onRetry() {
+        initConversation()
+    }
+
+    private fun initConversation() {
         viewModelScope.launch(dispatcher) {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.value = ChatUiState(isLoading = true)
 
             chatRepo.getConversation()?.let { result ->
                 handleChatResult(result) { conversation ->
@@ -129,10 +138,8 @@ internal class ChatViewModel @Inject constructor(
     private suspend fun <T> handleChatResult(chatResult: ChatResult<T>, onSuccess: suspend (T) -> Unit) {
         when (chatResult) {
             is Success -> onSuccess(chatResult.value)
-            is ValidationError -> {
-                _uiState.update { it.copy(isPiiError = true) }
-            }
-            else -> { }// Todo - handle error!!!
+            is ValidationError -> _uiState.update { it.copy(isPiiError = true) }
+            else -> _uiState.update { it.copy(isError = true) }
         }
     }
 
