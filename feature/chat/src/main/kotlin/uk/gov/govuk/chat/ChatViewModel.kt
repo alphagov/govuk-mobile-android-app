@@ -13,7 +13,6 @@ import uk.gov.govuk.chat.data.remote.ChatResult
 import uk.gov.govuk.chat.data.remote.ChatResult.Success
 import uk.gov.govuk.chat.data.remote.ChatResult.ValidationError
 import uk.gov.govuk.chat.data.remote.model.Answer
-import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
 import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.chat.ui.model.ChatEntry
 import javax.inject.Inject
@@ -50,10 +49,23 @@ internal class ChatViewModel @Inject constructor(
             chatRepo.getConversation()?.let { result ->
                 handleChatResult(result) { conversation ->
                     conversation.answeredQuestions.forEach { question ->
-                        addChatEntry(question)
+                        addChatEntry(
+                            questionId = question.id,
+                            question = question.message
+                        )
                         updateChatEntry(question.id, question.answer)
                     }
-                    // Todo - handle pending questions!!!
+
+                    conversation.pendingQuestion?.let { pendingQuestion ->
+                        addChatEntry(
+                            questionId = pendingQuestion.id,
+                            question = pendingQuestion.message
+                        )
+                        getAnswer(
+                            conversationId = conversation.id,
+                            questionId = pendingQuestion.id
+                        )
+                    }
                 }
             }
 
@@ -70,7 +82,10 @@ internal class ChatViewModel @Inject constructor(
                 _uiState.update { it.copy(isLoading = true) }
 
                 handleChatResult(chatRepo.askQuestion(question)) { answeredQuestion ->
-                    addChatEntry(answeredQuestion)
+                    addChatEntry(
+                        questionId = answeredQuestion.id,
+                        question = answeredQuestion.message
+                    )
                     onQuestionUpdated("")
                     getAnswer(
                         conversationId = answeredQuestion.conversationId,
@@ -121,13 +136,13 @@ internal class ChatViewModel @Inject constructor(
         }
     }
 
-    private fun addChatEntry(question: AnsweredQuestion) {
+    private fun addChatEntry(questionId: String, question: String) {
         _uiState.update {
             it.copy(
                 chatEntries = it.chatEntries.plus(
                     mapOf(
-                        question.id to ChatEntry(
-                            question = question.message,
+                        questionId to ChatEntry(
+                            question = question,
                             answer = "",
                             sources = emptyList()
                         )
