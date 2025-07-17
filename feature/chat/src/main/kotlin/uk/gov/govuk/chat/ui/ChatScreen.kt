@@ -46,6 +46,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -239,7 +240,7 @@ private fun ChatScreen(
                                 DropdownMenuItem(
                                     text = {
                                         Text(
-                                            "About",
+                                            text = stringResource(id = R.string.action_about),
                                             color = GovUkTheme.colourScheme.textAndIcons.primary,
                                             style = GovUkTheme.typography.bodyRegular,
                                         )
@@ -256,7 +257,7 @@ private fun ChatScreen(
                                 DropdownMenuItem(
                                     text = {
                                         Text(
-                                            "Clear chat",
+                                            text = stringResource(id = R.string.action_clear),
                                             color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
                                             style = GovUkTheme.typography.bodyRegular,
                                         )
@@ -342,7 +343,15 @@ private fun ChatScreen(
                             },
                             placeholder = {
                                 if (!isFocused) {
-                                    Text(text = "Type your message here")
+                                    if (question.isEmpty()) {
+                                        Text(text = stringResource(id = R.string.input_label))
+                                    } else {
+                                        Text(
+                                            text = question,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
                                 }
                             },
                             isError = isError,
