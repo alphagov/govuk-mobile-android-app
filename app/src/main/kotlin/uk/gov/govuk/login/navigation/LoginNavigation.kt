@@ -70,7 +70,9 @@ fun NavGraphBuilder.loginGraph(
         }
         composable(route = ERROR_ROUTE) {
             ErrorRoute(
-                onBack = { navController.popBackStack() },
+                onBack = {
+                    navController.popBackStack(ERROR_ROUTE, true)
+                },
                 modifier = modifier
             )
         }
