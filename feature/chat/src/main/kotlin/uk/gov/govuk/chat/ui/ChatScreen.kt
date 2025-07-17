@@ -131,10 +131,17 @@ private fun ChatScreen(
                         )
                         MediumVerticalSpacer()
 
+                        val markdownTextStyle = TextStyle(
+                            color = GovUkTheme.colourScheme.textAndIcons.primary,
+                            fontSize = GovUkTheme.typography.bodyRegular.fontSize,
+                            fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
+                            fontWeight = GovUkTheme.typography.bodyRegular.fontWeight
+                        )
+
                         MarkdownText(
                             markdown = chatEntry.value.answer,
                             linkColor = GovUkTheme.colourScheme.textAndIcons.link,
-                            style = GovUkTheme.typography.bodyRegular,
+                            style = markdownTextStyle,
                             enableSoftBreakAddsNewLine = false
                         )
 
@@ -149,7 +156,7 @@ private fun ChatScreen(
                                     MarkdownText(
                                         markdown = source,
                                         linkColor = GovUkTheme.colourScheme.textAndIcons.link,
-                                        style = GovUkTheme.typography.bodyRegular,
+                                        style = markdownTextStyle,
                                         enableSoftBreakAddsNewLine = false
                                     )
                                     MediumVerticalSpacer()
