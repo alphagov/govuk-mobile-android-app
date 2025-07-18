@@ -42,7 +42,11 @@ internal fun NotificationsConsentRoute(
                     showNotificationsAlert(
                         context,
                         onCancelButtonClick = { notificationsViewModel.onCancelButtonClick(it) },
-                        onContinueButtonClick = { notificationsViewModel.onContinueButtonClick(it) })
+                        onContinueButtonClick = {
+                            notificationsConsentCompleted()
+                            notificationsViewModel.onContinueButtonClick(it)
+                        })
+
                 }
             )
         }

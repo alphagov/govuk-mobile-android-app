@@ -46,9 +46,8 @@ internal fun NotificationsOnboardingRoute(
                             context,
                             onCancelButtonClick = { notificationsViewModel.onCancelButtonClick(it) },
                             onContinueButtonClick = {
-                                notificationsViewModel.onContinueButtonClick(
-                                    it
-                                )
+                                notificationsViewModel.onContinueButtonClick(it)
+                                notificationsOnboardingCompleted()
                             })
                     }
                 )
