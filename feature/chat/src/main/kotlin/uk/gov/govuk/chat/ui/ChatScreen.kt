@@ -28,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -40,8 +39,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -118,7 +115,6 @@ private fun ChatContent(
     onSubmit: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var scrollPosition by remember { mutableIntStateOf(0) }
     val focusRequester = remember { FocusRequester() }
     var isFocused by rememberSaveable { mutableStateOf(false) }
     val scrollState = rememberScrollState()
@@ -136,19 +132,8 @@ private fun ChatContent(
             if (uiState.chatEntries.isNotEmpty()) {
                 MediumVerticalSpacer()
 
-                uiState.chatEntries.entries.forEachIndexed { index, chatEntry ->
-                    val isLastQuestion = index == uiState.chatEntries.size - 1
-                    Column(
-                        modifier = if (isLastQuestion) {
-                            Modifier.onGloballyPositioned { layoutCoordinates ->
-                                val positionInScrollableContent =
-                                    layoutCoordinates.positionInParent().y
-                                scrollPosition = positionInScrollableContent.toInt()
-                            }
-                        } else {
-                            Modifier
-                        }
-                    ) {
+                uiState.chatEntries.entries.forEach { chatEntry ->
+                    Column {
                         BodyBoldLabel(
                             text = chatEntry.value.question
                         )
@@ -186,6 +171,8 @@ private fun ChatContent(
                                 }
                             }
                         }
+
+                        MediumVerticalSpacer()
                     }
                 }
             }
@@ -203,16 +190,9 @@ private fun ChatContent(
             }
 
             Row(
-                modifier = if (uiState.isPiiError)
-                {
-                    Modifier
-                        .fillMaxWidth()
-                        .background(GovUkTheme.colourScheme.surfaces.chatBackground)
-                } else {
-                    Modifier
-                        .fillMaxWidth()
-                        .background(GovUkTheme.colourScheme.surfaces.chatBackground)
-                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(GovUkTheme.colourScheme.surfaces.chatBackground),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
