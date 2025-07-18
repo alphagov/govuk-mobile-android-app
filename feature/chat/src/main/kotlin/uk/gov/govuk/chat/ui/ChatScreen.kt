@@ -55,8 +55,8 @@ import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
-import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
+import uk.gov.govuk.design.ui.component.ErrorPage
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -71,8 +71,14 @@ internal fun ChatRoute(
 
     ChatScreen(
         uiState = uiState,
+        onQuestionUpdated = { question ->
+            viewModel.onQuestionUpdated(question)
+        },
         onSubmit = { question ->
             viewModel.onSubmit(question)
+        },
+        onRetry = {
+            viewModel.loadConversation()
         },
         modifier = modifier
     )
@@ -80,29 +86,45 @@ internal fun ChatRoute(
 
 @Composable
 private fun ChatScreen(
-    uiState: ChatUiState?,
+    uiState: ChatUiState,
+    onQuestionUpdated: (String) -> Unit,
+    onSubmit: (String) -> Unit,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (uiState.isError) {
+        ErrorPage(
+            headerText = "Header",
+            subText = "Subtext",
+            buttonText = "Retry",
+            onBack = { onRetry() },
+            modifier = modifier,
+            additionalText = "Additional text"
+        )
+    } else {
+        ChatContent(
+            uiState,
+            onQuestionUpdated,
+            onSubmit,
+            modifier
+        )
+    }
+}
+
+@Composable
+private fun ChatContent(
+    uiState: ChatUiState,
+    onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var question by rememberSaveable { mutableStateOf("") }
     var scrollPosition by remember { mutableIntStateOf(0) }
-    var isError by rememberSaveable { mutableStateOf(false) }
-    var characterCount by rememberSaveable { mutableIntStateOf(0) }
-    var buttonDisabled by rememberSaveable { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     var isFocused by rememberSaveable { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
-    LaunchedEffect(uiState?.chatEntries?.size) {
-        val answerCount = uiState?.chatEntries?.size ?: 0
-        if (answerCount > 0) {
-            delay(150)
-            scrollState.animateScrollTo(scrollState.maxValue)
-        }
-    }
-
     Column(
-        Modifier.background(color = GovUkTheme.colourScheme.surfaces.chatBackground)
+        modifier.background(color = GovUkTheme.colourScheme.surfaces.chatBackground)
     ) {
         Column(
             Modifier
@@ -111,20 +133,20 @@ private fun ChatScreen(
                 .weight(1f)
                 .padding(horizontal = GovUkTheme.spacing.medium)
         ) {
-            if (uiState?.chatEntries != null && uiState.chatEntries.isNotEmpty()) {
+            if (uiState.chatEntries.isNotEmpty()) {
                 MediumVerticalSpacer()
 
                 uiState.chatEntries.entries.forEachIndexed { index, chatEntry ->
                     val isLastQuestion = index == uiState.chatEntries.size - 1
                     Column(
                         modifier = if (isLastQuestion) {
-                            modifier.onGloballyPositioned { layoutCoordinates ->
+                            Modifier.onGloballyPositioned { layoutCoordinates ->
                                 val positionInScrollableContent =
                                     layoutCoordinates.positionInParent().y
                                 scrollPosition = positionInScrollableContent.toInt()
                             }
                         } else {
-                            modifier
+                            Modifier
                         }
                     ) {
                         BodyBoldLabel(
@@ -169,29 +191,25 @@ private fun ChatScreen(
             }
         }
 
-        Column(
-            modifier = Modifier
-        ) {
-            if (uiState != null) {
-                if (uiState.loading) {
-                    LinearProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = GovUkTheme.spacing.medium),
-                        color = GovUkTheme.colourScheme.surfaces.primary,
-                        trackColor = GovUkTheme.colourScheme.surfaces.textFieldBackground
-                    )
-                }
+        Column {
+            if (uiState.isLoading) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = GovUkTheme.spacing.medium),
+                    color = GovUkTheme.colourScheme.surfaces.primary,
+                    trackColor = GovUkTheme.colourScheme.surfaces.textFieldBackground
+                )
             }
 
             Row(
-                modifier = if (isError)
+                modifier = if (uiState.isPiiError)
                 {
                     Modifier
                         .fillMaxWidth()
                         .background(GovUkTheme.colourScheme.surfaces.chatBackground)
                 } else {
-                    modifier
+                    Modifier
                         .fillMaxWidth()
                         .background(GovUkTheme.colourScheme.surfaces.chatBackground)
                 },
@@ -205,7 +223,7 @@ private fun ChatScreen(
                         .then(
                             if (isFocused) {
                                 var color = GovUkTheme.colourScheme.strokes.chatTextFieldBorder
-                                if (isError) {
+                                if (uiState.isPiiError) {
                                     color = GovUkTheme.colourScheme.strokes.textFieldError
                                 }
 
@@ -329,28 +347,25 @@ private fun ChatScreen(
                                             )
                                     }
                                 ),
-                            value = if (isFocused) question else "",
+                            value = if (isFocused) uiState.question else "",
                             shape = if (isFocused)
                                 RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
                             else
                                 RoundedCornerShape(40.dp),
                             singleLine = false,
                             onValueChange = {
-                                buttonDisabled = false
-                                isError = false
-                                question = it
-                                characterCount = it.length
+                                onQuestionUpdated(it)
                             },
                             placeholder = {
                                 if (!isFocused) {
-                                    if (question.isEmpty()) {
+                                    if (uiState.question.isEmpty()) {
                                         Text(
                                             text = stringResource(id = R.string.input_label),
                                             color = GovUkTheme.colourScheme.textAndIcons.secondary
                                         )
                                     } else {
                                         Text(
-                                            text = question,
+                                            text = uiState.question,
                                             color = GovUkTheme.colourScheme.textAndIcons.secondary,
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis
@@ -358,7 +373,7 @@ private fun ChatScreen(
                                     }
                                 }
                             },
-                            isError = isError,
+                            isError = uiState.isPiiError,
                             colors = TextFieldDefaults.colors(
                                 cursorColor = GovUkTheme.colourScheme.textAndIcons.primary,
                                 focusedTextColor = GovUkTheme.colourScheme.textAndIcons.primary,
@@ -397,22 +412,13 @@ private fun ChatScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            buttonDisabled = characterCountText(
-                                characterCount = characterCount,
-                                buttonDisabled = buttonDisabled
-                            )
+                            CharacterCountText(uiState)
 
                             IconButton(
                                 onClick = {
-                                    val currentQuestion = question
-                                    isError = StringCleaner.includesPII(currentQuestion)
-                                    if (!isError) {
-                                        onSubmit(currentQuestion)
-                                        question = ""
-                                        characterCount = 0
-                                    }
+                                    onSubmit(uiState.question)
                                 },
-                                enabled = question.isNotBlank() && !buttonDisabled,
+                                enabled = uiState.isSubmitEnabled,
                                 colors = IconButtonColors(
                                     containerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
                                     contentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconEnabled,
@@ -430,9 +436,9 @@ private fun ChatScreen(
                 }
             }
 
-            if (isError) {
+            if (uiState.isPiiError) {
                 Row(
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = GovUkTheme.spacing.medium)
                 ) {
@@ -447,56 +453,51 @@ private fun ChatScreen(
             SmallVerticalSpacer()
         }
     }
+
+    LaunchedEffect(uiState.chatEntries.size) {
+        val answerCount = uiState.chatEntries.size
+        if (answerCount > 0) {
+            delay(150)
+            scrollState.animateScrollTo(scrollState.maxValue)
+        }
+    }
 }
 
 @Composable
-private fun characterCountText(
-    characterCount: Int,
-    buttonDisabled: Boolean
-): Boolean {
-    val characterLimit = 300
-    val characterNotify = 250
-
+private fun CharacterCountText(
+    uiState: ChatUiState,
+    modifier: Modifier = Modifier
+) {
+    val charactersRemaining = abs(uiState.charactersRemaining)
     var color = GovUkTheme.colourScheme.textAndIcons.secondary
     var style = GovUkTheme.typography.subheadlineRegular
-    var disabled = buttonDisabled
     var text = ""
 
-    if (characterCount in characterNotify..<characterLimit) {
-        val characterDifference = (characterLimit - characterCount)
-        text = pluralStringResource(
-            id = R.plurals.characterCountUnderOrAtLimit,
-            count = characterDifference,
-            characterDifference
-        )
-        disabled = false
-    } else if (characterCount == characterLimit) {
-        val characterDifference = 0
-        text = pluralStringResource(
-            id = R.plurals.characterCountUnderOrAtLimit,
-            count = characterDifference,
-            characterDifference
-        )
-        disabled = false
-    } else if (characterCount > characterLimit) {
-        val characterDifference = abs(characterLimit - characterCount)
-        text = pluralStringResource(
-            id = R.plurals.characterCountOverLimit,
-            count = characterDifference,
-            characterDifference
-        )
-        color = GovUkTheme.colourScheme.textAndIcons.textFieldError
-        style = GovUkTheme.typography.subheadlineBold
-        disabled = true
+    when {
+        uiState.displayCharacterWarning -> {
+            text = pluralStringResource(
+                id = R.plurals.characterCountUnderOrAtLimit,
+                count = charactersRemaining,
+                charactersRemaining
+            )
+        }
+        uiState.displayCharacterError -> {
+            text = pluralStringResource(
+                id = R.plurals.characterCountOverLimit,
+                count = charactersRemaining,
+                charactersRemaining
+            )
+            color = GovUkTheme.colourScheme.textAndIcons.textFieldError
+            style = GovUkTheme.typography.subheadlineBold
+        }
     }
 
     Text(
         text = text,
         color = color,
         style = style,
-        modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+        modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium)
     )
-    return disabled
 }
 
 @Preview(
@@ -507,8 +508,10 @@ private fun characterCountText(
 private fun LightModeChatScreenPreview() {
     GovUkTheme {
         ChatScreen(
-            uiState = ChatUiState(loading = false),
+            uiState = ChatUiState(isLoading = false),
+            onQuestionUpdated = { _ -> },
             onSubmit = { _ -> },
+            onRetry = { }
         )
     }
 }
@@ -521,10 +524,10 @@ private fun LightModeChatScreenPreview() {
 private fun DarkModeChatScreenPreview() {
     GovUkTheme {
         ChatScreen(
-            uiState = ChatUiState(
-                loading = false
-            ),
+            uiState = ChatUiState(isLoading = false),
+            onQuestionUpdated = { _ -> },
             onSubmit = { _ -> },
+            onRetry = { }
         )
     }
 }
