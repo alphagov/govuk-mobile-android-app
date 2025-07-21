@@ -203,59 +203,7 @@ private fun ChatContent(
                 ) {
                     Row {
                         AnimatedVisibility(!isFocused) {
-                            var expanded by rememberSaveable { mutableStateOf(false) }
-
-                            DropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false },
-                                modifier = Modifier
-                                    .background(GovUkTheme.colourScheme.surfaces.alert)
-                                    .border(
-                                        1.dp,
-                                        GovUkTheme.colourScheme.surfaces.alert,
-                                        RoundedCornerShape(GovUkTheme.spacing.extraSmall)
-                                    )
-                                    .width(200.dp)
-                            ) {
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = stringResource(id = R.string.action_about),
-                                            color = GovUkTheme.colourScheme.textAndIcons.primary,
-                                            style = GovUkTheme.typography.bodyRegular,
-                                        )
-                                    },
-                                    trailingIcon = {
-                                        Icon(
-                                            painter = painterResource(R.drawable.outline_info_24),
-                                            contentDescription = null,
-                                            tint = GovUkTheme.colourScheme.textAndIcons.primary
-                                        )
-                                    },
-                                    onClick = { /* TODO: Handle action */ },
-                                )
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = stringResource(id = R.string.action_clear),
-                                            color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
-                                            style = GovUkTheme.typography.bodyRegular,
-                                        )
-                                    },
-                                    trailingIcon = {
-                                        Icon(
-                                            painter = painterResource(R.drawable.outline_delete_24),
-                                            contentDescription = null,
-                                            tint = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
-                                        )
-                                    },
-                                    onClick = { /* TODO: Handle action */ }
-                                )
-                            }
-
-                            ActionIconButton(
-                                onClick = { expanded = !expanded }
-                            )
+                            ActionMenu()
                         }
 
                         TextField(
@@ -403,6 +351,63 @@ private fun SubmitIconButton(onClick: () -> Unit, enabled: Boolean) {
             contentDescription = null
         )
     }
+}
+
+@Composable
+private fun ActionMenu() {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        modifier = Modifier
+            .background(GovUkTheme.colourScheme.surfaces.alert)
+            .border(
+                1.dp,
+                GovUkTheme.colourScheme.surfaces.alert,
+                RoundedCornerShape(GovUkTheme.spacing.extraSmall)
+            )
+            .width(200.dp)
+    ) {
+        DropdownMenuItem(
+            text = {
+                Text(
+                    text = stringResource(id = R.string.action_about),
+                    color = GovUkTheme.colourScheme.textAndIcons.primary,
+                    style = GovUkTheme.typography.bodyRegular,
+                )
+            },
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.outline_info_24),
+                    contentDescription = null,
+                    tint = GovUkTheme.colourScheme.textAndIcons.primary
+                )
+            },
+            onClick = { /* TODO: Handle action */ },
+        )
+        DropdownMenuItem(
+            text = {
+                Text(
+                    text = stringResource(id = R.string.action_clear),
+                    color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
+                    style = GovUkTheme.typography.bodyRegular,
+                )
+            },
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.outline_delete_24),
+                    contentDescription = null,
+                    tint = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
+                )
+            },
+            onClick = { /* TODO: Handle action */ }
+        )
+    }
+
+    ActionIconButton(
+        onClick = { expanded = !expanded }
+    )
 }
 
 @Composable
