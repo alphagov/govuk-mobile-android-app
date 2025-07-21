@@ -133,7 +133,9 @@ private fun ChatContent(
         }
 
         Column {
-            DisplayProgressIndicator(uiState = uiState)
+            if (uiState.isLoading) {
+                DisplayProgressIndicator()
+            }
 
             Row(
                 modifier = Modifier
@@ -244,7 +246,10 @@ private fun ChatContent(
                 }
             }
 
-            DisplayPIIError(uiState = uiState)
+            if (uiState.isPiiError) {
+                DisplayPIIError()
+            }
+
             SmallVerticalSpacer()
         }
     }
@@ -294,33 +299,29 @@ private fun inputTextFieldDefaults() = TextFieldDefaults.colors(
 )
 
 @Composable
-private fun DisplayPIIError(uiState: ChatUiState) {
-    if (uiState.isPiiError) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = GovUkTheme.spacing.medium)
-        ) {
-            val errorMessage = stringResource(id = R.string.pii_error_message)
-            BodyBoldLabel(
-                color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
-                text = errorMessage
-            )
-        }
+private fun DisplayPIIError() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = GovUkTheme.spacing.medium)
+    ) {
+        val errorMessage = stringResource(id = R.string.pii_error_message)
+        BodyBoldLabel(
+            color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
+            text = errorMessage
+        )
     }
 }
 
 @Composable
-private fun DisplayProgressIndicator(uiState: ChatUiState) {
-    if (uiState.isLoading) {
-        LinearProgressIndicator(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = GovUkTheme.spacing.medium),
-            color = GovUkTheme.colourScheme.surfaces.primary,
-            trackColor = GovUkTheme.colourScheme.surfaces.textFieldBackground
-        )
-    }
+private fun DisplayProgressIndicator() {
+    LinearProgressIndicator(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = GovUkTheme.spacing.medium),
+        color = GovUkTheme.colourScheme.surfaces.primary,
+        trackColor = GovUkTheme.colourScheme.surfaces.textFieldBackground
+    )
 }
 
 @Composable
