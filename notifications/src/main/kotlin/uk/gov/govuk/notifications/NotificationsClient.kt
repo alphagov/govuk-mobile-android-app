@@ -1,6 +1,5 @@
 package uk.gov.govuk.notifications
 
-import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
