@@ -206,38 +206,11 @@ private fun ChatContent(
                             },
                             placeholder = {
                                 if (!isFocused) {
-                                    if (uiState.question.isEmpty()) {
-                                        Text(
-                                            text = stringResource(id = R.string.input_label),
-                                            color = GovUkTheme.colourScheme.textAndIcons.secondary
-                                        )
-                                    } else {
-                                        Text(
-                                            text = uiState.question,
-                                            color = GovUkTheme.colourScheme.textAndIcons.secondary,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }
+                                    DisplayPlaceholderText(uiState = uiState)
                                 }
                             },
                             isError = uiState.isPiiError,
-                            colors = TextFieldDefaults.colors(
-                                cursorColor = GovUkTheme.colourScheme.textAndIcons.primary,
-                                focusedTextColor = GovUkTheme.colourScheme.textAndIcons.primary,
-                                unfocusedTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-                                disabledTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-                                focusedContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-                                unfocusedContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-                                disabledContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                errorContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-                                errorLabelColor = GovUkTheme.colourScheme.textAndIcons.primary,
-                                errorCursorColor = GovUkTheme.colourScheme.textAndIcons.primary,
-                                errorIndicatorColor = Color.Transparent
-                            )
+                            colors = inputTextFieldDefaults()
                         )
                     }
 
@@ -284,6 +257,41 @@ private fun ChatContent(
         }
     }
 }
+
+@Composable
+private fun DisplayPlaceholderText(uiState: ChatUiState) {
+    if (uiState.question.isEmpty()) {
+        Text(
+            text = stringResource(id = R.string.input_label),
+            color = GovUkTheme.colourScheme.textAndIcons.secondary
+        )
+    } else {
+        Text(
+            text = uiState.question,
+            color = GovUkTheme.colourScheme.textAndIcons.secondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+private fun inputTextFieldDefaults() = TextFieldDefaults.colors(
+    cursorColor = GovUkTheme.colourScheme.textAndIcons.primary,
+    focusedTextColor = GovUkTheme.colourScheme.textAndIcons.primary,
+    unfocusedTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
+    disabledTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
+    focusedContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
+    unfocusedContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
+    disabledContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
+    focusedIndicatorColor = Color.Transparent,
+    unfocusedIndicatorColor = Color.Transparent,
+    disabledIndicatorColor = Color.Transparent,
+    errorContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
+    errorLabelColor = GovUkTheme.colourScheme.textAndIcons.primary,
+    errorCursorColor = GovUkTheme.colourScheme.textAndIcons.primary,
+    errorIndicatorColor = Color.Transparent
+)
 
 @Composable
 private fun DisplayPIIError(uiState: ChatUiState) {
