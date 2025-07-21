@@ -50,12 +50,13 @@ internal class AppNavigation @Inject constructor(
                     !appRepo.isTopicSelectionCompleted() &&
                     topicsFeature.hasTopics() -> navigate(navController, TOPIC_SELECTION_GRAPH_ROUTE)
             flagRepo.isNotificationsEnabled() &&
-                    !appRepo.isNotificationsOnboardingCompleted() -> navigate(navController, NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
+                    !notificationsClient.isNotificationsOnboardingCompleted() ->
+                navigate(navController, NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             flagRepo.isNotificationsEnabled() &&
-                appRepo.isNotificationsOnboardingCompleted() &&
-                notificationsClient.permissionGranted(navController.context) &&
-                !notificationsClient.consentGiven() -> {
-                    navigate(navController, NOTIFICATIONS_CONSENT_ON_NEXT_ROUTE)}
+                    notificationsClient.isNotificationsOnboardingCompleted() &&
+                    notificationsClient.permissionGranted(navController.context) &&
+                    !notificationsClient.consentGiven() ->
+                navigate(navController, NOTIFICATIONS_CONSENT_ON_NEXT_ROUTE)
             else -> {
                 navigate(navController, HOME_GRAPH_ROUTE)
                 deeplinkHandler.handleDeeplink(navController)
@@ -64,7 +65,7 @@ internal class AppNavigation @Inject constructor(
     }
 
     suspend fun onNotificationsOnboardingCompleted(navController: NavController) {
-        appRepo.notificationsOnboardingCompleted()
+        notificationsClient.notificationsOnboardingCompleted()
         onNext(navController)
     }
 
@@ -87,7 +88,7 @@ internal class AppNavigation @Inject constructor(
             }
         } else if (
             authRepo.isUserSessionActive() &&
-            appRepo.isNotificationsOnboardingCompleted() &&
+            notificationsClient.isNotificationsOnboardingCompleted() &&
             !notificationsClient.consentGiven()
         ) {
             navController.navigate(NOTIFICATIONS_CONSENT_ROUTE)

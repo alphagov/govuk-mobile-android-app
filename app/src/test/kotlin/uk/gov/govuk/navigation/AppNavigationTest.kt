@@ -187,7 +187,7 @@ class AppNavigationTest {
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
         coEvery { topicsFeature.hasTopics() } returns false
         every { flagRepo.isNotificationsEnabled() } returns true
-        coEvery { appRepo.isNotificationsOnboardingCompleted() } returns true
+        coEvery { notificationsClient.isNotificationsOnboardingCompleted() } returns true
         every { notificationsClient.permissionGranted(any()) } returns true
         every { notificationsClient.consentGiven() } returns false
 
@@ -297,7 +297,7 @@ class AppNavigationTest {
         every { analyticsClient.isAnalyticsConsentRequired() } returns false
         every { flagRepo.isTopicsEnabled() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { appRepo.isNotificationsOnboardingCompleted() } returns true
+        coEvery { notificationsClient.isNotificationsOnboardingCompleted() } returns true
         coEvery { topicsFeature.hasTopics() } returns false
         every { flagRepo.isNotificationsEnabled() } returns true
 
@@ -305,7 +305,7 @@ class AppNavigationTest {
             appLaunchNav.onNotificationsOnboardingCompleted(navController)
 
             coVerify(exactly = 1) {
-                appRepo.notificationsOnboardingCompleted()
+                notificationsClient.notificationsOnboardingCompleted()
             }
 
             verify(exactly = 1) {
@@ -366,7 +366,7 @@ class AppNavigationTest {
         every { analyticsClient.isAnalyticsConsentRequired() } returns false
         every { flagRepo.isTopicsEnabled() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { appRepo.isNotificationsOnboardingCompleted() } returns true
+        coEvery { notificationsClient.isNotificationsOnboardingCompleted() } returns true
         coEvery { topicsFeature.hasTopics() } returns false
         every { flagRepo.isNotificationsEnabled() } returns true
         every { notificationsClient.permissionGranted(any()) } returns false
@@ -391,7 +391,7 @@ class AppNavigationTest {
         every { analyticsClient.isAnalyticsConsentRequired() } returns false
         every { flagRepo.isTopicsEnabled() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { appRepo.isNotificationsOnboardingCompleted() } returns true
+        coEvery { notificationsClient.isNotificationsOnboardingCompleted() } returns true
         coEvery { topicsFeature.hasTopics() } returns false
         every { flagRepo.isNotificationsEnabled() } returns true
         every { notificationsClient.permissionGranted(any()) } returns false
@@ -431,7 +431,7 @@ class AppNavigationTest {
         every { flagRepo.isNotificationsEnabled() } returns true
         every { notificationsClient.permissionGranted(any()) } returns true
         every { authRepo.isUserSessionActive() } returns true
-        coEvery { appRepo.isNotificationsOnboardingCompleted() } returns false
+        coEvery { notificationsClient.isNotificationsOnboardingCompleted() } returns false
 
         runTest {
             appLaunchNav.navigateOnResume(navController)
@@ -447,7 +447,7 @@ class AppNavigationTest {
         every { flagRepo.isNotificationsEnabled() } returns true
         every { notificationsClient.permissionGranted(any()) } returns true
         every { authRepo.isUserSessionActive() } returns true
-        coEvery { appRepo.isNotificationsOnboardingCompleted() } returns false
+        coEvery { notificationsClient.isNotificationsOnboardingCompleted() } returns false
         coEvery { notificationsClient.consentGiven() } returns true
 
         runTest {
@@ -464,7 +464,7 @@ class AppNavigationTest {
         every { flagRepo.isNotificationsEnabled() } returns true
         every { notificationsClient.permissionGranted(any()) } returns true
         every { authRepo.isUserSessionActive() } returns true
-        coEvery { appRepo.isNotificationsOnboardingCompleted() } returns true
+        coEvery { notificationsClient.isNotificationsOnboardingCompleted() } returns true
         coEvery { notificationsClient.consentGiven() } returns false
 
         runTest {

@@ -14,11 +14,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import uk.gov.govuk.notifications.data.NotificationsRepo
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class NotificationsClient @Inject constructor() {
+class NotificationsClient @Inject constructor(
+    private val notificationsRepo: NotificationsRepo
+) {
 
     companion object {
         private const val DEEP_LINK = "deeplink"
@@ -59,6 +62,13 @@ class NotificationsClient @Inject constructor() {
                 handleAdditionalData(context, event.notification.additionalData)
             }
         })
+    }
+
+    suspend fun isNotificationsOnboardingCompleted() =
+        notificationsRepo.isNotificationsOnboardingCompleted()
+
+    suspend fun notificationsOnboardingCompleted() {
+        notificationsRepo.notificationsOnboardingCompleted()
     }
 
     internal fun handleAdditionalData(
