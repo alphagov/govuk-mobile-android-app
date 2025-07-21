@@ -14,6 +14,39 @@ class NotificationsRepoTest {
     private val notificationsDataStore = mockk<NotificationsDataStore>(relaxed = true)
 
     @Test
+    fun `Given the user has not previously completed notifications onboarding, When is notifications onboarding completed, then return false`() {
+        val repo = NotificationsRepo(notificationsDataStore)
+
+        coEvery { notificationsDataStore.isNotificationsOnboardingCompleted() } returns false
+
+        runTest {
+            assertFalse(repo.isNotificationsOnboardingCompleted())
+        }
+    }
+
+    @Test
+    fun `Given the user has previously completed notifications onboarding, When is notifications onboarding completed, then return true`() {
+        val repo = NotificationsRepo(notificationsDataStore)
+
+        coEvery { notificationsDataStore.isNotificationsOnboardingCompleted()} returns true
+
+        runTest {
+            assertTrue(repo.isNotificationsOnboardingCompleted())
+        }
+    }
+
+    @Test
+    fun `Given the user has completed notifications onboarding, When notifications onboarding completed, then update data store`() {
+        val repo = NotificationsRepo(notificationsDataStore)
+
+        runTest {
+            notificationsDataStore.notificationsOnboardingCompleted()
+
+            coVerify { repo.notificationsOnboardingCompleted() }
+        }
+    }
+
+    @Test
     fun `Given the user has not previously requested permission, When is first permission request completed, then return false`() {
         val repo = NotificationsRepo(notificationsDataStore)
 
