@@ -138,20 +138,7 @@ private fun ChatContent(
                             text = chatEntry.value.question
                         )
                         MediumVerticalSpacer()
-
-                        val markdownTextStyle = TextStyle(
-                            color = GovUkTheme.colourScheme.textAndIcons.primary,
-                            fontSize = GovUkTheme.typography.bodyRegular.fontSize,
-                            fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
-                            fontWeight = GovUkTheme.typography.bodyRegular.fontWeight
-                        )
-
-                        MarkdownText(
-                            markdown = chatEntry.value.answer,
-                            linkColor = GovUkTheme.colourScheme.textAndIcons.link,
-                            style = markdownTextStyle,
-                            enableSoftBreakAddsNewLine = false
-                        )
+                        DisplayMarkdownText(text = chatEntry.value.answer)
 
                         chatEntry.value.sources?.let { sources ->
                             if (sources.isNotEmpty()) {
@@ -161,12 +148,7 @@ private fun ChatContent(
                                 MediumVerticalSpacer()
 
                                 sources.forEach { source ->
-                                    MarkdownText(
-                                        markdown = source,
-                                        linkColor = GovUkTheme.colourScheme.textAndIcons.link,
-                                        style = markdownTextStyle,
-                                        enableSoftBreakAddsNewLine = false
-                                    )
+                                    DisplayMarkdownText(text = source)
                                     MediumVerticalSpacer()
                                 }
                             }
@@ -441,6 +423,24 @@ private fun ChatContent(
             scrollState.animateScrollTo(scrollState.maxValue)
         }
     }
+}
+
+@Composable
+private fun markdownTextStyle() = TextStyle(
+    color = GovUkTheme.colourScheme.textAndIcons.primary,
+    fontSize = GovUkTheme.typography.bodyRegular.fontSize,
+    fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
+    fontWeight = GovUkTheme.typography.bodyRegular.fontWeight
+)
+
+@Composable
+private fun DisplayMarkdownText(text: String) {
+    MarkdownText(
+        markdown = text,
+        linkColor = GovUkTheme.colourScheme.textAndIcons.link,
+        style = markdownTextStyle(),
+        enableSoftBreakAddsNewLine = false
+    )
 }
 
 @Composable
