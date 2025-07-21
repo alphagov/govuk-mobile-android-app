@@ -1,16 +1,16 @@
 package uk.gov.govuk.chat.data
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
-import okhttp3.ResponseBody.Companion.toResponseBody
-import retrofit2.Response
 import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.chat.data.remote.ChatApi
+import uk.gov.govuk.chat.data.remote.ChatResult
+import uk.gov.govuk.chat.data.remote.ChatResult.AwaitingAnswer
+import uk.gov.govuk.chat.data.remote.ChatResult.Success
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
 import uk.gov.govuk.chat.data.remote.model.Conversation
 import uk.gov.govuk.chat.data.remote.model.ConversationQuestionRequest
+import uk.gov.govuk.chat.data.remote.safeChatApiCall
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
@@ -21,20 +21,16 @@ internal class ChatRepo @Inject constructor(
     private val dataStore: ChatDataStore
 ) {
 
-    suspend fun getConversation(): Conversation? {
+    suspend fun getConversation(): ChatResult<Conversation>? {
         val conversationId = dataStore.conversationId()
-        if (conversationId != null) {
-            val response = safeChatApiCall { chatApi.getConversation(conversationId) }
-            if (response.isSuccessful) {
-                return response.body()
-            }
+        return if (conversationId != null) {
+            safeChatApiCall { chatApi.getConversation(conversationId) }
+        } else {
+            null
         }
-
-        // Todo - handle error!!!
-        return null
     }
 
-    suspend fun askQuestion(question: String): AnsweredQuestion? {
+    suspend fun askQuestion(question: String): ChatResult<AnsweredQuestion> {
         val conversationId = dataStore.conversationId()
         return if (conversationId != null) {
             updateConversation(
@@ -46,84 +42,38 @@ internal class ChatRepo @Inject constructor(
         }
     }
 
-    private suspend fun startConversation(question: String): AnsweredQuestion? {
+    private suspend fun startConversation(question: String): ChatResult<AnsweredQuestion> {
         val requestBody = ConversationQuestionRequest(
             userQuestion = question
         )
 
-        val response = safeChatApiCall { chatApi.startConversation(requestBody) }
-        val responseBody = response.body()
-        return if (response.isSuccessful && responseBody != null) {
-            dataStore.saveConversationId(responseBody.conversationId)
-            return response.body()
-        } else {
-            // Todo - handle error!!!
-            null
+        val result = safeChatApiCall { chatApi.startConversation(requestBody) }
+        if (result is Success) {
+            dataStore.saveConversationId(result.value.conversationId)
         }
+        return result
     }
 
-    private suspend fun updateConversation(conversationId: String, question: String): AnsweredQuestion? {
+    private suspend fun updateConversation(conversationId: String, question: String): ChatResult<AnsweredQuestion> {
         val requestBody = ConversationQuestionRequest(
             userQuestion = question
         )
 
-        val response = safeChatApiCall { chatApi.updateConversation(conversationId, requestBody) }
-        return if (response.isSuccessful) {
-            return response.body()
-        } else {
-            // Todo - handle error!!!
-            null
-        }
+        return safeChatApiCall { chatApi.updateConversation(conversationId, requestBody) }
     }
 
-    //    wait and retry set as defaults, but can be overridden for testing
     suspend fun getAnswer(
         conversationId: String,
         questionId: String,
-        wait: Int = 4,
-        retries: Int = 12
-    ): Answer? {
-        var counter = 0
-
-        while (counter < retries) {
+        wait: Int = 3,
+    ): ChatResult<Answer> {
+        while (true) {
             delay(wait.seconds)
 
-            val response = safeChatApiCall { chatApi.getAnswer(conversationId, questionId) }
-            if (response.isSuccessful) {
-                if (response.code() == 200) {
-                    return response.body()
-                }
+            val result = safeChatApiCall { chatApi.getAnswer(conversationId, questionId) }
+            if (result !is AwaitingAnswer) {
+                return result
             }
-
-            counter++
-        }
-
-        // Todo - handle error!!!
-        return null
-    }
-
-    private suspend fun <T> safeChatApiCall(apiCall: suspend () -> Response<T>): Response<T> {
-        return try {
-            val response = withContext(Dispatchers.IO) { apiCall() }
-            val body = response.body()
-            val code = response.code()
-
-            if (response.isSuccessful && body != null) {
-                return response
-            } else {
-                when (code) {
-                    400 -> Response.error(400, "Error: ${response.message()}".toResponseBody())
-                    403 -> Response.error(403, "Error: ${response.message()}".toResponseBody())
-                    404 -> Response.error(404, "Error: ${response.message()}".toResponseBody())
-                    422 -> Response.error(422, "Error: ${response.message()}".toResponseBody())
-                    429 -> Response.error(429, "Error: ${response.message()}".toResponseBody())
-                    500 -> Response.error(500, "Error: ${response.message()}".toResponseBody())
-                    else -> Response.error(500, "Error: ${response.message()}".toResponseBody())
-                }
-            }
-        } catch (e: Exception) {
-            // TODO: handle UnknownHostException and HttpException and show the appropriate full page error screens
-            Response.error(500, "Error: ${e.message}".toResponseBody())
         }
     }
 }

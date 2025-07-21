@@ -12,16 +12,17 @@ import org.junit.Test
 import retrofit2.Response
 import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.chat.data.remote.ChatApi
+import uk.gov.govuk.chat.data.remote.ChatResult.NotFound
+import uk.gov.govuk.chat.data.remote.ChatResult.Success
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
-import uk.gov.govuk.chat.data.remote.model.Conversation
+import uk.gov.govuk.chat.data.remote.model.ConversationQuestionRequest
+import kotlin.test.assertTrue
 
 class ChatRepoTest {
 
     private val chatApi = mockk<ChatApi>(relaxed = true)
     private val dataStore = mockk<ChatDataStore>(relaxed = true)
-    private val conversationResponse = mockk<Response<Conversation>>(relaxed = true)
-    private val conversation = mockk<Conversation>(relaxed = true)
     private val questionResponse = mockk<Response<AnsweredQuestion>>(relaxed = true)
     private val answeredQuestion = mockk<AnsweredQuestion>(relaxed = true)
     private val answerResponse = mockk<Response<Answer>>(relaxed = true)
@@ -42,113 +43,76 @@ class ChatRepoTest {
     }
 
     @Test
-    fun `Get conversation returns null when api call is not successful`() = runTest {
+    fun `Get conversation performs API call when there is a conversation id`() = runTest {
         coEvery { dataStore.conversationId() } returns "123"
-        coEvery { chatApi.getConversation(any()) } returns conversationResponse
-        every { conversationResponse.isSuccessful } returns false
 
-        assertNull(chatRepo.getConversation())
-    }
-
-    @Test
-    fun `Get conversation returns conversation`() = runTest {
-        coEvery { dataStore.conversationId() } returns "123"
-        coEvery { chatApi.getConversation(any()) } returns conversationResponse
-        every { conversationResponse.isSuccessful } returns true
-        every { conversationResponse.body() } returns conversation
-
-        assertEquals(conversation, chatRepo.getConversation())
-    }
-
-    @Test
-    fun `Ask question returns null when api call is not successful after starting a conversation`() = runTest {
-        coEvery { dataStore.conversationId() } returns null
-        coEvery { chatApi.startConversation(any()) } returns questionResponse
-        every { questionResponse.isSuccessful } returns false
-
-        assertNull(chatRepo.askQuestion("abc"))
-    }
-
-    @Test
-    fun `Ask question returns null when response body is null after starting a conversation`() = runTest {
-        coEvery { dataStore.conversationId() } returns null
-        coEvery { chatApi.startConversation(any()) } returns questionResponse
-        every { questionResponse.isSuccessful } returns true
-        every { questionResponse.body() } returns null
-
-        assertNull(chatRepo.askQuestion("abc"))
-    }
-
-    @Test
-    fun `Ask question returns answered question and persists conversation id after starting a conversation`() = runTest {
-        coEvery { dataStore.conversationId() } returns null
-        coEvery { chatApi.startConversation(any()) } returns questionResponse
-        every { questionResponse.isSuccessful } returns true
-        every { questionResponse.body() } returns answeredQuestion
-        every { answeredQuestion.conversationId } returns "123"
-
-        assertEquals(answeredQuestion, chatRepo.askQuestion("abc"))
+        chatRepo.getConversation()
 
         coVerify {
+            chatApi.getConversation("123")
+        }
+    }
+
+    @Test
+    fun `Ask question updates existing conversation`() = runTest {
+        coEvery { dataStore.conversationId() } returns "123"
+
+        chatRepo.askQuestion("question")
+
+        coVerify {
+            chatApi.updateConversation(
+                "123",
+                ConversationQuestionRequest("question")
+            )
+        }
+
+        coVerify(exactly = 0) {
+            chatApi.startConversation(any())
+        }
+    }
+
+    @Test
+    fun `Ask question creates a new conversation and persists id`() = runTest {
+        coEvery { dataStore.conversationId() } returns null
+        coEvery { chatApi.startConversation(any()) } returns questionResponse
+        coEvery { questionResponse.isSuccessful } returns true
+        coEvery { questionResponse.body() } returns answeredQuestion
+        coEvery { answeredQuestion.conversationId } returns "123"
+
+        chatRepo.askQuestion("question")
+
+        coVerify {
+            chatApi.startConversation(
+                ConversationQuestionRequest("question")
+            )
             dataStore.saveConversationId("123")
         }
-    }
 
-    @Test
-    fun `Ask question returns null when api call is not successful after updating a conversation`() = runTest {
-        coEvery { dataStore.conversationId() } returns "123"
-        coEvery { chatApi.updateConversation("123", any()) } returns questionResponse
-        every { questionResponse.isSuccessful } returns false
-
-        assertNull(chatRepo.askQuestion("abc"))
-    }
-
-    @Test
-    fun `Ask question returns null when response body is null after updating a conversation`() = runTest {
-        coEvery { dataStore.conversationId() } returns "123"
-        coEvery { chatApi.updateConversation("123", any()) } returns questionResponse
-        every { questionResponse.isSuccessful } returns true
-        every { questionResponse.body() } returns null
-
-        assertNull(chatRepo.askQuestion("abc"))
-    }
-
-    @Test
-    fun `Ask question returns answered question after updating a conversation`() = runTest {
-        coEvery { dataStore.conversationId() } returns "123"
-        coEvery { chatApi.updateConversation("123", any()) } returns questionResponse
-        every { questionResponse.isSuccessful } returns true
-        every { questionResponse.body() } returns answeredQuestion
-
-        assertEquals(answeredQuestion, chatRepo.askQuestion("abc"))
-    }
-
-    @Test
-    fun `Get answer retries and returns null when api does not return an answer`() = runTest {
-        coEvery { chatApi.getAnswer(any(), any()) } returns answerResponse
-        every { answerResponse.isSuccessful } returns false andThen true
-        every { answerResponse.code() } returns 202
-
-        val answer = chatRepo.getAnswer("123", "abc", wait = 1, retries = 2)
-
-        assertNull(answer)
-
-        coVerify(exactly = 2) {
-            chatApi.getAnswer("123", "abc")
+        coVerify(exactly = 0) {
+            chatApi.updateConversation(any(), any())
         }
     }
 
     @Test
-    fun `Get answer retries and returns answer when api does returns an answer`() = runTest {
+    fun `Get answer retries and returns answer when api returns an answer`() = runTest {
         coEvery { chatApi.getAnswer(any(), any()) } returns answerResponse
-        every { answerResponse.isSuccessful } returns false andThen true
-        every { answerResponse.code() } returns 202 andThen 202 andThen 202 andThen 202 andThen 200 andThen 200
+        every { answerResponse.isSuccessful } returns true
+        every { answerResponse.code() } returns 202 andThen 200
         every { answerResponse.body() } returns answer
 
-        assertEquals(answer, chatRepo.getAnswer("123", "abc", wait = 1))
+        val expected = Success(answer)
 
-        coVerify(exactly = 3) {
-            chatApi.getAnswer("123", "abc")
-        }
+        assertEquals(expected, chatRepo.getAnswer("123", "abc", wait = 1))
+    }
+
+    @Test
+    fun `Get answer retries and returns error when api returns an error`() = runTest {
+        coEvery { chatApi.getAnswer(any(), any()) } returns answerResponse
+        every { answerResponse.isSuccessful } returns true andThen false
+        every { answerResponse.code() } returns 202 andThen 404
+
+        val result = chatRepo.getAnswer("123", "abc", wait = 1)
+
+        assertTrue(result is NotFound)
     }
 }
