@@ -253,35 +253,9 @@ private fun ChatContent(
                                 )
                             }
 
-                            IconButton(
-                                onClick = { expanded = !expanded },
-                                enabled = true,
-                                colors = IconButtonColors(
-                                    containerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-                                    contentColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
-                                    disabledContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-                                    disabledContentColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled
-                                ),
-                                modifier = Modifier
-                                    .border(
-                                        1.dp,
-                                        GovUkTheme.colourScheme.strokes.chatTextFieldBorderDisabled,
-                                        RoundedCornerShape(30.dp)
-                                    )
-                                    .clip(RoundedCornerShape(30.dp))
-                                    .height(50.dp)
-                                    .width(50.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.outline_more_vert_24),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .padding(all = GovUkTheme.spacing.small)
-                                        .clip(RoundedCornerShape(30.dp))
-                                        .height(50.dp)
-                                        .width(50.dp)
-                                )
-                            }
+                            ActionIconButton(
+                                onClick = { expanded = !expanded }
+                            )
                         }
 
                         TextField(
@@ -376,23 +350,10 @@ private fun ChatContent(
                         ) {
                             CharacterCountText(uiState)
 
-                            IconButton(
-                                onClick = {
-                                    onSubmit(uiState.question)
-                                },
-                                enabled = uiState.isSubmitEnabled,
-                                colors = IconButtonColors(
-                                    containerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
-                                    contentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconEnabled,
-                                    disabledContainerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundDisabled,
-                                    disabledContentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconDisabled
-                                )
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.outline_arrow_upward_24),
-                                    contentDescription = null
-                                )
-                            }
+                            SubmitIconButton(
+                                onClick = { onSubmit(uiState.question) },
+                                enabled = uiState.isSubmitEnabled
+                            )
                         }
                     }
                 }
@@ -422,6 +383,56 @@ private fun ChatContent(
             delay(150)
             scrollState.animateScrollTo(scrollState.maxValue)
         }
+    }
+}
+
+@Composable
+private fun SubmitIconButton(onClick: () -> Unit, enabled: Boolean) {
+    IconButton(
+        onClick = onClick,
+        enabled = enabled,
+        colors = IconButtonColors(
+            containerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
+            contentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconEnabled,
+            disabledContainerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundDisabled,
+            disabledContentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconDisabled
+        )
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.outline_arrow_upward_24),
+            contentDescription = null
+        )
+    }
+}
+
+@Composable
+private fun ActionIconButton(onClick: () -> Unit) {
+    val modifier = Modifier
+        .clip(RoundedCornerShape(30.dp))
+        .height(50.dp)
+        .width(50.dp)
+
+    IconButton(
+        onClick = onClick,
+        enabled = true,
+        colors = IconButtonColors(
+            containerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
+            contentColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
+            disabledContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
+            disabledContentColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled
+        ),
+        modifier = modifier
+            .border(
+                1.dp,
+                GovUkTheme.colourScheme.strokes.chatTextFieldBorderDisabled,
+                RoundedCornerShape(30.dp)
+            )
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.outline_more_vert_24),
+            contentDescription = null,
+            modifier = modifier.padding(all = GovUkTheme.spacing.small)
+        )
     }
 }
 
