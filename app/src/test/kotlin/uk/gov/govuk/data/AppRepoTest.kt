@@ -97,6 +97,40 @@ class AppRepoTest {
     }
 
     @Test
+    fun `Given the user has not previously completed notifications onboarding, When is notifications onboarding completed, then return false`() {
+        val repo = AppRepo(appDataStore)
+
+        coEvery { appDataStore.isNotificationsOnboardingCompleted() } returns false
+
+        runTest {
+
+            assertFalse(repo.isNotificationsOnboardingCompleted())
+        }
+    }
+
+    @Test
+    fun `Given the user has previously completed notifications onboarding, When is notifications onboarding completed, then return true`() {
+        val repo = AppRepo(appDataStore)
+
+        coEvery { appDataStore.isNotificationsOnboardingCompleted()} returns true
+
+        runTest {
+            assertTrue(repo.isNotificationsOnboardingCompleted())
+        }
+    }
+
+    @Test
+    fun `Given the user has completed notifications onboarding, When notifications onboarding completed, then update data store`() {
+        val repo = AppRepo(appDataStore)
+
+        runTest {
+            repo.notificationsOnboardingCompleted()
+
+            coVerify { appDataStore.notificationsOnboardingCompleted() }
+        }
+    }
+
+    @Test
     fun `Given the data store contains suppressed home widgets, When the suppressed home widgets flow is requested, then forward the flow from the data store`() {
         val suppressedWidgets = flowOf(setOf("Widget 1"))
         every { appDataStore.suppressedHomeWidgets } returns suppressedWidgets

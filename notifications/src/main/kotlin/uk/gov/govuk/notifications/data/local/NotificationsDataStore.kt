@@ -15,18 +15,7 @@ class NotificationsDataStore @Inject constructor(
 ) {
 
     companion object {
-        internal const val NOTIFICATIONS_ONBOARDING_COMPLETED_KEY = "notifications_onboarding_completed"
         internal const val NOTIFICATIONS_FIRST_PERMISSION_REQUEST_COMPLETED_KEY = "notifications_first_permission_request_completed"
-    }
-
-    internal suspend fun isOnboardingCompleted(): Boolean {
-        return dataStore.data.firstOrNull()
-            ?.get(booleanPreferencesKey(NOTIFICATIONS_ONBOARDING_COMPLETED_KEY)) == true
-    }
-
-    internal suspend fun onboardingCompleted() {
-        dataStore.edit { preferences -> preferences[booleanPreferencesKey(NOTIFICATIONS_ONBOARDING_COMPLETED_KEY)] = true
-        }
     }
 
     internal suspend fun isFirstPermissionRequestCompleted(): Boolean {

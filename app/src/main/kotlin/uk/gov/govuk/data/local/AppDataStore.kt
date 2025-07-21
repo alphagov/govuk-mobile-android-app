@@ -20,6 +20,7 @@ internal class AppDataStore @Inject constructor(
     companion object {
         internal const val SKIPPED_BIOMETRICS_KEY = "skipped_biometrics"
         internal const val TOPIC_SELECTION_COMPLETED_KEY = "topic_selection_completed"
+        internal const val NOTIFICATIONS_ONBOARDING_COMPLETED_KEY = "notifications_onboarding_completed"
         internal const val SUPPRESSED_HOME_WIDGETS = "suppressed_home_widgets"
     }
 
@@ -48,6 +49,18 @@ internal class AppDataStore @Inject constructor(
     internal suspend fun topicSelectionCompleted() {
         dataStore.edit { prefs ->
             prefs[booleanPreferencesKey(TOPIC_SELECTION_COMPLETED_KEY)] = true
+        }
+    }
+
+    internal suspend fun isNotificationsOnboardingCompleted(): Boolean {
+        return dataStore.data.firstOrNull()
+            ?.get(booleanPreferencesKey(NOTIFICATIONS_ONBOARDING_COMPLETED_KEY)) == true
+    }
+
+    internal suspend fun notificationsOnboardingCompleted() {
+        dataStore.edit { preferences -> preferences[booleanPreferencesKey(
+            NOTIFICATIONS_ONBOARDING_COMPLETED_KEY
+        )] = true
         }
     }
 

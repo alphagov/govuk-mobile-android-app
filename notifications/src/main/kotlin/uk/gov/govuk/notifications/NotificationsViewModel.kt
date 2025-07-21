@@ -30,7 +30,6 @@ internal open class NotificationsViewModel @Inject constructor(
 
     internal fun onAllowNotificationsClick(text: String, onCompleted: () -> Unit) {
         viewModelScope.launch {
-            notificationsDataStore.onboardingCompleted()
             notificationsDataStore.firstPermissionRequestCompleted()
         }
         notificationsClient.giveConsent()
@@ -45,18 +44,12 @@ internal open class NotificationsViewModel @Inject constructor(
     }
 
     internal fun onNotNowClick(text: String) {
-        viewModelScope.launch {
-            notificationsDataStore.onboardingCompleted()
-        }
         analyticsClient.buttonClick(
             text = text
         )
     }
 
     internal fun onGiveConsentClick(text: String, onCompleted: () -> Unit) {
-        viewModelScope.launch {
-            notificationsDataStore.onboardingCompleted()
-        }
         notificationsClient.giveConsent()
         analyticsClient.buttonClick(
             text = text
@@ -65,9 +58,6 @@ internal open class NotificationsViewModel @Inject constructor(
     }
 
     internal fun onTurnOffNotificationsClick(text: String) {
-        viewModelScope.launch {
-            notificationsDataStore.onboardingCompleted()
-        }
         analyticsClient.buttonClick(
             text = text,
             external = true

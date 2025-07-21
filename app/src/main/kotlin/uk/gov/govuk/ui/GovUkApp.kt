@@ -65,10 +65,8 @@ import uk.gov.govuk.home.navigation.homeGraph
 import uk.gov.govuk.login.navigation.BIOMETRIC_SETTINGS_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.loginGraph
+import uk.gov.govuk.navigation.AppNavigation
 import uk.gov.govuk.navigation.TopLevelDestination
-import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ROUTE
-import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_ROUTE
-import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_PERMISSION_ROUTE
 import uk.gov.govuk.notifications.navigation.notificationsGraph
 import uk.gov.govuk.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.gov.govuk.search.navigation.searchGraph
@@ -109,7 +107,6 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                         BottomNavScaffold(
                             intentFlow = intentFlow,
                             viewModel = viewModel,
-                            shouldDisplayNotificationsOnboarding = it.shouldDisplayNotificationsOnboarding,
                             shouldShowExternalBrowser = it.shouldShowExternalBrowser,
                             homeWidgets = homeWidgets
                         )
@@ -139,7 +136,6 @@ private fun LoadingScreen(
 private fun BottomNavScaffold(
     intentFlow: Flow<Intent>,
     viewModel: AppViewModel,
-    shouldDisplayNotificationsOnboarding: Boolean,
     shouldShowExternalBrowser: Boolean,
     homeWidgets: List<HomeWidget>?,
 ) {
@@ -195,17 +191,18 @@ private fun BottomNavScaffold(
                 shouldShowExternalBrowser = shouldShowExternalBrowser,
                 paddingValues = paddingValues
             )
-
-            if (shouldDisplayNotificationsOnboarding) {
-                HandleNotificationsPermissionStatus(navController = { navController })
-            }
+            HandleOnResumeNavigation(
+                navController = { navController },
+                appNavigation = viewModel.appNavigation
+            )
         }
     }
 }
 
 @Composable
-private fun HandleNotificationsPermissionStatus(
-    navController: () -> NavHostController
+private fun HandleOnResumeNavigation(
+    navController: () -> NavHostController,
+    appNavigation: AppNavigation
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
@@ -220,14 +217,7 @@ private fun HandleNotificationsPermissionStatus(
                     // Nav graph has not been set
                     return@LaunchedEffect
                 }
-                val route = when (controller.currentDestination?.route) {
-                    NOTIFICATIONS_ONBOARDING_ROUTE -> NOTIFICATIONS_ONBOARDING_ROUTE
-                    NOTIFICATIONS_PERMISSION_ROUTE -> return@LaunchedEffect
-                    else -> NOTIFICATIONS_CONSENT_ROUTE
-                }
-                controller.navigate(route) {
-                    launchSingleTop = true
-                }
+                appNavigation.navigateOnResume(controller)
             }
             else -> { /* Do nothing */ }
         }
@@ -391,11 +381,15 @@ private fun GovUkNavHost(
             notificationsOnboardingCompleted = {
                 coroutineScope.launch {
                     appNavigation.onNotificationsOnboardingCompleted(navController)
-                    navController.navigate(NOTIFICATIONS_CONSENT_ROUTE)
+                }
+            },
+            notificationsConsentOnNextCompleted = {
+                coroutineScope.launch {
+                    appNavigation.onNext(navController)
                 }
             },
             notificationsConsentCompleted = {
-                navController.navigateUp()
+                navController.popBackStack()
             },
             notificationsPermissionCompleted = {
                 navController.popBackStack()

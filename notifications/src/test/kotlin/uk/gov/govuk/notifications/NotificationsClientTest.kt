@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
+import androidx.core.app.NotificationManagerCompat
 import com.onesignal.OneSignal
 import com.onesignal.notifications.INotification
 import com.onesignal.notifications.INotificationClickEvent
@@ -42,6 +43,7 @@ class NotificationsClientTest {
         mockkStatic(OneSignal::class)
         mockkStatic(OneSignal.Debug::class)
         mockkStatic(Uri::class)
+        mockkStatic(NotificationManagerCompat::class)
     }
 
     @After
@@ -111,6 +113,24 @@ class NotificationsClientTest {
 
         runTest {
             assertFalse(notificationsClient.consentGiven())
+        }
+    }
+
+    @Test
+    fun `Given we have a notifications client, when permission granted is called and notifications are disabled, returns false`() {
+        every { NotificationManagerCompat.from(context).areNotificationsEnabled() } returns false
+
+        runTest {
+            assertFalse(notificationsClient.permissionGranted(context))
+        }
+    }
+
+    @Test
+    fun `Given we have a notifications client, when permission granted is called and notifications are enabled, returns true`() {
+        every { NotificationManagerCompat.from(context).areNotificationsEnabled() } returns true
+
+        runTest {
+            assertTrue(notificationsClient.permissionGranted(context))
         }
     }
 
