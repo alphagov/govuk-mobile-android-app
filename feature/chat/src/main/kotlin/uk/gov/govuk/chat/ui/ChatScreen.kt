@@ -133,15 +133,7 @@ private fun ChatContent(
         }
 
         Column {
-            if (uiState.isLoading) {
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = GovUkTheme.spacing.medium),
-                    color = GovUkTheme.colourScheme.surfaces.primary,
-                    trackColor = GovUkTheme.colourScheme.surfaces.textFieldBackground
-                )
-            }
+            DisplayProgressIndicator(uiState = uiState)
 
             Row(
                 modifier = Modifier
@@ -303,6 +295,19 @@ private fun ChatContent(
             delay(150)
             scrollState.animateScrollTo(scrollState.maxValue)
         }
+    }
+}
+
+@Composable
+private fun DisplayProgressIndicator(uiState: ChatUiState) {
+    if (uiState.isLoading) {
+        LinearProgressIndicator(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = GovUkTheme.spacing.medium),
+            color = GovUkTheme.colourScheme.surfaces.primary,
+            trackColor = GovUkTheme.colourScheme.surfaces.textFieldBackground
+        )
     }
 }
 
