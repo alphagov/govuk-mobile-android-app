@@ -391,46 +391,52 @@ private fun ActionMenu() {
             )
             .width(200.dp)
     ) {
-        DropdownMenuItem(
-            text = {
-                Text(
-                    text = stringResource(id = R.string.action_about),
-                    color = GovUkTheme.colourScheme.textAndIcons.primary,
-                    style = GovUkTheme.typography.bodyRegular,
-                )
-            },
-            trailingIcon = {
-                Icon(
-                    painter = painterResource(R.drawable.outline_info_24),
-                    contentDescription = null,
-                    tint = GovUkTheme.colourScheme.textAndIcons.primary
-                )
-            },
-            onClick = { /* TODO: Handle action */ },
-        )
-        DropdownMenuItem(
-            text = {
-                Text(
-                    text = stringResource(id = R.string.action_clear),
-                    color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
-                    style = GovUkTheme.typography.bodyRegular,
-                )
-            },
-            trailingIcon = {
-                Icon(
-                    painter = painterResource(R.drawable.outline_delete_24),
-                    contentDescription = null,
-                    tint = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
-                )
-            },
-            onClick = { /* TODO: Handle action */ }
-        )
+        AboutMenuItem()
+        ClearMenuItem()
     }
 
     ActionIconButton(
         onClick = { expanded = !expanded }
     )
 }
+
+@Composable
+private fun AboutMenuItem() = DropdownMenuItem(
+    text = {
+        Text(
+            text = stringResource(id = R.string.action_about),
+            color = GovUkTheme.colourScheme.textAndIcons.primary,
+            style = GovUkTheme.typography.bodyRegular,
+        )
+    },
+    trailingIcon = {
+        Icon(
+            painter = painterResource(R.drawable.outline_info_24),
+            contentDescription = null,
+            tint = GovUkTheme.colourScheme.textAndIcons.primary
+        )
+    },
+    onClick = { /* TODO: Handle action */ },
+)
+
+@Composable
+private fun ClearMenuItem() = DropdownMenuItem(
+    text = {
+        Text(
+            text = stringResource(id = R.string.action_clear),
+            color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
+            style = GovUkTheme.typography.bodyRegular,
+        )
+    },
+    trailingIcon = {
+        Icon(
+            painter = painterResource(R.drawable.outline_delete_24),
+            contentDescription = null,
+            tint = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
+        )
+    },
+    onClick = { /* TODO: Handle action */ }
+)
 
 @Composable
 private fun ActionIconButton(onClick: () -> Unit) {
