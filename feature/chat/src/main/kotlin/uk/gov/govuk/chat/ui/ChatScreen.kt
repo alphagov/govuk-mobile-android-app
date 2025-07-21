@@ -129,64 +129,12 @@ private fun ChatContent(
                 .weight(1f)
                 .padding(horizontal = GovUkTheme.spacing.medium)
         ) {
-            if (uiState.chatEntries.isNotEmpty()) {
-                MediumVerticalSpacer()
-
-                uiState.chatEntries.entries.forEach { chatEntry ->
-                    Column {
-                        BodyBoldLabel(
-                            text = chatEntry.value.question
-                        )
-                        MediumVerticalSpacer()
-
-                        val markdownTextStyle = TextStyle(
-                            color = GovUkTheme.colourScheme.textAndIcons.primary,
-                            fontSize = GovUkTheme.typography.bodyRegular.fontSize,
-                            fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
-                            fontWeight = GovUkTheme.typography.bodyRegular.fontWeight
-                        )
-
-                        MarkdownText(
-                            markdown = chatEntry.value.answer,
-                            linkColor = GovUkTheme.colourScheme.textAndIcons.link,
-                            style = markdownTextStyle,
-                            enableSoftBreakAddsNewLine = false
-                        )
-
-                        chatEntry.value.sources?.let { sources ->
-                            if (sources.isNotEmpty()) {
-                                BodyBoldLabel(
-                                    text = stringResource(id = R.string.sources_header)
-                                )
-                                MediumVerticalSpacer()
-
-                                sources.forEach { source ->
-                                    MarkdownText(
-                                        markdown = source,
-                                        linkColor = GovUkTheme.colourScheme.textAndIcons.link,
-                                        style = markdownTextStyle,
-                                        enableSoftBreakAddsNewLine = false
-                                    )
-                                    MediumVerticalSpacer()
-                                }
-                            }
-                        }
-
-                        MediumVerticalSpacer()
-                    }
-                }
-            }
+            DisplayChatEntries(uiState = uiState)
         }
 
         Column {
             if (uiState.isLoading) {
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = GovUkTheme.spacing.medium),
-                    color = GovUkTheme.colourScheme.surfaces.primary,
-                    trackColor = GovUkTheme.colourScheme.surfaces.textFieldBackground
-                )
+                DisplayProgressIndicator()
             }
 
             Row(
@@ -202,10 +150,10 @@ private fun ChatContent(
                         .padding(all = GovUkTheme.spacing.medium)
                         .then(
                             if (isFocused) {
-                                var color = GovUkTheme.colourScheme.strokes.chatTextFieldBorder
-                                if (uiState.isPiiError) {
-                                    color = GovUkTheme.colourScheme.strokes.textFieldError
-                                }
+                                var color = if (uiState.isPiiError)
+                                        GovUkTheme.colourScheme.strokes.textFieldError
+                                    else
+                                        GovUkTheme.colourScheme.strokes.chatTextFieldBorder
 
                                 Modifier
                                     .border(
@@ -221,85 +169,7 @@ private fun ChatContent(
                 ) {
                     Row {
                         AnimatedVisibility(!isFocused) {
-                            var expanded by rememberSaveable { mutableStateOf(false) }
-
-                            DropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false },
-                                modifier = Modifier
-                                    .background(GovUkTheme.colourScheme.surfaces.alert)
-                                    .border(
-                                        1.dp,
-                                        GovUkTheme.colourScheme.surfaces.alert,
-                                        RoundedCornerShape(GovUkTheme.spacing.extraSmall)
-                                    )
-                                    .width(200.dp)
-                            ) {
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = stringResource(id = R.string.action_about),
-                                            color = GovUkTheme.colourScheme.textAndIcons.primary,
-                                            style = GovUkTheme.typography.bodyRegular,
-                                        )
-                                    },
-                                    trailingIcon = {
-                                        Icon(
-                                            painter = painterResource(R.drawable.outline_info_24),
-                                            contentDescription = null,
-                                            tint = GovUkTheme.colourScheme.textAndIcons.primary
-                                        )
-                                    },
-                                    onClick = { /* TODO: Handle action */ },
-                                )
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = stringResource(id = R.string.action_clear),
-                                            color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
-                                            style = GovUkTheme.typography.bodyRegular,
-                                        )
-                                    },
-                                    trailingIcon = {
-                                        Icon(
-                                            painter = painterResource(R.drawable.outline_delete_24),
-                                            contentDescription = null,
-                                            tint = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
-                                        )
-                                    },
-                                    onClick = { /* TODO: Handle action */ }
-                                )
-                            }
-
-                            IconButton(
-                                onClick = { expanded = !expanded },
-                                enabled = true,
-                                colors = IconButtonColors(
-                                    containerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-                                    contentColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
-                                    disabledContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-                                    disabledContentColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled
-                                ),
-                                modifier = Modifier
-                                    .border(
-                                        1.dp,
-                                        GovUkTheme.colourScheme.strokes.chatTextFieldBorderDisabled,
-                                        RoundedCornerShape(30.dp)
-                                    )
-                                    .clip(RoundedCornerShape(30.dp))
-                                    .height(50.dp)
-                                    .width(50.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.outline_more_vert_24),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .padding(all = GovUkTheme.spacing.small)
-                                        .clip(RoundedCornerShape(30.dp))
-                                        .height(50.dp)
-                                        .width(50.dp)
-                                )
-                            }
+                            ActionMenu()
                         }
 
                         TextField(
@@ -338,38 +208,11 @@ private fun ChatContent(
                             },
                             placeholder = {
                                 if (!isFocused) {
-                                    if (uiState.question.isEmpty()) {
-                                        Text(
-                                            text = stringResource(id = R.string.input_label),
-                                            color = GovUkTheme.colourScheme.textAndIcons.secondary
-                                        )
-                                    } else {
-                                        Text(
-                                            text = uiState.question,
-                                            color = GovUkTheme.colourScheme.textAndIcons.secondary,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }
+                                    DisplayPlaceholderText(uiState = uiState)
                                 }
                             },
                             isError = uiState.isPiiError,
-                            colors = TextFieldDefaults.colors(
-                                cursorColor = GovUkTheme.colourScheme.textAndIcons.primary,
-                                focusedTextColor = GovUkTheme.colourScheme.textAndIcons.primary,
-                                unfocusedTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-                                disabledTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-                                focusedContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-                                unfocusedContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-                                disabledContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                errorContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-                                errorLabelColor = GovUkTheme.colourScheme.textAndIcons.primary,
-                                errorCursorColor = GovUkTheme.colourScheme.textAndIcons.primary,
-                                errorIndicatorColor = Color.Transparent
-                            )
+                            colors = inputTextFieldDefaults()
                         )
                     }
 
@@ -394,40 +237,17 @@ private fun ChatContent(
                         ) {
                             CharacterCountText(uiState)
 
-                            IconButton(
-                                onClick = {
-                                    onSubmit(uiState.question)
-                                },
-                                enabled = uiState.isSubmitEnabled,
-                                colors = IconButtonColors(
-                                    containerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
-                                    contentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconEnabled,
-                                    disabledContainerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundDisabled,
-                                    disabledContentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconDisabled
-                                )
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.outline_arrow_upward_24),
-                                    contentDescription = null
-                                )
-                            }
+                            SubmitIconButton(
+                                onClick = { onSubmit(uiState.question) },
+                                enabled = uiState.isSubmitEnabled
+                            )
                         }
                     }
                 }
             }
 
             if (uiState.isPiiError) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = GovUkTheme.spacing.medium)
-                ) {
-                    val errorMessage = stringResource(id = R.string.pii_error_message)
-                    BodyBoldLabel(
-                        color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
-                        text = errorMessage
-                    )
-                }
+                DisplayPIIError()
             }
 
             SmallVerticalSpacer()
@@ -441,6 +261,231 @@ private fun ChatContent(
             scrollState.animateScrollTo(scrollState.maxValue)
         }
     }
+}
+
+@Composable
+private fun DisplayPlaceholderText(uiState: ChatUiState) {
+    if (uiState.question.isEmpty()) {
+        Text(
+            text = stringResource(id = R.string.input_label),
+            color = GovUkTheme.colourScheme.textAndIcons.secondary
+        )
+    } else {
+        Text(
+            text = uiState.question,
+            color = GovUkTheme.colourScheme.textAndIcons.secondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+private fun inputTextFieldDefaults() = TextFieldDefaults.colors(
+    cursorColor = GovUkTheme.colourScheme.textAndIcons.primary,
+    focusedTextColor = GovUkTheme.colourScheme.textAndIcons.primary,
+    unfocusedTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
+    disabledTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
+    focusedContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
+    unfocusedContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
+    disabledContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
+    focusedIndicatorColor = Color.Transparent,
+    unfocusedIndicatorColor = Color.Transparent,
+    disabledIndicatorColor = Color.Transparent,
+    errorContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
+    errorLabelColor = GovUkTheme.colourScheme.textAndIcons.primary,
+    errorCursorColor = GovUkTheme.colourScheme.textAndIcons.primary,
+    errorIndicatorColor = Color.Transparent
+)
+
+@Composable
+private fun DisplayPIIError() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = GovUkTheme.spacing.medium)
+    ) {
+        val errorMessage = stringResource(id = R.string.pii_error_message)
+        BodyBoldLabel(
+            color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
+            text = errorMessage
+        )
+    }
+}
+
+@Composable
+private fun DisplayProgressIndicator() {
+    LinearProgressIndicator(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = GovUkTheme.spacing.medium),
+        color = GovUkTheme.colourScheme.surfaces.primary,
+        trackColor = GovUkTheme.colourScheme.surfaces.textFieldBackground
+    )
+}
+
+@Composable
+private fun DisplayChatEntries(uiState: ChatUiState) {
+    if (uiState.chatEntries.isNotEmpty()) {
+        MediumVerticalSpacer()
+
+        uiState.chatEntries.entries.forEach { chatEntry ->
+            Column {
+                BodyBoldLabel(
+                    text = chatEntry.value.question
+                )
+                MediumVerticalSpacer()
+                DisplayMarkdownText(text = chatEntry.value.answer)
+
+                chatEntry.value.sources?.let { sources ->
+                    if (sources.isNotEmpty()) {
+                        BodyBoldLabel(
+                            text = stringResource(id = R.string.sources_header)
+                        )
+                        MediumVerticalSpacer()
+
+                        sources.forEach { source ->
+                            DisplayMarkdownText(text = source)
+                            MediumVerticalSpacer()
+                        }
+                    }
+                }
+
+                MediumVerticalSpacer()
+            }
+        }
+    }
+}
+
+@Composable
+private fun SubmitIconButton(onClick: () -> Unit, enabled: Boolean) {
+    IconButton(
+        onClick = onClick,
+        enabled = enabled,
+        colors = IconButtonColors(
+            containerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
+            contentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconEnabled,
+            disabledContainerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundDisabled,
+            disabledContentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconDisabled
+        )
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.outline_arrow_upward_24),
+            contentDescription = null
+        )
+    }
+}
+
+@Composable
+private fun ActionMenu() {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        modifier = Modifier
+            .background(GovUkTheme.colourScheme.surfaces.alert)
+            .border(
+                1.dp,
+                GovUkTheme.colourScheme.surfaces.alert,
+                RoundedCornerShape(GovUkTheme.spacing.extraSmall)
+            )
+            .width(200.dp)
+    ) {
+        AboutMenuItem()
+        ClearMenuItem()
+    }
+
+    ActionIconButton(
+        onClick = { expanded = !expanded }
+    )
+}
+
+@Composable
+private fun AboutMenuItem() = DropdownMenuItem(
+    text = {
+        Text(
+            text = stringResource(id = R.string.action_about),
+            color = GovUkTheme.colourScheme.textAndIcons.primary,
+            style = GovUkTheme.typography.bodyRegular,
+        )
+    },
+    trailingIcon = {
+        Icon(
+            painter = painterResource(R.drawable.outline_info_24),
+            contentDescription = null,
+            tint = GovUkTheme.colourScheme.textAndIcons.primary
+        )
+    },
+    onClick = { /* TODO: Handle action */ },
+)
+
+@Composable
+private fun ClearMenuItem() = DropdownMenuItem(
+    text = {
+        Text(
+            text = stringResource(id = R.string.action_clear),
+            color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
+            style = GovUkTheme.typography.bodyRegular,
+        )
+    },
+    trailingIcon = {
+        Icon(
+            painter = painterResource(R.drawable.outline_delete_24),
+            contentDescription = null,
+            tint = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
+        )
+    },
+    onClick = { /* TODO: Handle action */ }
+)
+
+@Composable
+private fun ActionIconButton(onClick: () -> Unit) {
+    val modifier = Modifier
+        .clip(RoundedCornerShape(30.dp))
+        .height(50.dp)
+        .width(50.dp)
+
+    IconButton(
+        onClick = onClick,
+        enabled = true,
+        colors = IconButtonColors(
+            containerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
+            contentColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
+            disabledContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
+            disabledContentColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled
+        ),
+        modifier = modifier
+            .border(
+                1.dp,
+                GovUkTheme.colourScheme.strokes.chatTextFieldBorderDisabled,
+                RoundedCornerShape(30.dp)
+            )
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.outline_more_vert_24),
+            contentDescription = null,
+            modifier = modifier.padding(all = GovUkTheme.spacing.small)
+        )
+    }
+}
+
+@Composable
+private fun markdownTextStyle() = TextStyle(
+    color = GovUkTheme.colourScheme.textAndIcons.primary,
+    fontSize = GovUkTheme.typography.bodyRegular.fontSize,
+    fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
+    fontWeight = GovUkTheme.typography.bodyRegular.fontWeight
+)
+
+@Composable
+private fun DisplayMarkdownText(text: String) {
+    MarkdownText(
+        markdown = text,
+        linkColor = GovUkTheme.colourScheme.textAndIcons.link,
+        style = markdownTextStyle(),
+        enableSoftBreakAddsNewLine = false
+    )
 }
 
 @Composable
