@@ -129,35 +129,7 @@ private fun ChatContent(
                 .weight(1f)
                 .padding(horizontal = GovUkTheme.spacing.medium)
         ) {
-            if (uiState.chatEntries.isNotEmpty()) {
-                MediumVerticalSpacer()
-
-                uiState.chatEntries.entries.forEach { chatEntry ->
-                    Column {
-                        BodyBoldLabel(
-                            text = chatEntry.value.question
-                        )
-                        MediumVerticalSpacer()
-                        DisplayMarkdownText(text = chatEntry.value.answer)
-
-                        chatEntry.value.sources?.let { sources ->
-                            if (sources.isNotEmpty()) {
-                                BodyBoldLabel(
-                                    text = stringResource(id = R.string.sources_header)
-                                )
-                                MediumVerticalSpacer()
-
-                                sources.forEach { source ->
-                                    DisplayMarkdownText(text = source)
-                                    MediumVerticalSpacer()
-                                }
-                            }
-                        }
-
-                        MediumVerticalSpacer()
-                    }
-                }
-            }
+            DisplayChatEntries(uiState = uiState)
         }
 
         Column {
@@ -330,6 +302,39 @@ private fun ChatContent(
         if (answerCount > 0) {
             delay(150)
             scrollState.animateScrollTo(scrollState.maxValue)
+        }
+    }
+}
+
+@Composable
+private fun DisplayChatEntries(uiState: ChatUiState) {
+    if (uiState.chatEntries.isNotEmpty()) {
+        MediumVerticalSpacer()
+
+        uiState.chatEntries.entries.forEach { chatEntry ->
+            Column {
+                BodyBoldLabel(
+                    text = chatEntry.value.question
+                )
+                MediumVerticalSpacer()
+                DisplayMarkdownText(text = chatEntry.value.answer)
+
+                chatEntry.value.sources?.let { sources ->
+                    if (sources.isNotEmpty()) {
+                        BodyBoldLabel(
+                            text = stringResource(id = R.string.sources_header)
+                        )
+                        MediumVerticalSpacer()
+
+                        sources.forEach { source ->
+                            DisplayMarkdownText(text = source)
+                            MediumVerticalSpacer()
+                        }
+                    }
+                }
+
+                MediumVerticalSpacer()
+            }
         }
     }
 }
