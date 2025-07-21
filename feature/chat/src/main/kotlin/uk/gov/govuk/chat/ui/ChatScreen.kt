@@ -202,10 +202,10 @@ private fun ChatContent(
                         .padding(all = GovUkTheme.spacing.medium)
                         .then(
                             if (isFocused) {
-                                var color = GovUkTheme.colourScheme.strokes.chatTextFieldBorder
-                                if (uiState.isPiiError) {
-                                    color = GovUkTheme.colourScheme.strokes.textFieldError
-                                }
+                                var color = if (uiState.isPiiError)
+                                        GovUkTheme.colourScheme.strokes.textFieldError
+                                    else
+                                        GovUkTheme.colourScheme.strokes.chatTextFieldBorder
 
                                 Modifier
                                     .border(
