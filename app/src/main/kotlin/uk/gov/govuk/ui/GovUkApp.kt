@@ -383,7 +383,7 @@ private fun GovUkNavHost(
                     appNavigation.onNotificationsOnboardingCompleted(navController)
                 }
             },
-            notificationsConsentOnLaunchCompleted = {
+            notificationsConsentOnNextCompleted = {
                 coroutineScope.launch {
                     appNavigation.onNext(navController)
                 }

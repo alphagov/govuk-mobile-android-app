@@ -158,7 +158,7 @@ class AppDataStoreTest {
     }
 
     @Test
-    fun `Given notifications onboarding completed is null, then return false`() {
+    fun `Given notifications onboarding completed is false, then return false`() {
         val appDatastore = AppDataStore(dataStore)
 
         runTest {
@@ -180,6 +180,17 @@ class AppDataStoreTest {
             }
 
             assertTrue(appDatastore.isNotificationsOnboardingCompleted())
+        }
+    }
+
+    @Test
+    fun `Given the user completes notifications onboarding, then update the prefs`() {
+        val appDatastore = AppDataStore(dataStore)
+
+        runTest {
+            appDatastore.notificationsOnboardingCompleted()
+
+            assertTrue(dataStore.data.first()[booleanPreferencesKey(NOTIFICATIONS_ONBOARDING_COMPLETED_KEY)] == true)
         }
     }
 

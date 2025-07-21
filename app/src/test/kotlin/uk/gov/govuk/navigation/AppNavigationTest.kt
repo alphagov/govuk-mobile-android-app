@@ -20,7 +20,7 @@ import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.NotificationsClient
-import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ON_LAUNCH_ROUTE
+import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ON_NEXT_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
 import uk.gov.govuk.topics.TopicsFeature
@@ -196,7 +196,7 @@ class AppNavigationTest {
 
             verify {
                 navController.popBackStack()
-                navController.navigate(NOTIFICATIONS_CONSENT_ON_LAUNCH_ROUTE)
+                navController.navigate(NOTIFICATIONS_CONSENT_ON_NEXT_ROUTE)
             }
         }
     }
@@ -370,7 +370,7 @@ class AppNavigationTest {
         coEvery { topicsFeature.hasTopics() } returns false
         every { flagRepo.isNotificationsEnabled() } returns true
         every { notificationsClient.permissionGranted(any()) } returns false
-        every { navController.currentDestination?.route } returns NOTIFICATIONS_CONSENT_ON_LAUNCH_ROUTE
+        every { navController.currentDestination?.route } returns NOTIFICATIONS_CONSENT_ON_NEXT_ROUTE
 
         runTest {
             appLaunchNav.navigateOnResume(navController)

@@ -11,12 +11,12 @@ import uk.gov.govuk.notifications.ui.NotificationsPermissionRoute
 const val NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE = "notifications_onboarding_graph_route"
 const val NOTIFICATIONS_ONBOARDING_ROUTE = "notifications_onboarding_route"
 const val NOTIFICATIONS_PERMISSION_ROUTE = "notifications_permission_route"
-const val NOTIFICATIONS_CONSENT_ON_LAUNCH_ROUTE = "notifications_consent_on_launch_route"
+const val NOTIFICATIONS_CONSENT_ON_NEXT_ROUTE = "notifications_consent_on_next_route"
 const val NOTIFICATIONS_CONSENT_ROUTE = "notifications_consent_route"
 
 fun NavGraphBuilder.notificationsGraph(
     notificationsOnboardingCompleted: () -> Unit,
-    notificationsConsentOnLaunchCompleted: () -> Unit,
+    notificationsConsentOnNextCompleted: () -> Unit,
     notificationsConsentCompleted: () -> Unit,
     notificationsPermissionCompleted: () -> Unit,
     launchBrowser: (url: String) -> Unit,
@@ -33,9 +33,9 @@ fun NavGraphBuilder.notificationsGraph(
                 modifier = modifier
             )
         }
-        composable(NOTIFICATIONS_CONSENT_ON_LAUNCH_ROUTE) {
+        composable(NOTIFICATIONS_CONSENT_ON_NEXT_ROUTE) {
             NotificationsConsentRoute(
-                notificationsConsentCompleted = notificationsConsentOnLaunchCompleted,
+                notificationsConsentCompleted = notificationsConsentOnNextCompleted,
                 launchBrowser = launchBrowser,
                 modifier = modifier
             )

@@ -10,7 +10,7 @@ import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.NotificationsClient
-import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ON_LAUNCH_ROUTE
+import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ON_NEXT_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
 import uk.gov.govuk.topics.TopicsFeature
@@ -55,7 +55,7 @@ internal class AppNavigation @Inject constructor(
                 appRepo.isNotificationsOnboardingCompleted() &&
                 notificationsClient.permissionGranted(navController.context) &&
                 !notificationsClient.consentGiven() -> {
-                    navigate(navController, NOTIFICATIONS_CONSENT_ON_LAUNCH_ROUTE)}
+                    navigate(navController, NOTIFICATIONS_CONSENT_ON_NEXT_ROUTE)}
             else -> {
                 navigate(navController, HOME_GRAPH_ROUTE)
                 deeplinkHandler.handleDeeplink(navController)
@@ -82,7 +82,7 @@ internal class AppNavigation @Inject constructor(
     private suspend fun navigateNotificationsOnResume(navController: NavController) {
         if (!notificationsClient.permissionGranted(navController.context)) {
             notificationsClient.removeConsent()
-            if (navController.currentDestination?.route == NOTIFICATIONS_CONSENT_ON_LAUNCH_ROUTE) {
+            if (navController.currentDestination?.route == NOTIFICATIONS_CONSENT_ON_NEXT_ROUTE) {
                 onNext(navController)
             }
         } else if (
