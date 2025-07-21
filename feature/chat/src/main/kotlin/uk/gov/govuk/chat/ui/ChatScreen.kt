@@ -271,20 +271,7 @@ private fun ChatContent(
                 }
             }
 
-            if (uiState.isPiiError) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = GovUkTheme.spacing.medium)
-                ) {
-                    val errorMessage = stringResource(id = R.string.pii_error_message)
-                    BodyBoldLabel(
-                        color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
-                        text = errorMessage
-                    )
-                }
-            }
-
+            DisplayPIIError(uiState = uiState)
             SmallVerticalSpacer()
         }
     }
@@ -294,6 +281,23 @@ private fun ChatContent(
         if (answerCount > 0) {
             delay(150)
             scrollState.animateScrollTo(scrollState.maxValue)
+        }
+    }
+}
+
+@Composable
+private fun DisplayPIIError(uiState: ChatUiState) {
+    if (uiState.isPiiError) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = GovUkTheme.spacing.medium)
+        ) {
+            val errorMessage = stringResource(id = R.string.pii_error_message)
+            BodyBoldLabel(
+                color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
+                text = errorMessage
+            )
         }
     }
 }
