@@ -10,6 +10,7 @@ import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.NotificationsClient
+import uk.gov.govuk.notifications.data.NotificationsRepo
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ON_NEXT_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
@@ -26,7 +27,8 @@ internal class AppNavigation @Inject constructor(
     private val authRepo: AuthRepo,
     private val topicsFeature: TopicsFeature,
     private val deeplinkHandler: DeeplinkHandler,
-    private val notificationsClient: NotificationsClient
+    private val notificationsClient: NotificationsClient,
+    private val notificationsRepo: NotificationsRepo,
 ) {
     fun setOnLaunchBrowser(onLaunchBrowser: (String) -> Unit) {
         deeplinkHandler.onLaunchBrowser = onLaunchBrowser
@@ -50,10 +52,10 @@ internal class AppNavigation @Inject constructor(
                     !appRepo.isTopicSelectionCompleted() &&
                     topicsFeature.hasTopics() -> navigate(navController, TOPIC_SELECTION_GRAPH_ROUTE)
             flagRepo.isNotificationsEnabled() &&
-                    !notificationsClient.isNotificationsOnboardingCompleted() ->
+                    !notificationsRepo.isNotificationsOnboardingCompleted() ->
                 navigate(navController, NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
             flagRepo.isNotificationsEnabled() &&
-                    notificationsClient.isNotificationsOnboardingCompleted() &&
+                    notificationsRepo.isNotificationsOnboardingCompleted() &&
                     notificationsClient.permissionGranted(navController.context) &&
                     !notificationsClient.consentGiven() ->
                 navigate(navController, NOTIFICATIONS_CONSENT_ON_NEXT_ROUTE)
@@ -65,7 +67,7 @@ internal class AppNavigation @Inject constructor(
     }
 
     suspend fun onNotificationsOnboardingCompleted(navController: NavController) {
-        notificationsClient.notificationsOnboardingCompleted()
+        notificationsRepo.notificationsOnboardingCompleted()
         onNext(navController)
     }
 
@@ -88,7 +90,7 @@ internal class AppNavigation @Inject constructor(
             }
         } else if (
             authRepo.isUserSessionActive() &&
-            notificationsClient.isNotificationsOnboardingCompleted() &&
+            notificationsRepo.isNotificationsOnboardingCompleted() &&
             !notificationsClient.consentGiven()
         ) {
             navController.navigate(NOTIFICATIONS_CONSENT_ROUTE)

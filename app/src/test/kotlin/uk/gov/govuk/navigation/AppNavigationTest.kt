@@ -20,6 +20,7 @@ import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.notifications.NotificationsClient
+import uk.gov.govuk.notifications.data.NotificationsRepo
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ON_NEXT_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ROUTE
 import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE
@@ -32,6 +33,7 @@ class AppNavigationTest {
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val appRepo = mockk<AppRepo>(relaxed = true)
     private val authRepo = mockk<AuthRepo>(relaxed = true)
+    private val notificationsRepo = mockk<NotificationsRepo>(relaxed = true)
     private val topicsFeature = mockk<TopicsFeature>(relaxed = true)
     private val deeplinkHandler = mockk<DeeplinkHandler>(relaxed = true)
     private val notificationsClient = mockk<NotificationsClient>(relaxed = true)
@@ -49,7 +51,8 @@ class AppNavigationTest {
             authRepo,
             topicsFeature,
             deeplinkHandler,
-            notificationsClient
+            notificationsClient,
+            notificationsRepo
         )
     }
 
@@ -187,7 +190,7 @@ class AppNavigationTest {
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
         coEvery { topicsFeature.hasTopics() } returns false
         every { flagRepo.isNotificationsEnabled() } returns true
-        coEvery { notificationsClient.isNotificationsOnboardingCompleted() } returns true
+        coEvery { notificationsRepo.isNotificationsOnboardingCompleted() } returns true
         every { notificationsClient.permissionGranted(any()) } returns true
         every { notificationsClient.consentGiven() } returns false
 
@@ -297,7 +300,7 @@ class AppNavigationTest {
         every { analyticsClient.isAnalyticsConsentRequired() } returns false
         every { flagRepo.isTopicsEnabled() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { notificationsClient.isNotificationsOnboardingCompleted() } returns true
+        coEvery { notificationsRepo.isNotificationsOnboardingCompleted() } returns true
         coEvery { topicsFeature.hasTopics() } returns false
         every { flagRepo.isNotificationsEnabled() } returns true
 
@@ -305,7 +308,7 @@ class AppNavigationTest {
             appLaunchNav.onNotificationsOnboardingCompleted(navController)
 
             coVerify(exactly = 1) {
-                notificationsClient.notificationsOnboardingCompleted()
+                notificationsRepo.notificationsOnboardingCompleted()
             }
 
             verify(exactly = 1) {
@@ -366,7 +369,7 @@ class AppNavigationTest {
         every { analyticsClient.isAnalyticsConsentRequired() } returns false
         every { flagRepo.isTopicsEnabled() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { notificationsClient.isNotificationsOnboardingCompleted() } returns true
+        coEvery { notificationsRepo.isNotificationsOnboardingCompleted() } returns true
         coEvery { topicsFeature.hasTopics() } returns false
         every { flagRepo.isNotificationsEnabled() } returns true
         every { notificationsClient.permissionGranted(any()) } returns false
@@ -391,7 +394,7 @@ class AppNavigationTest {
         every { analyticsClient.isAnalyticsConsentRequired() } returns false
         every { flagRepo.isTopicsEnabled() } returns true
         coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { notificationsClient.isNotificationsOnboardingCompleted() } returns true
+        coEvery { notificationsRepo.isNotificationsOnboardingCompleted() } returns true
         coEvery { topicsFeature.hasTopics() } returns false
         every { flagRepo.isNotificationsEnabled() } returns true
         every { notificationsClient.permissionGranted(any()) } returns false
@@ -431,7 +434,7 @@ class AppNavigationTest {
         every { flagRepo.isNotificationsEnabled() } returns true
         every { notificationsClient.permissionGranted(any()) } returns true
         every { authRepo.isUserSessionActive() } returns true
-        coEvery { notificationsClient.isNotificationsOnboardingCompleted() } returns false
+        coEvery { notificationsRepo.isNotificationsOnboardingCompleted() } returns false
 
         runTest {
             appLaunchNav.navigateOnResume(navController)
@@ -447,7 +450,7 @@ class AppNavigationTest {
         every { flagRepo.isNotificationsEnabled() } returns true
         every { notificationsClient.permissionGranted(any()) } returns true
         every { authRepo.isUserSessionActive() } returns true
-        coEvery { notificationsClient.isNotificationsOnboardingCompleted() } returns false
+        coEvery { notificationsRepo.isNotificationsOnboardingCompleted() } returns false
         coEvery { notificationsClient.consentGiven() } returns true
 
         runTest {
@@ -464,7 +467,7 @@ class AppNavigationTest {
         every { flagRepo.isNotificationsEnabled() } returns true
         every { notificationsClient.permissionGranted(any()) } returns true
         every { authRepo.isUserSessionActive() } returns true
-        coEvery { notificationsClient.isNotificationsOnboardingCompleted() } returns true
+        coEvery { notificationsRepo.isNotificationsOnboardingCompleted() } returns true
         coEvery { notificationsClient.consentGiven() } returns false
 
         runTest {

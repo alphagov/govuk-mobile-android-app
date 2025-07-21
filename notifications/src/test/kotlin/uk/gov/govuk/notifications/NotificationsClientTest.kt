@@ -29,18 +29,16 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import uk.gov.govuk.notifications.data.NotificationsRepo
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NotificationsClientTest {
     private val context = mockk<Context>(relaxed = true)
-    private val notificationsRepo = mockk<NotificationsRepo>()
 
     private lateinit var notificationsClient: NotificationsClient
 
     @Before
     fun setup() {
-        notificationsClient = NotificationsClient(notificationsRepo)
+        notificationsClient = NotificationsClient()
 
         mockkStatic(OneSignal::class)
         mockkStatic(OneSignal.Debug::class)
@@ -237,37 +235,6 @@ class NotificationsClientTest {
 
             verify(exactly = 0) {
                 context.startActivity(intent)
-            }
-        }
-    }
-
-    @Test
-    fun `Given we have a notifications client, when notifications onboarding is completed, then is notifications onboarding completed returns true`() {
-        coEvery { notificationsRepo.isNotificationsOnboardingCompleted() } returns true
-
-        runTest {
-            assertTrue(notificationsClient.isNotificationsOnboardingCompleted())
-        }
-    }
-
-    @Test
-    fun `Given we have a notifications client, when notifications onboarding is not completed, then is notifications onboarding completed returns false`() {
-        coEvery { notificationsRepo.isNotificationsOnboardingCompleted() } returns false
-
-        runTest {
-            assertFalse(notificationsClient.isNotificationsOnboardingCompleted())
-        }
-    }
-
-    @Test
-    fun `Given we have a notifications client, when notifications onboarding completed is called, then notifications onboarding completed is called`() {
-        coEvery { notificationsRepo.notificationsOnboardingCompleted() } returns Unit
-
-        runTest {
-            notificationsClient.notificationsOnboardingCompleted()
-
-            coVerify(exactly = 1) {
-                notificationsRepo.notificationsOnboardingCompleted()
             }
         }
     }
