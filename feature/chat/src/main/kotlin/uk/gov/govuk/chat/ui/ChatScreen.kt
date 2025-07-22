@@ -2,6 +2,7 @@ package uk.gov.govuk.chat.ui
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
@@ -15,6 +16,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -53,6 +56,7 @@ import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
+import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ErrorPage
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
@@ -331,30 +335,72 @@ private fun DisplayChatEntries(uiState: ChatUiState) {
 
         uiState.chatEntries.entries.forEach { chatEntry ->
             Column {
-                BodyBoldLabel(
-                    text = chatEntry.value.question
-                )
+                DisplayQuestion(question = chatEntry.value.question)
                 MediumVerticalSpacer()
-                DisplayMarkdownText(text = chatEntry.value.answer)
+                DisplayAnswer(
+                    answer = chatEntry.value.answer,
+                    sources = chatEntry.value.sources
+                )
+            }
+        }
+    }
+}
 
-                chatEntry.value.sources?.let { sources ->
-                    if (sources.isNotEmpty()) {
-                        BodyBoldLabel(
-                            text = stringResource(id = R.string.sources_header)
-                        )
-                        MediumVerticalSpacer()
+@Composable
+private fun DisplayQuestion(question: String) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = GovUkTheme.colourScheme.surfaces.chatUserMessageBackground,
+            contentColor = GovUkTheme.colourScheme.textAndIcons.chatUserMessageText
+        ),
+        border = BorderStroke(1.dp, GovUkTheme.colourScheme.strokes.chatUserMessageBorder),
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        BodyRegularLabel(
+            text = question,
+            modifier = Modifier.padding(GovUkTheme.spacing.medium)
+        )
+    }
 
-                        sources.forEach { source ->
-                            DisplayMarkdownText(text = source)
-                            MediumVerticalSpacer()
-                        }
-                    }
+    MediumVerticalSpacer()
+}
+
+@Composable
+private fun DisplayAnswer(answer: String, sources: List<String>?) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = GovUkTheme.colourScheme.surfaces.chatBotMessageBackground,
+            contentColor = GovUkTheme.colourScheme.textAndIcons.chatBotMessageText
+        ),
+        border = BorderStroke(1.dp, GovUkTheme.colourScheme.strokes.chatBotMessageBorder),
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        BodyBoldLabel(
+            text = "GOV.UK Chat",
+            modifier = Modifier.padding(GovUkTheme.spacing.medium)
+        )
+
+        DisplayMarkdownText(text = answer)
+
+        sources?.let { sources ->
+            if (sources.isNotEmpty()) {
+                BodyBoldLabel(
+                    text = stringResource(id = R.string.sources_header),
+                    modifier = Modifier.padding(GovUkTheme.spacing.medium)
+                )
+
+                sources.forEach { source ->
+                    DisplayMarkdownText(text = source)
                 }
 
                 MediumVerticalSpacer()
             }
         }
     }
+
+    MediumVerticalSpacer()
 }
 
 @Composable
@@ -484,7 +530,10 @@ private fun DisplayMarkdownText(text: String) {
         markdown = text,
         linkColor = GovUkTheme.colourScheme.textAndIcons.link,
         style = markdownTextStyle(),
-        enableSoftBreakAddsNewLine = false
+        enableSoftBreakAddsNewLine = false,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = GovUkTheme.spacing.medium)
     )
 }
 
