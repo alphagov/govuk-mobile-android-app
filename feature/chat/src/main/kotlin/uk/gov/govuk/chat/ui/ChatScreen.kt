@@ -2,11 +2,20 @@ package uk.gov.govuk.chat.ui
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +29,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
@@ -38,16 +48,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
@@ -331,10 +344,9 @@ private fun DisplayProgressIndicator() {
 @Composable
 private fun DisplayChatEntries(uiState: ChatUiState) {
     if (uiState.chatEntries.isNotEmpty()) {
-        MediumVerticalSpacer()
-
         uiState.chatEntries.entries.forEach { chatEntry ->
             Column {
+                MediumVerticalSpacer()
                 DisplayQuestion(question = chatEntry.value.question)
                 MediumVerticalSpacer()
                 DisplayAnswer(
@@ -362,8 +374,6 @@ private fun DisplayQuestion(question: String) {
             modifier = Modifier.padding(GovUkTheme.spacing.medium)
         )
     }
-
-    MediumVerticalSpacer()
 }
 
 @Composable
@@ -386,21 +396,98 @@ private fun DisplayAnswer(answer: String, sources: List<String>?) {
 
         sources?.let { sources ->
             if (sources.isNotEmpty()) {
-                BodyBoldLabel(
-                    text = stringResource(id = R.string.sources_header),
-                    modifier = Modifier.padding(GovUkTheme.spacing.medium)
-                )
-
-                sources.forEach { source ->
-                    DisplayMarkdownText(text = source)
-                }
-
-                MediumVerticalSpacer()
+                DisplaySources(sources = sources)
             }
         }
     }
+}
 
-    MediumVerticalSpacer()
+@Composable
+private fun ChatDivider() {
+    HorizontalDivider(
+        thickness = 1.dp,
+        color = GovUkTheme.colourScheme.strokes.chatDivider
+    )
+}
+
+@Composable
+private fun DisplaySources(sources: List<String>) {
+    var expanded by remember { mutableStateOf(false) }
+    val degrees by animateFloatAsState(if (expanded) -90f else 90f)
+
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(GovUkTheme.spacing.medium),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            ChatDivider()
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(GovUkTheme.spacing.medium),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.baseline_info_24),
+                contentDescription = null,
+                tint = GovUkTheme.colourScheme.textAndIcons.icon,
+                modifier = Modifier
+                    .padding(end = GovUkTheme.spacing.small),
+            )
+
+            BodyBoldLabel(
+                text = "GOV.UK Chat can make mistakes.\nCheck GOV.UK pages for important information."
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .clickable { expanded = !expanded }
+                .fillMaxWidth()
+                .padding(GovUkTheme.spacing.medium),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            BodyRegularLabel(
+                text = "GOV.UK pages used in this answer"
+            )
+
+            Image(
+                painter = painterResource(R.drawable.outline_chevron_right_24),
+                contentDescription = null,
+                modifier = Modifier.rotate(degrees),
+                colorFilter = ColorFilter.tint(GovUkTheme.colourScheme.textAndIcons.icon)
+            )
+        }
+
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically(
+                spring(
+                    stiffness = Spring.StiffnessMediumLow,
+                    visibilityThreshold = IntSize.VisibilityThreshold
+                )
+            ),
+            exit = shrinkVertically()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = GovUkTheme.spacing.medium)
+            ) {
+                sources.forEach { source ->
+                    DisplayMarkdownText(text = source)
+                }
+            }
+
+            Box(Modifier.fillMaxWidth().height(1.dp))
+        }
+
+        MediumVerticalSpacer()
+    }
 }
 
 @Composable

@@ -160,7 +160,7 @@ internal class ChatViewModel @Inject constructor(
             _uiState.value.chatEntries[questionId]?.let { chatEntry ->
                 chatEntry.answer = answer.message
                 chatEntry.sources = answer.sources?.map { source ->
-                    "* [${source.title}](${source.url})"
+                    "[${source.title}](${source.url})"
                 }
             }
         }
