@@ -388,7 +388,7 @@ private fun DisplayAnswer(answer: String, sources: List<String>?) {
             modifier = Modifier.padding(GovUkTheme.spacing.medium)
         )
 
-        DisplayMarkdownText(text = answer)
+        DisplayMarkdownText(text = answer, talkbackText = answer)
 
         sources?.let { sources ->
             if (sources.isNotEmpty()) {
@@ -480,8 +480,7 @@ private fun DisplaySources(sources: List<String>) {
                         MediumVerticalSpacer()
                         DisplayMarkdownText(
                             text = sources[index],
-                            modifier = Modifier
-                                .semantics { contentDescription = linkText }
+                            talkbackText = linkText
                         )
                         if (index < sources.size - 1) {
                             MediumVerticalSpacer()
@@ -620,6 +619,7 @@ private fun markdownTextStyle() = TextStyle(
 @Composable
 private fun DisplayMarkdownText(
     text: String,
+    talkbackText: String,
     modifier: Modifier = Modifier
 ) {
     MarkdownText(
@@ -631,6 +631,9 @@ private fun DisplayMarkdownText(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = GovUkTheme.spacing.medium)
+            .semantics {
+                contentDescription = talkbackText
+            }
     )
 }
 
