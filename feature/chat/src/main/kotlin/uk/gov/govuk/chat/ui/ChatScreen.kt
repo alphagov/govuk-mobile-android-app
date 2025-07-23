@@ -384,7 +384,7 @@ private fun DisplayAnswer(answer: String, sources: List<String>?) {
             .fillMaxWidth()
     ) {
         BodyBoldLabel(
-            text = "GOV.UK Chat",
+            text = stringResource(id = R.string.bot_header_text),
             modifier = Modifier.padding(GovUkTheme.spacing.medium)
         )
 
@@ -437,7 +437,7 @@ private fun DisplaySources(sources: List<String>) {
             )
 
             BodyBoldLabel(
-                text = "GOV.UK Chat can make mistakes.\nCheck GOV.UK pages for important information."
+                text = stringResource(id = R.string.bot_sources_header_text)
             )
         }
 
@@ -449,7 +449,7 @@ private fun DisplaySources(sources: List<String>) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             BodyRegularLabel(
-                text = "GOV.UK pages used in this answer"
+                text = stringResource(id = R.string.bot_sources_list_description)
             )
 
             Image(
@@ -474,13 +474,14 @@ private fun DisplaySources(sources: List<String>) {
                         count = sources.size,
                         key = { index -> sources[index] }
                     ) { index ->
+                        val linkAddendumText = stringResource(id = R.string.sources_open_in_text)
+                        val linkText = "${sources[index]} $linkAddendumText"
+
                         MediumVerticalSpacer()
                         DisplayMarkdownText(
                             text = sources[index],
                             modifier = Modifier
-                                .semantics {
-                                    contentDescription = "$sources[index] - opens in web browser"
-                                }
+                                .semantics { contentDescription = linkText }
                         )
                         if (index < sources.size - 1) {
                             MediumVerticalSpacer()
