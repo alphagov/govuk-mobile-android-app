@@ -2,12 +2,7 @@ package uk.gov.govuk.chat.ui
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,13 +10,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -57,10 +52,11 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
@@ -403,17 +399,18 @@ private fun DisplayAnswer(answer: String, sources: List<String>?) {
 }
 
 @Composable
-private fun ChatDivider() {
+private fun ChatDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(
         thickness = 1.dp,
-        color = GovUkTheme.colourScheme.strokes.chatDivider
+        color = GovUkTheme.colourScheme.strokes.chatDivider,
+        modifier = modifier
     )
 }
 
 @Composable
 private fun DisplaySources(sources: List<String>) {
-    var expanded by remember { mutableStateOf(false) }
-    val degrees by animateFloatAsState(if (expanded) -90f else 90f)
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val degrees by animateFloatAsState(if (expanded) 0f else -180f)
 
     Column {
         Row(
@@ -456,37 +453,45 @@ private fun DisplaySources(sources: List<String>) {
             )
 
             Image(
-                painter = painterResource(R.drawable.outline_chevron_right_24),
+                painter = painterResource(R.drawable.outline_arrow_drop_up_24),
                 contentDescription = null,
                 modifier = Modifier.rotate(degrees),
                 colorFilter = ColorFilter.tint(GovUkTheme.colourScheme.textAndIcons.icon)
             )
         }
 
-        AnimatedVisibility(
-            visible = expanded,
-            enter = expandVertically(
-                spring(
-                    stiffness = Spring.StiffnessMediumLow,
-                    visibilityThreshold = IntSize.VisibilityThreshold
-                )
-            ),
-            exit = shrinkVertically()
-        ) {
-            Box(
+        AnimatedVisibility(visible = expanded) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = GovUkTheme.spacing.medium)
             ) {
-                sources.forEach { source ->
-                    DisplayMarkdownText(text = source)
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height((sources.size * 60).dp) // TODO: Without this we get an infinite scroll error
+                ) {
+                    items(
+                        count = sources.size,
+                        key = { index -> sources[index] }
+                    ) { index ->
+                        MediumVerticalSpacer()
+                        DisplayMarkdownText(
+                            text = sources[index],
+                            modifier = Modifier
+                                .semantics {
+                                    contentDescription = "$sources[index] - opens in web browser"
+                                }
+                        )
+                        if (index < sources.size - 1) {
+                            MediumVerticalSpacer()
+                            ChatDivider(
+                                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+                            )
+                        }
+                    }
                 }
             }
-
-            Box(Modifier.fillMaxWidth().height(1.dp))
         }
-
-        MediumVerticalSpacer()
     }
 }
 
@@ -612,13 +617,17 @@ private fun markdownTextStyle() = TextStyle(
 )
 
 @Composable
-private fun DisplayMarkdownText(text: String) {
+private fun DisplayMarkdownText(
+    text: String,
+    modifier: Modifier = Modifier
+) {
     MarkdownText(
         markdown = text,
         linkColor = GovUkTheme.colourScheme.textAndIcons.link,
         style = markdownTextStyle(),
         enableSoftBreakAddsNewLine = false,
-        modifier = Modifier
+        enableUnderlineForLink = false,
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = GovUkTheme.spacing.medium)
     )
