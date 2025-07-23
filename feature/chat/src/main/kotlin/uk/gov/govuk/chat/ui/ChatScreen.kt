@@ -239,7 +239,7 @@ private fun ChatContent(
 
                             SubmitIconButton(
                                 onClick = { onSubmit(uiState.question) },
-                                enabled = uiState.isSubmitEnabled
+                                uiState = uiState
                             )
                         }
                     }
@@ -358,10 +358,10 @@ private fun DisplayChatEntries(uiState: ChatUiState) {
 }
 
 @Composable
-private fun SubmitIconButton(onClick: () -> Unit, enabled: Boolean) {
+private fun SubmitIconButton(onClick: () -> Unit, uiState: ChatUiState) {
     IconButton(
         onClick = onClick,
-        enabled = enabled,
+        enabled = uiState.isSubmitEnabled && !uiState.isPiiError,
         colors = IconButtonColors(
             containerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
             contentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconEnabled,
