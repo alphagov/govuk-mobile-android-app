@@ -42,6 +42,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -148,6 +151,7 @@ private fun ChatContent(
                     modifier = Modifier
                         .background(GovUkTheme.colourScheme.surfaces.chatBackground)
                         .padding(all = GovUkTheme.spacing.medium)
+                        .semantics { isTraversalGroup = true }
                         .then(
                             if (isFocused) {
                                 var color = if (uiState.isPiiError)
@@ -169,7 +173,7 @@ private fun ChatContent(
                 ) {
                     Row {
                         AnimatedVisibility(!isFocused) {
-                            ActionMenu()
+                            ActionMenu(modifier = Modifier.semantics { this.traversalIndex = 1f })
                         }
 
                         TextField(
@@ -184,6 +188,7 @@ private fun ChatContent(
                                 .onFocusChanged {
                                     isFocused = it.isFocused
                                 }
+                                .semantics { this.traversalIndex = 0f }
                                 .then(
                                     if (isFocused) {
                                         Modifier.padding(horizontal = 0.dp)
@@ -377,13 +382,13 @@ private fun SubmitIconButton(onClick: () -> Unit, uiState: ChatUiState) {
 }
 
 @Composable
-private fun ActionMenu() {
+private fun ActionMenu(modifier: Modifier = Modifier) {
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = { expanded = false },
-        modifier = Modifier
+        modifier = modifier
             .background(GovUkTheme.colourScheme.surfaces.alert)
             .border(
                 1.dp,
