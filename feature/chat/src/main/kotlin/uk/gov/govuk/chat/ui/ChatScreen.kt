@@ -371,7 +371,7 @@ private fun SubmitIconButton(onClick: () -> Unit, enabled: Boolean) {
     ) {
         Icon(
             painter = painterResource(R.drawable.outline_arrow_upward_24),
-            contentDescription = null
+            contentDescription = stringResource(id = R.string.button_alt),
         )
     }
 }
@@ -464,7 +464,7 @@ private fun ActionIconButton(onClick: () -> Unit) {
     ) {
         Icon(
             painter = painterResource(R.drawable.outline_more_vert_24),
-            contentDescription = null,
+            contentDescription = stringResource(id = R.string.action_alt),
             modifier = modifier.padding(all = GovUkTheme.spacing.small)
         )
     }
