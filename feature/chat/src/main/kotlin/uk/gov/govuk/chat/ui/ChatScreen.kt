@@ -356,19 +356,22 @@ private fun DisplayChatEntries(uiState: ChatUiState) {
 
 @Composable
 private fun DisplayQuestion(question: String) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = GovUkTheme.colourScheme.surfaces.chatUserMessageBackground,
-            contentColor = GovUkTheme.colourScheme.textAndIcons.chatUserMessageText
-        ),
-        border = BorderStroke(1.dp, GovUkTheme.colourScheme.strokes.chatUserMessageBorder),
-        modifier = Modifier
-            .fillMaxWidth()
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End
     ) {
-        BodyRegularLabel(
-            text = question,
-            modifier = Modifier.padding(GovUkTheme.spacing.medium)
-        )
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = GovUkTheme.colourScheme.surfaces.chatUserMessageBackground,
+                contentColor = GovUkTheme.colourScheme.textAndIcons.chatUserMessageText
+            ),
+            border = BorderStroke(1.dp, GovUkTheme.colourScheme.strokes.chatUserMessageBorder)
+        ) {
+            BodyRegularLabel(
+                text = question,
+                modifier = Modifier.padding(GovUkTheme.spacing.medium)
+            )
+        }
     }
 }
 
