@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -164,9 +163,9 @@ private fun ChatContent(
                         .then(
                             if (isFocused) {
                                 var color = if (uiState.isPiiError)
-                                        GovUkTheme.colourScheme.strokes.textFieldError
-                                    else
-                                        GovUkTheme.colourScheme.strokes.chatTextFieldBorder
+                                    GovUkTheme.colourScheme.strokes.textFieldError
+                                else
+                                    GovUkTheme.colourScheme.strokes.chatTextFieldBorder
 
                                 Modifier
                                     .border(
@@ -468,31 +467,26 @@ private fun DisplaySources(sources: List<String>) {
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height((sources.size * 60).dp) // TODO: Without this we get an infinite scroll error
-                ) {
-                    items(
-                        count = sources.size,
-                        key = { index -> sources[index] }
-                    ) { index ->
-                        val linkAddendumText = stringResource(id = R.string.sources_open_in_text)
-                        val linkText = "${sources[index]} $linkAddendumText"
+                sources.forEachIndexed { index, _ ->
+                    val linkAddendumText = stringResource(id = R.string.sources_open_in_text)
+                    val linkText = "${sources[index]} $linkAddendumText"
 
+                    MediumVerticalSpacer()
+
+                    DisplayMarkdownText(
+                        text = sources[index],
+                        talkbackText = linkText
+                    )
+
+                    if (index < sources.size - 1) {
                         MediumVerticalSpacer()
-                        DisplayMarkdownText(
-                            text = sources[index],
-                            talkbackText = linkText
+                        ChatDivider(
+                            modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
                         )
-                        if (index < sources.size - 1) {
-                            MediumVerticalSpacer()
-                            ChatDivider(
-                                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
-                            )
-                        }
                     }
                 }
+
+                MediumVerticalSpacer()
             }
         }
     }
