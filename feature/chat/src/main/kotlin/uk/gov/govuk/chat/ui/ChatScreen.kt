@@ -392,10 +392,8 @@ private fun DisplayAnswer(answer: String, sources: List<String>?) {
 
         DisplayMarkdownText(text = answer, talkbackText = answer)
 
-        sources?.let { sources ->
-            if (sources.isNotEmpty()) {
-                DisplaySources(sources = sources)
-            }
+        if (!sources.isNullOrEmpty()) {
+            DisplaySources(sources = sources)
         }
     }
 }
