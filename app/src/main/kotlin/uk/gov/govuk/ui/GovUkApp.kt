@@ -57,6 +57,7 @@ import uk.gov.govuk.AppViewModel
 import uk.gov.govuk.BuildConfig
 import uk.gov.govuk.R
 import uk.gov.govuk.analytics.navigation.analyticsGraph
+import uk.gov.govuk.chat.navigation.chatGraph
 import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
@@ -64,10 +65,8 @@ import uk.gov.govuk.home.navigation.homeGraph
 import uk.gov.govuk.login.navigation.BIOMETRIC_SETTINGS_ROUTE
 import uk.gov.govuk.login.navigation.LOGIN_GRAPH_ROUTE
 import uk.gov.govuk.login.navigation.loginGraph
+import uk.gov.govuk.navigation.AppNavigation
 import uk.gov.govuk.navigation.TopLevelDestination
-import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_CONSENT_ROUTE
-import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_ONBOARDING_ROUTE
-import uk.gov.govuk.notifications.navigation.NOTIFICATIONS_PERMISSION_ROUTE
 import uk.gov.govuk.notifications.navigation.notificationsGraph
 import uk.gov.govuk.search.navigation.SEARCH_GRAPH_ROUTE
 import uk.gov.govuk.search.navigation.searchGraph
@@ -108,7 +107,6 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                         BottomNavScaffold(
                             intentFlow = intentFlow,
                             viewModel = viewModel,
-                            shouldDisplayNotificationsOnboarding = it.shouldDisplayNotificationsOnboarding,
                             shouldShowExternalBrowser = it.shouldShowExternalBrowser,
                             homeWidgets = homeWidgets
                         )
@@ -138,7 +136,6 @@ private fun LoadingScreen(
 private fun BottomNavScaffold(
     intentFlow: Flow<Intent>,
     viewModel: AppViewModel,
-    shouldDisplayNotificationsOnboarding: Boolean,
     shouldShowExternalBrowser: Boolean,
     homeWidgets: List<HomeWidget>?,
 ) {
@@ -194,17 +191,18 @@ private fun BottomNavScaffold(
                 shouldShowExternalBrowser = shouldShowExternalBrowser,
                 paddingValues = paddingValues
             )
-
-            if (shouldDisplayNotificationsOnboarding) {
-                HandleNotificationsPermissionStatus(navController = { navController })
-            }
+            HandleOnResumeNavigation(
+                navController = { navController },
+                appNavigation = viewModel.appNavigation
+            )
         }
     }
 }
 
 @Composable
-private fun HandleNotificationsPermissionStatus(
-    navController: () -> NavHostController
+private fun HandleOnResumeNavigation(
+    navController: () -> NavHostController,
+    appNavigation: AppNavigation
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
@@ -219,14 +217,7 @@ private fun HandleNotificationsPermissionStatus(
                     // Nav graph has not been set
                     return@LaunchedEffect
                 }
-                val route = when (controller.currentDestination?.route) {
-                    NOTIFICATIONS_ONBOARDING_ROUTE -> NOTIFICATIONS_ONBOARDING_ROUTE
-                    NOTIFICATIONS_PERMISSION_ROUTE -> return@LaunchedEffect
-                    else -> NOTIFICATIONS_CONSENT_ROUTE
-                }
-                controller.navigate(route) {
-                    launchSingleTop = true
-                }
+                appNavigation.navigateOnResume(controller)
             }
             else -> { /* Do nothing */ }
         }
@@ -239,7 +230,13 @@ private fun BottomNav(
     navController: NavHostController,
     onTabClick: (String) -> Unit
 ) {
-    val topLevelDestinations = listOf(TopLevelDestination.Home, TopLevelDestination.Settings)
+    val topLevelDestinations = buildList {
+        add(TopLevelDestination.Home)
+        if (viewModel.isChatEnabled()) {
+            add(TopLevelDestination.Chat)
+        }
+        add(TopLevelDestination.Settings)
+    }
 
     var selectedIndex by rememberSaveable {
         mutableIntStateOf(-1)
@@ -332,7 +329,7 @@ private fun GovUkNavHost(
 
     LaunchedEffect(Unit) {
         appNavigation.setOnLaunchBrowser { url ->
-            browserLauncher.launch(url)
+            browserLauncher.launch(url) { showBrowserNotFoundAlert(context) }
         }
 
         appNavigation.setOnDeeplinkNotFound {
@@ -360,7 +357,12 @@ private fun GovUkNavHost(
                     appNavigation.onNext(navController)
                 }
             },
-            launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
+            launchBrowser = { url ->
+                browserLauncher.launchPartial(
+                    context = context,
+                    url = url
+                ) { showBrowserNotFoundAlert(context) }
+            }
         )
         topicSelectionGraph(
             topicSelectionCompleted = {
@@ -372,23 +374,32 @@ private fun GovUkNavHost(
         )
         topicsGraph(
             navController = navController,
-            launchBrowser = { url -> browserLauncher.launch(url) },
+            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } },
             modifier = Modifier.padding(paddingValues)
         )
         notificationsGraph(
             notificationsOnboardingCompleted = {
                 coroutineScope.launch {
                     appNavigation.onNotificationsOnboardingCompleted(navController)
-                    navController.navigate(NOTIFICATIONS_CONSENT_ROUTE)
+                }
+            },
+            notificationsConsentOnNextCompleted = {
+                coroutineScope.launch {
+                    appNavigation.onNext(navController)
                 }
             },
             notificationsConsentCompleted = {
-                navController.navigateUp()
+                navController.popBackStack()
             },
             notificationsPermissionCompleted = {
                 navController.popBackStack()
             },
-            launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) }
+            launchBrowser = { url ->
+                browserLauncher.launchPartial(
+                    context = context,
+                    url = url
+                ) { showBrowserNotFoundAlert(context) }
+            }
         )
         homeGraph(
             widgets = homeWidgets(
@@ -397,7 +408,13 @@ private fun GovUkNavHost(
                 onInternalClick = onInternalWidgetClick,
                 onExternalClick = onExternalWidgetClick,
                 onSuppressClick = onSuppressWidgetClick,
-                launchBrowser = { url -> browserLauncher.launch(url) }
+                launchBrowser = { url ->
+                    browserLauncher.launch(url) {
+                        showBrowserNotFoundAlert(
+                            context
+                        )
+                    }
+                }
             ),
             modifier = Modifier.padding(paddingValues),
             headerWidget = if (homeWidgets.contains(HomeWidget.SEARCH)) {
@@ -417,7 +434,12 @@ private fun GovUkNavHost(
             navigateTo = { route -> navController.navigate(route) },
             onBiometricsClick = { navController.navigate(BIOMETRIC_SETTINGS_ROUTE) },
             appVersion = BuildConfig.VERSION_NAME_USER_FACING,
-            launchBrowser = { url -> browserLauncher.launchPartial(context = context, url = url) },
+            launchBrowser = { url ->
+                browserLauncher.launchPartial(
+                    context = context,
+                    url = url
+                ) { showBrowserNotFoundAlert(context) }
+            },
             modifier = Modifier.padding(paddingValues)
         )
         signOutGraph(
@@ -428,10 +450,10 @@ private fun GovUkNavHost(
         )
         searchGraph(
             navController,
-            launchBrowser = { url -> browserLauncher.launch(url) })
+            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } })
         visitedGraph(
             navController = navController,
-            launchBrowser = { url -> browserLauncher.launch(url) },
+            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } },
             modifier = Modifier.padding(paddingValues)
         )
 
@@ -444,6 +466,11 @@ private fun GovUkNavHost(
             onCancel = exitLocal,
             modifier = Modifier.padding(paddingValues)
         )
+
+        chatGraph(
+            navController = navController,
+            modifier = Modifier.padding(paddingValues)
+        )
     }
 }
 
@@ -452,6 +479,18 @@ private fun showDeepLinkNotFoundAlert(context: Context) {
         setTitle(context.getString(R.string.deep_link_not_found_alert_title))
         setMessage(context.getString(R.string.deep_link_not_found_alert_message))
         setPositiveButton(context.getString(R.string.deep_link_not_found_alert_button)) { dialog, _ ->
+            dialog.dismiss()
+        }
+    }.also { deepLinkNotFoundAlert ->
+        deepLinkNotFoundAlert.show()
+    }
+}
+
+private fun showBrowserNotFoundAlert(context: Context) {
+    AlertDialog.Builder(context).apply {
+        setTitle(context.getString(R.string.browser_not_found_alert_title))
+        setMessage(context.getString(R.string.browser_not_found_alert_message))
+        setPositiveButton(context.getString(R.string.browser_not_found_alert_button)) { dialog, _ ->
             dialog.dismiss()
         }
     }.also { deepLinkNotFoundAlert ->

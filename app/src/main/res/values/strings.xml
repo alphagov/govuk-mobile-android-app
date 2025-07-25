@@ -19,10 +19,15 @@
     <string name="recommend_update_title">You’re using an old version of the app</string>
 
     <string name="settings">Settings</string>
+    <string name="chat">Chat</string>
 
     <string name="deep_link_not_found_alert_title">Page not found</string>
     <string name="deep_link_not_found_alert_message">Update the app to the latest version.\n\nIf you’re already using the latest version, try again later.</string>
     <string name="deep_link_not_found_alert_button">Close</string>
+
+    <string name="browser_not_found_alert_title">No browser app found</string>
+    <string name="browser_not_found_alert_message">Please install a browser app and try again.</string>
+    <string name="browser_not_found_alert_button">Close</string>
 
     <string name="login_sign_in_error_header">There was a problem signing you in</string>
     <string name="login_sign_in_error_sub_text">Try to sign in again</string>

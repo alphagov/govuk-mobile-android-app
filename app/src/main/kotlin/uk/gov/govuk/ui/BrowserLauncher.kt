@@ -1,5 +1,6 @@
 package uk.gov.govuk.ui
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -28,19 +29,23 @@ internal fun rememberBrowserLauncher(shouldShowExternalBrowser: Boolean): Browse
 internal sealed class BrowserActivityLauncher(
     val launcher: ManagedActivityResultLauncher<Intent, ActivityResult>
 ) {
-    abstract fun launch(url: String)
+    abstract fun launch(url: String, onError: () -> Unit)
 
-    open fun launchPartial(context: Context, url: String) {
-        launch(url)
+    open fun launchPartial(context: Context, url: String, onError: () -> Unit) {
+        launch(url, onError)
     }
 
     internal class External(
         launcher: ManagedActivityResultLauncher<Intent, ActivityResult>
     ) : BrowserActivityLauncher(launcher) {
-        override fun launch(url: String) {
-            Intent(Intent.ACTION_VIEW).run {
-                data = url.toUri()
-                launcher.launch(this)
+        override fun launch(url: String, onError: () -> Unit) {
+            try {
+                Intent(Intent.ACTION_VIEW).run {
+                    data = url.toUri()
+                    launcher.launch(this)
+                }
+            } catch (e: ActivityNotFoundException) {
+                onError()
             }
         }
     }
@@ -48,17 +53,25 @@ internal sealed class BrowserActivityLauncher(
     internal class InApp(
         launcher: ManagedActivityResultLauncher<Intent, ActivityResult>
     ) : BrowserActivityLauncher(launcher) {
-        override fun launch(url: String) {
-            CustomTabsIntent.Builder().build().run {
-                intent.data = url.toUri()
-                launcher.launch(this.intent)
+        override fun launch(url: String, onError: () -> Unit) {
+            try {
+                CustomTabsIntent.Builder().build().run {
+                    intent.data = url.toUri()
+                    launcher.launch(this.intent)
+                }
+            } catch (e: ActivityNotFoundException) {
+                onError()
             }
         }
 
-        override fun launchPartial(context: Context, url: String) {
-            context.getPartialCustomTabsIntent().run {
-                intent.data = url.toUri()
-                launcher.launch(this.intent)
+        override fun launchPartial(context: Context, url: String, onError: () -> Unit) {
+            try {
+                context.getPartialCustomTabsIntent().run {
+                    intent.data = url.toUri()
+                    launcher.launch(this.intent)
+                }
+            } catch (e: ActivityNotFoundException) {
+                onError()
             }
         }
     }

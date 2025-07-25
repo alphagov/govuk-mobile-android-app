@@ -205,32 +205,6 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given notifications are enabled, When init, then emit notifications enabled state`() {
-        every { flagRepo.isNotificationsEnabled() } returns true
-
-        val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appNavigation)
-
-        runTest {
-            val result = viewModel.uiState.first() as AppUiState.Default
-            assertTrue(result.shouldDisplayNotificationsOnboarding)
-        }
-    }
-
-    @Test
-    fun `Given notifications are disabled, When init, then emit notifications disabled state`() {
-        every { flagRepo.isNotificationsEnabled() } returns false
-
-        val viewModel = AppViewModel(timeoutManager, appRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, analyticsClient, appNavigation)
-
-        runTest {
-            val result = viewModel.uiState.first() as AppUiState.Default
-            assertFalse(result.shouldDisplayNotificationsOnboarding)
-        }
-    }
-
-    @Test
     fun `Given the search feature is enabled, When init, then emit search enabled state`() {
         coEvery { flagRepo.isSearchEnabled() } returns true
 

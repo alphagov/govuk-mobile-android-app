@@ -38,6 +38,7 @@ dependencyResolutionManagement {
                 }
             }
         }
+        maven("https://jitpack.io")
     }
 }
 
@@ -48,6 +49,7 @@ include(":analytics")
 include(":app")
 include(":config")
 include(":design")
+include(":feature:chat")
 include(":feature:home")
 include(":feature:local")
 include(":feature:search")

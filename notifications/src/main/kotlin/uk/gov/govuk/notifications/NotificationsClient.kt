@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
 import com.onesignal.OneSignal
 import com.onesignal.notifications.INotificationClickEvent
@@ -37,6 +38,9 @@ class NotificationsClient @Inject constructor() {
     }
 
     fun consentGiven() = OneSignal.consentGiven
+
+    fun permissionGranted(context: Context) =
+        NotificationManagerCompat.from(context).areNotificationsEnabled()
 
     fun requestPermission(
         dispatcher: CoroutineDispatcher = Dispatchers.IO,

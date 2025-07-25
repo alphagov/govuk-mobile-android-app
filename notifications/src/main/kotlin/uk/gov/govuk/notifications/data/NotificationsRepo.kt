@@ -5,9 +5,15 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-internal class NotificationsRepo @Inject constructor(
+class NotificationsRepo @Inject constructor(
     private val notificationsDataStore: NotificationsDataStore
 ) {
+    suspend fun isNotificationsOnboardingCompleted() =
+        notificationsDataStore.isNotificationsOnboardingCompleted()
+
+    suspend fun notificationsOnboardingCompleted() =
+        notificationsDataStore.notificationsOnboardingCompleted()
+
     internal suspend fun isFirstPermissionRequestCompleted() =
         notificationsDataStore.isFirstPermissionRequestCompleted()
 

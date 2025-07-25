@@ -67,7 +67,6 @@ internal class AppViewModel @Inject constructor(
 
                     _uiState.value = AppUiState.Default(
                         shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
-                        shouldDisplayNotificationsOnboarding = flagRepo.isNotificationsEnabled(),
                         shouldShowExternalBrowser = flagRepo.isExternalBrowserEnabled()
                     )
 
@@ -151,6 +150,8 @@ internal class AppViewModel @Inject constructor(
             }
         }
     }
+
+    fun isChatEnabled() = flagRepo.isChatEnabled()
 
     fun onWidgetClick(
         text: String,

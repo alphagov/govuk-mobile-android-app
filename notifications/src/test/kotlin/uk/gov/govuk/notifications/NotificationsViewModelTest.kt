@@ -54,16 +54,12 @@ class NotificationsViewModelTest {
     }
 
     @Test
-    fun `Given Allow notifications button click, then onboarding completed, give consent and log analytics`() {
-        coEvery { notificationsDataStore.onboardingCompleted() } returns Unit
+    fun `Given Allow notifications button click, then give consent and log analytics`() {
         every { notificationsClient.giveConsent() } returns Unit
 
         viewModel.onGiveConsentClick("Title") {}
 
         runTest {
-            coVerify(exactly = 1) {
-                notificationsDataStore.onboardingCompleted()
-            }
             verify(exactly = 1) {
                 notificationsClient.giveConsent()
                 analyticsClient.buttonClick("Title")
@@ -72,14 +68,10 @@ class NotificationsViewModelTest {
     }
 
     @Test
-    fun `Given Turn off notifications button click, then onboarding completed and log analytics`() {
-        coEvery { notificationsDataStore.onboardingCompleted() } returns Unit
+    fun `Given Turn off notifications button click, then log analytics`() {
         viewModel.onTurnOffNotificationsClick("Title")
 
         runTest {
-            coVerify(exactly = 1) {
-                notificationsDataStore.onboardingCompleted()
-            }
             verify(exactly = 1) {
                 analyticsClient.buttonClick(
                     text = "Title",
@@ -90,8 +82,7 @@ class NotificationsViewModelTest {
     }
 
     @Test
-    fun `Given Allow notifications button click, then onboarding completed, first permission request completed, request permission and log analytics`() {
-        coEvery { notificationsDataStore.onboardingCompleted() } returns Unit
+    fun `Given Allow notifications button click, then first permission request completed, request permission and log analytics`() {
         coEvery { notificationsDataStore.firstPermissionRequestCompleted() } returns Unit
         every { notificationsClient.giveConsent() } returns Unit
 
@@ -106,7 +97,6 @@ class NotificationsViewModelTest {
 
         runTest {
             coVerify(exactly = 1) {
-                notificationsDataStore.onboardingCompleted()
                 notificationsDataStore.firstPermissionRequestCompleted()
             }
             verify(exactly = 1) {
@@ -119,15 +109,11 @@ class NotificationsViewModelTest {
     }
 
     @Test
-    fun `Given Not now button click, then onboarding completed and log analytics`() {
-        coEvery { notificationsDataStore.onboardingCompleted() } returns Unit
+    fun `Given Not now button click, then log analytics`() {
 
         viewModel.onNotNowClick("Title")
 
         runTest {
-            coVerify(exactly = 1) {
-                notificationsDataStore.onboardingCompleted()
-            }
             verify(exactly = 1) {
                 analyticsClient.buttonClick("Title")
             }

@@ -55,29 +55,25 @@ internal fun NotificationsPermissionRoute(
                             primaryText = primaryText, onPrimary = {
                                 notificationsViewModel.onAllowNotificationsClick(primaryText)
                                 {
-                                    viewModel.finish()
+                                    notificationsPermissionCompleted()
                                 }
                             },
                             secondaryText = secondaryText,
                             onSecondary = {
                                 notificationsViewModel.onNotNowClick(secondaryText)
-                                viewModel.finish()
+                                notificationsPermissionCompleted()
                             }
                         )
                     }
                 )
             }
+
             NotificationsUiState.Alert -> {
                 val context = LocalContext.current
                 showNotificationsAlert(
                     context,
                     onCancelButtonClick = { notificationsViewModel.onCancelButtonClick(it) },
                     onContinueButtonClick = { notificationsViewModel.onContinueButtonClick(it) })
-                viewModel.finish()
-            }
-
-            NotificationsUiState.Finish -> {
-                EmptyScreen()
                 notificationsPermissionCompleted()
             }
         }
