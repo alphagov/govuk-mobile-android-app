@@ -138,7 +138,7 @@ class ChatViewModelTest {
         assertFalse(finalState.isLoading)
         assertEquals("Question 1", question)
         assertEquals("Answer 1", answer)
-        assertEquals("* [title](url)", chatEntry?.sources?.first())
+        assertEquals("[title](url)", chatEntry?.sources?.first())
 
         coVerify(exactly = 0) {
             chatRepo.getAnswer(any(), any(), any())
@@ -313,7 +313,7 @@ class ChatViewModelTest {
         assertFalse(finalState.isLoading)
         assertEquals("Question 1", chatEntry?.question)
         assertEquals("Answer 1", chatEntry?.answer)
-        assertEquals("* [title](url)", chatEntry?.sources?.first())
+        assertEquals("[title](url)", chatEntry?.sources?.first())
     }
 
     @Test
