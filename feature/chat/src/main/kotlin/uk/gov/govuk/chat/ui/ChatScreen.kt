@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -48,16 +50,20 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -68,7 +74,9 @@ import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.ErrorPage
+import uk.gov.govuk.design.ui.component.CentreAlignedScreen
+import uk.gov.govuk.design.ui.component.LargeHorizontalSpacer
+import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -89,9 +97,6 @@ internal fun ChatRoute(
         onSubmit = { question ->
             viewModel.onSubmit(question)
         },
-        onRetry = {
-            viewModel.loadConversation()
-        },
         modifier = modifier
     )
 }
@@ -101,18 +106,10 @@ private fun ChatScreen(
     uiState: ChatUiState,
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
-    onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (uiState.isError) {
-        ErrorPage(
-            headerText = "Header",
-            subText = "Subtext",
-            buttonText = "Retry",
-            onBack = { onRetry() },
-            modifier = modifier,
-            additionalText = "Additional text"
-        )
+        ChatErrorPage(modifier = modifier)
     } else {
         ChatContent(
             uiState,
@@ -121,6 +118,87 @@ private fun ChatScreen(
             modifier
         )
     }
+}
+
+@Composable
+private fun ChatErrorPage(
+    modifier: Modifier = Modifier,
+) {
+    // TODO: this probably should be a component like ErrorPage, but currently the need for links in text is only within Chat
+    CentreAlignedScreen(
+        modifier = modifier,
+        screenContent = {
+            Icon(
+                painter = painterResource(id = uk.gov.govuk.design.R.drawable.ic_error),
+                contentDescription = null,
+                tint = GovUkTheme.colourScheme.textAndIcons.primary,
+                modifier = Modifier.height(IntrinsicSize.Min)
+                    .padding(all = GovUkTheme.spacing.medium)
+            )
+
+            LargeHorizontalSpacer()
+
+            LargeTitleBoldLabel(
+                text = stringResource(id = R.string.error_page_header),
+                textAlign = TextAlign.Center
+            )
+
+            MediumVerticalSpacer()
+
+            BodyRegularLabel(
+                text = stringResource(id = R.string.error_page_subtext),
+                textAlign = TextAlign.Center
+            )
+
+            MediumVerticalSpacer()
+
+            AdditionalText()
+        },
+        footerContent = {}
+    )
+}
+
+@Composable
+private fun AdditionalText() {
+    val intro = stringResource(id = R.string.error_page_additional_text_intro)
+    val linkText = stringResource(id = R.string.error_page_additional_text_link_text)
+    val outro = stringResource(id = R.string.error_page_additional_text_outro)
+    val url = stringResource(id = R.string.error_page_additional_text_url)
+
+    val uriHandler = LocalUriHandler.current
+
+    val annotatedString = buildAnnotatedString {
+        append(intro)
+        append(" ")
+        pushStringAnnotation(tag = "URL", annotation = url)
+        withStyle(
+            style = SpanStyle(
+                color = GovUkTheme.colourScheme.textAndIcons.link
+            )
+        ) {
+            append(linkText)
+            append(" ")
+        }
+        pop()
+        append(outro)
+    }
+
+    return ClickableText(
+        text = annotatedString,
+        style = GovUkTheme.typography.bodyRegular.copy(
+            color = GovUkTheme.colourScheme.textAndIcons.primary,
+            textAlign = TextAlign.Center
+        ),
+        onClick = { offset ->
+            annotatedString.getStringAnnotations(
+                    tag = "URL",
+                    start = offset,
+                    end = offset
+                ).firstOrNull()?.let { annotation ->
+                    uriHandler.openUri(annotation.item)
+                }
+        }
+    )
 }
 
 @Composable
@@ -684,8 +762,7 @@ private fun LightModeChatScreenPreview() {
         ChatScreen(
             uiState = ChatUiState(isLoading = false),
             onQuestionUpdated = { _ -> },
-            onSubmit = { _ -> },
-            onRetry = { }
+            onSubmit = { _ -> }
         )
     }
 }
@@ -700,8 +777,7 @@ private fun DarkModeChatScreenPreview() {
         ChatScreen(
             uiState = ChatUiState(isLoading = false),
             onQuestionUpdated = { _ -> },
-            onSubmit = { _ -> },
-            onRetry = { }
+            onSubmit = { _ -> }
         )
     }
 }
