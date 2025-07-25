@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -127,7 +126,7 @@ private fun ChatScreen(
 private fun ChatErrorPage(
     modifier: Modifier = Modifier,
 ) {
-    // TODO: this probably should be a component like ErrorPage, but currently the need for links in text is only within Chat
+    // Could should be a component like ErrorPage, but currently the need for links in text is only within Chat
     CentreAlignedScreen(
         modifier = modifier,
         screenContent = {
@@ -162,7 +161,9 @@ private fun ChatErrorPage(
 }
 
 @Composable
-private fun AdditionalText() {
+private fun AdditionalText(
+    modifier: Modifier = Modifier
+) {
     val intro = stringResource(id = R.string.error_page_additional_text_intro)
     val linkText = stringResource(id = R.string.error_page_additional_text_link_text)
     val outro = stringResource(id = R.string.error_page_additional_text_outro)
@@ -186,21 +187,22 @@ private fun AdditionalText() {
         append(outro)
     }
 
-    return ClickableText(
+    Text(
         text = annotatedString,
         style = GovUkTheme.typography.bodyRegular.copy(
             color = GovUkTheme.colourScheme.textAndIcons.primary,
             textAlign = TextAlign.Center
         ),
-        onClick = { offset ->
-            annotatedString.getStringAnnotations(
-                    tag = "URL",
-                    start = offset,
-                    end = offset
-                ).firstOrNull()?.let { annotation ->
-                    uriHandler.openUri(annotation.item)
-                }
-        }
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable {
+                annotatedString
+                    .getStringAnnotations(tag = "URL", start = 0, end = annotatedString.length)
+                    .firstOrNull()
+                    ?.let { annotation ->
+                        uriHandler.openUri(annotation.item)
+                    }
+            }
     )
 }
 
@@ -230,9 +232,7 @@ private fun ChatContent(
         }
 
         Column {
-            if (uiState.isLoading) {
-                DisplayProgressIndicator()
-            }
+            DisplayProgressIndicator(uiState)
 
             Row(
                 modifier = Modifier
@@ -246,24 +246,7 @@ private fun ChatContent(
                         .background(GovUkTheme.colourScheme.surfaces.chatBackground)
                         .padding(all = GovUkTheme.spacing.medium)
                         .semantics { isTraversalGroup = true }
-                        .then(
-                            if (isFocused) {
-                                var color = if (uiState.isPiiError)
-                                    GovUkTheme.colourScheme.strokes.textFieldError
-                                else
-                                    GovUkTheme.colourScheme.strokes.chatTextFieldBorder
-
-                                Modifier
-                                    .border(
-                                        1.dp,
-                                        color,
-                                        RoundedCornerShape(20.dp)
-                                    )
-                                    .clip(RoundedCornerShape(0.dp, 0.dp, 20.dp, 20.dp))
-                            } else {
-                                Modifier.border(0.dp, Color.Transparent)
-                            }
-                        ),
+                        .modifyIfPiiError(isFocused, uiState),
                 ) {
                     Row {
                         AnimatedVisibility(!isFocused) {
@@ -283,19 +266,7 @@ private fun ChatContent(
                                     isFocused = it.isFocused
                                 }
                                 .semantics { this.traversalIndex = 0f }
-                                .then(
-                                    if (isFocused) {
-                                        Modifier.padding(horizontal = 0.dp)
-                                            .border(0.dp, Color.Transparent)
-                                    } else {
-                                        Modifier.padding(start = GovUkTheme.spacing.small)
-                                            .border(
-                                                1.dp,
-                                                GovUkTheme.colourScheme.strokes.chatTextFieldBorderDisabled,
-                                                RoundedCornerShape(40.dp)
-                                            )
-                                    }
-                                ),
+                                .modifyIfFocused(isFocused),
                             value = if (isFocused) uiState.question else "",
                             shape = if (isFocused)
                                 RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
@@ -306,9 +277,7 @@ private fun ChatContent(
                                 onQuestionUpdated(it)
                             },
                             placeholder = {
-                                if (!isFocused) {
-                                    DisplayPlaceholderText(uiState = uiState)
-                                }
+                                DisplayPlaceholderText(isFocused = isFocused, uiState = uiState)
                             },
                             isError = uiState.isPiiError,
                             colors = inputTextFieldDefaults()
@@ -345,9 +314,7 @@ private fun ChatContent(
                 }
             }
 
-            if (uiState.isPiiError) {
-                DisplayPIIError()
-            }
+            DisplayPIIError(uiState)
 
             SmallVerticalSpacer()
         }
@@ -360,6 +327,45 @@ private fun ChatContent(
             scrollState.animateScrollTo(scrollState.maxValue)
         }
     }
+}
+
+@Composable
+private fun Modifier.modifyIfPiiError(isFocused: Boolean, uiState: ChatUiState): Modifier {
+    return this.then(
+        if (isFocused) {
+            var color = if (uiState.isPiiError)
+                GovUkTheme.colourScheme.strokes.textFieldError
+            else
+                GovUkTheme.colourScheme.strokes.chatTextFieldBorder
+
+            Modifier
+                .border(
+                    1.dp,
+                    color,
+                    RoundedCornerShape(20.dp)
+                )
+                .clip(RoundedCornerShape(0.dp, 0.dp, 20.dp, 20.dp))
+        } else {
+            Modifier.border(0.dp, Color.Transparent)
+        }
+    )
+}
+
+@Composable
+private fun Modifier.modifyIfFocused(isFocused: Boolean): Modifier {
+    return this.then(
+        if (isFocused) {
+            Modifier.padding(horizontal = 0.dp)
+                .border(0.dp, Color.Transparent)
+        } else {
+            Modifier.padding(start = GovUkTheme.spacing.small)
+                .border(
+                    1.dp,
+                    GovUkTheme.colourScheme.strokes.chatTextFieldBorderDisabled,
+                    RoundedCornerShape(40.dp)
+                )
+        }
+    )
 }
 
 @Composable
@@ -481,8 +487,8 @@ private fun Message3() {
 }
 
 @Composable
-private fun DisplayPlaceholderText(uiState: ChatUiState) {
-    if (uiState.question.isEmpty()) {
+private fun DisplayPlaceholderText(isFocused: Boolean, uiState: ChatUiState) {
+    if (!isFocused && uiState.question.isEmpty()) {
         Text(
             text = stringResource(id = R.string.input_label),
             color = GovUkTheme.colourScheme.textAndIcons.secondary
@@ -516,29 +522,33 @@ private fun inputTextFieldDefaults() = TextFieldDefaults.colors(
 )
 
 @Composable
-private fun DisplayPIIError() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = GovUkTheme.spacing.medium)
-    ) {
-        val errorMessage = stringResource(id = R.string.pii_error_message)
-        BodyBoldLabel(
-            color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
-            text = errorMessage
-        )
+private fun DisplayPIIError(uiState: ChatUiState) {
+    if (uiState.isPiiError) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = GovUkTheme.spacing.medium)
+        ) {
+            val errorMessage = stringResource(id = R.string.pii_error_message)
+            BodyBoldLabel(
+                color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
+                text = errorMessage
+            )
+        }
     }
 }
 
 @Composable
-private fun DisplayProgressIndicator() {
-    LinearProgressIndicator(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = GovUkTheme.spacing.medium),
-        color = GovUkTheme.colourScheme.surfaces.primary,
-        trackColor = GovUkTheme.colourScheme.surfaces.textFieldBackground
-    )
+private fun DisplayProgressIndicator(uiState: ChatUiState) {
+    if (uiState.isLoading) {
+        LinearProgressIndicator(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = GovUkTheme.spacing.medium),
+            color = GovUkTheme.colourScheme.surfaces.primary,
+            trackColor = GovUkTheme.colourScheme.surfaces.textFieldBackground
+        )
+    }
 }
 
 @Composable
@@ -581,10 +591,10 @@ private fun DisplayQuestion(question: String) {
 
 @Composable
 private fun DisplayAnswer(
-    showHeader: Boolean = true,
     answer: String,
-    sources: List<String>?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showHeader: Boolean = true,
+    sources: List<String>?
 ) {
     Card(
         colors = CardDefaults.cardColors(
@@ -766,7 +776,7 @@ private fun AboutMenuItem() = DropdownMenuItem(
             tint = GovUkTheme.colourScheme.textAndIcons.primary
         )
     },
-    onClick = { /* TODO: Handle action */ },
+    onClick = { },
 )
 
 @Composable
@@ -785,7 +795,7 @@ private fun ClearMenuItem() = DropdownMenuItem(
             tint = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
         )
     },
-    onClick = { /* TODO: Handle action */ }
+    onClick = { }
 )
 
 @Composable
