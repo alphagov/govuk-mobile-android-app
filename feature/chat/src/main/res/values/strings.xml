@@ -31,5 +31,4 @@
   <string name="bot_message_1">Hi 👋 I’m GOV.UK Chat.</string>
   <string name="bot_message_2">I’m an experimental AI tool.\n\nWhen you ask a question, I’ll find the most relevant information from GOV.UK and use it to create an answer.</string>
   <string name="bot_message_3">Ask a question to get started.</string>
-  <string name="bot_answering_text">Message loading...</string>
 </resources>
