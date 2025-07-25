@@ -51,6 +51,9 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -160,6 +163,7 @@ private fun ChatContent(
                     modifier = Modifier
                         .background(GovUkTheme.colourScheme.surfaces.chatBackground)
                         .padding(all = GovUkTheme.spacing.medium)
+                        .semantics { isTraversalGroup = true }
                         .then(
                             if (isFocused) {
                                 var color = if (uiState.isPiiError)
@@ -181,7 +185,7 @@ private fun ChatContent(
                 ) {
                     Row {
                         AnimatedVisibility(!isFocused) {
-                            ActionMenu()
+                            ActionMenu(modifier = Modifier.semantics { this.traversalIndex = 1f })
                         }
 
                         TextField(
@@ -196,6 +200,7 @@ private fun ChatContent(
                                 .onFocusChanged {
                                     isFocused = it.isFocused
                                 }
+                                .semantics { this.traversalIndex = 0f }
                                 .then(
                                     if (isFocused) {
                                         Modifier.padding(horizontal = 0.dp)
@@ -251,7 +256,7 @@ private fun ChatContent(
 
                             SubmitIconButton(
                                 onClick = { onSubmit(uiState.question) },
-                                enabled = uiState.isSubmitEnabled
+                                uiState = uiState
                             )
                         }
                     }
@@ -491,10 +496,10 @@ private fun DisplaySources(sources: List<String>) {
 }
 
 @Composable
-private fun SubmitIconButton(onClick: () -> Unit, enabled: Boolean) {
+private fun SubmitIconButton(onClick: () -> Unit, uiState: ChatUiState) {
     IconButton(
         onClick = onClick,
-        enabled = enabled,
+        enabled = uiState.isSubmitEnabled && !uiState.isPiiError,
         colors = IconButtonColors(
             containerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
             contentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconEnabled,
@@ -504,19 +509,19 @@ private fun SubmitIconButton(onClick: () -> Unit, enabled: Boolean) {
     ) {
         Icon(
             painter = painterResource(R.drawable.outline_arrow_upward_24),
-            contentDescription = null
+            contentDescription = stringResource(id = R.string.button_alt),
         )
     }
 }
 
 @Composable
-private fun ActionMenu() {
+private fun ActionMenu(modifier: Modifier = Modifier) {
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = { expanded = false },
-        modifier = Modifier
+        modifier = modifier
             .background(GovUkTheme.colourScheme.surfaces.alert)
             .border(
                 1.dp,
@@ -597,7 +602,7 @@ private fun ActionIconButton(onClick: () -> Unit) {
     ) {
         Icon(
             painter = painterResource(R.drawable.outline_more_vert_24),
-            contentDescription = null,
+            contentDescription = stringResource(id = R.string.action_alt),
             modifier = modifier.padding(all = GovUkTheme.spacing.small)
         )
     }
