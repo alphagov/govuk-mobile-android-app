@@ -3,6 +3,9 @@ package uk.gov.govuk.chat.ui
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -222,6 +225,7 @@ private fun ChatContent(
                 .weight(1f)
                 .padding(horizontal = GovUkTheme.spacing.medium)
         ) {
+            DisplayIntroMessages(uiState.chatEntries.isEmpty()) // only animate if no conversation
             DisplayChatEntries(uiState = uiState)
         }
 
@@ -359,6 +363,124 @@ private fun ChatContent(
 }
 
 @Composable
+private fun DisplayIntroMessages(animated: Boolean) {
+    if (animated) {
+        var message1Visible by remember { mutableStateOf(false) }
+        var message2Visible by remember { mutableStateOf(false) }
+        var message3Visible by remember { mutableStateOf(false) }
+
+        val delay = 1000L
+        val duration = 500
+
+        LaunchedEffect(key1 = true) {
+            delay(delay)
+
+            message1Visible = true
+            delay(delay)
+
+            message2Visible = true
+            delay(delay)
+
+            message3Visible = true
+        }
+
+        MessageHeader()
+        MediumVerticalSpacer()
+
+        AnimatedVisibility(
+            visible = message1Visible,
+            enter = fadeIn(animationSpec = tween(durationMillis = duration)) +
+                scaleIn(animationSpec = tween(durationMillis = duration))
+        ) {
+            Message1()
+        }
+
+        if (message1Visible) {
+            MediumVerticalSpacer()
+        }
+
+        AnimatedVisibility(
+            visible = message2Visible,
+            enter = fadeIn(animationSpec = tween(durationMillis = duration)) +
+                scaleIn(animationSpec = tween(durationMillis = duration))
+        ) {
+            Message2()
+        }
+
+        if (message2Visible) {
+            MediumVerticalSpacer()
+        }
+
+        AnimatedVisibility(
+            visible = message3Visible,
+            enter = fadeIn(animationSpec = tween(durationMillis = duration)) +
+                scaleIn(animationSpec = tween(durationMillis = duration))
+        ) {
+            Message3()
+        }
+    } else {
+        MessageHeader()
+        MediumVerticalSpacer()
+        Message1()
+        MediumVerticalSpacer()
+        Message2()
+        MediumVerticalSpacer()
+        Message3()
+    }
+}
+
+@Composable
+private fun MessageHeader() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = GovUkTheme.spacing.medium,
+                end = GovUkTheme.spacing.medium,
+                bottom = 0.dp,
+                top = 48.dp
+            ),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(id = R.string.bot_message_availability_text),
+            color = GovUkTheme.colourScheme.textAndIcons.chatBotHeaderText,
+            style = GovUkTheme.typography.bodyRegular
+        )
+    }
+}
+
+@Composable
+private fun Message1() {
+    DisplayAnswer(
+        answer = stringResource(id = R.string.bot_message_1),
+        sources = emptyList(),
+        modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
+    )
+}
+
+@Composable
+private fun Message2() {
+    DisplayAnswer(
+        showHeader = false,
+        answer = stringResource(id = R.string.bot_message_2),
+        sources = emptyList(),
+        modifier = Modifier.padding(vertical = GovUkTheme.spacing.medium)
+    )
+}
+
+@Composable
+private fun Message3() {
+    DisplayAnswer(
+        showHeader = false,
+        answer = stringResource(id = R.string.bot_message_3),
+        sources = emptyList(),
+        modifier = Modifier.padding(vertical = GovUkTheme.spacing.medium)
+    )
+}
+
+@Composable
 private fun DisplayPlaceholderText(uiState: ChatUiState) {
     if (uiState.question.isEmpty()) {
         Text(
@@ -458,7 +580,12 @@ private fun DisplayQuestion(question: String) {
 }
 
 @Composable
-private fun DisplayAnswer(answer: String, sources: List<String>?) {
+private fun DisplayAnswer(
+    showHeader: Boolean = true,
+    answer: String,
+    modifier: Modifier = Modifier,
+    sources: List<String>?
+) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = GovUkTheme.colourScheme.surfaces.chatBotMessageBackground,
@@ -468,12 +595,18 @@ private fun DisplayAnswer(answer: String, sources: List<String>?) {
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        BodyBoldLabel(
-            text = stringResource(id = R.string.bot_header_text),
-            modifier = Modifier.padding(GovUkTheme.spacing.medium)
-        )
+        if (showHeader) {
+            BodyBoldLabel(
+                text = stringResource(id = R.string.bot_header_text),
+                modifier = Modifier.padding(GovUkTheme.spacing.medium)
+            )
+        }
 
-        DisplayMarkdownText(text = answer, talkbackText = answer)
+        DisplayMarkdownText(
+            text = answer,
+            talkbackText = answer,
+            modifier = modifier
+        )
 
         if (!sources.isNullOrEmpty()) {
             DisplaySources(sources = sources)

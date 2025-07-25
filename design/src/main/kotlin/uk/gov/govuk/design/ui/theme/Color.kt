@@ -90,7 +90,8 @@ data class GovUkColourScheme(
         val chatButtonIconDisabled: Color,
         val chatButtonIconEnabled: Color,
         val chatUserMessageText: Color,
-        val chatBotMessageText: Color
+        val chatBotMessageText: Color,
+        val chatBotHeaderText: Color
     )
 
     data class Surfaces(
@@ -193,7 +194,8 @@ internal val LightColorScheme = GovUkColourScheme(
         chatButtonIconDisabled = Grey600,
         chatButtonIconEnabled = White,
         chatUserMessageText = Black,
-        chatBotMessageText = Black
+        chatBotMessageText = Black,
+        chatBotHeaderText = Grey700
     ),
     surfaces = Surfaces(
         background = White,
@@ -294,7 +296,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatButtonIconDisabled = Black,
         chatButtonIconEnabled = BlueDarker80,
         chatUserMessageText = White,
-        chatBotMessageText = White
+        chatBotMessageText = White,
+        chatBotHeaderText = BlueLighter25
     ),
     surfaces = Surfaces(
         background = Black,
@@ -396,7 +399,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             chatButtonIconDisabled = Color.Unspecified,
             chatButtonIconEnabled = Color.Unspecified,
             chatUserMessageText = Color.Unspecified,
-            chatBotMessageText = Color.Unspecified
+            chatBotMessageText = Color.Unspecified,
+            chatBotHeaderText = Color.Unspecified
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,
