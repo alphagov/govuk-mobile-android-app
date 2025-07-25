@@ -583,8 +583,8 @@ private fun DisplayQuestion(question: String) {
 private fun DisplayAnswer(
     showHeader: Boolean = true,
     answer: String,
-    sources: List<String>?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    sources: List<String>?
 ) {
     Card(
         colors = CardDefaults.cardColors(
