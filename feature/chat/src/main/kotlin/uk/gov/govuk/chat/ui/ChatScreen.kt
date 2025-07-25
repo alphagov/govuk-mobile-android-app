@@ -80,6 +80,7 @@ import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
+import kotlin.String
 import kotlin.math.abs
 
 @Composable
@@ -222,6 +223,7 @@ private fun ChatContent(
                 .weight(1f)
                 .padding(horizontal = GovUkTheme.spacing.medium)
         ) {
+            DisplayIntroMessages()
             DisplayChatEntries(uiState = uiState)
         }
 
@@ -359,6 +361,68 @@ private fun ChatContent(
 }
 
 @Composable
+private fun DisplayIntroMessages() {
+    MessageHeader()
+    MediumVerticalSpacer()
+    Message1()
+    MediumVerticalSpacer()
+    Message2()
+    MediumVerticalSpacer()
+    Message3()
+}
+
+@Composable
+private fun MessageHeader() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = GovUkTheme.spacing.medium,
+                end = GovUkTheme.spacing.medium,
+                bottom = 0.dp,
+                top = 48.dp
+            ),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(id = R.string.bot_message_availability_text),
+            color = GovUkTheme.colourScheme.textAndIcons.chatBotHeaderText,
+            style = GovUkTheme.typography.bodyRegular
+        )
+    }
+}
+
+@Composable
+private fun Message1() {
+    DisplayAnswer(
+        answer = stringResource(id = R.string.bot_message_1),
+        sources = emptyList(),
+        modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
+    )
+}
+
+@Composable
+private fun Message2() {
+    DisplayAnswer(
+        showHeader = false,
+        answer = stringResource(id = R.string.bot_message_2),
+        sources = emptyList(),
+        modifier = Modifier.padding(vertical = GovUkTheme.spacing.medium)
+    )
+}
+
+@Composable
+private fun Message3() {
+    DisplayAnswer(
+        showHeader = false,
+        answer = stringResource(id = R.string.bot_message_3),
+        sources = emptyList(),
+        modifier = Modifier.padding(vertical = GovUkTheme.spacing.medium)
+    )
+}
+
+@Composable
 private fun DisplayPlaceholderText(uiState: ChatUiState) {
     if (uiState.question.isEmpty()) {
         Text(
@@ -458,7 +522,12 @@ private fun DisplayQuestion(question: String) {
 }
 
 @Composable
-private fun DisplayAnswer(answer: String, sources: List<String>?) {
+private fun DisplayAnswer(
+    showHeader: Boolean = true,
+    answer: String,
+    sources: List<String>?,
+    modifier: Modifier = Modifier
+) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = GovUkTheme.colourScheme.surfaces.chatBotMessageBackground,
@@ -468,12 +537,18 @@ private fun DisplayAnswer(answer: String, sources: List<String>?) {
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        BodyBoldLabel(
-            text = stringResource(id = R.string.bot_header_text),
-            modifier = Modifier.padding(GovUkTheme.spacing.medium)
-        )
+        if (showHeader) {
+            BodyBoldLabel(
+                text = stringResource(id = R.string.bot_header_text),
+                modifier = Modifier.padding(GovUkTheme.spacing.medium)
+            )
+        }
 
-        DisplayMarkdownText(text = answer, talkbackText = answer)
+        DisplayMarkdownText(
+            text = answer,
+            talkbackText = answer,
+            modifier = modifier
+        )
 
         if (!sources.isNullOrEmpty()) {
             DisplaySources(sources = sources)
