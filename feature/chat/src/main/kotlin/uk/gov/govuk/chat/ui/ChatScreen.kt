@@ -461,7 +461,6 @@ private fun MessageHeader() {
 private fun Message1() {
     DisplayAnswer(
         answer = stringResource(id = R.string.bot_message_1),
-        sources = emptyList(),
         modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
     )
 }
@@ -471,7 +470,6 @@ private fun Message2() {
     DisplayAnswer(
         showHeader = false,
         answer = stringResource(id = R.string.bot_message_2),
-        sources = emptyList(),
         modifier = Modifier.padding(vertical = GovUkTheme.spacing.medium)
     )
 }
@@ -481,7 +479,6 @@ private fun Message3() {
     DisplayAnswer(
         showHeader = false,
         answer = stringResource(id = R.string.bot_message_3),
-        sources = emptyList(),
         modifier = Modifier.padding(vertical = GovUkTheme.spacing.medium)
     )
 }
@@ -594,7 +591,7 @@ private fun DisplayAnswer(
     answer: String,
     modifier: Modifier = Modifier,
     showHeader: Boolean = true,
-    sources: List<String>?
+    sources: List<String>? = null
 ) {
     Card(
         colors = CardDefaults.cardColors(
