@@ -44,4 +44,14 @@ class ChatDataStoreTest {
         chatDataStore.saveConversationId("123")
         assertEquals("123", chatDataStore.conversationId())
     }
+
+    @Test
+    fun `Clears the conversation id`() = runTest {
+        chatDataStore.saveConversationId("123")
+        assertEquals("123", chatDataStore.conversationId())
+
+        chatDataStore.clearConversation()
+
+        assertNull(chatDataStore.conversationId())
+    }
 }

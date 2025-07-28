@@ -115,4 +115,25 @@ class ChatRepoTest {
 
         assertTrue(result is NotFound)
     }
+
+    @Test
+    fun `Given a conversation id, when cleared the conversation id is removed`() = runTest {
+        coEvery { dataStore.conversationId() } returns "123"
+
+        chatRepo.getConversation()
+
+        coVerify {
+            chatApi.getConversation("123")
+        }
+
+        chatRepo.clearConversation()
+
+        coVerify {
+            dataStore.clearConversation()
+        }
+
+        coEvery { dataStore.conversationId() } returns null
+
+        assertNull(chatRepo.getConversation())
+    }
 }

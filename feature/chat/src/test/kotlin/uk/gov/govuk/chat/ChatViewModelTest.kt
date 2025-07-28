@@ -146,7 +146,92 @@ class ChatViewModelTest {
     }
 
     @Test
+    fun `Clear conversation`() = runTest {
+        val conversation = Conversation(
+            id = "123",
+            answeredQuestions =
+                listOf(
+                    AnsweredQuestion(
+                        "abc",
+                        Answer(
+                            "",
+                            "",
+                            "Answer 1",
+                            listOf(
+                                Source(
+                                    "url",
+                                    "title"
+                                )
+                            )
+                        ),
+                        "",
+                        "",
+                        "Question 1"
+
+                    )
+                ),
+            "",
+            null
+        )
+
+        coEvery { chatRepo.getConversation() } coAnswers {
+            delay(100)
+            ChatResult.Success(conversation)
+        }
+
+        val uiStates = mutableListOf<ChatUiState>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.toList(uiStates)
+        }
+
+        viewModel.clearConversation()
+
+        advanceUntilIdle()
+
+        viewModel.loadConversation()
+
+        advanceUntilIdle()
+
+        assertTrue(uiStates[1].isLoading)
+        assertTrue(uiStates[2].chatEntries.isEmpty())
+        assertFalse(uiStates[2].isLoading)
+        assertTrue(uiStates[2].chatEntries.isEmpty())
+    }
+
+    @Test
     fun `Load conversation emits error`() = runTest {
+        coEvery { chatRepo.getConversation() } coAnswers {
+            delay(100)
+            ChatResult.Error()
+        }
+
+        val uiStates = mutableListOf<ChatUiState>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.toList(uiStates)
+        }
+
+        viewModel.loadConversation()
+
+        advanceUntilIdle()
+
+        val loadingState = uiStates[1]
+
+        assertTrue(loadingState.isLoading)
+        assertEquals(0, loadingState.chatEntries.size)
+
+        val finalState = uiStates.last()
+
+        assertFalse(finalState.isLoading)
+        assertEquals(0, loadingState.chatEntries.size)
+        assertTrue(finalState.isError)
+
+        coVerify(exactly = 0) {
+            chatRepo.getAnswer(any(), any(), any())
+        }
+    }
+
+    @Test
+    fun `Load conversation emits retryable error`() = runTest {
         coEvery { chatRepo.getConversation() } coAnswers {
             delay(100)
             ChatResult.NotFound()
@@ -170,7 +255,7 @@ class ChatViewModelTest {
 
         assertFalse(finalState.isLoading)
         assertEquals(0, loadingState.chatEntries.size)
-        assertTrue(finalState.isError)
+        assertTrue(finalState.isRetryableError)
 
         coVerify(exactly = 0) {
             chatRepo.getAnswer(any(), any(), any())

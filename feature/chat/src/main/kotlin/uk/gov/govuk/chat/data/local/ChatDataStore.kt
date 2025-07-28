@@ -27,4 +27,10 @@ internal class ChatDataStore @Inject constructor(
             preferences[stringPreferencesKey(CONVERSATION_ID_KEY)] = id
         }
     }
+
+    internal suspend fun clearConversation() {
+        dataStore.edit { preferences ->
+            preferences.remove(stringPreferencesKey(CONVERSATION_ID_KEY))
+        }
+    }
 }
