@@ -161,7 +161,7 @@ private fun ChatErrorPage(
     modifier: Modifier = Modifier,
     additionalText: String? = null,
     buttonText: String? = null,
-    onRetry: () -> Unit = {}
+    onRetry: (() -> Unit)? = null
 ) {
     CentreAlignedScreen(
         modifier = modifier,
@@ -200,7 +200,7 @@ private fun ChatErrorPage(
             }
         },
         footerContent = {
-            if (buttonText != null && onRetry != {}) {
+            if (buttonText != null && onRetry != null) {
                 MediumVerticalSpacer()
                 PrimaryButton(
                     text = buttonText,
