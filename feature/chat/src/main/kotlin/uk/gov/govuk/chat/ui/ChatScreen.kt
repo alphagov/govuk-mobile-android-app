@@ -874,6 +874,7 @@ private fun ClearMenuItem(
     if (openDialog.value) {
         AlertDialog(
             onDismissRequest = { openDialog.value = false },
+            shape = RoundedCornerShape(10.dp),
             text = {
                 BodyBoldLabel(
                     text = "Do you want to clear your chat history?",
