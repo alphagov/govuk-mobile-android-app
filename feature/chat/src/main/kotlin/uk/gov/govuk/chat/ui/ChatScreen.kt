@@ -319,7 +319,10 @@ private fun ChatContent(
 
                         TextField(
                             textStyle = TextStyle(
-                                color = GovUkTheme.colourScheme.textAndIcons.primary
+                                color = GovUkTheme.colourScheme.textAndIcons.primary,
+                                fontSize = GovUkTheme.typography.bodyRegular.fontSize,
+                                fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
+                                fontFamily = GovUkTheme.typography.bodyRegular.fontFamily
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
