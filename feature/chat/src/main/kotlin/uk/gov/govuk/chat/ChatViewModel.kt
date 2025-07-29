@@ -11,6 +11,7 @@ import uk.gov.govuk.chat.data.ChatRepo
 import uk.gov.govuk.chat.data.remote.ChatResult
 import uk.gov.govuk.chat.data.remote.ChatResult.Success
 import uk.gov.govuk.chat.data.remote.ChatResult.ValidationError
+import uk.gov.govuk.chat.data.remote.ChatResult.NotFound
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.chat.ui.model.ChatEntry
@@ -25,7 +26,8 @@ internal data class ChatUiState(
     val displayCharacterError: Boolean = false,
     val charactersRemaining: Int = 0,
     val isSubmitEnabled: Boolean = false,
-    val isError: Boolean = false
+    val isError: Boolean = false,
+    val isRetryableError: Boolean = false
 )
 
 @HiltViewModel
@@ -71,6 +73,14 @@ internal class ChatViewModel @Inject constructor(
                 }
             }
 
+            _uiState.update { it.copy(isLoading = false) }
+        }
+    }
+
+    fun clearConversation() {
+        viewModelScope.launch {
+            _uiState.value = ChatUiState(isLoading = true)
+            chatRepo.clearConversation()
             _uiState.update { it.copy(isLoading = false) }
         }
     }
@@ -135,6 +145,7 @@ internal class ChatViewModel @Inject constructor(
         when (chatResult) {
             is Success -> onSuccess(chatResult.value)
             is ValidationError -> _uiState.update { it.copy(isPiiError = true) }
+            is NotFound -> _uiState.update { it.copy(isRetryableError = true) }
             else -> _uiState.update { it.copy(isError = true) }
         }
     }

@@ -77,9 +77,11 @@ import uk.gov.govuk.chat.R
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.CentreAlignedScreen
+import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.LargeHorizontalSpacer
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.component.PrimaryButton
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import kotlin.math.abs
@@ -99,6 +101,9 @@ internal fun ChatRoute(
         onSubmit = { question ->
             viewModel.onSubmit(question)
         },
+        onRetry = {
+            viewModel.clearConversation()
+        },
         modifier = modifier
     )
 }
@@ -108,10 +113,16 @@ private fun ChatScreen(
     uiState: ChatUiState,
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (uiState.isError) {
-        ChatErrorPage(modifier = modifier)
+    if (uiState.isRetryableError) {
+        ChatErrorPageWithRetry(
+            onRetry = onRetry,
+            modifier = modifier
+        )
+    } else if (uiState.isError) {
+        ChatErrorPageNoRetry(modifier)
     } else {
         ChatContent(
             uiState,
@@ -123,10 +134,37 @@ private fun ChatScreen(
 }
 
 @Composable
-private fun ChatErrorPage(
-    modifier: Modifier = Modifier,
+private fun ChatErrorPageWithRetry(
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    // Could should be a component like ErrorPage, but currently the need for links in text is only within Chat
+    ChatErrorPage(
+        subText = stringResource(id = R.string.error_retry_page_subtext),
+        modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium),
+        additionalText = stringResource(id = R.string.error_retry_page_additional_text),
+        buttonText = stringResource(id = R.string.error_retry_button_text),
+        onRetry = onRetry
+    )
+}
+
+@Composable
+private fun ChatErrorPageNoRetry(
+    modifier: Modifier = Modifier
+) {
+    ChatErrorPage(
+        subText = stringResource(id = R.string.error_page_subtext),
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun ChatErrorPage(
+    subText: String,
+    modifier: Modifier = Modifier,
+    additionalText: String? = null,
+    buttonText: String? = null,
+    onRetry: (() -> Unit)? = null
+) {
     CentreAlignedScreen(
         modifier = modifier,
         screenContent = {
@@ -148,15 +186,34 @@ private fun ChatErrorPage(
             MediumVerticalSpacer()
 
             BodyRegularLabel(
-                text = stringResource(id = R.string.error_page_subtext),
+                text = subText,
                 textAlign = TextAlign.Center
             )
 
             MediumVerticalSpacer()
 
-            AdditionalText()
+            if (additionalText != null) {
+                BodyRegularLabel(
+                    text = additionalText,
+                    textAlign = TextAlign.Center
+                )
+            } else {
+                AdditionalText()
+            }
         },
-        footerContent = {}
+        footerContent = {
+            if (buttonText != null && onRetry != null) {
+                MediumVerticalSpacer()
+                PrimaryButton(
+                    text = buttonText,
+                    onClick = onRetry,
+                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
+                    enabled = true,
+                    externalLink = false
+                )
+                ExtraLargeVerticalSpacer()
+            }
+        }
     )
 }
 
@@ -902,7 +959,8 @@ private fun LightModeChatScreenPreview() {
         ChatScreen(
             uiState = ChatUiState(isLoading = false),
             onQuestionUpdated = { _ -> },
-            onSubmit = { _ -> }
+            onSubmit = { _ -> },
+            onRetry = { }
         )
     }
 }
@@ -917,7 +975,8 @@ private fun DarkModeChatScreenPreview() {
         ChatScreen(
             uiState = ChatUiState(isLoading = false),
             onQuestionUpdated = { _ -> },
-            onSubmit = { _ -> }
+            onSubmit = { _ -> },
+            onRetry = { }
         )
     }
 }
