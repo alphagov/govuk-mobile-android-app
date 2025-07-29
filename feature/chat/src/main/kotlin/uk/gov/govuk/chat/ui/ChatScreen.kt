@@ -130,6 +130,7 @@ private fun ChatScreen(
             uiState,
             onQuestionUpdated,
             onSubmit,
+            onRetry,
             modifier
         )
     }
@@ -270,6 +271,7 @@ private fun ChatContent(
     uiState: ChatUiState,
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -309,7 +311,10 @@ private fun ChatContent(
                 ) {
                     Row {
                         AnimatedVisibility(!isFocused) {
-                            ActionMenu(modifier = Modifier.semantics { this.traversalIndex = 1f })
+                            ActionMenu(
+                                onRetry = onRetry,
+                                modifier = Modifier.semantics { this.traversalIndex = 1f }
+                            )
                         }
 
                         TextField(
@@ -792,7 +797,10 @@ private fun SubmitIconButton(onClick: () -> Unit, uiState: ChatUiState) {
 }
 
 @Composable
-private fun ActionMenu(modifier: Modifier = Modifier) {
+private fun ActionMenu(
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     DropdownMenu(
@@ -808,7 +816,10 @@ private fun ActionMenu(modifier: Modifier = Modifier) {
             .width(200.dp)
     ) {
         AboutMenuItem()
-        ClearMenuItem()
+        ClearMenuItem(
+            onRetry = onRetry,
+            onClearConfirmed = { expanded = false }
+        )
     }
 
     ActionIconButton(
@@ -836,7 +847,10 @@ private fun AboutMenuItem() = DropdownMenuItem(
 )
 
 @Composable
-private fun ClearMenuItem() {
+private fun ClearMenuItem(
+    onRetry: () -> Unit,
+    onClearConfirmed: () -> Unit
+) {
     val openDialog = rememberSaveable { mutableStateOf(false) }
 
     DropdownMenuItem(
@@ -867,7 +881,13 @@ private fun ClearMenuItem() {
                 )
             },
             confirmButton = {
-                TextButton(onClick = { /* TODO: Handle action */ }) {
+                TextButton(
+                    onClick = {
+                        onRetry()
+                        openDialog.value = false
+                        onClearConfirmed()
+                    }
+                ) {
                     BodyBoldLabel(
                         text = "Yes, clear chat",
                         color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
@@ -875,7 +895,12 @@ private fun ClearMenuItem() {
                 }
             },
             dismissButton = {
-                TextButton(onClick = { openDialog.value = false }) {
+                TextButton(
+                    onClick = {
+                        openDialog.value = false
+                        onClearConfirmed()
+                    }
+                ) {
                     BodyRegularLabel(
                         text = "No, not now",
                         color = GovUkTheme.colourScheme.textAndIcons.link
