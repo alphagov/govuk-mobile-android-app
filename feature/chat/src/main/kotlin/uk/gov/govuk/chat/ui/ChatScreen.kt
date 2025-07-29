@@ -71,11 +71,13 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
+import uk.gov.govuk.chat.navigation.navigateToAbout
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.CentreAlignedScreen
@@ -90,6 +92,7 @@ import kotlin.math.abs
 
 @Composable
 internal fun ChatRoute(
+    navController: NavController,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: ChatViewModel = hiltViewModel()
@@ -106,6 +109,9 @@ internal fun ChatRoute(
         onRetry = {
             viewModel.clearConversation()
         },
+        onClick = {
+            navController.navigateToAbout()
+        },
         modifier = modifier
     )
 }
@@ -116,6 +122,7 @@ private fun ChatScreen(
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
     onRetry: () -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (uiState.isRetryableError) {
@@ -131,6 +138,7 @@ private fun ChatScreen(
             onQuestionUpdated,
             onSubmit,
             onClear = onRetry,
+            onClick = onClick,
             modifier
         )
     }
@@ -272,6 +280,7 @@ private fun ChatContent(
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
     onClear: () -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -312,6 +321,7 @@ private fun ChatContent(
                     Row {
                         AnimatedVisibility(!isFocused) {
                             ActionMenu(
+                                onClick = onClick,
                                 onClear = onClear,
                                 modifier = Modifier.semantics { this.traversalIndex = 1f }
                             )
@@ -801,6 +811,7 @@ private fun SubmitIconButton(onClick: () -> Unit, uiState: ChatUiState) {
 
 @Composable
 private fun ActionMenu(
+    onClick: () -> Unit,
     onClear: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -818,7 +829,10 @@ private fun ActionMenu(
             )
             .width(200.dp)
     ) {
-        AboutMenuItem()
+        AboutMenuItem(
+            onClick = onClick,
+            onActioned = { expanded = false }
+        )
         ClearMenuItem(
             onClear = onClear,
             onClearActioned = { expanded = false }
@@ -831,23 +845,31 @@ private fun ActionMenu(
 }
 
 @Composable
-private fun AboutMenuItem() = DropdownMenuItem(
-    text = {
-        Text(
-            text = stringResource(id = R.string.action_about),
-            color = GovUkTheme.colourScheme.textAndIcons.primary,
-            style = GovUkTheme.typography.bodyRegular,
-        )
-    },
-    trailingIcon = {
-        Icon(
-            painter = painterResource(R.drawable.outline_info_24),
-            contentDescription = null,
-            tint = GovUkTheme.colourScheme.textAndIcons.primary
-        )
-    },
-    onClick = { },
-)
+private fun AboutMenuItem(
+    onClick: () -> Unit,
+    onActioned: () -> Unit
+) {
+    DropdownMenuItem(
+        text = {
+            Text(
+                text = stringResource(id = R.string.action_about),
+                color = GovUkTheme.colourScheme.textAndIcons.primary,
+                style = GovUkTheme.typography.bodyRegular,
+            )
+        },
+        trailingIcon = {
+            Icon(
+                painter = painterResource(R.drawable.outline_info_24),
+                contentDescription = null,
+                tint = GovUkTheme.colourScheme.textAndIcons.primary
+            )
+        },
+        onClick = {
+            onClick()
+            onActioned()
+        }
+    )
+}
 
 @Composable
 private fun ClearMenuItem(
@@ -1024,7 +1046,8 @@ private fun LightModeChatScreenPreview() {
             uiState = ChatUiState(isLoading = false),
             onQuestionUpdated = { _ -> },
             onSubmit = { _ -> },
-            onRetry = { }
+            onRetry = { },
+            onClick = { }
         )
     }
 }
@@ -1040,7 +1063,8 @@ private fun DarkModeChatScreenPreview() {
             uiState = ChatUiState(isLoading = false),
             onQuestionUpdated = { _ -> },
             onSubmit = { _ -> },
-            onRetry = { }
+            onRetry = { },
+            onClick = { }
         )
     }
 }

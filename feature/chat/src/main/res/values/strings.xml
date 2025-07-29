@@ -34,4 +34,19 @@
   <string name="error_retry_page_subtext">Your previous conversation is no longer available.</string>
   <string name="error_retry_page_additional_text">To continue using GOV.UK Chat, you need to start a new chat.</string>
   <string name="error_retry_button_text">Start a new chat</string>
+  <string name="about_header_text">About GOV.UK Chat</string>
+  <string name="about_content">
+    GOV.UK Chat is an experimental AI tool, designed to make it easier to find answers from the pages of GOV.UK. Ask it a question and it will use GOV.UK guidance to quickly find an answer.\n\n
+    You can use it to find out more about topics, services and information on GOV.UK. You can also explore the answers in more detail by asking follow-up questions.\n\n
+    ## Double-check your answers\n
+    AI tools can sometimes make mistakes. For example, they can hallucinate. This is when they confidently provide false information or facts. GOV.UK Chat is designed to minimise the risk of hallucinations.\n\n
+    It only uses GOV.UK guidance to answer questions. And with each answer, it provides links to the GOV.UK pages it uses. This makes it simple to double-check the information it gives you.\n
+    ## Start new chats\n
+    GOV.UK Chat uses your previous messages as context to interpret and answer new questions.\n\n
+    You can clear your chats if you want to ask about something new. This will remove your previous messages and make your answers more accurate.\n\n
+    If you do this, you’ll no longer have access to your previous questions and answers.\n
+    ## More information about GOV.UK Chat\n
+    GOV.UK Chat is powered by the same large language model (LLM) that’s used on Claude, Anthropic’s generative AI chatbot.\n\n
+    Visit GOV.UK for more information on data and privacy on [data and privacy on GOV.UK Chat](https://www.gov.uk/government/publications/govuk-chat-privacy-notice).\n\n
+    You can also find out more about GOV.UK Chat on the [Inside GOV.UK blog](https://insidegovuk.blog.gov.uk/).</string>
 </resources>
