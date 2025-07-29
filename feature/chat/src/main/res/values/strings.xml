@@ -27,6 +27,10 @@
   <string name="error_page_additional_text_link_text">GOV.UK app homepage</string>
   <string name="error_page_additional_text_outro">if you need information now.</string>
   <string name="error_page_additional_text_url">https://www.gov.uk</string>
+  <string name="bot_message_availability_text">Messages will be available for 90 days</string>
+  <string name="bot_message_1">Hi 👋 I’m GOV.UK Chat.</string>
+  <string name="bot_message_2">I’m an experimental AI tool.\n\nWhen you ask a question, I’ll find the most relevant information from GOV.UK and use it to create an answer.</string>
+  <string name="bot_message_3">Ask a question to get started.</string>
   <string name="error_retry_page_subtext">Your previous conversation is no longer available.</string>
   <string name="error_retry_page_additional_text">To continue using GOV.UK Chat, you need to start a new chat.</string>
   <string name="error_retry_button_text">Start a new chat</string>

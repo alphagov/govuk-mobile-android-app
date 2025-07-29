@@ -3,6 +3,9 @@ package uk.gov.govuk.chat.ui
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,7 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -216,7 +218,9 @@ private fun ChatErrorPage(
 }
 
 @Composable
-private fun AdditionalText() {
+private fun AdditionalText(
+    modifier: Modifier = Modifier
+) {
     val intro = stringResource(id = R.string.error_page_additional_text_intro)
     val linkText = stringResource(id = R.string.error_page_additional_text_link_text)
     val outro = stringResource(id = R.string.error_page_additional_text_outro)
@@ -240,21 +244,22 @@ private fun AdditionalText() {
         append(outro)
     }
 
-    return ClickableText(
+    Text(
         text = annotatedString,
         style = GovUkTheme.typography.bodyRegular.copy(
             color = GovUkTheme.colourScheme.textAndIcons.primary,
             textAlign = TextAlign.Center
         ),
-        onClick = { offset ->
-            annotatedString.getStringAnnotations(
-                    tag = "URL",
-                    start = offset,
-                    end = offset
-                ).firstOrNull()?.let { annotation ->
-                    uriHandler.openUri(annotation.item)
-                }
-        }
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable {
+                annotatedString
+                    .getStringAnnotations(tag = "URL", start = 0, end = annotatedString.length)
+                    .firstOrNull()
+                    ?.let { annotation ->
+                        uriHandler.openUri(annotation.item)
+                    }
+            }
     )
 }
 
@@ -279,13 +284,12 @@ private fun ChatContent(
                 .weight(1f)
                 .padding(horizontal = GovUkTheme.spacing.medium)
         ) {
+            DisplayIntroMessages(uiState.chatEntries.isEmpty()) // only animate if no conversation
             DisplayChatEntries(uiState = uiState)
         }
 
         Column {
-            if (uiState.isLoading) {
-                DisplayProgressIndicator()
-            }
+            DisplayProgressIndicator(uiState)
 
             Row(
                 modifier = Modifier
@@ -299,24 +303,7 @@ private fun ChatContent(
                         .background(GovUkTheme.colourScheme.surfaces.chatBackground)
                         .padding(all = GovUkTheme.spacing.medium)
                         .semantics { isTraversalGroup = true }
-                        .then(
-                            if (isFocused) {
-                                var color = if (uiState.isPiiError)
-                                    GovUkTheme.colourScheme.strokes.textFieldError
-                                else
-                                    GovUkTheme.colourScheme.strokes.chatTextFieldBorder
-
-                                Modifier
-                                    .border(
-                                        1.dp,
-                                        color,
-                                        RoundedCornerShape(20.dp)
-                                    )
-                                    .clip(RoundedCornerShape(0.dp, 0.dp, 20.dp, 20.dp))
-                            } else {
-                                Modifier.border(0.dp, Color.Transparent)
-                            }
-                        ),
+                        .modifyIfPiiError(isFocused, uiState),
                 ) {
                     Row {
                         AnimatedVisibility(!isFocused) {
@@ -336,19 +323,7 @@ private fun ChatContent(
                                     isFocused = it.isFocused
                                 }
                                 .semantics { this.traversalIndex = 0f }
-                                .then(
-                                    if (isFocused) {
-                                        Modifier.padding(horizontal = 0.dp)
-                                            .border(0.dp, Color.Transparent)
-                                    } else {
-                                        Modifier.padding(start = GovUkTheme.spacing.small)
-                                            .border(
-                                                1.dp,
-                                                GovUkTheme.colourScheme.strokes.chatTextFieldBorderDisabled,
-                                                RoundedCornerShape(40.dp)
-                                            )
-                                    }
-                                ),
+                                .modifyIfFocused(isFocused),
                             value = if (isFocused) uiState.question else "",
                             shape = if (isFocused)
                                 RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
@@ -359,9 +334,7 @@ private fun ChatContent(
                                 onQuestionUpdated(it)
                             },
                             placeholder = {
-                                if (!isFocused) {
-                                    DisplayPlaceholderText(uiState = uiState)
-                                }
+                                DisplayPlaceholderText(isFocused = isFocused, uiState = uiState)
                             },
                             isError = uiState.isPiiError,
                             colors = inputTextFieldDefaults()
@@ -398,9 +371,7 @@ private fun ChatContent(
                 }
             }
 
-            if (uiState.isPiiError) {
-                DisplayPIIError()
-            }
+            DisplayPIIError(uiState)
 
             SmallVerticalSpacer()
         }
@@ -416,8 +387,162 @@ private fun ChatContent(
 }
 
 @Composable
-private fun DisplayPlaceholderText(uiState: ChatUiState) {
-    if (uiState.question.isEmpty()) {
+private fun Modifier.modifyIfPiiError(isFocused: Boolean, uiState: ChatUiState): Modifier {
+    return this.then(
+        if (isFocused) {
+            var color = if (uiState.isPiiError)
+                GovUkTheme.colourScheme.strokes.textFieldError
+            else
+                GovUkTheme.colourScheme.strokes.chatTextFieldBorder
+
+            Modifier
+                .border(
+                    1.dp,
+                    color,
+                    RoundedCornerShape(20.dp)
+                )
+                .clip(RoundedCornerShape(0.dp, 0.dp, 20.dp, 20.dp))
+        } else {
+            Modifier.border(0.dp, Color.Transparent)
+        }
+    )
+}
+
+@Composable
+private fun Modifier.modifyIfFocused(isFocused: Boolean): Modifier {
+    return this.then(
+        if (isFocused) {
+            Modifier.padding(horizontal = 0.dp)
+                .border(0.dp, Color.Transparent)
+        } else {
+            Modifier.padding(start = GovUkTheme.spacing.small)
+                .border(
+                    1.dp,
+                    GovUkTheme.colourScheme.strokes.chatTextFieldBorderDisabled,
+                    RoundedCornerShape(40.dp)
+                )
+        }
+    )
+}
+
+@Composable
+private fun DisplayIntroMessages(animated: Boolean) {
+    if (animated) {
+        var message1Visible by remember { mutableStateOf(false) }
+        var message2Visible by remember { mutableStateOf(false) }
+        var message3Visible by remember { mutableStateOf(false) }
+
+        val delay = 1000L
+        val duration = 500
+
+        LaunchedEffect(key1 = true) {
+            delay(delay)
+
+            message1Visible = true
+            delay(delay)
+
+            message2Visible = true
+            delay(delay)
+
+            message3Visible = true
+        }
+
+        MessageHeader()
+        MediumVerticalSpacer()
+
+        AnimatedVisibility(
+            visible = message1Visible,
+            enter = fadeIn(animationSpec = tween(durationMillis = duration)) +
+                scaleIn(animationSpec = tween(durationMillis = duration))
+        ) {
+            Message1()
+        }
+
+        if (message1Visible) {
+            MediumVerticalSpacer()
+        }
+
+        AnimatedVisibility(
+            visible = message2Visible,
+            enter = fadeIn(animationSpec = tween(durationMillis = duration)) +
+                scaleIn(animationSpec = tween(durationMillis = duration))
+        ) {
+            Message2()
+        }
+
+        if (message2Visible) {
+            MediumVerticalSpacer()
+        }
+
+        AnimatedVisibility(
+            visible = message3Visible,
+            enter = fadeIn(animationSpec = tween(durationMillis = duration)) +
+                scaleIn(animationSpec = tween(durationMillis = duration))
+        ) {
+            Message3()
+        }
+    } else {
+        MessageHeader()
+        MediumVerticalSpacer()
+        Message1()
+        MediumVerticalSpacer()
+        Message2()
+        MediumVerticalSpacer()
+        Message3()
+    }
+}
+
+@Composable
+private fun MessageHeader() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = GovUkTheme.spacing.medium,
+                end = GovUkTheme.spacing.medium,
+                bottom = 0.dp,
+                top = 48.dp
+            ),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(id = R.string.bot_message_availability_text),
+            color = GovUkTheme.colourScheme.textAndIcons.chatBotHeaderText,
+            style = GovUkTheme.typography.bodyRegular
+        )
+    }
+}
+
+@Composable
+private fun Message1() {
+    DisplayAnswer(
+        answer = stringResource(id = R.string.bot_message_1),
+        modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
+    )
+}
+
+@Composable
+private fun Message2() {
+    DisplayAnswer(
+        showHeader = false,
+        answer = stringResource(id = R.string.bot_message_2),
+        modifier = Modifier.padding(vertical = GovUkTheme.spacing.medium)
+    )
+}
+
+@Composable
+private fun Message3() {
+    DisplayAnswer(
+        showHeader = false,
+        answer = stringResource(id = R.string.bot_message_3),
+        modifier = Modifier.padding(vertical = GovUkTheme.spacing.medium)
+    )
+}
+
+@Composable
+private fun DisplayPlaceholderText(isFocused: Boolean, uiState: ChatUiState) {
+    if (!isFocused && uiState.question.isEmpty()) {
         Text(
             text = stringResource(id = R.string.input_label),
             color = GovUkTheme.colourScheme.textAndIcons.secondary
@@ -451,29 +576,33 @@ private fun inputTextFieldDefaults() = TextFieldDefaults.colors(
 )
 
 @Composable
-private fun DisplayPIIError() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = GovUkTheme.spacing.medium)
-    ) {
-        val errorMessage = stringResource(id = R.string.pii_error_message)
-        BodyBoldLabel(
-            color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
-            text = errorMessage
-        )
+private fun DisplayPIIError(uiState: ChatUiState) {
+    if (uiState.isPiiError) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = GovUkTheme.spacing.medium)
+        ) {
+            val errorMessage = stringResource(id = R.string.pii_error_message)
+            BodyBoldLabel(
+                color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
+                text = errorMessage
+            )
+        }
     }
 }
 
 @Composable
-private fun DisplayProgressIndicator() {
-    LinearProgressIndicator(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = GovUkTheme.spacing.medium),
-        color = GovUkTheme.colourScheme.surfaces.primary,
-        trackColor = GovUkTheme.colourScheme.surfaces.textFieldBackground
-    )
+private fun DisplayProgressIndicator(uiState: ChatUiState) {
+    if (uiState.isLoading) {
+        LinearProgressIndicator(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = GovUkTheme.spacing.medium),
+            color = GovUkTheme.colourScheme.surfaces.primary,
+            trackColor = GovUkTheme.colourScheme.surfaces.textFieldBackground
+        )
+    }
 }
 
 @Composable
@@ -515,7 +644,12 @@ private fun DisplayQuestion(question: String) {
 }
 
 @Composable
-private fun DisplayAnswer(answer: String, sources: List<String>?) {
+private fun DisplayAnswer(
+    answer: String,
+    modifier: Modifier = Modifier,
+    showHeader: Boolean = true,
+    sources: List<String>? = null
+) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = GovUkTheme.colourScheme.surfaces.chatBotMessageBackground,
@@ -525,12 +659,18 @@ private fun DisplayAnswer(answer: String, sources: List<String>?) {
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        BodyBoldLabel(
-            text = stringResource(id = R.string.bot_header_text),
-            modifier = Modifier.padding(GovUkTheme.spacing.medium)
-        )
+        if (showHeader) {
+            BodyBoldLabel(
+                text = stringResource(id = R.string.bot_header_text),
+                modifier = Modifier.padding(GovUkTheme.spacing.medium)
+            )
+        }
 
-        DisplayMarkdownText(text = answer, talkbackText = answer)
+        DisplayMarkdownText(
+            text = answer,
+            talkbackText = answer,
+            modifier = modifier
+        )
 
         if (!sources.isNullOrEmpty()) {
             DisplaySources(sources = sources)
@@ -690,7 +830,7 @@ private fun AboutMenuItem() = DropdownMenuItem(
             tint = GovUkTheme.colourScheme.textAndIcons.primary
         )
     },
-    onClick = { /* TODO: Handle action */ },
+    onClick = { },
 )
 
 @Composable
@@ -709,7 +849,7 @@ private fun ClearMenuItem() = DropdownMenuItem(
             tint = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
         )
     },
-    onClick = { /* TODO: Handle action */ }
+    onClick = { }
 )
 
 @Composable
