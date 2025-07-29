@@ -818,7 +818,7 @@ private fun ActionMenu(
         AboutMenuItem()
         ClearMenuItem(
             onClear = onClear,
-            onClearConfirmed = { expanded = false }
+            onClearActioned = { expanded = false }
         )
     }
 
@@ -849,7 +849,7 @@ private fun AboutMenuItem() = DropdownMenuItem(
 @Composable
 private fun ClearMenuItem(
     onClear: () -> Unit,
-    onClearConfirmed: () -> Unit
+    onClearActioned: () -> Unit
 ) {
     val openDialog = rememberSaveable { mutableStateOf(false) }
 
@@ -885,7 +885,7 @@ private fun ClearMenuItem(
                     onClick = {
                         onClear()
                         openDialog.value = false
-                        onClearConfirmed()
+                        onClearActioned()
                     }
                 ) {
                     BodyBoldLabel(
@@ -898,7 +898,7 @@ private fun ClearMenuItem(
                 TextButton(
                     onClick = {
                         openDialog.value = false
-                        onClearConfirmed()
+                        onClearActioned()
                     }
                 ) {
                     BodyRegularLabel(
