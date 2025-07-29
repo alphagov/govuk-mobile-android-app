@@ -130,7 +130,7 @@ private fun ChatScreen(
             uiState,
             onQuestionUpdated,
             onSubmit,
-            onRetry,
+            onClear = onRetry,
             modifier
         )
     }
@@ -271,7 +271,7 @@ private fun ChatContent(
     uiState: ChatUiState,
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
-    onRetry: () -> Unit,
+    onClear: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -312,7 +312,7 @@ private fun ChatContent(
                     Row {
                         AnimatedVisibility(!isFocused) {
                             ActionMenu(
-                                onRetry = onRetry,
+                                onClear = onClear,
                                 modifier = Modifier.semantics { this.traversalIndex = 1f }
                             )
                         }
@@ -798,7 +798,7 @@ private fun SubmitIconButton(onClick: () -> Unit, uiState: ChatUiState) {
 
 @Composable
 private fun ActionMenu(
-    onRetry: () -> Unit,
+    onClear: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -817,7 +817,7 @@ private fun ActionMenu(
     ) {
         AboutMenuItem()
         ClearMenuItem(
-            onRetry = onRetry,
+            onClear = onClear,
             onClearConfirmed = { expanded = false }
         )
     }
@@ -848,7 +848,7 @@ private fun AboutMenuItem() = DropdownMenuItem(
 
 @Composable
 private fun ClearMenuItem(
-    onRetry: () -> Unit,
+    onClear: () -> Unit,
     onClearConfirmed: () -> Unit
 ) {
     val openDialog = rememberSaveable { mutableStateOf(false) }
@@ -883,7 +883,7 @@ private fun ClearMenuItem(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        onRetry()
+                        onClear()
                         openDialog.value = false
                         onClearConfirmed()
                     }
