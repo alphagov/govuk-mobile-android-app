@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -33,6 +34,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -834,23 +836,56 @@ private fun AboutMenuItem() = DropdownMenuItem(
 )
 
 @Composable
-private fun ClearMenuItem() = DropdownMenuItem(
-    text = {
-        Text(
-            text = stringResource(id = R.string.action_clear),
-            color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
-            style = GovUkTheme.typography.bodyRegular,
+private fun ClearMenuItem() {
+    val openDialog = rememberSaveable { mutableStateOf(false) }
+
+    DropdownMenuItem(
+        text = {
+            Text(
+                text = stringResource(id = R.string.action_clear),
+                color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
+                style = GovUkTheme.typography.bodyRegular,
+            )
+        },
+        trailingIcon = {
+            Icon(
+                painter = painterResource(R.drawable.outline_delete_24),
+                contentDescription = null,
+                tint = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
+            )
+        },
+        onClick = { openDialog.value = true }
+    )
+
+    if (openDialog.value) {
+        AlertDialog(
+            onDismissRequest = { openDialog.value = false },
+            text = {
+                BodyBoldLabel(
+                    text = "Do you want to clear your chat history?",
+                    color = GovUkTheme.colourScheme.textAndIcons.primary
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { /* TODO: Handle action */ }) {
+                    BodyBoldLabel(
+                        text = "Yes, clear chat",
+                        color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { openDialog.value = false }) {
+                    BodyRegularLabel(
+                        text = "No, not now",
+                        color = GovUkTheme.colourScheme.textAndIcons.link
+                    )
+                }
+            },
+            containerColor = GovUkTheme.colourScheme.surfaces.alert
         )
-    },
-    trailingIcon = {
-        Icon(
-            painter = painterResource(R.drawable.outline_delete_24),
-            contentDescription = null,
-            tint = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
-        )
-    },
-    onClick = { }
-)
+    }
+}
 
 @Composable
 private fun ActionIconButton(onClick: () -> Unit) {
