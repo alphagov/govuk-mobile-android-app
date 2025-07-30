@@ -1,21 +1,27 @@
 package uk.gov.govuk.home.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -42,6 +48,7 @@ internal fun HomeRoute(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun HomeScreen(
     widgets: List<@Composable (Modifier) -> Unit>,
@@ -77,34 +84,50 @@ private fun HomeScreen(
             }
         }
 
-        LazyColumn (
-            modifier = Modifier
-                .padding(horizontal = GovUkTheme.spacing.medium),
-            state = rememberLazyListState()
-        ) {
-            item{
-                LargeVerticalSpacer()
-            }
-            items(widgets) { widget ->
-                widget(Modifier.fillMaxWidth())
-            }
-            item {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
+        val scaleViewOnScroll = rememberScaleViewOnScroll(maxViewSize = 64.dp)
+
+        Box(Modifier.nestedScroll(scaleViewOnScroll.nestedScrollConnection)) {
+            CompositionLocalProvider(
+                LocalOverscrollConfiguration provides null
+            ) {
+                LazyColumn(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            top = GovUkTheme.spacing.extraLarge,
-                            bottom = GovUkTheme.spacing.medium
-                        )
+                        .padding(horizontal = GovUkTheme.spacing.medium),
+                    state = rememberLazyListState()
                 ) {
-                    Icon(
-                        painter = painterResource(id = uk.gov.govuk.design.R.drawable.crown),
-                        contentDescription = stringResource(id = uk.gov.govuk.design.R.string.crown_alt_text),
-                        tint = GovUkTheme.colourScheme.textAndIcons.logoCrown,
-                        modifier = Modifier.height(64.dp)
-                    )
+                    item {
+                        LargeVerticalSpacer()
+                    }
+                    items(widgets) { widget ->
+                        widget(Modifier.fillMaxWidth())
+                    }
+
+                    item {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    top = GovUkTheme.spacing.extraLarge,
+                                    bottom = GovUkTheme.spacing.medium
+                                )
+                        ) {
+                            Icon(
+                                painter = painterResource(id = uk.gov.govuk.design.R.drawable.crown),
+                                contentDescription = stringResource(id = uk.gov.govuk.design.R.string.crown_alt_text),
+                                tint = GovUkTheme.colourScheme.textAndIcons.logoCrown,
+                                modifier = Modifier
+                                    .size(scaleViewOnScroll.maxViewSize)
+                                    .graphicsLayer {
+                                        scaleX = scaleViewOnScroll.scaleFactor
+                                        scaleY = scaleViewOnScroll.scaleFactor
+                                        translationY =
+                                            -(scaleViewOnScroll.maxViewSize.toPx() - scaleViewOnScroll.currentViewSize.toPx()) / 2f
+                                    }
+                            )
+                        }
+                    }
                 }
             }
         }
