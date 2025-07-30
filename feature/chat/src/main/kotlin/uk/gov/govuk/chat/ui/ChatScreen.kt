@@ -849,6 +849,8 @@ private fun AboutMenuItem(
     onClick: () -> Unit,
     onActioned: () -> Unit
 ) {
+    val altText = stringResource(id = R.string.about_button_alt_text)
+
     DropdownMenuItem(
         text = {
             Text(
@@ -867,6 +869,9 @@ private fun AboutMenuItem(
         onClick = {
             onClick()
             onActioned()
+        },
+        modifier = Modifier.semantics {
+            contentDescription = altText
         }
     )
 }
@@ -876,6 +881,7 @@ private fun ClearMenuItem(
     onClear: () -> Unit,
     onClearActioned: () -> Unit
 ) {
+    val altText = stringResource(id = R.string.clear_button_alt_text)
     val openDialog = rememberSaveable { mutableStateOf(false) }
 
     DropdownMenuItem(
@@ -893,7 +899,10 @@ private fun ClearMenuItem(
                 tint = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
             )
         },
-        onClick = { openDialog.value = true }
+        onClick = { openDialog.value = true },
+        modifier = Modifier.semantics {
+            contentDescription = altText
+        }
     )
 
     if (openDialog.value) {

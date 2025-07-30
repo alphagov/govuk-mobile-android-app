@@ -49,4 +49,6 @@
     GOV.UK Chat is powered by the same large language model (LLM) that’s used on Claude, Anthropic’s generative AI chatbot.\n\n
     Visit GOV.UK for more information on data and privacy on [data and privacy on GOV.UK Chat](https://www.gov.uk/government/publications/govuk-chat-privacy-notice).\n\n
     You can also find out more about GOV.UK Chat on the [Inside GOV.UK blog](https://insidegovuk.blog.gov.uk/).</string>
+  <string name="about_button_alt_text">About GOV.UK Chat</string>
+  <string name="clear_button_alt_text">Clear chat</string>
 </resources>
