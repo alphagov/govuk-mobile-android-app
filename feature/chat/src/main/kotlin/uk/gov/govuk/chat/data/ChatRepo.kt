@@ -11,6 +11,7 @@ import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
 import uk.gov.govuk.chat.data.remote.model.Conversation
 import uk.gov.govuk.chat.data.remote.model.ConversationQuestionRequest
 import uk.gov.govuk.chat.data.remote.safeChatApiCall
+import uk.gov.govuk.config.data.ConfigRepo
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
@@ -18,7 +19,8 @@ import kotlin.time.Duration.Companion.seconds
 @Singleton
 internal class ChatRepo @Inject constructor(
     private val chatApi: ChatApi,
-    private val dataStore: ChatDataStore
+    private val dataStore: ChatDataStore,
+    private val configRepo: ConfigRepo
 ) {
 
     suspend fun getConversation(): ChatResult<Conversation>? {
@@ -69,10 +71,12 @@ internal class ChatRepo @Inject constructor(
     suspend fun getAnswer(
         conversationId: String,
         questionId: String,
-        wait: Int = 3,
+        wait: Int? = null,
     ): ChatResult<Answer> {
+        val pollInterval = wait ?: configRepo.chatPollIntervalSeconds
+
         while (true) {
-            delay(wait.seconds)
+            delay(pollInterval.seconds)
 
             val result = safeChatApiCall { chatApi.getAnswer(conversationId, questionId) }
             if (result !is AwaitingAnswer) {

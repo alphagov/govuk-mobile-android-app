@@ -281,7 +281,7 @@ class ChatViewModelTest {
         advanceUntilIdle()
 
         coVerify {
-            chatRepo.getAnswer(any(), any(), any())
+            chatRepo.getAnswer(any(), any())
         }
     }
 

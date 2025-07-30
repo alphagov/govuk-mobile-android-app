@@ -5,7 +5,10 @@ import uk.gov.govuk.config.SignatureValidator
 import uk.gov.govuk.config.data.remote.ConfigApi
 import uk.gov.govuk.config.data.remote.model.Config
 import uk.gov.govuk.config.data.remote.model.ConfigResponse
-import uk.gov.govuk.data.model.Result.*
+import uk.gov.govuk.data.model.Result.DeviceOffline
+import uk.gov.govuk.data.model.Result.Error
+import uk.gov.govuk.data.model.Result.InvalidSignature
+import uk.gov.govuk.data.model.Result.Success
 import java.net.UnknownHostException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,6 +19,11 @@ class ConfigRepo @Inject constructor(
     private val gson: Gson,
     private val signatureValidator: SignatureValidator
 ) {
+
+    companion object {
+        private const val CHAT_POLL_INTERVAL_FALLBACK = 3
+    }
+
     private lateinit var _config: Config
     val config: Config
         get() {
@@ -51,4 +59,7 @@ class ConfigRepo @Inject constructor(
             Error()
         }
     }
+
+    val chatPollIntervalSeconds: Int
+        get() = config.chatPollIntervalSeconds?.takeIf { it > 0 } ?: CHAT_POLL_INTERVAL_FALLBACK
 }
