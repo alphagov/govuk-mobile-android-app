@@ -71,10 +71,12 @@ internal class ChatRepo @Inject constructor(
     suspend fun getAnswer(
         conversationId: String,
         questionId: String,
-        wait: Int = configRepo.chatPollIntervalSeconds,
+        wait: Int? = null,
     ): ChatResult<Answer> {
+        val pollInterval = wait ?: configRepo.chatPollIntervalSeconds
+
         while (true) {
-            delay(wait.seconds)
+            delay(pollInterval.seconds)
 
             val result = safeChatApiCall { chatApi.getAnswer(conversationId, questionId) }
             if (result !is AwaitingAnswer) {
