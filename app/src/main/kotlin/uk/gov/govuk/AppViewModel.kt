@@ -100,7 +100,9 @@ internal class AppViewModel @Inject constructor(
         timeoutManager.onUserInteraction(interactionTime) {
             if (authRepo.isUserSessionActive()) {
                 authRepo.endUserSession()
-                appNavigation.onSignOut(navController)
+                viewModelScope.launch {
+                    appNavigation.onSignOut(navController)
+                }
             }
         }
     }
