@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uk.gov.govuk.chat.data.ChatRepo
 import uk.gov.govuk.chat.data.remote.ChatResult
+import uk.gov.govuk.chat.data.remote.ChatResult.NotFound
 import uk.gov.govuk.chat.data.remote.ChatResult.Success
 import uk.gov.govuk.chat.data.remote.ChatResult.ValidationError
-import uk.gov.govuk.chat.data.remote.ChatResult.NotFound
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.chat.ui.model.ChatEntry
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 internal data class ChatUiState(
     val question: String = "",
-    val chatEntries: Map<String, ChatEntry> = emptyMap(),
+    val chatEntries: LinkedHashMap<String, ChatEntry> = linkedMapOf(),
     val isLoading: Boolean = false,
     val isPiiError: Boolean = false,
     val displayCharacterWarning: Boolean = false,
@@ -36,7 +36,7 @@ internal class ChatViewModel @Inject constructor(
 ): ViewModel() {
     private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
         ChatUiState(
-            chatEntries = emptyMap(),
+            chatEntries = linkedMapOf(),
             isLoading = false
         )
     )
@@ -153,15 +153,16 @@ internal class ChatViewModel @Inject constructor(
     private fun addChatEntry(questionId: String, question: String) {
         _uiState.update {
             it.copy(
-                chatEntries = it.chatEntries.plus(
-                    mapOf(
-                        questionId to ChatEntry(
+                chatEntries = LinkedHashMap(it.chatEntries).apply {
+                    put(
+                        questionId,
+                        ChatEntry(
                             question = question,
                             answer = "",
                             sources = emptyList()
                         )
                     )
-                )
+                }
             )
         }
     }

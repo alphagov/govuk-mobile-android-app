@@ -25,9 +25,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -85,6 +86,7 @@ import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
+import uk.gov.govuk.chat.ui.model.ChatEntry
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.CentreAlignedScreen
@@ -285,20 +287,27 @@ private fun ChatContent(
 ) {
     val focusRequester = remember { FocusRequester() }
     var isFocused by rememberSaveable { mutableStateOf(false) }
-    val scrollState = rememberScrollState()
+    val listState = rememberLazyListState()
+
+    val chatEntries = uiState.chatEntries.toList()
 
     Column(
         modifier.background(color = GovUkTheme.colourScheme.surfaces.chatBackground)
     ) {
-        Column(
-            Modifier
-                .verticalScroll(scrollState)
+        LazyColumn (
+            state = listState,
+            modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
                 .padding(horizontal = GovUkTheme.spacing.medium)
         ) {
-            DisplayIntroMessages(uiState.chatEntries.isEmpty()) // only animate if no conversation
-            DisplayChatEntries(uiState = uiState)
+            item {
+                DisplayIntroMessages(uiState.chatEntries.isEmpty()) // only animate if no conversation
+            }
+
+            items(chatEntries) {
+                DisplayChatEntry(uiState.isLoading, it.second)
+            }
         }
 
         Column {
@@ -394,11 +403,9 @@ private fun ChatContent(
         }
     }
 
-    LaunchedEffect(uiState.chatEntries.size) {
-        val answerCount = uiState.chatEntries.size
-        if (answerCount > 0) {
-            delay(150)
-            scrollState.animateScrollTo(scrollState.maxValue)
+    if (chatEntries.isNotEmpty()) {
+        LaunchedEffect(chatEntries.last().second.answer) {
+            listState.animateScrollToItem(chatEntries.size)
         }
     }
 }
@@ -407,7 +414,7 @@ private fun ChatContent(
 private fun Modifier.modifyIfPiiError(isFocused: Boolean, uiState: ChatUiState): Modifier {
     return this.then(
         if (isFocused) {
-            var color = if (uiState.isPiiError)
+            val color = if (uiState.isPiiError)
                 GovUkTheme.colourScheme.strokes.textFieldError
             else
                 GovUkTheme.colourScheme.strokes.chatTextFieldBorder
@@ -610,39 +617,35 @@ private fun DisplayPIIError(uiState: ChatUiState) {
 }
 
 @Composable
-private fun DisplayChatEntries(uiState: ChatUiState) {
-    if (uiState.chatEntries.isNotEmpty()) {
-        uiState.chatEntries.entries.forEach { chatEntry ->
-            Column {
-                MediumVerticalSpacer()
-                DisplayQuestion(question = chatEntry.value.question)
+private fun DisplayChatEntry(isLoading: Boolean, chatEntry: ChatEntry) {
+    Column {
+        MediumVerticalSpacer()
+        DisplayQuestion(question = chatEntry.question)
 
-                MediumVerticalSpacer()
-                if (uiState.isLoading && chatEntry.value.answer.isEmpty()) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.baseline_circle_24),
-                            contentDescription = null,
-                            tint = GovUkTheme.colourScheme.textAndIcons.chatLoadingIcon,
-                            modifier = Modifier
-                                .padding(end = GovUkTheme.spacing.small),
-                        )
+        MediumVerticalSpacer()
+        if (isLoading && chatEntry.answer.isEmpty()) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_circle_24),
+                    contentDescription = null,
+                    tint = GovUkTheme.colourScheme.textAndIcons.chatLoadingIcon,
+                    modifier = Modifier
+                        .padding(end = GovUkTheme.spacing.small),
+                )
 
-                        LoadingText(
-                            text = stringResource(id = R.string.loading_text),
-                            modifier = Modifier
-                        )
-                    }
-                } else {
-                    DisplayAnswer(
-                        answer = chatEntry.value.answer,
-                        sources = chatEntry.value.sources
-                    )
-                }
+                LoadingText(
+                    text = stringResource(id = R.string.loading_text),
+                    modifier = Modifier
+                )
             }
+        } else {
+            DisplayAnswer(
+                answer = chatEntry.answer,
+                sources = chatEntry.sources
+            )
         }
     }
 }
