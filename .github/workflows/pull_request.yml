@@ -28,6 +28,14 @@ jobs:
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@00854ea68c109d98c75d956347303bf7c45b0277 #v3.2.1
 
+      - name: Get Secrets
+        uses: bitwarden/sm-action@14f92f1d294ae3c2b6a3845d389cd2c318b0dfd8 # pin@v2.2.0
+        with:
+          access_token: ${{ secrets.BW_ACCESS_TOKEN }}
+          base_url: https://vault.bitwarden.eu
+          secrets: |
+            cbf3007d-ada7-4ea0-b15c-b32b00faef23 > SONAR_TOKEN
+
       - name: Lint
         run: ./gradlew lint
         env:
@@ -42,5 +50,3 @@ jobs:
 
       - name: Analyze
         run: ./gradlew sonar --info
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
