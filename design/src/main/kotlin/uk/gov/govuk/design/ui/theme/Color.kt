@@ -17,7 +17,6 @@ private val BlueLighter95 = Color(0xFFF4F8FB)
 private val BlueDarker25 = Color(0xFF16548A)
 private val BlueDarker50 = Color(0xFF0F385C)
 private val BlueDarker80 = Color(0xFF061625)
-
 private val TealAccent = Color(0xFF00FFE0)
 
 private val YellowPrimary = Color(0xFFFFDD00)
@@ -91,7 +90,10 @@ data class GovUkColourScheme(
         val chatButtonIconEnabled: Color,
         val chatUserMessageText: Color,
         val chatBotMessageText: Color,
-        val chatBotHeaderText: Color
+        val chatBotHeaderText: Color,
+        val chatLoadingTextDark: Color,
+        val chatLoadingTextLight: Color,
+        val chatLoadingIcon: Color
     )
 
     data class Surfaces(
@@ -195,7 +197,10 @@ internal val LightColorScheme = GovUkColourScheme(
         chatButtonIconEnabled = White,
         chatUserMessageText = Black,
         chatBotMessageText = Black,
-        chatBotHeaderText = Grey700
+        chatBotHeaderText = Grey700,
+        chatLoadingTextDark = Grey700,
+        chatLoadingTextLight = Grey300,
+        chatLoadingIcon = BluePrimary
     ),
     surfaces = Surfaces(
         background = White,
@@ -297,7 +302,10 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatButtonIconEnabled = BlueDarker80,
         chatUserMessageText = White,
         chatBotMessageText = White,
-        chatBotHeaderText = BlueLighter25
+        chatBotHeaderText = BlueLighter25,
+        chatLoadingTextDark = BlueLighter25,
+        chatLoadingTextLight = BlueLighter80,
+        chatLoadingIcon = BluePrimary
     ),
     surfaces = Surfaces(
         background = Black,
@@ -400,7 +408,10 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             chatButtonIconEnabled = Color.Unspecified,
             chatUserMessageText = Color.Unspecified,
             chatBotMessageText = Color.Unspecified,
-            chatBotHeaderText = Color.Unspecified
+            chatBotHeaderText = Color.Unspecified,
+            chatLoadingTextDark = Color.Unspecified,
+            chatLoadingTextLight = Color.Unspecified,
+            chatLoadingIcon = Color.Unspecified
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,
