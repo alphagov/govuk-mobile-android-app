@@ -2,7 +2,12 @@ package uk.gov.govuk.chat.ui
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.DurationBasedAnimationSpec
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
@@ -32,7 +37,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -52,8 +56,13 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.LinearGradientShader
+import androidx.compose.ui.graphics.Shader
+import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -293,8 +302,6 @@ private fun ChatContent(
         }
 
         Column {
-            DisplayProgressIndicator(uiState)
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -603,32 +610,92 @@ private fun DisplayPIIError(uiState: ChatUiState) {
 }
 
 @Composable
-private fun DisplayProgressIndicator(uiState: ChatUiState) {
-    if (uiState.isLoading) {
-        LinearProgressIndicator(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = GovUkTheme.spacing.medium),
-            color = GovUkTheme.colourScheme.surfaces.primary,
-            trackColor = GovUkTheme.colourScheme.surfaces.textFieldBackground
-        )
-    }
-}
-
-@Composable
 private fun DisplayChatEntries(uiState: ChatUiState) {
     if (uiState.chatEntries.isNotEmpty()) {
         uiState.chatEntries.entries.forEach { chatEntry ->
             Column {
                 MediumVerticalSpacer()
                 DisplayQuestion(question = chatEntry.value.question)
+
                 MediumVerticalSpacer()
-                DisplayAnswer(
-                    answer = chatEntry.value.answer,
-                    sources = chatEntry.value.sources
-                )
+                if (uiState.isLoading && chatEntry.value.answer.isEmpty()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_circle_24),
+                            contentDescription = null,
+                            tint = GovUkTheme.colourScheme.textAndIcons.chatLoadingIcon,
+                            modifier = Modifier
+                                .padding(end = GovUkTheme.spacing.small),
+                        )
+
+                        LoadingText(
+                            text = stringResource(id = R.string.loading_text),
+                            modifier = Modifier
+                        )
+                    }
+                } else {
+                    DisplayAnswer(
+                        answer = chatEntry.value.answer,
+                        sources = chatEntry.value.sources
+                    )
+                }
             }
         }
+    }
+}
+
+@Composable
+fun LoadingText(
+    text: String,
+    modifier: Modifier = Modifier,
+    animationSpec: DurationBasedAnimationSpec<Float> = tween(1000, 500, LinearEasing)
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "LoadingTextTransition")
+
+    val shimmerProgress by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(animationSpec),
+        label = "LoadingTextProgress"
+    )
+
+    val colorDark = GovUkTheme.colourScheme.textAndIcons.chatLoadingTextDark
+    val colorLight = GovUkTheme.colourScheme.textAndIcons.chatLoadingTextLight
+
+    val brush = remember(shimmerProgress, colorDark, colorLight) {
+        LoadingTextShimmerBrush(
+            shimmerProgress = shimmerProgress,
+            colorDark = colorDark,
+            colorLight = colorLight
+        )
+    }
+
+    Text(
+        text = text,
+        modifier = modifier,
+        style = GovUkTheme.typography.bodyRegular.copy(brush = brush)
+    )
+}
+
+private class LoadingTextShimmerBrush(
+    private val shimmerProgress: Float,
+    private val colorDark: Color,
+    private val colorLight: Color
+): ShaderBrush() {
+
+    override fun createShader(size: Size): Shader {
+        val initialXOffset = -size.width
+        val totalSweepDistance = size.width * 2
+        val currentPosition = initialXOffset + totalSweepDistance * shimmerProgress
+
+        return LinearGradientShader(
+            colors = listOf(colorDark, colorLight),
+            from = Offset(currentPosition, 0f),
+            to = Offset(currentPosition + size.width, 0f)
+        )
     }
 }
 

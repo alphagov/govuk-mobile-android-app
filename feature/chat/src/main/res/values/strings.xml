@@ -34,4 +34,5 @@
   <string name="error_retry_page_subtext">Your previous conversation is no longer available.</string>
   <string name="error_retry_page_additional_text">To continue using GOV.UK Chat, you need to start a new chat.</string>
   <string name="error_retry_button_text">Start a new chat</string>
+  <string name="loading_text">Generating your answer&#8230;</string>
 </resources>
