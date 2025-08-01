@@ -110,10 +110,7 @@ private fun ChatContent(
     onClear: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val focusRequester = remember { FocusRequester() }
-    var isFocused by rememberSaveable { mutableStateOf(false) }
     val listState = rememberLazyListState()
-
     val chatEntries = uiState.chatEntries.toList()
 
     Column(
@@ -143,86 +140,17 @@ private fun ChatContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(
-                    modifier = Modifier
-                        .background(GovUkTheme.colourScheme.surfaces.chatBackground)
-                        .padding(all = GovUkTheme.spacing.medium)
-                        .semantics { isTraversalGroup = true }
-                        .modifyIfPiiError(isFocused, uiState),
-                ) {
-                    Row {
-                        AnimatedVisibility(!isFocused) {
-                            ActionMenu(
-                                onClear = onClear,
-                                modifier = Modifier.semantics { this.traversalIndex = 1f }
-                            )
-                        }
-
-                        TextField(
-                            textStyle = TextStyle(
-                                color = GovUkTheme.colourScheme.textAndIcons.primary,
-                                fontSize = GovUkTheme.typography.bodyRegular.fontSize,
-                                fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
-                                fontFamily = GovUkTheme.typography.bodyRegular.fontFamily
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 0.dp, bottom = 0.dp)
-                                .focusRequester(focusRequester)
-                                .focusable(true)
-                                .onFocusChanged {
-                                    isFocused = it.isFocused
-                                }
-                                .semantics { this.traversalIndex = 0f }
-                                .modifyIfFocused(isFocused),
-                            value = if (isFocused) uiState.question else "",
-                            shape = if (isFocused)
-                                RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
-                            else
-                                RoundedCornerShape(40.dp),
-                            singleLine = false,
-                            onValueChange = {
-                                onQuestionUpdated(it)
-                            },
-                            placeholder = {
-                                DisplayPlaceholderText(isFocused = isFocused, uiState = uiState)
-                            },
-                            isError = uiState.isPiiError,
-                            colors = inputTextFieldDefaults()
-                        )
-                    }
-
-                    AnimatedVisibility(isFocused) {
-                        Row(
-                            modifier = Modifier
-                                .background(GovUkTheme.colourScheme.surfaces.chatTextFieldBackground)
-                                .border(
-                                    0.dp,
-                                    Color.Transparent,
-                                    RoundedCornerShape(0.dp, 0.dp, 20.dp, 20.dp)
-                                )
-                                .fillMaxWidth()
-                                .padding(
-                                    start = 0.dp,
-                                    end = GovUkTheme.spacing.small,
-                                    top = 0.dp,
-                                    bottom = GovUkTheme.spacing.small
-                                ),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            CharacterCountText(uiState)
-
-                            SubmitIconButton(
-                                onClick = { onSubmit(uiState.question) },
-                                uiState = uiState
-                            )
-                        }
-                    }
-                }
+                ChatInput(
+                    uiState,
+                    onQuestionUpdated,
+                    onSubmit,
+                    onClear
+                )
             }
 
-            DisplayPIIError(uiState)
+            if (uiState.isPiiError) {
+                PiiErrorMessage()
+            }
 
             SmallVerticalSpacer()
         }
@@ -231,6 +159,95 @@ private fun ChatContent(
     if (chatEntries.isNotEmpty()) {
         LaunchedEffect(chatEntries.last().second.answer) {
             listState.animateScrollToItem(chatEntries.size)
+        }
+    }
+}
+
+@Composable
+private fun ChatInput(
+    uiState: ChatUiState,
+    onQuestionUpdated: (String) -> Unit,
+    onSubmit: (String) -> Unit,
+    onClear: () -> Unit,
+) {
+    val focusRequester = remember { FocusRequester() }
+    var isFocused by rememberSaveable { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .background(GovUkTheme.colourScheme.surfaces.chatBackground)
+            .padding(all = GovUkTheme.spacing.medium)
+            .semantics { isTraversalGroup = true }
+            .modifyIfPiiError(isFocused, uiState),
+    ) {
+        Row {
+            AnimatedVisibility(!isFocused) {
+                ActionMenu(
+                    onClear = onClear,
+                    modifier = Modifier.semantics { this.traversalIndex = 1f }
+                )
+            }
+
+            TextField(
+                textStyle = TextStyle(
+                    color = GovUkTheme.colourScheme.textAndIcons.primary,
+                    fontSize = GovUkTheme.typography.bodyRegular.fontSize,
+                    fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
+                    fontFamily = GovUkTheme.typography.bodyRegular.fontFamily
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 0.dp, bottom = 0.dp)
+                    .focusRequester(focusRequester)
+                    .focusable(true)
+                    .onFocusChanged {
+                        isFocused = it.isFocused
+                    }
+                    .semantics { this.traversalIndex = 0f }
+                    .modifyIfFocused(isFocused),
+                value = if (isFocused) uiState.question else "",
+                shape = if (isFocused)
+                    RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
+                else
+                    RoundedCornerShape(40.dp),
+                singleLine = false,
+                onValueChange = {
+                    onQuestionUpdated(it)
+                },
+                placeholder = {
+                    PlaceholderText(isFocused = isFocused, uiState = uiState)
+                },
+                isError = uiState.isPiiError,
+                colors = inputTextFieldDefaults()
+            )
+        }
+
+        AnimatedVisibility(isFocused) {
+            Row(
+                modifier = Modifier
+                    .background(GovUkTheme.colourScheme.surfaces.chatTextFieldBackground)
+                    .border(
+                        0.dp,
+                        Color.Transparent,
+                        RoundedCornerShape(0.dp, 0.dp, 20.dp, 20.dp)
+                    )
+                    .fillMaxWidth()
+                    .padding(
+                        start = 0.dp,
+                        end = GovUkTheme.spacing.small,
+                        top = 0.dp,
+                        bottom = GovUkTheme.spacing.small
+                    ),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CharacterCountMessage(uiState)
+
+                SubmitIconButton(
+                    onClick = { onSubmit(uiState.question) },
+                    uiState = uiState
+                )
+            }
         }
     }
 }
@@ -275,7 +292,7 @@ private fun Modifier.modifyIfFocused(isFocused: Boolean): Modifier {
 }
 
 @Composable
-private fun DisplayPlaceholderText(isFocused: Boolean, uiState: ChatUiState) {
+private fun PlaceholderText(isFocused: Boolean, uiState: ChatUiState) {
     if (!isFocused && uiState.question.isEmpty()) {
         Text(
             text = stringResource(id = R.string.input_label),
@@ -310,19 +327,17 @@ private fun inputTextFieldDefaults() = TextFieldDefaults.colors(
 )
 
 @Composable
-private fun DisplayPIIError(uiState: ChatUiState) {
-    if (uiState.isPiiError) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = GovUkTheme.spacing.medium)
-        ) {
-            val errorMessage = stringResource(id = R.string.pii_error_message)
-            BodyBoldLabel(
-                color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
-                text = errorMessage
-            )
-        }
+private fun PiiErrorMessage() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = GovUkTheme.spacing.medium)
+    ) {
+        val errorMessage = stringResource(id = R.string.pii_error_message)
+        BodyBoldLabel(
+            color = GovUkTheme.colourScheme.textAndIcons.textFieldError,
+            text = errorMessage
+        )
     }
 }
 
@@ -346,7 +361,7 @@ private fun SubmitIconButton(onClick: () -> Unit, uiState: ChatUiState) {
 }
 
 @Composable
-private fun CharacterCountText(
+private fun CharacterCountMessage(
     uiState: ChatUiState,
     modifier: Modifier = Modifier
 ) {
