@@ -41,16 +41,13 @@ jobs:
             5a3468ee-c962-4535-9c8e-b32b00fadfe0 > FIREBASE_TOKEN
             235aa3fe-7605-4337-ab29-b32c0085d539 > CI_ACCESS_USERNAME
             16eca8c9-cccf-448b-a731-b32c0085e7ed > CI_ACCESS_TOKEN
+            e2b38f74-0d53-4d3a-a33d-b32c008ddcbd > ALPHA_KEY_PASSWORD
+            3cf30e82-cb2a-4838-b507-b32c008dc1ee > ALPHA_KEY_ALIAS
+            327b161e-f28d-4dce-94fb-b32c008df91d > ALPHA_KEYSTORE
 
       - name: Decode keystore
         run: |
           echo $ALPHA_KEYSTORE | base64 -di > alpha.jks
-        env:
-          ALPHA_KEYSTORE: ${{ secrets.ALPHA_KEYSTORE }}
 
       - name: Build APK and distribute to firebase
         run: ./gradlew assembleAlpha appDistributionAlpha
-        env:
-          ALPHA_KEYSTORE: ${{ secrets.ALPHA_KEYSTORE }}
-          ALPHA_KEY_PASSWORD: ${{ secrets.ALPHA_KEY_PASSWORD }}
-          ALPHA_KEY_ALIAS: ${{ secrets.ALPHA_KEY_ALIAS }}
