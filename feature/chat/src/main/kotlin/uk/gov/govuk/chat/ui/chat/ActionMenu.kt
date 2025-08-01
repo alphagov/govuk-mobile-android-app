@@ -48,20 +48,24 @@ fun ActionMenu(
             )
             .width(200.dp)
     ) {
-        AboutMenuItem()
+        AboutMenuItem(modifier = modifier)
         ClearMenuItem(
             onClear = onClear,
-            onClearActioned = { expanded = false }
+            onClearActioned = { expanded = false },
+            modifier = modifier
         )
     }
 
     ActionIconButton(
-        onClick = { expanded = !expanded }
+        onClick = { expanded = !expanded },
+        modifier = modifier
     )
 }
 
 @Composable
-private fun AboutMenuItem() = DropdownMenuItem(
+private fun AboutMenuItem(
+    modifier: Modifier = Modifier
+) = DropdownMenuItem(
     text = {
         Text(
             text = stringResource(id = R.string.action_about),
@@ -77,12 +81,14 @@ private fun AboutMenuItem() = DropdownMenuItem(
         )
     },
     onClick = { },
+    modifier = modifier
 )
 
 @Composable
 private fun ClearMenuItem(
     onClear: () -> Unit,
-    onClearActioned: () -> Unit
+    onClearActioned: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val openDialog = rememberSaveable { mutableStateOf(false) }
 
@@ -101,7 +107,8 @@ private fun ClearMenuItem(
                 tint = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
             )
         },
-        onClick = { openDialog.value = true }
+        onClick = { openDialog.value = true },
+        modifier = modifier
     )
 
     if (openDialog.value) {
@@ -141,14 +148,18 @@ private fun ClearMenuItem(
                     )
                 }
             },
-            containerColor = GovUkTheme.colourScheme.surfaces.alert
+            containerColor = GovUkTheme.colourScheme.surfaces.alert,
+            modifier = modifier
         )
     }
 }
 
 @Composable
-private fun ActionIconButton(onClick: () -> Unit) {
-    val modifier = Modifier
+private fun ActionIconButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val modifier = modifier
         .clip(RoundedCornerShape(30.dp))
         .height(50.dp)
         .width(50.dp)

@@ -31,8 +31,14 @@ import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
-fun DisplayChatEntry(isLoading: Boolean, chatEntry: ChatEntry) {
-    Column {
+fun DisplayChatEntry(
+    isLoading: Boolean,
+    chatEntry: ChatEntry,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
         MediumVerticalSpacer()
         Question(question = chatEntry.question)
 

@@ -26,7 +26,7 @@ fun Answer(
             contentColor = GovUkTheme.colourScheme.textAndIcons.chatBotMessageText
         ),
         border = BorderStroke(1.dp, GovUkTheme.colourScheme.strokes.chatBotMessageBorder),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
     ) {
         if (showHeader) {
