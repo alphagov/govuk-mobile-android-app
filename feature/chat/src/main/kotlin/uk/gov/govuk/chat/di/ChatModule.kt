@@ -15,6 +15,9 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import uk.gov.govuk.chat.BuildConfig
+import uk.gov.govuk.chat.ChatFeature
+import uk.gov.govuk.chat.DefaultChatFeature
+import uk.gov.govuk.chat.data.ChatRepo
 import uk.gov.govuk.chat.data.remote.ChatApi
 import javax.inject.Named
 import javax.inject.Singleton
@@ -22,6 +25,13 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 internal class ChatModule {
+
+    @Provides
+    @Singleton
+    fun providesChatFeature(chatRepo: ChatRepo): ChatFeature {
+        return DefaultChatFeature(chatRepo)
+    }
+
     @Provides
     @Singleton
     fun providesChatApi(): ChatApi {

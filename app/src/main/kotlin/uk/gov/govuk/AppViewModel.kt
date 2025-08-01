@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
+import uk.gov.govuk.chat.ChatFeature
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
@@ -36,6 +37,7 @@ internal class AppViewModel @Inject constructor(
     private val localFeature: LocalFeature,
     private val searchFeature: SearchFeature,
     private val visitedFeature: Visited,
+    private val chatFeature: ChatFeature,
     private val analyticsClient: AnalyticsClient,
     val appNavigation: AppNavigation
 ) : ViewModel() {
@@ -116,6 +118,7 @@ internal class AppViewModel @Inject constructor(
                 localFeature.clear()
                 searchFeature.clear()
                 visitedFeature.clear()
+                chatFeature.clear()
                 analyticsClient.clear()
             }
             appNavigation.onNext(navController)
