@@ -40,6 +40,9 @@ jobs:
           secrets: |
             235aa3fe-7605-4337-ab29-b32c0085d539 > CI_ACCESS_USERNAME
             16eca8c9-cccf-448b-a731-b32c0085e7ed > CI_ACCESS_TOKEN
+            b0f5d09e-1302-4d68-a74b-b32c00c7373b > RELEASE_KEY_PASSWORD
+            13778a7b-3a7f-492e-a5da-b32c00c71bf3 > RELEASE_KEY_ALIAS
+            0b918a95-398d-44b4-8c0f-b32c00c750a1 > RELEASE_KEYSTORE
 
       - name: Decode Google service account JSON
         run: |
@@ -50,12 +53,6 @@ jobs:
       - name: Decode keystore
         run: |
           echo $RELEASE_KEYSTORE | base64 -di > release.jks
-        env:
-          RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
 
       - name: Build bundle and release to Google Play
         run: bundle exec fastlane android deploy
-        env:
-          RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
-          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
