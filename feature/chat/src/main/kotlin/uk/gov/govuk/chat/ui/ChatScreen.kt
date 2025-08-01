@@ -15,21 +15,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -68,7 +62,6 @@ import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.chat.ui.model.ChatEntry
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
-import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -447,154 +440,6 @@ private fun SubmitIconButton(onClick: () -> Unit, uiState: ChatUiState) {
         Icon(
             painter = painterResource(R.drawable.outline_arrow_upward_24),
             contentDescription = stringResource(id = R.string.button_alt),
-        )
-    }
-}
-
-@Composable
-private fun ActionMenu(
-    onClear: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var expanded by rememberSaveable { mutableStateOf(false) }
-
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { expanded = false },
-        modifier = modifier
-            .background(GovUkTheme.colourScheme.surfaces.alert)
-            .border(
-                1.dp,
-                GovUkTheme.colourScheme.surfaces.alert,
-                RoundedCornerShape(GovUkTheme.spacing.extraSmall)
-            )
-            .width(200.dp)
-    ) {
-        AboutMenuItem()
-        ClearMenuItem(
-            onClear = onClear,
-            onClearActioned = { expanded = false }
-        )
-    }
-
-    ActionIconButton(
-        onClick = { expanded = !expanded }
-    )
-}
-
-@Composable
-private fun AboutMenuItem() = DropdownMenuItem(
-    text = {
-        Text(
-            text = stringResource(id = R.string.action_about),
-            color = GovUkTheme.colourScheme.textAndIcons.primary,
-            style = GovUkTheme.typography.bodyRegular,
-        )
-    },
-    trailingIcon = {
-        Icon(
-            painter = painterResource(R.drawable.outline_info_24),
-            contentDescription = null,
-            tint = GovUkTheme.colourScheme.textAndIcons.primary
-        )
-    },
-    onClick = { },
-)
-
-@Composable
-private fun ClearMenuItem(
-    onClear: () -> Unit,
-    onClearActioned: () -> Unit
-) {
-    val openDialog = rememberSaveable { mutableStateOf(false) }
-
-    DropdownMenuItem(
-        text = {
-            Text(
-                text = stringResource(id = R.string.action_clear),
-                color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
-                style = GovUkTheme.typography.bodyRegular,
-            )
-        },
-        trailingIcon = {
-            Icon(
-                painter = painterResource(R.drawable.outline_delete_24),
-                contentDescription = null,
-                tint = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
-            )
-        },
-        onClick = { openDialog.value = true }
-    )
-
-    if (openDialog.value) {
-        AlertDialog(
-            onDismissRequest = { openDialog.value = false },
-            shape = RoundedCornerShape(10.dp),
-            text = {
-                BodyBoldLabel(
-                    text = "Do you want to clear your chat history?",
-                    color = GovUkTheme.colourScheme.textAndIcons.primary
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onClear()
-                        openDialog.value = false
-                        onClearActioned()
-                    }
-                ) {
-                    BodyBoldLabel(
-                        text = "Yes, clear chat",
-                        color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        openDialog.value = false
-                        onClearActioned()
-                    }
-                ) {
-                    BodyRegularLabel(
-                        text = "No, not now",
-                        color = GovUkTheme.colourScheme.textAndIcons.link
-                    )
-                }
-            },
-            containerColor = GovUkTheme.colourScheme.surfaces.alert
-        )
-    }
-}
-
-@Composable
-private fun ActionIconButton(onClick: () -> Unit) {
-    val modifier = Modifier
-        .clip(RoundedCornerShape(30.dp))
-        .height(50.dp)
-        .width(50.dp)
-
-    IconButton(
-        onClick = onClick,
-        enabled = true,
-        colors = IconButtonColors(
-            containerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-            contentColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
-            disabledContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-            disabledContentColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled
-        ),
-        modifier = modifier
-            .border(
-                1.dp,
-                GovUkTheme.colourScheme.strokes.chatTextFieldBorderDisabled,
-                RoundedCornerShape(30.dp)
-            )
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.outline_more_vert_24),
-            contentDescription = stringResource(id = R.string.action_alt),
-            modifier = modifier.padding(all = GovUkTheme.spacing.small)
         )
     }
 }
