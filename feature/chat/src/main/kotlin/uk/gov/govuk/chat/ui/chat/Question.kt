@@ -1,4 +1,4 @@
-package uk.gov.govuk.chat.ui
+package uk.gov.govuk.chat.ui.chat
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -14,7 +14,7 @@ import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
-fun DisplayQuestion(question: String) {
+fun Question(question: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End

@@ -1,4 +1,4 @@
-package uk.gov.govuk.chat.ui
+package uk.gov.govuk.chat.ui.chat
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -25,7 +25,7 @@ import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
-fun DisplayIntroMessages(animated: Boolean) {
+fun IntroMessages(animated: Boolean) {
     if (animated) {
         var message1Visible by remember { mutableStateOf(false) }
         var message2Visible by remember { mutableStateOf(false) }
@@ -115,7 +115,7 @@ private fun MessageHeader() {
 
 @Composable
 private fun Message1() {
-    DisplayAnswer(
+    Answer(
         answer = stringResource(id = R.string.bot_message_1),
         modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
     )
@@ -123,7 +123,7 @@ private fun Message1() {
 
 @Composable
 private fun Message2() {
-    DisplayAnswer(
+    Answer(
         showHeader = false,
         answer = stringResource(id = R.string.bot_message_2),
         modifier = Modifier.padding(vertical = GovUkTheme.spacing.medium)
@@ -132,7 +132,7 @@ private fun Message2() {
 
 @Composable
 private fun Message3() {
-    DisplayAnswer(
+    Answer(
         showHeader = false,
         answer = stringResource(id = R.string.bot_message_3),
         modifier = Modifier.padding(vertical = GovUkTheme.spacing.medium)

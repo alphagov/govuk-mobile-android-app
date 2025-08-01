@@ -1,4 +1,4 @@
-package uk.gov.govuk.chat.ui
+package uk.gov.govuk.chat.ui.chat
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.IntrinsicSize

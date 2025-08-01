@@ -1,4 +1,4 @@
-package uk.gov.govuk.chat.ui
+package uk.gov.govuk.chat.ui.chat
 
 import androidx.compose.animation.core.DurationBasedAnimationSpec
 import androidx.compose.animation.core.LinearEasing
@@ -34,7 +34,7 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 fun DisplayChatEntry(isLoading: Boolean, chatEntry: ChatEntry) {
     Column {
         MediumVerticalSpacer()
-        DisplayQuestion(question = chatEntry.question)
+        Question(question = chatEntry.question)
 
         MediumVerticalSpacer()
         if (isLoading && chatEntry.answer.isEmpty()) {
@@ -56,7 +56,7 @@ fun DisplayChatEntry(isLoading: Boolean, chatEntry: ChatEntry) {
                 )
             }
         } else {
-            DisplayAnswer(
+            Answer(
                 answer = chatEntry.answer,
                 sources = chatEntry.sources
             )

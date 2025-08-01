@@ -1,8 +1,7 @@
-package uk.gov.govuk.chat.ui
+package uk.gov.govuk.chat.ui.chat
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,8 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -24,11 +21,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import dev.jeziellago.compose.markdowntext.MarkdownText
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
@@ -36,42 +29,7 @@ import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
-fun DisplayAnswer(
-    answer: String,
-    modifier: Modifier = Modifier,
-    showHeader: Boolean = true,
-    sources: List<String>? = null
-) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = GovUkTheme.colourScheme.surfaces.chatBotMessageBackground,
-            contentColor = GovUkTheme.colourScheme.textAndIcons.chatBotMessageText
-        ),
-        border = BorderStroke(1.dp, GovUkTheme.colourScheme.strokes.chatBotMessageBorder),
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        if (showHeader) {
-            BodyBoldLabel(
-                text = stringResource(id = R.string.bot_header_text),
-                modifier = Modifier.padding(GovUkTheme.spacing.medium)
-            )
-        }
-
-        DisplayMarkdownText(
-            text = answer,
-            talkbackText = answer,
-            modifier = modifier
-        )
-
-        if (!sources.isNullOrEmpty()) {
-            DisplaySources(sources = sources)
-        }
-    }
-}
-
-@Composable
-private fun DisplaySources(sources: List<String>) {
+fun Sources(sources: List<String>) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val degrees by animateFloatAsState(if (expanded) 0f else -180f)
 
@@ -134,7 +92,7 @@ private fun DisplaySources(sources: List<String>) {
 
                     MediumVerticalSpacer()
 
-                    DisplayMarkdownText(
+                    Markdown(
                         text = sources[index],
                         talkbackText = linkText
                     )
@@ -151,32 +109,6 @@ private fun DisplaySources(sources: List<String>) {
             }
         }
     }
-}
-
-@Composable
-private fun DisplayMarkdownText(
-    text: String,
-    talkbackText: String,
-    modifier: Modifier = Modifier
-) {
-    MarkdownText(
-        markdown = text,
-        linkColor = GovUkTheme.colourScheme.textAndIcons.link,
-        style = TextStyle(
-            color = GovUkTheme.colourScheme.textAndIcons.primary,
-            fontSize = GovUkTheme.typography.bodyRegular.fontSize,
-            fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
-            fontWeight = GovUkTheme.typography.bodyRegular.fontWeight
-        ),
-        enableSoftBreakAddsNewLine = false,
-        enableUnderlineForLink = false,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = GovUkTheme.spacing.medium)
-            .semantics {
-                contentDescription = talkbackText
-            }
-    )
 }
 
 @Composable

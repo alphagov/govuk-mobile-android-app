@@ -1,4 +1,4 @@
-package uk.gov.govuk.chat.ui
+package uk.gov.govuk.chat.ui.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

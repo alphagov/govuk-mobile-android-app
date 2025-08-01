@@ -49,6 +49,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
+import uk.gov.govuk.chat.ui.chat.ActionMenu
+import uk.gov.govuk.chat.ui.chat.ChatErrorPageNoRetry
+import uk.gov.govuk.chat.ui.chat.ChatErrorPageWithRetry
+import uk.gov.govuk.chat.ui.chat.DisplayChatEntry
+import uk.gov.govuk.chat.ui.chat.IntroMessages
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -124,7 +129,7 @@ private fun ChatContent(
                 .padding(horizontal = GovUkTheme.spacing.medium)
         ) {
             item {
-                DisplayIntroMessages(uiState.chatEntries.isEmpty()) // only animate if no conversation
+                IntroMessages(uiState.chatEntries.isEmpty()) // only animate if no conversation
             }
 
             items(chatEntries) {
