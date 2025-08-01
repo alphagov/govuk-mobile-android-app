@@ -43,12 +43,11 @@ jobs:
             b0f5d09e-1302-4d68-a74b-b32c00c7373b > RELEASE_KEY_PASSWORD
             13778a7b-3a7f-492e-a5da-b32c00c71bf3 > RELEASE_KEY_ALIAS
             0b918a95-398d-44b4-8c0f-b32c00c750a1 > RELEASE_KEYSTORE
+            f6dfe34d-3d10-4fa6-a399-b32c00d65843 > GOOGLE_SERVICE_ACCOUNT_JSON
 
       - name: Decode Google service account JSON
         run: |
           echo $GOOGLE_SERVICE_ACCOUNT_JSON | base64 -di > gsa.json
-        env:
-          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
 
       - name: Decode keystore
         run: |
