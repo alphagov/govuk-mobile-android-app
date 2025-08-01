@@ -8,7 +8,6 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
@@ -24,8 +23,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -432,27 +429,6 @@ private class LoadingTextShimmerBrush(
             from = Offset(currentPosition, 0f),
             to = Offset(currentPosition + size.width, 0f)
         )
-    }
-}
-
-@Composable
-private fun DisplayQuestion(question: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.End
-    ) {
-        Card(
-            colors = CardDefaults.cardColors(
-                containerColor = GovUkTheme.colourScheme.surfaces.chatUserMessageBackground,
-                contentColor = GovUkTheme.colourScheme.textAndIcons.chatUserMessageText
-            ),
-            border = BorderStroke(1.dp, GovUkTheme.colourScheme.strokes.chatUserMessageBorder)
-        ) {
-            BodyRegularLabel(
-                text = question,
-                modifier = Modifier.padding(GovUkTheme.spacing.medium)
-            )
-        }
     }
 }
 
