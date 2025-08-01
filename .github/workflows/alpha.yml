@@ -32,6 +32,14 @@ jobs:
       - name: Generate release notes
         run: git log --format=%B -n 1 > releasenotes.txt
 
+      - name: Get Secrets
+        uses: bitwarden/sm-action@14f92f1d294ae3c2b6a3845d389cd2c318b0dfd8 # pin@v2.2.0
+        with:
+          access_token: ${{ secrets.BW_ACCESS_TOKEN }}
+          base_url: https://vault.bitwarden.eu
+          secrets: |
+            5a3468ee-c962-4535-9c8e-b32b00fadfe0 > FIREBASE_TOKEN
+
       - name: Decode keystore
         run: |
           echo $ALPHA_KEYSTORE | base64 -di > alpha.jks
@@ -43,7 +51,6 @@ jobs:
         env:
           CI_ACCESS_USERNAME: ${{ secrets.CI_ACCESS_USERNAME }}
           CI_ACCESS_TOKEN: ${{ secrets.CI_ACCESS_TOKEN }}
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           ALPHA_KEYSTORE: ${{ secrets.ALPHA_KEYSTORE }}
           ALPHA_KEY_PASSWORD: ${{ secrets.ALPHA_KEY_PASSWORD }}
           ALPHA_KEY_ALIAS: ${{ secrets.ALPHA_KEY_ALIAS }}
