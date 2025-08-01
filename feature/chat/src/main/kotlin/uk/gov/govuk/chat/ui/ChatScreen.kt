@@ -5,15 +5,12 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.DurationBasedAnimationSpec
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,7 +28,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
@@ -50,21 +46,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.LinearGradientShader
 import androidx.compose.ui.graphics.Shader
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
@@ -73,7 +66,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import dev.jeziellago.compose.markdowntext.MarkdownText
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
@@ -465,133 +457,6 @@ private fun DisplayQuestion(question: String) {
 }
 
 @Composable
-fun DisplayAnswer(
-    answer: String,
-    modifier: Modifier = Modifier,
-    showHeader: Boolean = true,
-    sources: List<String>? = null
-) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = GovUkTheme.colourScheme.surfaces.chatBotMessageBackground,
-            contentColor = GovUkTheme.colourScheme.textAndIcons.chatBotMessageText
-        ),
-        border = BorderStroke(1.dp, GovUkTheme.colourScheme.strokes.chatBotMessageBorder),
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        if (showHeader) {
-            BodyBoldLabel(
-                text = stringResource(id = R.string.bot_header_text),
-                modifier = Modifier.padding(GovUkTheme.spacing.medium)
-            )
-        }
-
-        DisplayMarkdownText(
-            text = answer,
-            talkbackText = answer,
-            modifier = modifier
-        )
-
-        if (!sources.isNullOrEmpty()) {
-            DisplaySources(sources = sources)
-        }
-    }
-}
-
-@Composable
-private fun ChatDivider(modifier: Modifier = Modifier) {
-    HorizontalDivider(
-        thickness = 1.dp,
-        color = GovUkTheme.colourScheme.strokes.chatDivider,
-        modifier = modifier
-    )
-}
-
-@Composable
-private fun DisplaySources(sources: List<String>) {
-    var expanded by rememberSaveable { mutableStateOf(false) }
-    val degrees by animateFloatAsState(if (expanded) 0f else -180f)
-
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(GovUkTheme.spacing.medium),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            ChatDivider()
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(GovUkTheme.spacing.medium),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.baseline_info_24),
-                contentDescription = null,
-                tint = GovUkTheme.colourScheme.textAndIcons.icon,
-                modifier = Modifier
-                    .padding(end = GovUkTheme.spacing.small),
-            )
-
-            BodyBoldLabel(
-                text = stringResource(id = R.string.bot_sources_header_text)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .clickable { expanded = !expanded }
-                .fillMaxWidth()
-                .padding(GovUkTheme.spacing.medium),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            BodyRegularLabel(
-                text = stringResource(id = R.string.bot_sources_list_description)
-            )
-
-            Image(
-                painter = painterResource(R.drawable.outline_arrow_drop_up_24),
-                contentDescription = null,
-                modifier = Modifier.rotate(degrees),
-                colorFilter = ColorFilter.tint(GovUkTheme.colourScheme.textAndIcons.icon)
-            )
-        }
-
-        AnimatedVisibility(visible = expanded) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                sources.forEachIndexed { index, _ ->
-                    val linkAddendumText = stringResource(id = R.string.sources_open_in_text)
-                    val linkText = "${sources[index]} $linkAddendumText"
-
-                    MediumVerticalSpacer()
-
-                    DisplayMarkdownText(
-                        text = sources[index],
-                        talkbackText = linkText
-                    )
-
-                    if (index < sources.size - 1) {
-                        MediumVerticalSpacer()
-                        ChatDivider(
-                            modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
-                        )
-                    }
-                }
-
-                MediumVerticalSpacer()
-            }
-        }
-    }
-}
-
-@Composable
 private fun SubmitIconButton(onClick: () -> Unit, uiState: ChatUiState) {
     IconButton(
         onClick = onClick,
@@ -756,35 +621,6 @@ private fun ActionIconButton(onClick: () -> Unit) {
             modifier = modifier.padding(all = GovUkTheme.spacing.small)
         )
     }
-}
-
-@Composable
-private fun markdownTextStyle() = TextStyle(
-    color = GovUkTheme.colourScheme.textAndIcons.primary,
-    fontSize = GovUkTheme.typography.bodyRegular.fontSize,
-    fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
-    fontWeight = GovUkTheme.typography.bodyRegular.fontWeight
-)
-
-@Composable
-private fun DisplayMarkdownText(
-    text: String,
-    talkbackText: String,
-    modifier: Modifier = Modifier
-) {
-    MarkdownText(
-        markdown = text,
-        linkColor = GovUkTheme.colourScheme.textAndIcons.link,
-        style = markdownTextStyle(),
-        enableSoftBreakAddsNewLine = false,
-        enableUnderlineForLink = false,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = GovUkTheme.spacing.medium)
-            .semantics {
-                contentDescription = talkbackText
-            }
-    )
 }
 
 @Composable
