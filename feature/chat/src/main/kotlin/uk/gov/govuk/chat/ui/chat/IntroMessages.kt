@@ -25,7 +25,7 @@ import uk.gov.govuk.chat.R
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
-fun IntroMessages(
+internal fun IntroMessages(
     animated: Boolean,
     modifier: Modifier = Modifier
 ) {

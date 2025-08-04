@@ -15,7 +15,7 @@ import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
-fun Answer(
+internal fun Answer(
     answer: String,
     modifier: Modifier = Modifier,
     showHeader: Boolean = true,

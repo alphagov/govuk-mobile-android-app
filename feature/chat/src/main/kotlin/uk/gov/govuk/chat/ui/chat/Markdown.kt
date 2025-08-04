@@ -11,7 +11,7 @@ import dev.jeziellago.compose.markdowntext.MarkdownText
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
-fun Markdown(
+internal fun Markdown(
     text: String,
     talkbackText: String,
     modifier: Modifier = Modifier

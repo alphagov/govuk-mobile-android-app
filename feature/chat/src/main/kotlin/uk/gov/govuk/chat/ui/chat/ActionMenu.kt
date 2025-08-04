@@ -30,7 +30,7 @@ import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
-fun ActionMenu(
+internal fun ActionMenu(
     onClear: () -> Unit,
     modifier: Modifier = Modifier
 ) {

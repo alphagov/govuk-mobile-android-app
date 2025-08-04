@@ -31,7 +31,7 @@ import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
-fun DisplayChatEntry(
+internal fun DisplayChatEntry(
     isLoading: Boolean,
     chatEntry: ChatEntry,
     modifier: Modifier = Modifier
@@ -70,7 +70,7 @@ fun DisplayChatEntry(
 }
 
 @Composable
-fun LoadingText(
+private fun LoadingText(
     text: String,
     modifier: Modifier = Modifier,
     animationSpec: DurationBasedAnimationSpec<Float> = tween(1000, 500, LinearEasing)

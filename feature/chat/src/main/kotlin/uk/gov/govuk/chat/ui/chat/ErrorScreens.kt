@@ -27,7 +27,7 @@ import uk.gov.govuk.design.ui.component.PrimaryButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
-fun ChatErrorPageWithRetry(
+internal fun ChatErrorPageWithRetry(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -41,7 +41,7 @@ fun ChatErrorPageWithRetry(
 }
 
 @Composable
-fun ChatErrorPageNoRetry(
+internal fun ChatErrorPageNoRetry(
     modifier: Modifier = Modifier
 ) {
     ChatErrorPage(

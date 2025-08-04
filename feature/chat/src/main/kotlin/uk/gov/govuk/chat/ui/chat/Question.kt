@@ -14,7 +14,7 @@ import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
-fun Question(
+internal fun Question(
     question: String,
     modifier: Modifier = Modifier
 ) {

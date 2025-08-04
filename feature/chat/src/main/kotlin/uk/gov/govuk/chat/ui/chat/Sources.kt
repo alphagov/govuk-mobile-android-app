@@ -29,7 +29,7 @@ import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
-fun Sources(
+internal fun Sources(
     sources: List<String>,
     modifier: Modifier = Modifier
 ) {
