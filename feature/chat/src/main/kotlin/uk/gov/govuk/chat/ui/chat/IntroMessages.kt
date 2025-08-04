@@ -22,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.R
-import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -80,7 +79,6 @@ fun IntroMessages(
             }
         } else {
             MessageHeader()
-            MediumVerticalSpacer()
             Message1()
             Message2()
             Message3()
@@ -118,7 +116,7 @@ private fun Message1(
 ) {
     Answer(
         answer = stringResource(id = R.string.bot_message_1),
-        modifier = modifier.padding(bottom = GovUkTheme.spacing.medium)
+        modifier = modifier.padding(top = GovUkTheme.spacing.medium)
     )
 }
 
@@ -129,7 +127,7 @@ private fun Message2(
     Answer(
         showHeader = false,
         answer = stringResource(id = R.string.bot_message_2),
-        modifier = modifier.padding(vertical = GovUkTheme.spacing.medium)
+        modifier = modifier.padding(top = GovUkTheme.spacing.medium)
     )
 }
 
@@ -140,6 +138,6 @@ private fun Message3(
     Answer(
         showHeader = false,
         answer = stringResource(id = R.string.bot_message_3),
-        modifier = modifier.padding(vertical = GovUkTheme.spacing.medium)
+        modifier = modifier.padding(top = GovUkTheme.spacing.medium)
     )
 }

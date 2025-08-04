@@ -57,8 +57,7 @@ fun DisplayChatEntry(
                 )
 
                 LoadingText(
-                    text = stringResource(id = R.string.loading_text),
-                    modifier = Modifier
+                    text = stringResource(id = R.string.loading_text)
                 )
             }
         } else {

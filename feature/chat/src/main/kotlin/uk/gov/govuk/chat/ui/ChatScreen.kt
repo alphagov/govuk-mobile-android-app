@@ -356,9 +356,14 @@ private fun PiiErrorMessage(
 }
 
 @Composable
-private fun SubmitIconButton(onClick: () -> Unit, uiState: ChatUiState) {
+private fun SubmitIconButton(
+    onClick: () -> Unit,
+    uiState: ChatUiState,
+    modifier: Modifier = Modifier
+) {
     IconButton(
         onClick = onClick,
+        modifier = modifier,
         enabled = uiState.isSubmitEnabled && !uiState.isPiiError,
         colors = IconButtonColors(
             containerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,

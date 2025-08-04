@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
+import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -26,29 +27,29 @@ fun Answer(
             contentColor = GovUkTheme.colourScheme.textAndIcons.chatBotMessageText
         ),
         border = BorderStroke(1.dp, GovUkTheme.colourScheme.strokes.chatBotMessageBorder),
-        modifier = modifier
-            .fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
+        MediumVerticalSpacer()
+
         if (showHeader) {
             BodyBoldLabel(
                 text = stringResource(id = R.string.bot_header_text),
                 modifier = Modifier.padding(
-                    top = GovUkTheme.spacing.medium,
                     start = GovUkTheme.spacing.medium,
-                    end = GovUkTheme.spacing.medium,
-                    bottom = 0.dp
+                    end = GovUkTheme.spacing.medium
                 )
             )
         }
 
         Markdown(
             text = answer,
-            talkbackText = answer,
-            modifier = modifier
+            talkbackText = answer
         )
 
         if (!sources.isNullOrEmpty()) {
             Sources(sources = sources)
         }
+
+        MediumVerticalSpacer()
     }
 }

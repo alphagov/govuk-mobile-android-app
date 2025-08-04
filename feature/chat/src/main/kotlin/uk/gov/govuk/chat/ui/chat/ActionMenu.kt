@@ -71,14 +71,15 @@ private fun AboutMenuItem(
             style = GovUkTheme.typography.bodyRegular,
         )
     },
+    onClick = { },
+    modifier = modifier,
     trailingIcon = {
         Icon(
             painter = painterResource(R.drawable.outline_info_24),
             contentDescription = null,
             tint = GovUkTheme.colourScheme.textAndIcons.primary
         )
-    },
-    onClick = { },
+    }
 )
 
 @Composable
@@ -97,14 +98,15 @@ private fun ClearMenuItem(
                 style = GovUkTheme.typography.bodyRegular,
             )
         },
+        onClick = { openDialog.value = true },
+        modifier = modifier,
         trailingIcon = {
             Icon(
                 painter = painterResource(R.drawable.outline_delete_24),
                 contentDescription = null,
                 tint = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
             )
-        },
-        onClick = { openDialog.value = true }
+        }
     )
 
     if (openDialog.value) {
@@ -154,11 +156,6 @@ private fun ActionIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val modifier = Modifier
-        .clip(RoundedCornerShape(30.dp))
-        .height(50.dp)
-        .width(50.dp)
-
     IconButton(
         onClick = onClick,
         enabled = true,
@@ -169,6 +166,9 @@ private fun ActionIconButton(
             disabledContentColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled
         ),
         modifier = modifier
+            .clip(RoundedCornerShape(30.dp))
+            .height(50.dp)
+            .width(50.dp)
             .border(
                 1.dp,
                 GovUkTheme.colourScheme.strokes.chatTextFieldBorderDisabled,
@@ -178,7 +178,7 @@ private fun ActionIconButton(
         Icon(
             painter = painterResource(R.drawable.outline_more_vert_24),
             contentDescription = stringResource(id = R.string.action_alt),
-            modifier = modifier.padding(all = GovUkTheme.spacing.small)
+            modifier = Modifier.padding(all = GovUkTheme.spacing.small)
         )
     }
 }
