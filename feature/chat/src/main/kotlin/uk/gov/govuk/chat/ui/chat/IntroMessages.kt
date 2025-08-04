@@ -54,7 +54,6 @@ fun IntroMessages(
             }
 
             MessageHeader()
-            MediumVerticalSpacer()
 
             AnimatedVisibility(
                 visible = message1Visible,
@@ -64,20 +63,12 @@ fun IntroMessages(
                 Message1()
             }
 
-            if (message1Visible) {
-                MediumVerticalSpacer()
-            }
-
             AnimatedVisibility(
                 visible = message2Visible,
                 enter = fadeIn(animationSpec = tween(durationMillis = duration)) +
                     scaleIn(animationSpec = tween(durationMillis = duration))
             ) {
                 Message2()
-            }
-
-            if (message2Visible) {
-                MediumVerticalSpacer()
             }
 
             AnimatedVisibility(
@@ -91,9 +82,7 @@ fun IntroMessages(
             MessageHeader()
             MediumVerticalSpacer()
             Message1()
-            MediumVerticalSpacer()
             Message2()
-            MediumVerticalSpacer()
             Message3()
         }
     }

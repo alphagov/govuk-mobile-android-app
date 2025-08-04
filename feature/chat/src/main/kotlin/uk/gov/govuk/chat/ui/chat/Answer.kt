@@ -32,7 +32,12 @@ fun Answer(
         if (showHeader) {
             BodyBoldLabel(
                 text = stringResource(id = R.string.bot_header_text),
-                modifier = Modifier.padding(GovUkTheme.spacing.medium)
+                modifier = Modifier.padding(
+                    top = GovUkTheme.spacing.medium,
+                    start = GovUkTheme.spacing.medium,
+                    end = GovUkTheme.spacing.medium,
+                    bottom = 0.dp
+                )
             )
         }
 
