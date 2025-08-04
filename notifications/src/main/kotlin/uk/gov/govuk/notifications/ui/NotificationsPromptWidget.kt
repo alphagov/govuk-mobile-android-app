@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import uk.gov.govuk.design.ui.component.HomeNavigationCard
+import uk.gov.govuk.design.ui.component.HomeNavigationCardLegacy
 import uk.gov.govuk.notifications.NotificationsPromptWidgetViewModel
 import uk.gov.govuk.notifications.R
 
@@ -17,7 +17,7 @@ fun NotificationsPromptWidget(
     val viewModel: NotificationsPromptWidgetViewModel = hiltViewModel()
     val title = stringResource(R.string.prompt_widget_title)
 
-    HomeNavigationCard(
+    HomeNavigationCardLegacy(
         title = title,
         onClick = {
             viewModel.onClick()

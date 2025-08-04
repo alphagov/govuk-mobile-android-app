@@ -8,7 +8,7 @@ import uk.gov.govuk.design.ui.theme.GovUkColourScheme.TextAndIcons
 
 private val BluePrimary = Color(0xFF1D70B8)
 private val BlueAccent = Color(0xFF11E0F1)
-private val Blue2 = Color(0xFF259AFF)
+private val Blue2 = Color(0xFF263D54)
 private val BlueLighter25 = Color(0xFF5694CA)
 private val BlueLighter50 = Color(0xFF8EB8DC)
 private val BlueLighter80 = Color(0xFFD2E2F1)
@@ -33,6 +33,7 @@ private val GreenLighter95 = Color(0xFFF3F9F7)
 private val GreenDarker25 = Color(0xFF0D6544)
 private val GreenDarker50 = Color(0xFF09442D)
 
+private val Grey2 = Color(0xFF0A2740)
 private val Grey850 = Color(0xFF262626)
 private val Grey800 = Color(0xFF333333)
 private val Grey700 = Color(0xFF4D4D4D)
@@ -147,6 +148,7 @@ data class GovUkColourScheme(
         val pageControlsInactive: Color,
         val cardBlue: Color,
         val cardSelected: Color,
+        val cardDefault: Color,
         val listBlue: Color,
         val switchOn: Color,
         val switchOff: Color,
@@ -252,6 +254,7 @@ internal val LightColorScheme = GovUkColourScheme(
         pageControlsInactive = Grey500,
         cardBlue = BlueLighter50,
         cardSelected = GreenPrimary,
+        cardDefault = BlueLighter80,
         listBlue = BlueLighter50,
         switchOn = GreenPrimary,
         switchOff = BlackLighter50,
@@ -311,7 +314,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         background = Black,
         primary = BlueAccent,
         splash = BluePrimary,
-        cardDefault = Grey800,
+        cardDefault = Grey2,
         cardBlue = BlueDarker50,
         cardHighlight = Grey850,
         cardSelected = GreenDarker50,
@@ -357,6 +360,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         pageControlsInactive = Grey300,
         cardBlue = BlueDarker25,
         cardSelected = GreenAccent,
+        cardDefault = Blue2,
         listBlue = BluePrimary,
         switchOn = GreenPrimary,
         switchOff = BlackLighter50,
@@ -463,6 +467,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             pageControlsInactive = Color.Unspecified,
             cardBlue = Color.Unspecified,
             cardSelected = Color.Unspecified,
+            cardDefault = Color.Unspecified,
             listBlue = Color.Unspecified,
             switchOn = Color.Unspecified,
             switchOff = Color.Unspecified,

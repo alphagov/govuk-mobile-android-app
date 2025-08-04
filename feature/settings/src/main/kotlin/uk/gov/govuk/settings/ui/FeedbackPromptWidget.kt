@@ -8,7 +8,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.tooling.preview.Preview
-import uk.gov.govuk.design.ui.component.HomeNavigationCard
+import uk.gov.govuk.design.ui.component.HomeNavigationCardLegacy
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.settings.R
 
@@ -20,7 +20,7 @@ fun FeedbackPromptWidget(
     val title = stringResource(R.string.feedback_prompt_widget_title)
     val altText = "$title. ${stringResource(R.string.link_opens_in)}"
 
-    HomeNavigationCard(
+    HomeNavigationCardLegacy(
         title = title,
         onClick = { onClick(title) },
         modifier = modifier
