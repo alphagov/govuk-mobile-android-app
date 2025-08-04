@@ -27,6 +27,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -93,42 +94,47 @@ fun GovUkBottomBorderCard(
 
     val cornerRadius = 10.dp
     val strokeWidth = 3.dp
+    val density = if (LocalDensity.current.density == 0f) 1f else LocalDensity.current.density
+    val bottomPadding = strokeWidth / density
+
     Card(
-        modifier = modifier.drawBehind {
+        modifier = modifier
+            .padding(bottom = bottomPadding)
+            .drawBehind {
 
-            // Bottom line
-            drawLine(
-                color = borderColour,
-                start = Offset(x = cornerRadius.toPx(), y = size.height),
-                end = Offset(x = size.width - cornerRadius.toPx(), y = size.height),
-                strokeWidth = strokeWidth.toPx()
-            )
+                // Bottom line
+                drawLine(
+                    color = borderColour,
+                    start = Offset(x = cornerRadius.toPx(), y = size.height),
+                    end = Offset(x = size.width - cornerRadius.toPx(), y = size.height),
+                    strokeWidth = strokeWidth.toPx()
+                )
 
-            // Bottom-left corner
-            drawArc(
-                color = borderColour,
-                startAngle = 180f,
-                sweepAngle = -90f,
-                useCenter = false,
-                topLeft = Offset(x = 7f, y = size.height - cornerRadius.toPx() * 2),
-                size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2),
-                style = Stroke(width = strokeWidth.toPx())
-            )
+                // Bottom-left corner
+                drawArc(
+                    color = borderColour,
+                    startAngle = 180f,
+                    sweepAngle = -90f,
+                    useCenter = false,
+                    topLeft = Offset(x = 7f, y = size.height - cornerRadius.toPx() * 2),
+                    size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2),
+                    style = Stroke(width = strokeWidth.toPx())
+                )
 
-            // Bottom-right corner
-            drawArc(
-                color = borderColour,
-                startAngle = 360f,
-                sweepAngle = 90f,
-                useCenter = false,
-                topLeft = Offset(
-                    x = (size.width - cornerRadius.toPx() * 2) - 7,
-                    y = size.height - cornerRadius.toPx() * 2
-                ),
-                size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2),
-                style = Stroke(width = strokeWidth.toPx())
-            )
-        },
+                // Bottom-right corner
+                drawArc(
+                    color = borderColour,
+                    startAngle = 360f,
+                    sweepAngle = 90f,
+                    useCenter = false,
+                    topLeft = Offset(
+                        x = (size.width - cornerRadius.toPx() * 2) - 7,
+                        y = size.height - cornerRadius.toPx() * 2
+                    ),
+                    size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2),
+                    style = Stroke(width = strokeWidth.toPx())
+                )
+            },
 
         colors = CardDefaults.cardColors(containerColor = cardColour),
     ) {
@@ -449,7 +455,7 @@ private fun HomeNavigationCardLegacyNoIconPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFF4F8FB)
 @Composable
 private fun HomeNavigationCardPreview() {
     GovUkTheme {
@@ -463,7 +469,7 @@ private fun HomeNavigationCardPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFF4F8FB)
 @Composable
 private fun HomeNavigationCardTopImagePreview() {
     GovUkTheme {
@@ -478,7 +484,7 @@ private fun HomeNavigationCardTopImagePreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFF4F8FB)
 @Composable
 private fun HomeNavigationCardLeftImagePreview() {
     GovUkTheme {
@@ -493,7 +499,7 @@ private fun HomeNavigationCardLeftImagePreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFF4F8FB)
 @Composable
 private fun HomeNavigationCardRightImagePreview() {
     GovUkTheme {
@@ -508,7 +514,7 @@ private fun HomeNavigationCardRightImagePreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFF4F8FB)
 @Composable
 private fun HomeNavigationCardSuppressablePreview() {
     GovUkTheme {
@@ -521,7 +527,7 @@ private fun HomeNavigationCardSuppressablePreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFF4F8FB)
 @Composable
 private fun HomeNavigationCardChevronPreview() {
     GovUkTheme {
@@ -534,7 +540,7 @@ private fun HomeNavigationCardChevronPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFF4F8FB)
 @Composable
 private fun HomeNavigationCardLargeCallToActionPreview() {
     GovUkTheme {
