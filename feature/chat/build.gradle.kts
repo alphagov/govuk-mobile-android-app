@@ -23,6 +23,7 @@ android {
         consumerProguardFiles("consumer-rules.pro")
 
         buildConfigField("String", "CHAT_BASE_URL", "\"https://chat.integration.publishing.service.gov.uk/api/v0/\"")
+        buildConfigField("String", "ABOUT_APP_URL", "\"https://www.gov.uk\"")
 
         if (file("${rootProject.projectDir.path}/github.properties").exists()) {
             val propsFile = File("${rootProject.projectDir.path}/github.properties")
