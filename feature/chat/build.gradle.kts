@@ -74,7 +74,7 @@ dependencies {
     implementation(libs.retrofit.gson)
     implementation(libs.realm.base)
 
-    implementation("com.github.jeziellago:compose-markdown:0.5.7")
+    implementation(libs.compose.markdown)
 
     ksp(libs.hilt.compiler)
 
