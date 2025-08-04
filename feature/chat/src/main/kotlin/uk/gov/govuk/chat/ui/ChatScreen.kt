@@ -174,12 +174,13 @@ private fun ChatInput(
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
     onClear: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
     var isFocused by rememberSaveable { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .background(GovUkTheme.colourScheme.surfaces.chatBackground)
             .padding(all = GovUkTheme.spacing.medium)
             .semantics { isTraversalGroup = true }
@@ -297,18 +298,24 @@ private fun Modifier.modifyIfFocused(isFocused: Boolean): Modifier {
 }
 
 @Composable
-private fun PlaceholderText(isFocused: Boolean, uiState: ChatUiState) {
+private fun PlaceholderText(
+    isFocused: Boolean,
+    uiState: ChatUiState,
+    modifier: Modifier = Modifier
+) {
     if (!isFocused && uiState.question.isEmpty()) {
         Text(
             text = stringResource(id = R.string.input_label),
-            color = GovUkTheme.colourScheme.textAndIcons.secondary
+            color = GovUkTheme.colourScheme.textAndIcons.secondary,
+            modifier = modifier
         )
     } else {
         Text(
             text = uiState.question,
             color = GovUkTheme.colourScheme.textAndIcons.secondary,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            modifier = modifier
         )
     }
 }
@@ -332,9 +339,11 @@ private fun inputTextFieldDefaults() = TextFieldDefaults.colors(
 )
 
 @Composable
-private fun PiiErrorMessage() {
+private fun PiiErrorMessage(
+    modifier: Modifier = Modifier
+) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = GovUkTheme.spacing.medium)
     ) {

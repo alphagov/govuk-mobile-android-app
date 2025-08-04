@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,76 +26,85 @@ import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
-fun IntroMessages(animated: Boolean) {
-    if (animated) {
-        var message1Visible by remember { mutableStateOf(false) }
-        var message2Visible by remember { mutableStateOf(false) }
-        var message3Visible by remember { mutableStateOf(false) }
+fun IntroMessages(
+    animated: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        if (animated) {
+            var message1Visible by remember { mutableStateOf(false) }
+            var message2Visible by remember { mutableStateOf(false) }
+            var message3Visible by remember { mutableStateOf(false) }
 
-        val delay = 1000L
-        val duration = 500
+            val delay = 1000L
+            val duration = 500
 
-        LaunchedEffect(key1 = true) {
-            delay(delay)
+            LaunchedEffect(key1 = true) {
+                delay(delay)
 
-            message1Visible = true
-            delay(delay)
+                message1Visible = true
+                delay(delay)
 
-            message2Visible = true
-            delay(delay)
+                message2Visible = true
+                delay(delay)
 
-            message3Visible = true
-        }
+                message3Visible = true
+            }
 
-        MessageHeader()
-        MediumVerticalSpacer()
+            MessageHeader()
+            MediumVerticalSpacer()
 
-        AnimatedVisibility(
-            visible = message1Visible,
-            enter = fadeIn(animationSpec = tween(durationMillis = duration)) +
-                scaleIn(animationSpec = tween(durationMillis = duration))
-        ) {
+            AnimatedVisibility(
+                visible = message1Visible,
+                enter = fadeIn(animationSpec = tween(durationMillis = duration)) +
+                    scaleIn(animationSpec = tween(durationMillis = duration))
+            ) {
+                Message1()
+            }
+
+            if (message1Visible) {
+                MediumVerticalSpacer()
+            }
+
+            AnimatedVisibility(
+                visible = message2Visible,
+                enter = fadeIn(animationSpec = tween(durationMillis = duration)) +
+                    scaleIn(animationSpec = tween(durationMillis = duration))
+            ) {
+                Message2()
+            }
+
+            if (message2Visible) {
+                MediumVerticalSpacer()
+            }
+
+            AnimatedVisibility(
+                visible = message3Visible,
+                enter = fadeIn(animationSpec = tween(durationMillis = duration)) +
+                    scaleIn(animationSpec = tween(durationMillis = duration))
+            ) {
+                Message3()
+            }
+        } else {
+            MessageHeader()
+            MediumVerticalSpacer()
             Message1()
-        }
-
-        if (message1Visible) {
             MediumVerticalSpacer()
-        }
-
-        AnimatedVisibility(
-            visible = message2Visible,
-            enter = fadeIn(animationSpec = tween(durationMillis = duration)) +
-                scaleIn(animationSpec = tween(durationMillis = duration))
-        ) {
             Message2()
-        }
-
-        if (message2Visible) {
             MediumVerticalSpacer()
-        }
-
-        AnimatedVisibility(
-            visible = message3Visible,
-            enter = fadeIn(animationSpec = tween(durationMillis = duration)) +
-                scaleIn(animationSpec = tween(durationMillis = duration))
-        ) {
             Message3()
         }
-    } else {
-        MessageHeader()
-        MediumVerticalSpacer()
-        Message1()
-        MediumVerticalSpacer()
-        Message2()
-        MediumVerticalSpacer()
-        Message3()
     }
 }
 
 @Composable
-private fun MessageHeader() {
+private fun MessageHeader(
+    modifier: Modifier = Modifier
+) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(
                 start = GovUkTheme.spacing.medium,
@@ -114,27 +124,33 @@ private fun MessageHeader() {
 }
 
 @Composable
-private fun Message1() {
+private fun Message1(
+    modifier: Modifier = Modifier
+) {
     Answer(
         answer = stringResource(id = R.string.bot_message_1),
-        modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
+        modifier = modifier.padding(bottom = GovUkTheme.spacing.medium)
     )
 }
 
 @Composable
-private fun Message2() {
+private fun Message2(
+    modifier: Modifier = Modifier
+) {
     Answer(
         showHeader = false,
         answer = stringResource(id = R.string.bot_message_2),
-        modifier = Modifier.padding(vertical = GovUkTheme.spacing.medium)
+        modifier = modifier.padding(vertical = GovUkTheme.spacing.medium)
     )
 }
 
 @Composable
-private fun Message3() {
+private fun Message3(
+    modifier: Modifier = Modifier
+) {
     Answer(
         showHeader = false,
         answer = stringResource(id = R.string.bot_message_3),
-        modifier = Modifier.padding(vertical = GovUkTheme.spacing.medium)
+        modifier = modifier.padding(vertical = GovUkTheme.spacing.medium)
     )
 }

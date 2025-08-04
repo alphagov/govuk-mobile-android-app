@@ -14,9 +14,12 @@ import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
-fun Question(question: String) {
+fun Question(
+    question: String,
+    modifier: Modifier = Modifier
+) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End
     ) {
         Card(

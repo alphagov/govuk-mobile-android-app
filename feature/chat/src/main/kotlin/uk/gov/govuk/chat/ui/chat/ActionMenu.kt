@@ -61,7 +61,9 @@ fun ActionMenu(
 }
 
 @Composable
-private fun AboutMenuItem() = DropdownMenuItem(
+private fun AboutMenuItem(
+    modifier: Modifier = Modifier
+) = DropdownMenuItem(
     text = {
         Text(
             text = stringResource(id = R.string.action_about),
@@ -82,7 +84,8 @@ private fun AboutMenuItem() = DropdownMenuItem(
 @Composable
 private fun ClearMenuItem(
     onClear: () -> Unit,
-    onClearActioned: () -> Unit
+    onClearActioned: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val openDialog = rememberSaveable { mutableStateOf(false) }
 
@@ -147,7 +150,10 @@ private fun ClearMenuItem(
 }
 
 @Composable
-private fun ActionIconButton(onClick: () -> Unit) {
+private fun ActionIconButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val modifier = Modifier
         .clip(RoundedCornerShape(30.dp))
         .height(50.dp)

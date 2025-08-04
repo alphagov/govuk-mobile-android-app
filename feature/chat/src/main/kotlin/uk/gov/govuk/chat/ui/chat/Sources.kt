@@ -29,11 +29,16 @@ import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
-fun Sources(sources: List<String>) {
+fun Sources(
+    sources: List<String>,
+    modifier: Modifier = Modifier
+) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val degrees by animateFloatAsState(if (expanded) 0f else -180f)
 
-    Column {
+    Column(
+        modifier = modifier
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
