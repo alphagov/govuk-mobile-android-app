@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -168,6 +170,7 @@ private fun ChatContent(
                         drawRect(brush = bottomFade, blendMode = BlendMode.DstIn)
                     }
                     .fillMaxWidth()
+                    .weight(1f)
                     .padding(horizontal = GovUkTheme.spacing.medium)
             ) {
                 item {
@@ -176,6 +179,10 @@ private fun ChatContent(
 
                 items(chatEntries) {
                     DisplayChatEntry(uiState.isLoading, it.second)
+                }
+
+                item {
+                    Spacer(Modifier.height(50.dp))
                 }
             }
 
