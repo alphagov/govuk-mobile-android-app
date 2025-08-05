@@ -138,7 +138,7 @@ private fun ChatContent(
     val chatEntries = uiState.chatEntries.toList()
     val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
     val fadeStart = if (isPortrait) 0.9f else 0.8f
-    val bottomFade = Brush.verticalGradient(fadeStart to Color.Red, 1f to Color.Transparent)
+    val bottomFade = Brush.verticalGradient(fadeStart to Color.White, 1f to Color.Transparent)
     var backgroundVisible  by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
