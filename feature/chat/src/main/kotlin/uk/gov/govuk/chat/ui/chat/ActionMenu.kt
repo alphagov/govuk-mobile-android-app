@@ -21,9 +21,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import uk.gov.govuk.chat.BuildConfig
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
@@ -48,7 +50,9 @@ internal fun ActionMenu(
             )
             .width(200.dp)
     ) {
-        AboutMenuItem()
+        AboutMenuItem(
+            onLinkClicked = { expanded = false }
+        )
         ClearMenuItem(
             onClear = onClear,
             onClearActioned = { expanded = false }
@@ -62,25 +66,34 @@ internal fun ActionMenu(
 
 @Composable
 private fun AboutMenuItem(
+    onLinkClicked: () -> Unit,
     modifier: Modifier = Modifier
-) = DropdownMenuItem(
-    text = {
-        Text(
-            text = stringResource(id = R.string.action_about),
-            color = GovUkTheme.colourScheme.textAndIcons.primary,
-            style = GovUkTheme.typography.bodyRegular,
-        )
-    },
-    onClick = { },
-    modifier = modifier,
-    trailingIcon = {
-        Icon(
-            painter = painterResource(R.drawable.outline_info_24),
-            contentDescription = null,
-            tint = GovUkTheme.colourScheme.textAndIcons.primary
-        )
-    }
-)
+) {
+    val uriHandler = LocalUriHandler.current
+    val uri = BuildConfig.ABOUT_APP_URL
+
+    DropdownMenuItem(
+        text = {
+            Text(
+                text = stringResource(id = R.string.action_about),
+                color = GovUkTheme.colourScheme.textAndIcons.primary,
+                style = GovUkTheme.typography.bodyRegular,
+            )
+        },
+        onClick = {
+            onLinkClicked()
+            uriHandler.openUri(uri)
+        },
+        modifier = modifier,
+        trailingIcon = {
+            Icon(
+                painter = painterResource(R.drawable.outline_info_24),
+                contentDescription = null,
+                tint = GovUkTheme.colourScheme.textAndIcons.primary
+            )
+        }
+    )
+}
 
 @Composable
 private fun ClearMenuItem(

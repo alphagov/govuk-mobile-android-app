@@ -1,6 +1,7 @@
 [versions]
 agp = "8.9.2"
 biometric = "1.1.0"
+composeMarkdown = "0.5.7"
 kotlin = "2.0.21"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -43,6 +44,7 @@ openid = "0.11.1"
 gov-secure-store = "0.12.1"
 
 [libraries]
+compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "composeMarkdown" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
