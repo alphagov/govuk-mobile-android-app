@@ -59,7 +59,7 @@ class LoginViewModelTest {
     fun `Given the user is signed in and the id token issue date is in the future, when init is successful, then emit ui state`() {
         every { authRepo.isUserSignedIn() } returns true
         coEvery { authRepo.refreshTokens(any(), any()) } returns true
-        coEvery { loginRepo.getIdTokenIssueDate() } returns Date().toInstant().epochSecond + 10000L
+        coEvery { loginRepo.getRefreshTokenExpiryDate() } returns Date().toInstant().epochSecond + 10000L
 
         runTest {
             val events = mutableListOf<LoginEvent>()
@@ -76,7 +76,7 @@ class LoginViewModelTest {
     fun `Given the user is signed in and the id token issue date is not in the future, then end user session and clear auth repo`() {
         every { authRepo.isUserSignedIn() } returns true
         coEvery { authRepo.refreshTokens(any(), any()) } returns true
-        coEvery { loginRepo.getIdTokenIssueDate() } returns Date().toInstant().epochSecond
+        coEvery { loginRepo.getRefreshTokenExpiryDate() } returns Date().toInstant().epochSecond
 
         runTest {
             val events = mutableListOf<LoginEvent>()

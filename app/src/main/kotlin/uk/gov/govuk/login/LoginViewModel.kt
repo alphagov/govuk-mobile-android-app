@@ -59,7 +59,7 @@ internal class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             val result = authRepo.handleAuthResponse(data)
             if (result) {
-                saveIdTokenDate()
+                saveRefreshTokenExpiryDate()
                 _loginCompleted.emit(LoginEvent(isBiometricLogin = false))
             } else {
                 _errorEvent.emit(ErrorEvent.UnableToSignInError)
@@ -68,11 +68,11 @@ internal class LoginViewModel @Inject constructor(
     }
 
     private suspend fun shouldRefreshTokens(): Boolean {
-        val idTokenIssueDate = loginRepo.getIdTokenIssueDate()
+        val idTokenIssueDate = loginRepo.getRefreshTokenExpiryDate()
         return idTokenIssueDate == null || idTokenIssueDate > Date().toInstant().epochSecond
     }
 
-    private fun saveIdTokenDate() {
+    private fun saveRefreshTokenExpiryDate() {
         viewModelScope.launch {
             authRepo.getIdTokenIssueDate()?.let { idTokenIssueDate ->
                 val datePlusSixDaysTwentyThreeHours = idTokenIssueDate + 601200L

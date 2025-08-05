@@ -7,7 +7,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
-import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.login.data.local.LoginDataStore
 
 class LoginRepoTest {
@@ -21,7 +20,7 @@ class LoginRepoTest {
 
         runTest {
 
-            assertNull(repo.getIdTokenIssueDate())
+            assertNull(repo.getRefreshTokenExpiryDate())
         }
     }
 
@@ -33,7 +32,7 @@ class LoginRepoTest {
 
         runTest {
 
-            assertEquals(12345L, repo.getIdTokenIssueDate())
+            assertEquals(12345L, repo.getRefreshTokenExpiryDate())
         }
     }
 

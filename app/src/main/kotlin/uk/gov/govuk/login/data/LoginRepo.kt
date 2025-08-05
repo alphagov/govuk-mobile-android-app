@@ -8,7 +8,7 @@ import javax.inject.Singleton
 class LoginRepo @Inject constructor(
     private val loginDataStore: LoginDataStore
 ) {
-    internal suspend fun getIdTokenIssueDate() = loginDataStore.getRefreshTokenExpiryDate()
+    internal suspend fun getRefreshTokenExpiryDate() = loginDataStore.getRefreshTokenExpiryDate()
 
     internal suspend fun setRefreshTokenExpiryDate(expiryDate: Long) {
         loginDataStore.setRefreshTokenExpiryDate(expiryDate)
