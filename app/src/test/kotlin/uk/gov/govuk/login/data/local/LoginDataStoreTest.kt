@@ -83,7 +83,7 @@ class LoginDataStoreTest {
 
     @Test
     fun `Given the data store is cleared, when clear, then the data store is cleared`() {
-        val appDatastore = AppDataStore(dataStore)
+        val loginDatastore = LoginDataStore(dataStore)
 
         runTest {
             dataStore.edit { prefs ->
@@ -92,7 +92,7 @@ class LoginDataStoreTest {
 
             assertTrue(dataStore.data.first().asMap().isNotEmpty())
 
-            appDatastore.clear()
+            loginDatastore.clear()
 
             assertTrue(dataStore.data.first().asMap().isEmpty())
         }
