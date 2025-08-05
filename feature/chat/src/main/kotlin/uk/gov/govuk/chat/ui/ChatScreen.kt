@@ -148,18 +148,15 @@ private fun ChatContent(
     }
 
     Box(modifier.fillMaxSize()) {
-        AnimatedVisibility(
-            visible = backgroundVisible,
-            enter = fadeIn(animationSpec = tween(durationMillis = 5000))
-        ) {
-            AndroidView(
-                factory = { context ->
-                    FrameLayout(context).apply {
-                        setBackgroundResource(R.drawable.background_chat)
-                    }
-                },
-                modifier = Modifier.fillMaxSize()
-            )
+        if (uiState.chatEntries.isEmpty()) {
+            AnimatedVisibility(
+                visible = backgroundVisible,
+                enter = fadeIn(animationSpec = tween(durationMillis = 5000))
+            ) {
+                BackgroundGradient()
+            }
+        } else {
+            BackgroundGradient()
         }
 
         Column {
@@ -217,6 +214,20 @@ private fun ChatContent(
             listState.animateScrollToItem(chatEntries.size)
         }
     }
+}
+
+@Composable
+private fun BackgroundGradient(
+    modifier: Modifier = Modifier
+) {
+    AndroidView(
+        factory = { context ->
+            FrameLayout(context).apply {
+                setBackgroundResource(R.drawable.background_chat)
+            }
+        },
+        modifier = modifier.fillMaxSize()
+    )
 }
 
 @Composable
