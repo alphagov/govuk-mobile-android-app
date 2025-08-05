@@ -1,13 +1,18 @@
 package uk.gov.govuk.chat.ui
 
 import android.content.res.Configuration
+import android.widget.FrameLayout
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,10 +36,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -45,6 +56,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
@@ -122,31 +134,54 @@ private fun ChatContent(
 ) {
     val listState = rememberLazyListState()
     val chatEntries = uiState.chatEntries.toList()
+    val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
+    val fadeStart = if (isPortrait) 0.9f else 0.8f
+    val bottomFade = Brush.verticalGradient(fadeStart to Color.Red, 1f to Color.Transparent)
+    var backgroundVisible  by remember { mutableStateOf(false) }
 
-    Column(
-        modifier.background(color = GovUkTheme.colourScheme.surfaces.chatBackground)
-    ) {
-        LazyColumn (
-            state = listState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .padding(horizontal = GovUkTheme.spacing.medium)
+    LaunchedEffect(Unit) {
+        backgroundVisible = true
+    }
+
+    Box(modifier.fillMaxSize()) {
+        AnimatedVisibility(
+            visible = backgroundVisible,
+            enter = fadeIn(animationSpec = tween(durationMillis = 2000))
         ) {
-            item {
-                IntroMessages(uiState.chatEntries.isEmpty()) // only animate if no conversation
-            }
-
-            items(chatEntries) {
-                DisplayChatEntry(uiState.isLoading, it.second)
-            }
+            AndroidView(
+                factory = { context ->
+                    FrameLayout(context).apply {
+                        setBackgroundResource(R.drawable.background_chat)
+                    }
+                },
+                modifier = Modifier.fillMaxSize()
+            )
         }
 
         Column {
-            Row(
+            LazyColumn(
+                state = listState,
                 modifier = Modifier
+                    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+                    .drawWithContent {
+                        drawContent()
+                        drawRect(brush = bottomFade, blendMode = BlendMode.DstIn)
+                    }
                     .fillMaxWidth()
-                    .background(GovUkTheme.colourScheme.surfaces.chatBackground),
+                    .padding(horizontal = GovUkTheme.spacing.medium)
+            ) {
+                item {
+                    IntroMessages(uiState.chatEntries.isEmpty()) // only animate if no conversation
+                }
+
+                items(chatEntries) {
+                    DisplayChatEntry(uiState.isLoading, it.second)
+                }
+            }
+
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -159,11 +194,12 @@ private fun ChatContent(
                 )
             }
 
-            if (uiState.isPiiError) {
-                PiiErrorMessage()
-            }
+                if (uiState.isPiiError) {
+                    PiiErrorMessage()
+                }
 
-            SmallVerticalSpacer()
+                SmallVerticalSpacer()
+            }
         }
     }
 
@@ -188,7 +224,6 @@ private fun ChatInput(
 
     Column(
         modifier = modifier
-            .background(GovUkTheme.colourScheme.surfaces.chatBackground)
             .padding(all = GovUkTheme.spacing.medium)
             .semantics { isTraversalGroup = true }
             .modifyIfPiiError(isFocused, uiState),
