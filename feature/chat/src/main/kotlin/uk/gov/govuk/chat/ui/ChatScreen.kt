@@ -138,8 +138,14 @@ private fun ChatContent(
     val listState = rememberLazyListState()
     val chatEntries = uiState.chatEntries.toList()
     val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
-    val fadeStart = if (isPortrait) 0.9f else 0.8f
-    val bottomFade = Brush.verticalGradient(fadeStart to Color.White, 1f to Color.Transparent)
+    val topFadeEnd = if (isPortrait) 0.1f else 0.2f
+    val bottomFadeStart = if (isPortrait) 0.9f else 0.8f
+    val topBottomFade = Brush.verticalGradient(
+        0f to Color.Transparent,
+        topFadeEnd to Color.White,
+        bottomFadeStart to Color.White,
+        1f to Color.Transparent
+    )
     var backgroundVisible  by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -166,7 +172,7 @@ private fun ChatContent(
                     .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
                     .drawWithContent {
                         drawContent()
-                        drawRect(brush = bottomFade, blendMode = BlendMode.DstIn)
+                        drawRect(brush = topBottomFade, blendMode = BlendMode.DstIn)
                     }
                     .fillMaxWidth()
                     .weight(1f)
