@@ -8,7 +8,6 @@ import uk.gov.govuk.design.ui.theme.GovUkColourScheme.TextAndIcons
 
 private val BluePrimary = Color(0xFF1D70B8)
 private val BlueAccent = Color(0xFF11E0F1)
-private val Blue2 = Color(0xFF263D54)
 private val BlueLighter25 = Color(0xFF5694CA)
 private val BlueLighter50 = Color(0xFF8EB8DC)
 private val BlueLighter80 = Color(0xFFD2E2F1)
@@ -16,7 +15,9 @@ private val BlueLighter90 = Color(0xFFE8F1F8)
 private val BlueLighter95 = Color(0xFFF4F8FB)
 private val BlueDarker25 = Color(0xFF16548A)
 private val BlueDarker50 = Color(0xFF0F385C)
+private val BlueDarker65 = Color(0xFF0A2740)
 private val BlueDarker80 = Color(0xFF061625)
+private val BlueDarkMode = Color(0xFF263D54)
 private val TealAccent = Color(0xFF00FFE0)
 
 private val YellowPrimary = Color(0xFFFFDD00)
@@ -33,7 +34,6 @@ private val GreenLighter95 = Color(0xFFF3F9F7)
 private val GreenDarker25 = Color(0xFF0D6544)
 private val GreenDarker50 = Color(0xFF09442D)
 
-private val Grey2 = Color(0xFF0A2740)
 private val Grey850 = Color(0xFF262626)
 private val Grey800 = Color(0xFF333333)
 private val Grey700 = Color(0xFF4D4D4D)
@@ -314,7 +314,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         background = Black,
         primary = BlueAccent,
         splash = BluePrimary,
-        cardDefault = Grey2,
+        cardDefault = BlueDarker65,
         cardBlue = BlueDarker50,
         cardHighlight = Grey850,
         cardSelected = GreenDarker50,
@@ -360,7 +360,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         pageControlsInactive = Grey300,
         cardBlue = BlueDarker25,
         cardSelected = GreenAccent,
-        cardDefault = Blue2,
+        cardDefault = BlueDarkMode,
         listBlue = BluePrimary,
         switchOn = GreenPrimary,
         switchOff = BlackLighter50,
