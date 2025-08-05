@@ -8,7 +8,6 @@ import uk.gov.govuk.design.ui.theme.GovUkColourScheme.TextAndIcons
 
 private val BluePrimary = Color(0xFF1D70B8)
 private val BlueAccent = Color(0xFF11E0F1)
-private val Blue2 = Color(0xFF259AFF)
 private val BlueLighter25 = Color(0xFF5694CA)
 private val BlueLighter50 = Color(0xFF8EB8DC)
 private val BlueLighter80 = Color(0xFFD2E2F1)
@@ -16,7 +15,9 @@ private val BlueLighter90 = Color(0xFFE8F1F8)
 private val BlueLighter95 = Color(0xFFF4F8FB)
 private val BlueDarker25 = Color(0xFF16548A)
 private val BlueDarker50 = Color(0xFF0F385C)
+private val BlueDarker65 = Color(0xFF0A2740)
 private val BlueDarker80 = Color(0xFF061625)
+private val BlueDarkMode = Color(0xFF263D54)
 private val TealAccent = Color(0xFF00FFE0)
 
 private val YellowPrimary = Color(0xFFFFDD00)
@@ -147,6 +148,7 @@ data class GovUkColourScheme(
         val pageControlsInactive: Color,
         val cardBlue: Color,
         val cardSelected: Color,
+        val cardDefault: Color,
         val listBlue: Color,
         val switchOn: Color,
         val switchOff: Color,
@@ -252,6 +254,7 @@ internal val LightColorScheme = GovUkColourScheme(
         pageControlsInactive = Grey500,
         cardBlue = BlueLighter50,
         cardSelected = GreenPrimary,
+        cardDefault = BlueLighter80,
         listBlue = BlueLighter50,
         switchOn = GreenPrimary,
         switchOff = BlackLighter50,
@@ -311,7 +314,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         background = Black,
         primary = BlueAccent,
         splash = BluePrimary,
-        cardDefault = Grey800,
+        cardDefault = BlueDarker65,
         cardBlue = BlueDarker50,
         cardHighlight = Grey850,
         cardSelected = GreenDarker50,
@@ -357,6 +360,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         pageControlsInactive = Grey300,
         cardBlue = BlueDarker25,
         cardSelected = GreenAccent,
+        cardDefault = BlueDarkMode,
         listBlue = BluePrimary,
         switchOn = GreenPrimary,
         switchOff = BlackLighter50,
@@ -463,6 +467,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             pageControlsInactive = Color.Unspecified,
             cardBlue = Color.Unspecified,
             cardSelected = Color.Unspecified,
+            cardDefault = Color.Unspecified,
             listBlue = Color.Unspecified,
             switchOn = Color.Unspecified,
             switchOff = Color.Unspecified,
