@@ -230,6 +230,10 @@ class AuthRepo @Inject constructor(
         return getIdTokenProperty("email")
     }
 
+    fun getIdTokenIssueDate(): Int? {
+        return getIdTokenProperty("iat").toIntOrNull()
+    }
+
     private fun getIdTokenProperty(name: String): String {
         val parts = tokens.idToken.split(".")
         return try {

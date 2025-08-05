@@ -5,6 +5,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
@@ -19,11 +20,14 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.data.auth.AuthRepo
+import uk.gov.govuk.login.data.LoginRepo
+import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginViewModelTest {
 
     private val authRepo = mockk<AuthRepo>(relaxed = true)
+    private val loginRepo = mockk<LoginRepo>(relaxed = true)
     private val activity = mockk<FragmentActivity>(relaxed = true)
     private val dispatcher = UnconfinedTestDispatcher()
 
@@ -32,7 +36,7 @@ class LoginViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = LoginViewModel(authRepo)
+        viewModel = LoginViewModel(authRepo, loginRepo)
     }
 
     @After
@@ -52,9 +56,10 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Given the user is signed in, when init is successful, then emit ui state`() {
+    fun `Given the user is signed in and the id token issue date is in the future, when init is successful, then emit ui state`() {
         every { authRepo.isUserSignedIn() } returns true
         coEvery { authRepo.refreshTokens(any(), any()) } returns true
+        coEvery { loginRepo.getIdTokenIssueDate() } returns Date().toInstant().epochSecond + 10000L
 
         runTest {
             val events = mutableListOf<LoginEvent>()
@@ -64,6 +69,28 @@ class LoginViewModelTest {
             viewModel.init(activity)
 
             assertTrue(events.first().isBiometricLogin)
+        }
+    }
+
+    @Test
+    fun `Given the user is signed in and the id token issue date is not in the future, then end user session and clear auth repo`() {
+        every { authRepo.isUserSignedIn() } returns true
+        coEvery { authRepo.refreshTokens(any(), any()) } returns true
+        coEvery { loginRepo.getIdTokenIssueDate() } returns Date().toInstant().epochSecond
+
+        runTest {
+            val events = mutableListOf<LoginEvent>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(events)
+            }
+            viewModel.init(activity)
+
+            assertTrue(events.isEmpty())
+
+            coVerify(exactly = 1) {
+                authRepo.endUserSession()
+                authRepo.clear()
+            }
         }
     }
 
@@ -84,8 +111,9 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Given an auth response, when success, then emit ui state`() {
+    fun `Given an auth response, when success and id token issue date is not stored, then emit ui state`() {
         coEvery { authRepo.handleAuthResponse(any()) } returns true
+        every { authRepo.getIdTokenIssueDate() } returns null
 
         runTest {
             val events = mutableListOf<LoginEvent>()
@@ -95,6 +123,36 @@ class LoginViewModelTest {
             viewModel.onAuthResponse(null)
 
             assertFalse(events.first().isBiometricLogin)
+
+            verify(exactly = 1) {
+                authRepo.getIdTokenIssueDate()
+            }
+            coVerify(exactly = 0) {
+                loginRepo.setRefreshTokenExpiryDate(any())
+            }
+        }
+    }
+
+    @Test
+    fun `Given an auth response, when success and id token issue date is stored, then emit ui state`() {
+        coEvery { authRepo.handleAuthResponse(any()) } returns true
+        every { authRepo.getIdTokenIssueDate() } returns 12345
+
+        runTest {
+            val events = mutableListOf<LoginEvent>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(events)
+            }
+            viewModel.onAuthResponse(null)
+
+            assertFalse(events.first().isBiometricLogin)
+
+            verify(exactly = 1) {
+                authRepo.getIdTokenIssueDate()
+            }
+            coVerify(exactly = 1) {
+                loginRepo.setRefreshTokenExpiryDate(12345 + 601200)
+            }
         }
     }
 
