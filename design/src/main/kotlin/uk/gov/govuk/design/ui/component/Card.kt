@@ -329,6 +329,7 @@ fun HomeNavigationCard(
                         Icon(
                             painterResource(R.drawable.ic_cancel),
                             contentDescription = "${stringResource(R.string.content_desc_remove)} ${titleText ?: ""}",
+                            tint = GovUkTheme.colourScheme.textAndIcons.secondary
                         )
                     }
                 }
