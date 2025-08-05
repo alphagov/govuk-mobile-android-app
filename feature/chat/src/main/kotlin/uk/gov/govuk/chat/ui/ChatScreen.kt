@@ -60,6 +60,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
@@ -142,13 +143,14 @@ private fun ChatContent(
     var backgroundVisible  by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
+        delay(1000)
         backgroundVisible = true
     }
 
     Box(modifier.fillMaxSize()) {
         AnimatedVisibility(
             visible = backgroundVisible,
-            enter = fadeIn(animationSpec = tween(durationMillis = 2000))
+            enter = fadeIn(animationSpec = tween(durationMillis = 5000))
         ) {
             AndroidView(
                 factory = { context ->
