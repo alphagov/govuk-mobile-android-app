@@ -136,7 +136,7 @@ class LoginViewModelTest {
     @Test
     fun `Given an auth response, when success and id token issue date is stored, then emit ui state`() {
         coEvery { authRepo.handleAuthResponse(any()) } returns true
-        every { authRepo.getIdTokenIssueDate() } returns 12345
+        every { authRepo.getIdTokenIssueDate() } returns 12345L
 
         runTest {
             val events = mutableListOf<LoginEvent>()
@@ -151,7 +151,7 @@ class LoginViewModelTest {
                 authRepo.getIdTokenIssueDate()
             }
             coVerify(exactly = 1) {
-                loginRepo.setRefreshTokenExpiryDate(12345 + 601200)
+                loginRepo.setRefreshTokenExpiryDate(12345L + 601200L)
             }
         }
     }
