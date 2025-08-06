@@ -37,7 +37,7 @@ internal fun OnboardingPage(
     Column(
         modifier.fillMaxSize()
             .background(
-                GovUkTheme.colourScheme.surfaces.chatIntroBackground
+                GovUkTheme.colourScheme.surfaces.background
             )
     ) {
         headerContent()
