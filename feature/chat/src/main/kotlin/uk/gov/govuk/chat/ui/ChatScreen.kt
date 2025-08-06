@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -47,7 +48,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -57,6 +59,7 @@ import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -135,18 +138,13 @@ private fun ChatContent(
     onClear: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var heightPx by remember { mutableIntStateOf(0) }
     val listState = rememberLazyListState()
     val chatEntries = uiState.chatEntries.toList()
-    val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
-    val topFadeEnd = if (isPortrait) 0.1f else 0.2f
-    val bottomFadeStart = if (isPortrait) 0.9f else 0.8f
-    val topBottomFade = Brush.verticalGradient(
-        0f to Color.Transparent,
-        topFadeEnd to Color.White,
-        bottomFadeStart to Color.White,
-        1f to Color.Transparent
-    )
     var backgroundVisible  by remember { mutableStateOf(false) }
+    val brush = Brush.verticalGradient(
+        colorStops = calculateStops(heightPx, 20.dp)
+    )
 
     LaunchedEffect(Unit) {
         delay(1000)
@@ -169,10 +167,14 @@ private fun ChatContent(
             LazyColumn(
                 state = listState,
                 modifier = Modifier
+                    .onSizeChanged { heightPx = it.height }
                     .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
                     .drawWithContent {
                         drawContent()
-                        drawRect(brush = topBottomFade, blendMode = BlendMode.DstIn)
+                        drawRect(
+                            brush = brush,
+                            blendMode = BlendMode.DstIn
+                        )
                     }
                     .fillMaxWidth()
                     .weight(1f)
@@ -187,7 +189,7 @@ private fun ChatContent(
                 }
 
                 item {
-                    Spacer(Modifier.height(50.dp))
+                    Spacer(Modifier.height(20.dp))
                 }
             }
 
@@ -220,6 +222,31 @@ private fun ChatContent(
             listState.animateScrollToItem(chatEntries.size)
         }
     }
+}
+
+@Composable
+private fun calculateStops(
+    heightPx: Int,
+    fadeDp: Dp,
+): Array<Pair<Float, Color>> {
+    val density = LocalDensity.current
+    val topFadePx = with(density) { fadeDp.toPx() }
+    val bottomFadePx = with(density) { fadeDp.toPx() }
+
+    if (heightPx == 0) {
+        // Before layout pass, fallback to full opacity to avoid division by zero
+        return arrayOf(0f to Color.White, 1f to Color.White)
+    }
+
+    val topEnd = (topFadePx / heightPx).coerceIn(0f, 1f)
+    val bottomStart = ((heightPx - bottomFadePx) / heightPx).coerceIn(0f, 1f)
+
+    return arrayOf(
+        0f to Color.Transparent,
+        topEnd to Color.White,
+        bottomStart to Color.White,
+        1f to Color.Transparent
+    )
 }
 
 @Composable
