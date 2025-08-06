@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,7 +26,6 @@ import uk.gov.govuk.chat.navigation.navigateToChat
 import uk.gov.govuk.chat.navigation.navigateToOnboardingPageOne
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FullScreenHeader
-import uk.gov.govuk.design.ui.component.ListDivider
 import uk.gov.govuk.design.ui.component.PrimaryButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
@@ -71,11 +71,11 @@ private fun OnboardingPageTwoScreen(
                 modifier = Modifier.padding(all = GovUkTheme.spacing.medium)
                     .border(
                         1.dp,
-                        GovUkTheme.colourScheme.surfaces.cardBlue,
+                        GovUkTheme.colourScheme.strokes.chatIntroCardBorder,
                         RoundedCornerShape(10.dp)
                     )
                     .clip(RoundedCornerShape(10.dp))
-                    .background(GovUkTheme.colourScheme.surfaces.cardBlue)
+                    .background(GovUkTheme.colourScheme.surfaces.chatIntroCardBackground)
             ) {
                 Row(
                     modifier = Modifier.padding(all = GovUkTheme.spacing.medium),
@@ -98,7 +98,11 @@ private fun OnboardingPageTwoScreen(
                 Row(
                     modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
                 ) {
-                    ListDivider()
+                    HorizontalDivider(
+                        modifier = Modifier,
+                        thickness = 1.dp,
+                        color = GovUkTheme.colourScheme.strokes.chatIntroCardBorder
+                    )
                 }
 
                 Row(
@@ -124,7 +128,9 @@ private fun OnboardingPageTwoScreen(
             PrimaryButton(
                 text = stringResource(id = R.string.onboarding_page_two_button),
                 onClick = onClick,
-                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
+                modifier = Modifier
+                    .padding(horizontal = GovUkTheme.spacing.medium)
+                    .background(GovUkTheme.colourScheme.surfaces.fixedContainer),
                 enabled = true,
                 externalLink = false
             )

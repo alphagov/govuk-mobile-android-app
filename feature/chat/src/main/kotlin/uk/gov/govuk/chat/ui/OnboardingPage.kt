@@ -19,9 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
+import uk.gov.govuk.design.ui.component.FixedContainerDivider
 import uk.gov.govuk.design.ui.component.LargeHorizontalSpacer
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
-import uk.gov.govuk.design.ui.component.ListDivider
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
@@ -37,7 +37,7 @@ internal fun OnboardingPage(
     Column(
         modifier.fillMaxSize()
             .background(
-                GovUkTheme.colourScheme.surfaces.background
+                GovUkTheme.colourScheme.surfaces.chatIntroBackground
             )
     ) {
         headerContent()
@@ -73,7 +73,7 @@ internal fun OnboardingPage(
             }
         }
 
-        ListDivider()
+        FixedContainerDivider()
 
         MediumVerticalSpacer()
 

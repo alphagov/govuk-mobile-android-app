@@ -1,6 +1,7 @@
 package uk.gov.govuk.chat.ui
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -60,7 +61,9 @@ private fun OnboardingPageOneScreen(
             PrimaryButton(
                 text = stringResource(id = R.string.onboarding_page_one_button),
                 onClick = onClick,
-                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
+                modifier = Modifier
+                    .padding(horizontal = GovUkTheme.spacing.medium)
+                    .background(GovUkTheme.colourScheme.surfaces.fixedContainer),
                 enabled = true,
                 externalLink = false
             )
