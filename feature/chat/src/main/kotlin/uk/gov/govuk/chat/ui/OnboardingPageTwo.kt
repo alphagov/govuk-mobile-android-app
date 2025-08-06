@@ -57,7 +57,7 @@ private fun OnboardingPageTwoScreen(
 ) {
     OnboardingPage(
         title = stringResource(id = R.string.onboarding_page_two_header),
-        image = painterResource(id = R.drawable.onboarding_page_one),
+        image = painterResource(id = R.drawable.onboarding_page_two),
         modifier = modifier,
         headerContent = {
             FullScreenHeader(
