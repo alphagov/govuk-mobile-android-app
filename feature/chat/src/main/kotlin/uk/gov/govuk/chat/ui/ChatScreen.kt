@@ -157,7 +157,7 @@ private fun ChatContent(
         if (uiState.chatEntries.isEmpty()) {
             AnimatedVisibility(
                 visible = backgroundVisible,
-                enter = fadeIn(animationSpec = tween(durationMillis = 5000))
+                enter = fadeIn(animationSpec = tween(durationMillis = 2000))
             ) {
                 BackgroundGradient()
             }
