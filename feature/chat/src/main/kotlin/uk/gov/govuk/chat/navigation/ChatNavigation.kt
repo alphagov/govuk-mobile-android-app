@@ -3,7 +3,6 @@ package uk.gov.govuk.chat.navigation
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import uk.gov.govuk.chat.ui.ChatRoute
@@ -17,6 +16,7 @@ private const val CHAT_ONBOARDING_PAGE_2_ROUTE = "chat_onboarding_2_route"
 
 fun NavGraphBuilder.chatGraph(
     navController: NavHostController,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -40,6 +40,7 @@ fun NavGraphBuilder.chatGraph(
         composable(CHAT_ONBOARDING_PAGE_2_ROUTE) {
             OnboardingPageTwoRoute(
                 navController = navController,
+                launchBrowser = launchBrowser,
                 modifier = modifier
             )
         }

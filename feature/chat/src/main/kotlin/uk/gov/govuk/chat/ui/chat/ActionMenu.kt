@@ -21,7 +21,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -33,6 +32,7 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
 internal fun ActionMenu(
+    launchBrowser: (url: String) -> Unit,
     onClear: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -51,6 +51,7 @@ internal fun ActionMenu(
             .width(200.dp)
     ) {
         AboutMenuItem(
+            launchBrowser = launchBrowser,
             onLinkClicked = { expanded = false }
         )
         ClearMenuItem(
@@ -66,12 +67,10 @@ internal fun ActionMenu(
 
 @Composable
 private fun AboutMenuItem(
+    launchBrowser: (url: String) -> Unit,
     onLinkClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val uriHandler = LocalUriHandler.current
-    val uri = BuildConfig.ABOUT_APP_URL
-
     DropdownMenuItem(
         text = {
             Text(
@@ -82,7 +81,7 @@ private fun AboutMenuItem(
         },
         onClick = {
             onLinkClicked()
-            uriHandler.openUri(uri)
+            launchBrowser(BuildConfig.ABOUT_APP_URL)
         },
         modifier = modifier,
         trailingIcon = {
