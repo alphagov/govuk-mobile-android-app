@@ -1,26 +1,48 @@
 package uk.gov.govuk
 
-import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.graphics.ImageDecoder
+import android.graphics.drawable.AnimatedImageDrawable
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.FragmentActivity
-import com.google.firebase.Firebase
-import com.google.firebase.appcheck.appCheck
-import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-import uk.gov.govuk.ui.GovUkApp
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContent {
+            GovUkTheme {
+                Surface(
+                    modifier =
+                        Modifier
+                            .fillMaxSize(),
+                    color = GovUkTheme.colourScheme.surfaces.background
+                ) {
+                    AndroidView(factory = {
+                        ImageView(it).apply {
+                            val source = ImageDecoder.createSource(context.resources, R.drawable.animated)
+                            val drawable = ImageDecoder.decodeDrawable(source)
+                            setImageDrawable(drawable)
+                            if (drawable is AnimatedImageDrawable) {
+                                drawable.start()
+                            }
+                        }
+                    })
+                }
+            }
+        }
+    }
+
+    /*
     private val _intentFlow: MutableSharedFlow<Intent> =
         MutableSharedFlow(replay = 1)
     internal val intentFlow = _intentFlow.asSharedFlow()
@@ -67,4 +89,5 @@ class MainActivity : FragmentActivity() {
             _intentFlow.tryEmit(intent)
         }
     }
+     */
 }
