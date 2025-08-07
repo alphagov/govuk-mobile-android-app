@@ -22,7 +22,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +45,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
@@ -61,24 +61,35 @@ import kotlin.math.abs
 
 @Composable
 internal fun ChatRoute(
+    onShowOnboarding: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: ChatViewModel = hiltViewModel()
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    ChatScreen(
-        uiState = uiState,
-        onQuestionUpdated = { question ->
-            viewModel.onQuestionUpdated(question)
-        },
-        onSubmit = { question ->
-            viewModel.onSubmit(question)
-        },
-        onRetry = {
-            viewModel.clearConversation()
-        },
-        modifier = modifier
-    )
+    when (uiState.hasSeenOnboarding) {
+        null -> { /* do nothing */ }
+        true -> {
+            ChatScreen(
+                uiState = uiState,
+                onQuestionUpdated = { question ->
+                    viewModel.onQuestionUpdated(question)
+                },
+                onSubmit = { question ->
+                    viewModel.onSubmit(question)
+                },
+                onRetry = {
+                    viewModel.clearConversation()
+                },
+                modifier = modifier
+            )
+        }
+        false -> {
+            LaunchedEffect(Unit) {
+                onShowOnboarding()
+            }
+        }
+    }
 }
 
 @Composable

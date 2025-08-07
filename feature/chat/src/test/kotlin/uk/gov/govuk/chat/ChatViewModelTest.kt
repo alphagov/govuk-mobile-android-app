@@ -23,6 +23,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.chat.data.ChatRepo
+import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.chat.data.remote.ChatResult
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
@@ -33,6 +34,7 @@ import uk.gov.govuk.chat.data.remote.model.Source
 @OptIn(ExperimentalCoroutinesApi::class)
 class ChatViewModelTest {
     private val chatRepo = mockk<ChatRepo>(relaxed = true)
+    private val chatDataStore = mockk<ChatDataStore>(relaxed = true)
     private val conversation = mockk<Conversation>(relaxed = true)
     private val pendingQuestion = mockk<PendingQuestion>(relaxed = true)
     private val question = mockk<AnsweredQuestion>(relaxed = true)
@@ -45,7 +47,7 @@ class ChatViewModelTest {
     fun setup() {
         Dispatchers.setMain(dispatcher)
 
-        viewModel = ChatViewModel(chatRepo)
+        viewModel = ChatViewModel(chatRepo, chatDataStore)
 
         clearAllMocks()
     }
@@ -407,6 +409,8 @@ class ChatViewModelTest {
             delay(100)
             ChatResult.ValidationError()
         }
+
+        coEvery { chatDataStore.isChatIntroSeen() } returns true
 
         val uiStates = mutableListOf<ChatUiState>()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {

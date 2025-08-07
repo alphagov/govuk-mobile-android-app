@@ -19,13 +19,15 @@ fun NavGraphBuilder.chatGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    // TODO: If chat is 'seen' then startDestination is CHAT_ROUTE else CHAT_ONBOARDING_PAGE_1_ROUTE
     navigation(
         route = CHAT_GRAPH_ROUTE,
-        startDestination = CHAT_ONBOARDING_PAGE_1_ROUTE
+        startDestination = CHAT_ROUTE
     ) {
         composable(CHAT_ROUTE) {
             ChatRoute(
+                onShowOnboarding = {
+                    navController.navigateToOnboardingPageOne()
+                },
                 modifier = modifier
             )
         }
