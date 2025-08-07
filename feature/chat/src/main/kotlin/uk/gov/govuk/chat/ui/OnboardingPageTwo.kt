@@ -44,7 +44,7 @@ internal fun OnboardingPageTwoRoute(
             navController.navigateToChat()
         },
         onCancel = {
-            navController.popBackStack()
+            navController.popBackStack(route = "chat_route", inclusive = true)
         },
         onBack = {
             navController.navigateToOnboardingPageOne()
