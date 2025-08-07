@@ -12,6 +12,7 @@ private const val CHAT_ROUTE = "chat_route"
 
 fun NavGraphBuilder.chatGraph(
     navController: NavHostController,
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -20,6 +21,7 @@ fun NavGraphBuilder.chatGraph(
     ) {
         composable(CHAT_ROUTE) {
             ChatRoute(
+                launchBrowser = launchBrowser,
                 modifier = modifier
             )
         }

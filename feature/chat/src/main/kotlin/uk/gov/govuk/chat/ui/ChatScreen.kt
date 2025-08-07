@@ -61,6 +61,7 @@ import kotlin.math.abs
 
 @Composable
 internal fun ChatRoute(
+    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: ChatViewModel = hiltViewModel()
@@ -68,6 +69,7 @@ internal fun ChatRoute(
 
     ChatScreen(
         uiState = uiState,
+        launchBrowser = launchBrowser,
         onQuestionUpdated = { question ->
             viewModel.onQuestionUpdated(question)
         },
@@ -84,6 +86,7 @@ internal fun ChatRoute(
 @Composable
 private fun ChatScreen(
     uiState: ChatUiState,
+    launchBrowser: (url: String) -> Unit,
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
     onRetry: () -> Unit,
@@ -99,6 +102,7 @@ private fun ChatScreen(
     } else {
         ChatContent(
             uiState,
+            launchBrowser = launchBrowser,
             onQuestionUpdated,
             onSubmit,
             onClear = onRetry,
@@ -110,6 +114,7 @@ private fun ChatScreen(
 @Composable
 private fun ChatContent(
     uiState: ChatUiState,
+    launchBrowser: (url: String) -> Unit,
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
     onClear: () -> Unit,
@@ -147,6 +152,7 @@ private fun ChatContent(
             ) {
                 ChatInput(
                     uiState,
+                    launchBrowser = launchBrowser,
                     onQuestionUpdated,
                     onSubmit,
                     onClear
@@ -171,6 +177,7 @@ private fun ChatContent(
 @Composable
 private fun ChatInput(
     uiState: ChatUiState,
+    launchBrowser: (url: String) -> Unit,
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
     onClear: () -> Unit,
@@ -189,6 +196,7 @@ private fun ChatInput(
         Row {
             AnimatedVisibility(!isFocused) {
                 ActionMenu(
+                    launchBrowser = launchBrowser,
                     onClear = onClear,
                     modifier = Modifier.semantics { this.traversalIndex = 1f }
                 )
@@ -425,6 +433,7 @@ private fun LightModeChatScreenPreview() {
     GovUkTheme {
         ChatScreen(
             uiState = ChatUiState(isLoading = false),
+            launchBrowser = { _ -> },
             onQuestionUpdated = { _ -> },
             onSubmit = { _ -> },
             onRetry = { }
@@ -441,6 +450,7 @@ private fun DarkModeChatScreenPreview() {
     GovUkTheme {
         ChatScreen(
             uiState = ChatUiState(isLoading = false),
+            launchBrowser = { _ -> },
             onQuestionUpdated = { _ -> },
             onSubmit = { _ -> },
             onRetry = { }
