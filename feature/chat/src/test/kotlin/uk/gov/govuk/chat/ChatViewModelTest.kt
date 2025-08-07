@@ -554,4 +554,22 @@ class ChatViewModelTest {
         assertEquals(4, uiState.charactersRemaining)
         assertFalse(uiState.isSubmitEnabled)
     }
+
+    @Test
+    fun `setChatIntroSeen calls datastore and updates uiState`() = runTest {
+        coEvery { chatDataStore.isChatIntroSeen() } coAnswers { true }
+
+        val uiStates = mutableListOf<ChatUiState>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.toList(uiStates)
+        }
+
+        viewModel.setChatIntroSeen()
+        advanceUntilIdle()
+
+        coVerify(exactly = 1) { chatDataStore.saveChatIntroSeen() }
+
+        val finalState = viewModel.uiState.value
+        assertTrue(finalState.hasSeenOnboarding == true)
+    }
 }
