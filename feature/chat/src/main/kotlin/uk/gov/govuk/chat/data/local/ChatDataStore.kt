@@ -2,6 +2,7 @@ package uk.gov.govuk.chat.data.local
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.firstOrNull
@@ -16,6 +17,7 @@ internal class ChatDataStore @Inject constructor(
 
     companion object {
         internal const val CONVERSATION_ID_KEY = "conversation_id"
+        internal const val CHAT_INTRO_SEEN_KEY = "chat_intro_seen"
     }
 
     internal suspend fun conversationId(): String? {
@@ -31,6 +33,16 @@ internal class ChatDataStore @Inject constructor(
     internal suspend fun clearConversation() {
         dataStore.edit { preferences ->
             preferences.remove(stringPreferencesKey(CONVERSATION_ID_KEY))
+        }
+    }
+
+    internal suspend fun isChatIntroSeen(): Boolean {
+        return dataStore.data.firstOrNull()?.get(booleanPreferencesKey(CHAT_INTRO_SEEN_KEY)) == true
+    }
+
+    internal suspend fun saveChatIntroSeen() {
+        dataStore.edit { preferences ->
+            preferences[booleanPreferencesKey(CHAT_INTRO_SEEN_KEY)] = true
         }
     }
 }

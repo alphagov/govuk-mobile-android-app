@@ -9,6 +9,8 @@ import uk.gov.govuk.design.ui.theme.GovUkColourScheme.TextAndIcons
 private val BluePrimary = Color(0xFF1D70B8)
 private val BlueAccent = Color(0xFF11E0F1)
 private val Blue2 = Color(0xFF259AFF)
+private val Blue99 = Color(0xFF092237)
+
 private val BlueLighter25 = Color(0xFF5694CA)
 private val BlueLighter50 = Color(0xFF8EB8DC)
 private val BlueLighter80 = Color(0xFFD2E2F1)
@@ -138,7 +140,8 @@ data class GovUkColourScheme(
         val chatButtonBackgroundDisabled: Color,
         val chatButtonBackgroundEnabled: Color,
         val chatUserMessageBackground: Color,
-        val chatBotMessageBackground: Color
+        val chatBotMessageBackground: Color,
+        val chatIntroCardBackground: Color
     )
 
     data class Strokes(
@@ -159,7 +162,8 @@ data class GovUkColourScheme(
         val chatTextFieldBorderDisabled: Color,
         val chatUserMessageBorder: Color,
         val chatBotMessageBorder: Color,
-        val chatDivider: Color
+        val chatDivider: Color,
+        val chatIntroCardBorder: Color
     )
 }
 
@@ -244,7 +248,8 @@ internal val LightColorScheme = GovUkColourScheme(
         chatButtonBackgroundDisabled = Grey100,
         chatButtonBackgroundEnabled = BluePrimary,
         chatUserMessageBackground = BlueLighter80,
-        chatBotMessageBackground = White
+        chatBotMessageBackground = White,
+        chatIntroCardBackground = BlueLighter95
     ),
     strokes = Strokes(
         fixedContainer = BlackAlpha30,
@@ -264,7 +269,8 @@ internal val LightColorScheme = GovUkColourScheme(
         chatTextFieldBorderDisabled = Grey300,
         chatUserMessageBorder = BlueLighter80,
         chatBotMessageBorder = BlueLighter80,
-        chatDivider = BlueLighter80
+        chatDivider = BlueLighter80,
+        chatIntroCardBorder = BlueLighter80
     )
 )
 
@@ -349,7 +355,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatButtonBackgroundDisabled = Grey400,
         chatButtonBackgroundEnabled = BlueAccent,
         chatUserMessageBackground = Grey850,
-        chatBotMessageBackground = BlueDarker50
+        chatBotMessageBackground = BlueDarker50,
+        chatIntroCardBackground = Blue99
     ),
     strokes = Strokes(
         fixedContainer = WhiteAlpha30,
@@ -369,7 +376,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatTextFieldBorderDisabled = BlueLighter25,
         chatUserMessageBorder = Grey500,
         chatBotMessageBorder = BlueDarker25,
-        chatDivider = BlueDarker25
+        chatDivider = BlueDarker25,
+        chatIntroCardBorder = BlueDarker50
     )
 )
 
@@ -455,7 +463,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             chatButtonBackgroundDisabled = Color.Unspecified,
             chatButtonBackgroundEnabled = Color.Unspecified,
             chatUserMessageBackground = Color.Unspecified,
-            chatBotMessageBackground = Color.Unspecified
+            chatBotMessageBackground = Color.Unspecified,
+            chatIntroCardBackground = Color.Unspecified
         ),
         strokes = Strokes(
             fixedContainer = Color.Unspecified,
@@ -475,7 +484,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             chatTextFieldBorderDisabled = Color.Unspecified,
             chatUserMessageBorder = Color.Unspecified,
             chatBotMessageBorder = Color.Unspecified,
-            chatDivider = Color.Unspecified
+            chatDivider = Color.Unspecified,
+            chatIntroCardBorder = Color.Unspecified
         )
     )
 }

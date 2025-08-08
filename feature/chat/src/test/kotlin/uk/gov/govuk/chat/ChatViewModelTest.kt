@@ -23,6 +23,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.chat.data.ChatRepo
+import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.chat.data.remote.ChatResult
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
@@ -33,6 +34,7 @@ import uk.gov.govuk.chat.data.remote.model.Source
 @OptIn(ExperimentalCoroutinesApi::class)
 class ChatViewModelTest {
     private val chatRepo = mockk<ChatRepo>(relaxed = true)
+    private val chatDataStore = mockk<ChatDataStore>(relaxed = true)
     private val conversation = mockk<Conversation>(relaxed = true)
     private val pendingQuestion = mockk<PendingQuestion>(relaxed = true)
     private val question = mockk<AnsweredQuestion>(relaxed = true)
@@ -45,7 +47,7 @@ class ChatViewModelTest {
     fun setup() {
         Dispatchers.setMain(dispatcher)
 
-        viewModel = ChatViewModel(chatRepo)
+        viewModel = ChatViewModel(chatRepo, chatDataStore)
 
         clearAllMocks()
     }
@@ -408,6 +410,8 @@ class ChatViewModelTest {
             ChatResult.ValidationError()
         }
 
+        coEvery { chatDataStore.isChatIntroSeen() } returns true
+
         val uiStates = mutableListOf<ChatUiState>()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.toList(uiStates)
@@ -602,5 +606,23 @@ class ChatViewModelTest {
     @Test
     fun `Given no conversation, hasConversation returns false`() = runTest {
         assertFalse(viewModel.hasConversation())
+    }
+
+    @Test
+    fun `setChatIntroSeen calls datastore and updates uiState`() = runTest {
+        coEvery { chatDataStore.isChatIntroSeen() } coAnswers { true }
+
+        val uiStates = mutableListOf<ChatUiState>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.toList(uiStates)
+        }
+
+        viewModel.setChatIntroSeen()
+        advanceUntilIdle()
+
+        coVerify(exactly = 1) { chatDataStore.saveChatIntroSeen() }
+
+        val finalState = viewModel.uiState.value
+        assertTrue(finalState.hasSeenOnboarding == true)
     }
 }

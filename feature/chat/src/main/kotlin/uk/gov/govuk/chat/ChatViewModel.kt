@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uk.gov.govuk.chat.data.ChatRepo
+import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.chat.data.remote.ChatResult
 import uk.gov.govuk.chat.data.remote.ChatResult.NotFound
 import uk.gov.govuk.chat.data.remote.ChatResult.Success
@@ -27,12 +28,14 @@ internal data class ChatUiState(
     val charactersRemaining: Int = 0,
     val isSubmitEnabled: Boolean = false,
     val isError: Boolean = false,
-    val isRetryableError: Boolean = false
+    val isRetryableError: Boolean = false,
+    val hasSeenOnboarding: Boolean? = null
 )
 
 @HiltViewModel
 internal class ChatViewModel @Inject constructor(
-    private val chatRepo: ChatRepo
+    private val chatRepo: ChatRepo,
+    private val chatDataStore: ChatDataStore
 ): ViewModel() {
     private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
         ChatUiState(
@@ -43,6 +46,11 @@ internal class ChatViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(hasSeenOnboarding = chatDataStore.isChatIntroSeen())
+            }
+        }
         loadConversation()
     }
 
@@ -82,6 +90,13 @@ internal class ChatViewModel @Inject constructor(
             _uiState.value = ChatUiState(isLoading = true)
             chatRepo.clearConversation()
             _uiState.update { it.copy(isLoading = false) }
+        }
+    }
+
+    fun setChatIntroSeen() {
+        viewModelScope.launch {
+            chatDataStore.saveChatIntroSeen()
+            _uiState.update { it.copy(hasSeenOnboarding = true) }
         }
     }
 
