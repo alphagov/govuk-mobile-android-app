@@ -29,7 +29,7 @@ class MainActivity : FragmentActivity() {
                 ) {
                     AndroidView(factory = {
                         ImageView(it).apply {
-                            val source = ImageDecoder.createSource(context.resources, R.drawable.animated)
+                            val source = ImageDecoder.createSource(context.resources, R.drawable.animation)
                             val drawable = ImageDecoder.decodeDrawable(source)
                             setImageDrawable(drawable)
                             if (drawable is AnimatedImageDrawable) {
