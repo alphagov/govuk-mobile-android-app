@@ -81,6 +81,7 @@ import kotlin.math.abs
 internal fun ChatRoute(
     onShowOnboarding: () -> Unit,
     launchBrowser: (url: String) -> Unit,
+    onClearDone: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: ChatViewModel = hiltViewModel()
@@ -100,6 +101,7 @@ internal fun ChatRoute(
                 },
                 onRetry = {
                     viewModel.clearConversation()
+                    onClearDone()
                 },
                 modifier = modifier
             )
