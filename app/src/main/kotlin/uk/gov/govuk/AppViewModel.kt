@@ -18,6 +18,7 @@ import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
+import uk.gov.govuk.login.data.LoginRepo
 import uk.gov.govuk.navigation.AppNavigation
 import uk.gov.govuk.search.SearchFeature
 import uk.gov.govuk.topics.TopicsFeature
@@ -30,6 +31,7 @@ import javax.inject.Inject
 internal class AppViewModel @Inject constructor(
     private val timeoutManager: TimeoutManager,
     private val appRepo: AppRepo,
+    private val loginRepo: LoginRepo,
     private val configRepo: ConfigRepo,
     private val flagRepo: FlagRepo,
     private val authRepo: AuthRepo,
@@ -114,6 +116,7 @@ internal class AppViewModel @Inject constructor(
             if (authRepo.isDifferentUser()) {
                 authRepo.clear()
                 appRepo.clear()
+                loginRepo.clear()
                 topicsFeature.clear()
                 localFeature.clear()
                 searchFeature.clear()
