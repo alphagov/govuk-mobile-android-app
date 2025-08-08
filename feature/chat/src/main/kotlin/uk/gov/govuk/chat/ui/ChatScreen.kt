@@ -91,7 +91,7 @@ internal fun ChatRoute(
             ChatScreen(
                 uiState = uiState,
                 launchBrowser = launchBrowser,
-                hasConversation = viewModel.hasConversation(),
+                hasConversation = uiState.chatEntries.isNotEmpty(),
                 onQuestionUpdated = { question ->
                     viewModel.onQuestionUpdated(question)
                 },
