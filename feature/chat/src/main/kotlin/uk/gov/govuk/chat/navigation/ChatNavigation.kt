@@ -29,12 +29,14 @@ fun NavGraphBuilder.chatGraph(
                 onShowOnboarding = {
                     navController.navigateToOnboardingPageOne()
                 },
+                onClearDone = {
+                    navController.navigateToChat()
+                },
                 launchBrowser = launchBrowser,
                 modifier = modifier
             )
         }
         composable(CHAT_ONBOARDING_PAGE_1_ROUTE) {
-
             OnboardingPageOneRoute(
                 onClick = {
                     navController.navigateToOnboardingPageTwo()
@@ -44,8 +46,6 @@ fun NavGraphBuilder.chatGraph(
                 },
                 modifier = modifier
             )
-
-
         }
         composable(CHAT_ONBOARDING_PAGE_2_ROUTE) {
             OnboardingPageTwoRoute(
