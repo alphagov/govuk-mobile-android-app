@@ -38,4 +38,12 @@
   <string name="clear_dialog_title">Do you want to clear your chat history?</string>
   <string name="clear_dialog_positive_button">Yes, clear chat</string>
   <string name="clear_dialog_negative_button">No, not now</string>
+  <string name="onboarding_page_one_header">Get quick answers from GOV.UK Chat</string>
+  <string name="onboarding_page_one_text">An easy way to find answers about topics, services and information on GOV.UK.</string>
+  <string name="onboarding_page_one_button">Continue</string>
+  <string name="onboarding_page_two_header">Double-check the answers</string>
+  <string name="onboarding_page_two_text_one">GOV.UK Chat is an AI tool and can sometimes make mistakes.</string>
+  <string name="onboarding_page_two_text_two">It’s simple to double-check information. Use the links provided with each answer.</string>
+  <string name="onboarding_page_two_button">I understand</string>
+  <string name="onboarding_page_cancel_text">Cancel</string>
 </resources>

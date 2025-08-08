@@ -29,7 +29,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -63,6 +62,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
@@ -79,26 +79,29 @@ import kotlin.math.abs
 
 @Composable
 internal fun ChatRoute(
+    onShowOnboarding: () -> Unit,
     launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: ChatViewModel = hiltViewModel()
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    ChatScreen(
-        uiState = uiState,
-        launchBrowser = launchBrowser,
-        onQuestionUpdated = { question ->
-            viewModel.onQuestionUpdated(question)
-        },
-        onSubmit = { question ->
-            viewModel.onSubmit(question)
-        },
-        onRetry = {
-            viewModel.clearConversation()
-        },
-        modifier = modifier
-    )
+    uiState.hasSeenOnboarding.let { seenOnboarding ->
+        if (seenOnboarding == true) {
+            ChatScreen(
+                uiState = uiState,
+                launchBrowser = launchBrowser,
+                onQuestionUpdated = viewModel::onQuestionUpdated,
+                onSubmit = viewModel::onSubmit,
+                onRetry = viewModel::clearConversation,
+                modifier = modifier
+            )
+        } else if (seenOnboarding == false) {
+            LaunchedEffect(Unit) {
+                onShowOnboarding()
+            }
+        }
+    }
 }
 
 @Composable

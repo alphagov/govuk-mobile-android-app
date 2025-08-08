@@ -468,6 +468,7 @@ private fun GovUkNavHost(
         )
 
         chatGraph(
+            navController = navController,
             launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } },
             modifier = Modifier.padding(paddingValues)
         )
