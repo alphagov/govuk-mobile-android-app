@@ -21,11 +21,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
-import uk.gov.govuk.chat.navigation.navigateToChat
-import uk.gov.govuk.chat.navigation.navigateToOnboardingPageOne
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.PrimaryButton
@@ -33,7 +30,9 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
 internal fun OnboardingPageTwoRoute(
-    navController: NavController,
+    onClick: () -> Unit,
+    onCancel: () -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: ChatViewModel = hiltViewModel()
@@ -41,14 +40,10 @@ internal fun OnboardingPageTwoRoute(
     OnboardingPageTwoScreen(
         onClick = {
             viewModel.setChatIntroSeen()
-            navController.navigateToChat()
+            onClick()
         },
-        onCancel = {
-            navController.popBackStack(route = "chat_route", inclusive = true)
-        },
-        onBack = {
-            navController.navigateToOnboardingPageOne()
-        },
+        onCancel = onCancel,
+        onBack = onBack,
         modifier = modifier
     )
 }

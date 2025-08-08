@@ -34,18 +34,38 @@ fun NavGraphBuilder.chatGraph(
             )
         }
         composable(CHAT_ONBOARDING_PAGE_1_ROUTE) {
+
             OnboardingPageOneRoute(
-                navController = navController,
+                onClick = {
+                    navController.navigateToOnboardingPageTwo()
+                },
+                onCancel = {
+                    popToChatEntryScreen(navController)
+                },
                 modifier = modifier
             )
+
+
         }
         composable(CHAT_ONBOARDING_PAGE_2_ROUTE) {
             OnboardingPageTwoRoute(
-                navController = navController,
+                onClick = {
+                    navController.navigateToChat()
+                },
+                onCancel = {
+                    popToChatEntryScreen(navController)
+                },
+                onBack = {
+                    navController.navigateToOnboardingPageOne()
+                },
                 modifier = modifier
             )
         }
     }
+}
+
+private fun popToChatEntryScreen(navController: NavController) {
+    navController.popBackStack(route = "chat_route", inclusive = true)
 }
 
 fun NavController.navigateToChat() {

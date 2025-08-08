@@ -9,9 +9,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
 import uk.gov.govuk.chat.R
-import uk.gov.govuk.chat.navigation.navigateToOnboardingPageTwo
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
@@ -20,16 +18,13 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
 internal fun OnboardingPageOneRoute(
-    navController: NavController,
+    onClick: () -> Unit,
+    onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     OnboardingPageOneScreen(
-        onClick = {
-            navController.navigateToOnboardingPageTwo()
-        },
-        onCancel = {
-            navController.popBackStack(route = "chat_route", inclusive = true)
-        },
+        onClick = onClick,
+        onCancel = onCancel,
         modifier = modifier
     )
 }
