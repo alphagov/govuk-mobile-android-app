@@ -1,14 +1,21 @@
 package uk.gov.govuk.chat.ui
 
 import android.content.res.Configuration
+import android.widget.FrameLayout
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,6 +30,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,10 +38,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -43,9 +58,12 @@ import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
@@ -123,33 +141,64 @@ private fun ChatContent(
     onClear: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var heightPx by remember { mutableIntStateOf(0) }
     val listState = rememberLazyListState()
     val chatEntries = uiState.chatEntries.toList()
+    var backgroundVisible  by remember { mutableStateOf(false) }
+    val brush = Brush.verticalGradient(
+        colorStops = calculateStops(heightPx, 20.dp)
+    )
 
-    Column(
-        modifier.background(color = GovUkTheme.colourScheme.surfaces.chatBackground)
-    ) {
-        LazyColumn (
-            state = listState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .padding(horizontal = GovUkTheme.spacing.medium)
-        ) {
-            item {
-                IntroMessages(uiState.chatEntries.isEmpty()) // only animate if no conversation
-            }
+    LaunchedEffect(Unit) {
+        delay(1000)
+        backgroundVisible = true
+    }
 
-            items(chatEntries) {
-                DisplayChatEntry(uiState.isLoading, it.second)
+    Box(modifier.fillMaxSize()) {
+        if (uiState.chatEntries.isEmpty()) {
+            AnimatedVisibility(
+                visible = backgroundVisible,
+                enter = fadeIn(animationSpec = tween(durationMillis = 2000))
+            ) {
+                BackgroundGradient()
             }
+        } else {
+            BackgroundGradient()
         }
 
         Column {
-            Row(
+            LazyColumn(
+                state = listState,
                 modifier = Modifier
+                    .onSizeChanged { heightPx = it.height }
+                    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+                    .drawWithContent {
+                        drawContent()
+                        drawRect(
+                            brush = brush,
+                            blendMode = BlendMode.DstIn
+                        )
+                    }
                     .fillMaxWidth()
-                    .background(GovUkTheme.colourScheme.surfaces.chatBackground),
+                    .weight(1f)
+                    .padding(horizontal = GovUkTheme.spacing.medium)
+            ) {
+                item {
+                    IntroMessages(uiState.chatEntries.isEmpty()) // only animate if no conversation
+                }
+
+                items(chatEntries) {
+                    DisplayChatEntry(uiState.isLoading, it.second)
+                }
+
+                item {
+                    Spacer(Modifier.height(20.dp))
+                }
+            }
+
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -162,11 +211,12 @@ private fun ChatContent(
                 )
             }
 
-            if (uiState.isPiiError) {
-                PiiErrorMessage()
-            }
+                if (uiState.isPiiError) {
+                    PiiErrorMessage()
+                }
 
-            SmallVerticalSpacer()
+                SmallVerticalSpacer()
+            }
         }
     }
 
@@ -175,6 +225,45 @@ private fun ChatContent(
             listState.animateScrollToItem(chatEntries.size)
         }
     }
+}
+
+@Composable
+private fun calculateStops(
+    heightPx: Int,
+    fadeDp: Dp,
+): Array<Pair<Float, Color>> {
+    val density = LocalDensity.current
+    val topFadePx = with(density) { fadeDp.toPx() }
+    val bottomFadePx = with(density) { fadeDp.toPx() }
+
+    if (heightPx == 0) {
+        // Before layout pass, fallback to full opacity to avoid division by zero
+        return arrayOf(0f to Color.White, 1f to Color.White)
+    }
+
+    val topEnd = (topFadePx / heightPx).coerceIn(0f, 1f)
+    val bottomStart = ((heightPx - bottomFadePx) / heightPx).coerceIn(0f, 1f)
+
+    return arrayOf(
+        0f to Color.Transparent,
+        topEnd to Color.White,
+        bottomStart to Color.White,
+        1f to Color.Transparent
+    )
+}
+
+@Composable
+private fun BackgroundGradient(
+    modifier: Modifier = Modifier
+) {
+    AndroidView(
+        factory = { context ->
+            FrameLayout(context).apply {
+                setBackgroundResource(R.drawable.background_chat)
+            }
+        },
+        modifier = modifier.fillMaxSize()
+    )
 }
 
 @Composable
@@ -191,7 +280,6 @@ private fun ChatInput(
 
     Column(
         modifier = modifier
-            .background(GovUkTheme.colourScheme.surfaces.chatBackground)
             .padding(all = GovUkTheme.spacing.medium)
             .semantics { isTraversalGroup = true }
             .modifyIfPiiError(isFocused, uiState),
