@@ -70,6 +70,7 @@ internal fun ChatRoute(
     ChatScreen(
         uiState = uiState,
         launchBrowser = launchBrowser,
+        hasConversation = viewModel.hasConversation(),
         onQuestionUpdated = { question ->
             viewModel.onQuestionUpdated(question)
         },
@@ -87,6 +88,7 @@ internal fun ChatRoute(
 private fun ChatScreen(
     uiState: ChatUiState,
     launchBrowser: (url: String) -> Unit,
+    hasConversation: Boolean,
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
     onRetry: () -> Unit,
@@ -103,6 +105,7 @@ private fun ChatScreen(
         ChatContent(
             uiState,
             launchBrowser = launchBrowser,
+            hasConversation = hasConversation,
             onQuestionUpdated,
             onSubmit,
             onClear = onRetry,
@@ -115,6 +118,7 @@ private fun ChatScreen(
 private fun ChatContent(
     uiState: ChatUiState,
     launchBrowser: (url: String) -> Unit,
+    hasConversation: Boolean,
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
     onClear: () -> Unit,
@@ -153,6 +157,7 @@ private fun ChatContent(
                 ChatInput(
                     uiState,
                     launchBrowser = launchBrowser,
+                    hasConversation = hasConversation,
                     onQuestionUpdated,
                     onSubmit,
                     onClear
@@ -178,6 +183,7 @@ private fun ChatContent(
 private fun ChatInput(
     uiState: ChatUiState,
     launchBrowser: (url: String) -> Unit,
+    hasConversation: Boolean,
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
     onClear: () -> Unit,
@@ -197,6 +203,7 @@ private fun ChatInput(
             AnimatedVisibility(!isFocused) {
                 ActionMenu(
                     launchBrowser = launchBrowser,
+                    hasConversation = hasConversation,
                     onClear = onClear,
                     modifier = Modifier.semantics { this.traversalIndex = 1f }
                 )
@@ -434,6 +441,7 @@ private fun LightModeChatScreenPreview() {
         ChatScreen(
             uiState = ChatUiState(isLoading = false),
             launchBrowser = { _ -> },
+            hasConversation = false,
             onQuestionUpdated = { _ -> },
             onSubmit = { _ -> },
             onRetry = { }
@@ -451,6 +459,7 @@ private fun DarkModeChatScreenPreview() {
         ChatScreen(
             uiState = ChatUiState(isLoading = false),
             launchBrowser = { _ -> },
+            hasConversation = false,
             onQuestionUpdated = { _ -> },
             onSubmit = { _ -> },
             onRetry = { }

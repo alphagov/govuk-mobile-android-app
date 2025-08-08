@@ -130,6 +130,10 @@ internal class ChatViewModel @Inject constructor(
         }
     }
 
+    fun hasConversation(): Boolean {
+        return _uiState.value.chatEntries.isNotEmpty()
+    }
+
     private suspend fun getAnswer(conversationId: String, questionId: String) {
         handleChatResult(
             chatRepo.getAnswer(

@@ -550,4 +550,57 @@ class ChatViewModelTest {
         assertEquals(4, uiState.charactersRemaining)
         assertFalse(uiState.isSubmitEnabled)
     }
+
+    @Test
+    fun `Given a conversation, hasConversation returns true`() = runTest {
+        val question = AnsweredQuestion(
+            "abc",
+            Answer(
+                "",
+                "",
+                "",
+                null
+            ),
+            "",
+            "",
+            "Question 1"
+        )
+
+        val answer = Answer(
+            "",
+            "",
+            "Answer 1",
+            listOf(
+                Source(
+                    "url",
+                    "title"
+                )
+            )
+        )
+
+        coEvery { chatRepo.askQuestion(any()) } coAnswers {
+            delay(100)
+            ChatResult.Success(question)
+        }
+
+        coEvery { chatRepo.getAnswer(any(), any()) } returns ChatResult.Success(answer)
+
+        val uiStates = mutableListOf<ChatUiState>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.toList(uiStates)
+        }
+
+        assertFalse(viewModel.hasConversation())
+
+        viewModel.onSubmit("First Question")
+
+        advanceUntilIdle()
+
+        assertTrue(viewModel.hasConversation())
+    }
+
+    @Test
+    fun `Given no conversation, hasConversation returns false`() = runTest {
+        assertFalse(viewModel.hasConversation())
+    }
 }
