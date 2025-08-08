@@ -68,25 +68,17 @@ internal fun ChatRoute(
     val viewModel: ChatViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    when (uiState.hasSeenOnboarding) {
-        null -> { /* do nothing */ }
-        true -> {
+    uiState.hasSeenOnboarding.let { seenOnboarding ->
+        if (seenOnboarding == true) {
             ChatScreen(
                 uiState = uiState,
                 launchBrowser = launchBrowser,
-                onQuestionUpdated = { question ->
-                    viewModel.onQuestionUpdated(question)
-                },
-                onSubmit = { question ->
-                    viewModel.onSubmit(question)
-                },
-                onRetry = {
-                    viewModel.clearConversation()
-                },
+                onQuestionUpdated = viewModel::onQuestionUpdated,
+                onSubmit = viewModel::onSubmit,
+                onRetry = viewModel::clearConversation,
                 modifier = modifier
             )
-        }
-        false -> {
+        } else if (seenOnboarding == false) {
             LaunchedEffect(Unit) {
                 onShowOnboarding()
             }
