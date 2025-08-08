@@ -33,6 +33,7 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 @Composable
 internal fun ActionMenu(
     launchBrowser: (url: String) -> Unit,
+    hasConversation: Boolean,
     onClear: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -54,10 +55,13 @@ internal fun ActionMenu(
             launchBrowser = launchBrowser,
             onLinkClicked = { expanded = false }
         )
-        ClearMenuItem(
-            onClear = onClear,
-            onClearActioned = { expanded = false }
-        )
+
+        if (hasConversation) {
+            ClearMenuItem(
+                onClear = onClear,
+                onClearActioned = { expanded = false }
+            )
+        }
     }
 
     ActionIconButton(

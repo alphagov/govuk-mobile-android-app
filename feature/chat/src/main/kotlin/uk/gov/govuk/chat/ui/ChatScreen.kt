@@ -91,9 +91,16 @@ internal fun ChatRoute(
             ChatScreen(
                 uiState = uiState,
                 launchBrowser = launchBrowser,
-                onQuestionUpdated = viewModel::onQuestionUpdated,
-                onSubmit = viewModel::onSubmit,
-                onRetry = viewModel::clearConversation,
+                hasConversation = uiState.chatEntries.isNotEmpty(),
+                onQuestionUpdated = { question ->
+                    viewModel.onQuestionUpdated(question)
+                },
+                onSubmit = { question ->
+                    viewModel.onSubmit(question)
+                },
+                onRetry = {
+                    viewModel.clearConversation()
+                },
                 modifier = modifier
             )
         } else if (seenOnboarding == false) {
@@ -108,6 +115,7 @@ internal fun ChatRoute(
 private fun ChatScreen(
     uiState: ChatUiState,
     launchBrowser: (url: String) -> Unit,
+    hasConversation: Boolean,
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
     onRetry: () -> Unit,
@@ -124,6 +132,7 @@ private fun ChatScreen(
         ChatContent(
             uiState,
             launchBrowser = launchBrowser,
+            hasConversation = hasConversation,
             onQuestionUpdated,
             onSubmit,
             onClear = onRetry,
@@ -136,6 +145,7 @@ private fun ChatScreen(
 private fun ChatContent(
     uiState: ChatUiState,
     launchBrowser: (url: String) -> Unit,
+    hasConversation: Boolean,
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
     onClear: () -> Unit,
@@ -205,6 +215,7 @@ private fun ChatContent(
                 ChatInput(
                     uiState,
                     launchBrowser = launchBrowser,
+                    hasConversation = hasConversation,
                     onQuestionUpdated,
                     onSubmit,
                     onClear
@@ -270,6 +281,7 @@ private fun BackgroundGradient(
 private fun ChatInput(
     uiState: ChatUiState,
     launchBrowser: (url: String) -> Unit,
+    hasConversation: Boolean,
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
     onClear: () -> Unit,
@@ -288,6 +300,7 @@ private fun ChatInput(
             AnimatedVisibility(!isFocused) {
                 ActionMenu(
                     launchBrowser = launchBrowser,
+                    hasConversation = hasConversation,
                     onClear = onClear,
                     modifier = Modifier.semantics { this.traversalIndex = 1f }
                 )
@@ -525,6 +538,7 @@ private fun LightModeChatScreenPreview() {
         ChatScreen(
             uiState = ChatUiState(isLoading = false),
             launchBrowser = { _ -> },
+            hasConversation = false,
             onQuestionUpdated = { _ -> },
             onSubmit = { _ -> },
             onRetry = { }
@@ -542,6 +556,7 @@ private fun DarkModeChatScreenPreview() {
         ChatScreen(
             uiState = ChatUiState(isLoading = false),
             launchBrowser = { _ -> },
+            hasConversation = false,
             onQuestionUpdated = { _ -> },
             onSubmit = { _ -> },
             onRetry = { }
