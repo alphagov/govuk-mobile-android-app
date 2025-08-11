@@ -1,5 +1,6 @@
 package uk.gov.govuk.chat.ui
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.FixedContainerDivider
@@ -54,14 +56,18 @@ internal fun OnboardingPage(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Image(
-                    painter = image,
-                    contentDescription = null,
-                    modifier = Modifier.height(IntrinsicSize.Min)
-                        .padding(all = GovUkTheme.spacing.medium)
-                )
+                val isLogoVisible = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
 
-                LargeHorizontalSpacer()
+                if (isLogoVisible) {
+                    Image(
+                        painter = image,
+                        contentDescription = null,
+                        modifier = Modifier.height(IntrinsicSize.Min)
+                            .padding(all = GovUkTheme.spacing.medium)
+                    )
+
+                    LargeHorizontalSpacer()
+                }
 
                 LargeTitleBoldLabel(
                     text = title,
