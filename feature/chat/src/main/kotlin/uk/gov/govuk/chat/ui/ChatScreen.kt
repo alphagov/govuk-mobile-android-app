@@ -78,13 +78,10 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 import kotlin.math.abs
 
 internal class ChatScreenEvents(
-    val onPageView: () -> Unit,             // Scenario 9
-    val onMenuOpen: () -> Unit,             // Scenario 10
-    val onAboutClick: (String) -> Unit,     // Scenario 11
-    val onClearClick: (String) -> Unit,     // Scenario 12
-    val onClearYesClick: (String) -> Unit,  // Scenario 13
-    val onClearNoClick: (String) -> Unit,   // Scenario 14
-    val onQuestionSubmit: (String) -> Unit, // Scenario 15
+    val onPageView: (String, String, String) -> Unit,
+    val onActionItemClicked: (String, String, String) -> Unit,
+    val onAboutClick: (String) -> Unit,
+    val onQuestionSubmit: (String) -> Unit,
 )
 
 @Composable
@@ -102,12 +99,11 @@ internal fun ChatRoute(
             ChatScreen(
                 uiState = uiState,
                 analyticsEvents = ChatScreenEvents(
-                    onPageView = { viewModel.onPageView() },
-                    onMenuOpen = { viewModel.onMenuOpen() },
+                    onPageView = { klass, name, title ->
+                        viewModel.onPageView(klass, name, title)
+                    },
+                    onActionItemClicked = { text, section, action -> viewModel.onActionItemClicked(text, section, action) },
                     onAboutClick = { text -> viewModel.onAboutClick(text) },
-                    onClearClick = { text -> viewModel.onClearClick(text) },
-                    onClearYesClick = { text -> viewModel.onClearYesClick(text) },
-                    onClearNoClick = { text -> viewModel.onClearNoClick(text) },
                     onQuestionSubmit = { text -> viewModel.onQuestionSubmit(text) },
                 ),
                 launchBrowser = launchBrowser,
@@ -144,7 +140,11 @@ private fun ChatScreen(
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
-        analyticsEvents.onPageView()
+        analyticsEvents.onPageView(
+            ChatViewModel.Companion.SCREEN_CLASS,
+            ChatViewModel.Companion.SCREEN_NAME,
+            ChatViewModel.Companion.SCREEN_TITLE
+        )
     }
 
     if (uiState.isRetryableError) {
@@ -572,12 +572,9 @@ private fun LightModeChatScreenPreview() {
         ChatScreen(
             uiState = ChatUiState(isLoading = false),
             analyticsEvents = ChatScreenEvents(
-                onPageView = { },
-                onMenuOpen = { },
+                onPageView = { _, _, _ -> },
+                onActionItemClicked = { _, _, _ -> },
                 onAboutClick = { _ ->  },
-                onClearClick = { _ ->  },
-                onClearYesClick = { _ ->  },
-                onClearNoClick = { _ ->  },
                 onQuestionSubmit = { _ ->  },
             ),
             launchBrowser = { _ -> },
@@ -599,12 +596,9 @@ private fun DarkModeChatScreenPreview() {
         ChatScreen(
             uiState = ChatUiState(isLoading = false),
             analyticsEvents = ChatScreenEvents(
-                onPageView = { },
-                onMenuOpen = { },
+                onPageView = { _, _, _ -> },
+                onActionItemClicked = { _, _, _ -> },
                 onAboutClick = { _ ->  },
-                onClearClick = { _ ->  },
-                onClearYesClick = { _ ->  },
-                onClearNoClick = { _ -> },
                 onQuestionSubmit = { _ ->  },
             ),
             launchBrowser = { _ -> },

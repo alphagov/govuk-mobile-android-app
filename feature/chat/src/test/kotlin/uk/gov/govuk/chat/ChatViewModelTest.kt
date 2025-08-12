@@ -577,33 +577,49 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `Given a chat page view, then log analytics`() {
-        viewModel.onPageView()
+    fun `Given a page view, then log analytics`() {
+        val screenClass = "screenClass"
+        val screenName = "screenName"
+        val title = "title"
+
+        viewModel.onPageView(
+            screenClass = screenClass,
+            screenName = screenName,
+            title = title
+        )
 
         verify {
             analyticsClient.screenView(
-                screenClass = "Chat",
-                screenName = "Chat Screen",
-                title = "Chat Screen"
+                screenClass = screenClass,
+                screenName = screenName,
+                title = title
             )
         }
     }
 
     @Test
-    fun `When the user clicks on the Action Menu button, then log analytics`() {
-        viewModel.onMenuOpen()
+    fun `When the user clicks an action menu item, then log analytics`() {
+        val text = "text"
+        val section = "section"
+        val action = "action"
+
+        viewModel.onActionItemClicked(
+            text = text,
+            section = section,
+            action = action
+        )
 
         verify {
             analyticsClient.buttonFunction(
-                text = "Action Menu",
-                section = "Action Menu",
-                action = "Action Menu Opened"
+                text = text,
+                section = section,
+                action = action
             )
         }
     }
 
     @Test
-    fun `When the user clicks on the Action Menu About button, then log analytics`() {
+    fun `When the user clicks the About button, then log analytics`() {
         val buttonText = "buttonText"
 
         viewModel.onAboutClick(buttonText)
@@ -617,51 +633,6 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `When the user clicks on the Action Menu Clear button and the dialog is opened, then log analytics`() {
-        val buttonText = "buttonText"
-
-        viewModel.onClearClick(buttonText)
-
-        verify {
-            analyticsClient.buttonFunction(
-                text = buttonText,
-                section = "Action Menu",
-                action = "Clear Chat Opened"
-            )
-        }
-    }
-
-    @Test
-    fun `When the user clicks on the Action Menu Clear dialog Yes option, then log analytics`() {
-        val buttonText = "buttonText"
-
-        viewModel.onClearYesClick(buttonText)
-
-        verify {
-            analyticsClient.buttonFunction(
-                text = buttonText,
-                section = "Action Menu",
-                action = "Clear Chat Yes Clicked"
-            )
-        }
-    }
-
-    @Test
-    fun `When the user clicks on the Action Menu Clear dialog No option, then log analytics`() {
-        val buttonText = "buttonText"
-
-        viewModel.onClearNoClick(buttonText)
-
-        verify {
-            analyticsClient.buttonFunction(
-                text = buttonText,
-                section = "Action Menu",
-                action = "Clear Chat No Clicked"
-            )
-        }
-    }
-
-    @Test
     fun `When the user enters a question and submits it, then log analytics`() {
         val question = "I have a question"
 
@@ -669,6 +640,24 @@ class ChatViewModelTest {
 
         verify {
             analyticsClient.chat(question)
+        }
+    }
+
+    @Test
+    fun `Given an onboarding screen button click, then log analytics`() {
+        val text = "text"
+        val section = "section"
+
+        viewModel.onButtonClicked(
+            text = text,
+            section = section
+        )
+
+        verify {
+            analyticsClient.buttonClick(
+                text = text,
+                section = section
+            )
         }
     }
 }

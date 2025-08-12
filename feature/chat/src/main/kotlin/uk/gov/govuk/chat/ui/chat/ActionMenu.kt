@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.chat.BuildConfig
+import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.chat.ui.ChatScreenEvents
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
@@ -68,9 +69,14 @@ internal fun ActionMenu(
         }
     }
 
+    val buttonText = stringResource(id = R.string.action_alt)
     ActionIconButton(
         onClick = {
-            analyticsEvents.onMenuOpen()
+            analyticsEvents.onActionItemClicked(
+                buttonText,
+                ChatViewModel.Companion.ACTION_MENU,
+                ChatViewModel.Companion.ACTION_MENU_ACTION
+            )
             expanded = !expanded
         }
     )
@@ -129,7 +135,11 @@ private fun ClearMenuItem(
         },
         onClick = {
             openDialog.value = true
-            analyticsEvents.onClearClick(buttonText)
+            analyticsEvents.onActionItemClicked(
+                buttonText,
+                ChatViewModel.Companion.ACTION_MENU,
+                ChatViewModel.Companion.ACTION_MENU_CLEAR_ACTION
+            )
         },
         modifier = modifier,
         trailingIcon = {
@@ -156,7 +166,11 @@ private fun ClearMenuItem(
 
                 TextButton(
                     onClick = {
-                        analyticsEvents.onClearYesClick(buttonText)
+                        analyticsEvents.onActionItemClicked(
+                            buttonText,
+                            ChatViewModel.Companion.ACTION_MENU,
+                            ChatViewModel.Companion.ACTION_MENU_CLEAR_YES
+                        )
                         onClear()
                         openDialog.value = false
                         onClearActioned()
@@ -172,7 +186,11 @@ private fun ClearMenuItem(
                 val buttonText = stringResource(id = R.string.clear_dialog_negative_button)
                 TextButton(
                     onClick = {
-                        analyticsEvents.onClearNoClick(buttonText)
+                        analyticsEvents.onActionItemClicked(
+                            buttonText,
+                            ChatViewModel.Companion.ACTION_MENU,
+                            ChatViewModel.Companion.ACTION_MENU_CLEAR_NO
+                        )
                         openDialog.value = false
                         onClearActioned()
                     }

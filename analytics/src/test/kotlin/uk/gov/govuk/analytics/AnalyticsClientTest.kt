@@ -151,7 +151,7 @@ class AnalyticsClientTest {
     @Test
     fun `Given a user session is not active, when an ecommerce event is logged, then do not log to firebase`() = runTest {
         analyticsClient.isUserSessionActive = { false }
-        
+
         analyticsClient.selectItemEvent(
             ecommerceEvent = EcommerceEvent(
                 itemListName = "Topics",
@@ -223,6 +223,21 @@ class AnalyticsClientTest {
                     "section" to "section",
                     "language" to Locale.getDefault().language,
                     "text" to "text"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a chat question, then log event`() {
+        analyticsClient.chat("a question")
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Chat",
+                mapOf(
+                    "type" to "typed",
+                    "text" to "a question"
                 )
             )
         }
@@ -421,6 +436,24 @@ class AnalyticsClientTest {
                     "language" to Locale.getDefault().language,
                     "text" to "search result title",
                     "url" to "search result link"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a chat action menu about click, then log event`() {
+        analyticsClient.chatActionMenuAboutClick("chat about title", "chat about link")
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "ChatActionMenuAbout",
+                    "external" to true,
+                    "language" to Locale.getDefault().language,
+                    "text" to "chat about title",
+                    "url" to "chat about link"
                 )
             )
         }

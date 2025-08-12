@@ -40,14 +40,20 @@ internal class ChatViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient
 ): ViewModel() {
     companion object {
-        private const val SCREEN_CLASS = "Chat"
-        private const val SCREEN_NAME = "Chat Screen"
-        private const val SCREEN_TITLE = "Chat Screen"
-        private const val ACTION_MENU = "Action Menu"
-        private const val ACTION_MENU_ACTION = "Action Menu Opened"
-        private const val ACTION_MENU_CLEAR_ACTION = "Clear Chat Opened"
-        private const val ACTION_MENU_CLEAR_YES = "Clear Chat Yes Clicked"
-        private const val ACTION_MENU_CLEAR_NO = "Clear Chat No Clicked"
+        internal const val SCREEN_CLASS = "Chat"
+        internal const val SCREEN_NAME = "Chat Screen"
+        internal const val SCREEN_TITLE = "Chat Screen"
+        internal const val ACTION_MENU = "Action Menu"
+        internal const val ACTION_MENU_ACTION = "Action Menu Opened"
+        internal const val ACTION_MENU_CLEAR_ACTION = "Clear Chat Opened"
+        internal const val ACTION_MENU_CLEAR_YES = "Clear Chat Yes Clicked"
+        internal const val ACTION_MENU_CLEAR_NO = "Clear Chat No Clicked"
+        internal const val ONBOARDING_SCREEN_CLASS = "Chat Onboarding"
+        internal const val ONBOARDING_SCREEN_ONE_NAME = "Chat Onboarding Screen One"
+        internal const val ONBOARDING_SCREEN_ONE_TITLE = "Chat Onboarding Screen One"
+        internal const val ONBOARDING_SCREEN_TWO_NAME = "Chat Onboarding Screen Two"
+        internal const val ONBOARDING_SCREEN_TWO_TITLE = "Chat Onboarding Screen Two"
+        internal const val ONBOARDING_SCREEN_TWO_BACK_TEXT = "Chat Onboarding Screen Two Back"
     }
 
     private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
@@ -158,19 +164,19 @@ internal class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onPageView() {
+    fun onPageView(screenClass: String, screenName: String, title: String) {
         analyticsClient.screenView(
-            screenClass = SCREEN_CLASS,
-            screenName = SCREEN_NAME,
-            title = SCREEN_TITLE
+            screenClass = screenClass,
+            screenName = screenName,
+            title = title
         )
     }
 
-    fun onMenuOpen() {
+    fun onActionItemClicked(text: String, section: String, action: String) {
         analyticsClient.buttonFunction(
-            text = ACTION_MENU,
-            section = ACTION_MENU,
-            action = ACTION_MENU_ACTION
+            text = text,
+            section = section,
+            action = action
         )
     }
 
@@ -181,32 +187,15 @@ internal class ChatViewModel @Inject constructor(
         )
     }
 
-    fun onClearClick(text: String) {
-        analyticsClient.buttonFunction(
-            text = text,
-            section = ACTION_MENU,
-            action = ACTION_MENU_CLEAR_ACTION
-        )
-    }
-
-    fun onClearYesClick(text: String) {
-        analyticsClient.buttonFunction(
-            text = text,
-            section = ACTION_MENU,
-            action = ACTION_MENU_CLEAR_YES
-        )
-    }
-
-    fun onClearNoClick(text: String) {
-        analyticsClient.buttonFunction(
-            text = text,
-            section = ACTION_MENU,
-            action = ACTION_MENU_CLEAR_NO
-        )
-    }
-
     fun onQuestionSubmit(question: String) {
         analyticsClient.chat(question)
+    }
+
+    fun onButtonClicked(text: String, section: String) {
+        analyticsClient.buttonClick(
+            text = text,
+            section = section
+        )
     }
 
     private suspend fun getAnswer(conversationId: String, questionId: String) {
