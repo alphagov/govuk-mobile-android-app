@@ -98,6 +98,10 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
+    fun chat(question: String) {
+        redactedEvent(name = "Chat", type = "typed", inputString = question)
+    }
+
     fun search(searchTerm: String) {
         redactedEvent(name = "Search", type = "typed", inputString = searchTerm)
     }
@@ -108,6 +112,11 @@ class AnalyticsClient @Inject constructor(
 
     fun history(searchTerm: String) {
         redactedEvent(name = "Search", type = "history", inputString = searchTerm)
+    }
+
+    fun chatActionMenuAboutClick(text: String, url: String) {
+        // external as these links will be opened in the device browser
+        navigation(text = text, type = "ChatActionMenuAbout", url = url, external = true)
     }
 
     fun searchResultClick(text: String, url: String) {

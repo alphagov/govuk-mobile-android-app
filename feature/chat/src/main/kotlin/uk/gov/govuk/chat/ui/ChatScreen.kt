@@ -77,6 +77,16 @@ import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import kotlin.math.abs
 
+internal class ChatScreenEvents(
+    val onPageView: () -> Unit,             // Scenario 9
+    val onMenuOpen: () -> Unit,             // Scenario 10
+    val onAboutClick: (String) -> Unit,     // Scenario 11
+    val onClearClick: (String) -> Unit,     // Scenario 12
+    val onClearYesClick: (String) -> Unit,  // Scenario 13
+    val onClearNoClick: (String) -> Unit,   // Scenario 14
+    val onQuestionSubmit: (String) -> Unit, // Scenario 15
+)
+
 @Composable
 internal fun ChatRoute(
     onShowOnboarding: () -> Unit,
@@ -91,6 +101,15 @@ internal fun ChatRoute(
         if (seenOnboarding == true) {
             ChatScreen(
                 uiState = uiState,
+                analyticsEvents = ChatScreenEvents(
+                    onPageView = { viewModel.onPageView() },
+                    onMenuOpen = { viewModel.onMenuOpen() },
+                    onAboutClick = { text -> viewModel.onAboutClick(text) },
+                    onClearClick = { text -> viewModel.onClearClick(text) },
+                    onClearYesClick = { text -> viewModel.onClearYesClick(text) },
+                    onClearNoClick = { text -> viewModel.onClearNoClick(text) },
+                    onQuestionSubmit = { text -> viewModel.onQuestionSubmit(text) },
+                ),
                 launchBrowser = launchBrowser,
                 hasConversation = uiState.chatEntries.isNotEmpty(),
                 onQuestionUpdated = { question ->
@@ -116,6 +135,7 @@ internal fun ChatRoute(
 @Composable
 private fun ChatScreen(
     uiState: ChatUiState,
+    analyticsEvents: ChatScreenEvents,
     launchBrowser: (url: String) -> Unit,
     hasConversation: Boolean,
     onQuestionUpdated: (String) -> Unit,
@@ -123,6 +143,10 @@ private fun ChatScreen(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(Unit) {
+        analyticsEvents.onPageView()
+    }
+
     if (uiState.isRetryableError) {
         ChatErrorPageWithRetry(
             onRetry = onRetry,
@@ -138,6 +162,7 @@ private fun ChatScreen(
             onQuestionUpdated,
             onSubmit,
             onClear = onRetry,
+            analyticsEvents = analyticsEvents,
             modifier
         )
     }
@@ -151,6 +176,7 @@ private fun ChatContent(
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
     onClear: () -> Unit,
+    analyticsEvents: ChatScreenEvents,
     modifier: Modifier = Modifier
 ) {
     var heightPx by remember { mutableIntStateOf(0) }
@@ -220,7 +246,8 @@ private fun ChatContent(
                     hasConversation = hasConversation,
                     onQuestionUpdated,
                     onSubmit,
-                    onClear
+                    onClear,
+                    analyticsEvents = analyticsEvents
                 )
             }
 
@@ -287,6 +314,7 @@ private fun ChatInput(
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
     onClear: () -> Unit,
+    analyticsEvents: ChatScreenEvents,
     modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -304,6 +332,7 @@ private fun ChatInput(
                     launchBrowser = launchBrowser,
                     hasConversation = hasConversation,
                     onClear = onClear,
+                    analyticsEvents = analyticsEvents,
                     modifier = Modifier.semantics { this.traversalIndex = 1f }
                 )
             }
@@ -364,7 +393,10 @@ private fun ChatInput(
                 CharacterCountMessage(uiState)
 
                 SubmitIconButton(
-                    onClick = { onSubmit(uiState.question) },
+                    onClick = {
+                        analyticsEvents.onQuestionSubmit(uiState.question)
+                        onSubmit(uiState.question)
+                    },
                     uiState = uiState
                 )
             }
@@ -539,6 +571,15 @@ private fun LightModeChatScreenPreview() {
     GovUkTheme {
         ChatScreen(
             uiState = ChatUiState(isLoading = false),
+            analyticsEvents = ChatScreenEvents(
+                onPageView = { },
+                onMenuOpen = { },
+                onAboutClick = { _ ->  },
+                onClearClick = { _ ->  },
+                onClearYesClick = { _ ->  },
+                onClearNoClick = { _ ->  },
+                onQuestionSubmit = { _ ->  },
+            ),
             launchBrowser = { _ -> },
             hasConversation = false,
             onQuestionUpdated = { _ -> },
@@ -557,6 +598,15 @@ private fun DarkModeChatScreenPreview() {
     GovUkTheme {
         ChatScreen(
             uiState = ChatUiState(isLoading = false),
+            analyticsEvents = ChatScreenEvents(
+                onPageView = { },
+                onMenuOpen = { },
+                onAboutClick = { _ ->  },
+                onClearClick = { _ ->  },
+                onClearYesClick = { _ ->  },
+                onClearNoClick = { _ -> },
+                onQuestionSubmit = { _ ->  },
+            ),
             launchBrowser = { _ -> },
             hasConversation = false,
             onQuestionUpdated = { _ -> },

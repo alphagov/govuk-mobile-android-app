@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.chat.data.ChatRepo
 import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.chat.data.remote.ChatResult
@@ -35,8 +36,20 @@ internal data class ChatUiState(
 @HiltViewModel
 internal class ChatViewModel @Inject constructor(
     private val chatRepo: ChatRepo,
-    private val chatDataStore: ChatDataStore
+    private val chatDataStore: ChatDataStore,
+    private val analyticsClient: AnalyticsClient
 ): ViewModel() {
+    companion object {
+        private const val SCREEN_CLASS = "Chat"
+        private const val SCREEN_NAME = "Chat Screen"
+        private const val SCREEN_TITLE = "Chat Screen"
+        private const val ACTION_MENU = "Action Menu"
+        private const val ACTION_MENU_ACTION = "Action Menu Opened"
+        private const val ACTION_MENU_CLEAR_ACTION = "Clear Chat Opened"
+        private const val ACTION_MENU_CLEAR_YES = "Clear Chat Yes Clicked"
+        private const val ACTION_MENU_CLEAR_NO = "Clear Chat No Clicked"
+    }
+
     private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
         ChatUiState(
             chatEntries = linkedMapOf(),
@@ -143,6 +156,57 @@ internal class ChatViewModel @Inject constructor(
                 isSubmitEnabled = question.isNotBlank() && !displayCharacterError
             )
         }
+    }
+
+    fun onPageView() {
+        analyticsClient.screenView(
+            screenClass = SCREEN_CLASS,
+            screenName = SCREEN_NAME,
+            title = SCREEN_TITLE
+        )
+    }
+
+    fun onMenuOpen() {
+        analyticsClient.buttonFunction(
+            text = ACTION_MENU,
+            section = ACTION_MENU,
+            action = ACTION_MENU_ACTION
+        )
+    }
+
+    fun onAboutClick(text: String) {
+        analyticsClient.chatActionMenuAboutClick(
+            text = text,
+            url = BuildConfig.ABOUT_APP_URL
+        )
+    }
+
+    fun onClearClick(text: String) {
+        analyticsClient.buttonFunction(
+            text = text,
+            section = ACTION_MENU,
+            action = ACTION_MENU_CLEAR_ACTION
+        )
+    }
+
+    fun onClearYesClick(text: String) {
+        analyticsClient.buttonFunction(
+            text = text,
+            section = ACTION_MENU,
+            action = ACTION_MENU_CLEAR_YES
+        )
+    }
+
+    fun onClearNoClick(text: String) {
+        analyticsClient.buttonFunction(
+            text = text,
+            section = ACTION_MENU,
+            action = ACTION_MENU_CLEAR_NO
+        )
+    }
+
+    fun onQuestionSubmit(question: String) {
+        analyticsClient.chat(question)
     }
 
     private suspend fun getAnswer(conversationId: String, questionId: String) {

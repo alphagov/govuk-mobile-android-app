@@ -5,6 +5,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -22,6 +23,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.chat.data.ChatRepo
 import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.chat.data.remote.ChatResult
@@ -38,6 +40,7 @@ class ChatViewModelTest {
     private val conversation = mockk<Conversation>(relaxed = true)
     private val pendingQuestion = mockk<PendingQuestion>(relaxed = true)
     private val question = mockk<AnsweredQuestion>(relaxed = true)
+    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
 
     private val dispatcher = StandardTestDispatcher()
 
@@ -47,7 +50,7 @@ class ChatViewModelTest {
     fun setup() {
         Dispatchers.setMain(dispatcher)
 
-        viewModel = ChatViewModel(chatRepo, chatDataStore)
+        viewModel = ChatViewModel(chatRepo, chatDataStore, analyticsClient)
 
         clearAllMocks()
     }
@@ -571,5 +574,101 @@ class ChatViewModelTest {
 
         val finalState = viewModel.uiState.value
         assertTrue(finalState.hasSeenOnboarding == true)
+    }
+
+    @Test
+    fun `Given a chat page view, then log analytics`() {
+        viewModel.onPageView()
+
+        verify {
+            analyticsClient.screenView(
+                screenClass = "Chat",
+                screenName = "Chat Screen",
+                title = "Chat Screen"
+            )
+        }
+    }
+
+    @Test
+    fun `When the user clicks on the Action Menu button, then log analytics`() {
+        viewModel.onMenuOpen()
+
+        verify {
+            analyticsClient.buttonFunction(
+                text = "Action Menu",
+                section = "Action Menu",
+                action = "Action Menu Opened"
+            )
+        }
+    }
+
+    @Test
+    fun `When the user clicks on the Action Menu About button, then log analytics`() {
+        val buttonText = "buttonText"
+
+        viewModel.onAboutClick(buttonText)
+
+        verify {
+            analyticsClient.chatActionMenuAboutClick(
+                text = buttonText,
+                url = BuildConfig.ABOUT_APP_URL
+            )
+        }
+    }
+
+    @Test
+    fun `When the user clicks on the Action Menu Clear button and the dialog is opened, then log analytics`() {
+        val buttonText = "buttonText"
+
+        viewModel.onClearClick(buttonText)
+
+        verify {
+            analyticsClient.buttonFunction(
+                text = buttonText,
+                section = "Action Menu",
+                action = "Clear Chat Opened"
+            )
+        }
+    }
+
+    @Test
+    fun `When the user clicks on the Action Menu Clear dialog Yes option, then log analytics`() {
+        val buttonText = "buttonText"
+
+        viewModel.onClearYesClick(buttonText)
+
+        verify {
+            analyticsClient.buttonFunction(
+                text = buttonText,
+                section = "Action Menu",
+                action = "Clear Chat Yes Clicked"
+            )
+        }
+    }
+
+    @Test
+    fun `When the user clicks on the Action Menu Clear dialog No option, then log analytics`() {
+        val buttonText = "buttonText"
+
+        viewModel.onClearNoClick(buttonText)
+
+        verify {
+            analyticsClient.buttonFunction(
+                text = buttonText,
+                section = "Action Menu",
+                action = "Clear Chat No Clicked"
+            )
+        }
+    }
+
+    @Test
+    fun `When the user enters a question and submits it, then log analytics`() {
+        val question = "I have a question"
+
+        viewModel.onQuestionSubmit(question)
+
+        verify {
+            analyticsClient.chat(question)
+        }
     }
 }
