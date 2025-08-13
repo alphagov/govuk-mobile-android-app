@@ -460,6 +460,24 @@ class AnalyticsClientTest {
     }
 
     @Test
+    fun `Given a chat response markdown link click, then log event`() {
+        analyticsClient.chatMarkdownLinkClick("chat title", "chat link")
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "ChatMarkdownLink",
+                    "external" to true,
+                    "language" to Locale.getDefault().language,
+                    "text" to "chat title",
+                    "url" to "chat link"
+                )
+            )
+        }
+    }
+
+    @Test
     fun `Given a visited item click, then log event`() {
         analyticsClient.visitedItemClick("visited item title", "visited item link")
 
