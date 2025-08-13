@@ -72,12 +72,14 @@ internal fun ActionMenu(
     val buttonText = stringResource(id = R.string.action_alt)
     ActionIconButton(
         onClick = {
-            analyticsEvents.onActionItemClicked(
-                buttonText,
-                ChatViewModel.Companion.ACTION_MENU,
-                ChatViewModel.Companion.ACTION_MENU_ACTION
-            )
             expanded = !expanded
+            if (expanded) {
+                analyticsEvents.onActionItemClicked(
+                    buttonText,
+                    ChatViewModel.Companion.ACTION_MENU,
+                    ChatViewModel.Companion.ACTION_MENU_ACTION
+                )
+            }
         }
     )
 }
