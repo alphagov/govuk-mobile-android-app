@@ -116,6 +116,8 @@ private fun Message1(
 ) {
     Answer(
         answer = stringResource(id = R.string.bot_message_1),
+        launchBrowser = {},
+        onMarkdownLinkClicked = { _, _ -> },
         modifier = modifier.padding(top = GovUkTheme.spacing.medium)
     )
 }
@@ -127,6 +129,8 @@ private fun Message2(
     Answer(
         showHeader = false,
         answer = stringResource(id = R.string.bot_message_2),
+        launchBrowser = {},
+        onMarkdownLinkClicked = { _, _ -> },
         modifier = modifier.padding(top = GovUkTheme.spacing.medium)
     )
 }
@@ -138,6 +142,8 @@ private fun Message3(
     Answer(
         showHeader = false,
         answer = stringResource(id = R.string.bot_message_3),
+        launchBrowser = {},
+        onMarkdownLinkClicked = { _, _ -> },
         modifier = modifier.padding(top = GovUkTheme.spacing.medium)
     )
 }

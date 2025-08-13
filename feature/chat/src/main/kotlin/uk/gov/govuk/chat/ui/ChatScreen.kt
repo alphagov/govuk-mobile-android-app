@@ -82,6 +82,7 @@ internal class ChatScreenEvents(
     val onActionItemClicked: (String, String, String) -> Unit,
     val onAboutClick: (String) -> Unit,
     val onQuestionSubmit: (String) -> Unit,
+    val onMarkdownLinkClicked: (String, String) -> Unit,
 )
 
 @Composable
@@ -105,6 +106,7 @@ internal fun ChatRoute(
                     onActionItemClicked = { text, section, action -> viewModel.onActionItemClicked(text, section, action) },
                     onAboutClick = { text -> viewModel.onAboutClick(text) },
                     onQuestionSubmit = { text -> viewModel.onQuestionSubmit(text) },
+                    onMarkdownLinkClicked = { text, url -> viewModel.onMarkdownLinkClicked(text, url) }
                 ),
                 launchBrowser = launchBrowser,
                 hasConversation = uiState.chatEntries.isNotEmpty(),
@@ -226,7 +228,12 @@ private fun ChatContent(
                 }
 
                 items(chatEntries) {
-                    DisplayChatEntry(uiState.isLoading, it.second)
+                    DisplayChatEntry(
+                        uiState.isLoading,
+                        it.second,
+                        launchBrowser = launchBrowser,
+                        onMarkdownLinkClicked = analyticsEvents.onMarkdownLinkClicked,
+                    )
                 }
 
                 item {
@@ -576,6 +583,7 @@ private fun LightModeChatScreenPreview() {
                 onActionItemClicked = { _, _, _ -> },
                 onAboutClick = { _ ->  },
                 onQuestionSubmit = { _ ->  },
+                onMarkdownLinkClicked = { _, _ -> }
             ),
             launchBrowser = { _ -> },
             hasConversation = false,
@@ -600,6 +608,7 @@ private fun DarkModeChatScreenPreview() {
                 onActionItemClicked = { _, _, _ -> },
                 onAboutClick = { _ ->  },
                 onQuestionSubmit = { _ ->  },
+                onMarkdownLinkClicked = { _, _ -> }
             ),
             launchBrowser = { _ -> },
             hasConversation = false,

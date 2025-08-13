@@ -119,6 +119,11 @@ class AnalyticsClient @Inject constructor(
         navigation(text = text, type = "ChatActionMenuAbout", url = url, external = true)
     }
 
+    fun chatMarkdownLinkClick(text: String, url: String) {
+        // external as these links will be opened in the device browser
+        navigation(text = text, type = "ChatMarkdownLink", url = url, external = true)
+    }
+
     fun searchResultClick(text: String, url: String) {
         // external as these links will be opened in the device browser
         navigation(text = text, type = "SearchResult", url = url, external = true)

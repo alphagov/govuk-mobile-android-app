@@ -14,6 +14,9 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 internal fun Markdown(
     text: String,
     talkbackText: String,
+    launchBrowser: (url: String) -> Unit,
+    onMarkdownLinkClicked: (String, String) -> Unit,
+    markdownLinkType: String,
     modifier: Modifier = Modifier
 ) {
     MarkdownText(
@@ -32,6 +35,10 @@ internal fun Markdown(
             .padding(horizontal = GovUkTheme.spacing.medium)
             .semantics {
                 contentDescription = talkbackText
-            }
+            },
+        onLinkClicked = { url ->
+            onMarkdownLinkClicked(markdownLinkType, url)
+            launchBrowser(url)
+        }
     )
 }

@@ -660,4 +660,22 @@ class ChatViewModelTest {
             )
         }
     }
+
+    @Test
+    fun `Given an onboarding screen markdown link click, then log analytics`() {
+        val text = "text"
+        val url = "url"
+
+        viewModel.onMarkdownLinkClicked(
+            text = text,
+            url = url
+        )
+
+        verify {
+            analyticsClient.chatMarkdownLinkClick(
+                text = text,
+                url = url
+            )
+        }
+    }
 }

@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import uk.gov.govuk.chat.ChatViewModel.Companion.RESPONSE_LINK_CLICKED
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
@@ -17,6 +18,8 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 @Composable
 internal fun Answer(
     answer: String,
+    launchBrowser: (url: String) -> Unit,
+    onMarkdownLinkClicked: (String, String) -> Unit,
     modifier: Modifier = Modifier,
     showHeader: Boolean = true,
     sources: List<String>? = null
@@ -43,11 +46,18 @@ internal fun Answer(
 
         Markdown(
             text = answer,
-            talkbackText = answer
+            talkbackText = answer,
+            launchBrowser = launchBrowser,
+            onMarkdownLinkClicked = onMarkdownLinkClicked,
+            markdownLinkType = RESPONSE_LINK_CLICKED
         )
 
         if (!sources.isNullOrEmpty()) {
-            Sources(sources = sources)
+            Sources(
+                sources = sources,
+                launchBrowser = launchBrowser,
+                onMarkdownLinkClicked = onMarkdownLinkClicked,
+            )
         }
 
         MediumVerticalSpacer()

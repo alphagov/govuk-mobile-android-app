@@ -54,6 +54,8 @@ internal class ChatViewModel @Inject constructor(
         internal const val ONBOARDING_SCREEN_TWO_NAME = "Chat Onboarding Screen Two"
         internal const val ONBOARDING_SCREEN_TWO_TITLE = "Chat Onboarding Screen Two"
         internal const val ONBOARDING_SCREEN_TWO_BACK_TEXT = "Chat Onboarding Screen Two Back"
+        internal const val RESPONSE_LINK_CLICKED = "Response Link Clicked"
+        internal const val SOURCE_LINK_CLICKED = "Source Link Clicked"
     }
 
     private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
@@ -196,6 +198,10 @@ internal class ChatViewModel @Inject constructor(
             text = text,
             section = section
         )
+    }
+
+    fun onMarkdownLinkClicked(text: String, url: String) {
+        analyticsClient.chatMarkdownLinkClick(text = text, url = url, )
     }
 
     private suspend fun getAnswer(conversationId: String, questionId: String) {
