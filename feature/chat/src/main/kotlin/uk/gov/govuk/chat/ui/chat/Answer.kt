@@ -20,6 +20,7 @@ internal fun Answer(
     answer: String,
     launchBrowser: (url: String) -> Unit,
     onMarkdownLinkClicked: (String, String) -> Unit,
+    onActionItemClicked: (String, String, String) -> Unit,
     modifier: Modifier = Modifier,
     showHeader: Boolean = true,
     sources: List<String>? = null
@@ -57,6 +58,7 @@ internal fun Answer(
                 sources = sources,
                 launchBrowser = launchBrowser,
                 onMarkdownLinkClicked = onMarkdownLinkClicked,
+                onActionItemClicked = onActionItemClicked
             )
         }
 

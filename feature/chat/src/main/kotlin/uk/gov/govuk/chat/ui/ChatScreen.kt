@@ -106,7 +106,7 @@ internal fun ChatRoute(
                     onActionItemClicked = { text, section, action -> viewModel.onActionItemClicked(text, section, action) },
                     onAboutClick = { text -> viewModel.onAboutClick(text) },
                     onQuestionSubmit = { text -> viewModel.onQuestionSubmit(text) },
-                    onMarkdownLinkClicked = { text, url -> viewModel.onMarkdownLinkClicked(text, url) }
+                    onMarkdownLinkClicked = { text, url -> viewModel.onMarkdownLinkClicked(text, url) },
                 ),
                 launchBrowser = launchBrowser,
                 hasConversation = uiState.chatEntries.isNotEmpty(),
@@ -233,6 +233,7 @@ private fun ChatContent(
                         it.second,
                         launchBrowser = launchBrowser,
                         onMarkdownLinkClicked = analyticsEvents.onMarkdownLinkClicked,
+                        onActionItemClicked = analyticsEvents.onActionItemClicked,
                     )
                 }
 
@@ -583,7 +584,7 @@ private fun LightModeChatScreenPreview() {
                 onActionItemClicked = { _, _, _ -> },
                 onAboutClick = { _ ->  },
                 onQuestionSubmit = { _ ->  },
-                onMarkdownLinkClicked = { _, _ -> }
+                onMarkdownLinkClicked = { _, _ -> },
             ),
             launchBrowser = { _ -> },
             hasConversation = false,
@@ -608,7 +609,7 @@ private fun DarkModeChatScreenPreview() {
                 onActionItemClicked = { _, _, _ -> },
                 onAboutClick = { _ ->  },
                 onQuestionSubmit = { _ ->  },
-                onMarkdownLinkClicked = { _, _ -> }
+                onMarkdownLinkClicked = { _, _ -> },
             ),
             launchBrowser = { _ -> },
             hasConversation = false,

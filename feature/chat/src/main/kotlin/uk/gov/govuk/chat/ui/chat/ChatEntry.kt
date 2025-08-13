@@ -33,6 +33,7 @@ internal fun DisplayChatEntry(
     chatEntry: ChatEntry,
     launchBrowser: (url: String) -> Unit,
     onMarkdownLinkClicked: (String, String) -> Unit,
+    onActionItemClicked: (String, String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -64,7 +65,8 @@ internal fun DisplayChatEntry(
                 answer = chatEntry.answer,
                 sources = chatEntry.sources,
                 launchBrowser = launchBrowser,
-                onMarkdownLinkClicked = onMarkdownLinkClicked
+                onMarkdownLinkClicked = onMarkdownLinkClicked,
+                onActionItemClicked = onActionItemClicked
             )
         }
     }
