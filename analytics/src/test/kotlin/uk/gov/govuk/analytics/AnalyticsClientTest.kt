@@ -460,6 +460,23 @@ class AnalyticsClientTest {
     }
 
     @Test
+    fun `Given a question answer is returned in chat, then log event`() {
+        analyticsClient.chatQuestionAnswerReturnedEvent()
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "ChatQuestionAnswerReturned",
+                    "external" to false,
+                    "language" to Locale.getDefault().language,
+                    "text" to "Chat Question Answer Returned"
+                )
+            )
+        }
+    }
+
+    @Test
     fun `Given a chat response markdown link click, then log event`() {
         analyticsClient.chatMarkdownLinkClick("chat title", "chat link")
 
