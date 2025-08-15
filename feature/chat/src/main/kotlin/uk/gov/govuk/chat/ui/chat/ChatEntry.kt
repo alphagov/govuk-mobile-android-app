@@ -31,6 +31,9 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 internal fun DisplayChatEntry(
     isLoading: Boolean,
     chatEntry: ChatEntry,
+    launchBrowser: (url: String) -> Unit,
+    onMarkdownLinkClicked: (String, String) -> Unit,
+    onActionItemClicked: (String, String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -60,7 +63,10 @@ internal fun DisplayChatEntry(
         } else {
             Answer(
                 answer = chatEntry.answer,
-                sources = chatEntry.sources
+                sources = chatEntry.sources,
+                launchBrowser = launchBrowser,
+                onMarkdownLinkClicked = onMarkdownLinkClicked,
+                onActionItemClicked = onActionItemClicked
             )
         }
     }
