@@ -154,9 +154,9 @@ private fun ChatScreen(
 ) {
     LaunchedEffect(Unit) {
         analyticsEvents.onPageView(
-            ChatViewModel.Companion.SCREEN_CLASS,
-            ChatViewModel.Companion.SCREEN_NAME,
-            ChatViewModel.Companion.SCREEN_TITLE
+            ChatViewModel.SCREEN_CLASS,
+            ChatViewModel.SCREEN_NAME,
+            ChatViewModel.SCREEN_TITLE
         )
     }
 

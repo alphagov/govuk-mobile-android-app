@@ -76,8 +76,8 @@ internal fun ActionMenu(
             if (expanded) {
                 analyticsEvents.onActionItemClicked(
                     buttonText,
-                    ChatViewModel.Companion.ACTION_MENU,
-                    ChatViewModel.Companion.ACTION_MENU_ACTION
+                    ChatViewModel.ACTION_MENU,
+                    ChatViewModel.ACTION_MENU_ACTION
                 )
             }
         }
@@ -139,8 +139,8 @@ private fun ClearMenuItem(
             openDialog.value = true
             analyticsEvents.onActionItemClicked(
                 buttonText,
-                ChatViewModel.Companion.ACTION_MENU,
-                ChatViewModel.Companion.ACTION_MENU_CLEAR_ACTION
+                ChatViewModel.ACTION_MENU,
+                ChatViewModel.ACTION_MENU_CLEAR_ACTION
             )
         },
         modifier = modifier,
@@ -170,8 +170,8 @@ private fun ClearMenuItem(
                     onClick = {
                         analyticsEvents.onActionItemClicked(
                             buttonText,
-                            ChatViewModel.Companion.ACTION_MENU,
-                            ChatViewModel.Companion.ACTION_MENU_CLEAR_YES
+                            ChatViewModel.ACTION_MENU,
+                            ChatViewModel.ACTION_MENU_CLEAR_YES
                         )
                         onClear()
                         openDialog.value = false
@@ -190,8 +190,8 @@ private fun ClearMenuItem(
                     onClick = {
                         analyticsEvents.onActionItemClicked(
                             buttonText,
-                            ChatViewModel.Companion.ACTION_MENU,
-                            ChatViewModel.Companion.ACTION_MENU_CLEAR_NO
+                            ChatViewModel.ACTION_MENU,
+                            ChatViewModel.ACTION_MENU_CLEAR_NO
                         )
                         openDialog.value = false
                         onClearActioned()

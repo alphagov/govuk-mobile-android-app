@@ -32,22 +32,22 @@ internal fun OnboardingPageOneRoute(
     OnboardingPageOneScreen(
         onPageView = {
             viewModel.onPageView(
-                screenClass = ChatViewModel.Companion.ONBOARDING_SCREEN_CLASS,
-                screenName = ChatViewModel.Companion.ONBOARDING_SCREEN_ONE_NAME,
-                title = ChatViewModel.Companion.ONBOARDING_SCREEN_ONE_TITLE
+                screenClass = ChatViewModel.ONBOARDING_SCREEN_CLASS,
+                screenName = ChatViewModel.ONBOARDING_SCREEN_ONE_NAME,
+                title = ChatViewModel.ONBOARDING_SCREEN_ONE_TITLE
             )
         },
         onClick = {
             viewModel.onButtonClicked(
                 text = continueText,
-                section = ChatViewModel.Companion.ONBOARDING_SCREEN_ONE_NAME
+                section = ChatViewModel.ONBOARDING_SCREEN_ONE_NAME
             )
             onClick()
         },
         onCancel = {
             viewModel.onButtonClicked(
                 text = cancelText,
-                section = ChatViewModel.Companion.ONBOARDING_SCREEN_ONE_NAME
+                section = ChatViewModel.ONBOARDING_SCREEN_ONE_NAME
             )
             onCancel()
         },

@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import uk.gov.govuk.chat.ChatViewModel.Companion.RESPONSE_LINK_CLICKED
+import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
@@ -50,7 +50,7 @@ internal fun Answer(
             talkbackText = answer,
             launchBrowser = launchBrowser,
             onMarkdownLinkClicked = onMarkdownLinkClicked,
-            markdownLinkType = RESPONSE_LINK_CLICKED
+            markdownLinkType = ChatViewModel.RESPONSE_LINK_CLICKED
         )
 
         if (!sources.isNullOrEmpty()) {

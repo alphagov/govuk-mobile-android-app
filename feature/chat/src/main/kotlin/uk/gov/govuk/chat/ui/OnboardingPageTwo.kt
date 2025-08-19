@@ -43,15 +43,15 @@ internal fun OnboardingPageTwoRoute(
     OnboardingPageTwoScreen(
         {
             viewModel.onPageView(
-                screenClass = ChatViewModel.Companion.ONBOARDING_SCREEN_CLASS,
-                screenName = ChatViewModel.Companion.ONBOARDING_SCREEN_TWO_NAME,
-                title = ChatViewModel.Companion.ONBOARDING_SCREEN_TWO_TITLE
+                screenClass = ChatViewModel.ONBOARDING_SCREEN_CLASS,
+                screenName = ChatViewModel.ONBOARDING_SCREEN_TWO_NAME,
+                title = ChatViewModel.ONBOARDING_SCREEN_TWO_TITLE
             )
         },
         onClick = {
             viewModel.onButtonClicked(
                 text = continueText,
-                section = ChatViewModel.Companion.ONBOARDING_SCREEN_TWO_NAME
+                section = ChatViewModel.ONBOARDING_SCREEN_TWO_NAME
             )
             viewModel.setChatIntroSeen()
             onClick()
@@ -59,14 +59,14 @@ internal fun OnboardingPageTwoRoute(
         onCancel = {
             viewModel.onButtonClicked(
                 text = cancelText,
-                section = ChatViewModel.Companion.ONBOARDING_SCREEN_TWO_NAME
+                section = ChatViewModel.ONBOARDING_SCREEN_TWO_NAME
             )
             onCancel()
         },
         onBack = {
             viewModel.onButtonClicked(
-                text = ChatViewModel.Companion.ONBOARDING_SCREEN_TWO_BACK_TEXT,
-                section = ChatViewModel.Companion.ONBOARDING_SCREEN_TWO_NAME
+                text = ChatViewModel.ONBOARDING_SCREEN_TWO_BACK_TEXT,
+                section = ChatViewModel.ONBOARDING_SCREEN_TWO_NAME
             )
             onBack()
         },
