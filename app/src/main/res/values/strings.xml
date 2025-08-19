@@ -50,8 +50,9 @@
     <string name="biometric_settings_title">Biometrics</string>
     <string name="biometric_settings_toggle">Unlock app with biometrics</string>
     <string name="biometric_settings_description_1">If you have biometrics turned on, you’ll be able to use your fingerprint, face or iris to unlock the app.</string>
-    <string name="biometric_settings_description_2">If you do not want to use biometrics, you can use your phone’s pin or pattern instead.</string>
-    <string name="biometric_settings_description_3">Anyone who can unlock your phone with their fingerprint, face or iris or with your phone’s pin or pattern might be able to access your app.</string>
+    <string name="biometric_settings_android_10_description_2">Anyone who can unlock your phone with their biometrics might be able to access your app.</string>
+    <string name="biometric_settings_android_11_description_2">Anyone who can unlock your phone with their biometrics or with your phone’s PIN, pattern or password might be able to access your app.</string>
+    <string name="biometric_settings_description_3">If you do not want to use biometrics, you can unlock the app with your GOV.UK One Login details.</string>
     <string name="biometric_settings_description_4">You can turn off biometrics at any time.</string>
 
 </resources>
