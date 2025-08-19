@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
@@ -31,6 +32,9 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 @Composable
 internal fun Sources(
     sources: List<String>,
+    launchBrowser: (url: String) -> Unit,
+    onMarkdownLinkClicked: (String, String) -> Unit,
+    onActionItemClicked: (String, String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -69,7 +73,16 @@ internal fun Sources(
 
         Row(
             modifier = Modifier
-                .clickable { expanded = !expanded }
+                .clickable {
+                    expanded = !expanded
+                    if (expanded) {
+                        onActionItemClicked(
+                            ChatViewModel.RESPONSE_SOURCE_LINKS_OPENED,
+                            ChatViewModel.RESPONSE,
+                            ChatViewModel.RESPONSE_SOURCE_LINKS_OPENED
+                        )
+                    }
+                }
                 .fillMaxWidth()
                 .padding(GovUkTheme.spacing.medium),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -99,7 +112,10 @@ internal fun Sources(
 
                     Markdown(
                         text = sources[index],
-                        talkbackText = linkText
+                        talkbackText = linkText,
+                        launchBrowser = launchBrowser,
+                        onMarkdownLinkClicked = onMarkdownLinkClicked,
+                        markdownLinkType = ChatViewModel.RESPONSE_SOURCE_LINK_CLICKED
                     )
 
                     if (index < sources.size - 1) {

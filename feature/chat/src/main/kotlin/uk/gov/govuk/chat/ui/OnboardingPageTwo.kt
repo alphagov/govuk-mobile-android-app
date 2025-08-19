@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,25 +37,55 @@ internal fun OnboardingPageTwoRoute(
     modifier: Modifier = Modifier,
 ) {
     val viewModel: ChatViewModel = hiltViewModel()
+    val cancelText = stringResource(id = R.string.onboarding_page_cancel_text)
+    val continueText = stringResource(id = R.string.onboarding_page_two_button)
 
     OnboardingPageTwoScreen(
+        {
+            viewModel.onPageView(
+                screenClass = ChatViewModel.ONBOARDING_SCREEN_CLASS,
+                screenName = ChatViewModel.ONBOARDING_SCREEN_TWO_NAME,
+                title = ChatViewModel.ONBOARDING_SCREEN_TWO_TITLE
+            )
+        },
         onClick = {
+            viewModel.onButtonClicked(
+                text = continueText,
+                section = ChatViewModel.ONBOARDING_SCREEN_TWO_NAME
+            )
             viewModel.setChatIntroSeen()
             onClick()
         },
-        onCancel = onCancel,
-        onBack = onBack,
+        onCancel = {
+            viewModel.onButtonClicked(
+                text = cancelText,
+                section = ChatViewModel.ONBOARDING_SCREEN_TWO_NAME
+            )
+            onCancel()
+        },
+        onBack = {
+            viewModel.onButtonClicked(
+                text = ChatViewModel.ONBOARDING_SCREEN_TWO_BACK_TEXT,
+                section = ChatViewModel.ONBOARDING_SCREEN_TWO_NAME
+            )
+            onBack()
+        },
         modifier = modifier
     )
 }
 
 @Composable
 private fun OnboardingPageTwoScreen(
+    onPageView: () -> Unit,
     onClick: () -> Unit,
     onCancel: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(Unit) {
+        onPageView()
+    }
+
     OnboardingPage(
         title = stringResource(id = R.string.onboarding_page_two_header),
         image = painterResource(id = R.drawable.onboarding_page_two),
@@ -146,6 +177,7 @@ private fun OnboardingPageTwoScreen(
 private fun LightModePreview() {
     GovUkTheme {
         OnboardingPageTwoScreen(
+            onPageView = {},
             onClick = {},
             onCancel = {},
             onBack = {}
@@ -161,6 +193,7 @@ private fun LightModePreview() {
 private fun DarkModePreview() {
     GovUkTheme {
         OnboardingPageTwoScreen(
+            onPageView = {},
             onClick = {},
             onCancel = {},
             onBack = {}

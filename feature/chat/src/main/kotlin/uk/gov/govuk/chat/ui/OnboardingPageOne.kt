@@ -4,11 +4,14 @@ import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FullScreenHeader
@@ -22,19 +25,47 @@ internal fun OnboardingPageOneRoute(
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val viewModel: ChatViewModel = hiltViewModel()
+    val cancelText = stringResource(id = R.string.onboarding_page_cancel_text)
+    val continueText = stringResource(id = R.string.onboarding_page_one_button)
+
     OnboardingPageOneScreen(
-        onClick = onClick,
-        onCancel = onCancel,
+        onPageView = {
+            viewModel.onPageView(
+                screenClass = ChatViewModel.ONBOARDING_SCREEN_CLASS,
+                screenName = ChatViewModel.ONBOARDING_SCREEN_ONE_NAME,
+                title = ChatViewModel.ONBOARDING_SCREEN_ONE_TITLE
+            )
+        },
+        onClick = {
+            viewModel.onButtonClicked(
+                text = continueText,
+                section = ChatViewModel.ONBOARDING_SCREEN_ONE_NAME
+            )
+            onClick()
+        },
+        onCancel = {
+            viewModel.onButtonClicked(
+                text = cancelText,
+                section = ChatViewModel.ONBOARDING_SCREEN_ONE_NAME
+            )
+            onCancel()
+        },
         modifier = modifier
     )
 }
 
 @Composable
 private fun OnboardingPageOneScreen(
+    onPageView: () -> Unit,
     onClick: () -> Unit,
     onCancel: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(Unit) {
+        onPageView()
+    }
+
     OnboardingPage(
         title = stringResource(id = R.string.onboarding_page_one_header),
         image = painterResource(id = R.drawable.onboarding_page_one),
@@ -74,6 +105,7 @@ private fun OnboardingPageOneScreen(
 private fun LightModePreview() {
     GovUkTheme {
         OnboardingPageOneScreen(
+            onPageView = {},
             onClick = {},
             onCancel = {}
         )
@@ -88,6 +120,7 @@ private fun LightModePreview() {
 private fun DarkModePreview() {
     GovUkTheme {
         OnboardingPageOneScreen(
+            onPageView = {},
             onClick = {},
             onCancel = {}
         )

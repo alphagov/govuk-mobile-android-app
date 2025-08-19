@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.chat.data.ChatRepo
 import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.chat.data.remote.ChatResult
@@ -35,8 +36,30 @@ internal data class ChatUiState(
 @HiltViewModel
 internal class ChatViewModel @Inject constructor(
     private val chatRepo: ChatRepo,
-    private val chatDataStore: ChatDataStore
+    private val chatDataStore: ChatDataStore,
+    private val analyticsClient: AnalyticsClient
 ): ViewModel() {
+    companion object {
+        const val SCREEN_CLASS = "Chat"
+        const val SCREEN_NAME = "Chat Screen"
+        const val SCREEN_TITLE = "Chat Screen"
+        const val ACTION_MENU = "Action Menu"
+        const val ACTION_MENU_ACTION = "Action Menu Opened"
+        const val ACTION_MENU_CLEAR_ACTION = "Clear Chat Opened"
+        const val ACTION_MENU_CLEAR_YES = "Clear Chat Yes Clicked"
+        const val ACTION_MENU_CLEAR_NO = "Clear Chat No Clicked"
+        const val ONBOARDING_SCREEN_CLASS = "Chat Onboarding"
+        const val ONBOARDING_SCREEN_ONE_NAME = "Chat Onboarding Screen One"
+        const val ONBOARDING_SCREEN_ONE_TITLE = "Chat Onboarding Screen One"
+        const val ONBOARDING_SCREEN_TWO_NAME = "Chat Onboarding Screen Two"
+        const val ONBOARDING_SCREEN_TWO_TITLE = "Chat Onboarding Screen Two"
+        const val ONBOARDING_SCREEN_TWO_BACK_TEXT = "Chat Onboarding Screen Two Back"
+        const val RESPONSE_LINK_CLICKED = "Response Link Clicked"
+        const val RESPONSE_SOURCE_LINK_CLICKED = "Source Link Clicked"
+        const val RESPONSE = "Response"
+        const val RESPONSE_SOURCE_LINKS_OPENED = "Source Links Opened"
+    }
+
     private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
         ChatUiState(
             chatEntries = linkedMapOf(),
@@ -121,6 +144,7 @@ internal class ChatViewModel @Inject constructor(
                 }
 
                 _uiState.update { it.copy(isLoading = false) }
+                analyticsClient.chatQuestionAnswerReturnedEvent()
             }
         }
     }
@@ -143,6 +167,44 @@ internal class ChatViewModel @Inject constructor(
                 isSubmitEnabled = question.isNotBlank() && !displayCharacterError
             )
         }
+    }
+
+    fun onPageView(screenClass: String, screenName: String, title: String) {
+        analyticsClient.screenView(
+            screenClass = screenClass,
+            screenName = screenName,
+            title = title
+        )
+    }
+
+    fun onActionItemClicked(text: String, section: String, action: String) {
+        analyticsClient.buttonFunction(
+            text = text,
+            section = section,
+            action = action
+        )
+    }
+
+    fun onAboutClick(text: String) {
+        analyticsClient.chatActionMenuAboutClick(
+            text = text,
+            url = BuildConfig.ABOUT_APP_URL
+        )
+    }
+
+    fun onQuestionSubmit(question: String) {
+        analyticsClient.chat(question)
+    }
+
+    fun onButtonClicked(text: String, section: String) {
+        analyticsClient.buttonClick(
+            text = text,
+            section = section
+        )
+    }
+
+    fun onMarkdownLinkClicked(text: String, url: String) {
+        analyticsClient.chatMarkdownLinkClick(text = text, url = url, )
     }
 
     private suspend fun getAnswer(conversationId: String, questionId: String) {

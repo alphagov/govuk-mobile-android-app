@@ -77,6 +77,21 @@ import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import kotlin.math.abs
 
+internal class ChatScreenEvents(
+    val onPageView: (String, String, String) -> Unit,
+    val onActionItemClicked: (String, String, String) -> Unit,
+    val onAboutClick: (String) -> Unit,
+    val onQuestionSubmit: (String) -> Unit,
+    val onMarkdownLinkClicked: (String, String) -> Unit,
+)
+
+internal class ChatScreenClickEvents(
+    val onQuestionUpdated: (String) -> Unit,
+    val onSubmit: (String) -> Unit,
+    val onRetry: () -> Unit,
+    val onClear: () -> Unit,
+)
+
 @Composable
 internal fun ChatRoute(
     onShowOnboarding: () -> Unit,
@@ -91,18 +106,33 @@ internal fun ChatRoute(
         if (seenOnboarding == true) {
             ChatScreen(
                 uiState = uiState,
+                analyticsEvents = ChatScreenEvents(
+                    onPageView = { klass, name, title ->
+                        viewModel.onPageView(klass, name, title)
+                    },
+                    onActionItemClicked = { text, section, action -> viewModel.onActionItemClicked(text, section, action) },
+                    onAboutClick = { text -> viewModel.onAboutClick(text) },
+                    onQuestionSubmit = { text -> viewModel.onQuestionSubmit(text) },
+                    onMarkdownLinkClicked = { text, url -> viewModel.onMarkdownLinkClicked(text, url) },
+                ),
                 launchBrowser = launchBrowser,
                 hasConversation = uiState.chatEntries.isNotEmpty(),
-                onQuestionUpdated = { question ->
-                    viewModel.onQuestionUpdated(question)
-                },
-                onSubmit = { question ->
-                    viewModel.onSubmit(question)
-                },
-                onRetry = {
-                    viewModel.clearConversation()
-                    onClearDone()
-                },
+                clickEvents = ChatScreenClickEvents(
+                    onQuestionUpdated = { question ->
+                        viewModel.onQuestionUpdated(question)
+                    },
+                    onSubmit = { question ->
+                        viewModel.onSubmit(question)
+                    },
+                    onRetry = {
+                        viewModel.clearConversation()
+                        onClearDone()
+                    },
+                    onClear = {
+                        viewModel.clearConversation()
+                        onClearDone()
+                    }
+                ),
                 modifier = modifier
             )
         } else if (seenOnboarding == false) {
@@ -116,16 +146,23 @@ internal fun ChatRoute(
 @Composable
 private fun ChatScreen(
     uiState: ChatUiState,
+    analyticsEvents: ChatScreenEvents,
     launchBrowser: (url: String) -> Unit,
     hasConversation: Boolean,
-    onQuestionUpdated: (String) -> Unit,
-    onSubmit: (String) -> Unit,
-    onRetry: () -> Unit,
+    clickEvents: ChatScreenClickEvents,
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(Unit) {
+        analyticsEvents.onPageView(
+            ChatViewModel.SCREEN_CLASS,
+            ChatViewModel.SCREEN_NAME,
+            ChatViewModel.SCREEN_TITLE
+        )
+    }
+
     if (uiState.isRetryableError) {
         ChatErrorPageWithRetry(
-            onRetry = onRetry,
+            onRetry = clickEvents.onRetry,
             modifier = modifier
         )
     } else if (uiState.isError) {
@@ -135,9 +172,8 @@ private fun ChatScreen(
             uiState,
             launchBrowser = launchBrowser,
             hasConversation = hasConversation,
-            onQuestionUpdated,
-            onSubmit,
-            onClear = onRetry,
+            clickEvents = clickEvents,
+            analyticsEvents = analyticsEvents,
             modifier
         )
     }
@@ -148,9 +184,8 @@ private fun ChatContent(
     uiState: ChatUiState,
     launchBrowser: (url: String) -> Unit,
     hasConversation: Boolean,
-    onQuestionUpdated: (String) -> Unit,
-    onSubmit: (String) -> Unit,
-    onClear: () -> Unit,
+    clickEvents: ChatScreenClickEvents,
+    analyticsEvents: ChatScreenEvents,
     modifier: Modifier = Modifier
 ) {
     var heightPx by remember { mutableIntStateOf(0) }
@@ -200,7 +235,13 @@ private fun ChatContent(
                 }
 
                 items(chatEntries) {
-                    DisplayChatEntry(uiState.isLoading, it.second)
+                    DisplayChatEntry(
+                        uiState.isLoading,
+                        it.second,
+                        launchBrowser = launchBrowser,
+                        onMarkdownLinkClicked = analyticsEvents.onMarkdownLinkClicked,
+                        onActionItemClicked = analyticsEvents.onActionItemClicked,
+                    )
                 }
 
                 item {
@@ -208,21 +249,20 @@ private fun ChatContent(
                 }
             }
 
-        Column {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                ChatInput(
-                    uiState,
-                    launchBrowser = launchBrowser,
-                    hasConversation = hasConversation,
-                    onQuestionUpdated,
-                    onSubmit,
-                    onClear
-                )
-            }
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ChatInput(
+                        uiState,
+                        launchBrowser = launchBrowser,
+                        hasConversation = hasConversation,
+                        analyticsEvents = analyticsEvents,
+                        clickEvents = clickEvents
+                    )
+                }
 
                 if (uiState.isPiiError) {
                     PiiErrorMessage()
@@ -284,9 +324,8 @@ private fun ChatInput(
     uiState: ChatUiState,
     launchBrowser: (url: String) -> Unit,
     hasConversation: Boolean,
-    onQuestionUpdated: (String) -> Unit,
-    onSubmit: (String) -> Unit,
-    onClear: () -> Unit,
+    analyticsEvents: ChatScreenEvents,
+    clickEvents: ChatScreenClickEvents,
     modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -303,7 +342,8 @@ private fun ChatInput(
                 ActionMenu(
                     launchBrowser = launchBrowser,
                     hasConversation = hasConversation,
-                    onClear = onClear,
+                    onClear = clickEvents.onClear,
+                    analyticsEvents = analyticsEvents,
                     modifier = Modifier.semantics { this.traversalIndex = 1f }
                 )
             }
@@ -332,7 +372,7 @@ private fun ChatInput(
                     RoundedCornerShape(40.dp),
                 singleLine = false,
                 onValueChange = {
-                    onQuestionUpdated(it)
+                    clickEvents.onQuestionUpdated(it)
                 },
                 placeholder = {
                     PlaceholderText(isFocused = isFocused, uiState = uiState)
@@ -364,7 +404,10 @@ private fun ChatInput(
                 CharacterCountMessage(uiState)
 
                 SubmitIconButton(
-                    onClick = { onSubmit(uiState.question) },
+                    onClick = {
+                        analyticsEvents.onQuestionSubmit(uiState.question)
+                        clickEvents.onSubmit(uiState.question)
+                    },
                     uiState = uiState
                 )
             }
@@ -530,6 +573,21 @@ private fun CharacterCountMessage(
     )
 }
 
+private fun analyticsEvents() = ChatScreenEvents(
+    onPageView = { _, _, _ -> },
+    onActionItemClicked = { _, _, _ -> },
+    onAboutClick = { _ ->  },
+    onQuestionSubmit = { _ ->  },
+    onMarkdownLinkClicked = { _, _ -> },
+)
+
+private fun clickEvents() = ChatScreenClickEvents(
+    onQuestionUpdated = { _ -> },
+    onSubmit = { _ -> },
+    onRetry = { },
+    onClear = { }
+)
+
 @Preview(
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_NO
@@ -539,11 +597,10 @@ private fun LightModeChatScreenPreview() {
     GovUkTheme {
         ChatScreen(
             uiState = ChatUiState(isLoading = false),
+            analyticsEvents = analyticsEvents(),
             launchBrowser = { _ -> },
             hasConversation = false,
-            onQuestionUpdated = { _ -> },
-            onSubmit = { _ -> },
-            onRetry = { }
+            clickEvents = clickEvents()
         )
     }
 }
@@ -557,11 +614,10 @@ private fun DarkModeChatScreenPreview() {
     GovUkTheme {
         ChatScreen(
             uiState = ChatUiState(isLoading = false),
+            analyticsEvents = analyticsEvents(),
             launchBrowser = { _ -> },
             hasConversation = false,
-            onQuestionUpdated = { _ -> },
-            onSubmit = { _ -> },
-            onRetry = { }
+            clickEvents = clickEvents()
         )
     }
 }

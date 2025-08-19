@@ -25,7 +25,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.chat.BuildConfig
+import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
+import uk.gov.govuk.chat.ui.ChatScreenEvents
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -35,6 +37,7 @@ internal fun ActionMenu(
     launchBrowser: (url: String) -> Unit,
     hasConversation: Boolean,
     onClear: () -> Unit,
+    analyticsEvents: ChatScreenEvents,
     modifier: Modifier = Modifier
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -53,19 +56,31 @@ internal fun ActionMenu(
     ) {
         AboutMenuItem(
             launchBrowser = launchBrowser,
-            onLinkClicked = { expanded = false }
+            onLinkClicked = { expanded = false },
+            analyticsEvents = analyticsEvents
         )
 
         if (hasConversation) {
             ClearMenuItem(
                 onClear = onClear,
-                onClearActioned = { expanded = false }
+                onClearActioned = { expanded = false },
+                analyticsEvents = analyticsEvents
             )
         }
     }
 
+    val buttonText = stringResource(id = R.string.action_alt)
     ActionIconButton(
-        onClick = { expanded = !expanded }
+        onClick = {
+            expanded = !expanded
+            if (expanded) {
+                analyticsEvents.onActionItemClicked(
+                    buttonText,
+                    ChatViewModel.ACTION_MENU,
+                    ChatViewModel.ACTION_MENU_ACTION
+                )
+            }
+        }
     )
 }
 
@@ -73,17 +88,21 @@ internal fun ActionMenu(
 private fun AboutMenuItem(
     launchBrowser: (url: String) -> Unit,
     onLinkClicked: () -> Unit,
+    analyticsEvents: ChatScreenEvents,
     modifier: Modifier = Modifier
 ) {
+    val buttonText = stringResource(id = R.string.action_about)
+
     DropdownMenuItem(
         text = {
             Text(
-                text = stringResource(id = R.string.action_about),
+                text = buttonText,
                 color = GovUkTheme.colourScheme.textAndIcons.primary,
                 style = GovUkTheme.typography.bodyRegular,
             )
         },
         onClick = {
+            analyticsEvents.onAboutClick(buttonText)
             onLinkClicked()
             launchBrowser(BuildConfig.ABOUT_APP_URL)
         },
@@ -102,19 +121,28 @@ private fun AboutMenuItem(
 private fun ClearMenuItem(
     onClear: () -> Unit,
     onClearActioned: () -> Unit,
+    analyticsEvents: ChatScreenEvents,
     modifier: Modifier = Modifier
 ) {
     val openDialog = rememberSaveable { mutableStateOf(false) }
+    val buttonText = stringResource(id = R.string.action_clear)
 
     DropdownMenuItem(
         text = {
             Text(
-                text = stringResource(id = R.string.action_clear),
+                text = buttonText,
                 color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
                 style = GovUkTheme.typography.bodyRegular,
             )
         },
-        onClick = { openDialog.value = true },
+        onClick = {
+            openDialog.value = true
+            analyticsEvents.onActionItemClicked(
+                buttonText,
+                ChatViewModel.ACTION_MENU,
+                ChatViewModel.ACTION_MENU_CLEAR_ACTION
+            )
+        },
         modifier = modifier,
         trailingIcon = {
             Icon(
@@ -136,28 +164,41 @@ private fun ClearMenuItem(
                 )
             },
             confirmButton = {
+                val buttonText = stringResource(id = R.string.clear_dialog_positive_button)
+
                 TextButton(
                     onClick = {
+                        analyticsEvents.onActionItemClicked(
+                            buttonText,
+                            ChatViewModel.ACTION_MENU,
+                            ChatViewModel.ACTION_MENU_CLEAR_YES
+                        )
                         onClear()
                         openDialog.value = false
                         onClearActioned()
                     }
                 ) {
                     BodyBoldLabel(
-                        text = stringResource(id = R.string.clear_dialog_positive_button),
+                        text = buttonText,
                         color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
                     )
                 }
             },
             dismissButton = {
+                val buttonText = stringResource(id = R.string.clear_dialog_negative_button)
                 TextButton(
                     onClick = {
+                        analyticsEvents.onActionItemClicked(
+                            buttonText,
+                            ChatViewModel.ACTION_MENU,
+                            ChatViewModel.ACTION_MENU_CLEAR_NO
+                        )
                         openDialog.value = false
                         onClearActioned()
                     }
                 ) {
                     BodyRegularLabel(
-                        text = stringResource(id = R.string.clear_dialog_negative_button),
+                        text = buttonText,
                         color = GovUkTheme.colourScheme.textAndIcons.link
                     )
                 }

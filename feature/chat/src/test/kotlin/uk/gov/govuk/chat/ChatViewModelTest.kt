@@ -5,6 +5,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -22,6 +23,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.chat.data.ChatRepo
 import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.chat.data.remote.ChatResult
@@ -38,6 +40,7 @@ class ChatViewModelTest {
     private val conversation = mockk<Conversation>(relaxed = true)
     private val pendingQuestion = mockk<PendingQuestion>(relaxed = true)
     private val question = mockk<AnsweredQuestion>(relaxed = true)
+    private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
 
     private val dispatcher = StandardTestDispatcher()
 
@@ -47,7 +50,7 @@ class ChatViewModelTest {
     fun setup() {
         Dispatchers.setMain(dispatcher)
 
-        viewModel = ChatViewModel(chatRepo, chatDataStore)
+        viewModel = ChatViewModel(chatRepo, chatDataStore, analyticsClient)
 
         clearAllMocks()
     }
@@ -571,5 +574,108 @@ class ChatViewModelTest {
 
         val finalState = viewModel.uiState.value
         assertTrue(finalState.hasSeenOnboarding == true)
+    }
+
+    @Test
+    fun `Given a page view, then log analytics`() {
+        val screenClass = "screenClass"
+        val screenName = "screenName"
+        val title = "title"
+
+        viewModel.onPageView(
+            screenClass = screenClass,
+            screenName = screenName,
+            title = title
+        )
+
+        verify {
+            analyticsClient.screenView(
+                screenClass = screenClass,
+                screenName = screenName,
+                title = title
+            )
+        }
+    }
+
+    @Test
+    fun `When the user clicks an action menu item, then log analytics`() {
+        val text = "text"
+        val section = "section"
+        val action = "action"
+
+        viewModel.onActionItemClicked(
+            text = text,
+            section = section,
+            action = action
+        )
+
+        verify {
+            analyticsClient.buttonFunction(
+                text = text,
+                section = section,
+                action = action
+            )
+        }
+    }
+
+    @Test
+    fun `When the user clicks the About button, then log analytics`() {
+        val buttonText = "buttonText"
+
+        viewModel.onAboutClick(buttonText)
+
+        verify {
+            analyticsClient.chatActionMenuAboutClick(
+                text = buttonText,
+                url = BuildConfig.ABOUT_APP_URL
+            )
+        }
+    }
+
+    @Test
+    fun `When the user enters a question and submits it, then log analytics`() {
+        val question = "I have a question"
+
+        viewModel.onQuestionSubmit(question)
+
+        verify {
+            analyticsClient.chat(question)
+        }
+    }
+
+    @Test
+    fun `Given an onboarding screen button click, then log analytics`() {
+        val text = "text"
+        val section = "section"
+
+        viewModel.onButtonClicked(
+            text = text,
+            section = section
+        )
+
+        verify {
+            analyticsClient.buttonClick(
+                text = text,
+                section = section
+            )
+        }
+    }
+
+    @Test
+    fun `Given an onboarding screen markdown link click, then log analytics`() {
+        val text = "text"
+        val url = "url"
+
+        viewModel.onMarkdownLinkClicked(
+            text = text,
+            url = url
+        )
+
+        verify {
+            analyticsClient.chatMarkdownLinkClick(
+                text = text,
+                url = url
+            )
+        }
     }
 }
