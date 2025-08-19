@@ -1,6 +1,7 @@
 package uk.gov.govuk.login.ui
 
 import androidx.activity.compose.LocalActivity
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -47,6 +48,7 @@ internal fun BiometricRoute(
             viewModel.onSkip()
             onCompleted()
         },
+        descriptionOne = viewModel.getDescriptionOne(),
         modifier = modifier
     )
 
@@ -61,6 +63,7 @@ internal fun BiometricRoute(
 private fun BiometricScreen(
     onSetupBiometrics: () -> Unit,
     onSkip: () -> Unit,
+    @StringRes descriptionOne: Int,
     modifier: Modifier = Modifier
 ) {
     CentreAlignedScreen(
@@ -78,7 +81,7 @@ private fun BiometricScreen(
             MediumVerticalSpacer()
 
             BodyRegularLabel(
-                text = stringResource(R.string.login_biometrics_description_1),
+                text = stringResource(descriptionOne),
                 textAlign = TextAlign.Center
             )
 
@@ -152,7 +155,8 @@ private fun BiometricPreview() {
     GovUkTheme {
         BiometricScreen(
             onSetupBiometrics = { },
-            onSkip = { }
+            onSkip = { },
+            R.string.login_biometrics_android_11_description_1
         )
     }
 }

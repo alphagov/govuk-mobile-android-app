@@ -1,5 +1,6 @@
 package uk.gov.govuk.login
 
+import android.os.Build
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -35,4 +36,11 @@ internal class BiometricViewModel @Inject constructor(
             appRepo.skipBiometrics()
         }
     }
+
+    fun getDescriptionOne(androidVersion: Int = Build.VERSION.SDK_INT): Int =
+        if (androidVersion > Build.VERSION_CODES.Q) {
+            R.string.login_biometrics_android_11_description_1
+        } else {
+            R.string.login_biometrics_android_10_description_1
+        }
 }
