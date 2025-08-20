@@ -1,6 +1,7 @@
 package uk.gov.govuk.login.ui
 
 import androidx.activity.compose.LocalActivity
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ internal fun BiometricSettingsRoute(
         onPageView = { viewModel.onPageView() },
         isUserSignedIn = uiState,
         onToggle = { text -> viewModel.onToggle(text, activity) },
+        descriptionTwo = viewModel.getDescriptionTwo(),
         modifier = modifier
     )
 }
@@ -54,6 +56,7 @@ private fun BiometricSettingsScreen(
     onPageView: () -> Unit,
     isUserSignedIn: Boolean,
     onToggle: (String) -> Unit,
+    @StringRes descriptionTwo: Int,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -101,7 +104,7 @@ private fun BiometricSettingsScreen(
 
                 MediumVerticalSpacer()
 
-                BodyRegularLabel(stringResource(R.string.biometric_settings_description_2))
+                BodyRegularLabel(stringResource(descriptionTwo))
 
                 MediumVerticalSpacer()
 
@@ -123,7 +126,8 @@ private fun BiometricSettingsPreview() {
             onBack = { },
             onPageView = { },
             isUserSignedIn = true,
-            onToggle = { }
+            onToggle = { },
+            descriptionTwo = R.string.biometric_settings_android_11_description_2
         )
     }
 }
