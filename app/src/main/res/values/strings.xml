@@ -40,8 +40,9 @@
     <string name="login_success_title">You have successfully signed in</string>
 
     <string name="login_biometrics_title">Unlock the app with biometrics</string>
-    <string name="login_biometrics_description_1">You can unlock the app with your face, fingerprint or iris.</string>
-    <string name="login_biometrics_description_2">If you do not want to use your biometrics, you can unlock the app with your phone’s pin or pattern, or with your email address and password.</string>
+    <string name="login_biometrics_android_10_description_1">Anyone who can unlock your phone with their biometrics might be able to access your app.</string>
+    <string name="login_biometrics_android_11_description_1">Anyone who can unlock your phone with their biometrics or with your phone’s PIN, pattern or password might be able to access your app.</string>
+    <string name="login_biometrics_description_2">If you do not want to use biometrics, you can unlock the app with your GOV.UK One Login details.</string>
     <string name="login_biometrics_button">Use biometrics</string>
     <string name="login_biometrics_skip_button">Skip</string>
 
