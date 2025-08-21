@@ -22,23 +22,13 @@ android {
 
         consumerProguardFiles("consumer-rules.pro")
 
-        buildConfigField("String", "CHAT_BASE_URL", "\"https://chat.integration.publishing.service.gov.uk/api/v0/\"")
+        buildConfigField("String", "CHAT_BASE_URL", "\"https://t4l83ued82.execute-api.eu-west-2.amazonaws.com/staging/\"")
         buildConfigField("String", "ABOUT_APP_URL", "\"https://www.gov.uk\"")
-
-        if (file("${rootProject.projectDir.path}/github.properties").exists()) {
-            val propsFile = File("${rootProject.projectDir.path}/github.properties")
-            val props = Properties().also { it.load(FileInputStream(propsFile)) }
-            val chatToken = props["chatToken"] as String?
-            buildConfigField("String", "CHAT_TOKEN", "\"$chatToken\"")
-        } else {
-            buildConfigField("String", "CHAT_TOKEN", "\"${System.getenv("CHAT_TOKEN")}\"")
-        }
     }
 
     buildTypes {
         release {
-            buildConfigField("String", "CHAT_BASE_URL", "\"https://chat.integration.publishing.service.gov.uk/api/v0/\"")
-            buildConfigField("String", "CHAT_TOKEN", "\"\"")
+            buildConfigField("String", "CHAT_BASE_URL", "\"https://t4l83ued82.execute-api.eu-west-2.amazonaws.com/staging/\"")
         }
     }
 
