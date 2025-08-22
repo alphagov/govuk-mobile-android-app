@@ -398,7 +398,7 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given the local feature is enabled and a local authority is not selected, When init, then emit local enabled state`() {
+    fun `Given the local feature is enabled, alert banner is null and a local authority is not selected, When init, then emit local enabled state`() {
         coEvery { flagRepo.isLocalServicesEnabled() } returns true
         coEvery { flagRepo.isTopicsEnabled() } returns true
         coEvery { configRepo.config.alertBanner } returns null
@@ -426,6 +426,19 @@ class AppViewModelTest {
             val homeWidgets = viewModel.homeWidgets.value!!
             assertNotEquals(HomeWidget.LOCAL, homeWidgets.first())
             assertEquals(HomeWidget.LOCAL, homeWidgets.last())
+        }
+    }
+
+    @Test
+    fun `Given the config alert banner is null, When init, then there are no home widgets`() {
+        every { configRepo.config.alertBanner } returns null
+
+        val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
+            searchFeature, visited, chatFeature, analyticsClient, appNavigation)
+
+        runTest {
+            val homeWidgets = viewModel.homeWidgets.value!!
+            assert(homeWidgets.isEmpty())
         }
     }
 
