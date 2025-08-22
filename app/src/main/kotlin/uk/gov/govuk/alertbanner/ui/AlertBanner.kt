@@ -16,8 +16,8 @@ fun AlertBanner(
     HomeAlertCard(
         modifier = modifier,
         description = alertBanner.body,
-        linkTitle = alertBanner.link.title,
-        linkUrl = alertBanner.link.url,
+        linkTitle = alertBanner.link?.title,
+        linkUrl = alertBanner.link?.url,
         onClick = { onClick(alertBanner.id) },
         launchBrowser = launchBrowser,
         onSuppressClick = { onSuppressClick(alertBanner.id) }
