@@ -164,14 +164,16 @@ private fun ChatScreen(
     }
 
     if (uiState.isRetryableError) {
-        // Todo - status bar insets
         ChatErrorPageWithRetry(
             onRetry = clickEvents.onRetry,
             modifier = modifier
+                .windowInsetsPadding(WindowInsets.statusBars)
         )
     } else if (uiState.isError) {
-        // Todo - status bar insets
-        ChatErrorPageNoRetry(modifier)
+        ChatErrorPageNoRetry(
+            modifier
+                .windowInsetsPadding(WindowInsets.statusBars)
+        )
     } else {
         ChatContent(
             uiState,
