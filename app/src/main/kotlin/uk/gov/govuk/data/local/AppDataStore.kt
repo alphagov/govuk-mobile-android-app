@@ -8,7 +8,6 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import uk.gov.govuk.ui.model.HomeWidget
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
