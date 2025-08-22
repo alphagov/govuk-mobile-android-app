@@ -147,8 +147,8 @@ fun HomeAlertCard(
     modifier: Modifier = Modifier,
     title: String? = null,
     description: String? = null,
-    linkTitle: String,
-    linkUrl: String,
+    linkTitle: String?,
+    linkUrl: String?,
     onClick: () -> Unit,
     launchBrowser: (url: String) -> Unit,
     onSuppressClick: (() -> Unit)? = null
@@ -224,29 +224,31 @@ fun HomeAlertCard(
                 .height(IntrinsicSize.Min)
                 .fillMaxWidth()
         ) {
-            Column {
-                HorizontalDivider(
-                    thickness = 1.dp,
-                    color = GovUkTheme.colourScheme.strokes.cardAlert
-                )
+            if (linkTitle != null && linkUrl != null) {
+                Column {
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = GovUkTheme.colourScheme.strokes.cardAlert
+                    )
 
-                MediumVerticalSpacer()
+                    MediumVerticalSpacer()
 
-                val opensInWebBrowser = stringResource(R.string.opens_in_web_browser)
-                BodyRegularLabel(
-                    text = linkTitle,
-                    color = GovUkTheme.colourScheme.textAndIcons.link,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .clickable {
-                            onClick()
-                            launchBrowser(linkUrl)
-                        }
-                        .semantics {
-                            contentDescription = "$linkTitle $opensInWebBrowser"
-                        }
-                )
-                MediumVerticalSpacer()
+                    val opensInWebBrowser = stringResource(R.string.opens_in_web_browser)
+                    BodyRegularLabel(
+                        text = linkTitle,
+                        color = GovUkTheme.colourScheme.textAndIcons.link,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .clickable {
+                                onClick()
+                                launchBrowser(linkUrl)
+                            }
+                            .semantics {
+                                contentDescription = "$linkTitle $opensInWebBrowser"
+                            }
+                    )
+                    MediumVerticalSpacer()
+                }
             }
         }
     }
