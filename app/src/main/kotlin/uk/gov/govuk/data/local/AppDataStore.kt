@@ -57,9 +57,9 @@ internal class AppDataStore @Inject constructor(
         }
         .distinctUntilChanged()
 
-    internal suspend fun suppressHomeWidget(widget: HomeWidget) {
+    internal suspend fun suppressHomeWidget(id: String) {
         val mutableWidgets = getSuppressedHomeWidgets()?.toMutableSet() ?: mutableSetOf()
-        mutableWidgets.add(widget.serializedName)
+        mutableWidgets.add(id)
         dataStore.edit { prefs -> prefs[stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS)] = mutableWidgets.toSet() }
     }
 

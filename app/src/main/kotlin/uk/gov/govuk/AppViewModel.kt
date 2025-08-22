@@ -71,7 +71,8 @@ internal class AppViewModel @Inject constructor(
 
                     _uiState.value = AppUiState.Default(
                         shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
-                        shouldShowExternalBrowser = flagRepo.isExternalBrowserEnabled()
+                        shouldShowExternalBrowser = flagRepo.isExternalBrowserEnabled(),
+                        alertBanner = configRepo.config.alertBanner
                     )
 
                     combine(
@@ -142,6 +143,11 @@ internal class AppViewModel @Inject constructor(
                 if (isSearchEnabled()) {
                     widgets.add(HomeWidget.SEARCH)
                 }
+                configRepo.config.alertBanner?.let { alertBanner ->
+                    if (!suppressedWidgets.contains(alertBanner.id)) {
+                        widgets.add(HomeWidget.ALERT_BANNER)
+                    }
+                }
                 if (isLocalServicesEnabled() && !hasLocalAuthority) {
                     widgets.add(HomeWidget.LOCAL)
                 }
@@ -176,15 +182,14 @@ internal class AppViewModel @Inject constructor(
     }
 
     fun onSuppressWidgetClick(
-        text: String,
-        section: String,
-        widget: HomeWidget
+        id: String,
+        section: String
     ) {
         viewModelScope.launch {
-            appRepo.suppressHomeWidget(widget)
+            appRepo.suppressHomeWidget(id)
         }
         analyticsClient.suppressWidgetClick(
-            text,
+            id,
             section
         )
     }

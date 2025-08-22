@@ -1,9 +1,12 @@
 package uk.gov.govuk
 
+import uk.gov.govuk.config.data.remote.model.AlertBanner
+
 internal sealed class AppUiState {
     internal class Default(
         val shouldDisplayRecommendUpdate: Boolean = false,
-        val shouldShowExternalBrowser: Boolean = false
+        val shouldShowExternalBrowser: Boolean = false,
+        val alertBanner: AlertBanner? = null
     ) : AppUiState()
 
     internal data object Loading : AppUiState()

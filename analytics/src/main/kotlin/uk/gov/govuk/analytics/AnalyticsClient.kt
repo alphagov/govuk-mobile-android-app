@@ -87,11 +87,11 @@ class AnalyticsClient @Inject constructor(
     }
 
     fun suppressWidgetClick(
-        text: String,
+        id: String,
         section: String
     ) {
         function(
-            text = text,
+            text = id,
             type = "Widget",
             section = section,
             action = "Remove"

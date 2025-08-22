@@ -11,7 +11,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import uk.gov.govuk.data.local.AppDataStore
-import uk.gov.govuk.ui.model.HomeWidget
 
 class AppRepoTest {
 
@@ -113,9 +112,9 @@ class AppRepoTest {
         val repo = AppRepo(appDataStore)
 
         runTest {
-            repo.suppressHomeWidget(HomeWidget.SEARCH)
+            repo.suppressHomeWidget("id")
 
-            coVerify { appDataStore.suppressHomeWidget(HomeWidget.SEARCH) }
+            coVerify { appDataStore.suppressHomeWidget("id") }
         }
     }
 

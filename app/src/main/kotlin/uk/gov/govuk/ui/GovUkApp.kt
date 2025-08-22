@@ -58,6 +58,7 @@ import uk.gov.govuk.BuildConfig
 import uk.gov.govuk.R
 import uk.gov.govuk.analytics.navigation.analyticsGraph
 import uk.gov.govuk.chat.navigation.chatGraph
+import uk.gov.govuk.config.data.remote.model.AlertBanner
 import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
@@ -108,7 +109,8 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                             intentFlow = intentFlow,
                             viewModel = viewModel,
                             shouldShowExternalBrowser = it.shouldShowExternalBrowser,
-                            homeWidgets = homeWidgets
+                            homeWidgets = homeWidgets,
+                            alertBanner = it.alertBanner
                         )
                     }
                 }
@@ -138,6 +140,7 @@ private fun BottomNavScaffold(
     viewModel: AppViewModel,
     shouldShowExternalBrowser: Boolean,
     homeWidgets: List<HomeWidget>?,
+    alertBanner: AlertBanner?
 ) {
     val navController = rememberNavController()
     val navBarPadding = WindowInsets.navigationBars.asPaddingValues()
@@ -170,6 +173,7 @@ private fun BottomNavScaffold(
                 viewModel = viewModel,
                 navController = navController,
                 homeWidgets = homeWidgets,
+                alertBanner = alertBanner,
                 onInternalWidgetClick = { text ->
                     viewModel.onWidgetClick(
                         text = text,
@@ -185,8 +189,8 @@ private fun BottomNavScaffold(
                         section = section
                     )
                 },
-                onSuppressWidgetClick = { text, widget ->
-                    viewModel.onSuppressWidgetClick(text, section, widget)
+                onSuppressWidgetClick = { id ->
+                    viewModel.onSuppressWidgetClick(id, section)
                 },
                 shouldShowExternalBrowser = shouldShowExternalBrowser,
                 paddingValues = paddingValues
@@ -315,9 +319,10 @@ private fun GovUkNavHost(
     viewModel: AppViewModel,
     navController: NavHostController,
     homeWidgets: List<HomeWidget>?,
+    alertBanner: AlertBanner?,
     onInternalWidgetClick: (String) -> Unit,
     onExternalWidgetClick: (String, String?) -> Unit,
-    onSuppressWidgetClick: (String, HomeWidget) -> Unit,
+    onSuppressWidgetClick: (id: String) -> Unit,
     shouldShowExternalBrowser: Boolean,
     paddingValues: PaddingValues
 ) {
@@ -405,6 +410,7 @@ private fun GovUkNavHost(
             widgets = homeWidgets(
                 navController = navController,
                 homeWidgets = homeWidgets,
+                alertBanner = alertBanner,
                 onInternalClick = onInternalWidgetClick,
                 onExternalClick = onExternalWidgetClick,
                 onSuppressClick = onSuppressWidgetClick,

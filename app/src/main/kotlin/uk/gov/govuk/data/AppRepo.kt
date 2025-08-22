@@ -22,7 +22,7 @@ internal class AppRepo @Inject constructor(
 
     internal val suppressedHomeWidgets = appDataStore.suppressedHomeWidgets
 
-    internal suspend fun suppressHomeWidget(widget: HomeWidget) = appDataStore.suppressHomeWidget(widget)
+    internal suspend fun suppressHomeWidget(id: String) = appDataStore.suppressHomeWidget(id)
 
     internal suspend fun clear() = appDataStore.clear()
 
