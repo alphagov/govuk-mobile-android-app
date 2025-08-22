@@ -214,6 +214,10 @@ class AuthRepo @Inject constructor(
         return tokens.accessToken.isNotBlank()
     }
 
+    fun getAccessToken(): String {
+        return tokens.accessToken
+    }
+
     fun isUserSignedIn(): Boolean {
         return secureStore.exists(REFRESH_TOKEN_KEY)
     }
