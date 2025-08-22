@@ -30,6 +30,8 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.chat.ChatFeature
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.flags.FlagRepo
+import uk.gov.govuk.config.data.remote.model.AlertBanner
+import uk.gov.govuk.config.data.remote.model.Link
 import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.model.Result.Error
@@ -332,11 +334,11 @@ class AppViewModelTest {
     @Test
     fun `When an suppress widget is clicked, then log analytics`() {
         runTest {
-            viewModel.onSuppressWidgetClick("text", "section", HomeWidget.NOTIFICATIONS)
+            viewModel.onSuppressWidgetClick("id", "section")
 
             coVerify {
-                appRepo.suppressHomeWidget(HomeWidget.NOTIFICATIONS)
-                analyticsClient.suppressWidgetClick("text", "section")
+                appRepo.suppressHomeWidget("id")
+                analyticsClient.suppressWidgetClick("id", "section")
             }
         }
     }
@@ -396,9 +398,10 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given the local feature is enabled and a local authority is not selected, When init, then emit local enabled state`() {
+    fun `Given the local feature is enabled, alert banner is null and a local authority is not selected, When init, then emit local enabled state`() {
         coEvery { flagRepo.isLocalServicesEnabled() } returns true
         coEvery { flagRepo.isTopicsEnabled() } returns true
+        coEvery { configRepo.config.alertBanner } returns null
 
         val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
             searchFeature, visited, chatFeature, analyticsClient, appNavigation)
@@ -425,6 +428,49 @@ class AppViewModelTest {
             assertEquals(HomeWidget.LOCAL, homeWidgets.last())
         }
     }
+
+    @Test
+    fun `Given the config alert banner is null, When init, then there are no home widgets`() {
+        every { configRepo.config.alertBanner } returns null
+
+        val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
+            searchFeature, visited, chatFeature, analyticsClient, appNavigation)
+
+        runTest {
+            val homeWidgets = viewModel.homeWidgets.value!!
+            assert(homeWidgets.isEmpty())
+        }
+    }
+
+    @Test
+    fun `Given the config has an alert banner which has not been suppressed, When init, then alert banner is the first home widget`() {
+        coEvery { flagRepo.isLocalServicesEnabled() } returns true
+        every { configRepo.config.alertBanner } returns AlertBanner("id", "body", Link("title", "url"))
+
+        val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
+            searchFeature, visited, chatFeature, analyticsClient, appNavigation)
+
+        runTest {
+            val homeWidgets = viewModel.homeWidgets.value!!
+            assertEquals(HomeWidget.ALERT_BANNER, homeWidgets.first())
+        }
+    }
+
+    @Test
+    fun `Given the config has an alert banner which has been suppressed, When init, then alert banner is not the first home widget`() {
+        coEvery { flagRepo.isLocalServicesEnabled() } returns true
+        every { configRepo.config.alertBanner } returns AlertBanner("id", "body", Link("title", "url"))
+        every { appRepo.suppressedHomeWidgets } returns flowOf(setOf("id"))
+
+        val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
+            searchFeature, visited, chatFeature, analyticsClient, appNavigation)
+
+        runTest {
+            val homeWidgets = viewModel.homeWidgets.value!!
+            assertNotEquals(HomeWidget.ALERT_BANNER, homeWidgets.first())
+        }
+    }
+
 
     @Test
     fun `Given a new user or the same user has logged in, When on login, then navigate to next nav destination`() {

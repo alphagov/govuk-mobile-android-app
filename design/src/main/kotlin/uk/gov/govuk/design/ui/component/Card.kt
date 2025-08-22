@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
@@ -23,7 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.R
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -35,6 +40,7 @@ fun GovUkCard(
     onClick: (() -> Unit)? = null,
     backgroundColour: Color = GovUkTheme.colourScheme.surfaces.cardBlue,
     borderColour: Color = GovUkTheme.colourScheme.strokes.cardBlue,
+    padding: Dp = GovUkTheme.spacing.medium,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val cardColour = if (isSelected) {
@@ -63,7 +69,7 @@ fun GovUkCard(
                     enabled = onClick != null,
                     onClick = { onClick?.invoke() }
                 )
-                .padding(GovUkTheme.spacing.medium)
+                .padding(padding)
         ) {
             content()
         }
@@ -137,6 +143,116 @@ fun HomeNavigationCard(
 }
 
 @Composable
+fun HomeAlertCard(
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    description: String? = null,
+    linkTitle: String,
+    linkUrl: String,
+    onClick: () -> Unit,
+    launchBrowser: (url: String) -> Unit,
+    onSuppressClick: (() -> Unit)? = null
+) {
+    GovUkCard(
+        modifier = modifier,
+        backgroundColour = GovUkTheme.colourScheme.surfaces.cardDefault,
+        borderColour = GovUkTheme.colourScheme.strokes.cardAlert,
+        padding = 0.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+                .fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f, fill = false),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                Row(
+                    modifier = Modifier
+                        .height(IntrinsicSize.Min),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f, fill = false)
+                            .fillMaxWidth()
+                    ) {
+                        MediumVerticalSpacer()
+                        title?.let { title ->
+                            BodyBoldLabel(
+                                title,
+                                modifier = Modifier.padding(start = 16.dp)
+                            )
+                        }
+
+                        if (title != null && description != null) {
+                            SmallVerticalSpacer()
+                        }
+
+                        description?.let { description ->
+                            BodyRegularLabel(
+                                description,
+                                modifier = Modifier.padding(start = 16.dp)
+                            )
+                        }
+                        MediumVerticalSpacer()
+                    }
+                }
+            }
+            onSuppressClick?.let {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clickable {
+                            onSuppressClick()
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painterResource(R.drawable.ic_cancel),
+                        contentDescription = "${stringResource(R.string.content_desc_remove)} ${title ?: ""}",
+                        tint = GovUkTheme.colourScheme.textAndIcons.secondary
+                    )
+                }
+            }
+        }
+        Row(
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+                .fillMaxWidth()
+        ) {
+            Column {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = GovUkTheme.colourScheme.strokes.cardAlert
+                )
+
+                MediumVerticalSpacer()
+
+                val opensInWebBrowser = stringResource(R.string.opens_in_web_browser)
+                BodyRegularLabel(
+                    text = linkTitle,
+                    color = GovUkTheme.colourScheme.textAndIcons.link,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .clickable {
+                            onClick()
+                            launchBrowser(linkUrl)
+                        }
+                        .semantics {
+                            contentDescription = "$linkTitle $opensInWebBrowser"
+                        }
+                )
+                MediumVerticalSpacer()
+            }
+        }
+    }
+}
+
+@Composable
 fun SearchResultCard(
     title: String,
     description: String?,
@@ -179,6 +295,23 @@ fun SearchResultCard(
         }
     }
 }
+
+@Preview
+@Composable
+private fun HomeAlertCardPreview() {
+    GovUkTheme {
+        HomeAlertCard(
+            title = "Card title",
+            description = "Card description that may go over multiple lines",
+            onClick = { },
+            launchBrowser = { },
+            linkTitle = "A link description",
+            linkUrl = "",
+            onSuppressClick = { }
+        )
+    }
+}
+
 
 @Preview
 @Composable

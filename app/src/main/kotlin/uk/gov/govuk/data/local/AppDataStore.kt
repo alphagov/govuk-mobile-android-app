@@ -8,7 +8,6 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import uk.gov.govuk.ui.model.HomeWidget
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -57,9 +56,9 @@ internal class AppDataStore @Inject constructor(
         }
         .distinctUntilChanged()
 
-    internal suspend fun suppressHomeWidget(widget: HomeWidget) {
+    internal suspend fun suppressHomeWidget(id: String) {
         val mutableWidgets = getSuppressedHomeWidgets()?.toMutableSet() ?: mutableSetOf()
-        mutableWidgets.add(widget.serializedName)
+        mutableWidgets.add(id)
         dataStore.edit { prefs -> prefs[stringSetPreferencesKey(SUPPRESSED_HOME_WIDGETS)] = mutableWidgets.toSet() }
     }
 
