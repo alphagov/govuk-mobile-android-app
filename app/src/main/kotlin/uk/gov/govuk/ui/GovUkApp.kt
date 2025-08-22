@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
@@ -39,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -147,6 +150,7 @@ private fun BottomNavScaffold(
     alertBanner: AlertBanner?
 ) {
     val navController = rememberNavController()
+    val layoutDirection = LocalLayoutDirection.current
     val navBarPadding = WindowInsets.navigationBars.asPaddingValues()
     val section = stringResource(R.string.homepage)
 
@@ -160,7 +164,12 @@ private fun BottomNavScaffold(
                 viewModel.onTabClick(tabText)
             }
         },
-        modifier = Modifier.padding(bottom = navBarPadding.calculateBottomPadding())
+        modifier = Modifier
+            .padding(
+                start = navBarPadding.calculateStartPadding(layoutDirection),
+                bottom = navBarPadding.calculateBottomPadding(),
+                end = navBarPadding.calculateEndPadding(layoutDirection)
+            )
     ) { paddingValues ->
         Surface(
             modifier = Modifier
