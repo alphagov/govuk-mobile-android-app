@@ -13,10 +13,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -97,7 +100,7 @@ internal fun ChatRoute(
     onShowOnboarding: () -> Unit,
     launchBrowser: (url: String) -> Unit,
     onClearDone: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val viewModel: ChatViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -161,11 +164,13 @@ private fun ChatScreen(
     }
 
     if (uiState.isRetryableError) {
+        // Todo - status bar insets
         ChatErrorPageWithRetry(
             onRetry = clickEvents.onRetry,
             modifier = modifier
         )
     } else if (uiState.isError) {
+        // Todo - status bar insets
         ChatErrorPageNoRetry(modifier)
     } else {
         ChatContent(
@@ -213,7 +218,10 @@ private fun ChatContent(
             BackgroundGradient()
         }
 
-        Column {
+        Column(
+            Modifier
+                .windowInsetsPadding(WindowInsets.statusBars)
+        ) {
             LazyColumn(
                 state = listState,
                 modifier = Modifier
