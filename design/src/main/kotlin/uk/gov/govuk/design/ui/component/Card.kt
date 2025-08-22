@@ -155,9 +155,6 @@ fun HomeAlertCard(
 ) {
     GovUkCard(
         modifier = modifier,
-        onClick = {
-            onClick()
-        },
         backgroundColour = GovUkTheme.colourScheme.surfaces.cardDefault,
         borderColour = GovUkTheme.colourScheme.strokes.cardAlert,
         padding = 0.dp
@@ -242,6 +239,7 @@ fun HomeAlertCard(
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .clickable {
+                            onClick()
                             launchBrowser(linkUrl)
                         }
                         .semantics {
