@@ -37,6 +37,7 @@ fun NavGraphBuilder.chatGraph(
             )
         }
         composable(CHAT_ONBOARDING_PAGE_1_ROUTE) {
+            // Todo - status bar insets
             OnboardingPageOneRoute(
                 onClick = {
                     navController.navigateToOnboardingPageTwo()
@@ -48,6 +49,7 @@ fun NavGraphBuilder.chatGraph(
             )
         }
         composable(CHAT_ONBOARDING_PAGE_2_ROUTE) {
+            // Todo - status bar insets
             OnboardingPageTwoRoute(
                 onClick = {
                     navController.navigateToChat()
