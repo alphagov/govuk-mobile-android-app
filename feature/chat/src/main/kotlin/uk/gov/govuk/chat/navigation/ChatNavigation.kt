@@ -1,5 +1,8 @@
 package uk.gov.govuk.chat.navigation
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -45,6 +48,7 @@ fun NavGraphBuilder.chatGraph(
                     popToChatEntryScreen(navController)
                 },
                 modifier = modifier
+                    .windowInsetsPadding(WindowInsets.statusBars)
             )
         }
         composable(CHAT_ONBOARDING_PAGE_2_ROUTE) {
@@ -59,6 +63,7 @@ fun NavGraphBuilder.chatGraph(
                     navController.navigateToOnboardingPageOne()
                 },
                 modifier = modifier
+                    .windowInsetsPadding(WindowInsets.statusBars)
             )
         }
     }
