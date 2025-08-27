@@ -18,6 +18,7 @@ internal class ChatDataStore @Inject constructor(
     companion object {
         internal const val CONVERSATION_ID_KEY = "conversation_id"
         internal const val CHAT_INTRO_SEEN_KEY = "chat_intro_seen"
+        internal const val CHAT_OPT_IN_KEY = "chat_opt_in"
     }
 
     internal suspend fun conversationId(): String? {
@@ -43,6 +44,22 @@ internal class ChatDataStore @Inject constructor(
     internal suspend fun saveChatIntroSeen() {
         dataStore.edit { preferences ->
             preferences[booleanPreferencesKey(CHAT_INTRO_SEEN_KEY)] = true
+        }
+    }
+
+    internal suspend fun isChatOptIn(): Boolean {
+        return dataStore.data.firstOrNull()?.get(booleanPreferencesKey(CHAT_OPT_IN_KEY)) == true
+    }
+
+    internal suspend fun saveChatOptIn() {
+        dataStore.edit { preferences ->
+            preferences[booleanPreferencesKey(CHAT_OPT_IN_KEY)] = true
+        }
+    }
+
+    internal suspend fun clearChatOptIn() {
+        dataStore.edit { preferences ->
+            preferences.remove(booleanPreferencesKey(CHAT_OPT_IN_KEY))
         }
     }
 }

@@ -75,4 +75,33 @@ class ChatDataStoreTest {
         chatDataStore.saveChatIntroSeen()
         assertTrue(chatDataStore.isChatIntroSeen())
     }
+
+    @Test
+    fun `Returns false for chat opt in if data store is empty`() = runTest {
+        assertFalse(chatDataStore.isChatOptIn())
+    }
+
+    @Test
+    fun `Returns true for chat opt in if data store value is true`() = runTest {
+        chatDataStore.saveChatOptIn()
+        assertTrue(chatDataStore.isChatOptIn())
+    }
+
+    @Test
+    fun `Sets chat opt in to true`() = runTest {
+        assertFalse(chatDataStore.isChatOptIn())
+
+        chatDataStore.saveChatOptIn()
+        assertTrue(chatDataStore.isChatOptIn())
+    }
+
+    @Test
+    fun `Clears the chat opt in flag`() = runTest {
+        chatDataStore.saveChatOptIn()
+        assertTrue(chatDataStore.isChatOptIn())
+
+        chatDataStore.clearChatOptIn()
+
+        assertFalse(chatDataStore.isChatOptIn())
+    }
 }
