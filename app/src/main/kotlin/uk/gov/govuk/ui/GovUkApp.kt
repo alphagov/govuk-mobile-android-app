@@ -34,6 +34,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -50,6 +51,7 @@ import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -251,12 +253,16 @@ private fun BottomNav(
     navController: NavHostController,
     onTabClick: (String) -> Unit
 ) {
-    val topLevelDestinations = buildList {
-        add(TopLevelDestination.Home)
-        if (viewModel.isChatEnabled()) {
-            add(TopLevelDestination.Chat)
+    val isChatTabEnabled by viewModel.isChatFeatureEnabledState.collectAsStateWithLifecycle()
+
+    val topLevelDestinations = remember(isChatTabEnabled) {
+        buildList {
+            add(TopLevelDestination.Home)
+            if (isChatTabEnabled) {
+                add(TopLevelDestination.Chat)
+            }
+            add(TopLevelDestination.Settings)
         }
-        add(TopLevelDestination.Settings)
     }
 
     var selectedIndex by rememberSaveable {

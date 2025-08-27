@@ -4,4 +4,6 @@ interface ChatFeature {
 
     suspend fun clear()
 
+    suspend fun isEnabled(): Boolean
+
 }

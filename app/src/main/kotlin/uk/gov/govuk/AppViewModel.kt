@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -50,10 +51,16 @@ internal class AppViewModel @Inject constructor(
     private val _homeWidgets: MutableStateFlow<List<HomeWidget>?> = MutableStateFlow(null)
     internal val homeWidgets = _homeWidgets.asStateFlow()
 
+    private val _isChatFeatureEnabled = MutableStateFlow(false)
+    val isChatFeatureEnabledState: StateFlow<Boolean> = _isChatFeatureEnabled.asStateFlow()
+
     init {
         analyticsClient.isUserSessionActive = { authRepo.isUserSessionActive() }
 
         viewModelScope.launch {
+            val enabled = isChatEnabled()
+            _isChatFeatureEnabled.value = enabled
+
             initWithConfig()
         }
     }
@@ -168,7 +175,9 @@ internal class AppViewModel @Inject constructor(
         }
     }
 
-    fun isChatEnabled() = flagRepo.isChatEnabled()
+    private suspend fun isChatEnabled(): Boolean {
+        return flagRepo.isChatEnabled() && chatFeature.isEnabled()
+    }
 
     fun onWidgetClick(
         text: String,
