@@ -32,7 +32,7 @@ internal suspend fun <T> safeChatApiCall(
             else -> {
                 when (code) {
                     401, 403 -> {
-                        if (retry && authRepo.refreshTokensNoUi()) {
+                        if (retry && authRepo.refreshTokens()) {
                             safeChatApiCall(apiCall, authRepo, retry = false)
                         } else {
                             AuthError()
