@@ -101,6 +101,14 @@ class AuthRepo @Inject constructor(
         }
     }
 
+    suspend fun refreshTokensNoUi(): Boolean {
+        val tokenRequest = tokenRequestBuilder
+            .setRefreshToken(tokens.refreshToken)
+            .build()
+
+        return performTokenRequest(tokenRequest, tokens.refreshToken)
+    }
+
     private suspend fun performTokenRequest(
         tokenRequest: TokenRequest,
         refreshToken: String? = null

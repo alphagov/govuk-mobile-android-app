@@ -9,8 +9,13 @@ import uk.gov.govuk.chat.data.remote.ChatResult.NotFound
 import uk.gov.govuk.chat.data.remote.ChatResult.RateLimitExceeded
 import uk.gov.govuk.chat.data.remote.ChatResult.Success
 import uk.gov.govuk.chat.data.remote.ChatResult.ValidationError
+import uk.gov.govuk.data.auth.AuthRepo
 
-internal suspend fun <T> safeChatApiCall(apiCall: suspend () -> Response<T>): ChatResult<T> {
+internal suspend fun <T> safeChatApiCall(
+    apiCall: suspend () -> Response<T>,
+    authRepo: AuthRepo,
+    retry: Boolean = true
+): ChatResult<T> {
     return try {
         val response = apiCall()
         val body = response.body()
@@ -26,8 +31,13 @@ internal suspend fun <T> safeChatApiCall(apiCall: suspend () -> Response<T>): Ch
             }
             else -> {
                 when (code) {
-                    401 -> AuthError()
-                    403 -> AuthError()
+                    401, 403 -> {
+                        if (retry && authRepo.refreshTokensNoUi()) {
+                            safeChatApiCall(apiCall, authRepo, retry = false)
+                        } else {
+                            AuthError()
+                        }
+                    }
                     404 -> NotFound()
                     422 -> ValidationError()
                     429 -> RateLimitExceeded()

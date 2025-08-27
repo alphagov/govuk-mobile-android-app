@@ -11,6 +11,7 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.chat.data.ChatRepo
 import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.chat.data.remote.ChatResult
+import uk.gov.govuk.chat.data.remote.ChatResult.AuthError
 import uk.gov.govuk.chat.data.remote.ChatResult.NotFound
 import uk.gov.govuk.chat.data.remote.ChatResult.Success
 import uk.gov.govuk.chat.data.remote.ChatResult.ValidationError
@@ -223,6 +224,10 @@ internal class ChatViewModel @Inject constructor(
             is Success -> onSuccess(chatResult.value)
             is ValidationError -> _uiState.update { it.copy(isPiiError = true) }
             is NotFound -> _uiState.update { it.copy(isRetryableError = true) }
+            is AuthError -> {
+                // TODO: logout and show login
+                println("clear tokens - log out user - reauthenticate")
+            }
             else -> _uiState.update { it.copy(isError = true) }
         }
     }

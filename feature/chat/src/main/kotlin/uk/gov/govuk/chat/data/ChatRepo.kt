@@ -12,6 +12,7 @@ import uk.gov.govuk.chat.data.remote.model.Conversation
 import uk.gov.govuk.chat.data.remote.model.ConversationQuestionRequest
 import uk.gov.govuk.chat.data.remote.safeChatApiCall
 import uk.gov.govuk.config.data.ConfigRepo
+import uk.gov.govuk.data.auth.AuthRepo
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
@@ -20,13 +21,17 @@ import kotlin.time.Duration.Companion.seconds
 internal class ChatRepo @Inject constructor(
     private val chatApi: ChatApi,
     private val dataStore: ChatDataStore,
-    private val configRepo: ConfigRepo
+    private val configRepo: ConfigRepo,
+    private val authRepo: AuthRepo
 ) {
 
     suspend fun getConversation(): ChatResult<Conversation>? {
         val conversationId = dataStore.conversationId()
         return if (conversationId != null) {
-            safeChatApiCall { chatApi.getConversation(conversationId) }
+            safeChatApiCall(
+                apiCall = { chatApi.getConversation(conversationId) },
+                authRepo = authRepo
+            )
         } else {
             null
         }
@@ -53,7 +58,10 @@ internal class ChatRepo @Inject constructor(
             userQuestion = question
         )
 
-        val result = safeChatApiCall { chatApi.startConversation(requestBody) }
+        val result = safeChatApiCall(
+            apiCall = { chatApi.startConversation(requestBody) },
+            authRepo = authRepo
+        )
         if (result is Success) {
             dataStore.saveConversationId(result.value.conversationId)
         }
@@ -65,7 +73,10 @@ internal class ChatRepo @Inject constructor(
             userQuestion = question
         )
 
-        return safeChatApiCall { chatApi.updateConversation(conversationId, requestBody) }
+        return safeChatApiCall(
+            apiCall = { chatApi.updateConversation(conversationId, requestBody) },
+            authRepo = authRepo
+        )
     }
 
     suspend fun getAnswer(
@@ -78,7 +89,11 @@ internal class ChatRepo @Inject constructor(
         while (true) {
             delay(pollInterval.seconds)
 
-            val result = safeChatApiCall { chatApi.getAnswer(conversationId, questionId) }
+            val result = safeChatApiCall(
+                apiCall = { chatApi.getAnswer(conversationId, questionId) },
+                authRepo = authRepo
+            )
+
             if (result !is AwaitingAnswer) {
                 return result
             }
