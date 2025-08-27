@@ -21,6 +21,7 @@ private const val CHAT_ONBOARDING_PAGE_2_ROUTE = "chat_onboarding_2_route"
 fun NavGraphBuilder.chatGraph(
     navController: NavHostController,
     launchBrowser: (url: String) -> Unit,
+    onAuthError: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     navigation(
@@ -36,6 +37,7 @@ fun NavGraphBuilder.chatGraph(
                     navController.navigateToChat()
                 },
                 launchBrowser = launchBrowser,
+                onAuthError = onAuthError,
                 modifier = modifier
             )
         }

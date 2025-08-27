@@ -495,6 +495,7 @@ private fun GovUkNavHost(
         chatGraph(
             navController = navController,
             launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } },
+            onAuthError = { appNavigation.onSignOut(navController) },
             modifier = Modifier.padding(paddingValues)
         )
     }

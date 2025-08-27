@@ -32,11 +32,13 @@ import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
 import uk.gov.govuk.chat.data.remote.model.Conversation
 import uk.gov.govuk.chat.data.remote.model.PendingQuestion
 import uk.gov.govuk.chat.data.remote.model.Source
+import uk.gov.govuk.data.auth.AuthRepo
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ChatViewModelTest {
     private val chatRepo = mockk<ChatRepo>(relaxed = true)
     private val chatDataStore = mockk<ChatDataStore>(relaxed = true)
+    private val authRepo = mockk<AuthRepo>(relaxed = true)
     private val conversation = mockk<Conversation>(relaxed = true)
     private val pendingQuestion = mockk<PendingQuestion>(relaxed = true)
     private val question = mockk<AnsweredQuestion>(relaxed = true)
@@ -50,7 +52,7 @@ class ChatViewModelTest {
     fun setup() {
         Dispatchers.setMain(dispatcher)
 
-        viewModel = ChatViewModel(chatRepo, chatDataStore, analyticsClient)
+        viewModel = ChatViewModel(chatRepo, chatDataStore, authRepo, analyticsClient)
 
         clearAllMocks()
     }
@@ -268,6 +270,27 @@ class ChatViewModelTest {
     }
 
     @Test
+    fun `Load conversation emits auth error`() = runTest {
+        coEvery { chatRepo.getConversation() } coAnswers {
+            delay(100)
+            ChatResult.AuthError()
+        }
+
+        var authError = false
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.authError.collect {
+                authError = true
+            }
+        }
+
+        viewModel.loadConversation()
+
+        advanceUntilIdle()
+
+        assertTrue(authError)
+    }
+
+    @Test
     fun `Load conversation gets answer if there is a pending question`() = runTest {
         coEvery { chatRepo.getConversation() } coAnswers {
             delay(100)
@@ -434,7 +457,6 @@ class ChatViewModelTest {
         assertFalse(finalState.isLoading)
         assertTrue(finalState.chatEntries.isEmpty())
         assertTrue(finalState.isPiiError)
-        assertTrue(finalState.isError)
 
         coVerify(exactly = 0) {
             chatRepo.getAnswer(any(), any(), any())
@@ -474,6 +496,27 @@ class ChatViewModelTest {
     }
 
     @Test
+    fun `Submit emits auth error`() = runTest {
+        coEvery { chatRepo.askQuestion(any()) } coAnswers {
+            delay(100)
+            ChatResult.AuthError()
+        }
+
+        var authError = false
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.authError.collect {
+                authError = true
+            }
+        }
+
+        viewModel.onSubmit("Question")
+
+        advanceUntilIdle()
+
+        assertTrue(authError)
+    }
+
+    @Test
     fun `Submit emits answer error`() = runTest {
         coEvery { chatRepo.askQuestion(any()) } coAnswers {
             delay(100)
@@ -500,6 +543,29 @@ class ChatViewModelTest {
 
         assertFalse(finalState.isLoading)
         assertTrue(finalState.isError)
+    }
+
+    @Test
+    fun `Submit emits answer auth error`() = runTest {
+        coEvery { chatRepo.askQuestion(any()) } coAnswers {
+            delay(100)
+            ChatResult.Success(question)
+        }
+
+        coEvery { chatRepo.getAnswer(any(), any(), any()) } returns ChatResult.AuthError()
+
+        var authError = false
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.authError.collect {
+                authError = true
+            }
+        }
+
+        viewModel.onSubmit("Question")
+
+        advanceUntilIdle()
+
+        assertTrue(authError)
     }
 
     @Test

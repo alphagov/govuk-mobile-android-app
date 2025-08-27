@@ -90,15 +90,21 @@ class AuthRepo @Inject constructor(
                 analyticsClient.logException(IllegalArgumentException("refresh token is null or blank"))
                 false
             } else {
-                val tokenRequest = tokenRequestBuilder
-                    .setRefreshToken(refreshToken)
-                    .build()
-
-                performTokenRequest(tokenRequest, refreshToken)
+                refreshTokens(refreshToken)
             }
         } else {
             false
         }
+    }
+
+    suspend fun refreshTokens(): Boolean = refreshTokens(tokens.refreshToken)
+
+    private suspend fun refreshTokens(refreshToken: String): Boolean {
+        val tokenRequest = tokenRequestBuilder
+            .setRefreshToken(refreshToken)
+            .build()
+
+        return performTokenRequest(tokenRequest, refreshToken)
     }
 
     private suspend fun performTokenRequest(

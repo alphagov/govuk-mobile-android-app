@@ -100,6 +100,7 @@ internal fun ChatRoute(
     onShowOnboarding: () -> Unit,
     launchBrowser: (url: String) -> Unit,
     onClearDone: () -> Unit,
+    onAuthError: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: ChatViewModel = hiltViewModel()
@@ -142,6 +143,12 @@ internal fun ChatRoute(
             LaunchedEffect(Unit) {
                 onShowOnboarding()
             }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.authError.collect {
+            onAuthError()
         }
     }
 }
@@ -531,7 +538,7 @@ private fun SubmitIconButton(
     IconButton(
         onClick = onClick,
         modifier = modifier,
-        enabled = uiState.isSubmitEnabled && !uiState.isPiiError,
+        enabled = uiState.isSubmitEnabled && !uiState.isPiiError && !uiState.isLoading,
         colors = IconButtonColors(
             containerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
             contentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconEnabled,

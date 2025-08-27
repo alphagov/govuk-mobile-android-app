@@ -3,7 +3,9 @@ package uk.gov.govuk.chat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -11,12 +13,14 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.chat.data.ChatRepo
 import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.chat.data.remote.ChatResult
+import uk.gov.govuk.chat.data.remote.ChatResult.AuthError
 import uk.gov.govuk.chat.data.remote.ChatResult.NotFound
 import uk.gov.govuk.chat.data.remote.ChatResult.Success
 import uk.gov.govuk.chat.data.remote.ChatResult.ValidationError
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.chat.ui.model.ChatEntry
+import uk.gov.govuk.data.auth.AuthRepo
 import javax.inject.Inject
 
 internal data class ChatUiState(
@@ -37,6 +41,7 @@ internal data class ChatUiState(
 internal class ChatViewModel @Inject constructor(
     private val chatRepo: ChatRepo,
     private val chatDataStore: ChatDataStore,
+    private val authRepo: AuthRepo,
     private val analyticsClient: AnalyticsClient
 ): ViewModel() {
     companion object {
@@ -67,6 +72,9 @@ internal class ChatViewModel @Inject constructor(
         )
     )
     val uiState = _uiState.asStateFlow()
+
+    private val _authError = MutableSharedFlow<Unit>()
+    val authError: SharedFlow<Unit> = _authError
 
     init {
         viewModelScope.launch {
@@ -223,6 +231,10 @@ internal class ChatViewModel @Inject constructor(
             is Success -> onSuccess(chatResult.value)
             is ValidationError -> _uiState.update { it.copy(isPiiError = true) }
             is NotFound -> _uiState.update { it.copy(isRetryableError = true) }
+            is AuthError -> {
+                authRepo.clear()
+                _authError.emit(Unit)
+            }
             else -> _uiState.update { it.copy(isError = true) }
         }
     }
