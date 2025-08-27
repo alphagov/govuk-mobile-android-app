@@ -100,6 +100,7 @@ internal fun ChatRoute(
     onShowOnboarding: () -> Unit,
     launchBrowser: (url: String) -> Unit,
     onClearDone: () -> Unit,
+    onAuthError: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: ChatViewModel = hiltViewModel()
@@ -142,6 +143,12 @@ internal fun ChatRoute(
             LaunchedEffect(Unit) {
                 onShowOnboarding()
             }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.authError.collect {
+            onAuthError()
         }
     }
 }

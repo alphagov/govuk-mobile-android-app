@@ -3,7 +3,9 @@ package uk.gov.govuk.chat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -68,6 +70,9 @@ internal class ChatViewModel @Inject constructor(
         )
     )
     val uiState = _uiState.asStateFlow()
+
+    private val _authError = MutableSharedFlow<Unit>()
+    val authError: SharedFlow<Unit> = _authError
 
     init {
         viewModelScope.launch {
@@ -224,10 +229,7 @@ internal class ChatViewModel @Inject constructor(
             is Success -> onSuccess(chatResult.value)
             is ValidationError -> _uiState.update { it.copy(isPiiError = true) }
             is NotFound -> _uiState.update { it.copy(isRetryableError = true) }
-            is AuthError -> {
-                // TODO: logout and show login
-                println("clear tokens - log out user - reauthenticate")
-            }
+            is AuthError -> { _authError.emit(Unit) }
             else -> _uiState.update { it.copy(isError = true) }
         }
     }
