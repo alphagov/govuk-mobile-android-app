@@ -538,7 +538,7 @@ private fun SubmitIconButton(
     IconButton(
         onClick = onClick,
         modifier = modifier,
-        enabled = uiState.isSubmitEnabled && !uiState.isPiiError,
+        enabled = uiState.isSubmitEnabled && !uiState.isPiiError && !uiState.isLoading,
         colors = IconButtonColors(
             containerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
             contentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconEnabled,
