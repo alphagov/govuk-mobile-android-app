@@ -20,6 +20,7 @@ import uk.gov.govuk.chat.data.remote.ChatResult.ValidationError
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.chat.ui.model.ChatEntry
+import uk.gov.govuk.data.auth.AuthRepo
 import javax.inject.Inject
 
 internal data class ChatUiState(
@@ -40,6 +41,7 @@ internal data class ChatUiState(
 internal class ChatViewModel @Inject constructor(
     private val chatRepo: ChatRepo,
     private val chatDataStore: ChatDataStore,
+    private val authRepo: AuthRepo,
     private val analyticsClient: AnalyticsClient
 ): ViewModel() {
     companion object {
@@ -229,7 +231,10 @@ internal class ChatViewModel @Inject constructor(
             is Success -> onSuccess(chatResult.value)
             is ValidationError -> _uiState.update { it.copy(isPiiError = true) }
             is NotFound -> _uiState.update { it.copy(isRetryableError = true) }
-            is AuthError -> { _authError.emit(Unit) }
+            is AuthError -> {
+                authRepo.clear()
+                _authError.emit(Unit)
+            }
             else -> _uiState.update { it.copy(isError = true) }
         }
     }
