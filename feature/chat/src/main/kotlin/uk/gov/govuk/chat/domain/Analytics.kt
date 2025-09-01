@@ -1,0 +1,22 @@
+package uk.gov.govuk.chat.domain
+
+object Analytics {
+    const val CHAT_SCREEN_CLASS = "Chat"
+    const val CHAT_SCREEN_NAME = "Chat Screen"
+    const val CHAT_SCREEN_TITLE = "Chat Screen"
+    const val ACTION_MENU = "Action Menu"
+    const val ACTION_MENU_ACTION = "Action Menu Opened"
+    const val ACTION_MENU_CLEAR_ACTION = "Clear Chat Opened"
+    const val ACTION_MENU_CLEAR_YES = "Clear Chat Yes Clicked"
+    const val ACTION_MENU_CLEAR_NO = "Clear Chat No Clicked"
+    const val ONBOARDING_SCREEN_CLASS = "Chat Onboarding"
+    const val ONBOARDING_SCREEN_ONE_NAME = "Chat Onboarding Screen One"
+    const val ONBOARDING_SCREEN_ONE_TITLE = "Chat Onboarding Screen One"
+    const val ONBOARDING_SCREEN_TWO_NAME = "Chat Onboarding Screen Two"
+    const val ONBOARDING_SCREEN_TWO_TITLE = "Chat Onboarding Screen Two"
+    const val ONBOARDING_SCREEN_TWO_BACK_TEXT = "Chat Onboarding Screen Two Back"
+    const val RESPONSE_LINK_CLICKED = "Response Link Clicked"
+    const val RESPONSE_SOURCE_LINK_CLICKED = "Source Link Clicked"
+    const val RESPONSE = "Response"
+    const val RESPONSE_SOURCE_LINKS_OPENED = "Source Links Opened"
+}

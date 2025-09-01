@@ -22,8 +22,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
+import uk.gov.govuk.chat.domain.Analytics
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
@@ -77,9 +77,9 @@ internal fun Sources(
                     expanded = !expanded
                     if (expanded) {
                         onActionItemClicked(
-                            ChatViewModel.RESPONSE_SOURCE_LINKS_OPENED,
-                            ChatViewModel.RESPONSE,
-                            ChatViewModel.RESPONSE_SOURCE_LINKS_OPENED
+                            Analytics.RESPONSE_SOURCE_LINKS_OPENED,
+                            Analytics.RESPONSE,
+                            Analytics.RESPONSE_SOURCE_LINKS_OPENED
                         )
                     }
                 }
@@ -115,7 +115,7 @@ internal fun Sources(
                         talkbackText = linkText,
                         launchBrowser = launchBrowser,
                         onMarkdownLinkClicked = onMarkdownLinkClicked,
-                        markdownLinkType = ChatViewModel.RESPONSE_SOURCE_LINK_CLICKED
+                        markdownLinkType = Analytics.RESPONSE_SOURCE_LINK_CLICKED
                     )
 
                     if (index < sources.size - 1) {

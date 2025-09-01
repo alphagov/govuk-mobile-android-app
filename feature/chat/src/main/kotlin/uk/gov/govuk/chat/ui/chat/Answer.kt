@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
+import uk.gov.govuk.chat.domain.Analytics
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -50,7 +50,7 @@ internal fun Answer(
             talkbackText = answer,
             launchBrowser = launchBrowser,
             onMarkdownLinkClicked = onMarkdownLinkClicked,
-            markdownLinkType = ChatViewModel.RESPONSE_LINK_CLICKED
+            markdownLinkType = Analytics.RESPONSE_LINK_CLICKED
         )
 
         if (!sources.isNullOrEmpty()) {

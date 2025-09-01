@@ -70,6 +70,7 @@ import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
+import uk.gov.govuk.chat.domain.Analytics
 import uk.gov.govuk.chat.ui.chat.ActionMenu
 import uk.gov.govuk.chat.ui.chat.ChatErrorPageNoRetry
 import uk.gov.govuk.chat.ui.chat.ChatErrorPageWithRetry
@@ -164,9 +165,9 @@ private fun ChatScreen(
 ) {
     LaunchedEffect(Unit) {
         analyticsEvents.onPageView(
-            ChatViewModel.SCREEN_CLASS,
-            ChatViewModel.SCREEN_NAME,
-            ChatViewModel.SCREEN_TITLE
+            Analytics.CHAT_SCREEN_CLASS,
+            Analytics.CHAT_SCREEN_NAME,
+            Analytics.CHAT_SCREEN_TITLE
         )
     }
 
