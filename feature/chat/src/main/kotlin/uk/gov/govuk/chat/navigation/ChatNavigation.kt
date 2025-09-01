@@ -45,6 +45,28 @@ fun NavGraphBuilder.chatGraph(
                 modifier = modifier
             )
         }
+    }
+}
+
+fun NavGraphBuilder.chatOnboardingGraph(
+    navController: NavHostController,
+    launchBrowser: (url: String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    navigation(
+        route = CHAT_ONBOARDING_GRAPH_ROUTE,
+        startDestination = CHAT_OPT_IN_ROUTE
+    ) {
+        composable(CHAT_OPT_IN_ROUTE) {
+            ChatOptInRoute(
+                launchBrowser = launchBrowser,
+                navigateToHome = {
+                    navController.navigateHome()
+                },
+                modifier = modifier
+                    .windowInsetsPadding(WindowInsets.statusBars)
+            )
+        }
         composable(CHAT_ONBOARDING_PAGE_1_ROUTE) {
             OnboardingPageOneRoute(
                 onClick = {
@@ -67,28 +89,6 @@ fun NavGraphBuilder.chatGraph(
                 },
                 onBack = {
                     navController.navigateToOnboardingPageOne()
-                },
-                modifier = modifier
-                    .windowInsetsPadding(WindowInsets.statusBars)
-            )
-        }
-    }
-}
-
-fun NavGraphBuilder.chatOnboardingGraph(
-    navController: NavHostController,
-    launchBrowser: (url: String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    navigation(
-        route = CHAT_ONBOARDING_GRAPH_ROUTE,
-        startDestination = CHAT_OPT_IN_ROUTE
-    ) {
-        composable(CHAT_OPT_IN_ROUTE) {
-            ChatOptInRoute(
-                launchBrowser = launchBrowser,
-                navigateToHome = {
-                    navController.navigateHome()
                 },
                 modifier = modifier
                     .windowInsetsPadding(WindowInsets.statusBars)
