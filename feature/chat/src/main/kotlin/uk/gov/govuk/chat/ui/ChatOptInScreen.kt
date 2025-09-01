@@ -18,12 +18,12 @@ import uk.gov.govuk.chat.ChatOptInViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.CentreAlignedScreen
-import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SecondaryButton
+import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -83,7 +83,7 @@ private fun ChatOptInScreen(
                     contentDescription = null,
                     modifier = Modifier.height(150.dp)
                 )
-                ExtraLargeVerticalSpacer()
+                LargeVerticalSpacer()
             }
 
             LargeTitleBoldLabel(
@@ -101,7 +101,7 @@ private fun ChatOptInScreen(
                 textAlign = TextAlign.Center
             )
 
-            MediumVerticalSpacer()
+            SmallVerticalSpacer()
 
             BodyRegularLabel(
                 text = stringResource(id = R.string.optin_para_2),
@@ -110,7 +110,7 @@ private fun ChatOptInScreen(
                 textAlign = TextAlign.Center
             )
 
-            MediumVerticalSpacer()
+            SmallVerticalSpacer()
 
             BodyRegularLabel(
                 text = stringResource(id = R.string.optin_para_3),
@@ -133,7 +133,7 @@ private fun ChatOptInScreen(
                 externalLink = true
             )
 
-            MediumVerticalSpacer()
+            SmallVerticalSpacer()
 
             val termsAndConditionsText =
                 stringResource(id = R.string.optin_terms_and_conditions)
@@ -163,8 +163,6 @@ private fun ChatOptInScreen(
                 text = optOutText,
                 onClick = { onClickOptOut(optOutText) }
             )
-
-            LargeVerticalSpacer()
         }
     )
 }
