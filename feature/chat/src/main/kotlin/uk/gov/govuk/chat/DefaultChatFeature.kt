@@ -16,4 +16,8 @@ internal class DefaultChatFeature @Inject constructor(
     override suspend fun userHasOptedIn(): Boolean {
         return dataStore.isChatOptIn()
     }
+
+    override suspend fun userHasNotYetChosen(): Boolean {
+        return dataStore.isChatOptInNull()
+    }
 }

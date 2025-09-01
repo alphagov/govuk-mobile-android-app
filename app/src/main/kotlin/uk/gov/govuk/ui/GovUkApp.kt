@@ -66,6 +66,7 @@ import uk.gov.govuk.R
 import uk.gov.govuk.analytics.navigation.analyticsGraph
 import uk.gov.govuk.chat.navigation.CHAT_GRAPH_ROUTE
 import uk.gov.govuk.chat.navigation.chatGraph
+import uk.gov.govuk.chat.navigation.chatOnboardingGraph
 import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
@@ -83,10 +84,10 @@ import uk.gov.govuk.settings.navigation.settingsGraph
 import uk.gov.govuk.settings.navigation.signOutGraph
 import uk.gov.govuk.topics.navigation.topicSelectionGraph
 import uk.gov.govuk.topics.navigation.topicsGraph
+import uk.gov.govuk.visited.navigation.visitedGraph
 import uk.gov.govuk.widgets.model.HomeWidget
 import uk.gov.govuk.widgets.ui.contains
 import uk.gov.govuk.widgets.ui.homeWidgets
-import uk.gov.govuk.visited.navigation.visitedGraph
 import uk.govuk.app.local.navigation.localGraph
 
 @Composable
@@ -498,6 +499,12 @@ private fun GovUkNavHost(
             navController = navController,
             launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } },
             onAuthError = { appNavigation.onSignOut(navController) },
+            modifier = Modifier.padding(paddingValues)
+        )
+
+        chatOnboardingGraph(
+            navController = navController,
+            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } },
             modifier = Modifier.padding(paddingValues)
         )
     }

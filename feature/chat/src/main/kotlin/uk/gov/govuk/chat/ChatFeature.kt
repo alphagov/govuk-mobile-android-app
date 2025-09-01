@@ -6,4 +6,6 @@ interface ChatFeature {
 
     suspend fun userHasOptedIn(): Boolean
 
+    suspend fun userHasNotYetChosen(): Boolean
+
 }

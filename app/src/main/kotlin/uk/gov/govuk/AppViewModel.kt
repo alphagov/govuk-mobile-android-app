@@ -176,7 +176,10 @@ internal class AppViewModel @Inject constructor(
     }
 
     private suspend fun isChatEnabled(): Boolean {
-        return flagRepo.isChatEnabled() && chatFeature.userHasOptedIn()
+        return flagRepo.isChatEnabled() &&
+                flagRepo.isChatOptInEnabled() &&
+                flagRepo.isChatTestActiveEnabled() &&
+                chatFeature.userHasOptedIn()
     }
 
     fun onWidgetClick(
