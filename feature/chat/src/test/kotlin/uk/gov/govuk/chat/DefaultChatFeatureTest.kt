@@ -28,7 +28,7 @@ class DefaultChatFeatureTest {
         val feature = DefaultChatFeature(chatRepo, dataStore)
 
         runTest {
-            feature.isEnabled()
+            feature.userHasOptedIn()
 
             coVerify { dataStore.isChatOptIn() }
         }

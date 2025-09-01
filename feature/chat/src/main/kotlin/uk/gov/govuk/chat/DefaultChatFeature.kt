@@ -13,7 +13,7 @@ internal class DefaultChatFeature @Inject constructor(
         chatRepo.clearConversation()
     }
 
-    override suspend fun isEnabled(): Boolean {
+    override suspend fun userHasOptedIn(): Boolean {
         return dataStore.isChatOptIn()
     }
 }
