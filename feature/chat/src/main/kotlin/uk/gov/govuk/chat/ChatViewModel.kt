@@ -180,8 +180,8 @@ internal class ChatViewModel @Inject constructor(
         )
     }
 
-    fun onQuestionSubmit(question: String) {
-        analyticsClient.chat(question)
+    fun onQuestionSubmit() {
+        analyticsClient.chat()
     }
 
     fun onButtonClicked(text: String, section: String) {

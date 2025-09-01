@@ -230,14 +230,13 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a chat question, then log event`() {
-        analyticsClient.chat("a question")
+        analyticsClient.chat()
 
         verify {
             firebaseAnalyticClient.logEvent(
                 "Chat",
                 mapOf(
                     "type" to "typed",
-                    "text" to "a question"
                 )
             )
         }

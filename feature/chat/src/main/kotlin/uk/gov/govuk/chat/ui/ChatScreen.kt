@@ -85,7 +85,7 @@ internal class ChatScreenEvents(
     val onPageView: (String, String, String) -> Unit,
     val onActionItemClicked: (String, String, String) -> Unit,
     val onAboutClick: (String) -> Unit,
-    val onQuestionSubmit: (String) -> Unit,
+    val onQuestionSubmit: () -> Unit,
     val onMarkdownLinkClicked: (String, String) -> Unit,
 )
 
@@ -117,7 +117,7 @@ internal fun ChatRoute(
                     },
                     onActionItemClicked = { text, section, action -> viewModel.onActionItemClicked(text, section, action) },
                     onAboutClick = { text -> viewModel.onAboutClick(text) },
-                    onQuestionSubmit = { text -> viewModel.onQuestionSubmit(text) },
+                    onQuestionSubmit = { viewModel.onQuestionSubmit() },
                     onMarkdownLinkClicked = { text, url -> viewModel.onMarkdownLinkClicked(text, url) },
                 ),
                 launchBrowser = launchBrowser,
@@ -163,26 +163,42 @@ private fun ChatScreen(
     clickEvents: ChatScreenClickEvents,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(Unit) {
-        analyticsEvents.onPageView(
-            Analytics.CHAT_SCREEN_CLASS,
-            Analytics.CHAT_SCREEN_NAME,
-            Analytics.CHAT_SCREEN_TITLE
-        )
-    }
-
     if (uiState.isRetryableError) {
+        LaunchedEffect(Unit) {
+            analyticsEvents.onPageView(
+                Analytics.CHAT_ERROR_SCREEN_CLASS,
+                Analytics.CHAT_ERROR_RETRY_SCREEN_NAME,
+                Analytics.CHAT_ERROR_RETRY_SCREEN_TITLE,
+            )
+        }
+
         ChatErrorPageWithRetry(
             onRetry = clickEvents.onRetry,
             modifier = modifier
                 .windowInsetsPadding(WindowInsets.statusBars)
         )
     } else if (uiState.isError) {
+        LaunchedEffect(Unit) {
+            analyticsEvents.onPageView(
+                Analytics.CHAT_ERROR_SCREEN_CLASS,
+                Analytics.CHAT_ERROR_SCREEN_NAME,
+                Analytics.CHAT_ERROR_SCREEN_TITLE,
+            )
+        }
+
         ChatErrorPageNoRetry(
             modifier
                 .windowInsetsPadding(WindowInsets.statusBars)
         )
     } else {
+        LaunchedEffect(Unit) {
+            analyticsEvents.onPageView(
+                Analytics.CHAT_SCREEN_CLASS,
+                Analytics.CHAT_SCREEN_NAME,
+                Analytics.CHAT_SCREEN_TITLE
+            )
+        }
+
         ChatContent(
             uiState,
             launchBrowser = launchBrowser,
@@ -423,7 +439,7 @@ private fun ChatInput(
 
                 SubmitIconButton(
                     onClick = {
-                        analyticsEvents.onQuestionSubmit(uiState.question)
+                        analyticsEvents.onQuestionSubmit()
                         clickEvents.onSubmit(uiState.question)
                     },
                     uiState = uiState
@@ -595,7 +611,7 @@ private fun analyticsEvents() = ChatScreenEvents(
     onPageView = { _, _, _ -> },
     onActionItemClicked = { _, _, _ -> },
     onAboutClick = { _ ->  },
-    onQuestionSubmit = { _ ->  },
+    onQuestionSubmit = { },
     onMarkdownLinkClicked = { _, _ -> },
 )
 
