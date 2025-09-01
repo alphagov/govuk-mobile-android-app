@@ -48,12 +48,24 @@ internal class ChatDataStore @Inject constructor(
     }
 
     internal suspend fun isChatOptIn(): Boolean {
-        return dataStore.data.firstOrNull()?.get(booleanPreferencesKey(CHAT_OPT_IN_KEY)) == true
+        val preferences = dataStore.data.firstOrNull()
+        return preferences?.get(booleanPreferencesKey(CHAT_OPT_IN_KEY)) == true
+    }
+
+    internal suspend fun isChatOptInPresent(): Boolean {
+        val preferences = dataStore.data.firstOrNull()
+        return preferences?.contains(booleanPreferencesKey(CHAT_OPT_IN_KEY)) == true
     }
 
     internal suspend fun saveChatOptIn() {
         dataStore.edit { preferences ->
             preferences[booleanPreferencesKey(CHAT_OPT_IN_KEY)] = true
+        }
+    }
+
+    internal suspend fun saveChatOptOut() {
+        dataStore.edit { preferences ->
+            preferences[booleanPreferencesKey(CHAT_OPT_IN_KEY)] = false
         }
     }
 

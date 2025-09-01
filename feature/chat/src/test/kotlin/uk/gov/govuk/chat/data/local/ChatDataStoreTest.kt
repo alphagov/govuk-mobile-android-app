@@ -96,6 +96,14 @@ class ChatDataStoreTest {
     }
 
     @Test
+    fun `Sets chat opt in to false`() = runTest {
+        assertFalse(chatDataStore.isChatOptIn())
+
+        chatDataStore.saveChatOptOut()
+        assertFalse(chatDataStore.isChatOptIn())
+    }
+
+    @Test
     fun `Clears the chat opt in flag`() = runTest {
         chatDataStore.saveChatOptIn()
         assertTrue(chatDataStore.isChatOptIn())
@@ -103,5 +111,24 @@ class ChatDataStoreTest {
         chatDataStore.clearChatOptIn()
 
         assertFalse(chatDataStore.isChatOptIn())
+    }
+
+    @Test
+    fun `Checks if chat opt in is present, prior to being set`() = runTest {
+        assertFalse(chatDataStore.isChatOptInPresent())
+    }
+
+    @Test
+    fun `Checks if chat opt in is present, once set to true`() = runTest {
+        chatDataStore.saveChatOptIn()
+
+        assertTrue(chatDataStore.isChatOptInPresent())
+    }
+
+    @Test
+    fun `Checks if chat opt in is present, once set to false`() = runTest {
+        chatDataStore.saveChatOptOut()
+
+        assertTrue(chatDataStore.isChatOptInPresent())
     }
 }
