@@ -700,12 +700,10 @@ class ChatViewModelTest {
 
     @Test
     fun `When the user enters a question and submits it, then log analytics`() {
-        val question = "I have a question"
-
-        viewModel.onQuestionSubmit(question)
+        viewModel.onQuestionSubmit()
 
         verify {
-            analyticsClient.chat(question)
+            analyticsClient.chat()
         }
     }
 

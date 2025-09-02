@@ -25,8 +25,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.chat.BuildConfig
-import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
+import uk.gov.govuk.chat.domain.Analytics
 import uk.gov.govuk.chat.ui.ChatScreenEvents
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
@@ -76,8 +76,8 @@ internal fun ActionMenu(
             if (expanded) {
                 analyticsEvents.onActionItemClicked(
                     buttonText,
-                    ChatViewModel.ACTION_MENU,
-                    ChatViewModel.ACTION_MENU_ACTION
+                    Analytics.ACTION_MENU,
+                    Analytics.ACTION_MENU_ACTION
                 )
             }
         }
@@ -139,8 +139,8 @@ private fun ClearMenuItem(
             openDialog.value = true
             analyticsEvents.onActionItemClicked(
                 buttonText,
-                ChatViewModel.ACTION_MENU,
-                ChatViewModel.ACTION_MENU_CLEAR_ACTION
+                Analytics.ACTION_MENU,
+                Analytics.ACTION_MENU_CLEAR_ACTION
             )
         },
         modifier = modifier,
@@ -170,8 +170,8 @@ private fun ClearMenuItem(
                     onClick = {
                         analyticsEvents.onActionItemClicked(
                             buttonText,
-                            ChatViewModel.ACTION_MENU,
-                            ChatViewModel.ACTION_MENU_CLEAR_YES
+                            Analytics.ACTION_MENU,
+                            Analytics.ACTION_MENU_CLEAR_YES
                         )
                         onClear()
                         openDialog.value = false
@@ -190,8 +190,8 @@ private fun ClearMenuItem(
                     onClick = {
                         analyticsEvents.onActionItemClicked(
                             buttonText,
-                            ChatViewModel.ACTION_MENU,
-                            ChatViewModel.ACTION_MENU_CLEAR_NO
+                            Analytics.ACTION_MENU,
+                            Analytics.ACTION_MENU_CLEAR_NO
                         )
                         openDialog.value = false
                         onClearActioned()

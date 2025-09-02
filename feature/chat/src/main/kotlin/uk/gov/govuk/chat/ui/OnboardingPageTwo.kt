@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
+import uk.gov.govuk.chat.domain.Analytics
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.PrimaryButton
@@ -43,15 +44,15 @@ internal fun OnboardingPageTwoRoute(
     OnboardingPageTwoScreen(
         {
             viewModel.onPageView(
-                screenClass = ChatViewModel.ONBOARDING_SCREEN_CLASS,
-                screenName = ChatViewModel.ONBOARDING_SCREEN_TWO_NAME,
-                title = ChatViewModel.ONBOARDING_SCREEN_TWO_TITLE
+                screenClass = Analytics.ONBOARDING_SCREEN_CLASS,
+                screenName = Analytics.ONBOARDING_SCREEN_TWO_NAME,
+                title = Analytics.ONBOARDING_SCREEN_TWO_TITLE
             )
         },
         onClick = {
             viewModel.onButtonClicked(
                 text = continueText,
-                section = ChatViewModel.ONBOARDING_SCREEN_TWO_NAME
+                section = Analytics.ONBOARDING_SCREEN_TWO_NAME
             )
             viewModel.setChatIntroSeen()
             onClick()
@@ -59,14 +60,14 @@ internal fun OnboardingPageTwoRoute(
         onCancel = {
             viewModel.onButtonClicked(
                 text = cancelText,
-                section = ChatViewModel.ONBOARDING_SCREEN_TWO_NAME
+                section = Analytics.ONBOARDING_SCREEN_TWO_NAME
             )
             onCancel()
         },
         onBack = {
             viewModel.onButtonClicked(
-                text = ChatViewModel.ONBOARDING_SCREEN_TWO_BACK_TEXT,
-                section = ChatViewModel.ONBOARDING_SCREEN_TWO_NAME
+                text = Analytics.ONBOARDING_SCREEN_TWO_BACK_TEXT,
+                section = Analytics.ONBOARDING_SCREEN_TWO_NAME
             )
             onBack()
         },

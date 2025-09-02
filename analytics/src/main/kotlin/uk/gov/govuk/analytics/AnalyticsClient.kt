@@ -98,8 +98,13 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
-    fun chat(question: String) {
-        redactedEvent(name = "Chat", type = "typed", inputString = question)
+    fun chat() {
+        logEvent(
+            "Chat",
+            mapOf(
+                "type" to "typed"
+            )
+        )
     }
 
     fun search(searchTerm: String) {
