@@ -376,6 +376,7 @@ private fun ChatInput(
                 ActionMenu(
                     launchBrowser = launchBrowser,
                     hasConversation = hasConversation,
+                    isLoading = uiState.isLoading,
                     onClear = clickEvents.onClear,
                     analyticsEvents = analyticsEvents,
                     modifier = Modifier.semantics { this.traversalIndex = 1f }

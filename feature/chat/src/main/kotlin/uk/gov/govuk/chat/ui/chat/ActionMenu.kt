@@ -12,6 +12,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -36,6 +37,7 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 internal fun ActionMenu(
     launchBrowser: (url: String) -> Unit,
     hasConversation: Boolean,
+    isLoading: Boolean,
     onClear: () -> Unit,
     analyticsEvents: ChatScreenEvents,
     modifier: Modifier = Modifier
@@ -62,6 +64,7 @@ internal fun ActionMenu(
 
         if (hasConversation) {
             ClearMenuItem(
+                enabled = !isLoading,
                 onClear = onClear,
                 onClearActioned = { expanded = false },
                 analyticsEvents = analyticsEvents
@@ -119,6 +122,7 @@ private fun AboutMenuItem(
 
 @Composable
 private fun ClearMenuItem(
+    enabled: Boolean,
     onClear: () -> Unit,
     onClearActioned: () -> Unit,
     analyticsEvents: ChatScreenEvents,
@@ -127,11 +131,17 @@ private fun ClearMenuItem(
     val openDialog = rememberSaveable { mutableStateOf(false) }
     val buttonText = stringResource(id = R.string.action_clear)
 
+    val colours = MenuDefaults.itemColors().copy(
+        textColor = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
+        trailingIconColor = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
+        disabledTextColor = GovUkTheme.colourScheme.textAndIcons.buttonRemoveDisabled,
+        disabledTrailingIconColor = GovUkTheme.colourScheme.textAndIcons.buttonRemoveDisabled
+    )
+
     DropdownMenuItem(
         text = {
             Text(
                 text = buttonText,
-                color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
                 style = GovUkTheme.typography.bodyRegular,
             )
         },
@@ -148,9 +158,10 @@ private fun ClearMenuItem(
             Icon(
                 painter = painterResource(R.drawable.outline_delete_24),
                 contentDescription = null,
-                tint = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
             )
-        }
+        },
+        enabled = enabled,
+        colors = colours
     )
 
     if (openDialog.value) {
