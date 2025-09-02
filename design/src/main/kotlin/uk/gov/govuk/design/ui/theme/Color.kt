@@ -19,6 +19,7 @@ private val BlueLighter95 = Color(0xFFF4F8FB)
 private val BlueDarker25 = Color(0xFF16548A)
 private val BlueDarker50 = Color(0xFF0F385C)
 private val BlueDarker80 = Color(0xFF061625)
+private val BlueDarkMode = Color(0xFF263D54)
 private val TealAccent = Color(0xFF00FFE0)
 
 private val YellowPrimary = Color(0xFFFFDD00)
@@ -319,7 +320,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         background = Black,
         primary = BlueAccent,
         splash = BluePrimary,
-        cardDefault = Grey800,
+        cardDefault = BlueDarkMode,
         cardBlue = BlueDarker50,
         cardHighlight = Grey850,
         cardSelected = GreenDarker50,
