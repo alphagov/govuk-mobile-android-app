@@ -1,5 +1,6 @@
 package uk.gov.govuk.login
 
+import android.os.Build
 import androidx.fragment.app.FragmentActivity
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -14,6 +15,8 @@ import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
+import uk.gov.govuk.R
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -63,5 +66,19 @@ class BiometricViewModelTest {
         viewModel.onContinue(activity)
 
         assertFalse(viewModel.uiState.value)
+    }
+
+    @Test
+    fun `Given the app is running on an Android 10 device, when get description one is called, then return the correct resource`() {
+        val descriptionOne = viewModel.getDescriptionOne(Build.VERSION_CODES.Q)
+
+        assertEquals(R.string.login_biometrics_android_10_description_1, descriptionOne)
+    }
+
+    @Test
+    fun `Given the app is running on an Android 11 device, when get description one is called, then return the correct resource`() {
+        val descriptionOne = viewModel.getDescriptionOne(Build.VERSION_CODES.R)
+
+        assertEquals(R.string.login_biometrics_android_11_description_1, descriptionOne)
     }
 }

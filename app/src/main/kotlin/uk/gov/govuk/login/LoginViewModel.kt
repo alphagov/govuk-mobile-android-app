@@ -11,13 +11,16 @@ import kotlinx.coroutines.launch
 import uk.gov.govuk.R
 import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.auth.ErrorEvent
+import uk.gov.govuk.login.data.LoginRepo
+import java.util.Date
 import javax.inject.Inject
 
 internal data class LoginEvent(val isBiometricLogin: Boolean)
 
 @HiltViewModel
 internal class LoginViewModel @Inject constructor(
-    private val authRepo: AuthRepo
+    private val authRepo: AuthRepo,
+    private val loginRepo: LoginRepo
 ) : ViewModel() {
 
     private val _loginCompleted = MutableSharedFlow<LoginEvent>()
@@ -33,15 +36,20 @@ internal class LoginViewModel @Inject constructor(
     fun init(activity: FragmentActivity) {
         if (authRepo.isUserSignedIn()) {
             viewModelScope.launch {
-                if (
-                    authRepo.refreshTokens(
-                        activity = activity,
-                        title = activity.getString(R.string.login_biometric_prompt_title)
-                    )
-                ) {
-                    _loginCompleted.emit(LoginEvent(isBiometricLogin = true))
+                if (shouldRefreshTokens()) {
+                    if (
+                        authRepo.refreshTokens(
+                            activity = activity,
+                            title = activity.getString(R.string.login_biometric_prompt_title)
+                        )
+                    ) {
+                        _loginCompleted.emit(LoginEvent(isBiometricLogin = true))
+                    } else {
+                        // Todo - handle failure!!!
+                    }
                 } else {
-                    // Todo - handle failure!!!
+                    authRepo.endUserSession()
+                    authRepo.clear()
                 }
             }
         }
@@ -51,9 +59,24 @@ internal class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             val result = authRepo.handleAuthResponse(data)
             if (result) {
+                saveRefreshTokenExpiryDate()
                 _loginCompleted.emit(LoginEvent(isBiometricLogin = false))
             } else {
                 _errorEvent.emit(ErrorEvent.UnableToSignInError)
+            }
+        }
+    }
+
+    private suspend fun shouldRefreshTokens(): Boolean {
+        val idTokenIssueDate = loginRepo.getRefreshTokenExpiryDate()
+        return idTokenIssueDate == null || idTokenIssueDate > Date().toInstant().epochSecond
+    }
+
+    private fun saveRefreshTokenExpiryDate() {
+        viewModelScope.launch {
+            authRepo.getIdTokenIssueDate()?.let { idTokenIssueDate ->
+                val datePlusSixDaysTwentyThreeHours = idTokenIssueDate + 601200L
+                loginRepo.setRefreshTokenExpiryDate(datePlusSixDaysTwentyThreeHours)
             }
         }
     }

@@ -9,14 +9,17 @@ import uk.gov.govuk.design.ui.theme.GovUkColourScheme.TextAndIcons
 private val BluePrimary = Color(0xFF1D70B8)
 private val BlueAccent = Color(0xFF11E0F1)
 private val Blue2 = Color(0xFF259AFF)
+private val Blue99 = Color(0xFF092237)
+
 private val BlueLighter25 = Color(0xFF5694CA)
 private val BlueLighter50 = Color(0xFF8EB8DC)
+private val BlueLighter80 = Color(0xFFD2E2F1)
 private val BlueLighter90 = Color(0xFFE8F1F8)
 private val BlueLighter95 = Color(0xFFF4F8FB)
 private val BlueDarker25 = Color(0xFF16548A)
 private val BlueDarker50 = Color(0xFF0F385C)
 private val BlueDarker80 = Color(0xFF061625)
-
+private val BlueDarkMode = Color(0xFF263D54)
 private val TealAccent = Color(0xFF00FFE0)
 
 private val YellowPrimary = Color(0xFFFFDD00)
@@ -87,7 +90,13 @@ data class GovUkColourScheme(
         val iconGreen: Color,
         val textFieldError: Color,
         val chatButtonIconDisabled: Color,
-        val chatButtonIconEnabled: Color
+        val chatButtonIconEnabled: Color,
+        val chatUserMessageText: Color,
+        val chatBotMessageText: Color,
+        val chatBotHeaderText: Color,
+        val chatLoadingTextDark: Color,
+        val chatLoadingTextLight: Color,
+        val chatLoadingIcon: Color
     )
 
     data class Surfaces(
@@ -130,13 +139,17 @@ data class GovUkColourScheme(
         val chatBackground: Color,
         val chatTextFieldBackground: Color,
         val chatButtonBackgroundDisabled: Color,
-        val chatButtonBackgroundEnabled: Color
+        val chatButtonBackgroundEnabled: Color,
+        val chatUserMessageBackground: Color,
+        val chatBotMessageBackground: Color,
+        val chatIntroCardBackground: Color
     )
 
     data class Strokes(
         val fixedContainer: Color,
         val listDivider: Color,
         val pageControlsInactive: Color,
+        val cardAlert: Color,
         val cardBlue: Color,
         val cardSelected: Color,
         val listBlue: Color,
@@ -148,7 +161,11 @@ data class GovUkColourScheme(
         val textFieldError: Color,
         val radioDivider: Color,
         val chatTextFieldBorder: Color,
-        val chatTextFieldBorderDisabled: Color
+        val chatTextFieldBorderDisabled: Color,
+        val chatUserMessageBorder: Color,
+        val chatBotMessageBorder: Color,
+        val chatDivider: Color,
+        val chatIntroCardBorder: Color
     )
 }
 
@@ -183,7 +200,13 @@ internal val LightColorScheme = GovUkColourScheme(
         iconGreen = GreenDarker25,
         textFieldError = RedPrimary,
         chatButtonIconDisabled = Grey600,
-        chatButtonIconEnabled = White
+        chatButtonIconEnabled = White,
+        chatUserMessageText = Black,
+        chatBotMessageText = Black,
+        chatBotHeaderText = Grey700,
+        chatLoadingTextDark = Grey700,
+        chatLoadingTextLight = Grey300,
+        chatLoadingIcon = BluePrimary
     ),
     surfaces = Surfaces(
         background = White,
@@ -225,12 +248,16 @@ internal val LightColorScheme = GovUkColourScheme(
         chatBackground = BlueLighter90,
         chatTextFieldBackground = White,
         chatButtonBackgroundDisabled = Grey100,
-        chatButtonBackgroundEnabled = BluePrimary
+        chatButtonBackgroundEnabled = BluePrimary,
+        chatUserMessageBackground = BlueLighter80,
+        chatBotMessageBackground = White,
+        chatIntroCardBackground = BlueLighter95
     ),
     strokes = Strokes(
         fixedContainer = BlackAlpha30,
         listDivider = Grey300,
         pageControlsInactive = Grey500,
+        cardAlert = BlueLighter25,
         cardBlue = BlueLighter50,
         cardSelected = GreenPrimary,
         listBlue = BlueLighter50,
@@ -242,7 +269,11 @@ internal val LightColorScheme = GovUkColourScheme(
         textFieldError = RedPrimary,
         radioDivider = Grey300,
         chatTextFieldBorder = BluePrimary,
-        chatTextFieldBorderDisabled = Grey300
+        chatTextFieldBorderDisabled = Grey300,
+        chatUserMessageBorder = BlueLighter80,
+        chatBotMessageBorder = BlueLighter80,
+        chatDivider = BlueLighter80,
+        chatIntroCardBorder = BlueLighter80
     )
 )
 
@@ -277,13 +308,19 @@ internal val DarkColorScheme = GovUkColourScheme(
         iconGreen = White,
         textFieldError = RedAccent,
         chatButtonIconDisabled = Black,
-        chatButtonIconEnabled = BlueDarker80
+        chatButtonIconEnabled = BlueDarker80,
+        chatUserMessageText = White,
+        chatBotMessageText = White,
+        chatBotHeaderText = BlueLighter25,
+        chatLoadingTextDark = BlueLighter25,
+        chatLoadingTextLight = BlueLighter80,
+        chatLoadingIcon = BluePrimary
     ),
     surfaces = Surfaces(
         background = Black,
         primary = BlueAccent,
         splash = BluePrimary,
-        cardDefault = Grey800,
+        cardDefault = BlueDarkMode,
         cardBlue = BlueDarker50,
         cardHighlight = Grey850,
         cardSelected = GreenDarker50,
@@ -319,12 +356,16 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatBackground = BlueDarker80,
         chatTextFieldBackground = BlueDarker50,
         chatButtonBackgroundDisabled = Grey400,
-        chatButtonBackgroundEnabled = BlueAccent
+        chatButtonBackgroundEnabled = BlueAccent,
+        chatUserMessageBackground = Grey850,
+        chatBotMessageBackground = BlueDarker50,
+        chatIntroCardBackground = Blue99
     ),
     strokes = Strokes(
         fixedContainer = WhiteAlpha30,
         listDivider = Grey500,
         pageControlsInactive = Grey300,
+        cardAlert = BlueLighter25,
         cardBlue = BlueDarker25,
         cardSelected = GreenAccent,
         listBlue = BluePrimary,
@@ -336,7 +377,11 @@ internal val DarkColorScheme = GovUkColourScheme(
         textFieldError = RedAccent,
         radioDivider = Grey500,
         chatTextFieldBorder = BlueAccent,
-        chatTextFieldBorderDisabled = BlueLighter25
+        chatTextFieldBorderDisabled = BlueLighter25,
+        chatUserMessageBorder = Grey500,
+        chatBotMessageBorder = BlueDarker25,
+        chatDivider = BlueDarker25,
+        chatIntroCardBorder = BlueDarker50
     )
 )
 
@@ -372,7 +417,13 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             iconGreen = Color.Unspecified,
             textFieldError = Color.Unspecified,
             chatButtonIconDisabled = Color.Unspecified,
-            chatButtonIconEnabled = Color.Unspecified
+            chatButtonIconEnabled = Color.Unspecified,
+            chatUserMessageText = Color.Unspecified,
+            chatBotMessageText = Color.Unspecified,
+            chatBotHeaderText = Color.Unspecified,
+            chatLoadingTextDark = Color.Unspecified,
+            chatLoadingTextLight = Color.Unspecified,
+            chatLoadingIcon = Color.Unspecified
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,
@@ -414,12 +465,16 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             chatBackground = Color.Unspecified,
             chatTextFieldBackground = Color.Unspecified,
             chatButtonBackgroundDisabled = Color.Unspecified,
-            chatButtonBackgroundEnabled = Color.Unspecified
+            chatButtonBackgroundEnabled = Color.Unspecified,
+            chatUserMessageBackground = Color.Unspecified,
+            chatBotMessageBackground = Color.Unspecified,
+            chatIntroCardBackground = Color.Unspecified
         ),
         strokes = Strokes(
             fixedContainer = Color.Unspecified,
             listDivider = Color.Unspecified,
             pageControlsInactive = Color.Unspecified,
+            cardAlert = Color.Unspecified,
             cardBlue = Color.Unspecified,
             cardSelected = Color.Unspecified,
             listBlue = Color.Unspecified,
@@ -431,7 +486,11 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             textFieldError = Color.Unspecified,
             radioDivider = Color.Unspecified,
             chatTextFieldBorder = Color.Unspecified,
-            chatTextFieldBorderDisabled = Color.Unspecified
+            chatTextFieldBorderDisabled = Color.Unspecified,
+            chatUserMessageBorder = Color.Unspecified,
+            chatBotMessageBorder = Color.Unspecified,
+            chatDivider = Color.Unspecified,
+            chatIntroCardBorder = Color.Unspecified
         )
     )
 }

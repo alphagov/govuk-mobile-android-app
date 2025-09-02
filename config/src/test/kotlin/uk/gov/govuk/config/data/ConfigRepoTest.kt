@@ -2,6 +2,7 @@ package uk.gov.govuk.config.data
 
 import com.google.gson.Gson
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -12,7 +13,10 @@ import uk.gov.govuk.config.SignatureValidator
 import uk.gov.govuk.config.data.remote.ConfigApi
 import uk.gov.govuk.config.data.remote.model.Config
 import uk.gov.govuk.config.data.remote.model.ConfigResponse
-import uk.gov.govuk.data.model.Result.*
+import uk.gov.govuk.data.model.Result.DeviceOffline
+import uk.gov.govuk.data.model.Result.Error
+import uk.gov.govuk.data.model.Result.InvalidSignature
+import uk.gov.govuk.data.model.Result.Success
 import java.io.IOException
 import java.net.UnknownHostException
 
@@ -123,6 +127,51 @@ class ConfigRepoTest {
 
         runTest {
             assertTrue(repo.initConfig() is InvalidSignature)
+        }
+    }
+
+    @Test
+    fun `Given a chat poll interval property, when retrieving the chat poll interval, then return propert value`() {
+        coEvery { configApi.getConfig() } returns Response.success(configResponse.toString())
+        coEvery { signatureValidator.isValidSignature(any(), any()) } returns true
+        coEvery { gson.fromJson(any<String>(), ConfigResponse::class.java) } returns ConfigResponse(config, "signature")
+        every { config.chatPollIntervalSeconds } returns 2
+
+        val repo = ConfigRepo(configApi, gson, signatureValidator)
+
+        runTest {
+            repo.initConfig()
+            assertEquals(2, repo.chatPollIntervalSeconds)
+        }
+    }
+
+    @Test
+    fun `Given the chat poll interval property is missing, when retrieving the chat poll interval, then return fallback value`() {
+        coEvery { configApi.getConfig() } returns Response.success(configResponse.toString())
+        coEvery { signatureValidator.isValidSignature(any(), any()) } returns true
+        coEvery { gson.fromJson(any<String>(), ConfigResponse::class.java) } returns ConfigResponse(config, "signature")
+        every { config.chatPollIntervalSeconds } returns null
+
+        val repo = ConfigRepo(configApi, gson, signatureValidator)
+
+        runTest {
+            repo.initConfig()
+            assertEquals(3, repo.chatPollIntervalSeconds)
+        }
+    }
+
+    @Test
+    fun `Given the chat poll interval property is 0, when retrieving the chat poll interval, then return fallback value`() {
+        coEvery { configApi.getConfig() } returns Response.success(configResponse.toString())
+        coEvery { signatureValidator.isValidSignature(any(), any()) } returns true
+        coEvery { gson.fromJson(any<String>(), ConfigResponse::class.java) } returns ConfigResponse(config, "signature")
+        every { config.chatPollIntervalSeconds } returns 0
+
+        val repo = ConfigRepo(configApi, gson, signatureValidator)
+
+        runTest {
+            repo.initConfig()
+            assertEquals(3, repo.chatPollIntervalSeconds)
         }
     }
 }

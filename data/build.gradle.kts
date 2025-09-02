@@ -17,8 +17,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "AUTH_BASE_URL", "\"https://govukapp-staging.auth.eu-west-2.amazoncognito.com/oauth2/\"")
-        buildConfigField("String", "TOKEN_BASE_URL", "\"https://m0q9zbtrs2.execute-api.eu-west-2.amazonaws.com/staging/oauth2/\"")
-        buildConfigField("String", "AUTH_CLIENT_ID", "\"7qal023jms3dumkqd6173etleh\"")
+        buildConfigField("String", "TOKEN_BASE_URL", "\"https://4y369hyvja.execute-api.eu-west-2.amazonaws.com/staging/oauth2/\"")
+        buildConfigField("String", "AUTH_CLIENT_ID", "\"7r88bunbmdsvihr2cdb43lasun\"")
         buildConfigField("String", "AUTHORIZE_ENDPOINT", "\"authorize\"")
         buildConfigField("String", "TOKEN_ENDPOINT", "\"token\"")
         buildConfigField("String", "AUTH_REDIRECT", "\"govuk://govuk/login-auth-callback\"")

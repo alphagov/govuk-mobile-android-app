@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import uk.gov.govuk.BuildConfig
+import uk.gov.govuk.alertbanner.ui.AlertBanner
+import uk.gov.govuk.config.data.remote.model.AlertBanner
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
-import uk.gov.govuk.notifications.ui.NotificationsPromptWidget
-import uk.gov.govuk.notifications.ui.notificationsPermissionShouldShowRationale
 import uk.gov.govuk.settings.ui.FeedbackPromptWidget
 import uk.gov.govuk.topics.navigation.navigateToTopic
 import uk.gov.govuk.topics.navigation.navigateToTopicsAll
@@ -24,24 +24,25 @@ internal fun List<HomeWidget>?.contains(widget: HomeWidget) = this?.contains(wid
 internal fun homeWidgets(
     navController: NavHostController,
     homeWidgets: List<HomeWidget>?,
+    alertBanner: AlertBanner?,
     onInternalClick: (String) -> Unit,
     onExternalClick: (String, String?) -> Unit,
-    onSuppressClick: (String, HomeWidget) -> Unit,
+    onSuppressClick: (id: String) -> Unit,
     launchBrowser: (url: String) -> Unit
 ): List<@Composable (Modifier) -> Unit> {
     val widgets = mutableListOf<@Composable (Modifier) -> Unit>()
     homeWidgets?.forEach {
         when (it) {
-            HomeWidget.NOTIFICATIONS -> {
-                widgets.add { modifier ->
-                    if (notificationsPermissionShouldShowRationale()) {
-                        NotificationsPromptWidget(
+            HomeWidget.ALERT_BANNER -> {
+                alertBanner?.let { alertBanner ->
+                    widgets.add { modifier ->
+                        AlertBanner(
+                            alertBanner = alertBanner,
                             onClick = { text ->
                                 onExternalClick(text, null)
                             },
-                            onSuppressClick = { text ->
-                                onSuppressClick(text, HomeWidget.NOTIFICATIONS)
-                            },
+                            launchBrowser = launchBrowser,
+                            onSuppressClick = onSuppressClick,
                             modifier = modifier
                         )
                         LargeVerticalSpacer()

@@ -1,5 +1,6 @@
 package uk.gov.govuk.login
 
+import android.os.Build
 import androidx.fragment.app.FragmentActivity
 import io.mockk.coVerify
 import io.mockk.every
@@ -14,8 +15,10 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import uk.gov.govuk.R
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
@@ -111,4 +114,19 @@ class BiometricSettingsViewModelTest {
         }
     }
 
+    @Test
+    fun `Given the app is running on an Android 10 device, when get description two is called, then return the correct resource`() {
+        val viewModel = BiometricSettingsViewModel(appRepo, authRepo, analyticsClient)
+        val descriptionTwo = viewModel.getDescriptionTwo(Build.VERSION_CODES.Q)
+
+        assertEquals(R.string.biometric_settings_android_10_description_2, descriptionTwo)
+    }
+
+    @Test
+    fun `Given the app is running on an Android 11 device, when get description two is called, then return the correct resource`() {
+        val viewModel = BiometricSettingsViewModel(appRepo, authRepo, analyticsClient)
+        val descriptionTwo = viewModel.getDescriptionTwo(Build.VERSION_CODES.R)
+
+        assertEquals(R.string.biometric_settings_android_11_description_2, descriptionTwo)
+    }
 }

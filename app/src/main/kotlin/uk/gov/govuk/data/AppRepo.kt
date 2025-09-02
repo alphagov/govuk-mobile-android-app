@@ -1,7 +1,6 @@
 package uk.gov.govuk.data
 
 import uk.gov.govuk.data.local.AppDataStore
-import uk.gov.govuk.ui.model.HomeWidget
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -9,7 +8,6 @@ import javax.inject.Singleton
 internal class AppRepo @Inject constructor(
     private val appDataStore: AppDataStore
 ) {
-
     internal suspend fun hasSkippedBiometrics() = appDataStore.hasSkippedBiometrics()
 
     internal suspend fun skipBiometrics() = appDataStore.skipBiometrics()
@@ -22,8 +20,7 @@ internal class AppRepo @Inject constructor(
 
     internal val suppressedHomeWidgets = appDataStore.suppressedHomeWidgets
 
-    internal suspend fun suppressHomeWidget(widget: HomeWidget) = appDataStore.suppressHomeWidget(widget)
+    internal suspend fun suppressHomeWidget(id: String) = appDataStore.suppressHomeWidget(id)
 
     internal suspend fun clear() = appDataStore.clear()
-
 }

@@ -17,12 +17,16 @@ import uk.gov.govuk.chat.data.remote.ChatResult.Success
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
 import uk.gov.govuk.chat.data.remote.model.ConversationQuestionRequest
+import uk.gov.govuk.config.data.ConfigRepo
+import uk.gov.govuk.data.auth.AuthRepo
 import kotlin.test.assertTrue
 
 class ChatRepoTest {
 
     private val chatApi = mockk<ChatApi>(relaxed = true)
     private val dataStore = mockk<ChatDataStore>(relaxed = true)
+    private val configRepo = mockk<ConfigRepo>(relaxed = true)
+    private val authRepo = mockk<AuthRepo>(relaxed = true)
     private val questionResponse = mockk<Response<AnsweredQuestion>>(relaxed = true)
     private val answeredQuestion = mockk<AnsweredQuestion>(relaxed = true)
     private val answerResponse = mockk<Response<Answer>>(relaxed = true)
@@ -32,7 +36,7 @@ class ChatRepoTest {
 
     @Before
     fun setup() {
-        chatRepo = ChatRepo(chatApi, dataStore)
+        chatRepo = ChatRepo(chatApi, dataStore, configRepo, authRepo)
     }
 
     @Test
@@ -114,5 +118,26 @@ class ChatRepoTest {
         val result = chatRepo.getAnswer("123", "abc", wait = 1)
 
         assertTrue(result is NotFound)
+    }
+
+    @Test
+    fun `Given a conversation id, when cleared the conversation id is removed`() = runTest {
+        coEvery { dataStore.conversationId() } returns "123"
+
+        chatRepo.getConversation()
+
+        coVerify {
+            chatApi.getConversation("123")
+        }
+
+        chatRepo.clearConversation()
+
+        coVerify {
+            dataStore.clearConversation()
+        }
+
+        coEvery { dataStore.conversationId() } returns null
+
+        assertNull(chatRepo.getConversation())
     }
 }

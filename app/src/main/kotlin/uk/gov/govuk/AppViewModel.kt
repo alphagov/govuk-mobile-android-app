@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
+import uk.gov.govuk.chat.ChatFeature
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
@@ -17,6 +18,7 @@ import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.InvalidSignature
 import uk.gov.govuk.data.model.Result.Success
+import uk.gov.govuk.login.data.LoginRepo
 import uk.gov.govuk.navigation.AppNavigation
 import uk.gov.govuk.search.SearchFeature
 import uk.gov.govuk.topics.TopicsFeature
@@ -29,6 +31,7 @@ import javax.inject.Inject
 internal class AppViewModel @Inject constructor(
     private val timeoutManager: TimeoutManager,
     private val appRepo: AppRepo,
+    private val loginRepo: LoginRepo,
     private val configRepo: ConfigRepo,
     private val flagRepo: FlagRepo,
     private val authRepo: AuthRepo,
@@ -36,6 +39,7 @@ internal class AppViewModel @Inject constructor(
     private val localFeature: LocalFeature,
     private val searchFeature: SearchFeature,
     private val visitedFeature: Visited,
+    private val chatFeature: ChatFeature,
     private val analyticsClient: AnalyticsClient,
     val appNavigation: AppNavigation
 ) : ViewModel() {
@@ -67,7 +71,8 @@ internal class AppViewModel @Inject constructor(
 
                     _uiState.value = AppUiState.Default(
                         shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
-                        shouldShowExternalBrowser = flagRepo.isExternalBrowserEnabled()
+                        shouldShowExternalBrowser = flagRepo.isExternalBrowserEnabled(),
+                        alertBanner = configRepo.config.alertBanner
                     )
 
                     combine(
@@ -100,7 +105,9 @@ internal class AppViewModel @Inject constructor(
         timeoutManager.onUserInteraction(interactionTime) {
             if (authRepo.isUserSessionActive()) {
                 authRepo.endUserSession()
-                appNavigation.onSignOut(navController)
+                viewModelScope.launch {
+                    appNavigation.onSignOut(navController)
+                }
             }
         }
     }
@@ -110,10 +117,12 @@ internal class AppViewModel @Inject constructor(
             if (authRepo.isDifferentUser()) {
                 authRepo.clear()
                 appRepo.clear()
+                loginRepo.clear()
                 topicsFeature.clear()
                 localFeature.clear()
                 searchFeature.clear()
                 visitedFeature.clear()
+                chatFeature.clear()
                 analyticsClient.clear()
             }
             appNavigation.onNext(navController)
@@ -133,6 +142,11 @@ internal class AppViewModel @Inject constructor(
                 val widgets = mutableListOf<HomeWidget>()
                 if (isSearchEnabled()) {
                     widgets.add(HomeWidget.SEARCH)
+                }
+                configRepo.config.alertBanner?.let { alertBanner ->
+                    if (!suppressedWidgets.contains(alertBanner.id)) {
+                        widgets.add(HomeWidget.ALERT_BANNER)
+                    }
                 }
                 if (isLocalServicesEnabled() && !hasLocalAuthority) {
                     widgets.add(HomeWidget.LOCAL)
@@ -168,15 +182,14 @@ internal class AppViewModel @Inject constructor(
     }
 
     fun onSuppressWidgetClick(
-        text: String,
-        section: String,
-        widget: HomeWidget
+        id: String,
+        section: String
     ) {
         viewModelScope.launch {
-            appRepo.suppressHomeWidget(widget)
+            appRepo.suppressHomeWidget(id)
         }
         analyticsClient.suppressWidgetClick(
-            text,
+            id,
             section
         )
     }

@@ -151,7 +151,7 @@ class AnalyticsClientTest {
     @Test
     fun `Given a user session is not active, when an ecommerce event is logged, then do not log to firebase`() = runTest {
         analyticsClient.isUserSessionActive = { false }
-        
+
         analyticsClient.selectItemEvent(
             ecommerceEvent = EcommerceEvent(
                 itemListName = "Topics",
@@ -223,6 +223,21 @@ class AnalyticsClientTest {
                     "section" to "section",
                     "language" to Locale.getDefault().language,
                     "text" to "text"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a chat question, then log event`() {
+        analyticsClient.chat("a question")
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Chat",
+                mapOf(
+                    "type" to "typed",
+                    "text" to "a question"
                 )
             )
         }
@@ -427,6 +442,59 @@ class AnalyticsClientTest {
     }
 
     @Test
+    fun `Given a chat action menu about click, then log event`() {
+        analyticsClient.chatActionMenuAboutClick("chat about title", "chat about link")
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "ChatActionMenuAbout",
+                    "external" to true,
+                    "language" to Locale.getDefault().language,
+                    "text" to "chat about title",
+                    "url" to "chat about link"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a question answer is returned in chat, then log event`() {
+        analyticsClient.chatQuestionAnswerReturnedEvent()
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "ChatQuestionAnswerReturned",
+                    "external" to false,
+                    "language" to Locale.getDefault().language,
+                    "text" to "Chat Question Answer Returned"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a chat response markdown link click, then log event`() {
+        analyticsClient.chatMarkdownLinkClick("chat title", "chat link")
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                "Navigation",
+                mapOf(
+                    "type" to "ChatMarkdownLink",
+                    "external" to true,
+                    "language" to Locale.getDefault().language,
+                    "text" to "chat title",
+                    "url" to "chat link"
+                )
+            )
+        }
+    }
+
+    @Test
     fun `Given a visited item click, then log event`() {
         analyticsClient.visitedItemClick("visited item title", "visited item link")
 
@@ -544,7 +612,7 @@ class AnalyticsClientTest {
 
     @Test
     fun `Given a suppress widget click, then log event`() {
-        analyticsClient.suppressWidgetClick("text", "section")
+        analyticsClient.suppressWidgetClick("id", "section")
 
         verify {
             firebaseAnalyticClient.logEvent(
@@ -552,7 +620,7 @@ class AnalyticsClientTest {
                 mapOf(
                     "type" to "Widget",
                     "language" to Locale.getDefault().language,
-                    "text" to "text",
+                    "text" to "id",
                     "section" to "section",
                     "action" to "Remove"
                 )

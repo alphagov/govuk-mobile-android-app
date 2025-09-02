@@ -90,15 +90,21 @@ class AuthRepo @Inject constructor(
                 analyticsClient.logException(IllegalArgumentException("refresh token is null or blank"))
                 false
             } else {
-                val tokenRequest = tokenRequestBuilder
-                    .setRefreshToken(refreshToken)
-                    .build()
-
-                performTokenRequest(tokenRequest, refreshToken)
+                refreshTokens(refreshToken)
             }
         } else {
             false
         }
+    }
+
+    suspend fun refreshTokens(): Boolean = refreshTokens(tokens.refreshToken)
+
+    private suspend fun refreshTokens(refreshToken: String): Boolean {
+        val tokenRequest = tokenRequestBuilder
+            .setRefreshToken(refreshToken)
+            .build()
+
+        return performTokenRequest(tokenRequest, refreshToken)
     }
 
     private suspend fun performTokenRequest(
@@ -214,6 +220,10 @@ class AuthRepo @Inject constructor(
         return tokens.accessToken.isNotBlank()
     }
 
+    fun getAccessToken(): String {
+        return tokens.accessToken
+    }
+
     fun isUserSignedIn(): Boolean {
         return secureStore.exists(REFRESH_TOKEN_KEY)
     }
@@ -228,6 +238,10 @@ class AuthRepo @Inject constructor(
 
     fun getUserEmail(): String {
         return getIdTokenProperty("email")
+    }
+
+    fun getIdTokenIssueDate(): Long? {
+        return getIdTokenProperty("iat").toLongOrNull()
     }
 
     private fun getIdTokenProperty(name: String): String {

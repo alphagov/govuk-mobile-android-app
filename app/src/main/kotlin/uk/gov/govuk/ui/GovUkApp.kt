@@ -4,16 +4,21 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.os.Build
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -34,10 +39,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -48,6 +52,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -57,7 +62,9 @@ import uk.gov.govuk.AppViewModel
 import uk.gov.govuk.BuildConfig
 import uk.gov.govuk.R
 import uk.gov.govuk.analytics.navigation.analyticsGraph
+import uk.gov.govuk.chat.navigation.CHAT_GRAPH_ROUTE
 import uk.gov.govuk.chat.navigation.chatGraph
+import uk.gov.govuk.config.data.remote.model.AlertBanner
 import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
@@ -88,7 +95,6 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
     var isRecommendUpdateSkipped by rememberSaveable { mutableStateOf(false) }
 
     if (isSplashDone && uiState != null) {
-        SetStatusBarColour(GovUkTheme.colourScheme.surfaces.homeHeader)
         uiState?.let {
             when (it) {
                 is AppUiState.Loading -> LoadingScreen()
@@ -108,15 +114,18 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                             intentFlow = intentFlow,
                             viewModel = viewModel,
                             shouldShowExternalBrowser = it.shouldShowExternalBrowser,
-                            homeWidgets = homeWidgets
+                            homeWidgets = homeWidgets,
+                            alertBanner = it.alertBanner
                         )
                     }
                 }
             }
         }
     } else {
-        SetStatusBarColour(GovUkTheme.colourScheme.surfaces.splash)
-        SplashScreen { isSplashDone = true }
+        Column {
+            StatusBar(false)
+            SplashScreen { isSplashDone = true }
+        }
     }
 }
 
@@ -138,10 +147,15 @@ private fun BottomNavScaffold(
     viewModel: AppViewModel,
     shouldShowExternalBrowser: Boolean,
     homeWidgets: List<HomeWidget>?,
+    alertBanner: AlertBanner?
 ) {
     val navController = rememberNavController()
+    val layoutDirection = LocalLayoutDirection.current
     val navBarPadding = WindowInsets.navigationBars.asPaddingValues()
     val section = stringResource(R.string.homepage)
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentNavParentRoute = navBackStackEntry?.destination?.parent?.route
 
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
@@ -150,7 +164,12 @@ private fun BottomNavScaffold(
                 viewModel.onTabClick(tabText)
             }
         },
-        modifier = Modifier.padding(bottom = navBarPadding.calculateBottomPadding())
+        modifier = Modifier
+            .padding(
+                start = navBarPadding.calculateStartPadding(layoutDirection),
+                bottom = navBarPadding.calculateBottomPadding(),
+                end = navBarPadding.calculateEndPadding(layoutDirection)
+            )
     ) { paddingValues ->
         Surface(
             modifier = Modifier
@@ -165,36 +184,40 @@ private fun BottomNavScaffold(
                 },
             color = GovUkTheme.colourScheme.surfaces.background
         ) {
-            GovUkNavHost(
-                intentFlow = intentFlow,
-                viewModel = viewModel,
-                navController = navController,
-                homeWidgets = homeWidgets,
-                onInternalWidgetClick = { text ->
-                    viewModel.onWidgetClick(
-                        text = text,
-                        external = false,
-                        section = section
-                    )
-                },
-                onExternalWidgetClick = { text, url ->
-                    viewModel.onWidgetClick(
-                        text = text,
-                        url = url,
-                        external = true,
-                        section = section
-                    )
-                },
-                onSuppressWidgetClick = { text, widget ->
-                    viewModel.onSuppressWidgetClick(text, section, widget)
-                },
-                shouldShowExternalBrowser = shouldShowExternalBrowser,
-                paddingValues = paddingValues
-            )
-            HandleOnResumeNavigation(
-                navController = { navController },
-                appNavigation = viewModel.appNavigation
-            )
+            Column {
+                StatusBar(currentNavParentRoute == CHAT_GRAPH_ROUTE)
+                GovUkNavHost(
+                    intentFlow = intentFlow,
+                    viewModel = viewModel,
+                    navController = navController,
+                    homeWidgets = homeWidgets,
+                    alertBanner = alertBanner,
+                    onInternalWidgetClick = { text ->
+                        viewModel.onWidgetClick(
+                            text = text,
+                            external = false,
+                            section = section
+                        )
+                    },
+                    onExternalWidgetClick = { text, url ->
+                        viewModel.onWidgetClick(
+                            text = text,
+                            url = url,
+                            external = true,
+                            section = section
+                        )
+                    },
+                    onSuppressWidgetClick = { id ->
+                        viewModel.onSuppressWidgetClick(id, section)
+                    },
+                    shouldShowExternalBrowser = shouldShowExternalBrowser,
+                    paddingValues = paddingValues
+                )
+                HandleOnResumeNavigation(
+                    navController = { navController },
+                    appNavigation = viewModel.appNavigation
+                )
+            }
         }
     }
 }
@@ -315,9 +338,10 @@ private fun GovUkNavHost(
     viewModel: AppViewModel,
     navController: NavHostController,
     homeWidgets: List<HomeWidget>?,
+    alertBanner: AlertBanner?,
     onInternalWidgetClick: (String) -> Unit,
     onExternalWidgetClick: (String, String?) -> Unit,
-    onSuppressWidgetClick: (String, HomeWidget) -> Unit,
+    onSuppressWidgetClick: (id: String) -> Unit,
     shouldShowExternalBrowser: Boolean,
     paddingValues: PaddingValues
 ) {
@@ -405,6 +429,7 @@ private fun GovUkNavHost(
             widgets = homeWidgets(
                 navController = navController,
                 homeWidgets = homeWidgets,
+                alertBanner = alertBanner,
                 onInternalClick = onInternalWidgetClick,
                 onExternalClick = onExternalWidgetClick,
                 onSuppressClick = onSuppressWidgetClick,
@@ -469,6 +494,8 @@ private fun GovUkNavHost(
 
         chatGraph(
             navController = navController,
+            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } },
+            onAuthError = { appNavigation.onSignOut(navController) },
             modifier = Modifier.padding(paddingValues)
         )
     }
@@ -498,24 +525,22 @@ private fun showBrowserNotFoundAlert(context: Context) {
     }
 }
 
-@Suppress("DEPRECATION")
 @Composable
-private fun SetStatusBarColour(
-    colour: Color
+private fun StatusBar(
+    isChat: Boolean,
+    modifier: Modifier = Modifier
 ) {
     val localView = LocalView.current
     val window = (localView.context as Activity).window
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-        window.decorView.setOnApplyWindowInsetsListener { view, insets ->
-            val statusBarInsets = insets.getInsets(android.view.WindowInsets.Type.statusBars())
-            view.setBackgroundColor(colour.toArgb())
-            view.setPadding(0, statusBarInsets.top, 0, 0)
-            insets
-        }
-    } else {
-        window.statusBarColor = colour.toArgb()
+    if (!isChat) {
+        Box(
+            modifier
+                .fillMaxWidth()
+                .windowInsetsTopHeight(WindowInsets.statusBars)
+                .background(GovUkTheme.colourScheme.surfaces.homeHeader)
+        )
     }
 
-    WindowCompat.getInsetsController(window, localView).isAppearanceLightStatusBars = false
+    WindowCompat.getInsetsController(window, localView).isAppearanceLightStatusBars = isChat
 }

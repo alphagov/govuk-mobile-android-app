@@ -6,7 +6,9 @@ import androidx.datastore.preferences.core.Preferences
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
@@ -43,5 +45,34 @@ class ChatDataStoreTest {
 
         chatDataStore.saveConversationId("123")
         assertEquals("123", chatDataStore.conversationId())
+    }
+
+    @Test
+    fun `Clears the conversation id`() = runTest {
+        chatDataStore.saveConversationId("123")
+        assertEquals("123", chatDataStore.conversationId())
+
+        chatDataStore.clearConversation()
+
+        assertNull(chatDataStore.conversationId())
+    }
+
+    @Test
+    fun `Returns false for chat intro seen if data store is empty`() = runTest {
+        assertFalse(chatDataStore.isChatIntroSeen())
+    }
+
+    @Test
+    fun `Returns true for chat intro seen if data store value is true`() = runTest {
+        chatDataStore.saveChatIntroSeen()
+        assertTrue(chatDataStore.isChatIntroSeen())
+    }
+
+    @Test
+    fun `Sets chat seen to true`() = runTest {
+        assertFalse(chatDataStore.isChatIntroSeen())
+
+        chatDataStore.saveChatIntroSeen()
+        assertTrue(chatDataStore.isChatIntroSeen())
     }
 }

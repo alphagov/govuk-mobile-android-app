@@ -3,44 +3,85 @@ package uk.gov.govuk.chat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.chat.data.ChatRepo
+import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.chat.data.remote.ChatResult
+import uk.gov.govuk.chat.data.remote.ChatResult.AuthError
+import uk.gov.govuk.chat.data.remote.ChatResult.NotFound
 import uk.gov.govuk.chat.data.remote.ChatResult.Success
 import uk.gov.govuk.chat.data.remote.ChatResult.ValidationError
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.chat.ui.model.ChatEntry
+import uk.gov.govuk.data.auth.AuthRepo
 import javax.inject.Inject
 
 internal data class ChatUiState(
     val question: String = "",
-    val chatEntries: Map<String, ChatEntry> = emptyMap(),
+    val chatEntries: LinkedHashMap<String, ChatEntry> = linkedMapOf(),
     val isLoading: Boolean = false,
     val isPiiError: Boolean = false,
     val displayCharacterWarning: Boolean = false,
     val displayCharacterError: Boolean = false,
     val charactersRemaining: Int = 0,
     val isSubmitEnabled: Boolean = false,
-    val isError: Boolean = false
+    val isError: Boolean = false,
+    val isRetryableError: Boolean = false,
+    val hasSeenOnboarding: Boolean? = null
 )
 
 @HiltViewModel
 internal class ChatViewModel @Inject constructor(
-    private val chatRepo: ChatRepo
+    private val chatRepo: ChatRepo,
+    private val chatDataStore: ChatDataStore,
+    private val authRepo: AuthRepo,
+    private val analyticsClient: AnalyticsClient
 ): ViewModel() {
+    companion object {
+        const val SCREEN_CLASS = "Chat"
+        const val SCREEN_NAME = "Chat Screen"
+        const val SCREEN_TITLE = "Chat Screen"
+        const val ACTION_MENU = "Action Menu"
+        const val ACTION_MENU_ACTION = "Action Menu Opened"
+        const val ACTION_MENU_CLEAR_ACTION = "Clear Chat Opened"
+        const val ACTION_MENU_CLEAR_YES = "Clear Chat Yes Clicked"
+        const val ACTION_MENU_CLEAR_NO = "Clear Chat No Clicked"
+        const val ONBOARDING_SCREEN_CLASS = "Chat Onboarding"
+        const val ONBOARDING_SCREEN_ONE_NAME = "Chat Onboarding Screen One"
+        const val ONBOARDING_SCREEN_ONE_TITLE = "Chat Onboarding Screen One"
+        const val ONBOARDING_SCREEN_TWO_NAME = "Chat Onboarding Screen Two"
+        const val ONBOARDING_SCREEN_TWO_TITLE = "Chat Onboarding Screen Two"
+        const val ONBOARDING_SCREEN_TWO_BACK_TEXT = "Chat Onboarding Screen Two Back"
+        const val RESPONSE_LINK_CLICKED = "Response Link Clicked"
+        const val RESPONSE_SOURCE_LINK_CLICKED = "Source Link Clicked"
+        const val RESPONSE = "Response"
+        const val RESPONSE_SOURCE_LINKS_OPENED = "Source Links Opened"
+    }
+
     private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
         ChatUiState(
-            chatEntries = emptyMap(),
+            chatEntries = linkedMapOf(),
             isLoading = false
         )
     )
     val uiState = _uiState.asStateFlow()
 
+    private val _authError = MutableSharedFlow<Unit>()
+    val authError: SharedFlow<Unit> = _authError
+
     init {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(hasSeenOnboarding = chatDataStore.isChatIntroSeen())
+            }
+        }
         loadConversation()
     }
 
@@ -75,6 +116,21 @@ internal class ChatViewModel @Inject constructor(
         }
     }
 
+    fun clearConversation() {
+        viewModelScope.launch {
+            _uiState.value = ChatUiState(isLoading = true)
+            chatRepo.clearConversation()
+            _uiState.update { it.copy(isLoading = false) }
+        }
+    }
+
+    fun setChatIntroSeen() {
+        viewModelScope.launch {
+            chatDataStore.saveChatIntroSeen()
+            _uiState.update { it.copy(hasSeenOnboarding = true) }
+        }
+    }
+
     fun onSubmit(question: String) {
         val isPiiError = StringCleaner.includesPII(question)
         _uiState.update { it.copy(isPiiError = isPiiError) }
@@ -96,6 +152,7 @@ internal class ChatViewModel @Inject constructor(
                 }
 
                 _uiState.update { it.copy(isLoading = false) }
+                analyticsClient.chatQuestionAnswerReturnedEvent()
             }
         }
     }
@@ -120,6 +177,44 @@ internal class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onPageView(screenClass: String, screenName: String, title: String) {
+        analyticsClient.screenView(
+            screenClass = screenClass,
+            screenName = screenName,
+            title = title
+        )
+    }
+
+    fun onActionItemClicked(text: String, section: String, action: String) {
+        analyticsClient.buttonFunction(
+            text = text,
+            section = section,
+            action = action
+        )
+    }
+
+    fun onAboutClick(text: String) {
+        analyticsClient.chatActionMenuAboutClick(
+            text = text,
+            url = BuildConfig.ABOUT_APP_URL
+        )
+    }
+
+    fun onQuestionSubmit(question: String) {
+        analyticsClient.chat(question)
+    }
+
+    fun onButtonClicked(text: String, section: String) {
+        analyticsClient.buttonClick(
+            text = text,
+            section = section
+        )
+    }
+
+    fun onMarkdownLinkClicked(text: String, url: String) {
+        analyticsClient.chatMarkdownLinkClick(text = text, url = url, )
+    }
+
     private suspend fun getAnswer(conversationId: String, questionId: String) {
         handleChatResult(
             chatRepo.getAnswer(
@@ -135,6 +230,11 @@ internal class ChatViewModel @Inject constructor(
         when (chatResult) {
             is Success -> onSuccess(chatResult.value)
             is ValidationError -> _uiState.update { it.copy(isPiiError = true) }
+            is NotFound -> _uiState.update { it.copy(isRetryableError = true) }
+            is AuthError -> {
+                authRepo.clear()
+                _authError.emit(Unit)
+            }
             else -> _uiState.update { it.copy(isError = true) }
         }
     }
@@ -142,15 +242,16 @@ internal class ChatViewModel @Inject constructor(
     private fun addChatEntry(questionId: String, question: String) {
         _uiState.update {
             it.copy(
-                chatEntries = it.chatEntries.plus(
-                    mapOf(
-                        questionId to ChatEntry(
+                chatEntries = LinkedHashMap(it.chatEntries).apply {
+                    put(
+                        questionId,
+                        ChatEntry(
                             question = question,
                             answer = "",
                             sources = emptyList()
                         )
                     )
-                )
+                }
             )
         }
     }
@@ -160,7 +261,7 @@ internal class ChatViewModel @Inject constructor(
             _uiState.value.chatEntries[questionId]?.let { chatEntry ->
                 chatEntry.answer = answer.message
                 chatEntry.sources = answer.sources?.map { source ->
-                    "* [${source.title}](${source.url})"
+                    "[${source.title}](${source.url})"
                 }
             }
         }

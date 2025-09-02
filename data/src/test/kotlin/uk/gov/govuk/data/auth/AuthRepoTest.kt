@@ -836,4 +836,24 @@ class AuthRepoTest {
             assertFalse(authRepo.isUserSessionActive())
         }
     }
+
+    @Test
+    fun `Given a request for the access token, return the access token`() {
+        every { AuthorizationResponse.fromIntent(any()) } returns authResponse
+        every { authService.performTokenRequest(any(), any(), any()) } answers {
+            val callback = thirdArg<TokenResponseCallback>()
+            callback.onTokenRequestCompleted(tokenResponse, null)
+        }
+        every { tokenResponseMapper.map(any()) } returns
+            TokenResponseMapper.Tokens(
+                accessToken = "accessToken",
+                idToken = "idToken",
+                refreshToken = "refreshToken"
+            )
+
+        runTest {
+            authRepo.handleAuthResponse(intent)
+            assertEquals("accessToken", authRepo.getAccessToken())
+        }
+    }
 }
