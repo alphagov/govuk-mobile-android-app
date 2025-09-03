@@ -6,12 +6,15 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.chat.ChatFeature
+import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
@@ -42,6 +45,7 @@ internal class AppViewModel @Inject constructor(
     private val visitedFeature: Visited,
     private val chatFeature: ChatFeature,
     private val analyticsClient: AnalyticsClient,
+    chatDataStore: ChatDataStore,
     val appNavigation: AppNavigation
 ) : ViewModel() {
 
@@ -51,16 +55,18 @@ internal class AppViewModel @Inject constructor(
     private val _homeWidgets: MutableStateFlow<List<HomeWidget>?> = MutableStateFlow(null)
     internal val homeWidgets = _homeWidgets.asStateFlow()
 
-    private val _isChatFeatureEnabled = MutableStateFlow(false)
-    val isChatFeatureEnabledState: StateFlow<Boolean> = _isChatFeatureEnabled.asStateFlow()
+    val userHasOptedIn: StateFlow<Boolean> = chatDataStore.hasOptedInFlow
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+//    TODO: needs to in include isChatEnabled() && userHasOptedIn
 
     init {
         analyticsClient.isUserSessionActive = { authRepo.isUserSessionActive() }
 
         viewModelScope.launch {
-            val enabled = isChatEnabled()
-            _isChatFeatureEnabled.value = enabled
-
             initWithConfig()
         }
     }
@@ -175,11 +181,10 @@ internal class AppViewModel @Inject constructor(
         }
     }
 
-    private suspend fun isChatEnabled(): Boolean {
+    private fun isChatEnabled(): Boolean {
         return flagRepo.isChatEnabled() &&
-                flagRepo.isChatOptInEnabled() &&
-                flagRepo.isChatTestActiveEnabled() &&
-                chatFeature.userHasOptedIn()
+            flagRepo.isChatOptInEnabled() &&
+            flagRepo.isChatTestActiveEnabled()
     }
 
     fun onWidgetClick(

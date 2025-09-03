@@ -5,13 +5,15 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
-internal class ChatDataStore @Inject constructor(
+class ChatDataStore @Inject constructor(
     @Named("chat_prefs") private val dataStore: DataStore<Preferences>
 ) {
 
@@ -19,6 +21,10 @@ internal class ChatDataStore @Inject constructor(
         internal const val CONVERSATION_ID_KEY = "conversation_id"
         internal const val CHAT_INTRO_SEEN_KEY = "chat_intro_seen"
         internal const val CHAT_OPT_IN_KEY = "chat_opt_in"
+    }
+
+    val hasOptedInFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[booleanPreferencesKey(CHAT_OPT_IN_KEY)] == true
     }
 
     internal suspend fun conversationId(): String? {

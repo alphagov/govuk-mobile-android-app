@@ -254,12 +254,12 @@ private fun BottomNav(
     navController: NavHostController,
     onTabClick: (String) -> Unit
 ) {
-    val isChatTabEnabled by viewModel.isChatFeatureEnabledState.collectAsStateWithLifecycle()
+    val showChatTab by viewModel.userHasOptedIn.collectAsStateWithLifecycle()
 
-    val topLevelDestinations = remember(isChatTabEnabled) {
+    val topLevelDestinations = remember(showChatTab) {
         buildList {
             add(TopLevelDestination.Home)
-            if (isChatTabEnabled) {
+            if (showChatTab) {
                 add(TopLevelDestination.Chat)
             }
             add(TopLevelDestination.Settings)
