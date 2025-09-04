@@ -236,6 +236,7 @@ class AnalyticsClientTest {
             firebaseAnalyticClient.logEvent(
                 "Chat",
                 mapOf(
+                    "action" to "Ask Question",
                     "type" to "typed",
                 )
             )
