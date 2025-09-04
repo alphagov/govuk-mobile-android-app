@@ -107,7 +107,10 @@ internal fun homeWidgets(
                         userFeedbackBanner = userFeedbackBanner,
                         onClick = {
                             launchBrowser(userFeedbackBanner.link.url)
-                            onExternalClick(userFeedbackBanner.body, userFeedbackBanner.link.url)
+                            onExternalClick(
+                                userFeedbackBanner.link.title,
+                                userFeedbackBanner.link.url
+                            )
                         },
                         modifier = modifier
                     )
