@@ -32,7 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -66,7 +65,7 @@ import uk.gov.govuk.R
 import uk.gov.govuk.analytics.navigation.analyticsGraph
 import uk.gov.govuk.chat.navigation.CHAT_GRAPH_ROUTE
 import uk.gov.govuk.chat.navigation.chatGraph
-import uk.gov.govuk.chat.navigation.chatOnboardingGraph
+import uk.gov.govuk.chat.navigation.chatOptInGraph
 import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
@@ -266,20 +265,16 @@ private fun BottomNav(
         }
     }
 
-    var selectedIndex by rememberSaveable {
-        mutableIntStateOf(-1)
-    }
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val currentParentRoute = navBackStackEntry?.destination?.parent?.route
 
-    LaunchedEffect(Unit) {
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            viewModel.onUserInteraction(navController)
-            selectedIndex =
-                topLevelDestinations.indexOfFirst { topLevelDestination ->
-                    topLevelDestination.route == destination.parent?.route ||
-                            topLevelDestination.associatedRoutes.any {
-                                destination.route?.startsWith(it) == true
-                            }
-                }
+    val selectedIndex = remember(topLevelDestinations, currentRoute, currentParentRoute) {
+        topLevelDestinations.indexOfFirst { topLevelDestination ->
+            topLevelDestination.route == currentParentRoute ||
+                    topLevelDestination.associatedRoutes.any {
+                        currentRoute?.startsWith(it) == true
+                    }
         }
     }
 
@@ -303,7 +298,6 @@ private fun BottomNav(
                     NavigationBarItem(
                         selected = index == selectedIndex,
                         onClick = {
-                            selectedIndex = index
                             onTabClick(tabText)
 
                             navController.navigate(destination.route) {
@@ -502,7 +496,7 @@ private fun GovUkNavHost(
             modifier = Modifier.padding(paddingValues)
         )
 
-        chatOnboardingGraph(
+        chatOptInGraph(
             navController = navController,
             launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } },
             modifier = Modifier.padding(paddingValues)
