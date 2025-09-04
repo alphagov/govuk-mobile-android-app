@@ -9,5 +9,6 @@ data class Config(
     @SerializedName("releaseFlags") val releaseFlags: ReleaseFlags,
     @SerializedName("version") val version: String,
     @SerializedName("chatPollIntervalSeconds") val chatPollIntervalSeconds: Int?,
-    @SerializedName("alertBanner") val alertBanner: AlertBanner?
+    @SerializedName("alertBanner") val alertBanner: AlertBanner?,
+    @SerializedName("userFeedbackBanner") val userFeedbackBanner: UserFeedbackBanner?
 )

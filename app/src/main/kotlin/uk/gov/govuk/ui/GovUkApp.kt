@@ -64,7 +64,6 @@ import uk.gov.govuk.R
 import uk.gov.govuk.analytics.navigation.analyticsGraph
 import uk.gov.govuk.chat.navigation.CHAT_GRAPH_ROUTE
 import uk.gov.govuk.chat.navigation.chatGraph
-import uk.gov.govuk.config.data.remote.model.AlertBanner
 import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
@@ -114,8 +113,7 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                             intentFlow = intentFlow,
                             viewModel = viewModel,
                             shouldShowExternalBrowser = it.shouldShowExternalBrowser,
-                            homeWidgets = homeWidgets,
-                            alertBanner = it.alertBanner
+                            homeWidgets = homeWidgets
                         )
                     }
                 }
@@ -146,8 +144,7 @@ private fun BottomNavScaffold(
     intentFlow: Flow<Intent>,
     viewModel: AppViewModel,
     shouldShowExternalBrowser: Boolean,
-    homeWidgets: List<HomeWidget>?,
-    alertBanner: AlertBanner?
+    homeWidgets: List<HomeWidget>?
 ) {
     val navController = rememberNavController()
     val layoutDirection = LocalLayoutDirection.current
@@ -191,7 +188,6 @@ private fun BottomNavScaffold(
                     viewModel = viewModel,
                     navController = navController,
                     homeWidgets = homeWidgets,
-                    alertBanner = alertBanner,
                     onInternalWidgetClick = { text ->
                         viewModel.onWidgetClick(
                             text = text,
@@ -338,7 +334,6 @@ private fun GovUkNavHost(
     viewModel: AppViewModel,
     navController: NavHostController,
     homeWidgets: List<HomeWidget>?,
-    alertBanner: AlertBanner?,
     onInternalWidgetClick: (String) -> Unit,
     onExternalWidgetClick: (String, String?) -> Unit,
     onSuppressWidgetClick: (id: String) -> Unit,
@@ -429,7 +424,6 @@ private fun GovUkNavHost(
             widgets = homeWidgets(
                 navController = navController,
                 homeWidgets = homeWidgets,
-                alertBanner = alertBanner,
                 onInternalClick = onInternalWidgetClick,
                 onExternalClick = onExternalWidgetClick,
                 onSuppressClick = onSuppressWidgetClick,
@@ -442,7 +436,7 @@ private fun GovUkNavHost(
                 }
             ),
             modifier = Modifier.padding(paddingValues),
-            headerWidget = if (homeWidgets.contains(HomeWidget.SEARCH)) {
+            headerWidget = if (homeWidgets.contains(HomeWidget.Search)) {
                 { modifier ->
                     SearchWidget(
                         onClick = { text ->

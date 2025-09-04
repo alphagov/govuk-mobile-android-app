@@ -1,10 +1,13 @@
 package uk.gov.govuk.ui.model
 
-enum class HomeWidget(val serializedName: String) {
-    ALERT_BANNER("alert_banner"),
-    FEEDBACK_PROMPT("feedback_prompt"),
-    SEARCH("search"),
-    RECENT_ACTIVITY("recent_activity"),
-    TOPICS("topics"),
-    LOCAL("local")
+import uk.gov.govuk.config.data.remote.model.AlertBanner
+import uk.gov.govuk.config.data.remote.model.UserFeedbackBanner
+
+internal sealed interface HomeWidget {
+    data class Alert(val alertBanner: AlertBanner) : HomeWidget
+    data object Search : HomeWidget
+    data object RecentActivity : HomeWidget
+    data object Topics : HomeWidget
+    data object Local : HomeWidget
+    data class UserFeedback(val userFeedbackBanner: UserFeedbackBanner) : HomeWidget
 }
