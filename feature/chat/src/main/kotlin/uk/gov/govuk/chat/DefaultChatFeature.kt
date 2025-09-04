@@ -1,5 +1,6 @@
 package uk.gov.govuk.chat
 
+import kotlinx.coroutines.flow.Flow
 import uk.gov.govuk.chat.data.ChatRepo
 import uk.gov.govuk.chat.data.local.ChatDataStore
 import javax.inject.Inject
@@ -13,11 +14,7 @@ internal class DefaultChatFeature @Inject constructor(
         chatRepo.clearConversation()
     }
 
-    override suspend fun userHasOptedIn(): Boolean {
-        return dataStore.isChatOptIn()
-    }
+    override suspend fun hasOptedIn(): Flow<Boolean> = dataStore.hasOptedIn
 
-    override suspend fun userHasNotYetChosen(): Boolean {
-        return dataStore.isChatOptInNull()
-    }
+    override suspend fun userHasNotYetChosen(): Boolean = dataStore.isChatOptInNull()
 }

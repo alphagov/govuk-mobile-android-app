@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.chat.ChatFeature
-import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
@@ -42,7 +41,6 @@ internal class AppViewModel @Inject constructor(
     private val visitedFeature: Visited,
     private val chatFeature: ChatFeature,
     private val analyticsClient: AnalyticsClient,
-    private val chatDataStore: ChatDataStore,
     val appNavigation: AppNavigation
 ) : ViewModel() {
 
@@ -74,7 +72,7 @@ internal class AppViewModel @Inject constructor(
                     combine(
                         appRepo.suppressedHomeWidgets,
                         localFeature.hasLocalAuthority(),
-                        chatDataStore.hasOptedInFlow
+                        chatFeature.hasOptedIn()
                     ) { suppressedWidgets, localAuthority, chatHasOptedIn ->
                         Triple(suppressedWidgets, localAuthority, chatHasOptedIn)
                     }.collect {
@@ -173,12 +171,6 @@ internal class AppViewModel @Inject constructor(
                 _homeWidgets.value = widgets
             }
         }
-    }
-
-    private fun isChatEnabled(): Boolean {
-        return flagRepo.isChatEnabled() &&
-            flagRepo.isChatOptInEnabled() &&
-            flagRepo.isChatTestActiveEnabled()
     }
 
     fun onWidgetClick(

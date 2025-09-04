@@ -13,7 +13,7 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
-class ChatDataStore @Inject constructor(
+internal class ChatDataStore @Inject constructor(
     @Named("chat_prefs") private val dataStore: DataStore<Preferences>
 ) {
 
@@ -23,7 +23,7 @@ class ChatDataStore @Inject constructor(
         internal const val CHAT_OPT_IN_KEY = "chat_opt_in"
     }
 
-    val hasOptedInFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+    val hasOptedIn: Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[booleanPreferencesKey(CHAT_OPT_IN_KEY)] == true
     }
 
