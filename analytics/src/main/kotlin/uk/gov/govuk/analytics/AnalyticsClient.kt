@@ -102,6 +102,7 @@ class AnalyticsClient @Inject constructor(
         logEvent(
             "Chat",
             mapOf(
+                "action" to "Ask Question",
                 "type" to "typed"
             )
         )
