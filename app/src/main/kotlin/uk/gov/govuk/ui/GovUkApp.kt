@@ -50,7 +50,6 @@ import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -116,7 +115,7 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                         BottomNavScaffold(
                             intentFlow = intentFlow,
                             viewModel = viewModel,
-                            shouldShowExternalBrowser = it.shouldShowExternalBrowser,
+                            uiState = it,
                             homeWidgets = homeWidgets
                         )
                     }
@@ -147,7 +146,7 @@ private fun LoadingScreen(
 private fun BottomNavScaffold(
     intentFlow: Flow<Intent>,
     viewModel: AppViewModel,
-    shouldShowExternalBrowser: Boolean,
+    uiState: AppUiState.Default,
     homeWidgets: List<HomeWidget>?
 ) {
     val navController = rememberNavController()
@@ -161,7 +160,7 @@ private fun BottomNavScaffold(
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
         bottomBar = {
-            BottomNav(viewModel, navController) { tabText ->
+            BottomNav(uiState.isChatEnabled, navController) { tabText ->
                 viewModel.onTabClick(tabText)
             }
         },
@@ -210,7 +209,7 @@ private fun BottomNavScaffold(
                     onSuppressWidgetClick = { id ->
                         viewModel.onSuppressWidgetClick(id, section)
                     },
-                    shouldShowExternalBrowser = shouldShowExternalBrowser,
+                    shouldShowExternalBrowser = uiState.shouldShowExternalBrowser,
                     paddingValues = paddingValues
                 )
                 HandleOnResumeNavigation(
@@ -249,20 +248,12 @@ private fun HandleOnResumeNavigation(
 
 @Composable
 private fun BottomNav(
-    viewModel: AppViewModel,
+    isChatEnabled: Boolean,
     navController: NavHostController,
     onTabClick: (String) -> Unit
 ) {
-    val showChatTab by viewModel.userHasOptedIn.collectAsStateWithLifecycle()
-
-    val topLevelDestinations = remember(showChatTab) {
-        buildList {
-            add(TopLevelDestination.Home)
-            if (showChatTab) {
-                add(TopLevelDestination.Chat)
-            }
-            add(TopLevelDestination.Settings)
-        }
+    val topLevelDestinations = remember(isChatEnabled) {
+        TopLevelDestination.values(isChatEnabled)
     }
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()

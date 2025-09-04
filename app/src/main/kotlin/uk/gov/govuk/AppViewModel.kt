@@ -6,11 +6,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.chat.ChatFeature
@@ -45,7 +42,7 @@ internal class AppViewModel @Inject constructor(
     private val visitedFeature: Visited,
     private val chatFeature: ChatFeature,
     private val analyticsClient: AnalyticsClient,
-    chatDataStore: ChatDataStore,
+    private val chatDataStore: ChatDataStore,
     val appNavigation: AppNavigation
 ) : ViewModel() {
 
@@ -54,14 +51,6 @@ internal class AppViewModel @Inject constructor(
 
     private val _homeWidgets: MutableStateFlow<List<HomeWidget>?> = MutableStateFlow(null)
     internal val homeWidgets = _homeWidgets.asStateFlow()
-
-    val userHasOptedIn: StateFlow<Boolean> = chatDataStore.hasOptedInFlow
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = false
-        )
-//    TODO: needs to in include isChatEnabled() && userHasOptedIn
 
     init {
         analyticsClient.isUserSessionActive = { authRepo.isUserSessionActive() }
@@ -82,18 +71,23 @@ internal class AppViewModel @Inject constructor(
                 } else {
                     topicsFeature.init()
 
-                    _uiState.value = AppUiState.Default(
-                        shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
-                        shouldShowExternalBrowser = flagRepo.isExternalBrowserEnabled(),
-                        alertBanner = configRepo.config.alertBanner
-                    )
-
                     combine(
                         appRepo.suppressedHomeWidgets,
-                        localFeature.hasLocalAuthority()
-                    ) { suppressedWidgets, localAuthority ->
-                        Pair(suppressedWidgets, localAuthority)
+                        localFeature.hasLocalAuthority(),
+                        chatDataStore.hasOptedInFlow
+                    ) { suppressedWidgets, localAuthority, chatHasOptedIn ->
+                        Triple(suppressedWidgets, localAuthority, chatHasOptedIn)
                     }.collect {
+                        _uiState.value = AppUiState.Default(
+                            shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
+                            shouldShowExternalBrowser = flagRepo.isExternalBrowserEnabled(),
+                            isChatEnabled = flagRepo.isChatEnabled() &&
+                                    flagRepo.isChatOptInEnabled() &&
+                                    flagRepo.isChatTestActiveEnabled() &&
+                                    it.third,
+                            alertBanner = configRepo.config.alertBanner
+                        )
+
                         updateHomeWidgets(it.first, it.second)
                     }
                 }
