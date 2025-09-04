@@ -6,7 +6,7 @@ interface ChatFeature {
 
     suspend fun clear()
 
-    suspend fun hasOptedIn(): Flow<Boolean>
+    fun hasOptedIn(): Flow<Boolean>
 
     suspend fun userHasNotYetChosen(): Boolean
 

@@ -15,7 +15,7 @@ import org.junit.Test
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.analytics.navigation.ANALYTICS_GRAPH_ROUTE
 import uk.gov.govuk.chat.ChatFeature
-import uk.gov.govuk.chat.navigation.CHAT_OPT_IN_ROUTE
+import uk.gov.govuk.chat.navigation.CHAT_OPT_IN_GRAPH_ROUTE
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
@@ -509,7 +509,7 @@ class AppNavigationTest {
 
         verify {
             navController.popBackStack()
-            navController.navigate(CHAT_OPT_IN_ROUTE)
+            navController.navigate(CHAT_OPT_IN_GRAPH_ROUTE)
         }
     }
 

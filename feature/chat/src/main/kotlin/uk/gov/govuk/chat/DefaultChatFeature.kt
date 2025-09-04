@@ -14,7 +14,7 @@ internal class DefaultChatFeature @Inject constructor(
         chatRepo.clearConversation()
     }
 
-    override suspend fun hasOptedIn(): Flow<Boolean> = dataStore.hasOptedIn
+    override fun hasOptedIn(): Flow<Boolean> = dataStore.hasOptedIn
 
     override suspend fun userHasNotYetChosen(): Boolean = dataStore.isChatOptInNull()
 }

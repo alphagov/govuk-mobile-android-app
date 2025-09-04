@@ -76,6 +76,7 @@ class AppViewModelTest {
         every { localFeature.hasLocalAuthority() } returns flowOf(false)
         every { appRepo.suppressedHomeWidgets } returns flowOf(emptySet())
         every { flagRepo.isAppAvailable() } returns true
+        every { chatFeature.hasOptedIn() } returns flowOf(false)
 
         viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature,
             localFeature, searchFeature, visited, chatFeature, analyticsClient, appNavigation)
@@ -589,14 +590,15 @@ class AppViewModelTest {
         every { flagRepo.isChatEnabled() } returns true
         every { flagRepo.isChatOptInEnabled() } returns true
         every { flagRepo.isChatTestActiveEnabled() } returns true
-        coEvery { chatFeature.userHasOptedIn() } returns true
+        every { chatFeature.hasOptedIn() } returns flowOf(true)
 
         val viewModel = AppViewModel(
             timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature,
             localFeature, searchFeature, visited, chatFeature, analyticsClient, appNavigation
         )
 
-        assertTrue(viewModel.isChatFeatureEnabledState.value)
+        val uiState = viewModel.uiState.first() as AppUiState.Default
+        assertTrue(uiState.isChatEnabled)
     }
 
     @Test
@@ -604,14 +606,15 @@ class AppViewModelTest {
         every { flagRepo.isChatEnabled() } returns true
         every { flagRepo.isChatOptInEnabled() } returns true
         every { flagRepo.isChatTestActiveEnabled() } returns true
-        coEvery { chatFeature.userHasOptedIn() } returns false
+        every { chatFeature.hasOptedIn() } returns flowOf(false)
 
         val viewModel = AppViewModel(
             timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature,
             localFeature, searchFeature, visited, chatFeature, analyticsClient, appNavigation
         )
 
-        assertFalse(viewModel.isChatFeatureEnabledState.value)
+        val uiState = viewModel.uiState.first() as AppUiState.Default
+        assertFalse(uiState.isChatEnabled)
     }
 
     @Test
@@ -619,14 +622,15 @@ class AppViewModelTest {
         every { flagRepo.isChatEnabled() } returns true
         every { flagRepo.isChatOptInEnabled() } returns true
         every { flagRepo.isChatTestActiveEnabled() } returns false
-        coEvery { chatFeature.userHasOptedIn() } returns true
+        every { chatFeature.hasOptedIn() } returns flowOf(true)
 
         val viewModel = AppViewModel(
             timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature,
             localFeature, searchFeature, visited, chatFeature, analyticsClient, appNavigation
         )
 
-        assertFalse(viewModel.isChatFeatureEnabledState.value)
+        val uiState = viewModel.uiState.first() as AppUiState.Default
+        assertFalse(uiState.isChatEnabled)
     }
 
     @Test
@@ -634,14 +638,15 @@ class AppViewModelTest {
         every { flagRepo.isChatEnabled() } returns true
         every { flagRepo.isChatOptInEnabled() } returns false
         every { flagRepo.isChatTestActiveEnabled() } returns true
-        coEvery { chatFeature.userHasOptedIn() } returns true
+        every { chatFeature.hasOptedIn() } returns flowOf(true)
 
         val viewModel = AppViewModel(
             timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature,
             localFeature, searchFeature, visited, chatFeature, analyticsClient, appNavigation
         )
 
-        assertFalse(viewModel.isChatFeatureEnabledState.value)
+        val uiState = viewModel.uiState.first() as AppUiState.Default
+        assertFalse(uiState.isChatEnabled)
     }
 
     @Test
@@ -649,13 +654,14 @@ class AppViewModelTest {
         every { flagRepo.isChatEnabled() } returns false
         every { flagRepo.isChatOptInEnabled() } returns true
         every { flagRepo.isChatTestActiveEnabled() } returns true
-        coEvery { chatFeature.userHasOptedIn() } returns true
+        every { chatFeature.hasOptedIn() } returns flowOf(true)
 
         val viewModel = AppViewModel(
             timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature,
             localFeature, searchFeature, visited, chatFeature, analyticsClient, appNavigation
         )
 
-        assertFalse(viewModel.isChatFeatureEnabledState.value)
+        val uiState = viewModel.uiState.first() as AppUiState.Default
+        assertFalse(uiState.isChatEnabled)
     }
 }

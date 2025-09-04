@@ -3,6 +3,9 @@ package uk.gov.govuk.chat.data.local
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -11,6 +14,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import uk.gov.govuk.chat.data.local.ChatDataStore.Companion.CHAT_OPT_IN_KEY
 import java.io.File
 import kotlin.io.path.createTempDirectory
 
@@ -77,40 +81,34 @@ class ChatDataStoreTest {
     }
 
     @Test
-    fun `Returns false for chat opt in if data store is empty`() = runTest {
-        assertFalse(chatDataStore.isChatOptIn())
-    }
-
-    @Test
-    fun `Returns true for chat opt in if data store value is true`() = runTest {
-        chatDataStore.saveChatOptIn()
-        assertTrue(chatDataStore.isChatOptIn())
-    }
-
-    @Test
     fun `Sets chat opt in to true`() = runTest {
-        assertFalse(chatDataStore.isChatOptIn())
-
+        assertTrue(chatDataStore.isChatOptInNull())
         chatDataStore.saveChatOptIn()
-        assertTrue(chatDataStore.isChatOptIn())
+        assertTrue(
+            dataStore.data.map { preferences ->
+                preferences[booleanPreferencesKey(CHAT_OPT_IN_KEY)] == true
+            }.first()
+        )
     }
 
     @Test
     fun `Sets chat opt in to false`() = runTest {
-        assertFalse(chatDataStore.isChatOptIn())
-
+        assertTrue(chatDataStore.isChatOptInNull())
         chatDataStore.saveChatOptOut()
-        assertFalse(chatDataStore.isChatOptIn())
+        assertTrue(
+            dataStore.data.map { preferences ->
+                preferences[booleanPreferencesKey(CHAT_OPT_IN_KEY)] == false
+            }.first()
+        )
     }
 
     @Test
     fun `Clears the chat opt in flag`() = runTest {
+        assertTrue(chatDataStore.isChatOptInNull())
         chatDataStore.saveChatOptIn()
-        assertTrue(chatDataStore.isChatOptIn())
-
+        assertFalse(chatDataStore.isChatOptInNull())
         chatDataStore.clearChatOptIn()
-
-        assertFalse(chatDataStore.isChatOptIn())
+        assertTrue(chatDataStore.isChatOptInNull())
     }
 
     @Test
@@ -130,5 +128,26 @@ class ChatDataStoreTest {
         chatDataStore.saveChatOptOut()
 
         assertFalse(chatDataStore.isChatOptInNull())
+    }
+
+    @Test
+    fun `Checks has opted in emits true`() = runTest {
+        chatDataStore.saveChatOptIn()
+
+        assertTrue(chatDataStore.hasOptedIn.first())
+    }
+
+    @Test
+    fun `Checks has opted in emits false`() = runTest {
+        chatDataStore.saveChatOptOut()
+
+        assertFalse(chatDataStore.hasOptedIn.first())
+    }
+
+    @Test
+    fun `Checks has opted in emits false when opt in is null`() = runTest {
+        chatDataStore.clearChatOptIn()
+
+        assertFalse(chatDataStore.hasOptedIn.first())
     }
 }
