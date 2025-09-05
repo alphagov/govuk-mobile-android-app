@@ -76,6 +76,7 @@ import uk.gov.govuk.chat.ui.chat.ChatErrorPageNoRetry
 import uk.gov.govuk.chat.ui.chat.ChatErrorPageWithRetry
 import uk.gov.govuk.chat.ui.chat.DisplayChatEntry
 import uk.gov.govuk.chat.ui.chat.IntroMessages
+import uk.gov.govuk.config.data.remote.model.ChatUrls
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -138,6 +139,7 @@ internal fun ChatRoute(
                         onClearDone()
                     }
                 ),
+                chatUrls = viewModel.chatUrls,
                 modifier = modifier
             )
         } else if (seenOnboarding == false) {
@@ -161,6 +163,7 @@ private fun ChatScreen(
     launchBrowser: (url: String) -> Unit,
     hasConversation: Boolean,
     clickEvents: ChatScreenClickEvents,
+    chatUrls: ChatUrls,
     modifier: Modifier = Modifier
 ) {
     if (uiState.isRetryableError) {
@@ -205,6 +208,7 @@ private fun ChatScreen(
             hasConversation = hasConversation,
             clickEvents = clickEvents,
             analyticsEvents = analyticsEvents,
+            chatUrls = chatUrls,
             modifier
         )
     }
@@ -217,6 +221,7 @@ private fun ChatContent(
     hasConversation: Boolean,
     clickEvents: ChatScreenClickEvents,
     analyticsEvents: ChatScreenEvents,
+    chatUrls: ChatUrls,
     modifier: Modifier = Modifier
 ) {
     var heightPx by remember { mutableIntStateOf(0) }
@@ -294,7 +299,8 @@ private fun ChatContent(
                         launchBrowser = launchBrowser,
                         hasConversation = hasConversation,
                         analyticsEvents = analyticsEvents,
-                        clickEvents = clickEvents
+                        clickEvents = clickEvents,
+                        chatUrls = chatUrls
                     )
                 }
 
@@ -360,6 +366,7 @@ private fun ChatInput(
     hasConversation: Boolean,
     analyticsEvents: ChatScreenEvents,
     clickEvents: ChatScreenClickEvents,
+    chatUrls: ChatUrls,
     modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -379,6 +386,7 @@ private fun ChatInput(
                     isLoading = uiState.isLoading,
                     onClear = clickEvents.onClear,
                     analyticsEvents = analyticsEvents,
+                    chatUrls = chatUrls,
                     modifier = Modifier.semantics { this.traversalIndex = 1f }
                 )
             }
@@ -635,6 +643,7 @@ private fun LightModeChatScreenPreview() {
             analyticsEvents = analyticsEvents(),
             launchBrowser = { _ -> },
             hasConversation = false,
+            chatUrls = ChatUrls("", "", "", ""),
             clickEvents = clickEvents()
         )
     }
@@ -652,6 +661,7 @@ private fun DarkModeChatScreenPreview() {
             analyticsEvents = analyticsEvents(),
             launchBrowser = { _ -> },
             hasConversation = false,
+            chatUrls = ChatUrls("", "", "", ""),
             clickEvents = clickEvents()
         )
     }

@@ -1,5 +1,6 @@
 package uk.gov.govuk.chat.ui
 
+import android.R.attr.text
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.height
@@ -36,13 +37,13 @@ internal fun ChatOptInRoute(
 
     ChatOptInScreen(
         onPageView = { viewModel.onPageView() },
-        onClickPrivacyNotice = { text, url ->
-            viewModel.onLinkClick(text, url)
-            launchBrowser(url)
+        onClickPrivacyNotice = { text ->
+            viewModel.onLinkClick(text, viewModel.privacyPolicyUrl)
+            launchBrowser(viewModel.privacyPolicyUrl)
         },
-        onClickTermsAndConditions = { text, url ->
-            viewModel.onLinkClick(text, url)
-            launchBrowser(url)
+        onClickTermsAndConditions = { text ->
+            viewModel.onLinkClick(text, viewModel.termsAndConditionsUrl)
+            launchBrowser(viewModel.termsAndConditionsUrl)
         },
         onClickOptIn = { text ->
             viewModel.onButtonClick(text)
@@ -61,8 +62,8 @@ internal fun ChatOptInRoute(
 @Composable
 private fun ChatOptInScreen(
     onPageView: () -> Unit,
-    onClickPrivacyNotice: (text: String, url: String) -> Unit,
-    onClickTermsAndConditions: (text: String, url: String) -> Unit,
+    onClickPrivacyNotice: (text: String) -> Unit,
+    onClickTermsAndConditions: (text: String) -> Unit,
     onClickOptIn: (text: String) -> Unit,
     onClickOptOut: (text: String) -> Unit,
     modifier: Modifier = Modifier
@@ -122,12 +123,11 @@ private fun ChatOptInScreen(
             MediumVerticalSpacer()
 
             val privacyNoticeText = stringResource(id = R.string.optin_privacy_notice)
-            val privacyNoticeUrl = stringResource(id = R.string.optin_privacy_notice_url)
 
             SecondaryButton(
                 text = privacyNoticeText,
                 onClick = {
-                    onClickPrivacyNotice(privacyNoticeText, privacyNoticeUrl)
+                    onClickPrivacyNotice(privacyNoticeText)
                 },
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.small),
                 externalLink = true
@@ -137,13 +137,11 @@ private fun ChatOptInScreen(
 
             val termsAndConditionsText =
                 stringResource(id = R.string.optin_terms_and_conditions)
-            val termsAndConditionsUrl =
-                stringResource(id = R.string.optin_terms_and_conditions_url)
 
             SecondaryButton(
                 text = termsAndConditionsText,
                 onClick = {
-                    onClickTermsAndConditions(termsAndConditionsText, termsAndConditionsUrl)
+                    onClickTermsAndConditions(termsAndConditionsText)
                 },
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.small),
                 externalLink = true
@@ -176,8 +174,8 @@ private fun LightModeChatOptInScreenPreview() {
     GovUkTheme {
         ChatOptInScreen(
             onPageView = { },
-            onClickPrivacyNotice = { _, _ -> },
-            onClickTermsAndConditions = { _, _ -> },
+            onClickPrivacyNotice = { _ -> },
+            onClickTermsAndConditions = { _ -> },
             onClickOptIn = { _ -> },
             onClickOptOut = { _ -> }
         )
@@ -193,8 +191,8 @@ private fun DarkModeChatOptInScreenPreview() {
     GovUkTheme {
         ChatOptInScreen(
             onPageView = { },
-            onClickPrivacyNotice = { _, _ -> },
-            onClickTermsAndConditions = { _, _ -> },
+            onClickPrivacyNotice = { _ -> },
+            onClickTermsAndConditions = { _ -> },
             onClickOptIn = { _ -> },
             onClickOptOut = { _ -> }
         )

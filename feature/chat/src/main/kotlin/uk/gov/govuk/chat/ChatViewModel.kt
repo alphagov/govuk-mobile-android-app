@@ -20,6 +20,7 @@ import uk.gov.govuk.chat.data.remote.ChatResult.ValidationError
 import uk.gov.govuk.chat.data.remote.model.Answer
 import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.chat.ui.model.ChatEntry
+import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import javax.inject.Inject
 
@@ -42,7 +43,8 @@ internal class ChatViewModel @Inject constructor(
     private val chatRepo: ChatRepo,
     private val chatDataStore: ChatDataStore,
     private val authRepo: AuthRepo,
-    private val analyticsClient: AnalyticsClient
+    private val analyticsClient: AnalyticsClient,
+    configRepo: ConfigRepo
 ): ViewModel() {
 
     private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
@@ -55,6 +57,8 @@ internal class ChatViewModel @Inject constructor(
 
     private val _authError = MutableSharedFlow<Unit>()
     val authError: SharedFlow<Unit> = _authError
+
+    val chatUrls = configRepo.config.chatUrls
 
     init {
         viewModelScope.launch {
@@ -176,7 +180,7 @@ internal class ChatViewModel @Inject constructor(
     fun onAboutClick(text: String) {
         analyticsClient.chatActionMenuAboutClick(
             text = text,
-            url = BuildConfig.ABOUT_APP_URL
+            url = chatUrls.about
         )
     }
 

@@ -25,10 +25,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import uk.gov.govuk.chat.BuildConfig
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.chat.domain.Analytics
 import uk.gov.govuk.chat.ui.ChatScreenEvents
+import uk.gov.govuk.config.data.remote.model.ChatUrls
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -40,6 +40,7 @@ internal fun ActionMenu(
     isLoading: Boolean,
     onClear: () -> Unit,
     analyticsEvents: ChatScreenEvents,
+    chatUrls: ChatUrls,
     modifier: Modifier = Modifier
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -59,7 +60,8 @@ internal fun ActionMenu(
         AboutMenuItem(
             launchBrowser = launchBrowser,
             onLinkClicked = { expanded = false },
-            analyticsEvents = analyticsEvents
+            analyticsEvents = analyticsEvents,
+            aboutUrl = chatUrls.about
         )
 
         if (hasConversation) {
@@ -92,6 +94,7 @@ private fun AboutMenuItem(
     launchBrowser: (url: String) -> Unit,
     onLinkClicked: () -> Unit,
     analyticsEvents: ChatScreenEvents,
+    aboutUrl: String,
     modifier: Modifier = Modifier
 ) {
     val buttonText = stringResource(id = R.string.action_about)
@@ -107,7 +110,7 @@ private fun AboutMenuItem(
         onClick = {
             analyticsEvents.onAboutClick(buttonText)
             onLinkClicked()
-            launchBrowser(BuildConfig.ABOUT_APP_URL)
+            launchBrowser(aboutUrl)
         },
         modifier = modifier,
         trailingIcon = {
