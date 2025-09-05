@@ -14,6 +14,8 @@ import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.analytics.navigation.ANALYTICS_GRAPH_ROUTE
+import uk.gov.govuk.chat.ChatFeature
+import uk.gov.govuk.chat.navigation.CHAT_OPT_IN_GRAPH_ROUTE
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
@@ -35,6 +37,7 @@ class AppNavigationTest {
     private val authRepo = mockk<AuthRepo>(relaxed = true)
     private val notificationsRepo = mockk<NotificationsRepo>(relaxed = true)
     private val topicsFeature = mockk<TopicsFeature>(relaxed = true)
+    private val chatFeature = mockk<ChatFeature>(relaxed = true)
     private val deeplinkHandler = mockk<DeeplinkHandler>(relaxed = true)
     private val notificationsClient = mockk<NotificationsClient>(relaxed = true)
     private val navController = mockk<NavController>(relaxed = true)
@@ -52,7 +55,8 @@ class AppNavigationTest {
             topicsFeature,
             deeplinkHandler,
             notificationsClient,
-            notificationsRepo
+            notificationsRepo,
+            chatFeature
         )
     }
 
@@ -485,6 +489,111 @@ class AppNavigationTest {
 
         verify {
             navController.navigate(LOGIN_GRAPH_ROUTE, any<NavOptionsBuilder.() -> Unit>())
+        }
+    }
+
+    @Test
+    fun `On next navigates to chat opt in, when all remote flags are true and the user has not yet chosen to opt in or opt out`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns true
+        coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        coEvery { topicsFeature.hasTopics() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns false
+
+        every { flagRepo.isChatEnabled() } returns true
+        every { flagRepo.isChatOptInEnabled() } returns true
+        every { flagRepo.isChatTestActiveEnabled() } returns true
+        coEvery { chatFeature.userHasNotYetChosen() } returns true
+
+        appLaunchNav.onNext(navController)
+
+        verify {
+            navController.popBackStack()
+            navController.navigate(CHAT_OPT_IN_GRAPH_ROUTE)
+        }
+    }
+
+    @Test
+    fun `On next navigates to home, when all remote flags are true and the user has chosen to opt in or opt out`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns true
+        coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        coEvery { topicsFeature.hasTopics() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns false
+
+        every { flagRepo.isChatEnabled() } returns true
+        every { flagRepo.isChatOptInEnabled() } returns true
+        every { flagRepo.isChatTestActiveEnabled() } returns true
+        coEvery { chatFeature.userHasNotYetChosen() } returns false
+
+        appLaunchNav.onNext(navController)
+
+        verify {
+            navController.popBackStack()
+            navController.navigate(HOME_GRAPH_ROUTE)
+        }
+    }
+
+    @Test
+    fun `On next navigates to home, when all remote flags are true except isChatTestActiveEnabled and the user has not yet chosen to opt in or opt out`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns true
+        coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        coEvery { topicsFeature.hasTopics() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns false
+
+        every { flagRepo.isChatEnabled() } returns true
+        every { flagRepo.isChatOptInEnabled() } returns true
+        every { flagRepo.isChatTestActiveEnabled() } returns false
+        coEvery { chatFeature.userHasNotYetChosen() } returns true
+
+        appLaunchNav.onNext(navController)
+
+        verify {
+            navController.popBackStack()
+            navController.navigate(HOME_GRAPH_ROUTE)
+        }
+    }
+
+    @Test
+    fun `On next navigates to home, when all remote flags are true except isChatOptInEnabled and the user has not yet chosen to opt in or opt out`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns true
+        coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        coEvery { topicsFeature.hasTopics() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns false
+
+        every { flagRepo.isChatEnabled() } returns true
+        every { flagRepo.isChatOptInEnabled() } returns false
+        every { flagRepo.isChatTestActiveEnabled() } returns true
+        coEvery { chatFeature.userHasNotYetChosen() } returns true
+
+        appLaunchNav.onNext(navController)
+
+        verify {
+            navController.popBackStack()
+            navController.navigate(HOME_GRAPH_ROUTE)
+        }
+    }
+
+    @Test
+    fun `On next navigates to home, when all remote flags are true except isChatEnabled and the user has not yet chosen to opt in or opt out`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns true
+        coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        coEvery { topicsFeature.hasTopics() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns false
+
+        every { flagRepo.isChatEnabled() } returns false
+        every { flagRepo.isChatOptInEnabled() } returns true
+        every { flagRepo.isChatTestActiveEnabled() } returns true
+        coEvery { chatFeature.userHasNotYetChosen() } returns true
+
+        appLaunchNav.onNext(navController)
+
+        verify {
+            navController.popBackStack()
+            navController.navigate(HOME_GRAPH_ROUTE)
         }
     }
 }

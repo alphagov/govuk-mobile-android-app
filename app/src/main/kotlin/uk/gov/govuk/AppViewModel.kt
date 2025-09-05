@@ -69,18 +69,22 @@ internal class AppViewModel @Inject constructor(
                 } else {
                     topicsFeature.init()
 
-                    _uiState.value = AppUiState.Default(
-                        shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
-                        shouldShowExternalBrowser = flagRepo.isExternalBrowserEnabled(),
-                        alertBanner = configRepo.config.alertBanner
-                    )
-
                     combine(
                         appRepo.suppressedHomeWidgets,
-                        localFeature.hasLocalAuthority()
-                    ) { suppressedWidgets, localAuthority ->
-                        Pair(suppressedWidgets, localAuthority)
+                        localFeature.hasLocalAuthority(),
+                        chatFeature.hasOptedIn()
+                    ) { suppressedWidgets, localAuthority, chatHasOptedIn ->
+                        Triple(suppressedWidgets, localAuthority, chatHasOptedIn)
                     }.collect {
+                        _uiState.value = AppUiState.Default(
+                            shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
+                            shouldShowExternalBrowser = flagRepo.isExternalBrowserEnabled(),
+                            isChatEnabled = flagRepo.isChatEnabled() &&
+                                    flagRepo.isChatTestActiveEnabled() &&
+                                    it.third,
+                            alertBanner = configRepo.config.alertBanner
+                        )
+
                         updateHomeWidgets(it.first, it.second)
                     }
                 }
@@ -167,8 +171,6 @@ internal class AppViewModel @Inject constructor(
             }
         }
     }
-
-    fun isChatEnabled() = flagRepo.isChatEnabled()
 
     fun onWidgetClick(
         text: String,

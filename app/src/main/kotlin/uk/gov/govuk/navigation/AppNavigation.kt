@@ -4,6 +4,8 @@ import android.net.Uri
 import androidx.navigation.NavController
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.analytics.navigation.ANALYTICS_GRAPH_ROUTE
+import uk.gov.govuk.chat.ChatFeature
+import uk.gov.govuk.chat.navigation.CHAT_OPT_IN_GRAPH_ROUTE
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
@@ -29,6 +31,7 @@ internal class AppNavigation @Inject constructor(
     private val deeplinkHandler: DeeplinkHandler,
     private val notificationsClient: NotificationsClient,
     private val notificationsRepo: NotificationsRepo,
+    private val chatFeature: ChatFeature
 ) {
     fun setOnLaunchBrowser(onLaunchBrowser: (String) -> Unit) {
         deeplinkHandler.onLaunchBrowser = onLaunchBrowser
@@ -59,6 +62,11 @@ internal class AppNavigation @Inject constructor(
                     notificationsClient.permissionGranted(navController.context) &&
                     !notificationsClient.consentGiven() ->
                 navigate(navController, NOTIFICATIONS_CONSENT_ON_NEXT_ROUTE)
+            flagRepo.isChatEnabled() &&
+                    flagRepo.isChatOptInEnabled() &&
+                    flagRepo.isChatTestActiveEnabled() &&
+                    chatFeature.userHasNotYetChosen() ->
+                navigate(navController, CHAT_OPT_IN_GRAPH_ROUTE)
             else -> {
                 navigate(navController, HOME_GRAPH_ROUTE)
                 deeplinkHandler.handleDeeplink(navController)

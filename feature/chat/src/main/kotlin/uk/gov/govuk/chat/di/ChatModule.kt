@@ -21,6 +21,7 @@ import uk.gov.govuk.chat.BuildConfig
 import uk.gov.govuk.chat.ChatFeature
 import uk.gov.govuk.chat.DefaultChatFeature
 import uk.gov.govuk.chat.data.ChatRepo
+import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.chat.data.remote.ChatApi
 import uk.gov.govuk.data.auth.AuthRepo
 import javax.inject.Inject
@@ -55,8 +56,8 @@ internal class ChatModule {
 
     @Provides
     @Singleton
-    fun providesChatFeature(chatRepo: ChatRepo): ChatFeature {
-        return DefaultChatFeature(chatRepo)
+    fun providesChatFeature(chatRepo: ChatRepo, dataStore: ChatDataStore): ChatFeature {
+        return DefaultChatFeature(chatRepo, dataStore)
     }
 
     @Provides

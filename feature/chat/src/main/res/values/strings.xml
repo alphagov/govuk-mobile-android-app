@@ -46,4 +46,14 @@
   <string name="onboarding_page_two_text_two">It’s simple to double-check information. Use the links provided with each answer.</string>
   <string name="onboarding_page_two_button">I understand</string>
   <string name="onboarding_page_cancel_text">Cancel</string>
+  <string name="optin_title">Get early access to GOV.UK Chat?</string>
+  <string name="optin_para_1">GOV.UK Chat is a new AI tool that uses GOV.UK pages to answer your questions.  You can try it out for a limited time.</string>
+  <string name="optin_para_2">By trying out GOV.UK Chat, you agree to share statistics about how you use it.</string>
+  <string name="optin_para_3">You can ask us to delete these statistics at any time. Read the privacy notice to find out how.</string>
+  <string name="optin_privacy_notice">GOV.UK Chat privacy notice</string>
+  <string name="optin_privacy_notice_url">https://www.gov.uk/government/publications/govuk-chat-privacy-notice</string>
+  <string name="optin_terms_and_conditions">GOV.UK Chat terms and conditions</string>
+  <string name="optin_terms_and_conditions_url">https://www.gov.uk/guidance/govuk-chat-terms-and-conditions</string>
+  <string name="optin_opt_in">Add GOV.UK Chat to the app</string>
+  <string name="optin_opt_out">Do not add GOV.UK Chat</string>
 </resources>
