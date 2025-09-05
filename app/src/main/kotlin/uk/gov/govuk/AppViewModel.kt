@@ -22,7 +22,7 @@ import uk.gov.govuk.login.data.LoginRepo
 import uk.gov.govuk.navigation.AppNavigation
 import uk.gov.govuk.search.SearchFeature
 import uk.gov.govuk.topics.TopicsFeature
-import uk.gov.govuk.ui.model.HomeWidget
+import uk.gov.govuk.widgets.model.HomeWidget
 import uk.gov.govuk.visited.Visited
 import uk.govuk.app.local.LocalFeature
 import javax.inject.Inject
@@ -141,24 +141,27 @@ internal class AppViewModel @Inject constructor(
             with(flagRepo) {
                 val widgets = mutableListOf<HomeWidget>()
                 if (isSearchEnabled()) {
-                    widgets.add(HomeWidget.SEARCH)
+                    widgets.add(HomeWidget.Search)
                 }
                 configRepo.config.alertBanner?.let { alertBanner ->
                     if (!suppressedWidgets.contains(alertBanner.id)) {
-                        widgets.add(HomeWidget.ALERT_BANNER)
+                        widgets.add(HomeWidget.Alert(alertBanner = alertBanner))
                     }
                 }
                 if (isLocalServicesEnabled() && !hasLocalAuthority) {
-                    widgets.add(HomeWidget.LOCAL)
+                    widgets.add(HomeWidget.Local)
                 }
                 if (isRecentActivityEnabled()) {
-                    widgets.add(HomeWidget.RECENT_ACTIVITY)
+                    widgets.add(HomeWidget.RecentActivity)
                 }
                 if (isTopicsEnabled()) {
-                    widgets.add(HomeWidget.TOPICS)
+                    widgets.add(HomeWidget.Topics)
                 }
                 if (isLocalServicesEnabled() && hasLocalAuthority) {
-                    widgets.add(HomeWidget.LOCAL)
+                    widgets.add(HomeWidget.Local)
+                }
+                configRepo.config.userFeedbackBanner?.let { userFeedbackBanner ->
+                    widgets.add(HomeWidget.UserFeedback(userFeedbackBanner = userFeedbackBanner))
                 }
                 _homeWidgets.value = widgets
             }

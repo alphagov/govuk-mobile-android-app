@@ -1,18 +1,14 @@
-package uk.gov.govuk.ui
+package uk.gov.govuk.widgets.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import uk.gov.govuk.BuildConfig
-import uk.gov.govuk.alertbanner.ui.AlertBanner
-import uk.gov.govuk.config.data.remote.model.AlertBanner
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
-import uk.gov.govuk.settings.ui.FeedbackPromptWidget
 import uk.gov.govuk.topics.navigation.navigateToTopic
 import uk.gov.govuk.topics.navigation.navigateToTopicsAll
 import uk.gov.govuk.topics.navigation.navigateToTopicsEdit
 import uk.gov.govuk.topics.ui.widget.TopicsWidget
-import uk.gov.govuk.ui.model.HomeWidget
+import uk.gov.govuk.widgets.model.HomeWidget
 import uk.gov.govuk.visited.navigation.VISITED_GRAPH_ROUTE
 import uk.gov.govuk.visited.ui.widget.VisitedWidget
 import uk.govuk.app.local.navigation.LOCAL_GRAPH_ROUTE
@@ -24,7 +20,6 @@ internal fun List<HomeWidget>?.contains(widget: HomeWidget) = this?.contains(wid
 internal fun homeWidgets(
     navController: NavHostController,
     homeWidgets: List<HomeWidget>?,
-    alertBanner: AlertBanner?,
     onInternalClick: (String) -> Unit,
     onExternalClick: (String, String?) -> Unit,
     onSuppressClick: (id: String) -> Unit,
@@ -33,11 +28,10 @@ internal fun homeWidgets(
     val widgets = mutableListOf<@Composable (Modifier) -> Unit>()
     homeWidgets?.forEach {
         when (it) {
-            HomeWidget.ALERT_BANNER -> {
-                alertBanner?.let { alertBanner ->
+            is HomeWidget.Alert -> {
                     widgets.add { modifier ->
                         AlertBanner(
-                            alertBanner = alertBanner,
+                            alertBanner = it.alertBanner,
                             onClick = { text ->
                                 onExternalClick(text, null)
                             },
@@ -47,23 +41,9 @@ internal fun homeWidgets(
                         )
                         LargeVerticalSpacer()
                     }
-                }
             }
 
-            HomeWidget.FEEDBACK_PROMPT -> {
-                widgets.add { modifier ->
-                    FeedbackPromptWidget(
-                        onClick = { text ->
-                            onExternalClick(text, null)
-                            launchBrowser(BuildConfig.VERSION_NAME_USER_FACING)
-                        },
-                        modifier = modifier
-                    )
-                    LargeVerticalSpacer()
-                }
-            }
-
-            HomeWidget.RECENT_ACTIVITY -> {
+            is HomeWidget.RecentActivity -> {
                 widgets.add { modifier ->
                     VisitedWidget(
                         onClick = { text ->
@@ -76,7 +56,7 @@ internal fun homeWidgets(
                 }
             }
 
-            HomeWidget.TOPICS -> {
+            is HomeWidget.Topics -> {
                 widgets.add { modifier ->
                     TopicsWidget(
                         onTopicClick = { ref, title ->
@@ -97,7 +77,7 @@ internal fun homeWidgets(
                 }
             }
 
-            HomeWidget.LOCAL -> {
+            is HomeWidget.Local -> {
                 widgets.add { modifier ->
                     LocalWidget(
                         onLookupClick = { text ->
@@ -118,6 +98,23 @@ internal fun homeWidgets(
                 }
             }
 
+            is HomeWidget.UserFeedback -> {
+                widgets.add { modifier ->
+                    val userFeedbackBanner = it.userFeedbackBanner
+                    UserFeedbackBanner(
+                        userFeedbackBanner = userFeedbackBanner,
+                        onClick = {
+                            launchBrowser(userFeedbackBanner.link.url)
+                            onExternalClick(
+                                userFeedbackBanner.link.title,
+                                userFeedbackBanner.link.url
+                            )
+                        },
+                        modifier = modifier
+                    )
+                    LargeVerticalSpacer()
+                }
+            }
             else -> { /* Do nothing */ }
         }
     }
