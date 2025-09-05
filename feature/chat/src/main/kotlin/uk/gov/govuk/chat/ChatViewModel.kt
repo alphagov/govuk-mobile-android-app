@@ -177,10 +177,10 @@ internal class ChatViewModel @Inject constructor(
         )
     }
 
-    fun onAboutClick(text: String) {
+    fun onAboutClick(text: String, url: String) {
         analyticsClient.chatActionMenuAboutClick(
             text = text,
-            url = chatUrls.about
+            url = url
         )
     }
 

@@ -85,7 +85,7 @@ import kotlin.math.abs
 internal class ChatScreenEvents(
     val onPageView: (String, String, String) -> Unit,
     val onActionItemClicked: (String, String, String) -> Unit,
-    val onAboutClick: (String) -> Unit,
+    val onAboutClick: (String, String) -> Unit,
     val onQuestionSubmit: () -> Unit,
     val onMarkdownLinkClicked: (String, String) -> Unit,
 )
@@ -117,7 +117,7 @@ internal fun ChatRoute(
                         viewModel.onPageView(klass, name, title)
                     },
                     onActionItemClicked = { text, section, action -> viewModel.onActionItemClicked(text, section, action) },
-                    onAboutClick = { text -> viewModel.onAboutClick(text) },
+                    onAboutClick = { text, url -> viewModel.onAboutClick(text, url) },
                     onQuestionSubmit = { viewModel.onQuestionSubmit() },
                     onMarkdownLinkClicked = { text, url -> viewModel.onMarkdownLinkClicked(text, url) },
                 ),
@@ -619,7 +619,7 @@ private fun CharacterCountMessage(
 private fun analyticsEvents() = ChatScreenEvents(
     onPageView = { _, _, _ -> },
     onActionItemClicked = { _, _, _ -> },
-    onAboutClick = { _ ->  },
+    onAboutClick = { _, _ ->  },
     onQuestionSubmit = { },
     onMarkdownLinkClicked = { _, _ -> },
 )

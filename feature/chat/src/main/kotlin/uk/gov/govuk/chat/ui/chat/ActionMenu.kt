@@ -1,5 +1,6 @@
 package uk.gov.govuk.chat.ui.chat
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.height
@@ -13,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -57,11 +59,40 @@ internal fun ActionMenu(
             )
             .width(200.dp)
     ) {
-        AboutMenuItem(
-            launchBrowser = launchBrowser,
-            onLinkClicked = { expanded = false },
-            analyticsEvents = analyticsEvents,
-            aboutUrl = chatUrls.about
+        val aboutText = stringResource(R.string.action_about)
+        MenuItem(
+            onClick = {
+                launchBrowser(chatUrls.about)
+                analyticsEvents.onAboutClick(aboutText, chatUrls.about)
+                expanded = false
+            },
+            buttonText = aboutText,
+            icon = R.drawable.outline_info_24,
+            modifier = modifier
+        )
+
+        val privacyText = stringResource(R.string.action_privacy)
+        MenuItem(
+            onClick = {
+                launchBrowser(chatUrls.privacyNotice)
+//                analyticsEvents.onAboutClick(aboutText, chatUrls.about)
+                expanded = false
+            },
+            buttonText = privacyText,
+            icon = R.drawable.outline_privacy_24,
+            modifier = modifier
+        )
+
+        val feedbackText = stringResource(R.string.action_feedback)
+        MenuItem(
+            onClick = {
+                launchBrowser(chatUrls.feedback)
+//                analyticsEvents.onAboutClick(aboutText, chatUrls.about)
+                expanded = false
+            },
+            buttonText = feedbackText,
+            icon = R.drawable.outline_feedback_24,
+            modifier = modifier
         )
 
         if (hasConversation) {
@@ -90,40 +121,6 @@ internal fun ActionMenu(
 }
 
 @Composable
-private fun AboutMenuItem(
-    launchBrowser: (url: String) -> Unit,
-    onLinkClicked: () -> Unit,
-    analyticsEvents: ChatScreenEvents,
-    aboutUrl: String,
-    modifier: Modifier = Modifier
-) {
-    val buttonText = stringResource(id = R.string.action_about)
-
-    DropdownMenuItem(
-        text = {
-            Text(
-                text = buttonText,
-                color = GovUkTheme.colourScheme.textAndIcons.primary,
-                style = GovUkTheme.typography.bodyRegular,
-            )
-        },
-        onClick = {
-            analyticsEvents.onAboutClick(buttonText)
-            onLinkClicked()
-            launchBrowser(aboutUrl)
-        },
-        modifier = modifier,
-        trailingIcon = {
-            Icon(
-                painter = painterResource(R.drawable.outline_info_24),
-                contentDescription = null,
-                tint = GovUkTheme.colourScheme.textAndIcons.primary
-            )
-        }
-    )
-}
-
-@Composable
 private fun ClearMenuItem(
     enabled: Boolean,
     onClear: () -> Unit,
@@ -141,13 +138,7 @@ private fun ClearMenuItem(
         disabledTrailingIconColor = GovUkTheme.colourScheme.textAndIcons.buttonRemoveDisabled
     )
 
-    DropdownMenuItem(
-        text = {
-            Text(
-                text = buttonText,
-                style = GovUkTheme.typography.bodyRegular,
-            )
-        },
+    MenuItem(
         onClick = {
             openDialog.value = true
             analyticsEvents.onActionItemClicked(
@@ -156,15 +147,11 @@ private fun ClearMenuItem(
                 Analytics.ACTION_MENU_CLEAR_ACTION
             )
         },
+        buttonText = buttonText,
+        icon = R.drawable.outline_delete_24,
         modifier = modifier,
-        trailingIcon = {
-            Icon(
-                painter = painterResource(R.drawable.outline_delete_24),
-                contentDescription = null,
-            )
-        },
         enabled = enabled,
-        colors = colours
+        colours = colours
     )
 
     if (openDialog.value) {
@@ -220,6 +207,38 @@ private fun ClearMenuItem(
             containerColor = GovUkTheme.colourScheme.surfaces.alert
         )
     }
+}
+
+@Composable
+private fun MenuItem(
+    onClick: () -> Unit,
+    buttonText: String,
+    @DrawableRes icon: Int,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    colours: MenuItemColors = MenuDefaults.itemColors().copy(
+        textColor = GovUkTheme.colourScheme.textAndIcons.primary,
+        trailingIconColor = GovUkTheme.colourScheme.textAndIcons.primary,
+    )
+) {
+    DropdownMenuItem(
+        text = {
+            Text(
+                text = buttonText,
+                style = GovUkTheme.typography.bodyRegular,
+            )
+        },
+        onClick = onClick,
+        modifier = modifier,
+        trailingIcon = {
+            Icon(
+                painter = painterResource(icon),
+                contentDescription = null,
+            )
+        },
+        enabled = enabled,
+        colors = colours
+    )
 }
 
 @Composable
