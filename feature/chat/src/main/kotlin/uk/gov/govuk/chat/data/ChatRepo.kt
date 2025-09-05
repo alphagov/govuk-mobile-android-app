@@ -37,10 +37,6 @@ internal class ChatRepo @Inject constructor(
         }
     }
 
-    suspend fun clearConversation() {
-        dataStore.clearConversation()
-    }
-
     suspend fun askQuestion(question: String): ChatResult<AnsweredQuestion> {
         val conversationId = dataStore.conversationId()
         return if (conversationId != null) {
@@ -98,5 +94,13 @@ internal class ChatRepo @Inject constructor(
                 return result
             }
         }
+    }
+
+    suspend fun clearConversation() {
+        dataStore.clearConversation()
+    }
+
+    suspend fun clear() {
+        dataStore.clear()
     }
 }

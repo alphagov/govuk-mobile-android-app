@@ -25,7 +25,7 @@ class DefaultChatFeatureTest {
         runTest {
             feature.clear()
 
-            coVerify { chatRepo.clearConversation() }
+            coVerify { chatRepo.clear() }
         }
     }
 

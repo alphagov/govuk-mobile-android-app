@@ -150,4 +150,21 @@ class ChatDataStoreTest {
 
         assertFalse(chatDataStore.hasOptedIn.first())
     }
+
+    @Test
+    fun `Clears everything`() = runTest {
+        chatDataStore.saveConversationId("123")
+        chatDataStore.saveChatOptIn()
+        chatDataStore.saveChatIntroSeen()
+
+        assertEquals("123", chatDataStore.conversationId())
+        assertFalse(chatDataStore.isChatOptInNull())
+        assertTrue(chatDataStore.isChatIntroSeen())
+
+        chatDataStore.clear()
+
+        assertNull(chatDataStore.conversationId())
+        assertTrue(chatDataStore.isChatOptInNull())
+        assertFalse(chatDataStore.isChatIntroSeen())
+    }
 }

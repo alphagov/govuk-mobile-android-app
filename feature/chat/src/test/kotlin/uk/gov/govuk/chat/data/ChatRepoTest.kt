@@ -140,4 +140,13 @@ class ChatRepoTest {
 
         assertNull(chatRepo.getConversation())
     }
+
+    @Test
+    fun `Clear the data store`() = runTest {
+        chatRepo.clear()
+
+        coVerify {
+            dataStore.clear()
+        }
+    }
 }

@@ -18,39 +18,13 @@ internal class ChatDataStore @Inject constructor(
 ) {
 
     companion object {
-        internal const val CONVERSATION_ID_KEY = "conversation_id"
-        internal const val CHAT_INTRO_SEEN_KEY = "chat_intro_seen"
         internal const val CHAT_OPT_IN_KEY = "chat_opt_in"
+        internal const val CHAT_INTRO_SEEN_KEY = "chat_intro_seen"
+        internal const val CONVERSATION_ID_KEY = "conversation_id"
     }
 
     val hasOptedIn: Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[booleanPreferencesKey(CHAT_OPT_IN_KEY)] == true
-    }
-
-    internal suspend fun conversationId(): String? {
-        return dataStore.data.firstOrNull()?.get(stringPreferencesKey(CONVERSATION_ID_KEY))
-    }
-
-    internal suspend fun saveConversationId(id: String) {
-        dataStore.edit { preferences ->
-            preferences[stringPreferencesKey(CONVERSATION_ID_KEY)] = id
-        }
-    }
-
-    internal suspend fun clearConversation() {
-        dataStore.edit { preferences ->
-            preferences.remove(stringPreferencesKey(CONVERSATION_ID_KEY))
-        }
-    }
-
-    internal suspend fun isChatIntroSeen(): Boolean {
-        return dataStore.data.firstOrNull()?.get(booleanPreferencesKey(CHAT_INTRO_SEEN_KEY)) == true
-    }
-
-    internal suspend fun saveChatIntroSeen() {
-        dataStore.edit { preferences ->
-            preferences[booleanPreferencesKey(CHAT_INTRO_SEEN_KEY)] = true
-        }
     }
 
     internal suspend fun isChatOptInNull(): Boolean {
@@ -70,9 +44,41 @@ internal class ChatDataStore @Inject constructor(
         }
     }
 
+    internal suspend fun isChatIntroSeen(): Boolean {
+        return dataStore.data.firstOrNull()?.get(booleanPreferencesKey(CHAT_INTRO_SEEN_KEY)) == true
+    }
+
+    internal suspend fun saveChatIntroSeen() {
+        dataStore.edit { preferences ->
+            preferences[booleanPreferencesKey(CHAT_INTRO_SEEN_KEY)] = true
+        }
+    }
+
+    internal suspend fun conversationId(): String? {
+        return dataStore.data.firstOrNull()?.get(stringPreferencesKey(CONVERSATION_ID_KEY))
+    }
+
+    internal suspend fun saveConversationId(id: String) {
+        dataStore.edit { preferences ->
+            preferences[stringPreferencesKey(CONVERSATION_ID_KEY)] = id
+        }
+    }
+
+    internal suspend fun clearConversation() {
+        dataStore.edit { preferences ->
+            preferences.remove(stringPreferencesKey(CONVERSATION_ID_KEY))
+        }
+    }
+
     internal suspend fun clearChatOptIn() {
         dataStore.edit { preferences ->
             preferences.remove(booleanPreferencesKey(CHAT_OPT_IN_KEY))
+        }
+    }
+
+    internal suspend fun clear() {
+        dataStore.edit { prefs ->
+            prefs.clear()
         }
     }
 }
