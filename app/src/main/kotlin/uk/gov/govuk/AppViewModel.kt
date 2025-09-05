@@ -80,7 +80,6 @@ internal class AppViewModel @Inject constructor(
                             shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
                             shouldShowExternalBrowser = flagRepo.isExternalBrowserEnabled(),
                             isChatEnabled = flagRepo.isChatEnabled() &&
-                                    flagRepo.isChatOptInEnabled() &&
                                     flagRepo.isChatTestActiveEnabled() &&
                                     it.third,
                             alertBanner = configRepo.config.alertBanner

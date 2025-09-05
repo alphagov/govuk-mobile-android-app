@@ -9,5 +9,7 @@ data class ReleaseFlags(
     @SerializedName("notifications") val notifications: Boolean,
     @SerializedName("localServices") val localServices: Boolean,
     @SerializedName("externalBrowser") val externalBrowser: Boolean,
-    @SerializedName("chat") val chatService: Boolean
+    @SerializedName("chat") val chat: Boolean,
+    @SerializedName("chatOptIn") val chatOptIn: Boolean,
+    @SerializedName("chatTestActive") val chatTestActive: Boolean
 )
