@@ -81,9 +81,9 @@ import uk.gov.govuk.settings.navigation.settingsGraph
 import uk.gov.govuk.settings.navigation.signOutGraph
 import uk.gov.govuk.topics.navigation.topicSelectionGraph
 import uk.gov.govuk.topics.navigation.topicsGraph
-import uk.gov.govuk.ui.model.HomeWidget
-import uk.gov.govuk.ui.widgets.contains
-import uk.gov.govuk.ui.widgets.homeWidgets
+import uk.gov.govuk.widgets.model.HomeWidget
+import uk.gov.govuk.widgets.ui.contains
+import uk.gov.govuk.widgets.ui.homeWidgets
 import uk.gov.govuk.visited.navigation.visitedGraph
 import uk.govuk.app.local.navigation.localGraph
 

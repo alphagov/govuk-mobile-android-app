@@ -1,4 +1,4 @@
-package uk.gov.govuk.ui.model
+package uk.gov.govuk.widgets.model
 
 import uk.gov.govuk.config.data.remote.model.AlertBanner
 import uk.gov.govuk.config.data.remote.model.UserFeedbackBanner

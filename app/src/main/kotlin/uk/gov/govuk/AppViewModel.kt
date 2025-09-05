@@ -22,7 +22,7 @@ import uk.gov.govuk.login.data.LoginRepo
 import uk.gov.govuk.navigation.AppNavigation
 import uk.gov.govuk.search.SearchFeature
 import uk.gov.govuk.topics.TopicsFeature
-import uk.gov.govuk.ui.model.HomeWidget
+import uk.gov.govuk.widgets.model.HomeWidget
 import uk.gov.govuk.visited.Visited
 import uk.govuk.app.local.LocalFeature
 import javax.inject.Inject
