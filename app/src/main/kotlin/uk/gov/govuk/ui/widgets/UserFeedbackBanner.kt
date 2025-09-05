@@ -1,4 +1,4 @@
-package uk.gov.govuk.userfeedbackbanner.ui
+package uk.gov.govuk.ui.widgets
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
