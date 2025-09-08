@@ -34,7 +34,7 @@ internal fun Sources(
     sources: List<String>,
     launchBrowser: (url: String) -> Unit,
     onMarkdownLinkClicked: (String, String) -> Unit,
-    onActionItemClicked: (String, String, String) -> Unit,
+    onSourcesExpanded: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -76,11 +76,7 @@ internal fun Sources(
                 .clickable {
                     expanded = !expanded
                     if (expanded) {
-                        onActionItemClicked(
-                            Analytics.RESPONSE_SOURCE_LINKS_OPENED,
-                            Analytics.RESPONSE,
-                            Analytics.RESPONSE_SOURCE_LINKS_OPENED
-                        )
+                        onSourcesExpanded()
                     }
                 }
                 .fillMaxWidth()

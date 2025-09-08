@@ -18,6 +18,7 @@ import uk.gov.govuk.chat.data.remote.ChatResult.NotFound
 import uk.gov.govuk.chat.data.remote.ChatResult.Success
 import uk.gov.govuk.chat.data.remote.ChatResult.ValidationError
 import uk.gov.govuk.chat.data.remote.model.Answer
+import uk.gov.govuk.chat.domain.Analytics
 import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.chat.ui.model.ChatEntry
 import uk.gov.govuk.config.data.ConfigRepo
@@ -198,6 +199,14 @@ internal class ChatViewModel @Inject constructor(
 
     fun onMarkdownLinkClicked(text: String, url: String) {
         analyticsClient.chatMarkdownLinkClick(text = text, url = url, )
+    }
+
+    fun onSourcesExpanded() {
+        analyticsClient.buttonFunction(
+            text = Analytics.RESPONSE_SOURCE_LINKS_OPENED,
+            section = Analytics.RESPONSE,
+            action = Analytics.RESPONSE_SOURCE_LINKS_OPENED
+        )
     }
 
     private suspend fun getAnswer(conversationId: String, questionId: String) {

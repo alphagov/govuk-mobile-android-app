@@ -88,6 +88,7 @@ internal class ChatScreenEvents(
     val onActionItemNavigationClicked: (String, String) -> Unit,
     val onQuestionSubmit: () -> Unit,
     val onMarkdownLinkClicked: (String, String) -> Unit,
+    val onSourcesExpanded: () -> Unit
 )
 
 internal class ChatScreenClickEvents(
@@ -124,6 +125,7 @@ internal fun ChatRoute(
                     },
                     onQuestionSubmit = { viewModel.onQuestionSubmit() },
                     onMarkdownLinkClicked = { text, url -> viewModel.onMarkdownLinkClicked(text, url) },
+                    onSourcesExpanded = { viewModel.onSourcesExpanded() }
                 ),
                 launchBrowser = launchBrowser,
                 hasConversation = uiState.chatEntries.isNotEmpty(),
@@ -283,7 +285,7 @@ private fun ChatContent(
                         it.second,
                         launchBrowser = launchBrowser,
                         onMarkdownLinkClicked = analyticsEvents.onMarkdownLinkClicked,
-                        onActionItemClicked = analyticsEvents.onActionItemFunctionClicked,
+                        onSourcesExpanded = analyticsEvents.onSourcesExpanded,
                     )
                 }
 
@@ -626,6 +628,7 @@ private fun analyticsEvents() = ChatScreenEvents(
     onActionItemNavigationClicked = { _, _ ->  },
     onQuestionSubmit = { },
     onMarkdownLinkClicked = { _, _ -> },
+    onSourcesExpanded = { }
 )
 
 private fun clickEvents() = ChatScreenClickEvents(
