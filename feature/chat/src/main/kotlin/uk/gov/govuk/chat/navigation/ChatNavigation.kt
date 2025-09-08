@@ -91,7 +91,6 @@ fun NavGraphBuilder.chatOptInGraph(
                     navController.navigateHome()
                 },
                 modifier = modifier
-                    .windowInsetsPadding(WindowInsets.statusBars)
             )
         }
     }

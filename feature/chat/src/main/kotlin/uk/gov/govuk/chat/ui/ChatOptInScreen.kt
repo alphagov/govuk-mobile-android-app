@@ -18,7 +18,7 @@ import uk.gov.govuk.chat.ChatOptInViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.CentreAlignedScreen
-import uk.gov.govuk.design.ui.component.FixedPrimaryButton
+import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
@@ -151,17 +151,13 @@ private fun ChatOptInScreen(
         },
         footerContent = {
             val optInText = stringResource(R.string.optin_opt_in)
-
-            FixedPrimaryButton(
-                text = optInText,
-                onClick = { onClickOptIn(optInText) }
-            )
-
             val optOutText = stringResource(R.string.optin_opt_out)
 
-            SecondaryButton(
-                text = optOutText,
-                onClick = { onClickOptOut(optOutText) }
+            FixedDoubleButtonGroup(
+                primaryText = optInText,
+                onPrimary = { onClickOptIn(optInText) },
+                secondaryText = optOutText,
+                onSecondary = { onClickOptOut(optOutText) }
             )
         }
     )
