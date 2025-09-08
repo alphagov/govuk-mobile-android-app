@@ -15,17 +15,19 @@ import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.chat.data.local.ChatDataStore
+import uk.gov.govuk.config.data.ConfigRepo
 
 class ChatOptInViewModelTest {
     private val chatDataStore = mockk<ChatDataStore>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
+    private val configRepo = mockk<ConfigRepo>(relaxed = true)
     private val dispatcher = StandardTestDispatcher()
     private lateinit var viewModel: ChatOptInViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = ChatOptInViewModel(chatDataStore, analyticsClient)
+        viewModel = ChatOptInViewModel(chatDataStore, analyticsClient, configRepo)
     }
 
     @After

@@ -442,24 +442,6 @@ class AnalyticsClientTest {
     }
 
     @Test
-    fun `Given a chat action menu about click, then log event`() {
-        analyticsClient.chatActionMenuAboutClick("chat about title", "chat about link")
-
-        verify {
-            firebaseAnalyticClient.logEvent(
-                "Navigation",
-                mapOf(
-                    "type" to "ChatActionMenuAbout",
-                    "external" to true,
-                    "language" to Locale.getDefault().language,
-                    "text" to "chat about title",
-                    "url" to "chat about link"
-                )
-            )
-        }
-    }
-
-    @Test
     fun `Given a question answer is returned in chat, then log event`() {
         analyticsClient.chatQuestionAnswerReturnedEvent()
 

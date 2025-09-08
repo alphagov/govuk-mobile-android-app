@@ -76,6 +76,7 @@ import uk.gov.govuk.chat.ui.chat.ChatErrorPageNoRetry
 import uk.gov.govuk.chat.ui.chat.ChatErrorPageWithRetry
 import uk.gov.govuk.chat.ui.chat.DisplayChatEntry
 import uk.gov.govuk.chat.ui.chat.IntroMessages
+import uk.gov.govuk.config.data.remote.model.ChatUrls
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -83,10 +84,11 @@ import kotlin.math.abs
 
 internal class ChatScreenEvents(
     val onPageView: (String, String, String) -> Unit,
-    val onActionItemClicked: (String, String, String) -> Unit,
-    val onAboutClick: (String) -> Unit,
+    val onActionItemFunctionClicked: (String, String, String) -> Unit,
+    val onActionItemNavigationClicked: (String, String) -> Unit,
     val onQuestionSubmit: () -> Unit,
     val onMarkdownLinkClicked: (String, String) -> Unit,
+    val onSourcesExpanded: () -> Unit
 )
 
 internal class ChatScreenClickEvents(
@@ -115,10 +117,15 @@ internal fun ChatRoute(
                     onPageView = { klass, name, title ->
                         viewModel.onPageView(klass, name, title)
                     },
-                    onActionItemClicked = { text, section, action -> viewModel.onActionItemClicked(text, section, action) },
-                    onAboutClick = { text -> viewModel.onAboutClick(text) },
+                    onActionItemFunctionClicked = { text, section, action ->
+                        viewModel.onActionItemFunctionClicked(text, section, action)
+                    },
+                    onActionItemNavigationClicked = { text, url ->
+                        viewModel.onActionItemNavigationClicked(text, url)
+                    },
                     onQuestionSubmit = { viewModel.onQuestionSubmit() },
                     onMarkdownLinkClicked = { text, url -> viewModel.onMarkdownLinkClicked(text, url) },
+                    onSourcesExpanded = { viewModel.onSourcesExpanded() }
                 ),
                 launchBrowser = launchBrowser,
                 hasConversation = uiState.chatEntries.isNotEmpty(),
@@ -138,6 +145,7 @@ internal fun ChatRoute(
                         onClearDone()
                     }
                 ),
+                chatUrls = viewModel.chatUrls,
                 modifier = modifier
             )
         } else if (seenOnboarding == false) {
@@ -161,6 +169,7 @@ private fun ChatScreen(
     launchBrowser: (url: String) -> Unit,
     hasConversation: Boolean,
     clickEvents: ChatScreenClickEvents,
+    chatUrls: ChatUrls,
     modifier: Modifier = Modifier
 ) {
     if (uiState.isRetryableError) {
@@ -205,6 +214,7 @@ private fun ChatScreen(
             hasConversation = hasConversation,
             clickEvents = clickEvents,
             analyticsEvents = analyticsEvents,
+            chatUrls = chatUrls,
             modifier
         )
     }
@@ -217,6 +227,7 @@ private fun ChatContent(
     hasConversation: Boolean,
     clickEvents: ChatScreenClickEvents,
     analyticsEvents: ChatScreenEvents,
+    chatUrls: ChatUrls,
     modifier: Modifier = Modifier
 ) {
     var heightPx by remember { mutableIntStateOf(0) }
@@ -274,7 +285,7 @@ private fun ChatContent(
                         it.second,
                         launchBrowser = launchBrowser,
                         onMarkdownLinkClicked = analyticsEvents.onMarkdownLinkClicked,
-                        onActionItemClicked = analyticsEvents.onActionItemClicked,
+                        onSourcesExpanded = analyticsEvents.onSourcesExpanded,
                     )
                 }
 
@@ -294,7 +305,8 @@ private fun ChatContent(
                         launchBrowser = launchBrowser,
                         hasConversation = hasConversation,
                         analyticsEvents = analyticsEvents,
-                        clickEvents = clickEvents
+                        clickEvents = clickEvents,
+                        chatUrls = chatUrls
                     )
                 }
 
@@ -360,6 +372,7 @@ private fun ChatInput(
     hasConversation: Boolean,
     analyticsEvents: ChatScreenEvents,
     clickEvents: ChatScreenClickEvents,
+    chatUrls: ChatUrls,
     modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -379,6 +392,7 @@ private fun ChatInput(
                     isLoading = uiState.isLoading,
                     onClear = clickEvents.onClear,
                     analyticsEvents = analyticsEvents,
+                    chatUrls = chatUrls,
                     modifier = Modifier.semantics { this.traversalIndex = 1f }
                 )
             }
@@ -610,10 +624,11 @@ private fun CharacterCountMessage(
 
 private fun analyticsEvents() = ChatScreenEvents(
     onPageView = { _, _, _ -> },
-    onActionItemClicked = { _, _, _ -> },
-    onAboutClick = { _ ->  },
+    onActionItemFunctionClicked = { _, _, _ -> },
+    onActionItemNavigationClicked = { _, _ ->  },
     onQuestionSubmit = { },
     onMarkdownLinkClicked = { _, _ -> },
+    onSourcesExpanded = { }
 )
 
 private fun clickEvents() = ChatScreenClickEvents(
@@ -635,6 +650,7 @@ private fun LightModeChatScreenPreview() {
             analyticsEvents = analyticsEvents(),
             launchBrowser = { _ -> },
             hasConversation = false,
+            chatUrls = ChatUrls("", "", "", ""),
             clickEvents = clickEvents()
         )
     }
@@ -652,6 +668,7 @@ private fun DarkModeChatScreenPreview() {
             analyticsEvents = analyticsEvents(),
             launchBrowser = { _ -> },
             hasConversation = false,
+            chatUrls = ChatUrls("", "", "", ""),
             clickEvents = clickEvents()
         )
     }

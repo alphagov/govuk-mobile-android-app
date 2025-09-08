@@ -18,8 +18,10 @@ import uk.gov.govuk.chat.data.remote.ChatResult.NotFound
 import uk.gov.govuk.chat.data.remote.ChatResult.Success
 import uk.gov.govuk.chat.data.remote.ChatResult.ValidationError
 import uk.gov.govuk.chat.data.remote.model.Answer
+import uk.gov.govuk.chat.domain.Analytics
 import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.chat.ui.model.ChatEntry
+import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import javax.inject.Inject
 
@@ -42,7 +44,8 @@ internal class ChatViewModel @Inject constructor(
     private val chatRepo: ChatRepo,
     private val chatDataStore: ChatDataStore,
     private val authRepo: AuthRepo,
-    private val analyticsClient: AnalyticsClient
+    private val analyticsClient: AnalyticsClient,
+    configRepo: ConfigRepo
 ): ViewModel() {
 
     private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
@@ -55,6 +58,8 @@ internal class ChatViewModel @Inject constructor(
 
     private val _authError = MutableSharedFlow<Unit>()
     val authError: SharedFlow<Unit> = _authError
+
+    val chatUrls = configRepo.config.chatUrls
 
     init {
         viewModelScope.launch {
@@ -165,7 +170,7 @@ internal class ChatViewModel @Inject constructor(
         )
     }
 
-    fun onActionItemClicked(text: String, section: String, action: String) {
+    fun onActionItemFunctionClicked(text: String, section: String, action: String) {
         analyticsClient.buttonFunction(
             text = text,
             section = section,
@@ -173,10 +178,11 @@ internal class ChatViewModel @Inject constructor(
         )
     }
 
-    fun onAboutClick(text: String) {
-        analyticsClient.chatActionMenuAboutClick(
+    fun onActionItemNavigationClicked(text: String, url: String) {
+        analyticsClient.buttonClick(
             text = text,
-            url = BuildConfig.ABOUT_APP_URL
+            url = url,
+            external = true
         )
     }
 
@@ -193,6 +199,14 @@ internal class ChatViewModel @Inject constructor(
 
     fun onMarkdownLinkClicked(text: String, url: String) {
         analyticsClient.chatMarkdownLinkClick(text = text, url = url, )
+    }
+
+    fun onSourcesExpanded() {
+        analyticsClient.buttonFunction(
+            text = Analytics.RESPONSE_SOURCE_LINKS_OPENED,
+            section = Analytics.RESPONSE,
+            action = Analytics.RESPONSE_SOURCE_LINKS_OPENED
+        )
     }
 
     private suspend fun getAnswer(conversationId: String, questionId: String) {

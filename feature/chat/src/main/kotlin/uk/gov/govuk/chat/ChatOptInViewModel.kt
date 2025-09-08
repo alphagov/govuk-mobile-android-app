@@ -6,12 +6,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.chat.data.local.ChatDataStore
+import uk.gov.govuk.config.data.ConfigRepo
 import javax.inject.Inject
 
 @HiltViewModel
 internal class ChatOptInViewModel @Inject constructor(
     private val chatDataStore: ChatDataStore,
-    private val analyticsClient: AnalyticsClient
+    private val analyticsClient: AnalyticsClient,
+    configRepo: ConfigRepo
 ): ViewModel() {
     companion object {
         const val SCREEN_CLASS = "ChatOptIn"
@@ -20,6 +22,8 @@ internal class ChatOptInViewModel @Inject constructor(
         const val SECTION = "Chat Opt In"
         const val ACTION = "Opt In/Out Button Click"
     }
+
+    val chatUrls = configRepo.config.chatUrls
 
     fun onPageView() {
         analyticsClient.screenView(

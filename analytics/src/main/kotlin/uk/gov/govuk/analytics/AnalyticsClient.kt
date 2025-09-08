@@ -120,11 +120,6 @@ class AnalyticsClient @Inject constructor(
         redactedEvent(name = "Search", type = "history", inputString = searchTerm)
     }
 
-    fun chatActionMenuAboutClick(text: String, url: String) {
-        // external as these links will be opened in the device browser
-        navigation(text = text, type = "ChatActionMenuAbout", url = url, external = true)
-    }
-
     fun chatMarkdownLinkClick(text: String, url: String) {
         // external as these links will be opened in the device browser
         navigation(text = text, type = "ChatMarkdownLink", url = url, external = true)
