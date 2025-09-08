@@ -1,6 +1,5 @@
 package uk.gov.govuk.chat.ui
 
-import android.R.attr.text
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.height
@@ -34,16 +33,17 @@ internal fun ChatOptInRoute(
     modifier: Modifier = Modifier
 ) {
     val viewModel: ChatOptInViewModel = hiltViewModel()
+    val chatUrls = viewModel.chatUrls
 
     ChatOptInScreen(
         onPageView = { viewModel.onPageView() },
         onClickPrivacyNotice = { text ->
-            viewModel.onLinkClick(text, viewModel.privacyPolicyUrl)
-            launchBrowser(viewModel.privacyPolicyUrl)
+            viewModel.onLinkClick(text, chatUrls.privacyNotice)
+            launchBrowser(chatUrls.privacyNotice)
         },
         onClickTermsAndConditions = { text ->
-            viewModel.onLinkClick(text, viewModel.termsAndConditionsUrl)
-            launchBrowser(viewModel.termsAndConditionsUrl)
+            viewModel.onLinkClick(text, chatUrls.termsAndConditions)
+            launchBrowser(chatUrls.termsAndConditions)
         },
         onClickOptIn = { text ->
             viewModel.onButtonClick(text)

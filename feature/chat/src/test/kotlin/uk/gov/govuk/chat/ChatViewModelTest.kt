@@ -669,7 +669,7 @@ class ChatViewModelTest {
         val section = "section"
         val action = "action"
 
-        viewModel.onActionItemClicked(
+        viewModel.onActionItemFunctionClicked(
             text = text,
             section = section,
             action = action
@@ -688,7 +688,7 @@ class ChatViewModelTest {
     fun `When the user clicks the About button, then log analytics`() {
         val buttonText = "buttonText"
 
-        viewModel.onAboutClick(buttonText)
+        viewModel.onActionItemNavigationClicked(buttonText)
 
         verify {
             analyticsClient.chatActionMenuAboutClick(

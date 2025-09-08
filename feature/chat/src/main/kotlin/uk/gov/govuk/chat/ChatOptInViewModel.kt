@@ -23,8 +23,7 @@ internal class ChatOptInViewModel @Inject constructor(
         const val ACTION = "Opt In/Out Button Click"
     }
 
-    val privacyPolicyUrl = configRepo.config.chatUrls.privacyNotice
-    val termsAndConditionsUrl = configRepo.config.chatUrls.termsAndConditions
+    val chatUrls = configRepo.config.chatUrls
 
     fun onPageView() {
         analyticsClient.screenView(

@@ -84,8 +84,8 @@ import kotlin.math.abs
 
 internal class ChatScreenEvents(
     val onPageView: (String, String, String) -> Unit,
-    val onActionItemClicked: (String, String, String) -> Unit,
-    val onAboutClick: (String, String) -> Unit,
+    val onActionItemFunctionClicked: (String, String, String) -> Unit,
+    val onActionItemNavigationClicked: (String, String) -> Unit,
     val onQuestionSubmit: () -> Unit,
     val onMarkdownLinkClicked: (String, String) -> Unit,
 )
@@ -116,8 +116,12 @@ internal fun ChatRoute(
                     onPageView = { klass, name, title ->
                         viewModel.onPageView(klass, name, title)
                     },
-                    onActionItemClicked = { text, section, action -> viewModel.onActionItemClicked(text, section, action) },
-                    onAboutClick = { text, url -> viewModel.onAboutClick(text, url) },
+                    onActionItemFunctionClicked = { text, section, action ->
+                        viewModel.onActionItemFunctionClicked(text, section, action)
+                    },
+                    onActionItemNavigationClicked = { text, url ->
+                        viewModel.onActionItemNavigationClicked(text, url)
+                    },
                     onQuestionSubmit = { viewModel.onQuestionSubmit() },
                     onMarkdownLinkClicked = { text, url -> viewModel.onMarkdownLinkClicked(text, url) },
                 ),
@@ -279,7 +283,7 @@ private fun ChatContent(
                         it.second,
                         launchBrowser = launchBrowser,
                         onMarkdownLinkClicked = analyticsEvents.onMarkdownLinkClicked,
-                        onActionItemClicked = analyticsEvents.onActionItemClicked,
+                        onActionItemClicked = analyticsEvents.onActionItemFunctionClicked,
                     )
                 }
 
@@ -618,8 +622,8 @@ private fun CharacterCountMessage(
 
 private fun analyticsEvents() = ChatScreenEvents(
     onPageView = { _, _, _ -> },
-    onActionItemClicked = { _, _, _ -> },
-    onAboutClick = { _, _ ->  },
+    onActionItemFunctionClicked = { _, _, _ -> },
+    onActionItemNavigationClicked = { _, _ ->  },
     onQuestionSubmit = { },
     onMarkdownLinkClicked = { _, _ -> },
 )

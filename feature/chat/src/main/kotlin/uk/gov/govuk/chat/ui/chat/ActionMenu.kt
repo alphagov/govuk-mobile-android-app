@@ -63,7 +63,7 @@ internal fun ActionMenu(
         MenuItem(
             onClick = {
                 launchBrowser(chatUrls.about)
-                analyticsEvents.onAboutClick(aboutText, chatUrls.about)
+                analyticsEvents.onActionItemNavigationClicked(aboutText, chatUrls.about)
                 expanded = false
             },
             buttonText = aboutText,
@@ -75,7 +75,7 @@ internal fun ActionMenu(
         MenuItem(
             onClick = {
                 launchBrowser(chatUrls.privacyNotice)
-//                analyticsEvents.onAboutClick(aboutText, chatUrls.about)
+                analyticsEvents.onActionItemNavigationClicked(privacyText, chatUrls.privacyNotice)
                 expanded = false
             },
             buttonText = privacyText,
@@ -87,7 +87,7 @@ internal fun ActionMenu(
         MenuItem(
             onClick = {
                 launchBrowser(chatUrls.feedback)
-//                analyticsEvents.onAboutClick(aboutText, chatUrls.about)
+                analyticsEvents.onActionItemNavigationClicked(feedbackText, chatUrls.feedback)
                 expanded = false
             },
             buttonText = feedbackText,
@@ -110,7 +110,7 @@ internal fun ActionMenu(
         onClick = {
             expanded = !expanded
             if (expanded) {
-                analyticsEvents.onActionItemClicked(
+                analyticsEvents.onActionItemFunctionClicked(
                     buttonText,
                     Analytics.ACTION_MENU,
                     Analytics.ACTION_MENU_ACTION
@@ -141,7 +141,7 @@ private fun ClearMenuItem(
     MenuItem(
         onClick = {
             openDialog.value = true
-            analyticsEvents.onActionItemClicked(
+            analyticsEvents.onActionItemFunctionClicked(
                 buttonText,
                 Analytics.ACTION_MENU,
                 Analytics.ACTION_MENU_CLEAR_ACTION
@@ -169,7 +169,7 @@ private fun ClearMenuItem(
 
                 TextButton(
                     onClick = {
-                        analyticsEvents.onActionItemClicked(
+                        analyticsEvents.onActionItemFunctionClicked(
                             buttonText,
                             Analytics.ACTION_MENU,
                             Analytics.ACTION_MENU_CLEAR_YES
@@ -189,7 +189,7 @@ private fun ClearMenuItem(
                 val buttonText = stringResource(id = R.string.clear_dialog_negative_button)
                 TextButton(
                     onClick = {
-                        analyticsEvents.onActionItemClicked(
+                        analyticsEvents.onActionItemFunctionClicked(
                             buttonText,
                             Analytics.ACTION_MENU,
                             Analytics.ACTION_MENU_CLEAR_NO
