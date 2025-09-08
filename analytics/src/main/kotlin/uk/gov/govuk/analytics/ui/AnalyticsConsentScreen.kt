@@ -4,9 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -25,7 +27,6 @@ import uk.gov.govuk.analytics.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
-import uk.gov.govuk.design.ui.component.MediumHorizontalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.PrivacyPolicyLink
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
@@ -124,13 +125,14 @@ private fun BulletItem(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Spacer(modifier = modifier.width(10.dp))
         Box(
             modifier = Modifier
                 .size(6.dp)
                 .clip(CircleShape)
                 .background(GovUkTheme.colourScheme.textAndIcons.primary)
         )
-        MediumHorizontalSpacer()
+        Spacer(modifier = modifier.width(10.dp))
         BodyRegularLabel(text)
     }
 }
