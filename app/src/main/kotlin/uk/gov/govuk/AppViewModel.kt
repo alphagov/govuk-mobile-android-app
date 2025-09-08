@@ -81,8 +81,7 @@ internal class AppViewModel @Inject constructor(
                             shouldShowExternalBrowser = flagRepo.isExternalBrowserEnabled(),
                             isChatEnabled = flagRepo.isChatEnabled() &&
                                     flagRepo.isChatTestActiveEnabled() &&
-                                    it.third,
-                            alertBanner = configRepo.config.alertBanner
+                                    it.third
                         )
 
                         updateHomeWidgets(it.first, it.second)
