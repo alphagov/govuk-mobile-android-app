@@ -76,7 +76,10 @@ private fun AnalyticsConsentScreen(
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = GovUkTheme.spacing.medium)
-                .padding(top = if (isPortrait) 64.dp else 32.dp)
+                .padding(
+                    top = if (isPortrait) GovUkTheme.spacing.extraLarge * 2
+                    else GovUkTheme.spacing.extraLarge
+                )
         ) {
             LargeTitleBoldLabel(
                 text = stringResource(R.string.analytics_consent_title),
