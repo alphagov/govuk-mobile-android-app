@@ -27,6 +27,7 @@ import uk.gov.govuk.analytics.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
+import uk.gov.govuk.design.ui.component.MediumHorizontalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.PrivacyPolicyLink
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
@@ -132,7 +133,7 @@ private fun BulletItem(
                 .clip(CircleShape)
                 .background(GovUkTheme.colourScheme.textAndIcons.primary)
         )
-        Spacer(modifier = modifier.width(10.dp))
+        MediumHorizontalSpacer()
         BodyRegularLabel(text)
     }
 }
