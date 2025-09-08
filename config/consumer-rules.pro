@@ -9,3 +9,4 @@
 -keep class uk.gov.govuk.config.data.remote.model.AlertBanner
 -keep class uk.gov.govuk.config.data.remote.model.UserFeedbackBanner
 -keep class uk.gov.govuk.config.data.remote.model.Link
+-keep class uk.gov.govuk.config.data.remote.model.ChatUrls
