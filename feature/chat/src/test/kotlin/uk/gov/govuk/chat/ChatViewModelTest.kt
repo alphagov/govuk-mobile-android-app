@@ -32,6 +32,8 @@ import uk.gov.govuk.chat.data.remote.model.AnsweredQuestion
 import uk.gov.govuk.chat.data.remote.model.Conversation
 import uk.gov.govuk.chat.data.remote.model.PendingQuestion
 import uk.gov.govuk.chat.data.remote.model.Source
+import uk.gov.govuk.chat.domain.Analytics
+import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.data.auth.AuthRepo
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -43,6 +45,7 @@ class ChatViewModelTest {
     private val pendingQuestion = mockk<PendingQuestion>(relaxed = true)
     private val question = mockk<AnsweredQuestion>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
+    private val configRepo = mockk<ConfigRepo>(relaxed = true)
 
     private val dispatcher = StandardTestDispatcher()
 
@@ -52,7 +55,7 @@ class ChatViewModelTest {
     fun setup() {
         Dispatchers.setMain(dispatcher)
 
-        viewModel = ChatViewModel(chatRepo, chatDataStore, authRepo, analyticsClient)
+        viewModel = ChatViewModel(chatRepo, chatDataStore, authRepo, analyticsClient, configRepo)
 
         clearAllMocks()
     }
@@ -685,15 +688,17 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `When the user clicks the About button, then log analytics`() {
+    fun `When the user clicks a navigation action item, then log analytics`() {
         val buttonText = "buttonText"
+        val url = "url"
 
-        viewModel.onActionItemNavigationClicked(buttonText)
+        viewModel.onActionItemNavigationClicked(buttonText, url)
 
         verify {
-            analyticsClient.chatActionMenuAboutClick(
+            analyticsClient.buttonClick(
                 text = buttonText,
-                url = BuildConfig.ABOUT_APP_URL
+                url = url,
+                external = true
             )
         }
     }
@@ -739,6 +744,19 @@ class ChatViewModelTest {
             analyticsClient.chatMarkdownLinkClick(
                 text = text,
                 url = url
+            )
+        }
+    }
+
+    @Test
+    fun `Given the sources are expanded, then log analytics`() {
+        viewModel.onSourcesExpanded()
+
+        verify {
+            analyticsClient.buttonFunction(
+                text = Analytics.RESPONSE_SOURCE_LINKS_OPENED,
+                section = Analytics.RESPONSE,
+                action = Analytics.RESPONSE_SOURCE_LINKS_OPENED
             )
         }
     }

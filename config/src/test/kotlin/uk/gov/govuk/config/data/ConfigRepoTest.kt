@@ -131,7 +131,7 @@ class ConfigRepoTest {
     }
 
     @Test
-    fun `Given a chat poll interval property, when retrieving the chat poll interval, then return propert value`() {
+    fun `Given a chat poll interval property, when retrieving the chat poll interval, then return property value`() {
         coEvery { configApi.getConfig() } returns Response.success(configResponse.toString())
         coEvery { signatureValidator.isValidSignature(any(), any()) } returns true
         coEvery { gson.fromJson(any<String>(), ConfigResponse::class.java) } returns ConfigResponse(config, "signature")
