@@ -56,4 +56,9 @@
   <string name="optin_terms_and_conditions">GOV.UK Chat terms and conditions</string>
   <string name="optin_opt_in">Add GOV.UK Chat to the app</string>
   <string name="optin_opt_out">Do not add GOV.UK Chat</string>
+  <string name="test_ended_title">GOV.UK Chat early access has ended</string>
+  <string name="test_ended_para_1">Early access to GOV.UK Chat has now ended. GOV.UK Chat and your conversations are no longer available.</string>
+  <string name="test_ended_para_2">We’re working on improving this feature and it may return soon.</string>
+  <string name="test_ended_feedback">Give feedback on GOV.UK Chat</string>
+  <string name="test_ended_button">Continue</string>
 </resources>
