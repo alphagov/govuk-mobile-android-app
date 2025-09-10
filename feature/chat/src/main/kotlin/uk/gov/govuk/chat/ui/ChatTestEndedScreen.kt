@@ -38,7 +38,6 @@ internal fun ChatTestEndedRoute(
     ChatTestEndedScreen(
         onPageView = { viewModel.onPageView() },
         onFeedback = { text ->
-            viewModel.onLinkClick(text, chatUrls.feedback)
             launchBrowser(chatUrls.feedback)
         },
         onContinue = { text ->

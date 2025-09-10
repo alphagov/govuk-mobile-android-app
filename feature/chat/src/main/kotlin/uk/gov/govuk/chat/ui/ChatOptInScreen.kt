@@ -38,11 +38,9 @@ internal fun ChatOptInRoute(
     ChatOptInScreen(
         onPageView = { viewModel.onPageView() },
         onClickPrivacyNotice = { text ->
-            viewModel.onLinkClick(text, chatUrls.privacyNotice)
             launchBrowser(chatUrls.privacyNotice)
         },
         onClickTermsAndConditions = { text ->
-            viewModel.onLinkClick(text, chatUrls.termsAndConditions)
             launchBrowser(chatUrls.termsAndConditions)
         },
         onClickOptIn = { text ->

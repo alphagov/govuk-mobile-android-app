@@ -33,13 +33,6 @@ internal class ChatTestEndedViewModel @Inject constructor(
         )
     }
 
-    fun onLinkClick(text: String, url: String) {
-        analyticsClient.visitedItemClick(
-            text = text,
-            url = url
-        )
-    }
-
     fun onContinueClick(text: String) {
         analyticsClient.buttonClick(
             text = text,

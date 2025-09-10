@@ -41,13 +41,6 @@ internal class ChatOptInViewModel @Inject constructor(
         )
     }
 
-    fun onLinkClick(text: String, url: String) {
-        analyticsClient.visitedItemClick(
-            text = text,
-            url = url
-        )
-    }
-
     fun onOptInClicked() {
         viewModelScope.launch {
             saveChatOptIn()

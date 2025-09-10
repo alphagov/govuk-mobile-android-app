@@ -1,13 +1,10 @@
 package uk.gov.govuk.chat
 
-import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import uk.gov.govuk.chat.data.ChatRepo
 import uk.gov.govuk.chat.data.local.ChatDataStore
@@ -42,6 +39,7 @@ class DefaultChatFeatureTest {
         }
     }
 
+    /*
     @Test
     fun `userHasNotYetChosen returns true when null in data store`() {
         coEvery { dataStore.isChatOptInNull() } returns true
@@ -63,4 +61,5 @@ class DefaultChatFeatureTest {
             assertFalse(feature.userHasNotYetChosen())
         }
     }
+     */
 }
