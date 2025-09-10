@@ -37,12 +37,8 @@ internal fun ChatOptInRoute(
 
     ChatOptInScreen(
         onPageView = { viewModel.onPageView() },
-        onClickPrivacyNotice = { text ->
-            launchBrowser(chatUrls.privacyNotice)
-        },
-        onClickTermsAndConditions = { text ->
-            launchBrowser(chatUrls.termsAndConditions)
-        },
+        onClickPrivacyNotice = { launchBrowser(chatUrls.privacyNotice) },
+        onClickTermsAndConditions = { launchBrowser(chatUrls.termsAndConditions) },
         onClickOptIn = { text ->
             viewModel.onButtonClick(text)
             viewModel.onOptInClicked()
@@ -60,8 +56,8 @@ internal fun ChatOptInRoute(
 @Composable
 private fun ChatOptInScreen(
     onPageView: () -> Unit,
-    onClickPrivacyNotice: (text: String) -> Unit,
-    onClickTermsAndConditions: (text: String) -> Unit,
+    onClickPrivacyNotice: () -> Unit,
+    onClickTermsAndConditions: () -> Unit,
     onClickOptIn: (text: String) -> Unit,
     onClickOptOut: (text: String) -> Unit,
     modifier: Modifier = Modifier
@@ -120,12 +116,10 @@ private fun ChatOptInScreen(
 
             MediumVerticalSpacer()
 
-            val privacyNoticeText = stringResource(id = R.string.optin_privacy_notice)
-
             SecondaryButton(
-                text = privacyNoticeText,
+                text = stringResource(id = R.string.optin_privacy_notice),
                 onClick = {
-                    onClickPrivacyNotice(privacyNoticeText)
+                    onClickPrivacyNotice()
                 },
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.small),
                 externalLink = true
@@ -133,13 +127,10 @@ private fun ChatOptInScreen(
 
             SmallVerticalSpacer()
 
-            val termsAndConditionsText =
-                stringResource(id = R.string.optin_terms_and_conditions)
-
             SecondaryButton(
-                text = termsAndConditionsText,
+                text = stringResource(id = R.string.optin_terms_and_conditions),
                 onClick = {
-                    onClickTermsAndConditions(termsAndConditionsText)
+                    onClickTermsAndConditions()
                 },
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.small),
                 externalLink = true
@@ -168,8 +159,8 @@ private fun LightModeChatOptInScreenPreview() {
     GovUkTheme {
         ChatOptInScreen(
             onPageView = { },
-            onClickPrivacyNotice = { _ -> },
-            onClickTermsAndConditions = { _ -> },
+            onClickPrivacyNotice = { },
+            onClickTermsAndConditions = { },
             onClickOptIn = { _ -> },
             onClickOptOut = { _ -> }
         )
@@ -185,8 +176,8 @@ private fun DarkModeChatOptInScreenPreview() {
     GovUkTheme {
         ChatOptInScreen(
             onPageView = { },
-            onClickPrivacyNotice = { _ -> },
-            onClickTermsAndConditions = { _ -> },
+            onClickPrivacyNotice = { },
+            onClickTermsAndConditions = { },
             onClickOptIn = { _ -> },
             onClickOptOut = { _ -> }
         )

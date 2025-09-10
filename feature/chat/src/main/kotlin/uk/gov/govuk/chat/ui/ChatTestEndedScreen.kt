@@ -37,9 +37,7 @@ internal fun ChatTestEndedRoute(
 
     ChatTestEndedScreen(
         onPageView = { viewModel.onPageView() },
-        onFeedback = { text ->
-            launchBrowser(chatUrls.feedback)
-        },
+        onFeedback = { launchBrowser(chatUrls.feedback) },
         onContinue = { text ->
             viewModel.onContinueClick(text)
             navigateToHome()
@@ -51,7 +49,7 @@ internal fun ChatTestEndedRoute(
 @Composable
 private fun ChatTestEndedScreen(
     onPageView: () -> Unit,
-    onFeedback: (text: String) -> Unit,
+    onFeedback: () -> Unit,
     onContinue: (text: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -100,11 +98,10 @@ private fun ChatTestEndedScreen(
 
             MediumVerticalSpacer()
 
-            val feedbackText = stringResource(id = R.string.test_ended_feedback)
             SecondaryButton(
-                text = feedbackText,
+                text = stringResource(id = R.string.test_ended_feedback),
                 onClick = {
-                    onFeedback(feedbackText)
+                    onFeedback()
                 },
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.small),
                 externalLink = true
