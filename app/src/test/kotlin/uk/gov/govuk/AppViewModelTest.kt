@@ -32,6 +32,7 @@ import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.config.data.remote.model.AlertBanner
 import uk.gov.govuk.config.data.remote.model.Link
+import uk.gov.govuk.config.data.remote.model.UserFeedbackBanner
 import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.model.Result.Error
@@ -41,7 +42,7 @@ import uk.gov.govuk.login.data.LoginRepo
 import uk.gov.govuk.navigation.AppNavigation
 import uk.gov.govuk.search.SearchFeature
 import uk.gov.govuk.topics.TopicsFeature
-import uk.gov.govuk.ui.model.HomeWidget
+import uk.gov.govuk.widgets.model.HomeWidget
 import uk.gov.govuk.visited.Visited
 import uk.govuk.app.local.LocalFeature
 
@@ -75,6 +76,7 @@ class AppViewModelTest {
         every { localFeature.hasLocalAuthority() } returns flowOf(false)
         every { appRepo.suppressedHomeWidgets } returns flowOf(emptySet())
         every { flagRepo.isAppAvailable() } returns true
+        every { chatFeature.hasOptedIn() } returns flowOf(false)
 
         viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature,
             localFeature, searchFeature, visited, chatFeature, analyticsClient, appNavigation)
@@ -219,7 +221,7 @@ class AppViewModelTest {
 
         runTest {
             viewModel.homeWidgets.first()
-                ?.let { assertTrue(it.contains(HomeWidget.SEARCH)) }
+                ?.let { assertTrue(it.contains(HomeWidget.Search)) }
         }
     }
 
@@ -233,7 +235,7 @@ class AppViewModelTest {
 
         runTest {
             viewModel.homeWidgets.first()
-                ?.let { assertFalse(it.contains(HomeWidget.SEARCH)) }
+                ?.let { assertFalse(it.contains(HomeWidget.Search)) }
         }
     }
 
@@ -246,7 +248,7 @@ class AppViewModelTest {
 
         runTest {
             viewModel.homeWidgets.first()
-                ?.let { assertTrue(it.contains(HomeWidget.RECENT_ACTIVITY)) }
+                ?.let { assertTrue(it.contains(HomeWidget.RecentActivity)) }
         }
     }
 
@@ -259,7 +261,7 @@ class AppViewModelTest {
 
         runTest {
             viewModel.homeWidgets.first()
-                ?.let { assertFalse(it.contains(HomeWidget.RECENT_ACTIVITY)) }
+                ?.let { assertFalse(it.contains(HomeWidget.RecentActivity)) }
         }
     }
 
@@ -272,7 +274,7 @@ class AppViewModelTest {
 
         runTest {
             viewModel.homeWidgets.first()
-                ?.let { assertTrue(it.contains(HomeWidget.TOPICS)) }
+                ?.let { assertTrue(it.contains(HomeWidget.Topics)) }
         }
     }
 
@@ -285,7 +287,7 @@ class AppViewModelTest {
 
         runTest {
             viewModel.homeWidgets.first()
-                ?.let { assertFalse(it.contains(HomeWidget.TOPICS)) }
+                ?.let { assertFalse(it.contains(HomeWidget.Topics)) }
         }
     }
 
@@ -393,7 +395,7 @@ class AppViewModelTest {
 
         runTest {
             viewModel.homeWidgets.first()
-                ?.let { assertFalse(it.contains(HomeWidget.LOCAL)) }
+                ?.let { assertFalse(it.contains(HomeWidget.Local)) }
         }
     }
 
@@ -408,13 +410,14 @@ class AppViewModelTest {
 
         runTest {
             val homeWidgets = viewModel.homeWidgets.value!!
-            assertEquals(HomeWidget.LOCAL, homeWidgets.first())
-            assertNotEquals(HomeWidget.LOCAL, homeWidgets.last())
+            assertEquals(HomeWidget.Local, homeWidgets.first())
+            assertNotEquals(HomeWidget.Local, homeWidgets.last())
         }
     }
 
     @Test
     fun `Given the local feature is enabled and a local authority is selected, When init, then emit local enabled state`() {
+        every { configRepo.config.userFeedbackBanner } returns null
         coEvery { flagRepo.isLocalServicesEnabled() } returns true
         coEvery { flagRepo.isTopicsEnabled() } returns true
         every { localFeature.hasLocalAuthority() } returns flowOf(true)
@@ -424,14 +427,15 @@ class AppViewModelTest {
 
         runTest {
             val homeWidgets = viewModel.homeWidgets.value!!
-            assertNotEquals(HomeWidget.LOCAL, homeWidgets.first())
-            assertEquals(HomeWidget.LOCAL, homeWidgets.last())
+            assertNotEquals(HomeWidget.Local, homeWidgets.first())
+            assertEquals(HomeWidget.Local, homeWidgets.last())
         }
     }
 
     @Test
-    fun `Given the config alert banner is null, When init, then there are no home widgets`() {
+    fun `Given the config alert banner and user feedback banner is null, When init, then there are no home widgets`() {
         every { configRepo.config.alertBanner } returns null
+        every { configRepo.config.userFeedbackBanner } returns null
 
         val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
             searchFeature, visited, chatFeature, analyticsClient, appNavigation)
@@ -444,22 +448,25 @@ class AppViewModelTest {
 
     @Test
     fun `Given the config has an alert banner which has not been suppressed, When init, then alert banner is the first home widget`() {
+        val alertBanner = AlertBanner("id", "body", Link("title", "url"))
         coEvery { flagRepo.isLocalServicesEnabled() } returns true
-        every { configRepo.config.alertBanner } returns AlertBanner("id", "body", Link("title", "url"))
+        every { configRepo.config.alertBanner } returns alertBanner
 
         val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
             searchFeature, visited, chatFeature, analyticsClient, appNavigation)
 
         runTest {
             val homeWidgets = viewModel.homeWidgets.value!!
-            assertEquals(HomeWidget.ALERT_BANNER, homeWidgets.first())
+            val alertWidget = HomeWidget.Alert(alertBanner)
+            assertEquals(alertWidget, homeWidgets.first())
         }
     }
 
     @Test
     fun `Given the config has an alert banner which has been suppressed, When init, then alert banner is not the first home widget`() {
+        val alertBanner = AlertBanner("id", "body", Link("title", "url"))
         coEvery { flagRepo.isLocalServicesEnabled() } returns true
-        every { configRepo.config.alertBanner } returns AlertBanner("id", "body", Link("title", "url"))
+        every { configRepo.config.alertBanner } returns alertBanner
         every { appRepo.suppressedHomeWidgets } returns flowOf(setOf("id"))
 
         val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
@@ -467,10 +474,26 @@ class AppViewModelTest {
 
         runTest {
             val homeWidgets = viewModel.homeWidgets.value!!
-            assertNotEquals(HomeWidget.ALERT_BANNER, homeWidgets.first())
+            val alertWidget = HomeWidget.Alert(alertBanner)
+            assertNotEquals(alertWidget, homeWidgets.first())
         }
     }
 
+    @Test
+    fun `Given the config has a user feedback banner, When init, then user feedback is the last home widget`() {
+        val userFeedbackBanner = UserFeedbackBanner("body", Link("title", "url"))
+        coEvery { flagRepo.isLocalServicesEnabled() } returns true
+        every { configRepo.config.userFeedbackBanner } returns userFeedbackBanner
+
+        val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
+            searchFeature, visited, chatFeature, analyticsClient, appNavigation)
+
+        runTest {
+            val homeWidgets = viewModel.homeWidgets.value!!
+            val userFeedbackWidget = HomeWidget.UserFeedback(userFeedbackBanner)
+            assertEquals(userFeedbackWidget, homeWidgets.last())
+        }
+    }
 
     @Test
     fun `Given a new user or the same user has logged in, When on login, then navigate to next nav destination`() {
@@ -560,5 +583,69 @@ class AppViewModelTest {
             authRepo.endUserSession()
             appNavigation.onSignOut(any())
         }
+    }
+
+    @Test
+    fun `Given all remote and local flags are true, When init, then should show chat`() = runTest {
+        every { flagRepo.isChatEnabled() } returns true
+        every { flagRepo.isChatOptInEnabled() } returns true
+        every { flagRepo.isChatTestActiveEnabled() } returns true
+        every { chatFeature.hasOptedIn() } returns flowOf(true)
+
+        val viewModel = AppViewModel(
+            timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature,
+            localFeature, searchFeature, visited, chatFeature, analyticsClient, appNavigation
+        )
+
+        val uiState = viewModel.uiState.first() as AppUiState.Default
+        assertTrue(uiState.isChatEnabled)
+    }
+
+    @Test
+    fun `Given all remote flags are true and the local flag is false, When init, then do not show chat`() = runTest {
+        every { flagRepo.isChatEnabled() } returns true
+        every { flagRepo.isChatOptInEnabled() } returns true
+        every { flagRepo.isChatTestActiveEnabled() } returns true
+        every { chatFeature.hasOptedIn() } returns flowOf(false)
+
+        val viewModel = AppViewModel(
+            timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature,
+            localFeature, searchFeature, visited, chatFeature, analyticsClient, appNavigation
+        )
+
+        val uiState = viewModel.uiState.first() as AppUiState.Default
+        assertFalse(uiState.isChatEnabled)
+    }
+
+    @Test
+    fun `Given all other remote flags are true except isChatTestActiveEnabled and the local flag is true, When init, then do not show chat`() = runTest {
+        every { flagRepo.isChatEnabled() } returns true
+        every { flagRepo.isChatOptInEnabled() } returns true
+        every { flagRepo.isChatTestActiveEnabled() } returns false
+        every { chatFeature.hasOptedIn() } returns flowOf(true)
+
+        val viewModel = AppViewModel(
+            timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature,
+            localFeature, searchFeature, visited, chatFeature, analyticsClient, appNavigation
+        )
+
+        val uiState = viewModel.uiState.first() as AppUiState.Default
+        assertFalse(uiState.isChatEnabled)
+    }
+
+    @Test
+    fun `Given all other remote flags are true except isChatEnabled and the local flag is true, When init, then do not show chat`() = runTest {
+        every { flagRepo.isChatEnabled() } returns false
+        every { flagRepo.isChatOptInEnabled() } returns true
+        every { flagRepo.isChatTestActiveEnabled() } returns true
+        every { chatFeature.hasOptedIn() } returns flowOf(true)
+
+        val viewModel = AppViewModel(
+            timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature,
+            localFeature, searchFeature, visited, chatFeature, analyticsClient, appNavigation
+        )
+
+        val uiState = viewModel.uiState.first() as AppUiState.Default
+        assertFalse(uiState.isChatEnabled)
     }
 }

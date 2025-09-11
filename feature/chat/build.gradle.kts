@@ -1,6 +1,3 @@
-import java.io.FileInputStream
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -23,7 +20,6 @@ android {
         consumerProguardFiles("consumer-rules.pro")
 
         buildConfigField("String", "CHAT_BASE_URL", "\"https://t4l83ued82.execute-api.eu-west-2.amazonaws.com/staging/\"")
-        buildConfigField("String", "ABOUT_APP_URL", "\"https://www.gov.uk\"")
     }
 
     buildTypes {

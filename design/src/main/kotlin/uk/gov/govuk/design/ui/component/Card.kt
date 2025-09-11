@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -298,22 +299,36 @@ fun SearchResultCard(
     }
 }
 
-@Preview
 @Composable
-private fun HomeAlertCardPreview() {
-    GovUkTheme {
-        HomeAlertCard(
-            title = "Card title",
-            description = "Card description that may go over multiple lines",
-            onClick = { },
-            launchBrowser = { },
-            linkTitle = "A link description",
-            linkUrl = "",
-            onSuppressClick = { }
+fun UserFeedbackCard(
+    body: String,
+    linkTitle: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        BodyRegularLabel(
+            text = body,
+            color = GovUkTheme.colourScheme.textAndIcons.primary,
+            textAlign = TextAlign.Center
+        )
+        val opensInWebBrowser = stringResource(R.string.opens_in_web_browser)
+        BodyRegularLabel(
+            text = linkTitle,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp)
+                .clickable {
+                    onClick()
+                }
+                .semantics {
+                    contentDescription = "$linkTitle $opensInWebBrowser"
+                },
+            color = GovUkTheme.colourScheme.textAndIcons.link,
+            textAlign = TextAlign.Center
         )
     }
 }
-
 
 @Preview
 @Composable
@@ -367,6 +382,22 @@ private fun HomeNavigationCardNoIconPreview() {
 
 @Preview
 @Composable
+private fun HomeAlertCardPreview() {
+    GovUkTheme {
+        HomeAlertCard(
+            title = "Card title",
+            description = "Card description that may go over multiple lines",
+            onClick = { },
+            launchBrowser = { },
+            linkTitle = "A link description",
+            linkUrl = "",
+            onSuppressClick = { }
+        )
+    }
+}
+
+@Preview
+@Composable
 private fun SearchResultWithDescriptionPreview() {
     GovUkTheme {
         SearchResultCard(
@@ -390,5 +421,13 @@ private fun SearchResultWithoutDescriptionPreview() {
             onClick = { _, _ -> },
             launchBrowser = {}
         )
+    }
+}
+
+@Preview
+@Composable
+private fun UserFeedbackCardPreview() {
+    GovUkTheme {
+        UserFeedbackCard("Card body", "A link description", {})
     }
 }

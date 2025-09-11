@@ -44,4 +44,14 @@ internal sealed class TopLevelDestination(
         stringResId = R.string.settings,
         icon = ic_settings
     )
+
+    companion object {
+        fun values(isChatEnabled: Boolean): List<TopLevelDestination> {
+            return buildList {
+                add(Home)
+                if (isChatEnabled) add(Chat)
+                add(Settings)
+            }
+        }
+    }
 }

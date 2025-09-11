@@ -94,10 +94,6 @@ private fun HomeScreen(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(
-                            top = GovUkTheme.spacing.extraLarge,
-                            bottom = GovUkTheme.spacing.medium
-                        )
                 ) {
                     Icon(
                         painter = painterResource(id = uk.gov.govuk.design.R.drawable.crown),
@@ -106,6 +102,9 @@ private fun HomeScreen(
                         modifier = Modifier.height(64.dp)
                     )
                 }
+            }
+            item{
+                LargeVerticalSpacer()
             }
         }
     }

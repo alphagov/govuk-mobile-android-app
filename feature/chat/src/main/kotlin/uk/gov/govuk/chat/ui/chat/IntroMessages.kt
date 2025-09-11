@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.R
@@ -105,6 +106,7 @@ private fun MessageHeader(
         Text(
             text = stringResource(id = R.string.bot_message_availability_text),
             color = GovUkTheme.colourScheme.textAndIcons.chatBotHeaderText,
+            textAlign = TextAlign.Center,
             style = GovUkTheme.typography.bodyRegular
         )
     }
@@ -118,7 +120,7 @@ private fun Message1(
         answer = stringResource(id = R.string.bot_message_1),
         launchBrowser = {},
         onMarkdownLinkClicked = { _, _ -> },
-        onActionItemClicked = { _, _, _ -> },
+        onSourcesExpanded = { },
         modifier = modifier.padding(top = GovUkTheme.spacing.medium)
     )
 }
@@ -132,7 +134,7 @@ private fun Message2(
         answer = stringResource(id = R.string.bot_message_2),
         launchBrowser = {},
         onMarkdownLinkClicked = { _, _ -> },
-        onActionItemClicked = { _, _, _ -> },
+        onSourcesExpanded = { },
         modifier = modifier.padding(top = GovUkTheme.spacing.medium)
     )
 }
@@ -146,7 +148,7 @@ private fun Message3(
         answer = stringResource(id = R.string.bot_message_3),
         launchBrowser = {},
         onMarkdownLinkClicked = { _, _ -> },
-        onActionItemClicked = { _, _, _ -> },
+        onSourcesExpanded = { },
         modifier = modifier.padding(top = GovUkTheme.spacing.medium)
     )
 }

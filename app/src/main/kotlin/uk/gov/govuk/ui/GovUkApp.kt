@@ -32,8 +32,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -64,7 +64,7 @@ import uk.gov.govuk.R
 import uk.gov.govuk.analytics.navigation.analyticsGraph
 import uk.gov.govuk.chat.navigation.CHAT_GRAPH_ROUTE
 import uk.gov.govuk.chat.navigation.chatGraph
-import uk.gov.govuk.config.data.remote.model.AlertBanner
+import uk.gov.govuk.chat.navigation.chatOptInGraph
 import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.home.navigation.HOME_GRAPH_START_DESTINATION
@@ -82,8 +82,10 @@ import uk.gov.govuk.settings.navigation.settingsGraph
 import uk.gov.govuk.settings.navigation.signOutGraph
 import uk.gov.govuk.topics.navigation.topicSelectionGraph
 import uk.gov.govuk.topics.navigation.topicsGraph
-import uk.gov.govuk.ui.model.HomeWidget
 import uk.gov.govuk.visited.navigation.visitedGraph
+import uk.gov.govuk.widgets.model.HomeWidget
+import uk.gov.govuk.widgets.ui.contains
+import uk.gov.govuk.widgets.ui.homeWidgets
 import uk.govuk.app.local.navigation.localGraph
 
 @Composable
@@ -113,9 +115,8 @@ internal fun GovUkApp(intentFlow: Flow<Intent>) {
                         BottomNavScaffold(
                             intentFlow = intentFlow,
                             viewModel = viewModel,
-                            shouldShowExternalBrowser = it.shouldShowExternalBrowser,
-                            homeWidgets = homeWidgets,
-                            alertBanner = it.alertBanner
+                            uiState = it,
+                            homeWidgets = homeWidgets
                         )
                     }
                 }
@@ -145,9 +146,8 @@ private fun LoadingScreen(
 private fun BottomNavScaffold(
     intentFlow: Flow<Intent>,
     viewModel: AppViewModel,
-    shouldShowExternalBrowser: Boolean,
-    homeWidgets: List<HomeWidget>?,
-    alertBanner: AlertBanner?
+    uiState: AppUiState.Default,
+    homeWidgets: List<HomeWidget>?
 ) {
     val navController = rememberNavController()
     val layoutDirection = LocalLayoutDirection.current
@@ -160,7 +160,7 @@ private fun BottomNavScaffold(
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
         bottomBar = {
-            BottomNav(viewModel, navController) { tabText ->
+            BottomNav(uiState.isChatEnabled, navController) { tabText ->
                 viewModel.onTabClick(tabText)
             }
         },
@@ -191,7 +191,6 @@ private fun BottomNavScaffold(
                     viewModel = viewModel,
                     navController = navController,
                     homeWidgets = homeWidgets,
-                    alertBanner = alertBanner,
                     onInternalWidgetClick = { text ->
                         viewModel.onWidgetClick(
                             text = text,
@@ -210,7 +209,7 @@ private fun BottomNavScaffold(
                     onSuppressWidgetClick = { id ->
                         viewModel.onSuppressWidgetClick(id, section)
                     },
-                    shouldShowExternalBrowser = shouldShowExternalBrowser,
+                    shouldShowExternalBrowser = uiState.shouldShowExternalBrowser,
                     paddingValues = paddingValues
                 )
                 HandleOnResumeNavigation(
@@ -249,32 +248,24 @@ private fun HandleOnResumeNavigation(
 
 @Composable
 private fun BottomNav(
-    viewModel: AppViewModel,
+    isChatEnabled: Boolean,
     navController: NavHostController,
     onTabClick: (String) -> Unit
 ) {
-    val topLevelDestinations = buildList {
-        add(TopLevelDestination.Home)
-        if (viewModel.isChatEnabled()) {
-            add(TopLevelDestination.Chat)
-        }
-        add(TopLevelDestination.Settings)
+    val topLevelDestinations = remember(isChatEnabled) {
+        TopLevelDestination.values(isChatEnabled)
     }
 
-    var selectedIndex by rememberSaveable {
-        mutableIntStateOf(-1)
-    }
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val currentParentRoute = navBackStackEntry?.destination?.parent?.route
 
-    LaunchedEffect(Unit) {
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            viewModel.onUserInteraction(navController)
-            selectedIndex =
-                topLevelDestinations.indexOfFirst { topLevelDestination ->
-                    topLevelDestination.route == destination.parent?.route ||
-                            topLevelDestination.associatedRoutes.any {
-                                destination.route?.startsWith(it) == true
-                            }
-                }
+    val selectedIndex = remember(topLevelDestinations, currentRoute, currentParentRoute) {
+        topLevelDestinations.indexOfFirst { topLevelDestination ->
+            topLevelDestination.route == currentParentRoute ||
+                    topLevelDestination.associatedRoutes.any {
+                        currentRoute?.startsWith(it) == true
+                    }
         }
     }
 
@@ -298,7 +289,6 @@ private fun BottomNav(
                     NavigationBarItem(
                         selected = index == selectedIndex,
                         onClick = {
-                            selectedIndex = index
                             onTabClick(tabText)
 
                             navController.navigate(destination.route) {
@@ -338,7 +328,6 @@ private fun GovUkNavHost(
     viewModel: AppViewModel,
     navController: NavHostController,
     homeWidgets: List<HomeWidget>?,
-    alertBanner: AlertBanner?,
     onInternalWidgetClick: (String) -> Unit,
     onExternalWidgetClick: (String, String?) -> Unit,
     onSuppressWidgetClick: (id: String) -> Unit,
@@ -429,7 +418,6 @@ private fun GovUkNavHost(
             widgets = homeWidgets(
                 navController = navController,
                 homeWidgets = homeWidgets,
-                alertBanner = alertBanner,
                 onInternalClick = onInternalWidgetClick,
                 onExternalClick = onExternalWidgetClick,
                 onSuppressClick = onSuppressWidgetClick,
@@ -442,7 +430,7 @@ private fun GovUkNavHost(
                 }
             ),
             modifier = Modifier.padding(paddingValues),
-            headerWidget = if (homeWidgets.contains(HomeWidget.SEARCH)) {
+            headerWidget = if (homeWidgets.contains(HomeWidget.Search)) {
                 { modifier ->
                     SearchWidget(
                         onClick = { text ->
@@ -497,6 +485,11 @@ private fun GovUkNavHost(
             launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } },
             onAuthError = { appNavigation.onSignOut(navController) },
             modifier = Modifier.padding(paddingValues)
+        )
+
+        chatOptInGraph(
+            navController = navController,
+            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } }
         )
     }
 }

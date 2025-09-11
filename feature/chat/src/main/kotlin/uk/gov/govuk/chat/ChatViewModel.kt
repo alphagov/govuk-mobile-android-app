@@ -18,8 +18,10 @@ import uk.gov.govuk.chat.data.remote.ChatResult.NotFound
 import uk.gov.govuk.chat.data.remote.ChatResult.Success
 import uk.gov.govuk.chat.data.remote.ChatResult.ValidationError
 import uk.gov.govuk.chat.data.remote.model.Answer
+import uk.gov.govuk.chat.domain.Analytics
 import uk.gov.govuk.chat.domain.StringCleaner
 import uk.gov.govuk.chat.ui.model.ChatEntry
+import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import javax.inject.Inject
 
@@ -42,28 +44,9 @@ internal class ChatViewModel @Inject constructor(
     private val chatRepo: ChatRepo,
     private val chatDataStore: ChatDataStore,
     private val authRepo: AuthRepo,
-    private val analyticsClient: AnalyticsClient
+    private val analyticsClient: AnalyticsClient,
+    configRepo: ConfigRepo
 ): ViewModel() {
-    companion object {
-        const val SCREEN_CLASS = "Chat"
-        const val SCREEN_NAME = "Chat Screen"
-        const val SCREEN_TITLE = "Chat Screen"
-        const val ACTION_MENU = "Action Menu"
-        const val ACTION_MENU_ACTION = "Action Menu Opened"
-        const val ACTION_MENU_CLEAR_ACTION = "Clear Chat Opened"
-        const val ACTION_MENU_CLEAR_YES = "Clear Chat Yes Clicked"
-        const val ACTION_MENU_CLEAR_NO = "Clear Chat No Clicked"
-        const val ONBOARDING_SCREEN_CLASS = "Chat Onboarding"
-        const val ONBOARDING_SCREEN_ONE_NAME = "Chat Onboarding Screen One"
-        const val ONBOARDING_SCREEN_ONE_TITLE = "Chat Onboarding Screen One"
-        const val ONBOARDING_SCREEN_TWO_NAME = "Chat Onboarding Screen Two"
-        const val ONBOARDING_SCREEN_TWO_TITLE = "Chat Onboarding Screen Two"
-        const val ONBOARDING_SCREEN_TWO_BACK_TEXT = "Chat Onboarding Screen Two Back"
-        const val RESPONSE_LINK_CLICKED = "Response Link Clicked"
-        const val RESPONSE_SOURCE_LINK_CLICKED = "Source Link Clicked"
-        const val RESPONSE = "Response"
-        const val RESPONSE_SOURCE_LINKS_OPENED = "Source Links Opened"
-    }
 
     private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
         ChatUiState(
@@ -75,6 +58,8 @@ internal class ChatViewModel @Inject constructor(
 
     private val _authError = MutableSharedFlow<Unit>()
     val authError: SharedFlow<Unit> = _authError
+
+    val chatUrls = configRepo.config.chatUrls
 
     init {
         viewModelScope.launch {
@@ -185,7 +170,7 @@ internal class ChatViewModel @Inject constructor(
         )
     }
 
-    fun onActionItemClicked(text: String, section: String, action: String) {
+    fun onActionItemFunctionClicked(text: String, section: String, action: String) {
         analyticsClient.buttonFunction(
             text = text,
             section = section,
@@ -193,15 +178,16 @@ internal class ChatViewModel @Inject constructor(
         )
     }
 
-    fun onAboutClick(text: String) {
-        analyticsClient.chatActionMenuAboutClick(
+    fun onActionItemNavigationClicked(text: String, url: String) {
+        analyticsClient.buttonClick(
             text = text,
-            url = BuildConfig.ABOUT_APP_URL
+            url = url,
+            external = true
         )
     }
 
-    fun onQuestionSubmit(question: String) {
-        analyticsClient.chat(question)
+    fun onQuestionSubmit() {
+        analyticsClient.chat()
     }
 
     fun onButtonClicked(text: String, section: String) {
@@ -213,6 +199,14 @@ internal class ChatViewModel @Inject constructor(
 
     fun onMarkdownLinkClicked(text: String, url: String) {
         analyticsClient.chatMarkdownLinkClick(text = text, url = url, )
+    }
+
+    fun onSourcesExpanded() {
+        analyticsClient.buttonFunction(
+            text = Analytics.RESPONSE_SOURCE_LINKS_OPENED,
+            section = Analytics.RESPONSE,
+            action = Analytics.RESPONSE_SOURCE_LINKS_OPENED
+        )
     }
 
     private suspend fun getAnswer(conversationId: String, questionId: String) {

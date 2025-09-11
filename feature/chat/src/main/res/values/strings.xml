@@ -14,6 +14,8 @@
     <item quantity="other">%d characters too many</item>
   </plurals>
   <string name="action_about">About</string>
+  <string name="action_privacy">Privacy notice</string>
+  <string name="action_feedback">Give feedback</string>
   <string name="action_clear">Clear chat</string>
   <string name="action_alt">More options</string>
   <string name="button_alt">Send message</string>
@@ -27,14 +29,14 @@
   <string name="error_page_additional_text_link_text">GOV.UK app homepage</string>
   <string name="error_page_additional_text_outro">if you need information now.</string>
   <string name="error_page_additional_text_url">https://www.gov.uk</string>
-  <string name="bot_message_availability_text">Messages will be available for 90 days</string>
+  <string name="bot_message_availability_text">Messages will be available until the end of the GOV.UK Chat trial</string>
   <string name="bot_message_1">Hi 👋 I’m GOV.UK Chat.</string>
   <string name="bot_message_2">I’m an experimental AI tool.\n\nWhen you ask a question, I’ll find the most relevant information from GOV.UK and use it to create an answer.</string>
   <string name="bot_message_3">Ask a question to get started.</string>
   <string name="error_retry_page_subtext">Your previous conversation is no longer available.</string>
   <string name="error_retry_page_additional_text">To continue using GOV.UK Chat, you need to start a new chat.</string>
   <string name="error_retry_button_text">Start a new chat</string>
-  <string name="loading_text">Generating your answer&#8230;</string>
+  <string name="loading_text">Generating your answer</string>
   <string name="clear_dialog_title">Do you want to clear your chat history?</string>
   <string name="clear_dialog_positive_button">Yes, clear chat</string>
   <string name="clear_dialog_negative_button">No, not now</string>
@@ -46,4 +48,12 @@
   <string name="onboarding_page_two_text_two">It’s simple to double-check information. Use the links provided with each answer.</string>
   <string name="onboarding_page_two_button">I understand</string>
   <string name="onboarding_page_cancel_text">Cancel</string>
+  <string name="optin_title">Get early access to GOV.UK Chat?</string>
+  <string name="optin_para_1">GOV.UK Chat is a new AI tool that uses GOV.UK pages to answer your questions.  You can try it out for a limited time.</string>
+  <string name="optin_para_2">By trying out GOV.UK Chat, you agree to share statistics about how you use it.</string>
+  <string name="optin_para_3">You can ask us to delete these statistics at any time. Read the privacy notice to find out how.</string>
+  <string name="optin_privacy_notice">GOV.UK Chat privacy notice</string>
+  <string name="optin_terms_and_conditions">GOV.UK Chat terms and conditions</string>
+  <string name="optin_opt_in">Add GOV.UK Chat to the app</string>
+  <string name="optin_opt_out">Do not add GOV.UK Chat</string>
 </resources>

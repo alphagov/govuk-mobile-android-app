@@ -1,4 +1,4 @@
-package uk.gov.govuk.alertbanner.ui
+package uk.gov.govuk.widgets.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
