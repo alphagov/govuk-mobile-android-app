@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import uk.gov.govuk.chat.ui.ChatOptInRoute
 import uk.gov.govuk.chat.ui.ChatRoute
+import uk.gov.govuk.chat.ui.ChatTestEndedRoute
 import uk.gov.govuk.chat.ui.OnboardingPageOneRoute
 import uk.gov.govuk.chat.ui.OnboardingPageTwoRoute
 
@@ -20,6 +21,7 @@ private const val CHAT_ONBOARDING_PAGE_1_ROUTE = "chat_onboarding_1_route"
 private const val CHAT_ONBOARDING_PAGE_2_ROUTE = "chat_onboarding_2_route"
 const val CHAT_OPT_IN_GRAPH_ROUTE = "chat_opt_in_graph_route"
 const val CHAT_OPT_IN_ROUTE = "chat_opt_in_route"
+const val CHAT_TEST_ENDED_ROUTE = "chat_test_ended_route"
 private const val HOME_ROUTE = "home_route"
 
 fun NavGraphBuilder.chatGraph(
@@ -86,6 +88,15 @@ fun NavGraphBuilder.chatOptInGraph(
     ) {
         composable(CHAT_OPT_IN_ROUTE) {
             ChatOptInRoute(
+                launchBrowser = launchBrowser,
+                navigateToHome = {
+                    navController.navigateHome()
+                },
+                modifier = modifier
+            )
+        }
+        composable(CHAT_TEST_ENDED_ROUTE) {
+            ChatTestEndedRoute(
                 launchBrowser = launchBrowser,
                 navigateToHome = {
                     navController.navigateHome()

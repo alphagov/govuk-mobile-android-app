@@ -14,11 +14,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import uk.gov.govuk.chat.ChatOptInViewModel
+import uk.gov.govuk.chat.ChatTestEndedViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.CentreAlignedScreen
-import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
+import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
@@ -27,26 +27,19 @@ import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
-internal fun ChatOptInRoute(
+internal fun ChatTestEndedRoute(
     launchBrowser: (url: String) -> Unit,
     navigateToHome: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: ChatOptInViewModel = hiltViewModel()
+    val viewModel: ChatTestEndedViewModel = hiltViewModel()
     val chatUrls = viewModel.chatUrls
 
-    ChatOptInScreen(
+    ChatTestEndedScreen(
         onPageView = { viewModel.onPageView() },
-        onClickPrivacyNotice = { launchBrowser(chatUrls.privacyNotice) },
-        onClickTermsAndConditions = { launchBrowser(chatUrls.termsAndConditions) },
-        onClickOptIn = { text ->
-            viewModel.onButtonClick(text)
-            viewModel.onOptInClicked()
-            navigateToHome()
-        },
-        onClickOptOut = { text ->
-            viewModel.onButtonClick(text)
-            viewModel.onOptOutClicked()
+        onFeedback = { launchBrowser(chatUrls.feedback) },
+        onContinue = { text ->
+            viewModel.onContinueClick(text)
             navigateToHome()
         },
         modifier = modifier
@@ -54,12 +47,10 @@ internal fun ChatOptInRoute(
 }
 
 @Composable
-private fun ChatOptInScreen(
+private fun ChatTestEndedScreen(
     onPageView: () -> Unit,
-    onClickPrivacyNotice: () -> Unit,
-    onClickTermsAndConditions: () -> Unit,
-    onClickOptIn: (text: String) -> Unit,
-    onClickOptOut: (text: String) -> Unit,
+    onFeedback: () -> Unit,
+    onContinue: (text: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -82,7 +73,7 @@ private fun ChatOptInScreen(
             }
 
             LargeTitleBoldLabel(
-                text = stringResource(id = R.string.optin_title),
+                text = stringResource(id = R.string.test_ended_title),
                 color = GovUkTheme.colourScheme.textAndIcons.primary,
                 textAlign = TextAlign.Center
             )
@@ -90,7 +81,7 @@ private fun ChatOptInScreen(
             MediumVerticalSpacer()
 
             BodyRegularLabel(
-                text = stringResource(id = R.string.optin_para_1),
+                text = stringResource(id = R.string.test_ended_para_1),
                 color = GovUkTheme.colourScheme.textAndIcons.primary,
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.extraLarge),
                 textAlign = TextAlign.Center
@@ -99,16 +90,7 @@ private fun ChatOptInScreen(
             SmallVerticalSpacer()
 
             BodyRegularLabel(
-                text = stringResource(id = R.string.optin_para_2),
-                color = GovUkTheme.colourScheme.textAndIcons.primary,
-                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.extraLarge),
-                textAlign = TextAlign.Center
-            )
-
-            SmallVerticalSpacer()
-
-            BodyRegularLabel(
-                text = stringResource(id = R.string.optin_para_3),
+                text = stringResource(id = R.string.test_ended_para_2),
                 color = GovUkTheme.colourScheme.textAndIcons.primary,
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.extraLarge),
                 textAlign = TextAlign.Center
@@ -117,34 +99,20 @@ private fun ChatOptInScreen(
             MediumVerticalSpacer()
 
             SecondaryButton(
-                text = stringResource(id = R.string.optin_privacy_notice),
+                text = stringResource(id = R.string.test_ended_feedback),
                 onClick = {
-                    onClickPrivacyNotice()
-                },
-                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.small),
-                externalLink = true
-            )
-
-            SmallVerticalSpacer()
-
-            SecondaryButton(
-                text = stringResource(id = R.string.optin_terms_and_conditions),
-                onClick = {
-                    onClickTermsAndConditions()
+                    onFeedback()
                 },
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.small),
                 externalLink = true
             )
         },
         footerContent = {
-            val optInText = stringResource(R.string.optin_opt_in)
-            val optOutText = stringResource(R.string.optin_opt_out)
+            val buttonText = stringResource(R.string.test_ended_button)
 
-            FixedDoubleButtonGroup(
-                primaryText = optInText,
-                onPrimary = { onClickOptIn(optInText) },
-                secondaryText = optOutText,
-                onSecondary = { onClickOptOut(optOutText) }
+            FixedPrimaryButton(
+                text = buttonText,
+                onClick = { onContinue(buttonText) },
             )
         }
     )
@@ -157,29 +125,25 @@ private fun ChatOptInScreen(
 @Composable
 private fun LightModeChatOptInScreenPreview() {
     GovUkTheme {
-        ChatOptInScreen(
+        ChatTestEndedScreen(
             onPageView = { },
-            onClickPrivacyNotice = { },
-            onClickTermsAndConditions = { },
-            onClickOptIn = { _ -> },
-            onClickOptOut = { _ -> }
+            onFeedback = { },
+            onContinue = { }
         )
     }
 }
 
 @Preview(
-    showBackground = true,
+    showBackground = false,
     uiMode = Configuration.UI_MODE_NIGHT_YES
 )
 @Composable
 private fun DarkModeChatOptInScreenPreview() {
     GovUkTheme {
-        ChatOptInScreen(
+        ChatTestEndedScreen(
             onPageView = { },
-            onClickPrivacyNotice = { },
-            onClickTermsAndConditions = { },
-            onClickOptIn = { _ -> },
-            onClickOptOut = { _ -> }
+            onFeedback = { },
+            onContinue = { }
         )
     }
 }
