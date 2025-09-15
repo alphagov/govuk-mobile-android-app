@@ -30,7 +30,6 @@ internal fun Answer(
             containerColor = GovUkTheme.colourScheme.surfaces.chatBotMessageBackground,
             contentColor = GovUkTheme.colourScheme.textAndIcons.chatBotMessageText
         ),
-        border = BorderStroke(1.dp, GovUkTheme.colourScheme.strokes.chatBotMessageBorder),
         modifier = modifier.fillMaxWidth()
     ) {
         MediumVerticalSpacer()

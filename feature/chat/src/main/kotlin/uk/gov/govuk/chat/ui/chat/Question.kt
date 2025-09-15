@@ -26,8 +26,7 @@ internal fun Question(
             colors = CardDefaults.cardColors(
                 containerColor = GovUkTheme.colourScheme.surfaces.chatUserMessageBackground,
                 contentColor = GovUkTheme.colourScheme.textAndIcons.chatUserMessageText
-            ),
-            border = BorderStroke(1.dp, GovUkTheme.colourScheme.strokes.chatUserMessageBorder)
+            )
         ) {
             BodyRegularLabel(
                 text = question,
