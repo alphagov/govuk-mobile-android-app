@@ -135,6 +135,7 @@ internal class ChatViewModel @Inject constructor(
                 _uiState.update { it.copy(isLoading = true) }
 
                 handleChatResult(chatRepo.askQuestion(question)) { answeredQuestion ->
+                    _uiState.update { it.copy(conversationState = HAS_CONVERSATION) }
                     addChatEntry(
                         questionId = answeredQuestion.id,
                         question = answeredQuestion.message

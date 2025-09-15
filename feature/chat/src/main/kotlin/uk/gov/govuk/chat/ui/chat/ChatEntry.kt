@@ -31,8 +31,9 @@ private enum class DisplayState { Idle, Loading, Answer }
 
 @Composable
 internal fun DisplayChatEntry(
-    isLoading: Boolean,
     chatEntry: ChatEntry,
+    isLoading: Boolean,
+    shouldAnimate: Boolean,
     launchBrowser: (url: String) -> Unit,
     onMarkdownLinkClicked: (String, String) -> Unit,
     onSourcesExpanded: () -> Unit,
@@ -43,38 +44,93 @@ internal fun DisplayChatEntry(
         Question(question = chatEntry.question)
         MediumVerticalSpacer()
 
-        val displayState = remember(chatEntry.id) { mutableStateOf(DisplayState.Idle) }
+        if (shouldAnimate) {
+            AnimatedChatEntry(
+                chatEntry = chatEntry,
+                isLoading = isLoading,
+                launchBrowser = launchBrowser,
+                onMarkdownLinkClicked = onMarkdownLinkClicked,
+                onSourcesExpanded = onSourcesExpanded
+            )
+        } else {
+            InstantChatEntry(
+                chatEntry = chatEntry,
+                isLoading = isLoading,
+                launchBrowser = launchBrowser,
+                onMarkdownLinkClicked = onMarkdownLinkClicked,
+                onSourcesExpanded = onSourcesExpanded
+            )
+        }
+    }
+}
 
-        LaunchedEffect(isLoading, chatEntry.answer) {
-            when {
-                isLoading && chatEntry.answer.isEmpty() -> {
-                    displayState.value = DisplayState.Loading
-                }
-                chatEntry.answer.isNotEmpty() -> {
-                    displayState.value = DisplayState.Answer
-                }
-                else -> {
-                    displayState.value = DisplayState.Idle
-                }
+@Composable
+private fun AnimatedChatEntry(
+    chatEntry: ChatEntry,
+    isLoading: Boolean,
+    launchBrowser: (url: String) -> Unit,
+    onMarkdownLinkClicked: (String, String) -> Unit,
+    onSourcesExpanded: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val displayState = remember(chatEntry.id) { mutableStateOf(DisplayState.Idle) }
+
+    LaunchedEffect(isLoading, chatEntry.answer) {
+        when {
+            isLoading && chatEntry.answer.isEmpty() -> {
+                displayState.value = DisplayState.Loading
+            }
+
+            chatEntry.answer.isNotEmpty() -> {
+                displayState.value = DisplayState.Answer
+            }
+
+            else -> {
+                displayState.value = DisplayState.Idle
             }
         }
+    }
 
-        Crossfade(
-            targetState = displayState.value,
-            animationSpec = tween(durationMillis = 1000)
-        ) { state ->
-            when (state) {
-                DisplayState.Loading -> Loading()
-                DisplayState.Answer -> Answer(
-                    answer = chatEntry.answer,
-                    sources = chatEntry.sources,
-                    launchBrowser = launchBrowser,
-                    onMarkdownLinkClicked = onMarkdownLinkClicked,
-                    onSourcesExpanded = onSourcesExpanded
-                )
-                DisplayState.Idle -> {}
-            }
+    Crossfade(
+        targetState = displayState.value,
+        animationSpec = tween(durationMillis = 1000)
+    ) { state ->
+        when (state) {
+            DisplayState.Loading -> Loading(modifier)
+            DisplayState.Answer -> Answer(
+                answer = chatEntry.answer,
+                sources = chatEntry.sources,
+                launchBrowser = launchBrowser,
+                onMarkdownLinkClicked = onMarkdownLinkClicked,
+                onSourcesExpanded = onSourcesExpanded
+            )
+
+            DisplayState.Idle -> {}
         }
+    }
+}
+
+@Composable
+private fun InstantChatEntry(
+    chatEntry: ChatEntry,
+    isLoading: Boolean,
+    launchBrowser: (url: String) -> Unit,
+    onMarkdownLinkClicked: (String, String) -> Unit,
+    onSourcesExpanded: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (isLoading && chatEntry.answer.isEmpty()) {
+        Loading(modifier)
+    } else {
+        Answer(
+            answer = chatEntry.answer,
+            sources = chatEntry.sources,
+            launchBrowser = launchBrowser,
+            onMarkdownLinkClicked = onMarkdownLinkClicked,
+            onSourcesExpanded = onSourcesExpanded,
+            modifier = modifier
+        )
+
     }
 }
 

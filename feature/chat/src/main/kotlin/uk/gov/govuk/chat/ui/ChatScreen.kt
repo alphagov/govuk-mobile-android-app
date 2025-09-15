@@ -68,6 +68,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.ChatUiState
+import uk.gov.govuk.chat.ChatUiState.ConversationState.LOADING
 import uk.gov.govuk.chat.ChatUiState.ConversationState.NO_CONVERSATION
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
@@ -276,14 +277,17 @@ private fun ChatContent(
                     .weight(1f)
                     .padding(horizontal = GovUkTheme.spacing.medium)
             ) {
-                item {
-                    IntroMessages(uiState.conversationState == NO_CONVERSATION) // only animate if no conversation
+                if (uiState.conversationState != LOADING) {
+                    item {
+                        IntroMessages(uiState.conversationState == NO_CONVERSATION) // only animate if no conversation
+                    }
                 }
 
                 items(chatEntries) {
                     DisplayChatEntry(
-                        uiState.isLoading,
-                        it.second,
+                        chatEntry = it.second,
+                        isLoading = uiState.isLoading,
+                        shouldAnimate = uiState.conversationState != LOADING,
                         launchBrowser = launchBrowser,
                         onMarkdownLinkClicked = analyticsEvents.onMarkdownLinkClicked,
                         onSourcesExpanded = analyticsEvents.onSourcesExpanded,
