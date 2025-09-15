@@ -19,6 +19,7 @@ private val BlueLighter95 = Color(0xFFF4F8FB)
 private val BlueDarker25 = Color(0xFF16548A)
 private val BlueDarker50 = Color(0xFF0F385C)
 private val BlueDarker80 = Color(0xFF061625)
+private val BlueDarker80Alpha50 = Color(0x80061625)
 private val BlueDarkMode = Color(0xFF263D54)
 private val TealAccent = Color(0xFF00FFE0)
 
@@ -53,6 +54,7 @@ private val BlackAlpha75 = Color(0x4B000000)
 
 private val White = Color(0xFFFFFFFF)
 private val WhiteAlpha30 = Color(0x4DFFFFFF)
+private val WhiteAlpha50 = Color(0x80FFFFFF)
 private val WhiteAlpha75 = Color(0x4BFFFFFF)
 
 data class GovUkColourScheme(
@@ -247,7 +249,7 @@ internal val LightColorScheme = GovUkColourScheme(
         chatTextFieldBackground = White,
         chatButtonBackgroundDisabled = Grey100,
         chatButtonBackgroundEnabled = BluePrimary,
-        chatUserMessageBackground = BlueLighter80,
+        chatUserMessageBackground = WhiteAlpha50,
         chatBotMessageBackground = White,
         chatIntroCardBackground = BlueLighter95
     ),
@@ -353,7 +355,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatTextFieldBackground = BlueDarker50,
         chatButtonBackgroundDisabled = Grey400,
         chatButtonBackgroundEnabled = BlueAccent,
-        chatUserMessageBackground = Grey850,
+        chatUserMessageBackground = BlueDarker80Alpha50,
         chatBotMessageBackground = BlueDarker50,
         chatIntroCardBackground = Blue99
     ),
