@@ -352,11 +352,11 @@ internal val DarkColorScheme = GovUkColourScheme(
         radioSelected = GreenAccent,
         radioUnselected = Grey500,
         chatBackground = BlueDarker80,
-        chatTextFieldBackground = BlueDarker50,
+        chatTextFieldBackground = BlueDarker80,
         chatButtonBackgroundDisabled = Grey400,
         chatButtonBackgroundEnabled = BlueAccent,
         chatUserMessageBackground = BlueDarker80Alpha50,
-        chatBotMessageBackground = BlueDarker50,
+        chatBotMessageBackground = BlueDarker80,
         chatIntroCardBackground = Blue99
     ),
     strokes = Strokes(
