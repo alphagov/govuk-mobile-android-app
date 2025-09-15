@@ -1,6 +1,5 @@
 package uk.gov.govuk.chat.ui.chat
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,7 +8,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
@@ -26,8 +24,7 @@ internal fun Question(
             colors = CardDefaults.cardColors(
                 containerColor = GovUkTheme.colourScheme.surfaces.chatUserMessageBackground,
                 contentColor = GovUkTheme.colourScheme.textAndIcons.chatUserMessageText
-            ),
-            border = BorderStroke(1.dp, GovUkTheme.colourScheme.strokes.chatUserMessageBorder)
+            )
         ) {
             BodyRegularLabel(
                 text = question,
