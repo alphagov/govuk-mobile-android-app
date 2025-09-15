@@ -3,6 +3,8 @@ package uk.gov.govuk.chat.ui.chat
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
 import android.widget.ImageView
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -24,6 +27,8 @@ import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
+private enum class DisplayState { Idle, Loading, Answer }
+
 @Composable
 internal fun DisplayChatEntry(
     isLoading: Boolean,
@@ -33,23 +38,42 @@ internal fun DisplayChatEntry(
     onSourcesExpanded: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-    ) {
+    Column(modifier = modifier) {
         MediumVerticalSpacer()
         Question(question = chatEntry.question)
-
         MediumVerticalSpacer()
-        if (isLoading && chatEntry.answer.isEmpty()) {
-            Loading()
-        } else {
-            Answer(
-                answer = chatEntry.answer,
-                sources = chatEntry.sources,
-                launchBrowser = launchBrowser,
-                onMarkdownLinkClicked = onMarkdownLinkClicked,
-                onSourcesExpanded = onSourcesExpanded
-            )
+
+        val displayState = remember(chatEntry.id) { mutableStateOf(DisplayState.Idle) }
+
+        LaunchedEffect(isLoading, chatEntry.answer) {
+            when {
+                isLoading && chatEntry.answer.isEmpty() -> {
+                    displayState.value = DisplayState.Loading
+                }
+                chatEntry.answer.isNotEmpty() -> {
+                    displayState.value = DisplayState.Answer
+                }
+                else -> {
+                    displayState.value = DisplayState.Idle
+                }
+            }
+        }
+
+        Crossfade(
+            targetState = displayState.value,
+            animationSpec = tween(durationMillis = 1000)
+        ) { state ->
+            when (state) {
+                DisplayState.Loading -> Loading()
+                DisplayState.Answer -> Answer(
+                    answer = chatEntry.answer,
+                    sources = chatEntry.sources,
+                    launchBrowser = launchBrowser,
+                    onMarkdownLinkClicked = onMarkdownLinkClicked,
+                    onSourcesExpanded = onSourcesExpanded
+                )
+                DisplayState.Idle -> {}
+            }
         }
     }
 }
