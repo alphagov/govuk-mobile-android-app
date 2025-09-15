@@ -27,10 +27,10 @@
   <string name="off_button">Off</string>
 
   <string name="sign_out_title">Are you sure you want to sign out?</string>
-  <string name="sign_out_bullet_title">This means:</string>
-  <string name="sign_out_bullet_1">if you\'re using your fingerprint, face or iris to unlock the app, this will be turned off</string>
-  <string name="sign_out_bullet_2">you\'ll stop sharing statistics about how you use the app</string>
-  <string name="sign_out_bullet_subtitle">Next time you sign in, you\'ll be able to set these preferences again.</string>
+  <string name="sign_out_body">
+    If you’re using your fingerprint, face or iris to unlock the app, this will be turned off.
+    You can turn it on again the next time you sign in.
+  </string>
   <string name="sign_out_button">Sign out</string>
   <string name="sign_out_cancel_button">Cancel</string>
 

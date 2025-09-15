@@ -1,7 +1,6 @@
 package uk.gov.govuk.settings.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -14,13 +13,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.ExtraSmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
 import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
-import uk.gov.govuk.design.ui.component.Title3BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.settings.NavigationEvent
 import uk.gov.govuk.settings.R
@@ -79,25 +76,7 @@ private fun SignOutScreen(
 
             MediumVerticalSpacer()
 
-            BodyRegularLabel(stringResource(R.string.sign_out_bullet_title))
-
-            MediumVerticalSpacer()
-
-            Row {
-                Title3BoldLabel("•    ")
-                BodyRegularLabel(stringResource(R.string.sign_out_bullet_1))
-            }
-
-            ExtraSmallVerticalSpacer()
-
-            Row {
-                Title3BoldLabel("•    ")
-                BodyRegularLabel(stringResource(R.string.sign_out_bullet_2))
-            }
-
-            MediumVerticalSpacer()
-
-            BodyRegularLabel(stringResource(R.string.sign_out_bullet_subtitle))
+            BodyRegularLabel(stringResource(R.string.sign_out_body))
 
             LargeVerticalSpacer()
         }
