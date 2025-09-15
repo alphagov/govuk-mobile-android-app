@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
+import uk.gov.govuk.chat.ChatUiState.ConversationState.HAS_CONVERSATION
+import uk.gov.govuk.chat.ChatUiState.ConversationState.LOADING
+import uk.gov.govuk.chat.ChatUiState.ConversationState.NO_CONVERSATION
 import uk.gov.govuk.chat.data.ChatRepo
 import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.chat.data.remote.ChatResult
@@ -28,6 +31,7 @@ import javax.inject.Inject
 internal data class ChatUiState(
     val question: String = "",
     val chatEntries: LinkedHashMap<String, ChatEntry> = linkedMapOf(),
+    val conversationState: ConversationState = LOADING,
     val isLoading: Boolean = false,
     val isPiiError: Boolean = false,
     val displayCharacterWarning: Boolean = false,
@@ -37,7 +41,11 @@ internal data class ChatUiState(
     val isError: Boolean = false,
     val isRetryableError: Boolean = false,
     val hasSeenOnboarding: Boolean? = null
-)
+) {
+    enum class ConversationState {
+        LOADING, HAS_CONVERSATION, NO_CONVERSATION
+    }
+}
 
 @HiltViewModel
 internal class ChatViewModel @Inject constructor(
@@ -48,12 +56,7 @@ internal class ChatViewModel @Inject constructor(
     configRepo: ConfigRepo
 ): ViewModel() {
 
-    private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
-        ChatUiState(
-            chatEntries = linkedMapOf(),
-            isLoading = false
-        )
-    )
+    private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(ChatUiState())
     val uiState = _uiState.asStateFlow()
 
     private val _authError = MutableSharedFlow<Unit>()
@@ -84,6 +87,8 @@ internal class ChatViewModel @Inject constructor(
                         updateChatEntry(question.id, question.answer)
                     }
 
+                    _uiState.update { it.copy(conversationState = HAS_CONVERSATION) }
+
                     conversation.pendingQuestion?.let { pendingQuestion ->
                         addChatEntry(
                             questionId = pendingQuestion.id,
@@ -95,6 +100,8 @@ internal class ChatViewModel @Inject constructor(
                         )
                     }
                 }
+            } ?: run {
+                _uiState.update { it.copy(conversationState = NO_CONVERSATION) }
             }
 
             _uiState.update { it.copy(isLoading = false) }
@@ -103,7 +110,10 @@ internal class ChatViewModel @Inject constructor(
 
     fun clearConversation() {
         viewModelScope.launch {
-            _uiState.value = ChatUiState(isLoading = true)
+            _uiState.value = ChatUiState(
+                isLoading = true,
+                conversationState = NO_CONVERSATION
+            )
             chatRepo.clearConversation()
             _uiState.update { it.copy(isLoading = false) }
         }

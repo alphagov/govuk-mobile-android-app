@@ -68,6 +68,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.ChatUiState
+import uk.gov.govuk.chat.ChatUiState.ConversationState.NO_CONVERSATION
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.chat.domain.Analytics
@@ -244,7 +245,7 @@ private fun ChatContent(
     }
 
     Box(modifier.fillMaxSize()) {
-        if (uiState.chatEntries.isEmpty()) {
+        if (uiState.conversationState == NO_CONVERSATION) {
             AnimatedVisibility(
                 visible = backgroundVisible,
                 enter = fadeIn(animationSpec = tween(durationMillis = 2000))
@@ -276,7 +277,7 @@ private fun ChatContent(
                     .padding(horizontal = GovUkTheme.spacing.medium)
             ) {
                 item {
-                    IntroMessages(uiState.chatEntries.isEmpty()) // only animate if no conversation
+                    IntroMessages(uiState.conversationState == NO_CONVERSATION) // only animate if no conversation
                 }
 
                 items(chatEntries) {
