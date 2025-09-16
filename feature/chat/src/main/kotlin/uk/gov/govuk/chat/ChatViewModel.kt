@@ -72,7 +72,6 @@ internal class ChatViewModel @Inject constructor(
     fun loadConversation() {
         viewModelScope.launch {
             chatRepo.getConversation()?.let { result ->
-
                 handleChatResult(result) { conversation ->
                     _uiState.value = Default(
                         chatEntries = conversation.answeredQuestions.mapNotNull { question ->
