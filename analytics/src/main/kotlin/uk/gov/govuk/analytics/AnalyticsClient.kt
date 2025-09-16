@@ -52,6 +52,25 @@ class AnalyticsClient @Inject constructor(
         )
     }
 
+    fun screenViewWithType(
+        screenClass: String,
+        screenName: String,
+        title: String,
+        type: String
+    ) {
+        logEvent(
+            FirebaseAnalytics.Event.SCREEN_VIEW,
+            parametersWithLanguage(
+                mapOf(
+                    FirebaseAnalytics.Param.SCREEN_CLASS to screenClass,
+                    FirebaseAnalytics.Param.SCREEN_NAME to screenName,
+                    "screen_title" to title,
+                    "type" to type
+                )
+            )
+        )
+    }
+
     fun buttonClick(
         text: String,
         url: String? = null,

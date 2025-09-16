@@ -35,6 +35,7 @@ dependencies {
     implementation(projects.design)
     implementation(projects.analytics)
     implementation(projects.config)
+    implementation(projects.feature.chat)
 
     implementation(libs.androidx.navigation.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -46,6 +47,7 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
+    testImplementation(libs.coroutine.test)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
