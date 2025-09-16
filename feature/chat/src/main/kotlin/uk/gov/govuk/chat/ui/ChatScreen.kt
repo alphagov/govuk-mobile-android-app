@@ -343,7 +343,10 @@ private fun ChatInput(
         modifier = modifier
             .padding(all = GovUkTheme.spacing.medium)
             .semantics { isTraversalGroup = true }
-            .modifyIfPiiError(isFocused, uiState),
+            .modifyIfPiiError(
+                isFocused = isFocused,
+                isPiiError = uiState.isPiiError
+            )
     ) {
         Row {
             AnimatedVisibility(!isFocused) {
@@ -385,7 +388,10 @@ private fun ChatInput(
                     clickEvents.onQuestionUpdated(it)
                 },
                 placeholder = {
-                    PlaceholderText(isFocused = isFocused, uiState = uiState)
+                    PlaceholderText(
+                        isFocused = isFocused,
+                        question = uiState.question
+                    )
                 },
                 isError = uiState.isPiiError,
                 colors = inputTextFieldDefaults()
@@ -411,14 +417,18 @@ private fun ChatInput(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                CharacterCountMessage(uiState)
+                CharacterCountMessage(
+                    charactersRemaining = uiState.charactersRemaining,
+                    displayCharacterWarning = uiState.displayCharacterWarning,
+                    displayCharacterError = uiState.displayCharacterError
+                )
 
                 SubmitIconButton(
                     onClick = {
                         analyticsEvents.onQuestionSubmit()
                         clickEvents.onSubmit(uiState.question)
                     },
-                    uiState = uiState
+                    enabled = uiState.isSubmitEnabled && !uiState.isPiiError && !uiState.isLoading
                 )
             }
         }
@@ -428,11 +438,11 @@ private fun ChatInput(
 @Composable
 private fun Modifier.modifyIfPiiError(
     isFocused: Boolean,
-    uiState: ChatUiState.Default
+    isPiiError: Boolean
 ): Modifier {
     return this.then(
         if (isFocused) {
-            val color = if (uiState.isPiiError)
+            val color = if (isPiiError)
                 GovUkTheme.colourScheme.strokes.textFieldError
             else
                 GovUkTheme.colourScheme.strokes.chatTextFieldBorder
@@ -470,10 +480,10 @@ private fun Modifier.modifyIfFocused(isFocused: Boolean): Modifier {
 @Composable
 private fun PlaceholderText(
     isFocused: Boolean,
-    uiState: ChatUiState.Default,
+    question:String,
     modifier: Modifier = Modifier
 ) {
-    if (!isFocused && uiState.question.isEmpty()) {
+    if (!isFocused && question.isEmpty()) {
         Text(
             text = stringResource(id = R.string.input_label),
             color = GovUkTheme.colourScheme.textAndIcons.secondary,
@@ -481,7 +491,7 @@ private fun PlaceholderText(
         )
     } else {
         Text(
-            text = uiState.question,
+            text = question,
             color = GovUkTheme.colourScheme.textAndIcons.secondary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -528,13 +538,13 @@ private fun PiiErrorMessage(
 @Composable
 private fun SubmitIconButton(
     onClick: () -> Unit,
-    uiState: ChatUiState.Default,
+    enabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     IconButton(
         onClick = onClick,
         modifier = modifier,
-        enabled = uiState.isSubmitEnabled && !uiState.isPiiError && !uiState.isLoading,
+        enabled = enabled,
         colors = IconButtonColors(
             containerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
             contentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconEnabled,
@@ -551,23 +561,25 @@ private fun SubmitIconButton(
 
 @Composable
 private fun CharacterCountMessage(
-    uiState: ChatUiState.Default,
+    charactersRemaining: Int,
+    displayCharacterWarning: Boolean,
+    displayCharacterError: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val charactersRemaining = abs(uiState.charactersRemaining)
+    val charactersRemaining = abs(charactersRemaining)
     var color = GovUkTheme.colourScheme.textAndIcons.secondary
     var style = GovUkTheme.typography.subheadlineRegular
     var text = ""
 
     when {
-        uiState.displayCharacterWarning -> {
+        displayCharacterWarning -> {
             text = pluralStringResource(
                 id = R.plurals.characterCountUnderOrAtLimit,
                 count = charactersRemaining,
                 charactersRemaining
             )
         }
-        uiState.displayCharacterError -> {
+        displayCharacterError -> {
             text = pluralStringResource(
                 id = R.plurals.characterCountOverLimit,
                 count = charactersRemaining,
