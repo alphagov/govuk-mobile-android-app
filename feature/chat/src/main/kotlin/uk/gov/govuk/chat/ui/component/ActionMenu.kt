@@ -94,8 +94,10 @@ internal fun ActionMenu(
         if (hasConversation) {
             ClearMenuItem(
                 enabled = !isLoading,
-                onClear = onClear,
-                onClearActioned = { expanded = false },
+                onClear = {
+                    onClear()
+                    expanded = false
+                },
                 onFunctionItemClicked = onFunctionItemClicked
             )
         }
@@ -120,7 +122,6 @@ internal fun ActionMenu(
 private fun ClearMenuItem(
     enabled: Boolean,
     onClear: () -> Unit,
-    onClearActioned: () -> Unit, // Todo - what is this for???
     onFunctionItemClicked: (String, String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -172,7 +173,6 @@ private fun ClearMenuItem(
                         )
                         onClear()
                         openDialog.value = false
-                        onClearActioned()
                     }
                 ) {
                     BodyBoldLabel(
@@ -191,7 +191,6 @@ private fun ClearMenuItem(
                             Analytics.ACTION_MENU_CLEAR_NO
                         )
                         openDialog.value = false
-                        onClearActioned()
                     }
                 ) {
                     BodyRegularLabel(
