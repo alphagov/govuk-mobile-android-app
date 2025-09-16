@@ -68,14 +68,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.ChatUiState
-import uk.gov.govuk.chat.ChatUiState.ConversationState.LOADING
-import uk.gov.govuk.chat.ChatUiState.ConversationState.NO_CONVERSATION
+import uk.gov.govuk.chat.ChatUiState.Default.ConversationState.LOADING
+import uk.gov.govuk.chat.ChatUiState.Default.ConversationState.NO_CONVERSATION
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.chat.domain.Analytics
 import uk.gov.govuk.chat.ui.chat.ActionMenu
-import uk.gov.govuk.chat.ui.chat.ChatErrorPageNoRetry
-import uk.gov.govuk.chat.ui.chat.ChatErrorPageWithRetry
 import uk.gov.govuk.chat.ui.chat.DisplayChatEntry
 import uk.gov.govuk.chat.ui.chat.IntroMessages
 import uk.gov.govuk.config.data.remote.model.ChatUrls
@@ -84,7 +82,7 @@ import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import kotlin.math.abs
 
-internal class ChatScreenEvents(
+internal class AnalyticsEvents(
     val onPageView: (String, String, String) -> Unit,
     val onActionItemFunctionClicked: (String, String, String) -> Unit,
     val onActionItemNavigationClicked: (String, String) -> Unit,
@@ -93,10 +91,9 @@ internal class ChatScreenEvents(
     val onSourcesExpanded: () -> Unit
 )
 
-internal class ChatScreenClickEvents(
+internal class ClickEvents(
     val onQuestionUpdated: (String) -> Unit,
     val onSubmit: (String) -> Unit,
-    val onRetry: () -> Unit,
     val onClear: () -> Unit,
 )
 
@@ -111,48 +108,57 @@ internal fun ChatRoute(
     val viewModel: ChatViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    uiState.hasSeenOnboarding.let { seenOnboarding ->
-        if (seenOnboarding == true) {
-            ChatScreen(
-                uiState = uiState,
-                analyticsEvents = ChatScreenEvents(
-                    onPageView = { klass, name, title ->
-                        viewModel.onPageView(klass, name, title)
-                    },
-                    onActionItemFunctionClicked = { text, section, action ->
-                        viewModel.onActionItemFunctionClicked(text, section, action)
-                    },
-                    onActionItemNavigationClicked = { text, url ->
-                        viewModel.onActionItemNavigationClicked(text, url)
-                    },
-                    onQuestionSubmit = { viewModel.onQuestionSubmit() },
-                    onMarkdownLinkClicked = { text, url -> viewModel.onMarkdownLinkClicked(text, url) },
-                    onSourcesExpanded = { viewModel.onSourcesExpanded() }
-                ),
-                launchBrowser = launchBrowser,
-                hasConversation = uiState.chatEntries.isNotEmpty(),
-                clickEvents = ChatScreenClickEvents(
-                    onQuestionUpdated = { question ->
-                        viewModel.onQuestionUpdated(question)
-                    },
-                    onSubmit = { question ->
-                        viewModel.onSubmit(question)
-                    },
-                    onRetry = {
-                        viewModel.clearConversation()
-                        onClearDone()
-                    },
-                    onClear = {
-                        viewModel.clearConversation()
-                        onClearDone()
-                    }
-                ),
-                chatUrls = viewModel.chatUrls,
-                modifier = modifier
-            )
-        } else if (seenOnboarding == false) {
-            LaunchedEffect(Unit) {
-                onShowOnboarding()
+    val onPageView: (String, String, String) -> Unit = { klass, name, title ->
+        viewModel.onPageView(
+            screenClass = klass,
+            screenName = name,
+            title = title
+        )
+    }
+
+    uiState?.let {
+        when (it) {
+            ChatUiState.Onboarding -> onShowOnboarding()
+            is ChatUiState.Error -> {
+                ErrorScreen(
+                    canRetry = it.canRetry,
+                    onPageView = onPageView,
+                    onRetry = { viewModel.clearConversation() },
+                    modifier = modifier
+                )
+            }
+            is ChatUiState.Default -> {
+                ChatScreen(
+                    uiState = it,
+                    analyticsEvents = AnalyticsEvents(
+                        onPageView = onPageView,
+                        onActionItemFunctionClicked = { text, section, action ->
+                            viewModel.onActionItemFunctionClicked(text, section, action)
+                        },
+                        onActionItemNavigationClicked = { text, url ->
+                            viewModel.onActionItemNavigationClicked(text, url)
+                        },
+                        onQuestionSubmit = { viewModel.onQuestionSubmit() },
+                        onMarkdownLinkClicked = { text, url -> viewModel.onMarkdownLinkClicked(text, url) },
+                        onSourcesExpanded = { viewModel.onSourcesExpanded() }
+                    ),
+                    launchBrowser = launchBrowser,
+                    hasConversation = it.chatEntries.isNotEmpty(),
+                    clickEvents = ClickEvents(
+                        onQuestionUpdated = { question ->
+                            viewModel.onQuestionUpdated(question)
+                        },
+                        onSubmit = { question ->
+                            viewModel.onSubmit(question)
+                        },
+                        onClear = {
+                            viewModel.clearConversation()
+                            onClearDone()
+                        }
+                    ),
+                    chatUrls = viewModel.chatUrls,
+                    modifier = modifier
+                )
             }
         }
     }
@@ -166,69 +172,11 @@ internal fun ChatRoute(
 
 @Composable
 private fun ChatScreen(
-    uiState: ChatUiState,
-    analyticsEvents: ChatScreenEvents,
+    uiState: ChatUiState.Default,
     launchBrowser: (url: String) -> Unit,
     hasConversation: Boolean,
-    clickEvents: ChatScreenClickEvents,
-    chatUrls: ChatUrls,
-    modifier: Modifier = Modifier
-) {
-    if (uiState.isRetryableError) {
-        LaunchedEffect(Unit) {
-            analyticsEvents.onPageView(
-                Analytics.CHAT_ERROR_SCREEN_CLASS,
-                Analytics.CHAT_ERROR_RETRY_SCREEN_NAME,
-                Analytics.CHAT_ERROR_RETRY_SCREEN_TITLE,
-            )
-        }
-
-        ChatErrorPageWithRetry(
-            onRetry = clickEvents.onRetry,
-            modifier = modifier
-                .windowInsetsPadding(WindowInsets.statusBars)
-        )
-    } else if (uiState.isError) {
-        LaunchedEffect(Unit) {
-            analyticsEvents.onPageView(
-                Analytics.CHAT_ERROR_SCREEN_CLASS,
-                Analytics.CHAT_ERROR_SCREEN_NAME,
-                Analytics.CHAT_ERROR_SCREEN_TITLE,
-            )
-        }
-
-        ChatErrorPageNoRetry(
-            modifier
-                .windowInsetsPadding(WindowInsets.statusBars)
-        )
-    } else {
-        LaunchedEffect(Unit) {
-            analyticsEvents.onPageView(
-                Analytics.CHAT_SCREEN_CLASS,
-                Analytics.CHAT_SCREEN_NAME,
-                Analytics.CHAT_SCREEN_TITLE
-            )
-        }
-
-        ChatContent(
-            uiState,
-            launchBrowser = launchBrowser,
-            hasConversation = hasConversation,
-            clickEvents = clickEvents,
-            analyticsEvents = analyticsEvents,
-            chatUrls = chatUrls,
-            modifier
-        )
-    }
-}
-
-@Composable
-private fun ChatContent(
-    uiState: ChatUiState,
-    launchBrowser: (url: String) -> Unit,
-    hasConversation: Boolean,
-    clickEvents: ChatScreenClickEvents,
-    analyticsEvents: ChatScreenEvents,
+    clickEvents: ClickEvents,
+    analyticsEvents: AnalyticsEvents,
     chatUrls: ChatUrls,
     modifier: Modifier = Modifier
 ) {
@@ -239,6 +187,14 @@ private fun ChatContent(
     val brush = Brush.verticalGradient(
         colorStops = calculateStops(heightPx, 20.dp)
     )
+
+    LaunchedEffect(Unit) {
+        analyticsEvents.onPageView(
+            Analytics.CHAT_SCREEN_CLASS,
+            Analytics.CHAT_SCREEN_NAME,
+            Analytics.CHAT_SCREEN_TITLE
+        )
+    }
 
     LaunchedEffect(Unit) {
         delay(1000)
@@ -372,11 +328,11 @@ private fun BackgroundGradient(
 
 @Composable
 private fun ChatInput(
-    uiState: ChatUiState,
+    uiState: ChatUiState.Default,
     launchBrowser: (url: String) -> Unit,
     hasConversation: Boolean,
-    analyticsEvents: ChatScreenEvents,
-    clickEvents: ChatScreenClickEvents,
+    analyticsEvents: AnalyticsEvents,
+    clickEvents: ClickEvents,
     chatUrls: ChatUrls,
     modifier: Modifier = Modifier
 ) {
@@ -470,7 +426,10 @@ private fun ChatInput(
 }
 
 @Composable
-private fun Modifier.modifyIfPiiError(isFocused: Boolean, uiState: ChatUiState): Modifier {
+private fun Modifier.modifyIfPiiError(
+    isFocused: Boolean,
+    uiState: ChatUiState.Default
+): Modifier {
     return this.then(
         if (isFocused) {
             val color = if (uiState.isPiiError)
@@ -511,7 +470,7 @@ private fun Modifier.modifyIfFocused(isFocused: Boolean): Modifier {
 @Composable
 private fun PlaceholderText(
     isFocused: Boolean,
-    uiState: ChatUiState,
+    uiState: ChatUiState.Default,
     modifier: Modifier = Modifier
 ) {
     if (!isFocused && uiState.question.isEmpty()) {
@@ -569,7 +528,7 @@ private fun PiiErrorMessage(
 @Composable
 private fun SubmitIconButton(
     onClick: () -> Unit,
-    uiState: ChatUiState,
+    uiState: ChatUiState.Default,
     modifier: Modifier = Modifier
 ) {
     IconButton(
@@ -592,7 +551,7 @@ private fun SubmitIconButton(
 
 @Composable
 private fun CharacterCountMessage(
-    uiState: ChatUiState,
+    uiState: ChatUiState.Default,
     modifier: Modifier = Modifier
 ) {
     val charactersRemaining = abs(uiState.charactersRemaining)
@@ -627,7 +586,7 @@ private fun CharacterCountMessage(
     )
 }
 
-private fun analyticsEvents() = ChatScreenEvents(
+private fun analyticsEvents() = AnalyticsEvents(
     onPageView = { _, _, _ -> },
     onActionItemFunctionClicked = { _, _, _ -> },
     onActionItemNavigationClicked = { _, _ ->  },
@@ -636,10 +595,9 @@ private fun analyticsEvents() = ChatScreenEvents(
     onSourcesExpanded = { }
 )
 
-private fun clickEvents() = ChatScreenClickEvents(
+private fun clickEvents() = ClickEvents(
     onQuestionUpdated = { _ -> },
     onSubmit = { _ -> },
-    onRetry = { },
     onClear = { }
 )
 
@@ -651,7 +609,7 @@ private fun clickEvents() = ChatScreenClickEvents(
 private fun LightModeChatScreenPreview() {
     GovUkTheme {
         ChatScreen(
-            uiState = ChatUiState(isLoading = false),
+            uiState = ChatUiState.Default(isLoading = false),
             analyticsEvents = analyticsEvents(),
             launchBrowser = { _ -> },
             hasConversation = false,
@@ -669,7 +627,7 @@ private fun LightModeChatScreenPreview() {
 private fun DarkModeChatScreenPreview() {
     GovUkTheme {
         ChatScreen(
-            uiState = ChatUiState(isLoading = false),
+            uiState = ChatUiState.Default(isLoading = false),
             analyticsEvents = analyticsEvents(),
             launchBrowser = { _ -> },
             hasConversation = false,

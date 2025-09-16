@@ -10,9 +10,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
-import uk.gov.govuk.chat.ChatUiState.ConversationState.HAS_CONVERSATION
-import uk.gov.govuk.chat.ChatUiState.ConversationState.LOADING
-import uk.gov.govuk.chat.ChatUiState.ConversationState.NO_CONVERSATION
+import uk.gov.govuk.chat.ChatUiState.Default
+import uk.gov.govuk.chat.ChatUiState.Default.ConversationState.HAS_CONVERSATION
+import uk.gov.govuk.chat.ChatUiState.Default.ConversationState.LOADING
+import uk.gov.govuk.chat.ChatUiState.Default.ConversationState.NO_CONVERSATION
+import uk.gov.govuk.chat.ChatUiState.Error
+import uk.gov.govuk.chat.ChatUiState.Onboarding
 import uk.gov.govuk.chat.data.ChatRepo
 import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.chat.data.remote.ChatResult
@@ -28,22 +31,24 @@ import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import javax.inject.Inject
 
-internal data class ChatUiState(
-    val question: String = "",
-    val chatEntries: LinkedHashMap<String, ChatEntry> = linkedMapOf(),
-    val conversationState: ConversationState = LOADING,
-    val isLoading: Boolean = false,
-    val isPiiError: Boolean = false,
-    val displayCharacterWarning: Boolean = false,
-    val displayCharacterError: Boolean = false,
-    val charactersRemaining: Int = 0,
-    val isSubmitEnabled: Boolean = false,
-    val isError: Boolean = false,
-    val isRetryableError: Boolean = false,
-    val hasSeenOnboarding: Boolean? = null
-) {
-    enum class ConversationState {
-        LOADING, HAS_CONVERSATION, NO_CONVERSATION
+internal sealed class ChatUiState {
+    data object Onboarding: ChatUiState()
+    data class Error(val canRetry: Boolean): ChatUiState()
+    data class Default(
+        val question: String = "",
+        val chatEntries: LinkedHashMap<String, ChatEntry> = linkedMapOf(),
+        val conversationState: ConversationState = LOADING,
+        val isLoading: Boolean = false,
+        val isPiiError: Boolean = false,
+        val displayCharacterWarning: Boolean = false,
+        val displayCharacterError: Boolean = false,
+        val charactersRemaining: Int = 0,
+        val isSubmitEnabled: Boolean = false,
+        val hasSeenOnboarding: Boolean? = null
+    ): ChatUiState() {
+        enum class ConversationState {
+            LOADING, HAS_CONVERSATION, NO_CONVERSATION
+        }
     }
 }
 
@@ -56,7 +61,7 @@ internal class ChatViewModel @Inject constructor(
     configRepo: ConfigRepo
 ): ViewModel() {
 
-    private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(ChatUiState())
+    private val _uiState: MutableStateFlow<ChatUiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
 
     private val _authError = MutableSharedFlow<Unit>()
@@ -66,18 +71,19 @@ internal class ChatViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            _uiState.update {
-                it.copy(hasSeenOnboarding = chatDataStore.isChatIntroSeen())
+            if (chatDataStore.isChatIntroSeen()) {
+                loadConversation()
+            } else {
+                _uiState.value = Onboarding
             }
         }
-        loadConversation()
     }
 
     fun loadConversation() {
         viewModelScope.launch {
-            _uiState.value = ChatUiState(isLoading = true)
-
             chatRepo.getConversation()?.let { result ->
+                _uiState.value = Default(isLoading = true)
+
                 handleChatResult(result) { conversation ->
                     conversation.answeredQuestions.forEach { question ->
                         addChatEntry(
@@ -87,7 +93,7 @@ internal class ChatViewModel @Inject constructor(
                         updateChatEntry(question.id, question.answer)
                     }
 
-                    _uiState.update { it.copy(conversationState = HAS_CONVERSATION) }
+                    _uiState.update { (it as Default).copy(conversationState = HAS_CONVERSATION) }
 
                     conversation.pendingQuestion?.let { pendingQuestion ->
                         addChatEntry(
@@ -101,41 +107,41 @@ internal class ChatViewModel @Inject constructor(
                     }
                 }
             } ?: run {
-                _uiState.update { it.copy(conversationState = NO_CONVERSATION) }
+                _uiState.value = Default(conversationState = NO_CONVERSATION)
             }
 
-            _uiState.update { it.copy(isLoading = false) }
+            _uiState.update { (it as Default).copy(isLoading = false) }
         }
     }
 
     fun clearConversation() {
         viewModelScope.launch {
-            _uiState.value = ChatUiState(
+            _uiState.value = Default(
                 isLoading = true,
                 conversationState = NO_CONVERSATION
             )
             chatRepo.clearConversation()
-            _uiState.update { it.copy(isLoading = false) }
+            _uiState.update { (it as Default).copy(isLoading = false) }
         }
     }
 
     fun setChatIntroSeen() {
         viewModelScope.launch {
             chatDataStore.saveChatIntroSeen()
-            _uiState.update { it.copy(hasSeenOnboarding = true) }
+            _uiState.value = Default()
         }
     }
 
     fun onSubmit(question: String) {
         val isPiiError = StringCleaner.includesPII(question)
-        _uiState.update { it.copy(isPiiError = isPiiError) }
+        _uiState.update { (it as Default).copy(isPiiError = isPiiError) }
 
         if (!isPiiError) {
             viewModelScope.launch {
-                _uiState.update { it.copy(isLoading = true) }
+                _uiState.update { (it as Default).copy(isLoading = true) }
 
                 handleChatResult(chatRepo.askQuestion(question)) { answeredQuestion ->
-                    _uiState.update { it.copy(conversationState = HAS_CONVERSATION) }
+                    _uiState.update { (it as Default).copy(conversationState = HAS_CONVERSATION) }
                     addChatEntry(
                         questionId = answeredQuestion.id,
                         question = answeredQuestion.message
@@ -147,7 +153,7 @@ internal class ChatViewModel @Inject constructor(
                     )
                 }
 
-                _uiState.update { it.copy(isLoading = false) }
+                _uiState.update { (it as Default).copy(isLoading = false) }
                 analyticsClient.chatQuestionAnswerReturnedEvent()
             }
         }
@@ -162,7 +168,7 @@ internal class ChatViewModel @Inject constructor(
         val displayCharacterError = remainingCharacters < 0
 
         _uiState.update {
-            it.copy(
+            (it as Default).copy(
                 question = question,
                 isPiiError = false,
                 displayCharacterWarning = remainingCharacters in 0..characterWarningThreshold,
@@ -234,19 +240,19 @@ internal class ChatViewModel @Inject constructor(
     private suspend fun <T> handleChatResult(chatResult: ChatResult<T>, onSuccess: suspend (T) -> Unit) {
         when (chatResult) {
             is Success -> onSuccess(chatResult.value)
-            is ValidationError -> _uiState.update { it.copy(isPiiError = true) }
-            is NotFound -> _uiState.update { it.copy(isRetryableError = true) }
+            is ValidationError -> _uiState.update { (it as Default).copy(isPiiError = true) }
+            is NotFound -> _uiState.value = Error(canRetry = true)
             is AuthError -> {
                 authRepo.clear()
                 _authError.emit(Unit)
             }
-            else -> _uiState.update { it.copy(isError = true) }
+            else -> _uiState.value = Error(canRetry = false)
         }
     }
 
     private fun addChatEntry(questionId: String, question: String) {
         _uiState.update {
-            it.copy(
+            (it as Default).copy(
                 chatEntries = LinkedHashMap(it.chatEntries).apply {
                     put(
                         questionId,
@@ -263,7 +269,7 @@ internal class ChatViewModel @Inject constructor(
 
     private fun updateChatEntry(questionId: String, answer: Answer?) {
         if (answer != null) {
-            _uiState.value.chatEntries[questionId]?.let { chatEntry ->
+            (_uiState.value as Default).chatEntries[questionId]?.let { chatEntry ->
                 chatEntry.answer = answer.message
                 chatEntry.sources = answer.sources?.map { source ->
                     "[${source.title}](${source.url})"

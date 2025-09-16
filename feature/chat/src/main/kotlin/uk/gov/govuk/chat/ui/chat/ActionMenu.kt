@@ -29,7 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.chat.domain.Analytics
-import uk.gov.govuk.chat.ui.ChatScreenEvents
+import uk.gov.govuk.chat.ui.AnalyticsEvents
 import uk.gov.govuk.config.data.remote.model.ChatUrls
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
@@ -41,7 +41,7 @@ internal fun ActionMenu(
     hasConversation: Boolean,
     isLoading: Boolean,
     onClear: () -> Unit,
-    analyticsEvents: ChatScreenEvents,
+    analyticsEvents: AnalyticsEvents,
     chatUrls: ChatUrls,
     modifier: Modifier = Modifier
 ) {
@@ -125,7 +125,7 @@ private fun ClearMenuItem(
     enabled: Boolean,
     onClear: () -> Unit,
     onClearActioned: () -> Unit,
-    analyticsEvents: ChatScreenEvents,
+    analyticsEvents: AnalyticsEvents,
     modifier: Modifier = Modifier
 ) {
     val openDialog = rememberSaveable { mutableStateOf(false) }
