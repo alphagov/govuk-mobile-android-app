@@ -72,19 +72,26 @@ internal class ChatViewModel @Inject constructor(
     fun loadConversation() {
         viewModelScope.launch {
             chatRepo.getConversation()?.let { result ->
-                _uiState.value = Default(isLoading = true)
 
                 handleChatResult(result) { conversation ->
-                    conversation.answeredQuestions.forEach { question ->
-                        addChatEntry(
-                            questionId = question.id,
-                            question = question.message,
-                            shouldAnimate = false
-                        )
-                        updateChatEntry(question.id, question.answer)
-                    }
+                    _uiState.value = Default(
+                        chatEntries = conversation.answeredQuestions.mapNotNull { question ->
+                            question.answer?.let { answer ->
+                                question.id to ChatEntry(
+                                    question = question.message,
+                                    answer = answer.message,
+                                    sources = answer.sources?.map { source ->
+                                        "[${source.title}](${source.url})"
+                                    },
+                                    shouldAnimate = false
+                                )
+                            }
+                        }.toMap(LinkedHashMap())
+                    )
 
                     conversation.pendingQuestion?.let { pendingQuestion ->
+                        _uiState.updateDefault { it.copy(isLoading = true) }
+
                         addChatEntry(
                             questionId = pendingQuestion.id,
                             question = pendingQuestion.message
@@ -93,12 +100,12 @@ internal class ChatViewModel @Inject constructor(
                             conversationId = conversation.id,
                             questionId = pendingQuestion.id
                         )
-                    }
 
-                    _uiState.update { (it as Default).copy(isLoading = false) }
+                        _uiState.updateDefault { it.copy(isLoading = false) }
+                    }
                 }
             } ?: run {
-                _uiState.value = Default(isLoading = false)
+                _uiState.value = Default()
             }
         }
     }
@@ -107,7 +114,7 @@ internal class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = Default(isLoading = true)
             chatRepo.clearConversation()
-            _uiState.update { (it as Default).copy(isLoading = false) }
+            _uiState.updateDefault { it.copy(isLoading = false) }
         }
     }
 
@@ -120,11 +127,11 @@ internal class ChatViewModel @Inject constructor(
 
     fun onSubmit(question: String) {
         val isPiiError = StringCleaner.includesPII(question)
-        _uiState.update { (it as Default).copy(isPiiError = isPiiError) }
+        _uiState.updateDefault { it.copy(isPiiError = isPiiError) }
 
         if (!isPiiError) {
             viewModelScope.launch {
-                _uiState.update { (it as Default).copy(isLoading = true) }
+                _uiState.updateDefault { it.copy(isLoading = true) }
 
                 handleChatResult(chatRepo.askQuestion(question)) { answeredQuestion ->
                     addChatEntry(
@@ -137,7 +144,7 @@ internal class ChatViewModel @Inject constructor(
                         questionId = answeredQuestion.id
                     )
 
-                    _uiState.update { (it as Default).copy(isLoading = false) }
+                    _uiState.updateDefault { it.copy(isLoading = false) }
                     analyticsClient.chatQuestionAnswerReturnedEvent()
                 }
 
@@ -154,8 +161,8 @@ internal class ChatViewModel @Inject constructor(
         val remainingCharacters = characterLimit - question.length
         val displayCharacterError = remainingCharacters < 0
 
-        _uiState.update {
-            (it as Default).copy(
+        _uiState.updateDefault {
+            it.copy(
                 question = question,
                 isPiiError = false,
                 displayCharacterWarning = remainingCharacters in 0..characterWarningThreshold,
@@ -226,8 +233,8 @@ internal class ChatViewModel @Inject constructor(
     private suspend fun <T> handleChatResult(chatResult: ChatResult<T>, onSuccess: suspend (T) -> Unit) {
         when (chatResult) {
             is Success -> onSuccess(chatResult.value)
-            is ValidationError -> _uiState.update {
-                (it as Default).copy(isLoading = false, isPiiError = true)
+            is ValidationError -> _uiState.updateDefault {
+                it.copy(isLoading = false, isPiiError = true)
             }
             is NotFound -> _uiState.value = Error(canRetry = true)
             is AuthError -> {
@@ -240,19 +247,17 @@ internal class ChatViewModel @Inject constructor(
 
     private fun addChatEntry(
         questionId: String,
-        question: String,
-        shouldAnimate: Boolean = true
+        question: String
     ) {
-        _uiState.update {
-            (it as Default).copy(
+        _uiState.updateDefault {
+            it.copy(
                 chatEntries = LinkedHashMap(it.chatEntries).apply {
                     put(
                         questionId,
                         ChatEntry(
                             question = question,
                             answer = "",
-                            sources = emptyList(),
-                            shouldAnimate = shouldAnimate
+                            sources = emptyList()
                         )
                     )
                 }
@@ -270,4 +275,11 @@ internal class ChatViewModel @Inject constructor(
             }
         }
     }
+
+    private inline fun MutableStateFlow<ChatUiState?>.updateDefault(
+        transform: (Default) -> Default
+    ) {
+        update { state -> transform(state as Default) }
+    }
+
 }
