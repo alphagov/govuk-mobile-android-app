@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import uk.gov.govuk.chat.domain.Analytics
-import uk.gov.govuk.chat.ui.chat.ChatErrorPageNoRetry
-import uk.gov.govuk.chat.ui.chat.ChatErrorPageWithRetry
+import uk.gov.govuk.chat.ui.component.ChatErrorPageNoRetry
+import uk.gov.govuk.chat.ui.component.ChatErrorPageWithRetry
 
 @Composable
 internal fun ErrorScreen(

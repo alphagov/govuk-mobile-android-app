@@ -73,9 +73,9 @@ import uk.gov.govuk.chat.ChatUiState.Default.ConversationState.NO_CONVERSATION
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.chat.domain.Analytics
-import uk.gov.govuk.chat.ui.chat.ActionMenu
-import uk.gov.govuk.chat.ui.chat.DisplayChatEntry
-import uk.gov.govuk.chat.ui.chat.IntroMessages
+import uk.gov.govuk.chat.ui.component.ActionMenu
+import uk.gov.govuk.chat.ui.component.DisplayChatEntry
+import uk.gov.govuk.chat.ui.component.IntroMessages
 import uk.gov.govuk.config.data.remote.model.ChatUrls
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer

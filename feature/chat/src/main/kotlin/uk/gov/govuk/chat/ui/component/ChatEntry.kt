@@ -1,4 +1,4 @@
-package uk.gov.govuk.chat.ui.chat
+package uk.gov.govuk.chat.ui.component
 
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable

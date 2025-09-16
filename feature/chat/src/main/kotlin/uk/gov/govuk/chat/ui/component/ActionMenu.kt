@@ -1,4 +1,4 @@
-package uk.gov.govuk.chat.ui.chat
+package uk.gov.govuk.chat.ui.component
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background

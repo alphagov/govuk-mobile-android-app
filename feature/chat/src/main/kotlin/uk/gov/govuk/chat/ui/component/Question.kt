@@ -1,4 +1,4 @@
-package uk.gov.govuk.chat.ui.chat
+package uk.gov.govuk.chat.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

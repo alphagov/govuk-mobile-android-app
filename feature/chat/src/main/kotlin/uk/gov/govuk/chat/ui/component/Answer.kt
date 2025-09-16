@@ -1,4 +1,4 @@
-package uk.gov.govuk.chat.ui.chat
+package uk.gov.govuk.chat.ui.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

@@ -1,4 +1,4 @@
-package uk.gov.govuk.chat.ui.chat
+package uk.gov.govuk.chat.ui.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
