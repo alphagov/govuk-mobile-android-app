@@ -46,8 +46,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.ChatUiState
-import uk.gov.govuk.chat.ChatUiState.Default.ConversationState.LOADING
-import uk.gov.govuk.chat.ChatUiState.Default.ConversationState.NO_CONVERSATION
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.chat.domain.Analytics
@@ -177,7 +175,7 @@ private fun ChatScreen(
     }
 
     Box(modifier.fillMaxSize()) {
-        if (uiState.conversationState == NO_CONVERSATION) {
+        if (uiState.chatEntries.isEmpty()) {
             AnimatedVisibility(
                 visible = backgroundVisible,
                 enter = fadeIn(animationSpec = tween(durationMillis = 2000))
@@ -208,17 +206,14 @@ private fun ChatScreen(
                     .weight(1f)
                     .padding(horizontal = GovUkTheme.spacing.medium)
             ) {
-                if (uiState.conversationState != LOADING) {
-                    item {
-                        IntroMessages(uiState.conversationState == NO_CONVERSATION) // only animate if no conversation
-                    }
+                item {
+                    IntroMessages(uiState.chatEntries.isEmpty()) // only animate if no conversation
                 }
 
                 items(chatEntries) {
                     DisplayChatEntry(
                         chatEntry = it.second,
                         isLoading = uiState.isLoading,
-                        shouldAnimate = uiState.conversationState != LOADING,
                         onMarkdownLinkClicked = { text, url ->
                             launchBrowser(url)
                             analyticsEvents.onMarkdownLinkClicked(text, url)

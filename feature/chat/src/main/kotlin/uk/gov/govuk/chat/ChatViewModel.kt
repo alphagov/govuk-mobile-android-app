@@ -11,9 +11,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.chat.ChatUiState.Default
-import uk.gov.govuk.chat.ChatUiState.Default.ConversationState.HAS_CONVERSATION
-import uk.gov.govuk.chat.ChatUiState.Default.ConversationState.LOADING
-import uk.gov.govuk.chat.ChatUiState.Default.ConversationState.NO_CONVERSATION
 import uk.gov.govuk.chat.ChatUiState.Error
 import uk.gov.govuk.chat.ChatUiState.Onboarding
 import uk.gov.govuk.chat.data.ChatRepo
@@ -37,19 +34,13 @@ internal sealed class ChatUiState {
     data class Default(
         val question: String = "",
         val chatEntries: LinkedHashMap<String, ChatEntry> = linkedMapOf(),
-        val conversationState: ConversationState = LOADING,
         val isLoading: Boolean = false,
         val isPiiError: Boolean = false,
         val displayCharacterWarning: Boolean = false,
         val displayCharacterError: Boolean = false,
         val charactersRemaining: Int = 0,
-        val isSubmitEnabled: Boolean = false,
-        val hasSeenOnboarding: Boolean? = null
-    ): ChatUiState() {
-        enum class ConversationState {
-            LOADING, HAS_CONVERSATION, NO_CONVERSATION
-        }
-    }
+        val isSubmitEnabled: Boolean = false
+    ): ChatUiState()
 }
 
 @HiltViewModel
@@ -88,12 +79,11 @@ internal class ChatViewModel @Inject constructor(
                     conversation.answeredQuestions.forEach { question ->
                         addChatEntry(
                             questionId = question.id,
-                            question = question.message
+                            question = question.message,
+                            shouldAnimate = false
                         )
                         updateChatEntry(question.id, question.answer)
                     }
-
-                    _uiState.update { (it as Default).copy(conversationState = HAS_CONVERSATION) }
 
                     conversation.pendingQuestion?.let { pendingQuestion ->
                         addChatEntry(
@@ -109,20 +99,14 @@ internal class ChatViewModel @Inject constructor(
                     _uiState.update { (it as Default).copy(isLoading = false) }
                 }
             } ?: run {
-                _uiState.value = Default(
-                    isLoading = false,
-                    conversationState = NO_CONVERSATION
-                )
+                _uiState.value = Default(isLoading = false)
             }
         }
     }
 
     fun clearConversation() {
         viewModelScope.launch {
-            _uiState.value = Default(
-                isLoading = true,
-                conversationState = NO_CONVERSATION
-            )
+            _uiState.value = Default(isLoading = true)
             chatRepo.clearConversation()
             _uiState.update { (it as Default).copy(isLoading = false) }
         }
@@ -144,7 +128,6 @@ internal class ChatViewModel @Inject constructor(
                 _uiState.update { (it as Default).copy(isLoading = true) }
 
                 handleChatResult(chatRepo.askQuestion(question)) { answeredQuestion ->
-                    _uiState.update { (it as Default).copy(conversationState = HAS_CONVERSATION) }
                     addChatEntry(
                         questionId = answeredQuestion.id,
                         question = answeredQuestion.message
@@ -257,7 +240,11 @@ internal class ChatViewModel @Inject constructor(
         }
     }
 
-    private fun addChatEntry(questionId: String, question: String) {
+    private fun addChatEntry(
+        questionId: String,
+        question: String,
+        shouldAnimate: Boolean = true
+    ) {
         _uiState.update {
             (it as Default).copy(
                 chatEntries = LinkedHashMap(it.chatEntries).apply {
@@ -266,7 +253,8 @@ internal class ChatViewModel @Inject constructor(
                         ChatEntry(
                             question = question,
                             answer = "",
-                            sources = emptyList()
+                            sources = emptyList(),
+                            shouldAnimate = shouldAnimate
                         )
                     )
                 }

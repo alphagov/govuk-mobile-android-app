@@ -33,7 +33,6 @@ private enum class DisplayState { Idle, Loading, Answer }
 internal fun DisplayChatEntry(
     chatEntry: ChatEntry,
     isLoading: Boolean,
-    shouldAnimate: Boolean,
     onMarkdownLinkClicked: (String, String) -> Unit,
     onSourcesExpanded: () -> Unit,
     modifier: Modifier = Modifier
@@ -43,7 +42,7 @@ internal fun DisplayChatEntry(
         Question(question = chatEntry.question)
         MediumVerticalSpacer()
 
-        if (shouldAnimate) {
+        if (chatEntry.shouldAnimate) {
             AnimatedChatEntry(
                 chatEntry = chatEntry,
                 isLoading = isLoading,
