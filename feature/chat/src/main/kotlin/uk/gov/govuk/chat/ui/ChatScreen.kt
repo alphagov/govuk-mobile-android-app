@@ -148,7 +148,7 @@ internal fun ChatRoute(
 @Composable
 private fun ChatScreen(
     uiState: ChatUiState.Default,
-    launchBrowser: (url: String) -> Unit, // Todo - can we remove this???
+    launchBrowser: (url: String) -> Unit,
     hasConversation: Boolean,
     uiEvents: UiEvents,
     analyticsEvents: AnalyticsEvents,
@@ -219,8 +219,10 @@ private fun ChatScreen(
                         chatEntry = it.second,
                         isLoading = uiState.isLoading,
                         shouldAnimate = uiState.conversationState != LOADING,
-                        launchBrowser = launchBrowser,
-                        onMarkdownLinkClicked = analyticsEvents.onMarkdownLinkClicked,
+                        onMarkdownLinkClicked = { text, url ->
+                            launchBrowser(url)
+                            analyticsEvents.onMarkdownLinkClicked(text, url)
+                        },
                         onSourcesExpanded = analyticsEvents.onSourcesExpanded,
                     )
                 }

@@ -34,7 +34,6 @@ internal fun DisplayChatEntry(
     chatEntry: ChatEntry,
     isLoading: Boolean,
     shouldAnimate: Boolean,
-    launchBrowser: (url: String) -> Unit,
     onMarkdownLinkClicked: (String, String) -> Unit,
     onSourcesExpanded: () -> Unit,
     modifier: Modifier = Modifier
@@ -48,7 +47,6 @@ internal fun DisplayChatEntry(
             AnimatedChatEntry(
                 chatEntry = chatEntry,
                 isLoading = isLoading,
-                launchBrowser = launchBrowser,
                 onMarkdownLinkClicked = onMarkdownLinkClicked,
                 onSourcesExpanded = onSourcesExpanded
             )
@@ -56,7 +54,6 @@ internal fun DisplayChatEntry(
             InstantChatEntry(
                 chatEntry = chatEntry,
                 isLoading = isLoading,
-                launchBrowser = launchBrowser,
                 onMarkdownLinkClicked = onMarkdownLinkClicked,
                 onSourcesExpanded = onSourcesExpanded
             )
@@ -68,7 +65,6 @@ internal fun DisplayChatEntry(
 private fun AnimatedChatEntry(
     chatEntry: ChatEntry,
     isLoading: Boolean,
-    launchBrowser: (url: String) -> Unit,
     onMarkdownLinkClicked: (String, String) -> Unit,
     onSourcesExpanded: () -> Unit,
     modifier: Modifier = Modifier
@@ -100,7 +96,6 @@ private fun AnimatedChatEntry(
             DisplayState.Answer -> Answer(
                 answer = chatEntry.answer,
                 sources = chatEntry.sources,
-                launchBrowser = launchBrowser,
                 onMarkdownLinkClicked = onMarkdownLinkClicked,
                 onSourcesExpanded = onSourcesExpanded
             )
@@ -114,7 +109,6 @@ private fun AnimatedChatEntry(
 private fun InstantChatEntry(
     chatEntry: ChatEntry,
     isLoading: Boolean,
-    launchBrowser: (url: String) -> Unit,
     onMarkdownLinkClicked: (String, String) -> Unit,
     onSourcesExpanded: () -> Unit,
     modifier: Modifier = Modifier
@@ -125,7 +119,6 @@ private fun InstantChatEntry(
         Answer(
             answer = chatEntry.answer,
             sources = chatEntry.sources,
-            launchBrowser = launchBrowser,
             onMarkdownLinkClicked = onMarkdownLinkClicked,
             onSourcesExpanded = onSourcesExpanded,
             modifier = modifier

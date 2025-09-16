@@ -14,7 +14,6 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 internal fun Markdown(
     text: String,
     talkbackText: String,
-    launchBrowser: (url: String) -> Unit,
     onMarkdownLinkClicked: (String, String) -> Unit,
     markdownLinkType: String,
     modifier: Modifier = Modifier
@@ -38,7 +37,6 @@ internal fun Markdown(
             },
         onLinkClicked = { url ->
             onMarkdownLinkClicked(markdownLinkType, url)
-            launchBrowser(url)
         }
     )
 }
