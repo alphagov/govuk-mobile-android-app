@@ -78,7 +78,6 @@ internal class UiEvents(
 internal fun ChatRoute(
     onShowOnboarding: () -> Unit,
     launchBrowser: (url: String) -> Unit,
-    onClearDone: () -> Unit,
     onAuthError: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -130,7 +129,6 @@ internal fun ChatRoute(
                         },
                         onClear = {
                             viewModel.clearConversation()
-                            onClearDone()
                         }
                     ),
                     chatUrls = viewModel.chatUrls,
@@ -150,7 +148,7 @@ internal fun ChatRoute(
 @Composable
 private fun ChatScreen(
     uiState: ChatUiState.Default,
-    launchBrowser: (url: String) -> Unit,
+    launchBrowser: (url: String) -> Unit, // Todo - can we remove this???
     hasConversation: Boolean,
     uiEvents: UiEvents,
     analyticsEvents: AnalyticsEvents,

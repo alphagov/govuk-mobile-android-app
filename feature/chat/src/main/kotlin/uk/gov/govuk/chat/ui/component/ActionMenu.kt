@@ -120,7 +120,7 @@ internal fun ActionMenu(
 private fun ClearMenuItem(
     enabled: Boolean,
     onClear: () -> Unit,
-    onClearActioned: () -> Unit,
+    onClearActioned: () -> Unit, // Todo - what is this for???
     onFunctionItemClicked: (String, String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {

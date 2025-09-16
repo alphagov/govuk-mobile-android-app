@@ -105,12 +105,15 @@ internal class ChatViewModel @Inject constructor(
                             questionId = pendingQuestion.id
                         )
                     }
+
+                    _uiState.update { (it as Default).copy(isLoading = false) }
                 }
             } ?: run {
-                _uiState.value = Default(conversationState = NO_CONVERSATION)
+                _uiState.value = Default(
+                    isLoading = false,
+                    conversationState = NO_CONVERSATION
+                )
             }
-
-            _uiState.update { (it as Default).copy(isLoading = false) }
         }
     }
 
@@ -151,10 +154,12 @@ internal class ChatViewModel @Inject constructor(
                         conversationId = answeredQuestion.conversationId,
                         questionId = answeredQuestion.id
                     )
+
+                    _uiState.update { (it as Default).copy(isLoading = false) }
+                    analyticsClient.chatQuestionAnswerReturnedEvent()
                 }
 
-                _uiState.update { (it as Default).copy(isLoading = false) }
-                analyticsClient.chatQuestionAnswerReturnedEvent()
+
             }
         }
     }
@@ -240,7 +245,9 @@ internal class ChatViewModel @Inject constructor(
     private suspend fun <T> handleChatResult(chatResult: ChatResult<T>, onSuccess: suspend (T) -> Unit) {
         when (chatResult) {
             is Success -> onSuccess(chatResult.value)
-            is ValidationError -> _uiState.update { (it as Default).copy(isPiiError = true) }
+            is ValidationError -> _uiState.update {
+                (it as Default).copy(isLoading = false, isPiiError = true)
+            }
             is NotFound -> _uiState.value = Error(canRetry = true)
             is AuthError -> {
                 authRepo.clear()

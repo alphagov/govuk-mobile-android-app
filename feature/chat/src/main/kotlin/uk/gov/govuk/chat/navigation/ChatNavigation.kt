@@ -39,9 +39,6 @@ fun NavGraphBuilder.chatGraph(
                 onShowOnboarding = {
                     navController.navigateToOnboardingPageOne()
                 },
-                onClearDone = {
-                    navController.navigateToChat()
-                },
                 launchBrowser = launchBrowser,
                 onAuthError = onAuthError,
                 modifier = modifier
