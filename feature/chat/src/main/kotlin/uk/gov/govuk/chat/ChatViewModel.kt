@@ -38,8 +38,7 @@ internal sealed class ChatUiState {
         val isPiiError: Boolean = false,
         val displayCharacterWarning: Boolean = false,
         val displayCharacterError: Boolean = false,
-        val charactersRemaining: Int = 0,
-        val isSubmitEnabled: Boolean = false
+        val charactersRemaining: Int = 0
     ): ChatUiState()
 }
 
@@ -161,8 +160,7 @@ internal class ChatViewModel @Inject constructor(
                 isPiiError = false,
                 displayCharacterWarning = remainingCharacters in 0..characterWarningThreshold,
                 displayCharacterError = displayCharacterError,
-                charactersRemaining = characterLimit - question.length,
-                isSubmitEnabled = question.isNotBlank() && !displayCharacterError
+                charactersRemaining = characterLimit - question.length
             )
         }
     }

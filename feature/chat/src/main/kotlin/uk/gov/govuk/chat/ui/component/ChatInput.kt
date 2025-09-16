@@ -149,7 +149,8 @@ internal fun ChatInput(
                     onClick = {
                         onSubmit(uiState.question)
                     },
-                    enabled = uiState.isSubmitEnabled && !uiState.isPiiError && !uiState.isLoading
+                    enabled = uiState.question.isNotBlank() && !uiState.displayCharacterError
+                            && !uiState.isPiiError && !uiState.isLoading
                 )
             }
         }
