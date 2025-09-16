@@ -61,14 +61,14 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 internal class AnalyticsEvents(
     val onPageView: (String, String, String) -> Unit,
-    val onActionItemFunctionClicked: (String, String, String) -> Unit,
-    val onActionItemNavigationClicked: (String, String) -> Unit,
+    val onNavigationActionItemClicked: (String, String) -> Unit,
+    val onFunctionActionItemClicked: (String, String, String) -> Unit,
     val onQuestionSubmit: () -> Unit,
     val onMarkdownLinkClicked: (String, String) -> Unit,
     val onSourcesExpanded: () -> Unit
 )
 
-internal class ClickEvents(
+internal class UiEvents(
     val onQuestionUpdated: (String) -> Unit,
     val onSubmit: (String) -> Unit,
     val onClear: () -> Unit,
@@ -109,11 +109,11 @@ internal fun ChatRoute(
                     uiState = it,
                     analyticsEvents = AnalyticsEvents(
                         onPageView = onPageView,
-                        onActionItemFunctionClicked = { text, section, action ->
-                            viewModel.onActionItemFunctionClicked(text, section, action)
+                        onNavigationActionItemClicked = { text, url ->
+                            viewModel.onNavigationActionItemClicked(text, url)
                         },
-                        onActionItemNavigationClicked = { text, url ->
-                            viewModel.onActionItemNavigationClicked(text, url)
+                        onFunctionActionItemClicked = { text, section, action ->
+                            viewModel.onFunctionActionItemClicked(text, section, action)
                         },
                         onQuestionSubmit = { viewModel.onQuestionSubmit() },
                         onMarkdownLinkClicked = { text, url -> viewModel.onMarkdownLinkClicked(text, url) },
@@ -121,7 +121,7 @@ internal fun ChatRoute(
                     ),
                     launchBrowser = launchBrowser,
                     hasConversation = it.chatEntries.isNotEmpty(),
-                    clickEvents = ClickEvents(
+                    uiEvents = UiEvents(
                         onQuestionUpdated = { question ->
                             viewModel.onQuestionUpdated(question)
                         },
@@ -152,7 +152,7 @@ private fun ChatScreen(
     uiState: ChatUiState.Default,
     launchBrowser: (url: String) -> Unit,
     hasConversation: Boolean,
-    clickEvents: ClickEvents,
+    uiEvents: UiEvents,
     analyticsEvents: AnalyticsEvents,
     chatUrls: ChatUrls,
     modifier: Modifier = Modifier
@@ -240,10 +240,20 @@ private fun ChatScreen(
                 ) {
                     ChatInput(
                         uiState,
-                        launchBrowser = launchBrowser,
                         hasConversation = hasConversation,
-                        analyticsEvents = analyticsEvents,
-                        clickEvents = clickEvents,
+                        onNavigationActionItemClicked = { text, url ->
+                            launchBrowser(url)
+                            analyticsEvents.onNavigationActionItemClicked(text, url)
+                        },
+                        onFunctionActionItemClicked = { text, section, action ->
+                            analyticsEvents.onFunctionActionItemClicked(text, section, action)
+                        },
+                        onClear = uiEvents.onClear,
+                        onQuestionUpdated = uiEvents.onQuestionUpdated,
+                        onSubmit = { question ->
+                            uiEvents.onSubmit(question)
+                            analyticsEvents.onQuestionSubmit()
+                        },
                         chatUrls = chatUrls
                     )
                 }
@@ -322,14 +332,14 @@ private fun PiiErrorMessage(
 
 private fun analyticsEvents() = AnalyticsEvents(
     onPageView = { _, _, _ -> },
-    onActionItemFunctionClicked = { _, _, _ -> },
-    onActionItemNavigationClicked = { _, _ ->  },
+    onFunctionActionItemClicked = { _, _, _ -> },
+    onNavigationActionItemClicked = { _, _ ->  },
     onQuestionSubmit = { },
     onMarkdownLinkClicked = { _, _ -> },
     onSourcesExpanded = { }
 )
 
-private fun clickEvents() = ClickEvents(
+private fun clickEvents() = UiEvents(
     onQuestionUpdated = { _ -> },
     onSubmit = { _ -> },
     onClear = { }
@@ -348,7 +358,7 @@ private fun LightModeChatScreenPreview() {
             launchBrowser = { _ -> },
             hasConversation = false,
             chatUrls = ChatUrls("", "", "", ""),
-            clickEvents = clickEvents()
+            uiEvents = clickEvents()
         )
     }
 }
@@ -366,7 +376,7 @@ private fun DarkModeChatScreenPreview() {
             launchBrowser = { _ -> },
             hasConversation = false,
             chatUrls = ChatUrls("", "", "", ""),
-            clickEvents = clickEvents()
+            uiEvents = clickEvents()
         )
     }
 }

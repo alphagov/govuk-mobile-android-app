@@ -187,19 +187,19 @@ internal class ChatViewModel @Inject constructor(
         )
     }
 
-    fun onActionItemFunctionClicked(text: String, section: String, action: String) {
-        analyticsClient.buttonFunction(
-            text = text,
-            section = section,
-            action = action
-        )
-    }
-
-    fun onActionItemNavigationClicked(text: String, url: String) {
+    fun onNavigationActionItemClicked(text: String, url: String) {
         analyticsClient.buttonClick(
             text = text,
             url = url,
             external = true
+        )
+    }
+
+    fun onFunctionActionItemClicked(text: String, section: String, action: String) {
+        analyticsClient.buttonFunction(
+            text = text,
+            section = section,
+            action = action
         )
     }
 

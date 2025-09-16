@@ -40,8 +40,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.R
-import uk.gov.govuk.chat.ui.AnalyticsEvents
-import uk.gov.govuk.chat.ui.ClickEvents
 import uk.gov.govuk.config.data.remote.model.ChatUrls
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import kotlin.math.abs
@@ -49,10 +47,12 @@ import kotlin.math.abs
 @Composable
 internal fun ChatInput(
     uiState: ChatUiState.Default,
-    launchBrowser: (url: String) -> Unit,
     hasConversation: Boolean,
-    analyticsEvents: AnalyticsEvents,
-    clickEvents: ClickEvents,
+    onNavigationActionItemClicked: (String, String) -> Unit,
+    onFunctionActionItemClicked: (String, String, String) -> Unit,
+    onClear: () -> Unit,
+    onQuestionUpdated: (String) -> Unit,
+    onSubmit: (String) -> Unit,
     chatUrls: ChatUrls,
     modifier: Modifier = Modifier
 ) {
@@ -71,11 +71,15 @@ internal fun ChatInput(
         Row {
             AnimatedVisibility(!isFocused) {
                 ActionMenu(
-                    launchBrowser = launchBrowser,
                     hasConversation = hasConversation,
                     isLoading = uiState.isLoading,
-                    onClear = clickEvents.onClear,
-                    analyticsEvents = analyticsEvents,
+                    onClear = onClear,
+                    onNavigationItemClicked = { text, url ->
+                        onNavigationActionItemClicked(text, url)
+                    },
+                    onFunctionItemClicked = { text, section, action ->
+                        onFunctionActionItemClicked(text, section, action)
+                    },
                     chatUrls = chatUrls,
                     modifier = Modifier.semantics { this.traversalIndex = 1f }
                 )
@@ -104,9 +108,7 @@ internal fun ChatInput(
                 else
                     RoundedCornerShape(40.dp),
                 singleLine = false,
-                onValueChange = {
-                    clickEvents.onQuestionUpdated(it)
-                },
+                onValueChange = onQuestionUpdated,
                 placeholder = {
                     PlaceholderText(
                         isFocused = isFocused,
@@ -145,8 +147,7 @@ internal fun ChatInput(
 
                 SubmitIconButton(
                     onClick = {
-                        analyticsEvents.onQuestionSubmit()
-                        clickEvents.onSubmit(uiState.question)
+                        onSubmit(uiState.question)
                     },
                     enabled = uiState.isSubmitEnabled && !uiState.isPiiError && !uiState.isLoading
                 )
