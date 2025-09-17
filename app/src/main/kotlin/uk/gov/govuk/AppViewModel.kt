@@ -22,8 +22,8 @@ import uk.gov.govuk.login.data.LoginRepo
 import uk.gov.govuk.navigation.AppNavigation
 import uk.gov.govuk.search.SearchFeature
 import uk.gov.govuk.topics.TopicsFeature
-import uk.gov.govuk.widgets.model.HomeWidget
 import uk.gov.govuk.visited.Visited
+import uk.gov.govuk.widgets.model.HomeWidget
 import uk.govuk.app.local.LocalFeature
 import javax.inject.Inject
 
@@ -81,7 +81,8 @@ internal class AppViewModel @Inject constructor(
                             shouldShowExternalBrowser = flagRepo.isExternalBrowserEnabled(),
                             isChatEnabled = flagRepo.isChatEnabled() &&
                                     flagRepo.isChatTestActiveEnabled() &&
-                                    it.third
+                                    it.third,
+                            userChatOptInState = it.third
                         )
 
                         updateHomeWidgets(it.first, it.second)
