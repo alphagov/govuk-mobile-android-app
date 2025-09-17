@@ -16,11 +16,12 @@ internal class HomeViewModel @Inject constructor(
         private const val TITLE = "Homepage"
     }
 
-    fun onPageView() {
-        analyticsClient.screenView(
+    fun onPageView(userChatOptInState: Boolean) {
+        analyticsClient.screenViewWithType(
             screenClass = SCREEN_CLASS,
             screenName = SCREEN_NAME,
-            title = TITLE
+            title = TITLE,
+            type = if (userChatOptInState) "chatOptIn" else "chatOptOut"
         )
     }
 }

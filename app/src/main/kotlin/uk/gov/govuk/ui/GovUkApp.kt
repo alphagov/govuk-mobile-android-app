@@ -210,6 +210,7 @@ private fun BottomNavScaffold(
                         viewModel.onSuppressWidgetClick(id, section)
                     },
                     shouldShowExternalBrowser = uiState.shouldShowExternalBrowser,
+                    userChatOptInState = uiState.userChatOptInState,
                     paddingValues = paddingValues
                 )
                 HandleOnResumeNavigation(
@@ -332,6 +333,7 @@ private fun GovUkNavHost(
     onExternalWidgetClick: (String, String?) -> Unit,
     onSuppressWidgetClick: (id: String) -> Unit,
     shouldShowExternalBrowser: Boolean,
+    userChatOptInState: Boolean,
     paddingValues: PaddingValues
 ) {
     val appNavigation = viewModel.appNavigation
@@ -429,6 +431,7 @@ private fun GovUkNavHost(
                     }
                 }
             ),
+            userChatOptInState = userChatOptInState,
             modifier = Modifier.padding(paddingValues),
             headerWidget = if (homeWidgets.contains(HomeWidget.Search)) {
                 { modifier ->
