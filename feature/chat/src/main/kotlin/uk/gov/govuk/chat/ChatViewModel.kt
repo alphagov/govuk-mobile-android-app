@@ -99,8 +99,6 @@ internal class ChatViewModel @Inject constructor(
                             conversationId = conversation.id,
                             questionId = pendingQuestion.id
                         )
-
-                        _uiState.updateDefault { it.copy(isLoading = false) }
                     }
                 }
             } ?: run {
@@ -142,12 +140,7 @@ internal class ChatViewModel @Inject constructor(
                         conversationId = answeredQuestion.conversationId,
                         questionId = answeredQuestion.id
                     )
-
-                    _uiState.updateDefault { it.copy(isLoading = false) }
-                    analyticsClient.chatQuestionAnswerReturnedEvent()
                 }
-
-
             }
         }
     }
@@ -226,6 +219,8 @@ internal class ChatViewModel @Inject constructor(
             )
         ) { answer ->
             updateChatEntry(questionId, answer)
+            _uiState.updateDefault { it.copy(isLoading = false) }
+            analyticsClient.chatQuestionAnswerReturnedEvent()
         }
     }
 
