@@ -4,6 +4,7 @@ import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
 import android.widget.ImageView
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,22 +43,12 @@ internal fun DisplayChatEntry(
         MediumVerticalSpacer()
         Question(question = chatEntry.question)
         MediumVerticalSpacer()
-
-        if (chatEntry.shouldAnimate) {
-            AnimatedChatEntry(
-                chatEntry = chatEntry,
-                isLoading = isLoading,
-                onMarkdownLinkClicked = onMarkdownLinkClicked,
-                onSourcesExpanded = onSourcesExpanded
-            )
-        } else {
-            InstantChatEntry(
-                chatEntry = chatEntry,
-                isLoading = isLoading,
-                onMarkdownLinkClicked = onMarkdownLinkClicked,
-                onSourcesExpanded = onSourcesExpanded
-            )
-        }
+        AnimatedChatEntry(
+            chatEntry = chatEntry,
+            isLoading = isLoading,
+            onMarkdownLinkClicked = onMarkdownLinkClicked,
+            onSourcesExpanded = onSourcesExpanded
+        )
     }
 }
 
@@ -68,7 +60,7 @@ private fun AnimatedChatEntry(
     onSourcesExpanded: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val displayState = remember(chatEntry.id) { mutableStateOf(DisplayState.Idle) }
+    val displayState = rememberSaveable(chatEntry.id) { mutableStateOf(DisplayState.Idle) }
 
     LaunchedEffect(isLoading, chatEntry.answer) {
         when {
@@ -88,7 +80,7 @@ private fun AnimatedChatEntry(
 
     Crossfade(
         targetState = displayState.value,
-        animationSpec = tween(durationMillis = 1000)
+        animationSpec = if (chatEntry.shouldAnimate) tween(durationMillis = 1000) else snap()
     ) { state ->
         when (state) {
             DisplayState.Loading -> Loading(modifier)
@@ -101,28 +93,6 @@ private fun AnimatedChatEntry(
 
             DisplayState.Idle -> {}
         }
-    }
-}
-
-@Composable
-private fun InstantChatEntry(
-    chatEntry: ChatEntry,
-    isLoading: Boolean,
-    onMarkdownLinkClicked: (String, String) -> Unit,
-    onSourcesExpanded: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    if (isLoading && chatEntry.answer.isEmpty()) {
-        Loading(modifier)
-    } else {
-        Answer(
-            answer = chatEntry.answer,
-            sources = chatEntry.sources,
-            onMarkdownLinkClicked = onMarkdownLinkClicked,
-            onSourcesExpanded = onSourcesExpanded,
-            modifier = modifier
-        )
-
     }
 }
 
