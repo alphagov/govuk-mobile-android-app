@@ -1,4 +1,4 @@
-package uk.gov.govuk.chat.ui.chat
+package uk.gov.govuk.chat.ui.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,7 +16,6 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 @Composable
 internal fun Answer(
     answer: String,
-    launchBrowser: (url: String) -> Unit,
     onMarkdownLinkClicked: (String, String) -> Unit,
     onSourcesExpanded: () -> Unit,
     modifier: Modifier = Modifier,
@@ -45,7 +44,6 @@ internal fun Answer(
         Markdown(
             text = answer,
             talkbackText = answer,
-            launchBrowser = launchBrowser,
             onMarkdownLinkClicked = onMarkdownLinkClicked,
             markdownLinkType = Analytics.RESPONSE_LINK_CLICKED
         )
@@ -53,7 +51,6 @@ internal fun Answer(
         if (!sources.isNullOrEmpty()) {
             Sources(
                 sources = sources,
-                launchBrowser = launchBrowser,
                 onMarkdownLinkClicked = onMarkdownLinkClicked,
                 onSourcesExpanded = onSourcesExpanded
             )

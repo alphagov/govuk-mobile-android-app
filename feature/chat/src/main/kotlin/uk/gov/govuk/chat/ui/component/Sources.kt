@@ -1,4 +1,4 @@
-package uk.gov.govuk.chat.ui.chat
+package uk.gov.govuk.chat.ui.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -32,7 +32,6 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 @Composable
 internal fun Sources(
     sources: List<String>,
-    launchBrowser: (url: String) -> Unit,
     onMarkdownLinkClicked: (String, String) -> Unit,
     onSourcesExpanded: () -> Unit,
     modifier: Modifier = Modifier
@@ -109,7 +108,6 @@ internal fun Sources(
                     Markdown(
                         text = sources[index],
                         talkbackText = linkText,
-                        launchBrowser = launchBrowser,
                         onMarkdownLinkClicked = onMarkdownLinkClicked,
                         markdownLinkType = Analytics.RESPONSE_SOURCE_LINK_CLICKED
                     )
