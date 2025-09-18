@@ -202,7 +202,7 @@ private fun Modifier.modifyIfFocused(isFocused: Boolean): Modifier {
 @Composable
 private fun PlaceholderText(
     isFocused: Boolean,
-    question:String,
+    question: String,
     modifier: Modifier = Modifier
 ) {
     if (!isFocused && question.isEmpty()) {
