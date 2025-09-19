@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.realm.base)
 
     implementation(libs.compose.markdown)
+    implementation(libs.androidx.compose.animation)
 
     ksp(libs.hilt.compiler)
 

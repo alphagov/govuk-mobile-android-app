@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="widget_title">Chat</string>
-  <string name="input_label">Type your message here</string>
+  <string name="input_label">Ask a question…</string>
   <string name="button_text">Go</string>
   <string name="sources_header">Sources</string>
   <string name="pii_error_message">Personal data has been detected in your question. Please remove it and try again.</string>
