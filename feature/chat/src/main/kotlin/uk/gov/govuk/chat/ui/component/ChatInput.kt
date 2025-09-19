@@ -108,7 +108,7 @@ internal fun ChatInput(
                     .animateContentSize(
                         animationSpec = tween(durationMillis = 500)
                     )
-                    .fillMaxWidth(if (isFocused) 1f else 0.87f)
+                    .fillMaxWidth(if (isFocused && uiState.question.isNotEmpty()) 1f else 0.87f)
                     .focusRequester(focusRequester)
                     .focusable(true)
                     .onFocusChanged {
@@ -127,7 +127,7 @@ internal fun ChatInput(
                 colors = inputTextFieldDefaults(),
                 trailingIcon = {
                     AnimateIcon(
-                        isFocused,
+                        isFocused && uiState.question.isNotEmpty(),
                         {
                             SubmitIconButton(
                                 onClick = {
@@ -142,7 +142,7 @@ internal fun ChatInput(
             )
 
             AnimateIcon(
-                !isFocused,
+                uiState.question.isEmpty(),
                 {
                     ActionMenu(
                         hasConversation = hasConversation,
@@ -275,7 +275,7 @@ private fun CharacterCountMessage(
 
 @Composable
 private fun AnimateIcon(
-    isFocused: Boolean,
+    visible: Boolean,
     icon: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -285,7 +285,7 @@ private fun AnimateIcon(
     // Finish at alpha = 1 and scale of 100%
 
     AnimatedVisibility(
-        visible = isFocused,
+        visible = visible,
         enter = scaleIn(
             animationSpec = tween(durationMillis = animationSpeed),
             initialScale = 0.5f,
