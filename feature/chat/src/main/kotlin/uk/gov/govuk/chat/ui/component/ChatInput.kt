@@ -121,10 +121,7 @@ internal fun ChatInput(
                 singleLine = false,
                 onValueChange = onQuestionUpdated,
                 placeholder = {
-                    PlaceholderText(
-                        isFocused = isFocused,
-                        question = uiState.question
-                    )
+                    PlaceholderText(question = uiState.question)
                 },
                 isError = uiState.isPiiError,
                 colors = inputTextFieldDefaults(),
@@ -168,11 +165,10 @@ internal fun ChatInput(
 
 @Composable
 private fun PlaceholderText(
-    isFocused: Boolean,
     question: String,
     modifier: Modifier = Modifier
 ) {
-    if (!isFocused && question.isEmpty()) {
+    if (question.isEmpty()) {
         Text(
             text = stringResource(id = R.string.input_label),
             color = GovUkTheme.colourScheme.textAndIcons.secondary,
