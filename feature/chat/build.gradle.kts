@@ -24,7 +24,7 @@ android {
 
     buildTypes {
         release {
-            buildConfigField("String", "CHAT_BASE_URL", "\"https://t4l83ued82.execute-api.eu-west-2.amazonaws.com/staging/\"")
+            buildConfigField("String", "CHAT_BASE_URL", "\"https://9olgmwodf3.execute-api.eu-west-2.amazonaws.com/production/\"")
         }
     }
 
