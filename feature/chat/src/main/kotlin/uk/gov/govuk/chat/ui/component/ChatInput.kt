@@ -106,7 +106,7 @@ internal fun ChatInput(
                 modifier = Modifier
                     .padding(top = 0.dp, bottom = 0.dp)
                     .animateContentSize(
-                        animationSpec = tween(durationMillis = 500)
+                        animationSpec = tween(durationMillis = 100)
                     )
                     .fillMaxWidth(if (isFocused && uiState.question.isNotEmpty()) 1f else 0.87f)
                     .focusRequester(focusRequester)
@@ -279,7 +279,8 @@ private fun AnimateIcon(
     icon: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val animationSpeed = 500
+    val animationSpeed = 300
+    val animationDelay = 100
 
     // Start at alpha = 0 and scale of 50%
     // Finish at alpha = 1 and scale of 100%
@@ -287,11 +288,17 @@ private fun AnimateIcon(
     AnimatedVisibility(
         visible = visible,
         enter = scaleIn(
-            animationSpec = tween(durationMillis = animationSpeed),
+            animationSpec = tween(
+                durationMillis = animationSpeed,
+                delayMillis = animationDelay
+            ),
             initialScale = 0.5f,
             transformOrigin = TransformOrigin.Center
         ) + fadeIn(
-            animationSpec = tween(durationMillis = animationSpeed),
+            animationSpec = tween(
+                durationMillis = animationSpeed,
+                delayMillis = animationDelay
+            ),
             initialAlpha = 0f
         ),
         exit = scaleOut(
