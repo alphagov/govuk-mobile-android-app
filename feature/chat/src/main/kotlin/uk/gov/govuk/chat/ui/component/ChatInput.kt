@@ -132,9 +132,9 @@ internal fun ChatInput(
                             SubmitIconButton(
                                 onClick = {
                                     onSubmit(uiState.question)
-                                    isFocused = false
                                 },
-                                enabled = true
+                                enabled = uiState.question.isNotBlank() && !uiState.displayCharacterError
+                                    && !uiState.isPiiError && !uiState.isLoading
                             )
                         }
                     )
