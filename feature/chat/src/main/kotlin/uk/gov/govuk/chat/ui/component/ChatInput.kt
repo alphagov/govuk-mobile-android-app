@@ -7,7 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -91,51 +91,67 @@ internal fun ChatInput(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextField(
-                textStyle = TextStyle(
-                    color = GovUkTheme.colourScheme.textAndIcons.primary,
-                    fontSize = GovUkTheme.typography.bodyRegular.fontSize,
-                    fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
-                    fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
-                    lineHeight = GovUkTheme.typography.bodyRegular.lineHeight
-                ),
+            Box(
                 modifier = Modifier
+                    .fillMaxWidth(
+                        if (isFocused && uiState.question.isNotEmpty()) {
+                            1f
+                        } else {
+                            0.88f
+                        }
+                    )
                     .animateContentSize(
                         animationSpec = tween(durationMillis = 100)
                     )
-                    .fillMaxWidth(if (isFocused && uiState.question.isNotEmpty()) 1f else 0.88f)
-                    .focusRequester(focusRequester)
-                    .focusable(true)
-                    .onFocusChanged {
-                        isFocused = it.isFocused
-                    }
-                    .height(IntrinsicSize.Min)
-                    .semantics { this.traversalIndex = 1f },
-                value = if (isFocused) uiState.question else "",
-                shape = RoundedCornerShape(24.dp),
-                singleLine = false,
-                minLines = 1,
-                onValueChange = onQuestionUpdated,
-                placeholder = {
-                    PlaceholderText(question = uiState.question)
-                },
-                isError = uiState.isPiiError,
-                colors = inputTextFieldDefaults(),
-                trailingIcon = {
-                    AnimateIcon(
-                        isFocused && uiState.question.isNotEmpty(),
-                        {
-                            SubmitIconButton(
-                                onClick = {
-                                    onSubmit(uiState.question)
-                                },
-                                enabled = uiState.question.isNotBlank() && !uiState.displayCharacterError
-                                    && !uiState.isPiiError && !uiState.isLoading
-                            )
-                        }
+                    .background(
+                        color = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
+                        shape = RoundedCornerShape(24.dp)
                     )
-                }
-            )
+                    .clip(RoundedCornerShape(24.dp))
+            ) {
+                TextField(
+                    textStyle = TextStyle(
+                        color = GovUkTheme.colourScheme.textAndIcons.primary,
+                        fontSize = GovUkTheme.typography.bodyRegular.fontSize,
+                        fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
+                        fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
+                        lineHeight = GovUkTheme.typography.bodyRegular.lineHeight
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester)
+                        .focusable(true)
+                        .onFocusChanged {
+                            isFocused = it.isFocused
+                        }
+                        .height(IntrinsicSize.Min)
+                        .semantics { this.traversalIndex = 0f },
+                    value = if (isFocused) uiState.question else "",
+                    shape = RoundedCornerShape(24.dp),
+                    singleLine = false,
+                    minLines = 1,
+                    onValueChange = onQuestionUpdated,
+                    placeholder = {
+                        PlaceholderText(question = uiState.question)
+                    },
+                    isError = uiState.isPiiError,
+                    colors = inputTextFieldDefaults(),
+                    trailingIcon = {
+                        AnimateIcon(
+                            isFocused && uiState.question.isNotEmpty(),
+                            {
+                                SubmitIconButton(
+                                    onClick = {
+                                        onSubmit(uiState.question)
+                                    },
+                                    enabled = !uiState.displayCharacterError
+                                            && !uiState.isPiiError && !uiState.isLoading
+                                )
+                            }
+                        )
+                    }
+                )
+            }
 
             AnimateIcon(
                 uiState.question.isEmpty(),
@@ -151,7 +167,7 @@ internal fun ChatInput(
                             onFunctionActionItemClicked(text, section, action)
                         },
                         chatUrls = chatUrls,
-                        modifier = Modifier.semantics { this.traversalIndex = 0f }
+                        modifier = Modifier.semantics { this.traversalIndex = 1f }
                     )
                 }
             )
@@ -294,15 +310,11 @@ private fun AnimateIcon(
     AnimatedVisibility(
         visible = visible,
         enter = scaleIn(
-            animationSpec = tween(
-                durationMillis = animationSpeed
-            ),
+            animationSpec = tween(durationMillis = animationSpeed),
             initialScale = 0.5f,
             transformOrigin = TransformOrigin.Center
         ) + fadeIn(
-            animationSpec = tween(
-                durationMillis = animationSpeed
-            ),
+            animationSpec = tween(durationMillis = animationSpeed),
             initialAlpha = 0f
         ),
         exit = scaleOut(
