@@ -246,7 +246,7 @@ private fun ActionIconButton(
     Box(
         contentAlignment = Alignment.BottomCenter,
         modifier = Modifier
-            .padding(bottom = 6.dp, start = 6.dp, end = 6.dp)
+            .padding(start = 6.dp)
     ) {
         IconButton(
             onClick = onClick,
@@ -258,7 +258,7 @@ private fun ActionIconButton(
                 disabledContentColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled
             ),
             modifier = modifier
-                .clip(RoundedCornerShape(20.dp))
+                .clip(RoundedCornerShape(60.dp))
                 .height(36.dp)
                 .width(36.dp)
         ) {

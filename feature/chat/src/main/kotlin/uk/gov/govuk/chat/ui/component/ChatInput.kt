@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -72,13 +72,11 @@ internal fun ChatInput(
 
     Column(
         modifier = modifier
-            .padding(all = GovUkTheme.spacing.medium)
             .semantics { isTraversalGroup = true }
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = GovUkTheme.spacing.small)
         ) {
             CharacterCountMessage(
                 charactersRemaining = uiState.charactersRemaining,
@@ -89,10 +87,7 @@ internal fun ChatInput(
 
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Transparent)
-                .border(0.dp, Color.Transparent, RoundedCornerShape(40.dp))
-                .clip(RoundedCornerShape(40.dp)),
+                .padding(horizontal = GovUkTheme.spacing.medium),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -101,14 +96,14 @@ internal fun ChatInput(
                     color = GovUkTheme.colourScheme.textAndIcons.primary,
                     fontSize = GovUkTheme.typography.bodyRegular.fontSize,
                     fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
-                    fontFamily = GovUkTheme.typography.bodyRegular.fontFamily
+                    fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
+                    lineHeight = GovUkTheme.typography.bodyRegular.lineHeight
                 ),
                 modifier = Modifier
-                    .padding(top = 0.dp, bottom = 0.dp)
                     .animateContentSize(
                         animationSpec = tween(durationMillis = 100)
                     )
-                    .fillMaxWidth(if (isFocused && uiState.question.isNotEmpty()) 1f else 0.87f)
+                    .fillMaxWidth(if (isFocused && uiState.question.isNotEmpty()) 1f else 0.88f)
                     .focusRequester(focusRequester)
                     .focusable(true)
                     .onFocusChanged {
@@ -117,8 +112,9 @@ internal fun ChatInput(
                     .height(IntrinsicSize.Min)
                     .semantics { this.traversalIndex = 1f },
                 value = if (isFocused) uiState.question else "",
-                shape = RoundedCornerShape(40.dp),
+                shape = RoundedCornerShape(24.dp),
                 singleLine = false,
+                minLines = 1,
                 onValueChange = onQuestionUpdated,
                 placeholder = {
                     PlaceholderText(question = uiState.question)
@@ -172,12 +168,20 @@ private fun PlaceholderText(
         Text(
             text = stringResource(id = R.string.input_label),
             color = GovUkTheme.colourScheme.textAndIcons.secondary,
+            fontSize = GovUkTheme.typography.bodyRegular.fontSize,
+            fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
+            fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
+            lineHeight = GovUkTheme.typography.bodyRegular.lineHeight,
             modifier = modifier
         )
     } else {
         Text(
             text = question,
             color = GovUkTheme.colourScheme.textAndIcons.secondary,
+            fontSize = GovUkTheme.typography.bodyRegular.fontSize,
+            fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
+            fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
+            lineHeight = GovUkTheme.typography.bodyRegular.lineHeight,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = modifier
@@ -213,11 +217,14 @@ private fun SubmitIconButton(
         contentAlignment = Alignment.BottomCenter,
         modifier = Modifier
             .fillMaxHeight()
-            .padding(bottom = 4.dp, end = 4.dp)
+            .padding(9.dp)
     ) {
         IconButton(
             onClick = onClick,
-            modifier = modifier,
+            modifier = modifier
+                .clip(RoundedCornerShape(60.dp))
+                .height(36.dp)
+                .width(36.dp),
             enabled = enabled,
             colors = IconButtonColors(
                 containerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
@@ -280,7 +287,6 @@ private fun AnimateIcon(
     modifier: Modifier = Modifier
 ) {
     val animationSpeed = 300
-    val animationDelay = 100
 
     // Start at alpha = 0 and scale of 50%
     // Finish at alpha = 1 and scale of 100%
@@ -289,15 +295,13 @@ private fun AnimateIcon(
         visible = visible,
         enter = scaleIn(
             animationSpec = tween(
-                durationMillis = animationSpeed,
-                delayMillis = animationDelay
+                durationMillis = animationSpeed
             ),
             initialScale = 0.5f,
             transformOrigin = TransformOrigin.Center
         ) + fadeIn(
             animationSpec = tween(
-                durationMillis = animationSpeed,
-                delayMillis = animationDelay
+                durationMillis = animationSpeed
             ),
             initialAlpha = 0f
         ),
