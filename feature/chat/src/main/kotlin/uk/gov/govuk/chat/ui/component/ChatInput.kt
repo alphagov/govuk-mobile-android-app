@@ -156,7 +156,7 @@ internal fun ChatInput(
             }
 
             AnimateIcon(
-                uiState.question.isEmpty(),
+                (uiState.question.isEmpty() || !isFocused && uiState.question.isNotEmpty()),
                 {
                     ActionMenu(
                         hasConversation = hasConversation,
