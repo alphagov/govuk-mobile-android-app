@@ -15,6 +15,8 @@ import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.unmockkAll
 import io.mockk.verify
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.runTest
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
@@ -35,6 +37,9 @@ import uk.gov.android.securestore.SecureStore
 import uk.gov.android.securestore.error.SecureStorageError
 import uk.gov.android.securestore.error.SecureStoreErrorType
 import uk.gov.govuk.analytics.AnalyticsClient
+import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.ERROR
+import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.LOADING
+import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.SUCCESS
 import uk.gov.govuk.data.remote.AuthApi
 import java.io.IOException
 
@@ -457,7 +462,7 @@ class AuthRepoTest {
         } returns RetrievalEvent.Success(emptyMap())
 
         runTest {
-            assertFalse(authRepo.refreshTokens(activity, ""))
+            assertEquals(ERROR, authRepo.refreshTokens(activity, "").last())
 
             coVerify {
                 secureStore.delete("refreshToken")
@@ -477,7 +482,7 @@ class AuthRepoTest {
         } returns RetrievalEvent.Success(mapOf("refreshToken" to " "))
 
         runTest {
-            assertFalse(authRepo.refreshTokens(activity, ""))
+            assertEquals(ERROR, authRepo.refreshTokens(activity, "").last())
 
             coVerify {
                 secureStore.delete("refreshToken")
@@ -497,7 +502,7 @@ class AuthRepoTest {
         } returns RetrievalEvent.Failed(SecureStoreErrorType.GENERAL)
 
         runTest {
-            assertFalse(authRepo.refreshTokens(activity, ""))
+            assertEquals(ERROR, authRepo.refreshTokens(activity, "").last())
         }
     }
 
@@ -518,7 +523,7 @@ class AuthRepoTest {
         }
 
         runTest {
-            assertFalse(authRepo.refreshTokens(activity, ""))
+            assertEquals(ERROR, authRepo.refreshTokens(activity, "").last())
         }
 
         verify(exactly = 0) {
@@ -545,7 +550,7 @@ class AuthRepoTest {
         }
 
         runTest {
-            assertFalse(authRepo.refreshTokens(activity, ""))
+            assertEquals(ERROR, authRepo.refreshTokens(activity, "").last())
         }
 
         verify {
@@ -576,7 +581,7 @@ class AuthRepoTest {
                 )
 
         runTest {
-            assertFalse(authRepo.refreshTokens(activity, ""))
+            assertEquals(ERROR, authRepo.refreshTokens(activity, "").last())
         }
     }
 
@@ -603,7 +608,7 @@ class AuthRepoTest {
                 )
 
         runTest {
-            assertFalse(authRepo.refreshTokens(activity, ""))
+            assertEquals(ERROR, authRepo.refreshTokens(activity, "").last())
         }
     }
 
@@ -630,7 +635,7 @@ class AuthRepoTest {
                 )
 
         runTest {
-            assertFalse(authRepo.refreshTokens(activity, ""))
+            assertEquals(ERROR, authRepo.refreshTokens(activity, "").last())
         }
     }
 
@@ -657,7 +662,7 @@ class AuthRepoTest {
                 )
 
         runTest {
-            assertFalse(authRepo.refreshTokens(activity, ""))
+            assertEquals(ERROR, authRepo.refreshTokens(activity, "").last())
         }
     }
 
@@ -684,7 +689,8 @@ class AuthRepoTest {
                 )
 
         runTest {
-            assertTrue(authRepo.refreshTokens(activity, ""))
+            assertEquals(LOADING, authRepo.refreshTokens(activity, "").first())
+            assertEquals(SUCCESS, authRepo.refreshTokens(activity, "").last())
         }
     }
 

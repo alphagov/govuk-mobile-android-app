@@ -5,9 +5,9 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -20,8 +20,13 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.data.auth.AuthRepo
+import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.ERROR
+import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.LOADING
+import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.SUCCESS
+import uk.gov.govuk.data.auth.ErrorEvent
 import uk.gov.govuk.login.data.LoginRepo
 import java.util.Date
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginViewModelTest {
@@ -56,26 +61,8 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Given the user is signed in and the id token issue date is in the future, when init is successful, then emit ui state`() {
+    fun `Given the user is signed in and the refresh token issue date is not in the future, then end user session and clear auth repo`() {
         every { authRepo.isUserSignedIn() } returns true
-        coEvery { authRepo.refreshTokens(any(), any()) } returns true
-        coEvery { loginRepo.getRefreshTokenExpiryDate() } returns Date().toInstant().epochSecond + 10000L
-
-        runTest {
-            val events = mutableListOf<LoginEvent>()
-            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                viewModel.loginCompleted.toList(events)
-            }
-            viewModel.init(activity)
-
-            assertTrue(events.first().isBiometricLogin)
-        }
-    }
-
-    @Test
-    fun `Given the user is signed in and the id token issue date is not in the future, then end user session and clear auth repo`() {
-        every { authRepo.isUserSignedIn() } returns true
-        coEvery { authRepo.refreshTokens(any(), any()) } returns true
         coEvery { loginRepo.getRefreshTokenExpiryDate() } returns Date().toInstant().epochSecond
 
         runTest {
@@ -87,7 +74,11 @@ class LoginViewModelTest {
 
             assertTrue(events.isEmpty())
 
-            coVerify(exactly = 1) {
+            coVerify(exactly = 0) {
+                authRepo.refreshTokens(any(), any())
+            }
+
+            coVerify {
                 authRepo.endUserSession()
                 authRepo.clear()
             }
@@ -95,38 +86,68 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Given the user is signed in, when init is unsuccessful, then do nothing`() {
+    fun `Given the user is signed in and the refresh token issue date is in the future, when init is successful, then emit loading and login event`() {
         every { authRepo.isUserSignedIn() } returns true
-        coEvery { authRepo.refreshTokens(any(), any()) } returns false
+        coEvery { loginRepo.getRefreshTokenExpiryDate() } returns Date().toInstant().epochSecond + 10000L
+        coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
 
         runTest {
+            val isLoading = mutableListOf<Boolean?>()
             val events = mutableListOf<LoginEvent>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.isLoading.toList(isLoading)
+            }
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
                 viewModel.loginCompleted.toList(events)
             }
             viewModel.init(activity)
 
+            assertTrue(isLoading.last() == true)
+            assertTrue(events.first().isBiometricLogin)
+        }
+    }
+
+    @Test
+    fun `Given the user is signed in, when init is unsuccessful, then emit loading`() {
+        every { authRepo.isUserSignedIn() } returns true
+        coEvery { loginRepo.getRefreshTokenExpiryDate() } returns Date().toInstant().epochSecond + 10000L
+        coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, ERROR)
+
+        runTest {
+            val isLoading = mutableListOf<Boolean?>()
+            val events = mutableListOf<LoginEvent>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.isLoading.toList(isLoading)
+            }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(events)
+            }
+            viewModel.init(activity)
+
+            assertTrue(isLoading.last() == false)
             assertTrue(events.isEmpty())
         }
     }
 
     @Test
-    fun `Given an auth response, when success and id token issue date is not stored, then emit ui state`() {
+    fun `Given an auth response, when success and id token issue date is not stored, then emit loading and login event`() {
         coEvery { authRepo.handleAuthResponse(any()) } returns true
         every { authRepo.getIdTokenIssueDate() } returns null
 
         runTest {
+            val isLoading = mutableListOf<Boolean?>()
             val events = mutableListOf<LoginEvent>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.isLoading.toList(isLoading)
+            }
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
                 viewModel.loginCompleted.toList(events)
             }
             viewModel.onAuthResponse(null)
 
+            assertTrue(isLoading.last() == true)
             assertFalse(events.first().isBiometricLogin)
 
-            verify(exactly = 1) {
-                authRepo.getIdTokenIssueDate()
-            }
             coVerify(exactly = 0) {
                 loginRepo.setRefreshTokenExpiryDate(any())
             }
@@ -134,40 +155,53 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Given an auth response, when success and id token issue date is stored, then emit ui state`() {
+    fun `Given an auth response, when success and id token issue date is stored, then emit loading, login event and set token expiry`() {
         coEvery { authRepo.handleAuthResponse(any()) } returns true
         every { authRepo.getIdTokenIssueDate() } returns 12345L
 
         runTest {
+            val isLoading = mutableListOf<Boolean?>()
             val events = mutableListOf<LoginEvent>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.isLoading.toList(isLoading)
+            }
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
                 viewModel.loginCompleted.toList(events)
             }
             viewModel.onAuthResponse(null)
 
+            assertTrue(isLoading.last() == true)
             assertFalse(events.first().isBiometricLogin)
 
-            verify(exactly = 1) {
-                authRepo.getIdTokenIssueDate()
-            }
             coVerify(exactly = 1) {
+                authRepo.getIdTokenIssueDate()
                 loginRepo.setRefreshTokenExpiryDate(12345L + 601200L)
             }
         }
     }
 
     @Test
-    fun `Given an auth response, when failure, then do not emit ui state`() {
+    fun `Given an auth response, when failure, then emit error event`() {
         coEvery { authRepo.handleAuthResponse(any()) } returns false
 
         runTest {
-            val events = mutableListOf<LoginEvent>()
+            val isLoading = mutableListOf<Boolean?>()
+            val loginEvents = mutableListOf<LoginEvent>()
+            val errorEvents = mutableListOf<ErrorEvent>()
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                viewModel.loginCompleted.toList(events)
+                viewModel.isLoading.toList(isLoading)
+            }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(loginEvents)
+            }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.errorEvent.toList(errorEvents)
             }
             viewModel.onAuthResponse(null)
 
-            assertTrue(events.isEmpty())
+            assertTrue(isLoading.last() == true)
+            assertTrue(loginEvents.isEmpty())
+            assertEquals(ErrorEvent.UnableToSignInError, errorEvents.first())
         }
     }
 }
