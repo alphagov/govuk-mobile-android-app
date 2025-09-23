@@ -78,11 +78,13 @@ internal fun ChatInput(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            CharacterCountMessage(
-                charactersRemaining = uiState.charactersRemaining,
-                displayCharacterWarning = uiState.displayCharacterWarning,
-                displayCharacterError = uiState.displayCharacterError
-            )
+            if (isFocused) {
+                CharacterCountMessage(
+                    charactersRemaining = uiState.charactersRemaining,
+                    displayCharacterWarning = uiState.displayCharacterWarning,
+                    displayCharacterError = uiState.displayCharacterError
+                )
+            }
         }
 
         Row(
