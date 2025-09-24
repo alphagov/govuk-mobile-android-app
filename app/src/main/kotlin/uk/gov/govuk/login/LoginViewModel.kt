@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.gov.govuk.R
+import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.auth.ErrorEvent
 import uk.gov.govuk.login.data.LoginRepo
@@ -22,7 +23,8 @@ internal data class LoginEvent(val isBiometricLogin: Boolean)
 @HiltViewModel
 internal class LoginViewModel @Inject constructor(
     private val authRepo: AuthRepo,
-    private val loginRepo: LoginRepo
+    private val loginRepo: LoginRepo,
+    private val configRepo: ConfigRepo
 ) : ViewModel() {
 
     private val _isLoading: MutableStateFlow<Boolean?> = MutableStateFlow(null)
@@ -83,8 +85,9 @@ internal class LoginViewModel @Inject constructor(
     private fun saveRefreshTokenExpiryDate() {
         viewModelScope.launch {
             authRepo.getIdTokenIssueDate()?.let { idTokenIssueDate ->
-                val datePlusSixDaysTwentyThreeHours = idTokenIssueDate + 601200L
-                loginRepo.setRefreshTokenExpiryDate(datePlusSixDaysTwentyThreeHours)
+                val datePlusRefreshTokenExpiry =
+                    idTokenIssueDate + configRepo.config.refreshTokenExpirySeconds
+                loginRepo.setRefreshTokenExpiryDate(datePlusRefreshTokenExpiry)
             }
         }
     }
