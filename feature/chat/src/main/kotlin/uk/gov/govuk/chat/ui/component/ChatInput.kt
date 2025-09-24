@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -72,77 +72,91 @@ internal fun ChatInput(
 
     Column(
         modifier = modifier
-            .padding(all = GovUkTheme.spacing.medium)
             .semantics { isTraversalGroup = true }
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = GovUkTheme.spacing.small)
         ) {
-            CharacterCountMessage(
-                charactersRemaining = uiState.charactersRemaining,
-                displayCharacterWarning = uiState.displayCharacterWarning,
-                displayCharacterError = uiState.displayCharacterError
-            )
+            if (isFocused) {
+                CharacterCountMessage(
+                    charactersRemaining = uiState.charactersRemaining,
+                    displayCharacterWarning = uiState.displayCharacterWarning,
+                    displayCharacterError = uiState.displayCharacterError
+                )
+            }
         }
 
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Transparent)
-                .border(0.dp, Color.Transparent, RoundedCornerShape(40.dp))
-                .clip(RoundedCornerShape(40.dp)),
+                .padding(horizontal = GovUkTheme.spacing.medium),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextField(
-                textStyle = TextStyle(
-                    color = GovUkTheme.colourScheme.textAndIcons.primary,
-                    fontSize = GovUkTheme.typography.bodyRegular.fontSize,
-                    fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
-                    fontFamily = GovUkTheme.typography.bodyRegular.fontFamily
-                ),
+            Box(
                 modifier = Modifier
-                    .padding(top = 0.dp, bottom = 0.dp)
+                    .fillMaxWidth(
+                        if (isFocused && uiState.question.isNotEmpty()) {
+                            1f
+                        } else {
+                            0.88f
+                        }
+                    )
                     .animateContentSize(
                         animationSpec = tween(durationMillis = 100)
                     )
-                    .fillMaxWidth(if (isFocused && uiState.question.isNotEmpty()) 1f else 0.87f)
-                    .focusRequester(focusRequester)
-                    .focusable(true)
-                    .onFocusChanged {
-                        isFocused = it.isFocused
-                    }
-                    .height(IntrinsicSize.Min)
-                    .semantics { this.traversalIndex = 1f },
-                value = if (isFocused) uiState.question else "",
-                shape = RoundedCornerShape(40.dp),
-                singleLine = false,
-                onValueChange = onQuestionUpdated,
-                placeholder = {
-                    PlaceholderText(question = uiState.question)
-                },
-                isError = uiState.isPiiError,
-                colors = inputTextFieldDefaults(),
-                trailingIcon = {
-                    AnimateIcon(
-                        isFocused && uiState.question.isNotEmpty(),
-                        {
-                            SubmitIconButton(
-                                onClick = {
-                                    onSubmit(uiState.question)
-                                },
-                                enabled = uiState.question.isNotBlank() && !uiState.displayCharacterError
-                                    && !uiState.isPiiError && !uiState.isLoading
-                            )
-                        }
+                    .background(
+                        color = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
+                        shape = RoundedCornerShape(24.dp)
                     )
-                }
-            )
+                    .clip(RoundedCornerShape(24.dp))
+            ) {
+                TextField(
+                    textStyle = TextStyle(
+                        color = GovUkTheme.colourScheme.textAndIcons.primary,
+                        fontSize = GovUkTheme.typography.bodyRegular.fontSize,
+                        fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
+                        fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
+                        lineHeight = GovUkTheme.typography.bodyRegular.lineHeight
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester)
+                        .focusable(true)
+                        .onFocusChanged {
+                            isFocused = it.isFocused
+                        }
+                        .height(IntrinsicSize.Min)
+                        .semantics { this.traversalIndex = 0f },
+                    value = if (isFocused) uiState.question else "",
+                    shape = RoundedCornerShape(24.dp),
+                    singleLine = false,
+                    minLines = 1,
+                    onValueChange = onQuestionUpdated,
+                    placeholder = {
+                        PlaceholderText(question = uiState.question)
+                    },
+                    isError = uiState.isPiiError,
+                    colors = inputTextFieldDefaults(),
+                    trailingIcon = {
+                        AnimateIcon(
+                            isFocused && uiState.question.isNotEmpty(),
+                            {
+                                SubmitIconButton(
+                                    onClick = {
+                                        onSubmit(uiState.question)
+                                    },
+                                    enabled = !uiState.displayCharacterError
+                                            && !uiState.isPiiError && !uiState.isLoading
+                                )
+                            }
+                        )
+                    }
+                )
+            }
 
             AnimateIcon(
-                uiState.question.isEmpty(),
+                (uiState.question.isEmpty() || !isFocused && uiState.question.isNotEmpty()),
                 {
                     ActionMenu(
                         hasConversation = hasConversation,
@@ -155,7 +169,7 @@ internal fun ChatInput(
                             onFunctionActionItemClicked(text, section, action)
                         },
                         chatUrls = chatUrls,
-                        modifier = Modifier.semantics { this.traversalIndex = 0f }
+                        modifier = Modifier.semantics { this.traversalIndex = 1f }
                     )
                 }
             )
@@ -168,21 +182,21 @@ private fun PlaceholderText(
     question: String,
     modifier: Modifier = Modifier
 ) {
-    if (question.isEmpty()) {
-        Text(
-            text = stringResource(id = R.string.input_label),
-            color = GovUkTheme.colourScheme.textAndIcons.secondary,
-            modifier = modifier
-        )
-    } else {
-        Text(
-            text = question,
-            color = GovUkTheme.colourScheme.textAndIcons.secondary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = modifier
-        )
-    }
+    val text = question.ifEmpty { stringResource(id = R.string.input_label) }
+    val maxLines = if (question.isEmpty()) Int.MAX_VALUE else 1
+    val overflow = if (question.isEmpty()) TextOverflow.Clip else TextOverflow.Ellipsis
+
+    Text(
+        text = text,
+        color = GovUkTheme.colourScheme.textAndIcons.secondary,
+        fontSize = GovUkTheme.typography.bodyRegular.fontSize,
+        fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
+        fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
+        lineHeight = GovUkTheme.typography.bodyRegular.lineHeight,
+        maxLines = maxLines,
+        overflow = overflow,
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -213,11 +227,13 @@ private fun SubmitIconButton(
         contentAlignment = Alignment.BottomCenter,
         modifier = Modifier
             .fillMaxHeight()
-            .padding(bottom = 4.dp, end = 4.dp)
+            .padding(9.dp)
     ) {
         IconButton(
             onClick = onClick,
-            modifier = modifier,
+            modifier = modifier
+                .clip(RoundedCornerShape(60.dp))
+                .size(36.dp),
             enabled = enabled,
             colors = IconButtonColors(
                 containerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
@@ -280,7 +296,6 @@ private fun AnimateIcon(
     modifier: Modifier = Modifier
 ) {
     val animationSpeed = 300
-    val animationDelay = 100
 
     // Start at alpha = 0 and scale of 50%
     // Finish at alpha = 1 and scale of 100%
@@ -288,17 +303,11 @@ private fun AnimateIcon(
     AnimatedVisibility(
         visible = visible,
         enter = scaleIn(
-            animationSpec = tween(
-                durationMillis = animationSpeed,
-                delayMillis = animationDelay
-            ),
+            animationSpec = tween(durationMillis = animationSpeed),
             initialScale = 0.5f,
             transformOrigin = TransformOrigin.Center
         ) + fadeIn(
-            animationSpec = tween(
-                durationMillis = animationSpeed,
-                delayMillis = animationDelay
-            ),
+            animationSpec = tween(durationMillis = animationSpeed),
             initialAlpha = 0f
         ),
         exit = scaleOut(
