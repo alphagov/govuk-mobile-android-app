@@ -3,13 +3,15 @@ package uk.gov.govuk.chat.ui.component
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
 import android.widget.ImageView
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.snap
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,22 +23,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.chat.ui.model.ChatEntry
+import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
-import uk.gov.govuk.design.ui.theme.GovUkTheme
-
-private enum class DisplayState { Idle, Loading, Answer }
 
 @Composable
-internal fun DisplayChatEntry(
+internal fun ChatEntry(
     chatEntry: ChatEntry,
-    isLoading: Boolean,
     onMarkdownLinkClicked: (String, String) -> Unit,
     onSourcesExpanded: () -> Unit,
+    animationDuration: Int,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -45,8 +46,8 @@ internal fun DisplayChatEntry(
         MediumVerticalSpacer()
         AnimatedChatEntry(
             chatEntry = chatEntry,
-            isLoading = isLoading,
             onMarkdownLinkClicked = onMarkdownLinkClicked,
+            animationDuration = animationDuration,
             onSourcesExpanded = onSourcesExpanded
         )
     }
@@ -55,43 +56,58 @@ internal fun DisplayChatEntry(
 @Composable
 private fun AnimatedChatEntry(
     chatEntry: ChatEntry,
-    isLoading: Boolean,
     onMarkdownLinkClicked: (String, String) -> Unit,
     onSourcesExpanded: () -> Unit,
+    animationDuration: Int,
     modifier: Modifier = Modifier
 ) {
-    val displayState = rememberSaveable(chatEntry.id) { mutableStateOf(DisplayState.Idle) }
+    var showLoading by rememberSaveable(chatEntry.id) { mutableStateOf(false) }
+    var showAnswer by rememberSaveable(chatEntry.id) { mutableStateOf(false) }
 
-    LaunchedEffect(isLoading, chatEntry.answer) {
-        when {
-            isLoading && chatEntry.answer.isEmpty() -> {
-                displayState.value = DisplayState.Loading
+    LaunchedEffect(chatEntry.answer) {
+        if (chatEntry.answer.isNotBlank()) {
+            if (showLoading && chatEntry.shouldAnimate) {
+                showLoading = false
+                delay(animationDuration.toLong())
             }
-
-            chatEntry.answer.isNotEmpty() -> {
-                displayState.value = DisplayState.Answer
-            }
-
-            else -> {
-                displayState.value = DisplayState.Idle
-            }
+            showAnswer = true
+        } else {
+            showAnswer = false
+            delay(animationDuration.toLong())
+            showLoading = true
         }
     }
 
-    Crossfade(
-        targetState = displayState.value,
-        animationSpec = if (chatEntry.shouldAnimate) tween(durationMillis = 1000) else snap()
-    ) { state ->
-        when (state) {
-            DisplayState.Loading -> Loading(modifier)
-            DisplayState.Answer -> Answer(
+    Column(modifier = modifier) {
+        if (chatEntry.shouldAnimate) {
+            AnimatedVisibility(
+                visible = showLoading,
+                enter = fadeIn(animationSpec = tween(animationDuration)),
+                exit = fadeOut(animationSpec = tween(animationDuration))
+            ) {
+                Loading()
+            }
+
+            AnimatedVisibility(
+                visible = showAnswer,
+                enter = fadeIn(animationSpec = tween(animationDuration)),
+                exit = fadeOut(animationSpec = tween(animationDuration))
+            ) {
+                Answer(
+                    answer = chatEntry.answer,
+                    sources = chatEntry.sources,
+                    onMarkdownLinkClicked = onMarkdownLinkClicked,
+                    onSourcesExpanded = onSourcesExpanded
+                )
+            }
+        } else {
+            if (showLoading) Loading()
+            if (showAnswer) Answer(
                 answer = chatEntry.answer,
                 sources = chatEntry.sources,
                 onMarkdownLinkClicked = onMarkdownLinkClicked,
                 onSourcesExpanded = onSourcesExpanded
             )
-
-            DisplayState.Idle -> {}
         }
     }
 }
@@ -104,16 +120,19 @@ private fun Loading(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AndroidView(factory = {
-            ImageView(it).apply {
-                val source = ImageDecoder.createSource(context.resources, R.drawable.ic_generating_answer)
-                val drawable = ImageDecoder.decodeDrawable(source)
-                setImageDrawable(drawable)
-                if (drawable is AnimatedImageDrawable) {
-                    drawable.start()
+        AndroidView(
+            factory = {
+                ImageView(it).apply {
+                    val source = ImageDecoder.createSource(context.resources, R.drawable.ic_generating_answer)
+                    val drawable = ImageDecoder.decodeDrawable(source)
+                    setImageDrawable(drawable)
+                    if (drawable is AnimatedImageDrawable) {
+                        drawable.start()
+                    }
                 }
-            }
-        })
+            },
+            modifier = Modifier.size(24.dp)
+        )
 
         SmallHorizontalSpacer()
 
@@ -126,10 +145,9 @@ private fun Loading(
             }
         }
 
-        Text(
+        BodyRegularLabel(
             text = stringResource(R.string.loading_text) + ".".repeat(dots),
-            color = GovUkTheme.colourScheme.textAndIcons.chatLoadingTextDark,
-            style = GovUkTheme.typography.bodyRegular
+            modifier = Modifier.padding(top = 2.dp)
         )
     }
 }

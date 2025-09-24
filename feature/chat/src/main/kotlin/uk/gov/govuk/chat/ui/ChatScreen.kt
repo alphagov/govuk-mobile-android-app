@@ -49,8 +49,8 @@ import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.chat.domain.Analytics
+import uk.gov.govuk.chat.ui.component.ChatEntry
 import uk.gov.govuk.chat.ui.component.ChatInput
-import uk.gov.govuk.chat.ui.component.DisplayChatEntry
 import uk.gov.govuk.chat.ui.component.IntroMessages
 import uk.gov.govuk.config.data.remote.model.ChatUrls
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
@@ -160,6 +160,7 @@ private fun ChatScreen(
     val brush = Brush.verticalGradient(
         colorStops = calculateStops(heightPx, 20.dp)
     )
+    val animationDuration = 500
 
     LaunchedEffect(Unit) {
         analyticsEvents.onPageView(
@@ -175,7 +176,7 @@ private fun ChatScreen(
     }
 
     Box(modifier.fillMaxSize()) {
-        if (uiState.chatEntries.isEmpty()) {
+        if (chatEntries.isEmpty()) {
             AnimatedVisibility(
                 visible = backgroundVisible,
                 enter = fadeIn(animationSpec = tween(durationMillis = 2000))
@@ -207,17 +208,17 @@ private fun ChatScreen(
                     .padding(horizontal = GovUkTheme.spacing.medium)
             ) {
                 item {
-                    IntroMessages(uiState.chatEntries.isEmpty()) // only animate if no conversation
+                    IntroMessages(chatEntries.isEmpty()) // only animate if no conversation
                 }
 
                 items(chatEntries) {
-                    DisplayChatEntry(
+                    ChatEntry(
                         chatEntry = it.second,
-                        isLoading = uiState.isLoading,
                         onMarkdownLinkClicked = { text, url ->
                             launchBrowser(url)
                             analyticsEvents.onMarkdownLinkClicked(text, url)
                         },
+                        animationDuration = animationDuration,
                         onSourcesExpanded = analyticsEvents.onSourcesExpanded,
                     )
                 }
@@ -264,6 +265,7 @@ private fun ChatScreen(
 
     if (chatEntries.isNotEmpty()) {
         LaunchedEffect(chatEntries.last().second.answer) {
+            delay(animationDuration.toLong())
             listState.animateScrollToItem(chatEntries.size)
         }
     }
