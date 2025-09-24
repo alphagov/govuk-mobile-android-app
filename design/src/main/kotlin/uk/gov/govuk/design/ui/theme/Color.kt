@@ -96,7 +96,6 @@ data class GovUkColourScheme(
         val chatUserMessageText: Color,
         val chatBotMessageText: Color,
         val chatBotHeaderText: Color,
-        val chatLoadingTextDark: Color,
         val chatLoadingTextLight: Color,
         val chatLoadingIcon: Color
     )
@@ -204,7 +203,6 @@ internal val LightColorScheme = GovUkColourScheme(
         chatUserMessageText = Black,
         chatBotMessageText = Black,
         chatBotHeaderText = Grey700,
-        chatLoadingTextDark = Grey700,
         chatLoadingTextLight = Grey300,
         chatLoadingIcon = BluePrimary
     ),
@@ -310,7 +308,6 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatUserMessageText = White,
         chatBotMessageText = White,
         chatBotHeaderText = Grey300,
-        chatLoadingTextDark = BlueLighter25,
         chatLoadingTextLight = BlueLighter80,
         chatLoadingIcon = BluePrimary
     ),
@@ -417,7 +414,6 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             chatUserMessageText = Color.Unspecified,
             chatBotMessageText = Color.Unspecified,
             chatBotHeaderText = Color.Unspecified,
-            chatLoadingTextDark = Color.Unspecified,
             chatLoadingTextLight = Color.Unspecified,
             chatLoadingIcon = Color.Unspecified
         ),
