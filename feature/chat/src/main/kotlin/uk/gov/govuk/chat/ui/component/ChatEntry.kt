@@ -3,9 +3,10 @@ package uk.gov.govuk.chat.ui.component
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
 import android.widget.ImageView
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.snap
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,14 +32,12 @@ import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
 
-private enum class DisplayState { Idle, Loading, Answer }
-
 @Composable
-internal fun DisplayChatEntry(
+internal fun ChatEntry(
     chatEntry: ChatEntry,
-    isLoading: Boolean,
     onMarkdownLinkClicked: (String, String) -> Unit,
     onSourcesExpanded: () -> Unit,
+    animationDuration: Int,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -47,8 +46,8 @@ internal fun DisplayChatEntry(
         MediumVerticalSpacer()
         AnimatedChatEntry(
             chatEntry = chatEntry,
-            isLoading = isLoading,
             onMarkdownLinkClicked = onMarkdownLinkClicked,
+            animationDuration = animationDuration,
             onSourcesExpanded = onSourcesExpanded
         )
     }
@@ -57,43 +56,58 @@ internal fun DisplayChatEntry(
 @Composable
 private fun AnimatedChatEntry(
     chatEntry: ChatEntry,
-    isLoading: Boolean,
     onMarkdownLinkClicked: (String, String) -> Unit,
     onSourcesExpanded: () -> Unit,
+    animationDuration: Int,
     modifier: Modifier = Modifier
 ) {
-    val displayState = rememberSaveable(chatEntry.id) { mutableStateOf(DisplayState.Idle) }
+    var showLoading by rememberSaveable(chatEntry.id) { mutableStateOf(false) }
+    var showAnswer by rememberSaveable(chatEntry.id) { mutableStateOf(false) }
 
-    LaunchedEffect(isLoading, chatEntry.answer) {
-        when {
-            chatEntry.answer.isNotBlank() -> {
-                displayState.value = DisplayState.Answer
+    LaunchedEffect(chatEntry.answer) {
+        if (chatEntry.answer.isNotBlank()) {
+            if (showLoading && chatEntry.shouldAnimate) {
+                showLoading = false
+                delay(animationDuration.toLong())
             }
-
-            isLoading -> {
-                displayState.value = DisplayState.Loading
-            }
-
-            else -> {
-                displayState.value = DisplayState.Idle
-            }
+            showAnswer = true
+        } else {
+            showAnswer = false
+            delay(animationDuration.toLong())
+            showLoading = true
         }
     }
 
-    Crossfade(
-        targetState = displayState.value,
-        animationSpec = if (chatEntry.shouldAnimate) tween(durationMillis = 1000) else snap()
-    ) { state ->
-        when (state) {
-            DisplayState.Loading -> Loading(modifier)
-            DisplayState.Answer -> Answer(
+    Column(modifier = modifier) {
+        if (chatEntry.shouldAnimate) {
+            AnimatedVisibility(
+                visible = showLoading,
+                enter = fadeIn(animationSpec = tween(animationDuration)),
+                exit = fadeOut(animationSpec = tween(animationDuration))
+            ) {
+                Loading()
+            }
+
+            AnimatedVisibility(
+                visible = showAnswer,
+                enter = fadeIn(animationSpec = tween(animationDuration)),
+                exit = fadeOut(animationSpec = tween(animationDuration))
+            ) {
+                Answer(
+                    answer = chatEntry.answer,
+                    sources = chatEntry.sources,
+                    onMarkdownLinkClicked = onMarkdownLinkClicked,
+                    onSourcesExpanded = onSourcesExpanded
+                )
+            }
+        } else {
+            if (showLoading) Loading()
+            if (showAnswer) Answer(
                 answer = chatEntry.answer,
                 sources = chatEntry.sources,
                 onMarkdownLinkClicked = onMarkdownLinkClicked,
                 onSourcesExpanded = onSourcesExpanded
             )
-
-            DisplayState.Idle -> {}
         }
     }
 }
