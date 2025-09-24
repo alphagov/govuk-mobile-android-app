@@ -18,6 +18,7 @@ private val BlueLighter90 = Color(0xFFE8F1F8)
 private val BlueLighter95 = Color(0xFFF4F8FB)
 private val BlueDarker25 = Color(0xFF16548A)
 private val BlueDarker50 = Color(0xFF0F385C)
+private val BlueDarker65 = Color(0xFF0A2740)
 private val BlueDarker80 = Color(0xFF061625)
 private val BlueDarker80Alpha50 = Color(0x80061625)
 private val BlueDarkMode = Color(0xFF263D54)
@@ -108,6 +109,7 @@ data class GovUkColourScheme(
         val cardDefault: Color,
         val cardBlue: Color,
         val cardHighlight: Color,
+        val cardNonTappable: Color,
         val cardSelected: Color,
         val listBlue: Color,
         val listHeadingBlue: Color,
@@ -215,6 +217,7 @@ internal val LightColorScheme = GovUkColourScheme(
         cardDefault = White,
         cardBlue = BlueLighter95,
         cardHighlight = Grey400,
+        cardNonTappable = BlueLighter80,
         cardSelected = GreenLighter95,
         listBlue = BlueLighter95,
         listHeadingBlue = BlueLighter95,
@@ -321,6 +324,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         cardDefault = BlueDarkMode,
         cardBlue = BlueDarker50,
         cardHighlight = Grey850,
+        cardNonTappable = BlueDarker65,
         cardSelected = GreenDarker50,
         listBlue = BlueDarker80,
         listHeadingBlue = BlueDarker50,
@@ -428,6 +432,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             cardDefault = Color.Unspecified,
             cardBlue = Color.Unspecified,
             cardHighlight = Color.Unspecified,
+            cardNonTappable = Color.Unspecified,
             cardSelected = Color.Unspecified,
             listBlue = Color.Unspecified,
             listHeadingBlue = Color.Unspecified,
