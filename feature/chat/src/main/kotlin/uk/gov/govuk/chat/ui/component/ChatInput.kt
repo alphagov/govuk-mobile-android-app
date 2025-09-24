@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -182,29 +182,21 @@ private fun PlaceholderText(
     question: String,
     modifier: Modifier = Modifier
 ) {
-    if (question.isEmpty()) {
-        Text(
-            text = stringResource(id = R.string.input_label),
-            color = GovUkTheme.colourScheme.textAndIcons.secondary,
-            fontSize = GovUkTheme.typography.bodyRegular.fontSize,
-            fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
-            fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
-            lineHeight = GovUkTheme.typography.bodyRegular.lineHeight,
-            modifier = modifier
-        )
-    } else {
-        Text(
-            text = question,
-            color = GovUkTheme.colourScheme.textAndIcons.secondary,
-            fontSize = GovUkTheme.typography.bodyRegular.fontSize,
-            fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
-            fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
-            lineHeight = GovUkTheme.typography.bodyRegular.lineHeight,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = modifier
-        )
-    }
+    val text = question.ifEmpty { stringResource(id = R.string.input_label) }
+    val maxLines = if (question.isEmpty()) Int.MAX_VALUE else 1
+    val overflow = if (question.isEmpty()) TextOverflow.Clip else TextOverflow.Ellipsis
+
+    Text(
+        text = text,
+        color = GovUkTheme.colourScheme.textAndIcons.secondary,
+        fontSize = GovUkTheme.typography.bodyRegular.fontSize,
+        fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
+        fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
+        lineHeight = GovUkTheme.typography.bodyRegular.lineHeight,
+        maxLines = maxLines,
+        overflow = overflow,
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -241,8 +233,7 @@ private fun SubmitIconButton(
             onClick = onClick,
             modifier = modifier
                 .clip(RoundedCornerShape(60.dp))
-                .height(36.dp)
-                .width(36.dp),
+                .size(36.dp),
             enabled = enabled,
             colors = IconButtonColors(
                 containerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
