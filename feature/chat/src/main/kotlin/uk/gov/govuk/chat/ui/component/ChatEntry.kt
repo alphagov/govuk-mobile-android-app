@@ -29,7 +29,7 @@ import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.chat.ui.model.ChatEntry
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
 
 @Composable
@@ -41,9 +41,9 @@ internal fun ChatEntry(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        MediumVerticalSpacer()
+        LargeVerticalSpacer()
         Question(question = chatEntry.question)
-        MediumVerticalSpacer()
+        LargeVerticalSpacer()
         AnimatedChatEntry(
             chatEntry = chatEntry,
             onMarkdownLinkClicked = onMarkdownLinkClicked,

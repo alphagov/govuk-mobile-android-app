@@ -18,14 +18,19 @@ internal fun Markdown(
     markdownLinkType: String,
     modifier: Modifier = Modifier
 ) {
+    // Convert h1-h6 headers to bold
+    val headerRegex = "(#+ *)(.*)(\n)".toRegex()
+    val headerReplacement = "$3\\*\\*$2\\*\\*$3$3" // \n**header text**\n\n
+
     MarkdownText(
-        markdown = text,
+        markdown = headerRegex.replace(text, headerReplacement),
         linkColor = GovUkTheme.colourScheme.textAndIcons.link,
         style = TextStyle(
             color = GovUkTheme.colourScheme.textAndIcons.primary,
             fontSize = GovUkTheme.typography.bodyRegular.fontSize,
             fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
-            fontWeight = GovUkTheme.typography.bodyRegular.fontWeight
+            fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
+            lineHeight = GovUkTheme.typography.bodyRegular.lineHeight
         ),
         enableSoftBreakAddsNewLine = false,
         enableUnderlineForLink = false,

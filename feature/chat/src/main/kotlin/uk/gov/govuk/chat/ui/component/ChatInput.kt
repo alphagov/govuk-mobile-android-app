@@ -89,18 +89,18 @@ internal fun ChatInput(
 
         Row(
             modifier = Modifier
-                .padding(horizontal = GovUkTheme.spacing.medium),
+                .padding(
+                    start = GovUkTheme.spacing.medium,
+                    end = GovUkTheme.spacing.medium,
+                    bottom = GovUkTheme.spacing.medium
+                ),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(
-                        if (isFocused && uiState.question.isNotEmpty()) {
-                            1f
-                        } else {
-                            0.88f
-                        }
+                        if (focusedWithInput(isFocused, uiState)) 1f else 0.88f
                     )
                     .animateContentSize(
                         animationSpec = tween(durationMillis = 100)
@@ -140,7 +140,7 @@ internal fun ChatInput(
                     colors = inputTextFieldDefaults(),
                     trailingIcon = {
                         AnimateIcon(
-                            isFocused && uiState.question.isNotEmpty(),
+                            focusedWithInput(isFocused, uiState),
                             {
                                 SubmitIconButton(
                                     onClick = {
@@ -156,7 +156,7 @@ internal fun ChatInput(
             }
 
             AnimateIcon(
-                (uiState.question.isEmpty() || !isFocused && uiState.question.isNotEmpty()),
+                (uiState.question.isEmpty() || !focusedWithInput(isFocused, uiState)),
                 {
                     ActionMenu(
                         hasConversation = hasConversation,
@@ -175,6 +175,13 @@ internal fun ChatInput(
             )
         }
     }
+}
+
+private fun focusedWithInput(
+    isFocused: Boolean,
+    uiState: ChatUiState.Default
+) : Boolean {
+    return isFocused && uiState.question.isNotEmpty()
 }
 
 @Composable
