@@ -11,5 +11,6 @@ data class Config(
     @SerializedName("chatPollIntervalSeconds") val chatPollIntervalSeconds: Int?,
     @SerializedName("alertBanner") val alertBanner: AlertBanner?,
     @SerializedName("userFeedbackBanner") val userFeedbackBanner: UserFeedbackBanner?,
-    @SerializedName("chatUrls") val chatUrls: ChatUrls
+    @SerializedName("chatUrls") val chatUrls: ChatUrls,
+    @SerializedName("refreshTokenExpirySeconds") val refreshTokenExpirySeconds: Long
 )

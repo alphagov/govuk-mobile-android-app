@@ -19,6 +19,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.ERROR
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.LOADING
@@ -33,6 +34,7 @@ class LoginViewModelTest {
 
     private val authRepo = mockk<AuthRepo>(relaxed = true)
     private val loginRepo = mockk<LoginRepo>(relaxed = true)
+    private val configRepo = mockk<ConfigRepo>(relaxed = true)
     private val activity = mockk<FragmentActivity>(relaxed = true)
     private val dispatcher = UnconfinedTestDispatcher()
 
@@ -41,7 +43,7 @@ class LoginViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = LoginViewModel(authRepo, loginRepo)
+        viewModel = LoginViewModel(authRepo, loginRepo, configRepo)
     }
 
     @After
@@ -158,6 +160,7 @@ class LoginViewModelTest {
     fun `Given an auth response, when success and id token issue date is stored, then emit loading, login event and set token expiry`() {
         coEvery { authRepo.handleAuthResponse(any()) } returns true
         every { authRepo.getIdTokenIssueDate() } returns 12345L
+        every { configRepo.config.refreshTokenExpirySeconds } returns 601200L
 
         runTest {
             val isLoading = mutableListOf<Boolean?>()
