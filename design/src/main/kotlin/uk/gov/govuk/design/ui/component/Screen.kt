@@ -15,6 +15,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
@@ -51,14 +53,20 @@ fun CentreAlignedScreen(
 
 @Composable
 fun LoadingScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    accessibilityText: String = ""
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
-            modifier = Modifier.width(36.dp),
+            modifier = Modifier
+                .width(36.dp)
+                .semantics {
+                    contentDescription = accessibilityText
+                }
+            ,
             color = GovUkTheme.colourScheme.surfaces.primary
         )
     }
