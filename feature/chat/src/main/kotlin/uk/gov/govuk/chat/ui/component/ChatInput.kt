@@ -89,7 +89,11 @@ internal fun ChatInput(
 
         Row(
             modifier = Modifier
-                .padding(horizontal = GovUkTheme.spacing.medium),
+                .padding(
+                    start = GovUkTheme.spacing.medium,
+                    end = GovUkTheme.spacing.medium,
+                    bottom = GovUkTheme.spacing.medium
+                ),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
