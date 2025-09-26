@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.R
+import uk.gov.govuk.design.ui.component.ScreenBackground
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
@@ -59,6 +60,8 @@ private fun BiometricSettingsScreen(
     @StringRes descriptionTwo: Int,
     modifier: Modifier = Modifier
 ) {
+    ScreenBackground()
+
     LaunchedEffect(Unit) {
         onPageView()
     }

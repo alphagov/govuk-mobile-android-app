@@ -145,7 +145,8 @@ data class GovUkColourScheme(
         val chatButtonBackgroundEnabled: Color,
         val chatUserMessageBackground: Color,
         val chatBotMessageBackground: Color,
-        val chatIntroCardBackground: Color
+        val chatIntroCardBackground: Color,
+        val screenBackground: Color
     )
 
     data class Strokes(
@@ -252,7 +253,8 @@ internal val LightColorScheme = GovUkColourScheme(
         chatButtonBackgroundEnabled = BluePrimary,
         chatUserMessageBackground = WhiteAlpha50,
         chatBotMessageBackground = White,
-        chatIntroCardBackground = BlueLighter95
+        chatIntroCardBackground = BlueLighter95,
+        screenBackground = BlueLighter90
     ),
     strokes = Strokes(
         fixedContainer = BlackAlpha30,
@@ -358,7 +360,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatButtonBackgroundEnabled = BlueAccent,
         chatUserMessageBackground = BlueDarker80Alpha50,
         chatBotMessageBackground = BlueDarker80,
-        chatIntroCardBackground = Blue99
+        chatIntroCardBackground = Blue99,
+        screenBackground = BlueDarker80
     ),
     strokes = Strokes(
         fixedContainer = WhiteAlpha30,
@@ -465,7 +468,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             chatButtonBackgroundEnabled = Color.Unspecified,
             chatUserMessageBackground = Color.Unspecified,
             chatBotMessageBackground = Color.Unspecified,
-            chatIntroCardBackground = Color.Unspecified
+            chatIntroCardBackground = Color.Unspecified,
+            screenBackground = Color.Unspecified
         ),
         strokes = Strokes(
             fixedContainer = Color.Unspecified,

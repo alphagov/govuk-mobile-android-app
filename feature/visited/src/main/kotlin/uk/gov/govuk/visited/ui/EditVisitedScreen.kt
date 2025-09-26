@@ -1,5 +1,6 @@
 package uk.gov.govuk.visited.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import uk.gov.govuk.design.ui.component.ScreenBackground
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.CardListItem
 import uk.gov.govuk.design.ui.component.ChildPageHeader
@@ -110,7 +112,6 @@ private fun EditVisitedScreen(
     val editingCompleteAltText = stringResource(R.string.visited_items_editing_complete_alt)
 
     Scaffold(
-        containerColor = GovUkTheme.colourScheme.surfaces.background,
         modifier = modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection)
             .fillMaxWidth(),
@@ -133,6 +134,9 @@ private fun EditVisitedScreen(
             )
         }
     ) { innerPadding ->
+
+        ScreenBackground()
+
         LazyColumn(
             modifier = modifier
                 .padding(innerPadding)
@@ -261,7 +265,7 @@ private fun BottomNavBar(
     val deselectText = stringResource(R.string.visited_items_deselect_all_button)
     val removeText = stringResource(R.string.visited_items_remove_button)
 
-    Column(modifier = modifier) {
+    Column(modifier = modifier.background(GovUkTheme.colourScheme.surfaces.background)) {
         HorizontalDivider(
             thickness = 1.dp,
             color = GovUkTheme.colourScheme.strokes.fixedContainer
