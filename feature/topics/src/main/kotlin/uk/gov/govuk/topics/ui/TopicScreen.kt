@@ -30,6 +30,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
+import uk.gov.govuk.design.ui.component.ScreenBackground
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.ExternalLinkListItem
@@ -58,6 +59,8 @@ internal fun TopicRoute(
     val viewModel: TopicViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val focusRequester = remember { FocusRequester() }
+
+    ScreenBackground()
 
     Box(modifier.fillMaxSize()) {
         uiState?.let {
