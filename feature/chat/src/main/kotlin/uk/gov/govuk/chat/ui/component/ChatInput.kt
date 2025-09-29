@@ -77,6 +77,10 @@ internal fun ChatInput(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(start = GovUkTheme.spacing.medium)
+                .height(32.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
         ) {
             if (isFocused) {
                 CharacterCountMessage(
@@ -265,8 +269,7 @@ private fun CharacterCountMessage(
     modifier: Modifier = Modifier
 ) {
     val charactersRemaining = abs(charactersRemaining)
-    var color = GovUkTheme.colourScheme.textAndIcons.secondary
-    var style = GovUkTheme.typography.subheadlineRegular
+    var color = GovUkTheme.colourScheme.textAndIcons.primary
     var text = ""
 
     when {
@@ -284,14 +287,16 @@ private fun CharacterCountMessage(
                 charactersRemaining
             )
             color = GovUkTheme.colourScheme.textAndIcons.textFieldError
-            style = GovUkTheme.typography.subheadlineBold
         }
     }
 
     Text(
         text = text,
         color = color,
-        style = style,
+        fontSize = GovUkTheme.typography.bodyRegular.fontSize,
+        fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
+        fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
+        lineHeight = GovUkTheme.typography.bodyRegular.lineHeight,
         modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium)
     )
 }

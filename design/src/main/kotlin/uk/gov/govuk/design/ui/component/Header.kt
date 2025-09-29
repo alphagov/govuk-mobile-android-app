@@ -157,7 +157,7 @@ fun ChildPageHeader(
         actionAltText = actionAltText,
         backgroundColour = GovUkTheme.colourScheme.surfaces.homeHeader,
         actionColour = GovUkTheme.colourScheme.textAndIcons.linkHeader,
-        titleColour = GovUkTheme.colourScheme.textAndIcons.linkHeader
+        titleColour = GovUkTheme.colourScheme.textAndIcons.header
     )
 }
 
