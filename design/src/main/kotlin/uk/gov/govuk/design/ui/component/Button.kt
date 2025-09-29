@@ -17,9 +17,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -35,12 +39,15 @@ data class GovUkButtonColours(
     val defaultContainerColour: Color,
     val defaultContentColour: Color,
     val defaultBorderColour: Color? = null,
+    val defaultStrokeColour: Color? = null,
     val focussedContainerColour: Color,
     val focussedContentColour: Color,
     val focussedBorderColour: Color? = null,
+    val focussedStrokeColour: Color? = null,
     val pressedContainerColour: Color,
     val pressedContentColour: Color,
     val pressedBorderColour: Color? = null,
+    val pressedStrokeColour: Color? = null,
     val disabledContainerColour: Color,
     val disabledContentColour: Color,
     val disabledBorderColour: Color? = null
@@ -57,10 +64,13 @@ fun PrimaryButton(
     val colours = GovUkButtonColours(
         defaultContainerColour = GovUkTheme.colourScheme.surfaces.buttonPrimary,
         defaultContentColour = GovUkTheme.colourScheme.textAndIcons.buttonPrimary,
+        defaultStrokeColour = GovUkTheme.colourScheme.surfaces.buttonPrimaryStroke,
         focussedContainerColour = GovUkTheme.colourScheme.surfaces.buttonPrimaryFocused,
         focussedContentColour = GovUkTheme.colourScheme.textAndIcons.buttonPrimaryFocused,
+        focussedStrokeColour = GovUkTheme.colourScheme.surfaces.buttonPrimaryStrokeFocussed,
         pressedContainerColour = GovUkTheme.colourScheme.surfaces.buttonPrimaryHighlight,
         pressedContentColour = GovUkTheme.colourScheme.textAndIcons.buttonPrimaryHighlight,
+        pressedStrokeColour = GovUkTheme.colourScheme.surfaces.buttonPrimaryStrokeHighlight,
         disabledContainerColour = GovUkTheme.colourScheme.surfaces.buttonPrimaryDisabled,
         disabledContentColour = GovUkTheme.colourScheme.textAndIcons.buttonPrimaryDisabled
     )
@@ -151,10 +161,13 @@ fun DestructiveButton(
     val colours = GovUkButtonColours(
         defaultContainerColour = GovUkTheme.colourScheme.surfaces.buttonDestructive,
         defaultContentColour = GovUkTheme.colourScheme.textAndIcons.buttonPrimary,
+        defaultStrokeColour = GovUkTheme.colourScheme.surfaces.buttonDestructiveStroke,
         focussedContainerColour = GovUkTheme.colourScheme.surfaces.buttonPrimaryFocused,
         focussedContentColour = GovUkTheme.colourScheme.textAndIcons.buttonPrimaryFocused,
+        focussedStrokeColour = GovUkTheme.colourScheme.surfaces.buttonDestructiveStrokeFocussed,
         pressedContainerColour = GovUkTheme.colourScheme.surfaces.buttonDestructiveHighlight,
         pressedContentColour = GovUkTheme.colourScheme.textAndIcons.buttonPrimaryHighlight,
+        pressedStrokeColour = GovUkTheme.colourScheme.surfaces.buttonDestructiveStrokeHighlight,
         disabledContainerColour = GovUkTheme.colourScheme.surfaces.buttonPrimaryDisabled,
         disabledContentColour = GovUkTheme.colourScheme.textAndIcons.buttonPrimaryDisabled
     )
@@ -222,9 +235,20 @@ private fun BaseButton(
         colours.disabledBorderColour
     }
 
+    val strokeColour = if (enabled) {
+        when {
+            isFocused -> colours.focussedStrokeColour
+            isPressed || isHovered -> colours.pressedStrokeColour
+            else -> colours.defaultStrokeColour
+        }
+    } else {
+        null
+    }
+
     Button(
         onClick = onClick,
         modifier = modifier
+            .drawBottomStroke(strokeColour)
             .focusRequester(focusRequester)
             .focusable(interactionSource = interactionSource),
         enabled = enabled,
@@ -236,12 +260,61 @@ private fun BaseButton(
         Text(
             text = text,
             style = textStyle,
-            modifier = Modifier.semantics {
-                contentDescription = altText
-            }.weight(1f, fill = false)
+            modifier = Modifier
+                .padding(8.dp)
+                .semantics {
+                    contentDescription = altText
+                }
+                .weight(1f, fill = false)
         )
         if (externalLink) ExternalLinkIcon()
     }
+}
+
+@Composable
+private fun Modifier.drawBottomStroke(colour: Color?): Modifier {
+    colour ?: return this
+
+    val cornerRadius = 15.dp
+    val strokeWidth = 3.dp
+    val offset = 7f
+
+    return this
+        .drawBehind {
+            // Bottom line
+            drawLine(
+                color = colour,
+                start = Offset(x = cornerRadius.toPx(), y = size.height - offset),
+                end = Offset(x = size.width - cornerRadius.toPx(), y = size.height - offset),
+                strokeWidth = strokeWidth.toPx()
+            )
+
+            // Bottom-left corner
+            drawArc(
+                color = colour,
+                startAngle = 180f,
+                sweepAngle = -90f,
+                useCenter = false,
+                topLeft = Offset(x = offset, y = size.height - offset - cornerRadius.toPx() * 2),
+                size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2),
+                style = Stroke(width = strokeWidth.toPx())
+            )
+
+            // Bottom-right corner
+            drawArc(
+                color = colour,
+                startAngle = 360f,
+                sweepAngle = 90f,
+                useCenter = false,
+                topLeft = Offset(
+                    x = (size.width - cornerRadius.toPx() * 2) - offset,
+                    y = size.height - offset - cornerRadius.toPx() * 2
+                ),
+                size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2),
+                style = Stroke(width = strokeWidth.toPx())
+            )
+        }
+        .padding(bottom = strokeWidth)
 }
 
 @Composable
