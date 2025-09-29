@@ -1,16 +1,20 @@
 package uk.gov.govuk.ui
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -29,45 +33,83 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 internal fun SplashScreen(
     onSplashDone: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(GovUkTheme.colourScheme.surfaces.splash),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        val composition by rememberLottieComposition(
-            LottieCompositionSpec.RawRes(R.raw.app_splash)
-        )
+    val altText: String = stringResource(id = uk.gov.govuk.design.R.string.gov_uk_alt_text)
 
-        var state = animateLottieCompositionAsState(composition = composition)
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val screenHeight = configuration.screenHeightDp.dp
 
-        if (LocalContext.current.areAnimationsEnabled()) {
-            LaunchedEffect(state.progress) {
-                if (state.progress == 1f) {
-                    onSplashDone()
-                }
-            }
-        } else {
-            // Handle cases where animations are disabled...
-            state = animateLottieCompositionAsState(composition = composition, isPlaying = false)
-            LaunchedEffect(true) {
-                delay(1000)
+    val govukSplashComposition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.govuk_splash)
+    )
+    val crownSplashComposition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.crown_splash)
+    )
+
+    var govukProgress by remember { mutableFloatStateOf(0f) }
+    var crownProgress by remember { mutableFloatStateOf(0f) }
+
+    var govukStateProgress = animateLottieCompositionAsState(
+        composition = govukSplashComposition,
+        isPlaying = LocalContext.current.areAnimationsEnabled(),
+        restartOnPlay = false
+    )
+    var crownStateProgress = animateLottieCompositionAsState(
+        composition = crownSplashComposition,
+        isPlaying = LocalContext.current.areAnimationsEnabled(),
+        restartOnPlay = false
+    )
+
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    val govukAlignment = if (isLandscape) Alignment.TopCenter else Alignment.Center
+    val govukWidth = if (isLandscape) 0.325f else 0.65f
+    val crownWidth = if (isLandscape) 0.10f else 0.20f
+    val crownPadding = if (isLandscape) 0.0f else 0.10f
+
+    if (LocalContext.current.areAnimationsEnabled()) {
+        govukProgress = govukStateProgress.progress
+        crownProgress = crownStateProgress.progress
+        LaunchedEffect(govukProgress, crownProgress) {
+            if (govukProgress == 1f && crownProgress == 1f) {
                 onSplashDone()
             }
         }
+    } else {
+        govukProgress = 1.0f
+        crownProgress = 1.0f
+        LaunchedEffect(Unit) {
+            delay(1_000)
+            onSplashDone()
+        }
+    }
 
-        val altText: String = stringResource(id = uk.gov.govuk.design.R.string.gov_uk_alt_text)
-
-        Column {
-            LottieAnimation(
-                composition = composition,
-                progress = { state.progress },
-                modifier = Modifier.semantics {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(GovUkTheme.colourScheme.surfaces.splash)
+    ) {
+        LottieAnimation(
+            composition = govukSplashComposition,
+            progress = { govukProgress },
+            modifier = Modifier
+                .align(govukAlignment)
+                .semantics {
                     contentDescription = altText
                 }
-            )
-            Spacer(Modifier.height(20.dp))
-        }
+                .width(screenWidth * govukWidth)
+        )
+
+        LottieAnimation(
+            composition = crownSplashComposition,
+            progress = { crownProgress },
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .semantics {
+                    contentDescription = altText
+                }
+                .width(screenWidth * crownWidth)
+                .padding(bottom = screenHeight * crownPadding)
+        )
     }
 }
