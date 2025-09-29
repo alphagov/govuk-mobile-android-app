@@ -60,8 +60,6 @@ private fun BiometricSettingsScreen(
     @StringRes descriptionTwo: Int,
     modifier: Modifier = Modifier
 ) {
-    ScreenBackground()
-
     LaunchedEffect(Unit) {
         onPageView()
     }
