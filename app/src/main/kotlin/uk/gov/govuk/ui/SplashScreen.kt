@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
@@ -35,9 +36,6 @@ internal fun SplashScreen(
     onSplashDone: () -> Unit
 ) {
     val altText: String = stringResource(id = uk.gov.govuk.design.R.string.gov_uk_alt_text)
-
-    val windowInfo = LocalWindowInfo.current
-    val density = LocalDensity.current
 
     val govukSplashComposition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(R.raw.govuk_splash)
@@ -61,23 +59,27 @@ internal fun SplashScreen(
     )
 
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-    val screenWidthInPx = windowInfo.containerSize.width
-    val screenHeightInPx = windowInfo.containerSize.height
-
     val govukAlignment = if (isLandscape) Alignment.TopCenter else Alignment.Center
     val govukWidth = if (isLandscape) 0.325f else 0.65f
     val crownWidth = if (isLandscape) 0.10f else 0.20f
     val crownPadding = if (isLandscape) 0.0f else 0.10f
 
-    val govukDesiredWidthInPx = screenWidthInPx * govukWidth
-    val crownDesiredWidthInPx = screenWidthInPx * crownWidth
+    val windowInfo = LocalWindowInfo.current
+    val screenWidthInPx = windowInfo.containerSize.width
+    val screenHeightInPx = windowInfo.containerSize.height
 
-    val govukWidthInDp = with(density) { govukDesiredWidthInPx.toDp() }
-    val crownWidthInDp = with(density) { crownDesiredWidthInPx.toDp() }
-
-    val crownPaddingBottomInPx = screenHeightInPx * crownPadding
-    val crownPaddingBottomInDp = with(density) { crownPaddingBottomInPx.toDp() }
+    val govukWidthInDp = dpFromPixelsRatio(
+        containerPixels = screenWidthInPx,
+        ratio = govukWidth
+    )
+    val crownWidthInDp = dpFromPixelsRatio(
+        containerPixels = screenWidthInPx,
+        ratio = crownWidth
+    )
+    val crownPaddingInDp = dpFromPixelsRatio(
+        containerPixels = screenHeightInPx,
+        ratio = crownPadding
+    )
 
     if (LocalContext.current.areAnimationsEnabled()) {
         govukProgress = govukStateProgress.progress
@@ -121,7 +123,17 @@ internal fun SplashScreen(
                     contentDescription = altText
                 }
                 .width(crownWidthInDp)
-                .padding(bottom = crownPaddingBottomInDp)
+                .padding(bottom = crownPaddingInDp)
         )
+    }
+}
+
+@Composable
+private fun dpFromPixelsRatio(
+    containerPixels: Int,
+    ratio: Float
+): Dp {
+    return with(LocalDensity.current) {
+        (containerPixels * ratio).toDp()
     }
 }
