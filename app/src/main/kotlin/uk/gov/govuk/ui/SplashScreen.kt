@@ -49,12 +49,12 @@ internal fun SplashScreen(
     var govukProgress by remember { mutableFloatStateOf(0f) }
     var crownProgress by remember { mutableFloatStateOf(0f) }
 
-    var govukStateProgress = animateLottieCompositionAsState(
+    val govukStateProgress = animateLottieCompositionAsState(
         composition = govukSplashComposition,
         isPlaying = LocalContext.current.areAnimationsEnabled(),
         restartOnPlay = false
     )
-    var crownStateProgress = animateLottieCompositionAsState(
+    val crownStateProgress = animateLottieCompositionAsState(
         composition = crownSplashComposition,
         isPlaying = LocalContext.current.areAnimationsEnabled(),
         restartOnPlay = false
