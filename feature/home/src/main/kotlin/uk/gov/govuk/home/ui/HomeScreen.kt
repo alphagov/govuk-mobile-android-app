@@ -18,6 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.ScreenBackground
@@ -71,6 +73,7 @@ private fun HomeScreen(
                 contentDescription = stringResource(id = R.string.logoAltText),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
+                    .semantics { heading() }
             )
 
             MediumVerticalSpacer()
