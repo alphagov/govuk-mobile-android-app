@@ -21,7 +21,6 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.Dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
@@ -68,18 +67,9 @@ internal fun SplashScreen(
     val screenWidthInPx = windowInfo.containerSize.width
     val screenHeightInPx = windowInfo.containerSize.height
 
-    val govukWidthInDp = dpFromPixelsRatio(
-        containerPixels = screenWidthInPx,
-        ratio = govukWidth
-    )
-    val crownWidthInDp = dpFromPixelsRatio(
-        containerPixels = screenWidthInPx,
-        ratio = crownWidth
-    )
-    val crownPaddingInDp = dpFromPixelsRatio(
-        containerPixels = screenHeightInPx,
-        ratio = crownPadding
-    )
+    val govukWidthInDp = screenWidthInPx.toDpWithRatio(govukWidth)
+    val crownWidthInDp = screenWidthInPx.toDpWithRatio(crownWidth)
+    val crownPaddingInDp = screenHeightInPx.toDpWithRatio(crownPadding)
 
     if (LocalContext.current.areAnimationsEnabled()) {
         govukProgress = govukStateProgress.progress
@@ -129,11 +119,8 @@ internal fun SplashScreen(
 }
 
 @Composable
-private fun dpFromPixelsRatio(
-    containerPixels: Int,
+private fun Int.toDpWithRatio(
     ratio: Float
-): Dp {
-    return with(LocalDensity.current) {
-        (containerPixels * ratio).toDp()
-    }
+) = with(LocalDensity.current) {
+    (this@toDpWithRatio * ratio).toDp()
 }
