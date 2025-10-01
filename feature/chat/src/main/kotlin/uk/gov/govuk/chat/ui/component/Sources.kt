@@ -27,6 +27,7 @@ import uk.gov.govuk.chat.domain.Analytics
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -54,7 +55,10 @@ internal fun Sources(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(GovUkTheme.spacing.medium),
+                .padding(
+                    horizontal = GovUkTheme.spacing.medium,
+                    vertical = GovUkTheme.spacing.small
+                ),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Icon(
@@ -79,7 +83,10 @@ internal fun Sources(
                     }
                 }
                 .fillMaxWidth()
-                .padding(GovUkTheme.spacing.medium),
+                .padding(
+                    horizontal = GovUkTheme.spacing.medium,
+                    vertical = GovUkTheme.spacing.small
+                ),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             BodyRegularLabel(
@@ -103,7 +110,7 @@ internal fun Sources(
                     val linkAddendumText = stringResource(id = R.string.sources_open_in_text)
                     val linkText = "${sources[index]} $linkAddendumText"
 
-                    MediumVerticalSpacer()
+                    SmallVerticalSpacer()
 
                     Markdown(
                         text = sources[index],
@@ -113,7 +120,7 @@ internal fun Sources(
                     )
 
                     if (index < sources.size - 1) {
-                        MediumVerticalSpacer()
+                        SmallVerticalSpacer()
                         ChatDivider(
                             modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
                         )

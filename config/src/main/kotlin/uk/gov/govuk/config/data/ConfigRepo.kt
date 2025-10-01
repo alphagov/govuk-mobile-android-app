@@ -21,7 +21,7 @@ class ConfigRepo @Inject constructor(
 ) {
 
     companion object {
-        private const val CHAT_POLL_INTERVAL_FALLBACK = 3
+        private const val CHAT_POLL_INTERVAL_FALLBACK = 3.0
     }
 
     private lateinit var _config: Config
@@ -60,6 +60,6 @@ class ConfigRepo @Inject constructor(
         }
     }
 
-    val chatPollIntervalSeconds: Int
-        get() = config.chatPollIntervalSeconds?.takeIf { it > 0 } ?: CHAT_POLL_INTERVAL_FALLBACK
+    val chatPollIntervalSeconds: Double
+        get() = (config.chatPollIntervalSeconds?.takeIf { it > 0.0 } ?: CHAT_POLL_INTERVAL_FALLBACK)
 }

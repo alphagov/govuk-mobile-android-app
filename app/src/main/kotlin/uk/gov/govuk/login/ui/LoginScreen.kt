@@ -50,7 +50,10 @@ internal fun LoginRoute(
     }
 
     if (isLoading == true) {
-        LoadingScreen(modifier)
+        LoadingScreen(
+            modifier = modifier,
+            accessibilityText = stringResource(R.string.login_loading_accessibility_text)
+        )
     } else {
         LoginScreen(
             onContinueClick = {

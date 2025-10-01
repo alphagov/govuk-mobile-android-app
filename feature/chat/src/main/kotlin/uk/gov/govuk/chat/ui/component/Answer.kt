@@ -39,6 +39,8 @@ internal fun Answer(
                     end = GovUkTheme.spacing.medium
                 )
             )
+
+            MediumVerticalSpacer()
         }
 
         Markdown(

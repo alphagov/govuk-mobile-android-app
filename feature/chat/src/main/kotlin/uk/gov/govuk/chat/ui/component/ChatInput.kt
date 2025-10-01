@@ -77,6 +77,10 @@ internal fun ChatInput(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(start = GovUkTheme.spacing.medium)
+                .height(32.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
         ) {
             if (isFocused) {
                 CharacterCountMessage(
@@ -89,18 +93,18 @@ internal fun ChatInput(
 
         Row(
             modifier = Modifier
-                .padding(horizontal = GovUkTheme.spacing.medium),
+                .padding(
+                    start = GovUkTheme.spacing.medium,
+                    end = GovUkTheme.spacing.medium,
+                    bottom = GovUkTheme.spacing.medium
+                ),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(
-                        if (isFocused && uiState.question.isNotEmpty()) {
-                            1f
-                        } else {
-                            0.88f
-                        }
+                        if (focusedWithInput(isFocused, uiState)) 1f else 0.88f
                     )
                     .animateContentSize(
                         animationSpec = tween(durationMillis = 100)
@@ -140,7 +144,7 @@ internal fun ChatInput(
                     colors = inputTextFieldDefaults(),
                     trailingIcon = {
                         AnimateIcon(
-                            isFocused && uiState.question.isNotEmpty(),
+                            focusedWithInput(isFocused, uiState),
                             {
                                 SubmitIconButton(
                                     onClick = {
@@ -156,7 +160,7 @@ internal fun ChatInput(
             }
 
             AnimateIcon(
-                (uiState.question.isEmpty() || !isFocused && uiState.question.isNotEmpty()),
+                (uiState.question.isEmpty() || !focusedWithInput(isFocused, uiState)),
                 {
                     ActionMenu(
                         hasConversation = hasConversation,
@@ -175,6 +179,13 @@ internal fun ChatInput(
             )
         }
     }
+}
+
+private fun focusedWithInput(
+    isFocused: Boolean,
+    uiState: ChatUiState.Default
+) : Boolean {
+    return isFocused && uiState.question.isNotEmpty()
 }
 
 @Composable
@@ -258,8 +269,7 @@ private fun CharacterCountMessage(
     modifier: Modifier = Modifier
 ) {
     val charactersRemaining = abs(charactersRemaining)
-    var color = GovUkTheme.colourScheme.textAndIcons.secondary
-    var style = GovUkTheme.typography.subheadlineRegular
+    var color = GovUkTheme.colourScheme.textAndIcons.primary
     var text = ""
 
     when {
@@ -277,14 +287,16 @@ private fun CharacterCountMessage(
                 charactersRemaining
             )
             color = GovUkTheme.colourScheme.textAndIcons.textFieldError
-            style = GovUkTheme.typography.subheadlineBold
         }
     }
 
     Text(
         text = text,
         color = color,
-        style = style,
+        fontSize = GovUkTheme.typography.bodyRegular.fontSize,
+        fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
+        fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
+        lineHeight = GovUkTheme.typography.bodyRegular.lineHeight,
         modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium)
     )
 }
