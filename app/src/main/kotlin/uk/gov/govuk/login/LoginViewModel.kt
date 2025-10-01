@@ -78,15 +78,15 @@ internal class LoginViewModel @Inject constructor(
     }
 
     private suspend fun shouldRefreshTokens(): Boolean {
-        val refreshTokenExpirySeconds = getTokenExpirySeconds()
-        return refreshTokenExpirySeconds == null || refreshTokenExpirySeconds > Date().toInstant().epochSecond
+        val tokenExpirySeconds = getTokenExpirySeconds()
+        return tokenExpirySeconds == null || tokenExpirySeconds > Date().toInstant().epochSecond
     }
 
     private suspend fun getTokenExpirySeconds(): Long? {
-        loginRepo.getRefreshTokenIssuedAtDate()?.let { issuedAtDate ->
-            return issuedAtDate + configRepo.config.refreshTokenExpirySeconds
+        return loginRepo.getRefreshTokenIssuedAtDate()?.let { issuedAtDate ->
+            issuedAtDate + configRepo.config.refreshTokenExpirySeconds
         } ?: run {
-            return loginRepo.getRefreshTokenExpiryDate()
+            loginRepo.getRefreshTokenExpiryDate()
         }
     }
 
