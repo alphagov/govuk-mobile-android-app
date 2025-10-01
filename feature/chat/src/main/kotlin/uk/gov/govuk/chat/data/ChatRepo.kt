@@ -78,7 +78,7 @@ internal class ChatRepo @Inject constructor(
     suspend fun getAnswer(
         conversationId: String,
         questionId: String,
-        wait: Int? = null,
+        wait: Double? = null,
     ): ChatResult<Answer> {
         val pollInterval = wait ?: configRepo.chatPollIntervalSeconds
 

@@ -135,13 +135,13 @@ class ConfigRepoTest {
         coEvery { configApi.getConfig() } returns Response.success(configResponse.toString())
         coEvery { signatureValidator.isValidSignature(any(), any()) } returns true
         coEvery { gson.fromJson(any<String>(), ConfigResponse::class.java) } returns ConfigResponse(config, "signature")
-        every { config.chatPollIntervalSeconds } returns 2
+        every { config.chatPollIntervalSeconds } returns 0.5
 
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
             repo.initConfig()
-            assertEquals(2, repo.chatPollIntervalSeconds)
+            assertEquals(0.5, repo.chatPollIntervalSeconds, 0.0)
         }
     }
 
@@ -156,7 +156,7 @@ class ConfigRepoTest {
 
         runTest {
             repo.initConfig()
-            assertEquals(3, repo.chatPollIntervalSeconds)
+            assertEquals(3.0, repo.chatPollIntervalSeconds, 0.0)
         }
     }
 
@@ -165,13 +165,13 @@ class ConfigRepoTest {
         coEvery { configApi.getConfig() } returns Response.success(configResponse.toString())
         coEvery { signatureValidator.isValidSignature(any(), any()) } returns true
         coEvery { gson.fromJson(any<String>(), ConfigResponse::class.java) } returns ConfigResponse(config, "signature")
-        every { config.chatPollIntervalSeconds } returns 0
+        every { config.chatPollIntervalSeconds } returns 0.0
 
         val repo = ConfigRepo(configApi, gson, signatureValidator)
 
         runTest {
             repo.initConfig()
-            assertEquals(3, repo.chatPollIntervalSeconds)
+            assertEquals(3.0, repo.chatPollIntervalSeconds, 0.0)
         }
     }
 }

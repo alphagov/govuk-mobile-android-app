@@ -106,7 +106,7 @@ class ChatRepoTest {
 
         val expected = Success(answer)
 
-        assertEquals(expected, chatRepo.getAnswer("123", "abc", wait = 1))
+        assertEquals(expected, chatRepo.getAnswer("123", "abc", wait = 1.0))
     }
 
     @Test
@@ -115,7 +115,7 @@ class ChatRepoTest {
         every { answerResponse.isSuccessful } returns true andThen false
         every { answerResponse.code() } returns 202 andThen 404
 
-        val result = chatRepo.getAnswer("123", "abc", wait = 1)
+        val result = chatRepo.getAnswer("123", "abc", wait = 1.0)
 
         assertTrue(result is NotFound)
     }
