@@ -88,9 +88,83 @@ class LoginViewModelTest {
     }
 
     @Test
+    fun `Given the user is signed in and the refresh token issued at date null and the expiry date is in the future, when init is successful, then emit loading and login event`() {
+        every { authRepo.isUserSignedIn() } returns true
+        coEvery { configRepo.config.refreshTokenExpirySeconds } returns 10000L
+        coEvery { loginRepo.getRefreshTokenExpiryDate() } returns Date().toInstant().epochSecond + 10000L
+        coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns null
+        coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
+
+        runTest {
+            val isLoading = mutableListOf<Boolean?>()
+            val events = mutableListOf<LoginEvent>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.isLoading.toList(isLoading)
+            }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(events)
+            }
+            viewModel.init(activity)
+
+            assertTrue(isLoading.last() == true)
+            assertTrue(events.first().isBiometricLogin)
+        }
+    }
+
+    @Test
+    fun `Given the user is signed in and the refresh token issued at date is null and the expiry date is not in the future, when init is successful, then end user session and clear`() {
+        every { authRepo.isUserSignedIn() } returns true
+        coEvery { configRepo.config.refreshTokenExpirySeconds } returns 10000L
+        coEvery { loginRepo.getRefreshTokenExpiryDate() } returns 0
+        coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns null
+        coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
+
+        runTest {
+            val isLoading = mutableListOf<Boolean?>()
+            val events = mutableListOf<LoginEvent>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.isLoading.toList(isLoading)
+            }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(events)
+            }
+            viewModel.init(activity)
+
+            coVerify {
+                authRepo.endUserSession()
+                authRepo.clear()
+            }
+        }
+    }
+
+    @Test
+    fun `Given the user is signed in and the refresh token issued at date is null and the expiry date is null, when init is successful, then emit loading and login event`() {
+        every { authRepo.isUserSignedIn() } returns true
+        coEvery { loginRepo.getRefreshTokenExpiryDate() } returns null
+        coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns null
+        coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
+
+        runTest {
+            val isLoading = mutableListOf<Boolean?>()
+            val events = mutableListOf<LoginEvent>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.isLoading.toList(isLoading)
+            }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(events)
+            }
+            viewModel.init(activity)
+
+            assertTrue(isLoading.last() == true)
+            assertTrue(events.first().isBiometricLogin)
+        }
+    }
+
+    @Test
     fun `Given the user is signed in and the refresh token issue date is in the future, when init is successful, then emit loading and login event`() {
         every { authRepo.isUserSignedIn() } returns true
-        coEvery { loginRepo.getRefreshTokenExpiryDate() } returns Date().toInstant().epochSecond + 10000L
+        coEvery { configRepo.config.refreshTokenExpirySeconds } returns 10000L
+        coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns Date().toInstant().epochSecond
         coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
 
         runTest {
@@ -112,7 +186,8 @@ class LoginViewModelTest {
     @Test
     fun `Given the user is signed in, when init is unsuccessful, then emit loading`() {
         every { authRepo.isUserSignedIn() } returns true
-        coEvery { loginRepo.getRefreshTokenExpiryDate() } returns Date().toInstant().epochSecond + 10000L
+        coEvery { configRepo.config.refreshTokenExpirySeconds } returns 10000L
+        coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns Date().toInstant().epochSecond
         coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, ERROR)
 
         runTest {
@@ -132,9 +207,9 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Given an auth response, when success and id token issue date is not stored, then emit loading and login event`() {
+    fun `Given an auth response, when success and id token issued at date is not stored, then emit loading and login event`() {
         coEvery { authRepo.handleAuthResponse(any()) } returns true
-        every { authRepo.getIdTokenIssueDate() } returns null
+        every { authRepo.getIdTokenIssuedAtDate() } returns null
 
         runTest {
             val isLoading = mutableListOf<Boolean?>()
@@ -151,15 +226,15 @@ class LoginViewModelTest {
             assertFalse(events.first().isBiometricLogin)
 
             coVerify(exactly = 0) {
-                loginRepo.setRefreshTokenExpiryDate(any())
+                loginRepo.setRefreshTokenIssuedAtDate(any())
             }
         }
     }
 
     @Test
-    fun `Given an auth response, when success and id token issue date is stored, then emit loading, login event and set token expiry`() {
+    fun `Given an auth response, when success and id token issued at date is stored, then emit loading, login event and set token expiry`() {
         coEvery { authRepo.handleAuthResponse(any()) } returns true
-        every { authRepo.getIdTokenIssueDate() } returns 12345L
+        every { authRepo.getIdTokenIssuedAtDate() } returns 12345L
         every { configRepo.config.refreshTokenExpirySeconds } returns 601200L
 
         runTest {
@@ -177,8 +252,8 @@ class LoginViewModelTest {
             assertFalse(events.first().isBiometricLogin)
 
             coVerify(exactly = 1) {
-                authRepo.getIdTokenIssueDate()
-                loginRepo.setRefreshTokenExpiryDate(12345L + 601200L)
+                authRepo.getIdTokenIssuedAtDate()
+                loginRepo.setRefreshTokenIssuedAtDate(12345L)
             }
         }
     }

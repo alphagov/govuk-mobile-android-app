@@ -10,8 +10,10 @@ class LoginRepo @Inject constructor(
 ) {
     internal suspend fun getRefreshTokenExpiryDate() = loginDataStore.getRefreshTokenExpiryDate()
 
-    internal suspend fun setRefreshTokenExpiryDate(expiryDate: Long) {
-        loginDataStore.setRefreshTokenExpiryDate(expiryDate)
+    internal suspend fun getRefreshTokenIssuedAtDate() = loginDataStore.getRefreshTokenIssuedAtDate()
+
+    internal suspend fun setRefreshTokenIssuedAtDate(issuedAtDate: Long) {
+        loginDataStore.setRefreshTokenIssuedAtDate(issuedAtDate)
     }
 
     internal suspend fun clear() = loginDataStore.clear()
