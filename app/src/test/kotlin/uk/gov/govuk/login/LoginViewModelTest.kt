@@ -63,82 +63,7 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Given the user is signed in and the refresh token issue date is not in the future, then end user session and clear auth repo`() {
-        every { authRepo.isUserSignedIn() } returns true
-        coEvery { loginRepo.getRefreshTokenExpiryDate() } returns Date().toInstant().epochSecond
-
-        runTest {
-            val events = mutableListOf<LoginEvent>()
-            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                viewModel.loginCompleted.toList(events)
-            }
-            viewModel.init(activity)
-
-            assertTrue(events.isEmpty())
-
-            coVerify(exactly = 0) {
-                authRepo.refreshTokens(any(), any())
-            }
-
-            coVerify {
-                authRepo.endUserSession()
-                authRepo.clear()
-            }
-        }
-    }
-
-    @Test
-    fun `Given the user is signed in and the refresh token issued at date null and the expiry date is in the future, when init is successful, then emit loading and login event`() {
-        every { authRepo.isUserSignedIn() } returns true
-        coEvery { configRepo.config.refreshTokenExpirySeconds } returns 10000L
-        coEvery { loginRepo.getRefreshTokenExpiryDate() } returns Date().toInstant().epochSecond + 10000L
-        coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns null
-        coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
-
-        runTest {
-            val isLoading = mutableListOf<Boolean?>()
-            val events = mutableListOf<LoginEvent>()
-            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                viewModel.isLoading.toList(isLoading)
-            }
-            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                viewModel.loginCompleted.toList(events)
-            }
-            viewModel.init(activity)
-
-            assertTrue(isLoading.last() == true)
-            assertTrue(events.first().isBiometricLogin)
-        }
-    }
-
-    @Test
-    fun `Given the user is signed in and the refresh token issued at date is null and the expiry date is not in the future, when init is successful, then end user session and clear`() {
-        every { authRepo.isUserSignedIn() } returns true
-        coEvery { configRepo.config.refreshTokenExpirySeconds } returns 10000L
-        coEvery { loginRepo.getRefreshTokenExpiryDate() } returns 0
-        coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns null
-        coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
-
-        runTest {
-            val isLoading = mutableListOf<Boolean?>()
-            val events = mutableListOf<LoginEvent>()
-            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                viewModel.isLoading.toList(isLoading)
-            }
-            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-                viewModel.loginCompleted.toList(events)
-            }
-            viewModel.init(activity)
-
-            coVerify {
-                authRepo.endUserSession()
-                authRepo.clear()
-            }
-        }
-    }
-
-    @Test
-    fun `Given the user is signed in and the refresh token issued at date is null and the expiry date is null, when init is successful, then emit loading and login event`() {
+    fun `Given the user is signed in and the refresh token issued at date and the refresh token expiry date are null, then emit loading and login event`() {
         every { authRepo.isUserSignedIn() } returns true
         coEvery { loginRepo.getRefreshTokenExpiryDate() } returns null
         coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns null
@@ -161,10 +86,11 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Given the user is signed in and the refresh token issue date is in the future, when init is successful, then emit loading and login event`() {
+    fun `Given the user is signed in and the refresh token expiry date and the refresh token expiry seconds are null and the refresh token expiry issued at date is not null, then emit loading and login event`() {
         every { authRepo.isUserSignedIn() } returns true
-        coEvery { configRepo.config.refreshTokenExpirySeconds } returns 10000L
+        coEvery { loginRepo.getRefreshTokenExpiryDate() } returns null
         coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns Date().toInstant().epochSecond
+        coEvery { configRepo.config.refreshTokenExpirySeconds } returns null
         coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
 
         runTest {
@@ -180,6 +106,106 @@ class LoginViewModelTest {
 
             assertTrue(isLoading.last() == true)
             assertTrue(events.first().isBiometricLogin)
+        }
+    }
+
+    @Test
+    fun `Given the user is signed in and the refresh token expiry seconds are in the future, then emit loading and login event`() {
+        every { authRepo.isUserSignedIn() } returns true
+        coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns Date().toInstant().epochSecond
+        coEvery { configRepo.config.refreshTokenExpirySeconds } returns Date().toInstant().epochSecond + 10000
+        coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
+
+        runTest {
+            val isLoading = mutableListOf<Boolean?>()
+            val events = mutableListOf<LoginEvent>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.isLoading.toList(isLoading)
+            }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(events)
+            }
+            viewModel.init(activity)
+
+            assertTrue(isLoading.last() == true)
+            assertTrue(events.first().isBiometricLogin)
+        }
+    }
+
+    @Test
+    fun `Given the user is signed in and the refresh token expiry seconds are not in the future, then end user session and clear auth repo`() {
+        every { authRepo.isUserSignedIn() } returns true
+        coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns Date().toInstant().epochSecond
+        coEvery { configRepo.config.refreshTokenExpirySeconds } returns 0
+
+        runTest {
+            val events = mutableListOf<LoginEvent>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(events)
+            }
+            viewModel.init(activity)
+
+            assertTrue(events.isEmpty())
+
+            coVerify(exactly = 0) {
+                authRepo.refreshTokens(any(), any())
+            }
+
+            coVerify {
+                authRepo.endUserSession()
+                authRepo.clear()
+            }
+        }
+    }
+
+    @Test
+    fun `Given the user is signed in and the refresh token issued at date and refresh expiry seconds are null and the refresh token expiry date is in the future, then emit loading and login event`() {
+        every { authRepo.isUserSignedIn() } returns true
+        coEvery { loginRepo.getRefreshTokenExpiryDate() } returns Date().toInstant().epochSecond + 10000
+        coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns null
+        coEvery { configRepo.config.refreshTokenExpirySeconds } returns null
+        coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
+
+        runTest {
+            val isLoading = mutableListOf<Boolean?>()
+            val events = mutableListOf<LoginEvent>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.isLoading.toList(isLoading)
+            }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(events)
+            }
+            viewModel.init(activity)
+
+            assertTrue(isLoading.last() == true)
+            assertTrue(events.first().isBiometricLogin)
+        }
+    }
+
+    @Test
+    fun `Given the user is signed in and the refresh token issued at date and refresh expiry seconds are null and the refresh token expiry date is not in the future, then end user session and clear auth repo`() {
+        every { authRepo.isUserSignedIn() } returns true
+        coEvery { loginRepo.getRefreshTokenExpiryDate() } returns 0
+        coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns null
+        coEvery { configRepo.config.refreshTokenExpirySeconds } returns null
+
+        runTest {
+            val events = mutableListOf<LoginEvent>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(events)
+            }
+            viewModel.init(activity)
+
+            assertTrue(events.isEmpty())
+
+            coVerify(exactly = 0) {
+                authRepo.refreshTokens(any(), any())
+            }
+
+            coVerify {
+                authRepo.endUserSession()
+                authRepo.clear()
+            }
         }
     }
 

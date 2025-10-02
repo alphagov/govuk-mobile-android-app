@@ -83,9 +83,11 @@ internal class LoginViewModel @Inject constructor(
     }
 
     private suspend fun getTokenExpirySeconds(): Long? {
-        return loginRepo.getRefreshTokenIssuedAtDate()?.let { issuedAtDate ->
-            issuedAtDate + configRepo.config.refreshTokenExpirySeconds
-        } ?: run {
+        val issuedAtDate = loginRepo.getRefreshTokenIssuedAtDate()
+        val expirySeconds = configRepo.config.refreshTokenExpirySeconds
+        return if (issuedAtDate != null && expirySeconds != null) {
+            issuedAtDate + expirySeconds
+        } else {
             loginRepo.getRefreshTokenExpiryDate()
         }
     }
