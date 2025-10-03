@@ -15,6 +15,7 @@ class LoginDataStore @Inject constructor(
 ) {
     companion object {
         internal const val REFRESH_TOKEN_EXPIRY_KEY = "refresh_token_expiry"
+        internal const val REFRESH_TOKEN_ISSUED_AT_DATE_KEY = "refresh_token_issued_at_date"
     }
 
     internal suspend fun getRefreshTokenExpiryDate(): Long? {
@@ -22,8 +23,15 @@ class LoginDataStore @Inject constructor(
             ?.get(longPreferencesKey(REFRESH_TOKEN_EXPIRY_KEY))
     }
 
-    internal suspend fun setRefreshTokenExpiryDate(expiryDate: Long) {
-        dataStore.edit { prefs -> prefs[longPreferencesKey(REFRESH_TOKEN_EXPIRY_KEY)] = expiryDate }
+    internal suspend fun getRefreshTokenIssuedAtDate(): Long? {
+        return dataStore.data.firstOrNull()
+            ?.get(longPreferencesKey(REFRESH_TOKEN_ISSUED_AT_DATE_KEY))
+    }
+
+    internal suspend fun setRefreshTokenIssuedAtDate(issuedAtDate: Long) {
+        dataStore.edit { prefs ->
+            prefs[longPreferencesKey(REFRESH_TOKEN_ISSUED_AT_DATE_KEY)] = issuedAtDate
+        }
     }
 
     internal suspend fun clear() {
