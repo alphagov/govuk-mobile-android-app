@@ -248,7 +248,7 @@ class AuthRepo @Inject constructor(
         return getIdTokenProperty("email")
     }
 
-    fun getIdTokenIssueDate(): Long? {
+    fun getIdTokenIssuedAtDate(): Long? {
         return getIdTokenProperty("iat").toLongOrNull()
     }
 

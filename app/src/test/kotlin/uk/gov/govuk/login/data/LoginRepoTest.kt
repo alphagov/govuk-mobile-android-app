@@ -37,13 +37,37 @@ class LoginRepoTest {
     }
 
     @Test
-    fun `Given a refresh token expiry date is 12345, When set refresh token expiry date, then update data store`() {
+    fun `Given the there is no refresh token issued at date stored, When get refresh token issued at date, then return null`() {
+        val repo = LoginRepo(loginDataStore)
+
+        coEvery { loginDataStore.getRefreshTokenIssuedAtDate() } returns null
+
+        runTest {
+
+            assertNull(repo.getRefreshTokenIssuedAtDate())
+        }
+    }
+
+    @Test
+    fun `Given the there is a refresh token issued at date stored, When get refresh token issued at date, then return issued at date`() {
+        val repo = LoginRepo(loginDataStore)
+
+        coEvery { loginDataStore.getRefreshTokenIssuedAtDate() } returns 12345L
+
+        runTest {
+
+            assertEquals(12345L, repo.getRefreshTokenIssuedAtDate())
+        }
+    }
+
+    @Test
+    fun `Given a refresh token issued at date is 12345, When set refresh token issued at date, then update data store`() {
         val repo = LoginRepo(loginDataStore)
 
         runTest {
-            repo.setRefreshTokenExpiryDate(12345L)
+            repo.setRefreshTokenIssuedAtDate(12345L)
 
-            coVerify { loginDataStore.setRefreshTokenExpiryDate(12345L) }
+            coVerify { loginDataStore.setRefreshTokenIssuedAtDate(12345L) }
         }
     }
 

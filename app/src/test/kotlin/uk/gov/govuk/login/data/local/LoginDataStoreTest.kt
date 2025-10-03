@@ -17,8 +17,8 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import uk.gov.govuk.data.local.AppDataStore
 import uk.gov.govuk.login.data.local.LoginDataStore.Companion.REFRESH_TOKEN_EXPIRY_KEY
+import uk.gov.govuk.login.data.local.LoginDataStore.Companion.REFRESH_TOKEN_ISSUED_AT_DATE_KEY
 import java.io.File
 import kotlin.io.path.createTempDirectory
 import kotlin.test.assertEquals
@@ -69,14 +69,27 @@ class LoginDataStoreTest {
     }
 
     @Test
-    fun `Given the refresh token expiry date is 12345, When set refresh token expiry date, then update the prefs`() {
+    fun `Given the refresh token issued at date is 12345 in the data store, When get refresh token issued at date, then return 12345`() {
         val loginDatastore = LoginDataStore(dataStore)
 
         runTest {
-            loginDatastore.setRefreshTokenExpiryDate(12345L)
+            dataStore.edit { prefs ->
+                prefs[longPreferencesKey(REFRESH_TOKEN_ISSUED_AT_DATE_KEY)] = 12345L
+            }
+
+            assertEquals(12345L, loginDatastore.getRefreshTokenIssuedAtDate())
+        }
+    }
+
+    @Test
+    fun `Given the refresh token issued at date is 12345, When set refresh token issued at date, then update the prefs`() {
+        val loginDatastore = LoginDataStore(dataStore)
+
+        runTest {
+            loginDatastore.setRefreshTokenIssuedAtDate(12345L)
 
             assertTrue(
-                dataStore.data.first()[longPreferencesKey(REFRESH_TOKEN_EXPIRY_KEY)] == 12345L
+                dataStore.data.first()[longPreferencesKey(REFRESH_TOKEN_ISSUED_AT_DATE_KEY)] == 12345L
             )
         }
     }
@@ -88,6 +101,10 @@ class LoginDataStoreTest {
         runTest {
             dataStore.edit { prefs ->
                 prefs[longPreferencesKey(REFRESH_TOKEN_EXPIRY_KEY)] = 12345L
+            }
+
+            dataStore.edit { prefs ->
+                prefs[longPreferencesKey(REFRESH_TOKEN_ISSUED_AT_DATE_KEY)] = 12345L
             }
 
             assertTrue(dataStore.data.first().asMap().isNotEmpty())
