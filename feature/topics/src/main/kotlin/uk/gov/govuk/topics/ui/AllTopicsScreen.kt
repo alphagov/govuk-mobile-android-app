@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import uk.gov.govuk.design.ui.component.ScreenBackground
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -50,8 +49,6 @@ private fun AllTopicsScreen(
     modifier: Modifier = Modifier
 ) {
     val title = stringResource(R.string.allTopicsTitle)
-
-    ScreenBackground()
 
     LaunchedEffect(Unit) {
         onPageView(title)

@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import uk.gov.govuk.design.ui.component.ScreenBackground
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
@@ -54,8 +53,6 @@ private fun EditTopicsScreen(
     modifier: Modifier = Modifier
 ) {
     val title = stringResource(R.string.editTitle)
-
-    ScreenBackground()
 
     LaunchedEffect(Unit) {
         onPageView(title)

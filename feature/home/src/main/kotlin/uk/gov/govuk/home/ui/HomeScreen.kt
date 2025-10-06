@@ -22,7 +22,6 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import uk.gov.govuk.design.ui.component.ScreenBackground
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -53,13 +52,11 @@ private fun HomeScreen(
     modifier: Modifier = Modifier,
     headerWidget: (@Composable (Modifier) -> Unit)? = null,
 ) {
-    ScreenBackground()
-
     LaunchedEffect(Unit) {
         onPageView()
     }
 
-    Column(modifier) {
+    Column(modifier.background(GovUkTheme.colourScheme.surfaces.screenBackground)) {
         Column(
             Modifier
                 .fillMaxWidth()

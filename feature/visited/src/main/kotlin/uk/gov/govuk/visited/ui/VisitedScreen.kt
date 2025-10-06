@@ -24,7 +24,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import uk.gov.govuk.design.ui.component.ScreenBackground
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
@@ -78,8 +77,6 @@ private fun VisitedScreen(
     launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ScreenBackground()
-
     LaunchedEffect(Unit) {
         onPageView()
     }

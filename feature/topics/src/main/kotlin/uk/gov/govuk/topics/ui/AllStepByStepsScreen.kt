@@ -13,7 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import uk.gov.govuk.design.ui.component.ScreenBackground
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.ExternalLinkListItem
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
@@ -57,8 +56,6 @@ private fun AllStepByStepsScreen(
     onExternalLink: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ScreenBackground()
-
     Column(modifier.fillMaxSize()) {
         val title = stringResource(R.string.stepByStepGuidesTitle)
 
