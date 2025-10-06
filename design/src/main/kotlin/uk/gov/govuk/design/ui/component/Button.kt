@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.R
+import uk.gov.govuk.design.ui.extension.drawBottomStroke
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 data class GovUkButtonColours(
@@ -249,7 +250,10 @@ private fun BaseButton(
     Button(
         onClick = onClick,
         modifier = modifier
-            .drawBottomStroke(strokeColour)
+            .drawBottomStroke(
+                colour = strokeColour,
+                cornerRadius = 15.dp
+            )
             .focusRequester(focusRequester)
             .focusable(interactionSource = interactionSource),
         enabled = enabled,
@@ -271,52 +275,6 @@ private fun BaseButton(
         )
         if (externalLink) ExternalLinkIcon()
     }
-}
-
-@Composable
-private fun Modifier.drawBottomStroke(colour: Color?): Modifier {
-    colour ?: return this
-
-    val cornerRadius = 15.dp
-    val strokeWidth = 3.dp
-    val offset = 7f
-
-    return this
-        .drawBehind {
-            // Bottom line
-            drawLine(
-                color = colour,
-                start = Offset(x = cornerRadius.toPx(), y = size.height - offset),
-                end = Offset(x = size.width - cornerRadius.toPx(), y = size.height - offset),
-                strokeWidth = strokeWidth.toPx()
-            )
-
-            // Bottom-left corner
-            drawArc(
-                color = colour,
-                startAngle = 180f,
-                sweepAngle = -90f,
-                useCenter = false,
-                topLeft = Offset(x = offset, y = size.height - offset - cornerRadius.toPx() * 2),
-                size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2),
-                style = Stroke(width = strokeWidth.toPx())
-            )
-
-            // Bottom-right corner
-            drawArc(
-                color = colour,
-                startAngle = 360f,
-                sweepAngle = 90f,
-                useCenter = false,
-                topLeft = Offset(
-                    x = (size.width - cornerRadius.toPx() * 2) - offset,
-                    y = size.height - offset - cornerRadius.toPx() * 2
-                ),
-                size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2),
-                style = Stroke(width = strokeWidth.toPx())
-            )
-        }
-        .padding(bottom = strokeWidth)
 }
 
 @Composable
