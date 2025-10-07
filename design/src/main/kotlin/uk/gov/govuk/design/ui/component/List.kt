@@ -98,7 +98,6 @@ fun SectionHeading(
                 BodyRegularLabel(
                     text = button.title,
                     modifier = Modifier
-                        .clip(RoundedCornerShape(15.dp))
                         .background(GovUkTheme.colourScheme.surfaces.cardDefault)
                         .padding(
                             horizontal = GovUkTheme.spacing.medium,
