@@ -367,7 +367,6 @@ fun SectionHeadingLabel(
     ) {
         val titleModifier = Modifier
             .padding(
-                horizontal = GovUkTheme.spacing.medium,
                 vertical = GovUkTheme.spacing.medium
             )
             .weight(1f)
@@ -395,7 +394,7 @@ fun SectionHeadingLabel(
                 onClick = button.onClick,
                 modifier = Modifier.padding(
                     top = GovUkTheme.spacing.extraSmall,
-                    end = GovUkTheme.spacing.medium,
+                    start = GovUkTheme.spacing.medium,
                     bottom = GovUkTheme.spacing.extraSmall
                 ),
                 contentPadding = PaddingValues()
