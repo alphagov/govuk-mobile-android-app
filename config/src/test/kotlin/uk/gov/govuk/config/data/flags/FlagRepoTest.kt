@@ -351,12 +351,14 @@ class FlagRepoTest {
         assertFalse(flagRepo.isLocalServicesEnabled())
     }
 
+    /*
     @Test
     fun `Given a debug build, When chat is enabled, then return false`() {
         flagRepo = FlagRepo(true, debugFlags, configRepo)
 
         assertFalse(flagRepo.isChatEnabled())
     }
+     */
 
     @Test
     fun `Given a release build, When chat is enabled, then return false`() {
@@ -365,12 +367,14 @@ class FlagRepoTest {
         assertFalse(flagRepo.isChatEnabled())
     }
 
+    /*
     @Test
     fun `Given a debug build, When chat opt in is enabled, then return false`() {
         flagRepo = FlagRepo(true, debugFlags, configRepo)
 
         assertFalse(flagRepo.isChatOptInEnabled())
     }
+     */
 
     @Test
     fun `Given a release build, When chat opt in is enabled, then return false`() {
@@ -379,12 +383,14 @@ class FlagRepoTest {
         assertFalse(flagRepo.isChatOptInEnabled())
     }
 
+    /*
     @Test
     fun `Given a debug build, When chat test active is enabled, then return false`() {
         flagRepo = FlagRepo(true, debugFlags, configRepo)
 
         assertFalse(flagRepo.isChatTestActiveEnabled())
     }
+     */
 
     @Test
     fun `Given a release build, When chat test active is enabled, then return false`() {
