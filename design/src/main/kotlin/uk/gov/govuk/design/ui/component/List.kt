@@ -2,7 +2,6 @@ package uk.gov.govuk.design.ui.component
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Icon
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,78 +31,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import uk.gov.govuk.design.R
-import uk.gov.govuk.design.ui.model.SectionHeadingButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-
-@Composable
-fun SectionHeading(
-    modifier: Modifier = Modifier,
-    title1: String? = null,
-    title3: String? = null,
-    button: SectionHeadingButton? = null
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        val titleModifier = Modifier
-            .padding(
-                horizontal = GovUkTheme.spacing.medium,
-                vertical = GovUkTheme.spacing.medium
-            )
-            .weight(1f)
-            .semantics { heading() }
-        val titleColour = GovUkTheme.colourScheme.textAndIcons.primary
-
-        title1?.let { title1 ->
-            Title1BoldLabel(
-                text = title1,
-                modifier = titleModifier,
-                color = titleColour
-            )
-        }
-
-        title3?.let { title3 ->
-            Title3BoldLabel(
-                text = title3,
-                modifier = titleModifier,
-                color = titleColour
-            )
-        }
-
-        button?.let { button ->
-            TextButton(
-                onClick = button.onClick,
-                modifier = Modifier.padding(
-                    top = GovUkTheme.spacing.extraSmall,
-                    end = GovUkTheme.spacing.medium,
-                    bottom = GovUkTheme.spacing.extraSmall
-                ),
-                contentPadding = PaddingValues()
-            ) {
-                BodyRegularLabel(
-                    text = button.title,
-                    modifier = Modifier
-                        .background(GovUkTheme.colourScheme.surfaces.cardDefault)
-                        .padding(
-                            horizontal = GovUkTheme.spacing.medium,
-                            vertical = 9.dp
-                        )
-                        .semantics { contentDescription = button.altText },
-                    color = GovUkTheme.colourScheme.textAndIcons.link
-                )
-            }
-        }
-    }
-}
 
 @Composable
 fun ListHeader(
@@ -673,36 +606,4 @@ private fun DrawScope.lastCell(
         color = borderColor,
         style = Stroke(width = borderWidth)
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SectionHeadingTitle1Preview() {
-    val button = SectionHeadingButton(
-        title = "Button Title",
-        altText = "Alt text",
-        onClick = {}
-    )
-    GovUkTheme {
-        SectionHeading(
-            title1 = "Section Heading Title",
-            button = button
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SectionHeadingTitle3Preview() {
-    val button = SectionHeadingButton(
-        title = "Button Title",
-        altText = "Alt text",
-        onClick = {}
-    )
-    GovUkTheme {
-        SectionHeading(
-            title3 = "Section Heading Title",
-            button = button
-        )
-    }
 }

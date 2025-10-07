@@ -1,6 +1,6 @@
 package uk.gov.govuk.design.ui.model
 
-data class SectionHeadingButton(
+data class SectionHeadingLabelButton(
     val title: String,
     val altText: String,
     val onClick: () -> Unit
