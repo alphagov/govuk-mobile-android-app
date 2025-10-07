@@ -25,10 +25,13 @@ private val BlueDarkMode = Color(0xFF263D54)
 private val TealAccent = Color(0xFF00FFE0)
 
 private val YellowPrimary = Color(0xFFFFDD00)
+private val YellowDarker50 = Color(0xFF806F0D)
 
 private val RedPrimary = Color(0xFFCA3535)
 private val RedAccent = Color(0xFFFF5E5E)
 private val RedDarker25 = Color(0xFF982828)
+private val RedDarker50 = Color(0xFF651B1B)
+private val RedDarker80 = Color(0xFF280B0B)
 
 private val GreenPrimary = Color(0xFF11875A)
 private val GreenAccent = Color(0xFF66F39E)
@@ -37,6 +40,7 @@ private val GreenLighter50 = Color(0xFF88C3AD)
 private val GreenLighter95 = Color(0xFFF3F9F7)
 private val GreenDarker25 = Color(0xFF0D6544)
 private val GreenDarker50 = Color(0xFF09442D)
+private val GreenDarker80 = Color(0xFF031B12)
 
 private val Grey850 = Color(0xFF262626)
 private val Grey800 = Color(0xFF333333)
@@ -118,6 +122,9 @@ data class GovUkColourScheme(
         val buttonPrimaryHighlight: Color,
         val buttonPrimaryDisabled: Color,
         val buttonPrimaryFocused: Color,
+        val buttonPrimaryStroke: Color,
+        val buttonPrimaryStrokeHighlight: Color,
+        val buttonPrimaryStrokeFocussed: Color,
         val buttonSecondary: Color,
         val buttonSecondaryHighlight: Color,
         val buttonSecondaryDisabled: Color,
@@ -128,6 +135,9 @@ data class GovUkColourScheme(
         val buttonCompactFocused: Color,
         val buttonDestructive: Color,
         val buttonDestructiveHighlight: Color,
+        val buttonDestructiveStroke: Color,
+        val buttonDestructiveStrokeHighlight: Color,
+        val buttonDestructiveStrokeFocussed: Color,
         val search: Color,
         val switchOn: Color,
         val switchOff: Color,
@@ -145,7 +155,8 @@ data class GovUkColourScheme(
         val chatButtonBackgroundEnabled: Color,
         val chatUserMessageBackground: Color,
         val chatBotMessageBackground: Color,
-        val chatIntroCardBackground: Color
+        val chatIntroCardBackground: Color,
+        val screenBackground: Color
     )
 
     data class Strokes(
@@ -225,6 +236,9 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonPrimaryHighlight = GreenDarker25,
         buttonPrimaryDisabled = Grey100,
         buttonPrimaryFocused = YellowPrimary,
+        buttonPrimaryStroke = GreenDarker50,
+        buttonPrimaryStrokeHighlight = GreenDarker80,
+        buttonPrimaryStrokeFocussed = Black,
         buttonSecondary = Color.Transparent,
         buttonSecondaryHighlight = Color.Transparent,
         buttonSecondaryDisabled = Color.Transparent,
@@ -235,6 +249,9 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonCompactFocused = YellowPrimary,
         buttonDestructive = RedPrimary,
         buttonDestructiveHighlight = RedDarker25,
+        buttonDestructiveStroke = RedDarker50,
+        buttonDestructiveStrokeHighlight = RedDarker80,
+        buttonDestructiveStrokeFocussed = Black,
         search = White,
         switchOn = GreenPrimary,
         switchOff = BlackLighter50,
@@ -252,7 +269,8 @@ internal val LightColorScheme = GovUkColourScheme(
         chatButtonBackgroundEnabled = BluePrimary,
         chatUserMessageBackground = WhiteAlpha50,
         chatBotMessageBackground = White,
-        chatIntroCardBackground = BlueLighter95
+        chatIntroCardBackground = BlueLighter95,
+        screenBackground = BlueLighter90
     ),
     strokes = Strokes(
         fixedContainer = BlackAlpha30,
@@ -331,6 +349,9 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonPrimaryHighlight = GreenLighter25,
         buttonPrimaryDisabled = Grey400,
         buttonPrimaryFocused = YellowPrimary,
+        buttonPrimaryStroke = GreenPrimary,
+        buttonPrimaryStrokeHighlight = GreenDarker50,
+        buttonPrimaryStrokeFocussed = YellowDarker50,
         buttonSecondary = Color.Transparent,
         buttonSecondaryHighlight = Color.Transparent,
         buttonSecondaryDisabled = Color.Transparent,
@@ -341,12 +362,15 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonCompactFocused = YellowPrimary,
         buttonDestructive = RedAccent,
         buttonDestructiveHighlight = RedPrimary,
+        buttonDestructiveStroke = RedPrimary,
+        buttonDestructiveStrokeHighlight = RedDarker50,
+        buttonDestructiveStrokeFocussed = YellowDarker50,
         search = Black,
         switchOn = GreenPrimary,
         switchOff = BlackLighter50,
         toggleHandle = White,
         icon = BlueAccent,
-        homeHeader = BlueDarker50,
+        homeHeader = BlueDarker65,
         cardGreen = GreenDarker50,
         textFieldBackground = Grey800,
         textFieldHighlighted = BlueDarker25,
@@ -358,7 +382,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatButtonBackgroundEnabled = BlueAccent,
         chatUserMessageBackground = BlueDarker80Alpha50,
         chatBotMessageBackground = BlueDarker80,
-        chatIntroCardBackground = Blue99
+        chatIntroCardBackground = Blue99,
+        screenBackground = BlueDarker80
     ),
     strokes = Strokes(
         fixedContainer = WhiteAlpha30,
@@ -438,6 +463,9 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             buttonPrimaryHighlight = Color.Unspecified,
             buttonPrimaryDisabled = Color.Unspecified,
             buttonPrimaryFocused = Color.Unspecified,
+            buttonPrimaryStroke = Color.Unspecified,
+            buttonPrimaryStrokeHighlight = Color.Unspecified,
+            buttonPrimaryStrokeFocussed = Color.Unspecified,
             buttonSecondary = Color.Unspecified,
             buttonSecondaryHighlight = Color.Unspecified,
             buttonSecondaryDisabled = Color.Unspecified,
@@ -448,6 +476,9 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             buttonCompactFocused = Color.Unspecified,
             buttonDestructive = Color.Unspecified,
             buttonDestructiveHighlight = Color.Unspecified,
+            buttonDestructiveStroke = Color.Unspecified,
+            buttonDestructiveStrokeHighlight = Color.Unspecified,
+            buttonDestructiveStrokeFocussed = Color.Unspecified,
             search = Color.Unspecified,
             switchOn = Color.Unspecified,
             switchOff = Color.Unspecified,
@@ -465,7 +496,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             chatButtonBackgroundEnabled = Color.Unspecified,
             chatUserMessageBackground = Color.Unspecified,
             chatBotMessageBackground = Color.Unspecified,
-            chatIntroCardBackground = Color.Unspecified
+            chatIntroCardBackground = Color.Unspecified,
+            screenBackground = Color.Unspecified
         ),
         strokes = Strokes(
             fixedContainer = Color.Unspecified,
