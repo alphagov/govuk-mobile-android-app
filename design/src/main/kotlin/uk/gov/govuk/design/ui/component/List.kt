@@ -55,31 +55,28 @@ fun SectionHeading(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        title1?.let { body ->
+        val titleModifier = Modifier
+            .padding(
+                horizontal = GovUkTheme.spacing.medium,
+                vertical = GovUkTheme.spacing.medium
+            )
+            .weight(1f)
+            .semantics { heading() }
+        val titleColour = GovUkTheme.colourScheme.textAndIcons.primary
+
+        title1?.let { title1 ->
             Title1BoldLabel(
-                text = body,
-                modifier = Modifier
-                    .padding(
-                        horizontal = GovUkTheme.spacing.medium,
-                        vertical = GovUkTheme.spacing.medium
-                    )
-                    .weight(1f)
-                    .semantics { heading() },
-                color = GovUkTheme.colourScheme.textAndIcons.primary
+                text = title1,
+                modifier = titleModifier,
+                color = titleColour
             )
         }
 
-        title3?.let { title ->
+        title3?.let { title3 ->
             Title3BoldLabel(
-                text = title,
-                modifier = Modifier
-                    .padding(
-                        horizontal = GovUkTheme.spacing.medium,
-                        vertical = GovUkTheme.spacing.medium
-                    )
-                    .weight(1f)
-                    .semantics { heading() },
-                color = GovUkTheme.colourScheme.textAndIcons.primary
+                text = title3,
+                modifier = titleModifier,
+                color = titleColour
             )
         }
 
