@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.CardListItem
 import uk.gov.govuk.design.ui.component.ConnectedButtonGroup
+import uk.gov.govuk.design.ui.component.IconLinkListItem
 import uk.gov.govuk.design.ui.component.SectionHeadingLabel
 import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -40,7 +41,6 @@ fun TopicsWidget(
                 onTopicClick(ref, title)
             },
             onEditClick = onEditClick,
-            onAllClick = onAllClick,
             modifier = modifier
         )
     }
@@ -52,7 +52,6 @@ private fun TopicsWidgetContent(
     onPageView: (List<TopicItemUi>) -> Unit,
     onTopicClick: (String, String, Int) -> Unit,
     onEditClick: (String) -> Unit,
-    onAllClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -96,6 +95,24 @@ private fun TopicsWidgetContent(
                     )
                 }
             }
+
+            // Todo - handle error/empty topics!!!
+            uiState.topics.forEachIndexed { index, topic ->
+                IconLinkListItem(
+                    title = topic.title,
+                    icon = topic.icon,
+                    onClick = {
+                        onTopicClick(
+                            topic.ref,
+                            topic.title,
+                            uiState.topics.indexOf(topic) + 1
+                        )
+                    },
+                    isFirst = false,
+                    isLast = index == uiState.topics.lastIndex
+                )
+            }
+
             /*
             ConnectedButtonGroup(
                 firstText = "Your topics",
@@ -205,8 +222,7 @@ private fun TopicsWidgetPreview() {
             ),
             onPageView = { },
             onTopicClick = { _, _, _ -> },
-            onEditClick = { },
-            onAllClick = { }
+            onEditClick = { }
         )
     }
 }
@@ -224,8 +240,7 @@ private fun TopicsWidgetEmptyTopicsPreview() {
             ),
             onPageView = { },
             onTopicClick = { _, _, _ -> },
-            onEditClick = { },
-            onAllClick = { }
+            onEditClick = { }
         )
     }
 }
@@ -243,8 +258,7 @@ private fun TopicsWidgetErrorPreview() {
             ),
             onPageView = { },
             onTopicClick = { _, _, _ -> },
-            onEditClick = { },
-            onAllClick = { }
+            onEditClick = { }
         )
     }
 }

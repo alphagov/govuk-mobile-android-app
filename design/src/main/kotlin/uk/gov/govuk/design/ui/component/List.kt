@@ -2,15 +2,18 @@ package uk.gov.govuk.design.ui.component
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -236,6 +239,74 @@ fun ToggleListItem(
                 onCheckedChange = onCheckedChange,
                 testDescription = title,
                 Modifier.clearAndSetSemantics {  }
+            )
+        }
+    }
+}
+
+@Composable
+fun IconLinkListItem(
+    title: String,
+    @DrawableRes icon: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    isFirst: Boolean = true,
+    isLast: Boolean = true
+) {
+    CardListItem(
+        modifier = modifier.fillMaxWidth(),
+        onClick = onClick,
+        isFirst = isFirst,
+        isLast = isLast,
+        drawDivider = false
+    ) {
+        Box(Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = GovUkTheme.spacing.medium),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(
+                            color = GovUkTheme.colourScheme.textAndIcons.iconSurroundPrimary,
+                            shape = CircleShape
+                        )
+                        .padding(6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(icon),
+                        contentDescription = null,
+                        tint = GovUkTheme.colourScheme.textAndIcons.iconPrimary
+                    )
+                }
+
+                MediumHorizontalSpacer()
+
+                BodyBoldLabel(
+                    text = title,
+                    modifier = Modifier.weight(1f)
+                )
+
+                MediumHorizontalSpacer()
+
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow),
+                    contentDescription = null,
+                    tint = GovUkTheme.colourScheme.textAndIcons.iconTertiary
+                )
+            }
+        }
+
+        if (!isLast) {
+            ListDivider(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(start = 72.dp)
+                    .padding(end = GovUkTheme.spacing.medium)
             )
         }
     }
