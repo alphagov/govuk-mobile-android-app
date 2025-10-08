@@ -1,7 +1,8 @@
 package uk.gov.govuk.topics.ui.widget
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -10,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import uk.gov.govuk.design.ui.component.CardListItem
 import uk.gov.govuk.design.ui.component.ConnectedButtonGroup
 import uk.gov.govuk.design.ui.component.SectionHeadingLabel
 import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
@@ -74,10 +76,27 @@ private fun TopicsWidgetContent(
             button = editButton
         )
 
-        Column(
-            modifier = Modifier
-                .background(GovUkTheme.colourScheme.surfaces.list)
-        ) {
+        Column {
+            CardListItem(
+                isLast = false,
+                drawDivider = false
+            ) {
+                Box(
+                    Modifier
+                        .padding(top = GovUkTheme.spacing.medium)
+                        .padding(horizontal = GovUkTheme.spacing.medium)
+                ) {
+                    ConnectedButtonGroup(
+                        firstText = "Your topics",
+                        onFirst = { },
+                        firstActive = true,
+                        secondText = "All topics",
+                        onSecond = { },
+                        secondActive = false
+                    )
+                }
+            }
+            /*
             ConnectedButtonGroup(
                 firstText = "Your topics",
                 onFirst = { },
@@ -86,6 +105,7 @@ private fun TopicsWidgetContent(
                 onSecond = { },
                 secondActive = false
             )
+             */
         }
 
         /*

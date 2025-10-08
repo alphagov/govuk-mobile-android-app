@@ -217,7 +217,7 @@ fun ConnectedButtonGroup(
             active = firstActive,
             modifier = Modifier.weight(0.5f),
         )
-        MediumHorizontalSpacer()
+        SmallHorizontalSpacer()
         ConnectedButton(
             text = secondText,
             onClick = onSecond,

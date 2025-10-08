@@ -26,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -45,7 +44,6 @@ fun ListHeader(
     @DrawableRes icon: Int,
     modifier: Modifier = Modifier
 ) {
-    val borderColor = GovUkTheme.colourScheme.strokes.listBlue
     val backgroundColor = GovUkTheme.colourScheme.surfaces.listHeadingBlue
 
     Box(
@@ -54,7 +52,6 @@ fun ListHeader(
                 drawCell(
                     isFirst = true,
                     isLast = false,
-                    borderColor = borderColor,
                     backgroundColor = backgroundColor,
                     backgroundColorHighlight = backgroundColor,
                     isClicked = false
@@ -250,10 +247,10 @@ fun CardListItem(
     onClick: (() -> Unit)? = null,
     isFirst: Boolean = true,
     isLast: Boolean = true,
+    drawDivider: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-    val borderColor = GovUkTheme.colourScheme.strokes.listBlue
-    val backgroundColor = GovUkTheme.colourScheme.surfaces.listBlue
+    val backgroundColor = GovUkTheme.colourScheme.surfaces.list
     val backgroundColorHighlight = GovUkTheme.colourScheme.surfaces.cardHighlight
 
     val interactionSource = remember { MutableInteractionSource() }
@@ -284,7 +281,6 @@ fun CardListItem(
                 drawCell(
                     isFirst = isFirst,
                     isLast = isLast,
-                    borderColor = borderColor,
                     backgroundColor = backgroundColor,
                     backgroundColorHighlight = backgroundColorHighlight,
                     isClicked = isClicked
@@ -294,7 +290,7 @@ fun CardListItem(
         Column {
             content()
 
-            if (!isLast) {
+            if (!isLast && drawDivider) {
                 ListDivider(Modifier.padding(horizontal = GovUkTheme.spacing.medium))
             }
         }
@@ -304,46 +300,36 @@ fun CardListItem(
 private fun DrawScope.drawCell(
     isFirst: Boolean,
     isLast: Boolean,
-    borderColor: Color,
     backgroundColor: Color,
     backgroundColorHighlight: Color,
     isClicked: Boolean
 ) {
-    val borderWidth = 1.dp
     val cornerRadius: Dp = 12.dp
 
     when {
         isFirst && isLast ->
             singleCell(
-                borderWidth = borderWidth.toPx(),
                 cornerRadius = cornerRadius.toPx(),
-                borderColor = borderColor,
                 backgroundColor = backgroundColor,
                 backgroundColorHighlight = backgroundColorHighlight,
                 isClicked = isClicked
             )
         isFirst ->
             firstCell(
-                borderWidth = borderWidth.toPx(),
                 cornerRadius = cornerRadius.toPx(),
-                borderColor = borderColor,
                 backgroundColor = backgroundColor,
                 backgroundColorHighlight = backgroundColorHighlight,
                 isClicked = isClicked
             )
         isLast ->
             lastCell(
-                borderWidth = borderWidth.toPx(),
                 cornerRadius = cornerRadius.toPx(),
-                borderColor = borderColor,
                 backgroundColor = backgroundColor,
                 backgroundColorHighlight = backgroundColorHighlight,
                 isClicked = isClicked
             )
         else ->
             intermediateCell(
-                borderWidth = borderWidth.toPx(),
-                borderColor = borderColor,
                 backgroundColor = backgroundColor,
                 backgroundColorHighlight = backgroundColorHighlight,
                 isClicked = isClicked
@@ -352,9 +338,7 @@ private fun DrawScope.drawCell(
 }
 
 private fun DrawScope.singleCell(
-    borderWidth: Float,
     cornerRadius: Float,
-    borderColor: Color,
     backgroundColor: Color,
     backgroundColorHighlight: Color,
     isClicked: Boolean
@@ -435,19 +419,10 @@ private fun DrawScope.singleCell(
         color = if (isClicked) backgroundColorHighlight else backgroundColor,
         style = Fill
     )
-
-    // Draw the path as a border
-    drawPath(
-        path = path,
-        color = borderColor,
-        style = Stroke(width = borderWidth)
-    )
 }
 
 private fun DrawScope.firstCell(
-    borderWidth: Float,
     cornerRadius: Float,
-    borderColor: Color,
     backgroundColor: Color,
     backgroundColorHighlight: Color,
     isClicked: Boolean
@@ -499,18 +474,9 @@ private fun DrawScope.firstCell(
         color = if (isClicked) backgroundColorHighlight else backgroundColor,
         style = Fill
     )
-
-    // Draw the path as a border
-    drawPath(
-        path = path,
-        color = borderColor,
-        style = Stroke(width = borderWidth)
-    )
 }
 
 private fun DrawScope.intermediateCell(
-    borderWidth: Float,
-    borderColor: Color,
     backgroundColor: Color,
     backgroundColorHighlight: Color,
     isClicked: Boolean
@@ -535,19 +501,10 @@ private fun DrawScope.intermediateCell(
         color = if (isClicked) backgroundColorHighlight else backgroundColor,
         size = size
     )
-
-    // Draw the path as a border
-    drawPath(
-        path = path,
-        color = borderColor,
-        style = Stroke(width = borderWidth)
-    )
 }
 
 private fun DrawScope.lastCell(
-    borderWidth: Float,
     cornerRadius: Float,
-    borderColor: Color,
     backgroundColor: Color,
     backgroundColorHighlight: Color,
     isClicked: Boolean
@@ -598,12 +555,5 @@ private fun DrawScope.lastCell(
         path = path,
         color = if (isClicked) backgroundColorHighlight else backgroundColor,
         style = Fill
-    )
-
-    // Draw the path as a border
-    drawPath(
-        path = path,
-        color = borderColor,
-        style = Stroke(width = borderWidth)
     )
 }
