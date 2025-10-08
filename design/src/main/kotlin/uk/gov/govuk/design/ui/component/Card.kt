@@ -350,6 +350,29 @@ fun NonTappableCard(body: String) {
 }
 
 @Composable
+private fun Modifier.bottomBorder(
+    strokeWidth: Dp,
+    bottomBorderColour: Color,
+    containerColor: Color,
+    radius: Dp
+) = this
+    .background(
+        color = containerColor,
+        shape = RoundedCornerShape(radius)
+    )
+    .clip(RoundedCornerShape(radius))
+    .drawBehind {
+        val strokeWidthPx = strokeWidth.toPx()
+        val y = size.height - strokeWidthPx / 2
+        drawLine(
+            color = bottomBorderColour,
+            start = Offset(0f, y),
+            end = Offset(size.width, y),
+            strokeWidth = strokeWidthPx
+        )
+    }
+
+@Composable
 fun CentredCardWithIcon(
     onClick: () -> Unit,
     @DrawableRes icon: Int,
@@ -357,33 +380,18 @@ fun CentredCardWithIcon(
     title: String? = null,
     description: String? = null
 ) {
-    val radius = GovUkTheme.numbers.cornerAndroidList
-    val bottomBorderColour = GovUkTheme.colourScheme.strokes.cardDefault
-    val containerColour = GovUkTheme.colourScheme.surfaces.list
-
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         onClick = onClick,
         content = {
             Column(
                 modifier = Modifier
-                    .background(
-                        color = containerColour,
-                        shape = RoundedCornerShape(radius)
+                    .bottomBorder(
+                        strokeWidth = 3.dp,
+                        bottomBorderColour = GovUkTheme.colourScheme.strokes.cardDefault,
+                        containerColor = GovUkTheme.colourScheme.surfaces.list,
+                        radius = GovUkTheme.numbers.cornerAndroidList
                     )
-                    .clip(RoundedCornerShape(radius))
-                    .drawBehind {
-                        bottomBorderColour.let { color ->
-                            val strokeWidth = 3.dp.toPx()
-                            val y = size.height - strokeWidth / 2
-                            drawLine(
-                                color = color,
-                                start = Offset(0f, y),
-                                end = Offset(size.width, y),
-                                strokeWidth = strokeWidth
-                            )
-                        }
-                    }
             ) {
                 ExtraLargeVerticalSpacer()
 
@@ -423,6 +431,59 @@ fun CentredCardWithIcon(
                 }
 
                 ExtraLargeVerticalSpacer()
+            }
+        }
+    )
+}
+
+@Composable
+fun NavigationCard(
+    title: String,
+    url: String,
+    onClick: (String, String) -> Unit,
+    launchBrowser: (url: String) -> Unit,
+    modifier: Modifier = Modifier,
+    description: String? = null
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        onClick = {
+            onClick(title, url)
+            launchBrowser(url)
+        },
+        content = {
+            Column(
+                modifier = Modifier
+                    .bottomBorder(
+                        strokeWidth = 3.dp,
+                        bottomBorderColour = GovUkTheme.colourScheme.strokes.cardDefault,
+                        containerColor = GovUkTheme.colourScheme.surfaces.list,
+                        radius = GovUkTheme.numbers.cornerAndroidList
+                    )
+            ) {
+                MediumVerticalSpacer()
+
+                description?.let { description ->
+                    BodyRegularLabel(
+                        text = description,
+                        color = GovUkTheme.colourScheme.textAndIcons.secondary,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = GovUkTheme.spacing.medium)
+                    )
+
+                    SmallVerticalSpacer()
+                }
+
+                Title2BoldLabel(
+                    text = title,
+                    color = GovUkTheme.colourScheme.textAndIcons.link,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = GovUkTheme.spacing.medium)
+                )
+
+                MediumVerticalSpacer()
             }
         }
     )
@@ -571,6 +632,33 @@ private fun CentredCardWithIconWithDescriptionPreview() {
             onClick = { },
             icon = R.drawable.ic_settings,
             description = "Card secondary text that may go over multiple lines."
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun NavigationCardWithTitleAndDescriptionPreview() {
+    GovUkTheme {
+        NavigationCard(
+            title = "Card title",
+            description = "Card secondary text that may go over multiple lines.",
+            url = "",
+            onClick = { _, _ -> },
+            launchBrowser = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun NavigationCardWithoutDescriptionPreview() {
+    GovUkTheme {
+        NavigationCard(
+            title = "Card title",
+            url = "",
+            onClick = { _, _ -> },
+            launchBrowser = {}
         )
     }
 }

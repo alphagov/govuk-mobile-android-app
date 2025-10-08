@@ -19,7 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.CentredCardWithIcon
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
-import uk.gov.govuk.design.ui.component.SearchResultCard
+import uk.gov.govuk.design.ui.component.NavigationCard
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title3BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -96,13 +96,13 @@ private fun LocalAuthorityCard(
         val description = if (localAuthority.parent != null) {
             stringResource(R.string.local_child_authority_description, localAuthority.name)
         } else {
-            stringResource(R.string.local_unitary_authority_description, localAuthority.name)
+            null
         }
 
         localAuthority.parent?.let { parent ->
             BodyRegularLabel(stringResource(R.string.local_two_tier_title))
             SmallVerticalSpacer()
-            SearchResultCard(
+            NavigationCard(
                 title = parent.name,
                 description = stringResource(
                     R.string.local_parent_authority_description,
@@ -115,7 +115,7 @@ private fun LocalAuthorityCard(
             LargeVerticalSpacer()
         }
 
-        SearchResultCard(
+        NavigationCard(
             title = localAuthority.name,
             description = description,
             url = localAuthority.url,
