@@ -198,6 +198,35 @@ private fun HorizontalButtonGroup(
     }
 }
 
+@Composable
+fun ConnectedButtonGroup(
+    firstText: String,
+    onFirst: () -> Unit,
+    firstActive: Boolean,
+    secondText: String,
+    onSecond: () -> Unit,
+    secondActive: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Row(modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
+        ConnectedButton(
+            text = firstText,
+            onClick = onFirst,
+            active = firstActive,
+            modifier = Modifier.weight(0.5f),
+        )
+        MediumHorizontalSpacer()
+        ConnectedButton(
+            text = secondText,
+            onClick = onSecond,
+            active = secondActive,
+            modifier = Modifier.weight(0.5f),
+        )
+    }
+}
+
 @Preview
 @Composable
 private fun FixedPrimaryButtonPreview()
@@ -280,6 +309,22 @@ private fun HorizontalDestructiveButtonGroupPreview()
             onSecondary = {},
             primaryDestructive = true,
             windowHeightSizeClass = WindowHeightSizeClass.COMPACT
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ConnectedButtonGroupPreview()
+{
+    GovUkTheme {
+        ConnectedButtonGroup(
+            firstText = "First",
+            onFirst = { },
+            firstActive = true,
+            secondText = "Second",
+            onSecond = { },
+            secondActive = false
         )
     }
 }

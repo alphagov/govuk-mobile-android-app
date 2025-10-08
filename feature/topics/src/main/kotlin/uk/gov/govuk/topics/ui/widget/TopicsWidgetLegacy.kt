@@ -1,26 +1,38 @@
 package uk.gov.govuk.topics.ui.widget
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import uk.gov.govuk.design.ui.component.ConnectedButtonGroup
-import uk.gov.govuk.design.ui.component.SectionHeadingLabel
-import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
+import uk.gov.govuk.design.ui.component.BodyBoldLabel
+import uk.gov.govuk.design.ui.component.BodyRegularLabel
+import uk.gov.govuk.design.ui.component.CompactButton
+import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
+import uk.gov.govuk.design.ui.component.Title3BoldLabel
+import uk.gov.govuk.design.ui.component.error.ProblemMessage
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.R
 import uk.gov.govuk.topics.TopicsWidgetUiState
 import uk.gov.govuk.topics.TopicsWidgetViewModel
+import uk.gov.govuk.topics.ui.component.TopicVerticalCard
+import uk.gov.govuk.topics.ui.component.TopicsGrid
 import uk.gov.govuk.topics.ui.model.TopicItemUi
 
 @Composable
-fun TopicsWidget(
+fun TopicsWidgetLegacy(
     onTopicClick: (String, String) -> Unit,
     onEditClick: (String) -> Unit,
     onAllClick: (String) -> Unit,
@@ -58,37 +70,42 @@ private fun TopicsWidgetContent(
     }
 
     Column(modifier = modifier) {
-        val editButtonText = stringResource(R.string.editButton)
-        val editButton = if (uiState.isError) {
-            null
-        } else {
-            SectionHeadingLabelButton(
-                title = editButtonText,
-                altText = stringResource(R.string.editButtonAltText),
-                onClick = { onEditClick(editButtonText) }
-            )
-        }
-
-        SectionHeadingLabel(
-            title3 = stringResource(R.string.topicsWidgetTitle),
-            button = editButton
-        )
-
-        Column(
+        Row(
             modifier = Modifier
-                .background(GovUkTheme.colourScheme.surfaces.list)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            ConnectedButtonGroup(
-                firstText = "Your topics",
-                onFirst = { },
-                firstActive = true,
-                secondText = "All topics",
-                onSecond = { },
-                secondActive = false
+            val title = if (uiState.isCustomised) {
+                stringResource(R.string.customisedTopicsWidgetTitle)
+            } else {
+                stringResource(R.string.topicsWidgetTitle)
+            }
+            Title3BoldLabel(
+                text = title,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = GovUkTheme.spacing.large)
+                    .semantics { heading() }
             )
+
+            if (!uiState.isError) {
+                val editButtonText = stringResource(R.string.editButton)
+                val editButtonAltText = stringResource(R.string.editButtonAltText)
+
+                TextButton(
+                    onClick = { onEditClick(editButtonText) }
+                ) {
+                    BodyBoldLabel(
+                        text = editButtonText,
+                        color = GovUkTheme.colourScheme.textAndIcons.link,
+                        modifier = Modifier.semantics {
+                            contentDescription = editButtonAltText
+                        }
+                    )
+                }
+            }
         }
 
-        /*
         when {
             uiState.isError -> {
                 ProblemMessage(
@@ -132,7 +149,6 @@ private fun TopicsWidgetContent(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
         }
-         */
     }
 }
 
