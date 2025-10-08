@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -25,6 +26,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -346,6 +349,85 @@ fun NonTappableCard(body: String) {
     )
 }
 
+@Composable
+fun CentredCardWithIcon(
+    onClick: () -> Unit,
+    @DrawableRes icon: Int,
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    description: String? = null
+) {
+    val radius = GovUkTheme.numbers.cornerAndroidList
+    val bottomBorderColour = GovUkTheme.colourScheme.strokes.cardDefault
+    val containerColour = GovUkTheme.colourScheme.surfaces.list
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+        content = {
+            Column(
+                modifier = Modifier
+                    .background(
+                        color = containerColour,
+                        shape = RoundedCornerShape(radius)
+                    )
+                    .clip(RoundedCornerShape(radius))
+                    .drawBehind {
+                        bottomBorderColour.let { color ->
+                            val strokeWidth = 3.dp.toPx()
+                            val y = size.height - strokeWidth / 2
+                            drawLine(
+                                color = color,
+                                start = Offset(0f, y),
+                                end = Offset(size.width, y),
+                                strokeWidth = strokeWidth
+                            )
+                        }
+                    }
+            ) {
+                ExtraLargeVerticalSpacer()
+
+                Icon(
+                    painterResource(icon),
+                    contentDescription = null,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .size(32.dp),
+                    tint = GovUkTheme.colourScheme.textAndIcons.icon
+                )
+
+                title?.let { title ->
+                    SmallVerticalSpacer()
+
+                    BodyBoldLabel(
+                        text = title,
+                        color = GovUkTheme.colourScheme.textAndIcons.primary,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = GovUkTheme.spacing.extraLarge),
+                        textAlign = TextAlign.Center,
+                    )
+                }
+
+                description?.let { description ->
+                    SmallVerticalSpacer()
+
+                    BodyRegularLabel(
+                        text = description,
+                        color = GovUkTheme.colourScheme.textAndIcons.secondary,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = GovUkTheme.spacing.extraLarge),
+                        textAlign = TextAlign.Center,
+                    )
+                }
+
+                ExtraLargeVerticalSpacer()
+            }
+        }
+    )
+}
+
 @Preview
 @Composable
 private fun HomeNavigationCardPreview() {
@@ -453,5 +535,42 @@ private fun UserFeedbackCardPreview() {
 private fun NonTappableCardPreview() {
     GovUkTheme {
         NonTappableCard("Card body")
+    }
+}
+
+@Preview
+@Composable
+private fun CentredCardWithIconWithTitleAndDescriptionPreview() {
+    GovUkTheme {
+        CentredCardWithIcon(
+            onClick = { },
+            icon = R.drawable.ic_settings,
+            title = "Card title",
+            description = "Card secondary text that may go over multiple lines."
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CentredCardWithIconWithTitlePreview() {
+    GovUkTheme {
+        CentredCardWithIcon(
+            onClick = { },
+            icon = R.drawable.ic_settings,
+            title = "Card title"
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CentredCardWithIconWithDescriptionPreview() {
+    GovUkTheme {
+        CentredCardWithIcon(
+            onClick = { },
+            icon = R.drawable.ic_settings,
+            description = "Card secondary text that may go over multiple lines."
+        )
     }
 }

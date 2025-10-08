@@ -16,6 +16,7 @@
     You can enter a different postcode at any time on the app home page.
   </string>
   <string name="local_widget_title">Your local services</string>
+  <string name="local_widget_description">Add a link to your local council’s website</string>
   <string name="local_edit_button">Edit</string>
   <string name="local_edit_button_alt_text">Edit your local council</string>
   <string name="local_child_authority_description">Find services like rubbish and recycling collection, council tax and housing on the %1$s website</string>
