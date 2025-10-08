@@ -90,24 +90,24 @@ class FlagRepo @Inject constructor(
     fun isChatEnabled(): Boolean {
         return isEnabled(
             debugEnabled = debugEnabled,
-            debugFlag = false, // Dev only flag, only set to true when actively working on chat
-            remoteFlag = false // Dev only flag, always off for production builds!!!
+            debugFlag = debugFlags.isChatEnabled,
+            remoteFlag = configRepo.config.releaseFlags.chat
         )
     }
 
     fun isChatOptInEnabled(): Boolean {
         return isEnabled(
             debugEnabled = debugEnabled,
-            debugFlag = false, // Dev only flag, only set to true when actively working on chat
-            remoteFlag = false // Dev only flag, always off for production builds!!!
+            debugFlag = debugFlags.isChatOptInEnabled,
+            remoteFlag =  configRepo.config.releaseFlags.chatOptIn
         )
     }
 
     fun isChatTestActiveEnabled(): Boolean {
         return isEnabled(
             debugEnabled = debugEnabled,
-            debugFlag = false, // Dev only flag, only set to true when actively working on chat
-            remoteFlag = false // Dev only flag, always off for production builds!!!
+            debugFlag = debugFlags.isChatTestActiveEnabled,
+            remoteFlag = configRepo.config.releaseFlags.chatTestActive
         )
     }
 }

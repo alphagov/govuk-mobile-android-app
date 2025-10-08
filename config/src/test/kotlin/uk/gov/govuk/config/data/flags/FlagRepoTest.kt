@@ -352,43 +352,49 @@ class FlagRepoTest {
     }
 
     @Test
-    fun `Given a debug build, When chat is enabled, then return false`() {
-        flagRepo = FlagRepo(true, debugFlags, configRepo)
+    fun `Given chat is enabled, When is chat enabled, then return true`() {
+        mockkStatic(::isEnabled)
+        every { isEnabled(any(), any(), any()) } returns true
+
+        assertTrue(flagRepo.isChatEnabled())
+    }
+
+    @Test
+    fun `Given chat is disabled, When is chat enabled, then return false`() {
+        mockkStatic(::isEnabled)
+        every { isEnabled(any(), any(), any()) } returns false
 
         assertFalse(flagRepo.isChatEnabled())
     }
 
     @Test
-    fun `Given a release build, When chat is enabled, then return false`() {
-        flagRepo = FlagRepo(false, debugFlags, configRepo)
+    fun `Given chat opt in is enabled, When is chat opt in enabled, then return true`() {
+        mockkStatic(::isEnabled)
+        every { isEnabled(any(), any(), any()) } returns true
 
-        assertFalse(flagRepo.isChatEnabled())
+        assertTrue(flagRepo.isChatOptInEnabled())
     }
 
     @Test
-    fun `Given a debug build, When chat opt in is enabled, then return false`() {
-        flagRepo = FlagRepo(true, debugFlags, configRepo)
+    fun `Given chat opt in is disabled, When is chat opt in enabled, then return false`() {
+        mockkStatic(::isEnabled)
+        every { isEnabled(any(), any(), any()) } returns false
 
         assertFalse(flagRepo.isChatOptInEnabled())
     }
 
     @Test
-    fun `Given a release build, When chat opt in is enabled, then return false`() {
-        flagRepo = FlagRepo(false, debugFlags, configRepo)
+    fun `Given chat test active is enabled, When is chat test active in enabled, then return true`() {
+        mockkStatic(::isEnabled)
+        every { isEnabled(any(), any(), any()) } returns true
 
-        assertFalse(flagRepo.isChatOptInEnabled())
+        assertTrue(flagRepo.isChatTestActiveEnabled())
     }
 
     @Test
-    fun `Given a debug build, When chat test active is enabled, then return false`() {
-        flagRepo = FlagRepo(true, debugFlags, configRepo)
-
-        assertFalse(flagRepo.isChatTestActiveEnabled())
-    }
-
-    @Test
-    fun `Given a release build, When chat test active is enabled, then return false`() {
-        flagRepo = FlagRepo(false, debugFlags, configRepo)
+    fun `Given chat test active is disabled, When is chat test active in enabled, then return false`() {
+        mockkStatic(::isEnabled)
+        every { isEnabled(any(), any(), any()) } returns false
 
         assertFalse(flagRepo.isChatTestActiveEnabled())
     }
