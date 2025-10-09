@@ -26,12 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -41,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.R
+import uk.gov.govuk.design.ui.extension.drawBottomStroke
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -353,48 +349,6 @@ fun NonTappableCard(body: String) {
 }
 
 @Composable
-private fun Modifier.bottomBorder(
-    strokeWidth: Dp,
-    bottomBorderColour: Color,
-    radius: Dp
-) = this
-    .padding(strokeWidth / if (LocalDensity.current.density == 0f) 1f else LocalDensity.current.density)
-    .drawBehind {
-        // Bottom
-        drawLine(
-            color = bottomBorderColour,
-            start = Offset(x = radius.toPx(), y = size.height),
-            end = Offset(x = size.width - radius.toPx(), y = size.height),
-            strokeWidth = strokeWidth.toPx()
-        )
-
-        // Bottom-left
-        drawArc(
-            color = bottomBorderColour,
-            startAngle = 180f,
-            sweepAngle = -90f,
-            useCenter = false,
-            topLeft = Offset(x = 7f, y = size.height - radius.toPx() * 2),
-            size = Size(radius.toPx() * 2, radius.toPx() * 2),
-            style = Stroke(width = strokeWidth.toPx())
-        )
-
-        // Bottom-right
-        drawArc(
-            color = bottomBorderColour,
-            startAngle = 360f,
-            sweepAngle = 90f,
-            useCenter = false,
-            topLeft = Offset(
-                x = (size.width - radius.toPx() * 2) - 7,
-                y = size.height - radius.toPx() * 2
-            ),
-            size = Size(radius.toPx() * 2, radius.toPx() * 2),
-            style = Stroke(width = strokeWidth.toPx())
-        )
-    }
-
-@Composable
 fun CentredCardWithIcon(
     onClick: () -> Unit,
     @DrawableRes icon: Int,
@@ -405,10 +359,9 @@ fun CentredCardWithIcon(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .bottomBorder(
-                strokeWidth = 3.dp,
-                bottomBorderColour = GovUkTheme.colourScheme.strokes.cardDefault,
-                radius = GovUkTheme.numbers.cornerAndroidList
+            .drawBottomStroke(
+                colour = GovUkTheme.colourScheme.strokes.cardDefault,
+                cornerRadius = GovUkTheme.numbers.cornerAndroidList
             ),
         colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.list),
         onClick = onClick,
@@ -467,10 +420,9 @@ fun NavigationCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .bottomBorder(
-                strokeWidth = 3.dp,
-                bottomBorderColour = GovUkTheme.colourScheme.strokes.cardDefault,
-                radius = GovUkTheme.numbers.cornerAndroidList
+            .drawBottomStroke(
+                colour = GovUkTheme.colourScheme.strokes.cardDefault,
+                cornerRadius = GovUkTheme.numbers.cornerAndroidList
             ),
         colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.list),
         onClick = {
