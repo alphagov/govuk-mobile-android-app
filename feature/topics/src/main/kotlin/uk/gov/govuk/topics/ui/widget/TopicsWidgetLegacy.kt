@@ -31,6 +31,8 @@ import uk.gov.govuk.topics.ui.component.TopicVerticalCard
 import uk.gov.govuk.topics.ui.component.TopicsGrid
 import uk.gov.govuk.topics.ui.model.TopicItemUi
 
+// TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
+
 @Composable
 fun TopicsWidgetLegacy(
     onTopicClick: (String, String) -> Unit,

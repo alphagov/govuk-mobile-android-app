@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
-import uk.gov.govuk.design.ui.component.ExternalLinkListItem
+import uk.gov.govuk.design.ui.component.ExternalLinkListItemLegacy
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.ListHeadingLabel
@@ -173,7 +173,7 @@ private fun ShowVisitedItems(
                 val lastVisited = item.lastVisited
                 val url = item.url
 
-                ExternalLinkListItem(
+                ExternalLinkListItemLegacy(
                     title = title,
                     onClick = {
                         coroutineScope.launch {

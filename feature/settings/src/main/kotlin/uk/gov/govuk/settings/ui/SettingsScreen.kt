@@ -27,16 +27,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.CaptionRegularLabel
-import uk.gov.govuk.design.ui.component.CardListItem
-import uk.gov.govuk.design.ui.component.ExternalLinkListItem
-import uk.gov.govuk.design.ui.component.InternalLinkListItem
+import uk.gov.govuk.design.ui.component.CardListItemLegacy
+import uk.gov.govuk.design.ui.component.ExternalLinkListItemLegacy
+import uk.gov.govuk.design.ui.component.InternalLinkListItemLegacy
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.SubheadlineRegularLabel
 import uk.gov.govuk.design.ui.component.TabHeader
-import uk.gov.govuk.design.ui.component.ToggleListItem
+import uk.gov.govuk.design.ui.component.ToggleListItemLegacy
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.settings.R
 import uk.gov.govuk.settings.SettingsUiState
@@ -188,7 +188,7 @@ private fun ManageLogin(
     Column(
         modifier = modifier
     ) {
-        CardListItem(
+        CardListItemLegacy(
             isFirst = true,
             isLast = false
         ) {
@@ -211,7 +211,7 @@ private fun ManageLogin(
             }
         }
 
-        ExternalLinkListItem(
+        ExternalLinkListItemLegacy(
             title = stringResource(R.string.manage_login_link),
             onClick = onAccountClick,
             isFirst = false
@@ -226,7 +226,7 @@ private fun ManageLogin(
 
         MediumVerticalSpacer()
 
-        CardListItem(
+        CardListItemLegacy(
             modifier = Modifier.fillMaxWidth(),
             onClick = onSignOutClick
         ) {
@@ -257,7 +257,7 @@ private fun NotificationsAndPrivacy(
 
         if (uiState.isAuthenticationEnabled) {
             val biometricTitle = stringResource(R.string.biometric_title)
-            InternalLinkListItem(
+            InternalLinkListItemLegacy(
                 title = biometricTitle,
                 onClick = { actions.onBiometricsClick(biometricTitle) },
                 isFirst = !uiState.isNotificationsEnabled,
@@ -265,7 +265,7 @@ private fun NotificationsAndPrivacy(
             )
         }
 
-        ToggleListItem(
+        ToggleListItemLegacy(
             title = stringResource(R.string.share_setting),
             checked = uiState.isAnalyticsEnabled,
             onCheckedChange = actions.onAnalyticsConsentChange,
@@ -315,7 +315,7 @@ private fun Notifications(
         }
     }
 
-    InternalLinkListItem(
+    InternalLinkListItemLegacy(
         title = stringResource(R.string.notifications_title),
         status = stringResource(status),
         onClick = onNotificationsClick,
@@ -334,7 +334,7 @@ private fun AboutTheApp(
     Column(
         modifier = modifier
     ) {
-        CardListItem(
+        CardListItemLegacy(
             isFirst = true,
             isLast = false
         ) {
@@ -353,7 +353,7 @@ private fun AboutTheApp(
             }
         }
 
-        ExternalLinkListItem(
+        ExternalLinkListItemLegacy(
             title = stringResource(R.string.help_and_feedback_title),
             onClick = onHelpClick,
             isFirst = false,
@@ -367,7 +367,7 @@ private fun PrivacyPolicy(
     onPrivacyPolicyClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ExternalLinkListItem(
+    ExternalLinkListItemLegacy(
         title = stringResource(R.string.privacy_policy_title),
         onClick = onPrivacyPolicyClick,
         modifier = modifier,
@@ -381,7 +381,7 @@ private fun AccessibilityStatement(
     onAccessibilityStatementClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ExternalLinkListItem(
+    ExternalLinkListItemLegacy(
         title = stringResource(R.string.accessibility_title),
         onClick = onAccessibilityStatementClick,
         modifier = modifier,
@@ -395,7 +395,7 @@ private fun OpenSourceLicenses(
     onLicenseClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    InternalLinkListItem(
+    InternalLinkListItemLegacy(
         title = stringResource(R.string.oss_licenses_title),
         onClick = onLicenseClick,
         modifier = modifier,
@@ -409,7 +409,7 @@ private fun TermsAndConditions(
     onLicenseClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ExternalLinkListItem(
+    ExternalLinkListItemLegacy(
         title = stringResource(R.string.terms_and_conditions_title),
         onClick = onLicenseClick,
         modifier = modifier,

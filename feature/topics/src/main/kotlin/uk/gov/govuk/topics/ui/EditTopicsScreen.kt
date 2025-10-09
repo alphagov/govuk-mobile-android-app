@@ -15,7 +15,7 @@ import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
-import uk.gov.govuk.design.ui.component.ToggleListItem
+import uk.gov.govuk.design.ui.component.ToggleListItemLegacy
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.EditTopicsViewModel
 import uk.gov.govuk.topics.R
@@ -77,7 +77,7 @@ private fun EditTopicsScreen(
 
             if (!topics.isNullOrEmpty()) {
                 itemsIndexed(topics) { index, topic ->
-                    ToggleListItem(
+                    ToggleListItemLegacy(
                         title = topic.title,
                         checked = topic.isSelected,
                         onCheckedChange = { checked ->
