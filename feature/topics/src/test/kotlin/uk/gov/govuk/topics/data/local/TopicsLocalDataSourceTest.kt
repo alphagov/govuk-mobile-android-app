@@ -236,7 +236,7 @@ class TopicsLocalDataSourceTest {
                 )
             }
 
-            localDataSource.deselectAll(listOf("ref1", "ref2"))
+            localDataSource.selectAll(listOf("ref1", "ref2"))
 
             val topics = realm.query<LocalTopicItem>().find()
             assertEquals(2, topics.size)

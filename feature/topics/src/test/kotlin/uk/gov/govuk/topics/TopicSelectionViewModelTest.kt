@@ -227,7 +227,7 @@ class TopicSelectionViewModelTest {
             analyticsClient.buttonClick(
                 text = "Done"
             )
-            topicsRepo.deselectAll(listOf("ref3","ref4"))
+            topicsRepo.selectAll(listOf("ref3","ref4"))
             topicsRepo.topicsCustomised()
         }
     }
