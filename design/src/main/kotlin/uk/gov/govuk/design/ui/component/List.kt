@@ -196,16 +196,18 @@ fun ExternalLinkListItem(
                     )
                 }
 
-                is ListItemStyle.Removable -> {
+                is ListItemStyle.Button -> {
                     MediumHorizontalSpacer()
                     TextButton(
-                        onClick = style.onRemoveClick,
-                        modifier = Modifier.align(Alignment.CenterVertically),
+                        onClick = style.onClick,
+                        modifier = Modifier
+                            .semantics { contentDescription = style.altText }
+                            .align(Alignment.CenterVertically),
                         contentPadding = PaddingValues()
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_cancel_round),
-                            contentDescription = style.altText,
+                            painter = painterResource(style.icon),
+                            contentDescription = null,
                             tint = GovUkTheme.colourScheme.textAndIcons.iconTertiary
                         )
                     }
@@ -214,20 +216,6 @@ fun ExternalLinkListItem(
                 else -> { /* Do nothing */ }
             }
         }
-    }
-}
-
-@Composable
-private fun applyPadding(subText: String): PaddingValues {
-    return if (subText.isNotEmpty()) {
-        PaddingValues(
-            top = GovUkTheme.spacing.medium,
-            start = GovUkTheme.spacing.medium,
-            end = GovUkTheme.spacing.medium,
-            bottom = 0.dp
-        )
-    } else {
-        PaddingValues(all = GovUkTheme.spacing.medium)
     }
 }
 
@@ -700,12 +688,12 @@ private fun ExternalLinkListItemIconPreview() {
 
 @Preview
 @Composable
-private fun ExternalLinkListItemRemovablePreview() {
+private fun ExternalLinkListItemButtonPreview() {
     GovUkTheme {
         ExternalLinkListItem(
             "Title",
             "Subtitle",
             {},
-            style = ListItemStyle.Removable("Alt text") {})
+            style = ListItemStyle.Button(R.drawable.ic_cancel_round, "Alt text") {})
     }
 }
