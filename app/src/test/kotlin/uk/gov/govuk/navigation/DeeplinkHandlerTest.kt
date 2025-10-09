@@ -15,7 +15,6 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.search.navigation.SEARCH_ROUTE
-import uk.gov.govuk.topics.navigation.TOPICS_ALL_ROUTE
 import uk.gov.govuk.topics.navigation.TOPICS_EDIT_ROUTE
 import uk.gov.govuk.visited.navigation.EDIT_VISITED_ROUTE
 import uk.gov.govuk.visited.navigation.VISITED_ROUTE
@@ -160,33 +159,16 @@ class DeeplinkHandlerTest {
     }
 
     @Test
-    fun `Handle topics all deeplink`() {
-        every { flagRepo.isTopicsEnabled() } returns true
-        every { deeplink.path } returns "/topics/all"
-        every { deeplink.toString() } returns "govuk://gov.uk/topics/all"
-
-        deeplinkHandler.deepLink = deeplink
-
-        deeplinkHandler.handleDeeplink(navController)
-
-        verify {
-            navController.navigate(HOME_GRAPH_ROUTE, any<NavOptionsBuilder.() -> Unit>())
-            navController.navigate(TOPICS_ALL_ROUTE, any<NavOptionsBuilder.() -> Unit>())
-            analyticsClient.deepLinkEvent(true, "govuk://gov.uk/topics/all")
-        }
-    }
-
-    @Test
     fun `Handle topics deeplink when topics is disabled`() {
         every { flagRepo.isTopicsEnabled() } returns false
-        every { deeplink.path } returns "/topics/all"
-        every { deeplink.toString() } returns "govuk://gov.uk/topics/all"
+        every { deeplink.path } returns "/topics/edit"
+        every { deeplink.toString() } returns "govuk://gov.uk/topics/edit"
         every { deeplink.getQueryParameter(any()) } returns null
 
         deeplinkHandler.handleDeeplink(navController)
 
         verify {
-            analyticsClient.deepLinkEvent(false, "govuk://gov.uk/topics/all")
+            analyticsClient.deepLinkEvent(false, "govuk://gov.uk/topics/edit")
             onDeeplinkNotFound.invoke()
         }
 

@@ -48,43 +48,6 @@ class TopicsWidgetViewModelTest {
                 title = "Benefits",
                 description = "description",
                 isSelected = true
-            )
-        )
-
-        every { topicsRepo.topics } returns flowOf(topics)
-        coEvery { topicsRepo.isTopicsCustomised() } returns true
-
-        val expected =
-            TopicsWidgetUiState(
-                yourTopics = listOf(
-                    TopicItemUi(
-                        ref = "benefits",
-                        icon = R.drawable.ic_topic_benefits,
-                        title = "Benefits",
-                        description = "description",
-                        isSelected = true
-                    )
-                ),
-                isError = false,
-                isCustomised = true,
-                displayShowAll = false
-            )
-
-        val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
-
-        runTest {
-            assertEquals(expected, viewModel.uiState.first())
-        }
-    }
-
-    @Test
-    fun `Given topics are emitted, When init, then filter selected topics and emit ui state`() {
-        val topics = listOf(
-            TopicItem(
-                ref = "benefits",
-                title = "Benefits",
-                description = "description",
-                isSelected = true
             ),
             TopicItem(
                 ref = "care",
@@ -108,9 +71,23 @@ class TopicsWidgetViewModelTest {
                         isSelected = true
                     )
                 ),
-                isError = false,
-                isCustomised = false,
-                displayShowAll = true
+                allTopics = listOf(
+                    TopicItemUi(
+                        ref = "benefits",
+                        icon = R.drawable.ic_topic_benefits,
+                        title = "Benefits",
+                        description = "description",
+                        isSelected = true
+                    ),
+                    TopicItemUi(
+                        ref = "care",
+                        icon = R.drawable.ic_topic_care,
+                        title = "Care",
+                        description = "description",
+                        isSelected = false
+                    )
+                ),
+                isError = false
             )
 
         val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)

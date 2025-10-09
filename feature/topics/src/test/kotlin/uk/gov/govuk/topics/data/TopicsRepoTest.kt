@@ -176,7 +176,7 @@ class TopicsRepoTest{
     }
 
     @Test
-    fun `Given topics are being deselected, when deselect all, then update local data source`() {
+    fun `Given topics are selected, when select all, then update local data source`() {
         val repo = TopicsRepo(topicsApi, localDataSource)
 
         runTest {
