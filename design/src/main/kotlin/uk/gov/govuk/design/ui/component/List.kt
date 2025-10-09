@@ -206,7 +206,7 @@ fun ExternalLinkListItem(
                         Icon(
                             painter = painterResource(R.drawable.ic_cancel_round),
                             contentDescription = style.altText,
-                            tint = GovUkTheme.colourScheme.textAndIcons.primary
+                            tint = GovUkTheme.colourScheme.textAndIcons.iconTertiary
                         )
                     }
                 }
