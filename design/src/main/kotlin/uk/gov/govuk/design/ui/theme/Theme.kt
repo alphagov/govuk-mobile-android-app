@@ -14,6 +14,9 @@ object GovUkTheme {
     val spacing: GovUkSpacing
         @Composable
         get() = LocalSpacing.current
+    val numbers: GovUkNumbers
+        @Composable
+        get() = LocalNumbers.current
 }
 
 @Composable
@@ -26,6 +29,7 @@ fun GovUkTheme(
         LocalColourScheme provides colorScheme,
         LocalTypography provides Typography,
         LocalSpacing provides Spacing,
+        LocalNumbers provides Numbers,
         content = content
     )
 }
