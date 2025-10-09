@@ -411,9 +411,7 @@ fun CentredCardWithIcon(
 @Composable
 fun NavigationCard(
     title: String,
-    url: String,
-    onClick: (String, String) -> Unit,
-    launchBrowser: (url: String) -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     description: String? = null
 ) {
@@ -425,10 +423,7 @@ fun NavigationCard(
                 cornerRadius = GovUkTheme.numbers.cornerAndroidList
             ),
         colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.list),
-        onClick = {
-            onClick(title, url)
-            launchBrowser(url)
-        },
+        onClick = onClick,
         content = {
             MediumVerticalSpacer()
 
@@ -611,9 +606,7 @@ private fun NavigationCardWithTitleAndDescriptionPreview() {
         NavigationCard(
             title = "Card title",
             description = "Card secondary text that may go over multiple lines.",
-            url = "",
-            onClick = { _, _ -> },
-            launchBrowser = {}
+            onClick = {}
         )
     }
 }
@@ -624,9 +617,7 @@ private fun NavigationCardWithoutDescriptionPreview() {
     GovUkTheme {
         NavigationCard(
             title = "Card title",
-            url = "",
-            onClick = { _, _ -> },
-            launchBrowser = {}
+            onClick = {}
         )
     }
 }

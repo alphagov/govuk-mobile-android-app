@@ -108,9 +108,10 @@ private fun LocalAuthorityCard(
                     R.string.local_parent_authority_description,
                     parent.name
                 ),
-                url = parent.url,
-                onClick = onClick,
-                launchBrowser = launchBrowser
+                onClick = {
+                    onClick(parent.name, parent.url)
+                    launchBrowser(parent.url)
+                }
             )
             LargeVerticalSpacer()
         }
@@ -118,9 +119,10 @@ private fun LocalAuthorityCard(
         NavigationCard(
             title = localAuthority.name,
             description = description,
-            url = localAuthority.url,
-            onClick = onClick,
-            launchBrowser = launchBrowser
+            onClick = {
+                onClick(localAuthority.name, localAuthority.url)
+                launchBrowser(localAuthority.url)
+            }
         )
     }
 }
