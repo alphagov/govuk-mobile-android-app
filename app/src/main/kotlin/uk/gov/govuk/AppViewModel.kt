@@ -155,14 +155,14 @@ internal class AppViewModel @Inject constructor(
                 if (isLocalServicesEnabled() && !hasLocalAuthority) {
                     widgets.add(HomeWidget.Local)
                 }
-                if (isRecentActivityEnabled()) {
-                    widgets.add(HomeWidget.RecentActivity)
-                }
                 if (isTopicsEnabled()) {
                     widgets.add(HomeWidget.Topics)
                 }
                 if (isLocalServicesEnabled() && hasLocalAuthority) {
                     widgets.add(HomeWidget.Local)
+                }
+                if (isRecentActivityEnabled()) {
+                    widgets.add(HomeWidget.RecentActivity)
                 }
                 configRepo.config.userFeedbackBanner?.let { userFeedbackBanner ->
                     widgets.add(HomeWidget.UserFeedback(userFeedbackBanner = userFeedbackBanner))

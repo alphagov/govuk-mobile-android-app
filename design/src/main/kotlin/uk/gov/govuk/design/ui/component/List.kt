@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,12 +34,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import uk.gov.govuk.design.R
+import uk.gov.govuk.design.ui.model.ListItemStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -135,11 +139,12 @@ fun InternalLinkListItem(
 @Composable
 fun ExternalLinkListItem(
     title: String,
+    subtitle: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isFirst: Boolean = true,
     isLast: Boolean = true,
-    subText: String = ""
+    style: ListItemStyle = ListItemStyle.Default
 ) {
     CardListItem(
         modifier = modifier,
@@ -147,39 +152,68 @@ fun ExternalLinkListItem(
         isFirst = isFirst,
         isLast = isLast
     ) {
+        val opensInWebBrowser = stringResource(R.string.opens_in_web_browser)
         Row(
-            modifier = Modifier.padding(applyPadding(subText))
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics { contentDescription = "$title $opensInWebBrowser $subtitle" }
         ) {
-            BodyRegularLabel(
-                text = title,
-                modifier = Modifier.weight(1f),
-                color = GovUkTheme.colourScheme.textAndIcons.link
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                BodyRegularLabel(
+                    text = title,
+                    modifier = Modifier.padding(
+                        start = GovUkTheme.spacing.medium,
+                        top = GovUkTheme.spacing.medium,
+                        end = GovUkTheme.spacing.medium
+                    ),
+                    color = GovUkTheme.colourScheme.textAndIcons.link
+                )
 
-            MediumHorizontalSpacer()
+                ExtraSmallVerticalSpacer()
 
-            Icon(
-                painter = painterResource(R.drawable.ic_external_link),
-                contentDescription = stringResource(R.string.opens_in_web_browser),
-                tint = GovUkTheme.colourScheme.textAndIcons.link
-            )
+                SubheadlineRegularLabel(
+                    text = subtitle,
+                    modifier = Modifier.padding(
+                        start = GovUkTheme.spacing.medium,
+                        end = GovUkTheme.spacing.medium,
+                        bottom = GovUkTheme.spacing.medium
+                    ),
+                    color = GovUkTheme.colourScheme.textAndIcons.secondary
+                )
+            }
+
+            when (style) {
+                is ListItemStyle.Icon -> {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_external_link),
+                        contentDescription = null,
+                        modifier = Modifier.padding(
+                            top = GovUkTheme.spacing.medium,
+                            end = GovUkTheme.spacing.medium
+                        ),
+                        tint = GovUkTheme.colourScheme.textAndIcons.link
+                    )
+                }
+
+                is ListItemStyle.Button -> {
+                    TextButton(
+                        onClick = style.onClick,
+                        modifier = Modifier
+                            .semantics { contentDescription = style.altText }
+                            .align(Alignment.CenterVertically),
+                        contentPadding = PaddingValues()
+                    ) {
+                        Icon(
+                            painter = painterResource(style.icon),
+                            contentDescription = null,
+                            tint = GovUkTheme.colourScheme.textAndIcons.iconTertiary
+                        )
+                    }
+                }
+
+                else -> { /* Do nothing */ }
+            }
         }
-
-        ShowSubText(subText)
-    }
-}
-
-@Composable
-private fun applyPadding(subText: String): PaddingValues {
-    return if (subText.isNotEmpty()) {
-        PaddingValues(
-            top = GovUkTheme.spacing.medium,
-            start = GovUkTheme.spacing.medium,
-            end = GovUkTheme.spacing.medium,
-            bottom = 0.dp
-        )
-    } else {
-        PaddingValues(all = GovUkTheme.spacing.medium)
     }
 }
 
@@ -627,4 +661,37 @@ private fun DrawScope.lastCell(
         color = if (isClicked) backgroundColorHighlight else backgroundColor,
         style = Fill
     )
+}
+
+@Preview
+@Composable
+private fun ExternalLinkListItemDefaultPreview() {
+    GovUkTheme {
+        ExternalLinkListItem("Title", "Subtitle", {})
+    }
+}
+
+@Preview
+@Composable
+private fun ExternalLinkListItemIconPreview() {
+    GovUkTheme {
+        ExternalLinkListItem(
+            "Title",
+            "Subtitle",
+            {},
+            style = ListItemStyle.Icon
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ExternalLinkListItemButtonPreview() {
+    GovUkTheme {
+        ExternalLinkListItem(
+            "Title",
+            "Subtitle",
+            {},
+            style = ListItemStyle.Button(R.drawable.ic_cancel_round, "Alt text") {})
+    }
 }

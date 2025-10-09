@@ -336,10 +336,13 @@ fun UserFeedbackCard(
 }
 
 @Composable
-fun NonTappableCard(body: String) {
+fun NonTappableCard(
+    body: String,
+    modifier: Modifier = Modifier
+) {
     BodyRegularLabel(
         text = body,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(shape = RoundedCornerShape(12.dp))
             .background(GovUkTheme.colourScheme.surfaces.cardNonTappable)
