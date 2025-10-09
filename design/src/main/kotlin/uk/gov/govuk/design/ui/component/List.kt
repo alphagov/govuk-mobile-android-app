@@ -184,7 +184,6 @@ fun ExternalLinkListItem(
 
             when (style) {
                 is ListItemStyle.Icon -> {
-                    MediumHorizontalSpacer()
                     Icon(
                         painter = painterResource(R.drawable.ic_external_link),
                         contentDescription = null,
@@ -197,7 +196,6 @@ fun ExternalLinkListItem(
                 }
 
                 is ListItemStyle.Button -> {
-                    MediumHorizontalSpacer()
                     TextButton(
                         onClick = style.onClick,
                         modifier = Modifier
