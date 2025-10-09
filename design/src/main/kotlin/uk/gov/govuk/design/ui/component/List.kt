@@ -178,7 +178,7 @@ fun ExternalLinkListItem(
                         end = GovUkTheme.spacing.medium,
                         bottom = GovUkTheme.spacing.medium
                     ),
-                    color = GovUkTheme.colourScheme.textAndIcons.primary
+                    color = GovUkTheme.colourScheme.textAndIcons.secondary
                 )
             }
 

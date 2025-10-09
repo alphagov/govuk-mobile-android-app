@@ -7,11 +7,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.ExternalLinkListItem
 import uk.gov.govuk.design.ui.component.NonTappableCard
 import uk.gov.govuk.design.ui.component.SectionHeadingLabel
 import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
+import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.visited.R
 import uk.gov.govuk.visited.VisitedWidgetUiState
 import uk.gov.govuk.visited.VisitedWidgetViewModel
@@ -90,17 +92,26 @@ private fun VisitedItems(
         }
     }
 }
-/*
-@Preview
+
+@Preview(showBackground = true)
 @Composable
-private fun VisitedWidgetPreview() {
+private fun NoVisitedItemsPreview() {
     GovUkTheme {
-        VisitedWidget(
-            onClick = { },
-            Modifier
-                .fillMaxWidth()
-                .background(GovUkTheme.colourScheme.surfaces.background)
+        NoVisitedItems()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun VisitedItemsPreview() {
+    val items = listOf(VisitedUi(
+        "Title",
+        "www.preview.com",
+        "")
+    )
+    GovUkTheme {
+        VisitedItems(
+            items, {}, { _, _ -> }
         )
     }
 }
-*/
