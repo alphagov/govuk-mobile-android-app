@@ -62,7 +62,13 @@ private fun TopicsWidgetContent(
         onPageView(uiState.yourTopics)
     }
 
-    var activeButtonState by rememberSaveable { mutableStateOf(ConnectedButton.FIRST) }
+    var activeButtonState by rememberSaveable { mutableStateOf( ConnectedButton.FIRST) }
+
+    LaunchedEffect(uiState.yourTopics.isEmpty()) {
+        if (uiState.yourTopics.isEmpty()) {
+            activeButtonState = ConnectedButton.SECOND
+        }
+    }
 
     Column(modifier = modifier) {
         val editButtonText = stringResource(R.string.editButton)
@@ -92,10 +98,20 @@ private fun TopicsWidgetContent(
                         .padding(horizontal = GovUkTheme.spacing.medium)
                 ) {
                     ConnectedButtonGroup(
-                        firstText = "Your topics",
-                        secondText = "All topics",
+                        firstText = "Your topics", // Todo - extract string
+                        secondText = "All topics", // Todo - extract string
                         onActiveStateChange = { activeButton ->
-                            activeButtonState = activeButton
+                            activeButtonState = when (activeButton) {
+                                ConnectedButton.FIRST -> {
+                                    if (uiState.yourTopics.isNotEmpty()) {
+                                        ConnectedButton.FIRST
+                                    } else {
+                                        onEditClick("") // Todo - what should text be???
+                                        ConnectedButton.SECOND
+                                    }
+                                }
+                                ConnectedButton.SECOND -> ConnectedButton.SECOND
+                            }
                         },
                         activeButton = activeButtonState
                     )
@@ -103,9 +119,14 @@ private fun TopicsWidgetContent(
             }
 
             val topics = when (activeButtonState) {
-                ConnectedButton.FIRST -> uiState.yourTopics
+                ConnectedButton.FIRST -> {
+                    uiState.yourTopics.ifEmpty {
+                        uiState.allTopics
+                    }
+                }
                 ConnectedButton.SECOND -> uiState.allTopics
             }
+
             // Todo - handle error/empty topics!!!
             topics.forEachIndexed { index, topic ->
                 IconLinkListItem(
