@@ -7,9 +7,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.window.core.layout.WindowHeightSizeClass
+import uk.gov.govuk.design.ui.component.ConnectedButton.FIRST
+import uk.gov.govuk.design.ui.component.ConnectedButton.SECOND
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -198,6 +204,45 @@ private fun HorizontalButtonGroup(
     }
 }
 
+enum class ConnectedButton {
+    FIRST, SECOND
+}
+
+@Composable
+fun ConnectedButtonGroup(
+    firstText: String,
+    secondText: String,
+    onActiveStateChange: (ConnectedButton) -> Unit,
+    modifier: Modifier = Modifier,
+    activeButton: ConnectedButton = FIRST
+) {
+    var activeButtonState by rememberSaveable { mutableStateOf(activeButton) }
+
+    Row(modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
+        ConnectedButton(
+            text = firstText,
+            onClick = {
+                activeButtonState = FIRST
+                onActiveStateChange(FIRST)
+            },
+            active = activeButtonState == FIRST,
+            modifier = Modifier.weight(0.5f),
+        )
+        SmallHorizontalSpacer()
+        ConnectedButton(
+            text = secondText,
+            onClick = {
+                activeButtonState = SECOND
+                onActiveStateChange(SECOND)
+            },
+            active = activeButtonState == SECOND,
+            modifier = Modifier.weight(0.5f),
+        )
+    }
+}
+
 @Preview
 @Composable
 private fun FixedPrimaryButtonPreview()
@@ -280,6 +325,19 @@ private fun HorizontalDestructiveButtonGroupPreview()
             onSecondary = {},
             primaryDestructive = true,
             windowHeightSizeClass = WindowHeightSizeClass.COMPACT
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ConnectedButtonGroupPreview()
+{
+    GovUkTheme {
+        ConnectedButtonGroup(
+            firstText = "First",
+            secondText = "Second",
+            onActiveStateChange = { }
         )
     }
 }

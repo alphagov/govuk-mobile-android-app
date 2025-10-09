@@ -32,6 +32,7 @@ internal class TopicsLocalDataSource @Inject constructor(
             val topicsToDelete =
                 localTopics.filter { !remoteTopics.map { it.ref }.contains(it.ref) }
 
+            // Todo - if topics have not been customised we should set the selected flag to false for ALL of them
             val isSelectedOnInsert = !isTopicsCustomised()
 
             realmProvider.open().write {

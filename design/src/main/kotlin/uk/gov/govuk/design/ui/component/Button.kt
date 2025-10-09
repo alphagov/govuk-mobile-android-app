@@ -183,6 +183,45 @@ fun DestructiveButton(
 }
 
 @Composable
+fun ConnectedButton(
+    text: String,
+    onClick: () -> Unit,
+    active: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val containerColour =
+        if (active) {
+            GovUkTheme.colourScheme.surfaces.connectedButtonGroupActive
+        } else {
+            GovUkTheme.colourScheme.surfaces.connectedButtonGroupInactive
+        }
+
+    val contentColour =
+        if (active) {
+            GovUkTheme.colourScheme.textAndIcons.header
+        } else {
+            GovUkTheme.colourScheme.textAndIcons.secondary
+        }
+
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        shape = RoundedCornerShape(15.dp),
+        colors = buttonColors(
+            containerColor = containerColour,
+            contentColor = contentColour
+        )
+    ) {
+        Text(
+            text = text,
+            style = if (active) GovUkTheme.typography.bodyBold else
+                GovUkTheme.typography.bodyRegular,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
 private fun BaseButton(
     text: String,
     onClick: () -> Unit,
@@ -432,6 +471,32 @@ private fun DestructiveDisabled()
             text = "Compact button",
             onClick = { },
             enabled = false
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ConnectedActive()
+{
+    GovUkTheme {
+        ConnectedButton(
+            text = "Connected button",
+            onClick = { },
+            active = true
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ConnectedInactive()
+{
+    GovUkTheme {
+        ConnectedButton(
+            text = "Connected button",
+            onClick = { },
+            active = false
         )
     }
 }

@@ -11,7 +11,7 @@ fun ListDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(
         modifier = modifier,
         thickness = 1.dp,
-        color = GovUkTheme.colourScheme.strokes.listBlue
+        color = GovUkTheme.colourScheme.strokes.listDivider
     )
 }
 

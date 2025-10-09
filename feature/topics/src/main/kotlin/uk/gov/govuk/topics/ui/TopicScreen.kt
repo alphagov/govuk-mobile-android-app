@@ -32,11 +32,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
-import uk.gov.govuk.design.ui.component.ExternalLinkListItem
-import uk.gov.govuk.design.ui.component.InternalLinkListItem
+import uk.gov.govuk.design.ui.component.ExternalLinkListItemLegacy
+import uk.gov.govuk.design.ui.component.InternalLinkListItemLegacy
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
-import uk.gov.govuk.design.ui.component.ListHeader
+import uk.gov.govuk.design.ui.component.ListHeaderLegacy
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.error.OfflineMessage
 import uk.gov.govuk.design.ui.component.error.ProblemMessage
@@ -244,7 +244,7 @@ private fun LazyListScope.contentItems(
 ) {
     if (contentItems.isNotEmpty()) {
         item {
-            ListHeader(
+            ListHeaderLegacy(
                 title = section.title,
                 icon = section.icon,
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
@@ -256,7 +256,7 @@ private fun LazyListScope.contentItems(
 
         itemsIndexed(contentItems) { index, content ->
             val sectionTitle = stringResource(section.title)
-            ExternalLinkListItem(
+            ExternalLinkListItemLegacy(
                 title = content.title,
                 onClick = { onClick(sectionTitle, content.title, content.url, currentItemIndex + index) },
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
@@ -269,7 +269,7 @@ private fun LazyListScope.contentItems(
             item {
                 val sectionTitle = stringResource(section.title)
                 val title = stringResource(R.string.seeAllButton)
-                InternalLinkListItem(
+                InternalLinkListItemLegacy(
                     title = title,
                     onClick = { onSeeAll(sectionTitle, title, currentItemIndex + contentItems.size) },
                     modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
@@ -293,7 +293,7 @@ private fun LazyListScope.subtopics(
 ) {
     if (subtopics.isNotEmpty()) {
         item {
-            ListHeader(
+            ListHeaderLegacy(
                 title = section.title,
                 icon = section.icon,
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
@@ -301,7 +301,7 @@ private fun LazyListScope.subtopics(
         }
 
         itemsIndexed(subtopics) { index, subtopic ->
-            InternalLinkListItem(
+            InternalLinkListItemLegacy(
                 title = subtopic.title,
                 onClick = { onClick(subtopic.title, subtopic.ref, currentItemIndex + index) },
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
