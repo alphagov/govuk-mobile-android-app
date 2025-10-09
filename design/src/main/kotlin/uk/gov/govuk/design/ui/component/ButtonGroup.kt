@@ -7,10 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.window.core.layout.WindowHeightSizeClass
@@ -213,31 +209,27 @@ fun ConnectedButtonGroup(
     firstText: String,
     secondText: String,
     onActiveStateChange: (ConnectedButton) -> Unit,
-    modifier: Modifier = Modifier,
-    activeButton: ConnectedButton = FIRST
+    activeButton: ConnectedButton,
+    modifier: Modifier = Modifier
 ) {
-    var activeButtonState by rememberSaveable { mutableStateOf(activeButton) }
-
     Row(modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         ConnectedButton(
             text = firstText,
             onClick = {
-                activeButtonState = FIRST
                 onActiveStateChange(FIRST)
             },
-            active = activeButtonState == FIRST,
+            active = activeButton == FIRST,
             modifier = Modifier.weight(0.5f),
         )
         SmallHorizontalSpacer()
         ConnectedButton(
             text = secondText,
             onClick = {
-                activeButtonState = SECOND
                 onActiveStateChange(SECOND)
             },
-            active = activeButtonState == SECOND,
+            active = activeButton == SECOND,
             modifier = Modifier.weight(0.5f),
         )
     }
@@ -337,7 +329,8 @@ private fun ConnectedButtonGroupPreview()
         ConnectedButtonGroup(
             firstText = "First",
             secondText = "Second",
-            onActiveStateChange = { }
+            onActiveStateChange = { },
+            activeButton = FIRST
         )
     }
 }

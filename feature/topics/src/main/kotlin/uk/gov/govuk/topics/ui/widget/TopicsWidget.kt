@@ -25,8 +25,6 @@ import uk.gov.govuk.topics.R
 import uk.gov.govuk.topics.TopicsWidgetUiState
 import uk.gov.govuk.topics.TopicsWidgetViewModel
 import uk.gov.govuk.topics.ui.model.TopicItemUi
-import uk.gov.govuk.topics.ui.widget.ActiveTopicsState.ALL
-import uk.gov.govuk.topics.ui.widget.ActiveTopicsState.YOUR
 
 @Composable
 fun TopicsWidget(
@@ -52,10 +50,6 @@ fun TopicsWidget(
     }
 }
 
-private enum class ActiveTopicsState {
-    YOUR, ALL
-}
-
 @Composable
 private fun TopicsWidgetContent(
     uiState: TopicsWidgetUiState,
@@ -68,7 +62,7 @@ private fun TopicsWidgetContent(
         onPageView(uiState.yourTopics)
     }
 
-    var activeTopicsState by rememberSaveable { mutableStateOf(YOUR) }
+    var activeButtonState by rememberSaveable { mutableStateOf(ConnectedButton.FIRST) }
 
     Column(modifier = modifier) {
         val editButtonText = stringResource(R.string.editButton)
@@ -101,18 +95,16 @@ private fun TopicsWidgetContent(
                         firstText = "Your topics",
                         secondText = "All topics",
                         onActiveStateChange = { activeButton ->
-                            activeTopicsState = when (activeButton) {
-                                ConnectedButton.FIRST -> YOUR
-                                ConnectedButton.SECOND -> ALL
-                            }
-                        }
+                            activeButtonState = activeButton
+                        },
+                        activeButton = activeButtonState
                     )
                 }
             }
 
-            val topics = when (activeTopicsState) {
-                YOUR -> uiState.yourTopics
-                ALL -> uiState.allTopics
+            val topics = when (activeButtonState) {
+                ConnectedButton.FIRST -> uiState.yourTopics
+                ConnectedButton.SECOND -> uiState.allTopics
             }
             // Todo - handle error/empty topics!!!
             topics.forEachIndexed { index, topic ->
