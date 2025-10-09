@@ -50,7 +50,7 @@ sonar {
         )
         property(
             "sonar.cpd.exclusions",
-            properties["sonar.cpd.exclusions"].toString() + ",**/TopicsRealmProvider.*"
+            properties["sonar.cpd.exclusions"].toString() + ",**/TopicsRealmProvider.*,**/TopicsWidgetLegacy.*" // TODO - remove legacy entry on completion of design refresh!!!
         )
     }
 }

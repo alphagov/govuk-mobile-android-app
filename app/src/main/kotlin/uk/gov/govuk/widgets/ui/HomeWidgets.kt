@@ -7,10 +7,10 @@ import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.topics.navigation.navigateToTopic
 import uk.gov.govuk.topics.navigation.navigateToTopicsAll
 import uk.gov.govuk.topics.navigation.navigateToTopicsEdit
-import uk.gov.govuk.topics.ui.widget.TopicsWidget
-import uk.gov.govuk.widgets.model.HomeWidget
+import uk.gov.govuk.topics.ui.widget.TopicsWidgetLegacy
 import uk.gov.govuk.visited.navigation.VISITED_GRAPH_ROUTE
 import uk.gov.govuk.visited.ui.widget.VisitedWidget
+import uk.gov.govuk.widgets.model.HomeWidget
 import uk.govuk.app.local.navigation.LOCAL_GRAPH_ROUTE
 import uk.govuk.app.local.navigation.LOCAL_LOOKUP_ROUTE
 import uk.govuk.app.local.ui.LocalWidget
@@ -58,7 +58,7 @@ internal fun homeWidgets(
 
             is HomeWidget.Topics -> {
                 widgets.add { modifier ->
-                    TopicsWidget(
+                    TopicsWidgetLegacy(
                         onTopicClick = { ref, title ->
                             onInternalClick(title)
                             navController.navigateToTopic(ref)

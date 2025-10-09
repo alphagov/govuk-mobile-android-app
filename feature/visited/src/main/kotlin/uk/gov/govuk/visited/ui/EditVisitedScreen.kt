@@ -33,7 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.CardListItem
+import uk.gov.govuk.design.ui.component.CardListItemLegacy
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.ListHeadingLabel
@@ -184,7 +184,7 @@ private fun CheckableExternalLinkListItem(
     onSelect: (String, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    CardListItem(
+    CardListItemLegacy(
         modifier = modifier,
         isFirst = isFirst,
         isLast = isLast

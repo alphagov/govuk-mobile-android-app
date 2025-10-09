@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
-import uk.gov.govuk.design.ui.component.ExternalLinkListItem
+import uk.gov.govuk.design.ui.component.ExternalLinkListItemLegacy
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -90,7 +90,7 @@ private fun LazyListScope.stepBySteps(
     onClick: (text: String, url: String, selectedItemIndex: Int) -> Unit
 ) {
     itemsIndexed(stepBySteps) { index, content ->
-        ExternalLinkListItem(
+        ExternalLinkListItemLegacy(
             title = content.title,
             onClick = { onClick(content.title, content.url, selectedItemIndex + index) },
             isFirst = index == 0,

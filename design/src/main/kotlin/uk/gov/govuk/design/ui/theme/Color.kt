@@ -25,10 +25,13 @@ private val BlueDarkMode = Color(0xFF263D54)
 private val TealAccent = Color(0xFF00FFE0)
 
 private val YellowPrimary = Color(0xFFFFDD00)
+private val YellowDarker50 = Color(0xFF806F0D)
 
 private val RedPrimary = Color(0xFFCA3535)
 private val RedAccent = Color(0xFFFF5E5E)
 private val RedDarker25 = Color(0xFF982828)
+private val RedDarker50 = Color(0xFF651B1B)
+private val RedDarker80 = Color(0xFF280B0B)
 
 private val GreenPrimary = Color(0xFF11875A)
 private val GreenAccent = Color(0xFF66F39E)
@@ -37,6 +40,7 @@ private val GreenLighter50 = Color(0xFF88C3AD)
 private val GreenLighter95 = Color(0xFFF3F9F7)
 private val GreenDarker25 = Color(0xFF0D6544)
 private val GreenDarker50 = Color(0xFF09442D)
+private val GreenDarker80 = Color(0xFF031B12)
 
 private val Grey850 = Color(0xFF262626)
 private val Grey800 = Color(0xFF333333)
@@ -84,6 +88,9 @@ data class GovUkColourScheme(
         val buttonSuccess: Color,
         val buttonDestructive: Color,
         val icon: Color,
+        val iconPrimary: Color,
+        val iconTertiary: Color,
+        val iconSurroundPrimary: Color,
         val trailingIcon: Color,
         val buttonRemoveDisabled: Color,
         val selectedTick: Color,
@@ -111,7 +118,7 @@ data class GovUkColourScheme(
         val cardNonTappable: Color,
         val cardSelected: Color,
         val list: Color,
-        val listBlue: Color,
+        val listBlue: Color, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         val listHeadingBlue: Color,
         val fixedContainer: Color,
         val alert: Color,
@@ -119,6 +126,9 @@ data class GovUkColourScheme(
         val buttonPrimaryHighlight: Color,
         val buttonPrimaryDisabled: Color,
         val buttonPrimaryFocused: Color,
+        val buttonPrimaryStroke: Color,
+        val buttonPrimaryStrokeHighlight: Color,
+        val buttonPrimaryStrokeFocussed: Color,
         val buttonSecondary: Color,
         val buttonSecondaryHighlight: Color,
         val buttonSecondaryDisabled: Color,
@@ -129,6 +139,11 @@ data class GovUkColourScheme(
         val buttonCompactFocused: Color,
         val buttonDestructive: Color,
         val buttonDestructiveHighlight: Color,
+        val buttonDestructiveStroke: Color,
+        val buttonDestructiveStrokeHighlight: Color,
+        val buttonDestructiveStrokeFocussed: Color,
+        val connectedButtonGroupActive: Color,
+        val connectedButtonGroupInactive: Color,
         val search: Color,
         val switchOn: Color,
         val switchOff: Color,
@@ -146,7 +161,8 @@ data class GovUkColourScheme(
         val chatButtonBackgroundEnabled: Color,
         val chatUserMessageBackground: Color,
         val chatBotMessageBackground: Color,
-        val chatIntroCardBackground: Color
+        val chatIntroCardBackground: Color,
+        val screenBackground: Color
     )
 
     data class Strokes(
@@ -157,7 +173,7 @@ data class GovUkColourScheme(
         val cardBlue: Color,
         val cardDefault: Color,
         val cardSelected: Color,
-        val listBlue: Color,
+        val listBlue: Color, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         val switchOn: Color,
         val switchOff: Color,
         val buttonCompactHighlight: Color,
@@ -194,6 +210,9 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonSuccess = GreenPrimary,
         buttonDestructive = RedPrimary,
         icon = BluePrimary,
+        iconPrimary = White,
+        iconTertiary = BluePrimary,
+        iconSurroundPrimary = BluePrimary,
         trailingIcon = Grey300,
         buttonRemoveDisabled = Grey700,
         selectedTick = White,
@@ -220,7 +239,7 @@ internal val LightColorScheme = GovUkColourScheme(
         cardNonTappable = BlueLighter80,
         cardSelected = GreenLighter95,
         list = White,
-        listBlue = BlueLighter95,
+        listBlue = BlueLighter95, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         listHeadingBlue = BlueLighter95,
         fixedContainer = WhiteAlpha75,
         alert = Grey100,
@@ -228,6 +247,12 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonPrimaryHighlight = GreenDarker25,
         buttonPrimaryDisabled = Grey100,
         buttonPrimaryFocused = YellowPrimary,
+
+        // Todo - move these into strokes???
+        buttonPrimaryStroke = GreenDarker50,
+        buttonPrimaryStrokeHighlight = GreenDarker80,
+        buttonPrimaryStrokeFocussed = Black,
+
         buttonSecondary = Color.Transparent,
         buttonSecondaryHighlight = Color.Transparent,
         buttonSecondaryDisabled = Color.Transparent,
@@ -238,6 +263,14 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonCompactFocused = YellowPrimary,
         buttonDestructive = RedPrimary,
         buttonDestructiveHighlight = RedDarker25,
+
+        // Todo - move these into strokes???
+        buttonDestructiveStroke = RedDarker50,
+        buttonDestructiveStrokeHighlight = RedDarker80,
+        buttonDestructiveStrokeFocussed = Black,
+
+        connectedButtonGroupActive = BluePrimary,
+        connectedButtonGroupInactive = BlueLighter90,
         search = White,
         switchOn = GreenPrimary,
         switchOff = BlackLighter50,
@@ -255,17 +288,18 @@ internal val LightColorScheme = GovUkColourScheme(
         chatButtonBackgroundEnabled = BluePrimary,
         chatUserMessageBackground = WhiteAlpha50,
         chatBotMessageBackground = White,
-        chatIntroCardBackground = BlueLighter95
+        chatIntroCardBackground = BlueLighter95,
+        screenBackground = BlueLighter90
     ),
     strokes = Strokes(
         fixedContainer = BlackAlpha30,
-        listDivider = Grey300,
+        listDivider = BlueLighter80,
         pageControlsInactive = Grey500,
         cardAlert = BlueLighter25,
         cardBlue = BlueLighter50,
         cardDefault = BlueLighter80,
         cardSelected = GreenPrimary,
-        listBlue = BlueLighter50,
+        listBlue = BlueLighter50, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         switchOn = GreenPrimary,
         switchOff = BlackLighter50,
         buttonCompactHighlight = BlueLighter25,
@@ -302,6 +336,9 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonSuccess = GreenAccent,
         buttonDestructive = RedAccent,
         icon = BlueLighter95,
+        iconPrimary = White,
+        iconTertiary = White,
+        iconSurroundPrimary = BlueDarkMode,
         trailingIcon = Grey500,
         buttonRemoveDisabled = Grey300,
         selectedTick = White,
@@ -328,7 +365,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         cardNonTappable = BlueDarker65,
         cardSelected = GreenDarker50,
         list = BlueDarker65,
-        listBlue = BlueDarker80,
+        listBlue = BlueDarker80, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         listHeadingBlue = BlueDarker50,
         fixedContainer = BlackAlpha75,
         alert = Grey800,
@@ -336,6 +373,12 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonPrimaryHighlight = GreenLighter25,
         buttonPrimaryDisabled = Grey400,
         buttonPrimaryFocused = YellowPrimary,
+
+        // Todo - move these into strokes???
+        buttonPrimaryStroke = GreenPrimary,
+        buttonPrimaryStrokeHighlight = GreenDarker50,
+        buttonPrimaryStrokeFocussed = YellowDarker50,
+
         buttonSecondary = Color.Transparent,
         buttonSecondaryHighlight = Color.Transparent,
         buttonSecondaryDisabled = Color.Transparent,
@@ -346,12 +389,20 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonCompactFocused = YellowPrimary,
         buttonDestructive = RedAccent,
         buttonDestructiveHighlight = RedPrimary,
+
+        // Todo - move these into strokes???
+        buttonDestructiveStroke = RedPrimary,
+        buttonDestructiveStrokeHighlight = RedDarker50,
+        buttonDestructiveStrokeFocussed = YellowDarker50,
+
+        connectedButtonGroupActive = BlueDarkMode,
+        connectedButtonGroupInactive = BlueDarker80,
         search = Black,
         switchOn = GreenPrimary,
         switchOff = BlackLighter50,
         toggleHandle = White,
         icon = BlueAccent,
-        homeHeader = BlueDarker50,
+        homeHeader = BlueDarker65,
         cardGreen = GreenDarker50,
         textFieldBackground = Grey800,
         textFieldHighlighted = BlueDarker25,
@@ -363,17 +414,18 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatButtonBackgroundEnabled = BlueAccent,
         chatUserMessageBackground = BlueDarker80Alpha50,
         chatBotMessageBackground = BlueDarker80,
-        chatIntroCardBackground = Blue99
+        chatIntroCardBackground = Blue99,
+        screenBackground = BlueDarker80
     ),
     strokes = Strokes(
         fixedContainer = WhiteAlpha30,
-        listDivider = Grey500,
+        listDivider = BlueDarkMode,
         pageControlsInactive = Grey300,
         cardAlert = BlueLighter25,
         cardBlue = BlueDarker25,
         cardDefault = BlueDarkMode,
         cardSelected = GreenAccent,
-        listBlue = BluePrimary,
+        listBlue = BluePrimary, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         switchOn = GreenPrimary,
         switchOff = BlackLighter50,
         buttonCompactHighlight = BlueDarker25,
@@ -411,6 +463,9 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             buttonSuccess = Color.Unspecified,
             buttonDestructive = Color.Unspecified,
             icon = Color.Unspecified,
+            iconPrimary = Color.Unspecified,
+            iconTertiary = Color.Unspecified,
+            iconSurroundPrimary = Color.Unspecified,
             trailingIcon = Color.Unspecified,
             buttonRemoveDisabled = Color.Unspecified,
             selectedTick = Color.Unspecified,
@@ -437,7 +492,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             cardNonTappable = Color.Unspecified,
             cardSelected = Color.Unspecified,
             list = Color.Unspecified,
-            listBlue = Color.Unspecified,
+            listBlue = Color.Unspecified, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
             listHeadingBlue = Color.Unspecified,
             fixedContainer = Color.Unspecified,
             alert = Color.Unspecified,
@@ -445,6 +500,9 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             buttonPrimaryHighlight = Color.Unspecified,
             buttonPrimaryDisabled = Color.Unspecified,
             buttonPrimaryFocused = Color.Unspecified,
+            buttonPrimaryStroke = Color.Unspecified,
+            buttonPrimaryStrokeHighlight = Color.Unspecified,
+            buttonPrimaryStrokeFocussed = Color.Unspecified,
             buttonSecondary = Color.Unspecified,
             buttonSecondaryHighlight = Color.Unspecified,
             buttonSecondaryDisabled = Color.Unspecified,
@@ -455,6 +513,11 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             buttonCompactFocused = Color.Unspecified,
             buttonDestructive = Color.Unspecified,
             buttonDestructiveHighlight = Color.Unspecified,
+            buttonDestructiveStroke = Color.Unspecified,
+            buttonDestructiveStrokeHighlight = Color.Unspecified,
+            buttonDestructiveStrokeFocussed = Color.Unspecified,
+            connectedButtonGroupActive = Color.Unspecified,
+            connectedButtonGroupInactive = Color.Unspecified,
             search = Color.Unspecified,
             switchOn = Color.Unspecified,
             switchOff = Color.Unspecified,
@@ -472,7 +535,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             chatButtonBackgroundEnabled = Color.Unspecified,
             chatUserMessageBackground = Color.Unspecified,
             chatBotMessageBackground = Color.Unspecified,
-            chatIntroCardBackground = Color.Unspecified
+            chatIntroCardBackground = Color.Unspecified,
+            screenBackground = Color.Unspecified
         ),
         strokes = Strokes(
             fixedContainer = Color.Unspecified,
@@ -482,7 +546,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             cardBlue = Color.Unspecified,
             cardDefault = Color.Unspecified,
             cardSelected = Color.Unspecified,
-            listBlue = Color.Unspecified,
+            listBlue = Color.Unspecified, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
             switchOn = Color.Unspecified,
             switchOff = Color.Unspecified,
             buttonCompactHighlight = Color.Unspecified,
