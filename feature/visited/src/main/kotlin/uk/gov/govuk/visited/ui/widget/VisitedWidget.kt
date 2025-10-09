@@ -12,6 +12,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.ExternalLinkListItem
 import uk.gov.govuk.design.ui.component.NonTappableCard
 import uk.gov.govuk.design.ui.component.SectionHeadingLabel
+import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.visited.R
@@ -55,7 +56,7 @@ private fun NoVisitedItems(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         SectionHeadingLabel(title3 = stringResource(R.string.visited_items_title))
-
+        SmallVerticalSpacer()
         NonTappableCard(
             body = stringResource(R.string.visited_items_no_pages_description)
         )
@@ -81,6 +82,7 @@ private fun VisitedItems(
             title3 = title,
             button = button
         )
+        SmallVerticalSpacer()
         items.forEachIndexed { index, visitedUi ->
             ExternalLinkListItem(
                 title = visitedUi.title,
