@@ -16,9 +16,7 @@ import javax.inject.Inject
 internal data class TopicsWidgetUiState(
     val allTopics: List<TopicItemUi>,
     val yourTopics: List<TopicItemUi>,
-    val isError: Boolean,
-    val isCustomised: Boolean,
-    val displayShowAll: Boolean
+    val isError: Boolean
 )
 
 @HiltViewModel
@@ -39,9 +37,7 @@ internal class TopicsWidgetViewModel @Inject constructor(
                 _uiState.value = TopicsWidgetUiState(
                     allTopics = mappedTopics,
                     yourTopics = mappedTopics.filter { it.isSelected },
-                    isError = topics.isEmpty(),
-                    isCustomised = topicsRepo.isTopicsCustomised(),
-                    displayShowAll = topics.size > mappedTopics.size
+                    isError = topics.isEmpty()
                 )
             }
         }

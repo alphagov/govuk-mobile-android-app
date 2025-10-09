@@ -5,7 +5,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.topics.navigation.navigateToTopic
-import uk.gov.govuk.topics.navigation.navigateToTopicsAll
 import uk.gov.govuk.topics.navigation.navigateToTopicsEdit
 import uk.gov.govuk.topics.ui.widget.TopicsWidget
 import uk.gov.govuk.visited.navigation.VISITED_GRAPH_ROUTE
@@ -66,10 +65,6 @@ internal fun homeWidgets(
                         onEditClick = { text ->
                             onInternalClick(text)
                             navController.navigateToTopicsEdit()
-                        },
-                        onAllClick = { text ->
-                            onInternalClick(text)
-                            navController.navigateToTopicsAll()
                         },
                         modifier = modifier
                     )

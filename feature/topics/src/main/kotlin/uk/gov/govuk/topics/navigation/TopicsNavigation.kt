@@ -8,7 +8,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import uk.gov.govuk.topics.ui.AllStepByStepRoute
-import uk.gov.govuk.topics.ui.AllTopicsRoute
 import uk.gov.govuk.topics.ui.EditTopicsRoute
 import uk.gov.govuk.topics.ui.TopicRoute
 import uk.gov.govuk.topics.ui.TopicSelectionRoute
@@ -20,13 +19,11 @@ const val TOPIC_ROUTE = "topic_route"
 internal const val TOPIC_REF_ARG = "ref"
 internal const val TOPIC_SUBTOPIC_ARG = "isSubtopic"
 const val TOPICS_EDIT_ROUTE = "topics_edit_route"
-const val TOPICS_ALL_ROUTE = "topics_all_route"
 const val TOPICS_ALL_STEP_BY_STEPS_ROUTE = "topics_all_step_by_steps_route"
 
 val topicsDeepLinks = mapOf(
     // Todo - individual topic with args
-    "/topics/edit" to listOf(TOPICS_EDIT_ROUTE),
-    "/topics/all" to listOf(TOPICS_ALL_ROUTE)
+    "/topics/edit" to listOf(TOPICS_EDIT_ROUTE)
 )
 
 fun NavGraphBuilder.topicSelectionGraph(
@@ -52,9 +49,14 @@ fun NavGraphBuilder.topicsGraph(
 ) {
     navigation(
         route = TOPICS_GRAPH_ROUTE,
-        startDestination = TOPICS_ALL_ROUTE
+        startDestination = TOPICS_EDIT_ROUTE
     ) {
         val topicPath = "/{$TOPIC_REF_ARG}?$TOPIC_SUBTOPIC_ARG={$TOPIC_SUBTOPIC_ARG}"
+        composable(TOPICS_EDIT_ROUTE) {
+            EditTopicsRoute(
+                onBack = { navController.popBackStack() }
+            )
+        }
         composable(
             "$TOPIC_ROUTE$topicPath",
             arguments = listOf(
@@ -70,18 +72,6 @@ fun NavGraphBuilder.topicsGraph(
                 },
                 onStepByStepSeeAll = { navController.navigate(TOPICS_ALL_STEP_BY_STEPS_ROUTE) },
                 onSubtopic = { ref -> navController.navigateToTopic(ref, true) },
-                modifier = modifier
-            )
-        }
-        composable(TOPICS_EDIT_ROUTE) {
-            EditTopicsRoute(
-                onBack = { navController.popBackStack() }
-            )
-        }
-        composable(TOPICS_ALL_ROUTE) {
-            AllTopicsRoute(
-                onBack = { navController.popBackStack() },
-                onClick = { title -> navController.navigateToTopic(title) },
                 modifier = modifier
             )
         }
@@ -103,8 +93,4 @@ fun NavController.navigateToTopic(ref: String, isSubtopic: Boolean = false) {
 
 fun NavController.navigateToTopicsEdit() {
     navigate(TOPICS_EDIT_ROUTE)
-}
-
-fun NavController.navigateToTopicsAll() {
-    navigate(TOPICS_ALL_ROUTE)
 }

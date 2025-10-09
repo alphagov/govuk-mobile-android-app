@@ -30,7 +30,6 @@ import uk.gov.govuk.topics.ui.model.TopicItemUi
 fun TopicsWidget(
     onTopicClick: (String, String) -> Unit,
     onEditClick: (String) -> Unit,
-    onAllClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: TopicsWidgetViewModel = hiltViewModel()
@@ -191,9 +190,7 @@ private fun TopicsWidgetPreview() {
                     ),
                 ),
                 allTopics = emptyList(),
-                isError = false,
-                isCustomised = true,
-                displayShowAll = true
+                isError = false
             ),
             onPageView = { },
             onTopicClick = { _, _, _ -> },
@@ -210,9 +207,7 @@ private fun TopicsWidgetEmptyTopicsPreview() {
             uiState = TopicsWidgetUiState(
                 allTopics = emptyList(),
                 yourTopics = emptyList(),
-                isError = false,
-                isCustomised = true,
-                displayShowAll = true
+                isError = false
             ),
             onPageView = { },
             onTopicClick = { _, _, _ -> },
@@ -229,9 +224,7 @@ private fun TopicsWidgetErrorPreview() {
             uiState = TopicsWidgetUiState(
                 allTopics = emptyList(),
                 yourTopics = emptyList(),
-                isError = true,
-                isCustomised = false,
-                displayShowAll = false
+                isError = true
             ),
             onPageView = { },
             onTopicClick = { _, _, _ -> },
