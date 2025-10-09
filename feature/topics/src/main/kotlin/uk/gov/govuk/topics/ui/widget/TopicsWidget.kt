@@ -109,64 +109,7 @@ private fun TopicsWidgetContent(
                     isLast = index == uiState.topics.lastIndex
                 )
             }
-
-            /*
-            ConnectedButtonGroup(
-                firstText = "Your topics",
-                onFirst = { },
-                firstActive = true,
-                secondText = "All topics",
-                onSecond = { },
-                secondActive = false
-            )
-             */
         }
-
-        /*
-        when {
-            uiState.isError -> {
-                ProblemMessage(
-                    description = stringResource(R.string.topics_error_message)
-                )
-            }
-            uiState.topics.isEmpty() -> {
-                BodyRegularLabel(
-                    text = stringResource(R.string.empty_topics),
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(vertical = GovUkTheme.spacing.small)
-                )
-            }
-            else -> {
-                TopicsGrid(
-                    topics = uiState.topics,
-                ) { modifier, topic ->
-                    TopicVerticalCard(
-                        icon = topic.icon,
-                        title = topic.title,
-                        onClick = {
-                            onTopicClick(
-                                topic.ref,
-                                topic.title,
-                                uiState.topics.indexOf(topic) + 1
-                             )
-                        },
-                        modifier = modifier
-                    )
-                }
-            }
-        }
-
-        if (uiState.displayShowAll) {
-            LargeVerticalSpacer()
-            val seeAllButtonText = stringResource(R.string.allTopicsButton)
-            CompactButton(
-                text = seeAllButtonText,
-                onClick = { onAllClick(seeAllButtonText) },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-        }
-         */
     }
 }
 
