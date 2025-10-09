@@ -7,9 +7,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.window.core.layout.WindowHeightSizeClass
+import uk.gov.govuk.design.ui.component.ConnectedButton.FIRST
+import uk.gov.govuk.design.ui.component.ConnectedButton.SECOND
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -198,30 +204,40 @@ private fun HorizontalButtonGroup(
     }
 }
 
+enum class ConnectedButton {
+    FIRST, SECOND
+}
+
 @Composable
 fun ConnectedButtonGroup(
     firstText: String,
-    onFirst: () -> Unit,
-    firstActive: Boolean,
     secondText: String,
-    onSecond: () -> Unit,
-    secondActive: Boolean,
-    modifier: Modifier = Modifier
+    onActiveStateChange: (ConnectedButton) -> Unit,
+    modifier: Modifier = Modifier,
+    activeButton: ConnectedButton = FIRST
 ) {
+    var activeButtonState by rememberSaveable { mutableStateOf(activeButton) }
+
     Row(modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         ConnectedButton(
             text = firstText,
-            onClick = onFirst,
-            active = firstActive,
+            onClick = {
+                activeButtonState = FIRST
+                onActiveStateChange(FIRST)
+            },
+            active = activeButtonState == FIRST,
             modifier = Modifier.weight(0.5f),
         )
         SmallHorizontalSpacer()
         ConnectedButton(
             text = secondText,
-            onClick = onSecond,
-            active = secondActive,
+            onClick = {
+                activeButtonState = SECOND
+                onActiveStateChange(SECOND)
+            },
+            active = activeButtonState == SECOND,
             modifier = Modifier.weight(0.5f),
         )
     }
@@ -320,11 +336,8 @@ private fun ConnectedButtonGroupPreview()
     GovUkTheme {
         ConnectedButtonGroup(
             firstText = "First",
-            onFirst = { },
-            firstActive = true,
             secondText = "Second",
-            onSecond = { },
-            secondActive = false
+            onActiveStateChange = { }
         )
     }
 }

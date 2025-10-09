@@ -87,11 +87,8 @@ private fun TopicsWidgetContent(
                 ) {
                     ConnectedButtonGroup(
                         firstText = "Your topics",
-                        onFirst = { },
-                        firstActive = true,
                         secondText = "All topics",
-                        onSecond = { },
-                        secondActive = false
+                        onActiveStateChange = { }
                     )
                 }
             }
