@@ -28,7 +28,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -353,22 +356,41 @@ fun NonTappableCard(body: String) {
 private fun Modifier.bottomBorder(
     strokeWidth: Dp,
     bottomBorderColour: Color,
-    containerColor: Color,
     radius: Dp
 ) = this
-    .background(
-        color = containerColor,
-        shape = RoundedCornerShape(radius)
-    )
-    .clip(RoundedCornerShape(radius))
+    .padding(strokeWidth / if (LocalDensity.current.density == 0f) 1f else LocalDensity.current.density)
     .drawBehind {
-        val strokeWidthPx = strokeWidth.toPx()
-        val y = size.height - strokeWidthPx / 2
+        // Bottom
         drawLine(
             color = bottomBorderColour,
-            start = Offset(0f, y),
-            end = Offset(size.width, y),
-            strokeWidth = strokeWidthPx
+            start = Offset(x = radius.toPx(), y = size.height),
+            end = Offset(x = size.width - radius.toPx(), y = size.height),
+            strokeWidth = strokeWidth.toPx()
+        )
+
+        // Bottom-left
+        drawArc(
+            color = bottomBorderColour,
+            startAngle = 180f,
+            sweepAngle = -90f,
+            useCenter = false,
+            topLeft = Offset(x = 7f, y = size.height - radius.toPx() * 2),
+            size = Size(radius.toPx() * 2, radius.toPx() * 2),
+            style = Stroke(width = strokeWidth.toPx())
+        )
+
+        // Bottom-right
+        drawArc(
+            color = bottomBorderColour,
+            startAngle = 360f,
+            sweepAngle = 90f,
+            useCenter = false,
+            topLeft = Offset(
+                x = (size.width - radius.toPx() * 2) - 7,
+                y = size.height - radius.toPx() * 2
+            ),
+            size = Size(radius.toPx() * 2, radius.toPx() * 2),
+            style = Stroke(width = strokeWidth.toPx())
         )
     }
 
@@ -381,57 +403,54 @@ fun CentredCardWithIcon(
     description: String? = null
 ) {
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .bottomBorder(
+                strokeWidth = 3.dp,
+                bottomBorderColour = GovUkTheme.colourScheme.strokes.cardDefault,
+                radius = GovUkTheme.numbers.cornerAndroidList
+            ),
+        colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.list),
         onClick = onClick,
         content = {
-            Column(
-                modifier = Modifier
-                    .bottomBorder(
-                        strokeWidth = 3.dp,
-                        bottomBorderColour = GovUkTheme.colourScheme.strokes.cardDefault,
-                        containerColor = GovUkTheme.colourScheme.surfaces.list,
-                        radius = GovUkTheme.numbers.cornerAndroidList
-                    )
-            ) {
-                ExtraLargeVerticalSpacer()
+            ExtraLargeVerticalSpacer()
 
-                Icon(
-                    painterResource(icon),
-                    contentDescription = null,
-                    modifier = modifier
+            Icon(
+                painterResource(icon),
+                contentDescription = null,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .size(32.dp),
+                tint = GovUkTheme.colourScheme.textAndIcons.icon
+            )
+
+            title?.let { title ->
+                SmallVerticalSpacer()
+
+                BodyBoldLabel(
+                    text = title,
+                    color = GovUkTheme.colourScheme.textAndIcons.primary,
+                    modifier = Modifier
                         .fillMaxWidth()
-                        .size(32.dp),
-                    tint = GovUkTheme.colourScheme.textAndIcons.icon
+                        .padding(horizontal = GovUkTheme.spacing.extraLarge),
+                    textAlign = TextAlign.Center,
                 )
-
-                title?.let { title ->
-                    SmallVerticalSpacer()
-
-                    BodyBoldLabel(
-                        text = title,
-                        color = GovUkTheme.colourScheme.textAndIcons.primary,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = GovUkTheme.spacing.extraLarge),
-                        textAlign = TextAlign.Center,
-                    )
-                }
-
-                description?.let { description ->
-                    SmallVerticalSpacer()
-
-                    BodyRegularLabel(
-                        text = description,
-                        color = GovUkTheme.colourScheme.textAndIcons.secondary,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = GovUkTheme.spacing.extraLarge),
-                        textAlign = TextAlign.Center,
-                    )
-                }
-
-                ExtraLargeVerticalSpacer()
             }
+
+            description?.let { description ->
+                SmallVerticalSpacer()
+
+                BodyRegularLabel(
+                    text = description,
+                    color = GovUkTheme.colourScheme.textAndIcons.secondary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = GovUkTheme.spacing.extraLarge),
+                    textAlign = TextAlign.Center,
+                )
+            }
+
+            ExtraLargeVerticalSpacer()
         }
     )
 }
@@ -446,45 +465,42 @@ fun NavigationCard(
     description: String? = null
 ) {
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .bottomBorder(
+                strokeWidth = 3.dp,
+                bottomBorderColour = GovUkTheme.colourScheme.strokes.cardDefault,
+                radius = GovUkTheme.numbers.cornerAndroidList
+            ),
+        colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.list),
         onClick = {
             onClick(title, url)
             launchBrowser(url)
         },
         content = {
-            Column(
-                modifier = Modifier
-                    .bottomBorder(
-                        strokeWidth = 3.dp,
-                        bottomBorderColour = GovUkTheme.colourScheme.strokes.cardDefault,
-                        containerColor = GovUkTheme.colourScheme.surfaces.list,
-                        radius = GovUkTheme.numbers.cornerAndroidList
-                    )
-            ) {
-                MediumVerticalSpacer()
+            MediumVerticalSpacer()
 
-                description?.let { description ->
-                    BodyRegularLabel(
-                        text = description,
-                        color = GovUkTheme.colourScheme.textAndIcons.secondary,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = GovUkTheme.spacing.medium)
-                    )
-
-                    SmallVerticalSpacer()
-                }
-
-                Title2BoldLabel(
-                    text = title,
-                    color = GovUkTheme.colourScheme.textAndIcons.link,
+            description?.let { description ->
+                BodyRegularLabel(
+                    text = description,
+                    color = GovUkTheme.colourScheme.textAndIcons.secondary,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = GovUkTheme.spacing.medium)
                 )
 
-                MediumVerticalSpacer()
+                SmallVerticalSpacer()
             }
+
+            Title2BoldLabel(
+                text = title,
+                color = GovUkTheme.colourScheme.textAndIcons.link,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = GovUkTheme.spacing.medium)
+            )
+
+            MediumVerticalSpacer()
         }
     )
 }
