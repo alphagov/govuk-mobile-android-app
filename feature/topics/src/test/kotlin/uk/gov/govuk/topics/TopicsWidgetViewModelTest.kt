@@ -56,7 +56,7 @@ class TopicsWidgetViewModelTest {
 
         val expected =
             TopicsWidgetUiState(
-                topics = listOf(
+                yourTopics = listOf(
                     TopicItemUi(
                         ref = "benefits",
                         icon = R.drawable.ic_topic_benefits,
@@ -99,7 +99,7 @@ class TopicsWidgetViewModelTest {
 
         val expected =
             TopicsWidgetUiState(
-                topics = listOf(
+                yourTopics = listOf(
                     TopicItemUi(
                         ref = "benefits",
                         icon = R.drawable.ic_topic_benefits,

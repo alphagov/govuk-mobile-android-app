@@ -68,7 +68,7 @@ private fun TopicsWidgetContent(
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
-        onPageView(uiState.topics)
+        onPageView(uiState.yourTopics)
     }
 
     Column(modifier = modifier) {
@@ -114,7 +114,7 @@ private fun TopicsWidgetContent(
                     description = stringResource(R.string.topics_error_message)
                 )
             }
-            uiState.topics.isEmpty() -> {
+            uiState.yourTopics.isEmpty() -> {
                 BodyRegularLabel(
                     text = stringResource(R.string.empty_topics),
                     modifier = Modifier
@@ -124,7 +124,7 @@ private fun TopicsWidgetContent(
             }
             else -> {
                 TopicsGrid(
-                    topics = uiState.topics,
+                    topics = uiState.yourTopics,
                 ) { modifier, topic ->
                     TopicVerticalCard(
                         icon = topic.icon,
@@ -133,7 +133,7 @@ private fun TopicsWidgetContent(
                             onTopicClick(
                                 topic.ref,
                                 topic.title,
-                                uiState.topics.indexOf(topic) + 1
+                                uiState.yourTopics.indexOf(topic) + 1
                              )
                         },
                         modifier = modifier
@@ -160,7 +160,8 @@ private fun TopicsWidgetPreview() {
     GovUkTheme {
         TopicsWidgetContent(
             uiState = TopicsWidgetUiState(
-                topics = listOf(
+                allTopics = emptyList(),
+                yourTopics = listOf(
                     TopicItemUi(
                         "",
                         R.drawable.ic_topic_default,
@@ -215,7 +216,8 @@ private fun TopicsWidgetEmptyTopicsPreview() {
     GovUkTheme {
         TopicsWidgetContent(
             uiState = TopicsWidgetUiState(
-                topics = emptyList(),
+                allTopics = emptyList(),
+                yourTopics = emptyList(),
                 isError = false,
                 isCustomised = true,
                 displayShowAll = true
@@ -234,7 +236,8 @@ private fun TopicsWidgetErrorPreview() {
     GovUkTheme {
         TopicsWidgetContent(
             uiState = TopicsWidgetUiState(
-                topics = emptyList(),
+                allTopics = emptyList(),
+                yourTopics = emptyList(),
                 isError = true,
                 isCustomised = false,
                 displayShowAll = false

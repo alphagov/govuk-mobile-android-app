@@ -14,7 +14,8 @@ import uk.gov.govuk.topics.ui.model.TopicItemUi
 import javax.inject.Inject
 
 internal data class TopicsWidgetUiState(
-    val topics: List<TopicItemUi>,
+    val allTopics: List<TopicItemUi>,
+    val yourTopics: List<TopicItemUi>,
     val isError: Boolean,
     val isCustomised: Boolean,
     val displayShowAll: Boolean
@@ -32,15 +33,15 @@ internal class TopicsWidgetViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             topicsRepo.topics.collect { topics ->
-                val filteredTopics = topics
-                    .filter { it.isSelected }
+                val mappedTopics = topics
                     .map{ topicItem -> topicItem.toTopicItemUi() }
 
                 _uiState.value = TopicsWidgetUiState(
-                    topics = filteredTopics,
+                    allTopics = mappedTopics,
+                    yourTopics = mappedTopics.filter { it.isSelected },
                     isError = topics.isEmpty(),
                     isCustomised = topicsRepo.isTopicsCustomised(),
-                    displayShowAll = topics.size > filteredTopics.size
+                    displayShowAll = topics.size > mappedTopics.size
                 )
             }
         }

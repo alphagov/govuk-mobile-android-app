@@ -552,21 +552,6 @@ private fun DrawScope.intermediateCell(
     backgroundColorHighlight: Color,
     isClicked: Boolean
 ) {
-    // Path for only side borders
-    val path = Path().apply {
-        // Start at top right corner
-        moveTo(size.width, 0f)
-
-        // Line to bottom right
-        lineTo(size.width, size.height)
-
-        // Move to bottom left
-        moveTo(0f, size.height)
-
-        // Line to top left
-        lineTo(0f, 0f)
-    }
-
     // Draw background colour
     drawRect(
         color = if (isClicked) backgroundColorHighlight else backgroundColor,

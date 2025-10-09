@@ -7,11 +7,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.CardListItem
+import uk.gov.govuk.design.ui.component.ConnectedButton
 import uk.gov.govuk.design.ui.component.ConnectedButtonGroup
 import uk.gov.govuk.design.ui.component.IconLinkListItem
 import uk.gov.govuk.design.ui.component.SectionHeadingLabel
@@ -21,6 +25,8 @@ import uk.gov.govuk.topics.R
 import uk.gov.govuk.topics.TopicsWidgetUiState
 import uk.gov.govuk.topics.TopicsWidgetViewModel
 import uk.gov.govuk.topics.ui.model.TopicItemUi
+import uk.gov.govuk.topics.ui.widget.ActiveTopicsState.ALL
+import uk.gov.govuk.topics.ui.widget.ActiveTopicsState.YOUR
 
 @Composable
 fun TopicsWidget(
@@ -46,6 +52,10 @@ fun TopicsWidget(
     }
 }
 
+private enum class ActiveTopicsState {
+    YOUR, ALL
+}
+
 @Composable
 private fun TopicsWidgetContent(
     uiState: TopicsWidgetUiState,
@@ -55,8 +65,10 @@ private fun TopicsWidgetContent(
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
-        onPageView(uiState.topics)
+        onPageView(uiState.yourTopics)
     }
+
+    var activeTopicsState by rememberSaveable { mutableStateOf(YOUR) }
 
     Column(modifier = modifier) {
         val editButtonText = stringResource(R.string.editButton)
@@ -88,13 +100,22 @@ private fun TopicsWidgetContent(
                     ConnectedButtonGroup(
                         firstText = "Your topics",
                         secondText = "All topics",
-                        onActiveStateChange = { }
+                        onActiveStateChange = { activeButton ->
+                            activeTopicsState = when (activeButton) {
+                                ConnectedButton.FIRST -> YOUR
+                                ConnectedButton.SECOND -> ALL
+                            }
+                        }
                     )
                 }
             }
 
+            val topics = when (activeTopicsState) {
+                YOUR -> uiState.yourTopics
+                ALL -> uiState.allTopics
+            }
             // Todo - handle error/empty topics!!!
-            uiState.topics.forEachIndexed { index, topic ->
+            topics.forEachIndexed { index, topic ->
                 IconLinkListItem(
                     title = topic.title,
                     icon = topic.icon,
@@ -102,11 +123,11 @@ private fun TopicsWidgetContent(
                         onTopicClick(
                             topic.ref,
                             topic.title,
-                            uiState.topics.indexOf(topic) + 1
+                            uiState.yourTopics.indexOf(topic) + 1
                         )
                     },
                     isFirst = false,
-                    isLast = index == uiState.topics.lastIndex
+                    isLast = index == topics.lastIndex
                 )
             }
         }
@@ -119,7 +140,7 @@ private fun TopicsWidgetPreview() {
     GovUkTheme {
         TopicsWidgetContent(
             uiState = TopicsWidgetUiState(
-                topics = listOf(
+                yourTopics = listOf(
                     TopicItemUi(
                         "",
                         R.drawable.ic_topic_default,
@@ -156,6 +177,7 @@ private fun TopicsWidgetPreview() {
                         isSelected = true
                     ),
                 ),
+                allTopics = emptyList(),
                 isError = false,
                 isCustomised = true,
                 displayShowAll = true
@@ -173,7 +195,8 @@ private fun TopicsWidgetEmptyTopicsPreview() {
     GovUkTheme {
         TopicsWidgetContent(
             uiState = TopicsWidgetUiState(
-                topics = emptyList(),
+                allTopics = emptyList(),
+                yourTopics = emptyList(),
                 isError = false,
                 isCustomised = true,
                 displayShowAll = true
@@ -191,7 +214,8 @@ private fun TopicsWidgetErrorPreview() {
     GovUkTheme {
         TopicsWidgetContent(
             uiState = TopicsWidgetUiState(
-                topics = emptyList(),
+                allTopics = emptyList(),
+                yourTopics = emptyList(),
                 isError = true,
                 isCustomised = false,
                 displayShowAll = false
