@@ -2,10 +2,11 @@
   <string name="visited_items_title">Pages you\'ve visited</string>
 
   <string name="visited_items_no_pages_title">No pages</string>
-  <string name="visited_items_no_pages_description">You haven\'t used the app to visit any GOV.UK pages yet</string>
+  <string name="visited_items_no_pages_description">You have not used the app to visit any GOV.UK pages</string>
 
   <string name="visited_items_last_visited">Last visited on</string>
 
+  <string name="visited_items_see_all">See all</string>
   <string name="visited_items_edit_button">Edit</string>
   <string name="visited_items_edit_button_alt_text">Edit pages you\'ve visited</string>
   <string name="visited_items_editing_complete_button">Cancel</string>

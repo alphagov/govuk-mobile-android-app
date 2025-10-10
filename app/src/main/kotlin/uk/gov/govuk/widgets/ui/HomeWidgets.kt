@@ -45,10 +45,11 @@ internal fun homeWidgets(
             is HomeWidget.RecentActivity -> {
                 widgets.add { modifier ->
                     VisitedWidget(
-                        onClick = { text ->
+                        onSeeAllClick = { text ->
                             onInternalClick(text)
                             navController.navigate(VISITED_GRAPH_ROUTE)
                         },
+                        launchBrowser = launchBrowser,
                         modifier = modifier
                     )
                     LargeVerticalSpacer()

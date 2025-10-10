@@ -171,6 +171,7 @@ data class GovUkColourScheme(
         val pageControlsInactive: Color,
         val cardAlert: Color,
         val cardBlue: Color,
+        val cardDefault: Color,
         val cardSelected: Color,
         val listBlue: Color, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         val switchOn: Color,
@@ -296,6 +297,7 @@ internal val LightColorScheme = GovUkColourScheme(
         pageControlsInactive = Grey500,
         cardAlert = BlueLighter25,
         cardBlue = BlueLighter50,
+        cardDefault = BlueLighter80,
         cardSelected = GreenPrimary,
         listBlue = BlueLighter50, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         switchOn = GreenPrimary,
@@ -421,6 +423,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         pageControlsInactive = Grey300,
         cardAlert = BlueLighter25,
         cardBlue = BlueDarker25,
+        cardDefault = BlueDarkMode,
         cardSelected = GreenAccent,
         listBlue = BluePrimary, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         switchOn = GreenPrimary,
@@ -541,6 +544,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             pageControlsInactive = Color.Unspecified,
             cardAlert = Color.Unspecified,
             cardBlue = Color.Unspecified,
+            cardDefault = Color.Unspecified,
             cardSelected = Color.Unspecified,
             listBlue = Color.Unspecified, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
             switchOn = Color.Unspecified,
