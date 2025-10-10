@@ -6,9 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.gov.govuk.R
+import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.auth.ErrorEvent
 import uk.gov.govuk.login.data.LoginRepo
@@ -20,8 +23,12 @@ internal data class LoginEvent(val isBiometricLogin: Boolean)
 @HiltViewModel
 internal class LoginViewModel @Inject constructor(
     private val authRepo: AuthRepo,
-    private val loginRepo: LoginRepo
+    private val loginRepo: LoginRepo,
+    private val configRepo: ConfigRepo
 ) : ViewModel() {
+
+    private val _isLoading: MutableStateFlow<Boolean?> = MutableStateFlow(null)
+    val isLoading = _isLoading.asStateFlow()
 
     private val _loginCompleted = MutableSharedFlow<LoginEvent>()
     val loginCompleted: SharedFlow<LoginEvent> = _loginCompleted
@@ -37,15 +44,17 @@ internal class LoginViewModel @Inject constructor(
         if (authRepo.isUserSignedIn()) {
             viewModelScope.launch {
                 if (shouldRefreshTokens()) {
-                    if (
-                        authRepo.refreshTokens(
-                            activity = activity,
-                            title = activity.getString(R.string.login_biometric_prompt_title)
-                        )
-                    ) {
-                        _loginCompleted.emit(LoginEvent(isBiometricLogin = true))
-                    } else {
-                        // Todo - handle failure!!!
+                    authRepo.refreshTokens(activity = activity, title = activity.getString(R.string.login_biometric_prompt_title)).collect { status ->
+                        when (status) {
+                            AuthRepo.RefreshStatus.LOADING -> {
+                                _isLoading.value = true
+                            }
+                            AuthRepo.RefreshStatus.SUCCESS ->
+                                _loginCompleted.emit(LoginEvent(isBiometricLogin = true))
+                            AuthRepo.RefreshStatus.ERROR -> {
+                                _isLoading.value = false
+                            }
+                        }
                     }
                 } else {
                     authRepo.endUserSession()
@@ -57,9 +66,10 @@ internal class LoginViewModel @Inject constructor(
 
     fun onAuthResponse(data: Intent?) {
         viewModelScope.launch {
+            _isLoading.value = true
             val result = authRepo.handleAuthResponse(data)
             if (result) {
-                saveRefreshTokenExpiryDate()
+                saveRefreshTokenIssuedAtDate()
                 _loginCompleted.emit(LoginEvent(isBiometricLogin = false))
             } else {
                 _errorEvent.emit(ErrorEvent.UnableToSignInError)
@@ -68,16 +78,23 @@ internal class LoginViewModel @Inject constructor(
     }
 
     private suspend fun shouldRefreshTokens(): Boolean {
-        val idTokenIssueDate = loginRepo.getRefreshTokenExpiryDate()
-        return idTokenIssueDate == null || idTokenIssueDate > Date().toInstant().epochSecond
+        val tokenExpirySeconds = getTokenExpirySeconds()
+        return tokenExpirySeconds == null || tokenExpirySeconds > Date().toInstant().epochSecond
     }
 
-    private fun saveRefreshTokenExpiryDate() {
-        viewModelScope.launch {
-            authRepo.getIdTokenIssueDate()?.let { idTokenIssueDate ->
-                val datePlusSixDaysTwentyThreeHours = idTokenIssueDate + 601200L
-                loginRepo.setRefreshTokenExpiryDate(datePlusSixDaysTwentyThreeHours)
-            }
+    private suspend fun getTokenExpirySeconds(): Long? {
+        val issuedAtDate = loginRepo.getRefreshTokenIssuedAtDate()
+        val expirySeconds = configRepo.config.refreshTokenExpirySeconds
+        return if (issuedAtDate != null && expirySeconds != null) {
+            issuedAtDate + expirySeconds
+        } else {
+            loginRepo.getRefreshTokenExpiryDate()
+        }
+    }
+
+    private suspend fun saveRefreshTokenIssuedAtDate() {
+        authRepo.getIdTokenIssuedAtDate()?.let { idTokenIssuedAtDate ->
+            loginRepo.setRefreshTokenIssuedAtDate(idTokenIssuedAtDate)
         }
     }
 }

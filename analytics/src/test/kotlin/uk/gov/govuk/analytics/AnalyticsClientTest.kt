@@ -188,6 +188,29 @@ class AnalyticsClientTest {
     }
 
     @Test
+    fun `Given a home screen view, then log event with a type`() {
+        analyticsClient.screenViewWithType(
+            screenClass = "screenClass",
+            screenName = "screenName",
+            title = "title",
+            type = "type"
+        )
+
+        verify {
+            firebaseAnalyticClient.logEvent(
+                FirebaseAnalytics.Event.SCREEN_VIEW,
+                mapOf(
+                    FirebaseAnalytics.Param.SCREEN_CLASS to "screenClass",
+                    FirebaseAnalytics.Param.SCREEN_NAME to "screenName",
+                    "screen_title" to "title",
+                    "type" to "type",
+                    "language" to Locale.getDefault().language
+                )
+            )
+        }
+    }
+
+    @Test
     fun `Given a button click, then log event`() {
         analyticsClient.buttonClick("text")
 

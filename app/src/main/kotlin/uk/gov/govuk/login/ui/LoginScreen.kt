@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -25,6 +27,7 @@ import uk.gov.govuk.design.ui.component.CentreAlignedScreen
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
+import uk.gov.govuk.design.ui.component.LoadingScreen
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title1RegularLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -38,6 +41,7 @@ internal fun LoginRoute(
     modifier: Modifier = Modifier
 ) {
     val viewModel: LoginViewModel = hiltViewModel()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     val authLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -45,16 +49,23 @@ internal fun LoginRoute(
         }
     }
 
-    LoginScreen(
-        onContinueClick = {
-            try {
-                authLauncher.launch(viewModel.authIntent)
-            } catch (e: ActivityNotFoundException) {
-                onError()
-            }
-        },
-        modifier = modifier
-    )
+    if (isLoading == true) {
+        LoadingScreen(
+            modifier = modifier,
+            accessibilityText = stringResource(R.string.login_loading_accessibility_text)
+        )
+    } else {
+        LoginScreen(
+            onContinueClick = {
+                try {
+                    authLauncher.launch(viewModel.authIntent)
+                } catch (_: ActivityNotFoundException) {
+                    onError()
+                }
+            },
+            modifier = modifier
+        )
+    }
 
     val activity = LocalActivity.current as FragmentActivity
 

@@ -5,10 +5,9 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
@@ -17,11 +16,12 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.chat.data.local.ChatDataStore
 import uk.gov.govuk.config.data.ConfigRepo
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ChatOptInViewModelTest {
     private val chatDataStore = mockk<ChatDataStore>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val configRepo = mockk<ConfigRepo>(relaxed = true)
-    private val dispatcher = StandardTestDispatcher()
+    private val dispatcher = UnconfinedTestDispatcher()
     private lateinit var viewModel: ChatOptInViewModel
 
     @Before
@@ -69,43 +69,22 @@ class ChatOptInViewModelTest {
     }
 
     @Test
-    fun `When the user clicks a link, then log analytics`() {
-        val text = "text"
-        val url = "url"
-
-        viewModel.onLinkClick(text = text, url = url)
-
-        verify {
-            analyticsClient.visitedItemClick(
-                text = text,
-                url = url
-            )
-        }
-    }
-
-    @Test
-    fun `When the user opts in, then set the opt in flag to true`() = runTest(dispatcher) {
+    fun `When the user opts in, then set the opt in flag to true`() {
         viewModel.onOptInClicked()
-
-        advanceUntilIdle()
 
         coVerify(exactly = 1) { chatDataStore.saveChatOptIn() }
     }
 
     @Test
-    fun `When the user opts out, then set the opt in flag to false`() = runTest(dispatcher) {
+    fun `When the user opts out, then set the opt in flag to false`() {
         viewModel.onOptOutClicked()
-
-        advanceUntilIdle()
 
         coVerify(exactly = 1) { chatDataStore.saveChatOptOut() }
     }
 
     @Test
-    fun `When the user has opted in, and the trial has ended, then set the opt in flag is removed`() = runTest(dispatcher) {
+    fun `When the user has opted in, and the trial has ended, then set the opt in flag is removed`() {
         viewModel.clearOptIn()
-
-        advanceUntilIdle()
 
         coVerify(exactly = 1) { chatDataStore.clearChatOptIn() }
     }

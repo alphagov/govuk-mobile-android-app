@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="widget_title">Chat</string>
-  <string name="input_label">Type your message here</string>
+  <string name="input_label">Ask a question…</string>
   <string name="button_text">Go</string>
   <string name="sources_header">Sources</string>
   <string name="pii_error_message">Personal data has been detected in your question. Please remove it and try again.</string>
@@ -56,4 +56,9 @@
   <string name="optin_terms_and_conditions">GOV.UK Chat terms and conditions</string>
   <string name="optin_opt_in">Add GOV.UK Chat to the app</string>
   <string name="optin_opt_out">Do not add GOV.UK Chat</string>
+  <string name="test_ended_title">GOV.UK Chat early access has ended</string>
+  <string name="test_ended_para_1">Early access to GOV.UK Chat has now ended. GOV.UK Chat and your conversations are no longer available.</string>
+  <string name="test_ended_para_2">We’re working on improving this feature and it may return soon.</string>
+  <string name="test_ended_feedback">Give feedback on GOV.UK Chat</string>
+  <string name="test_ended_button">Continue</string>
 </resources>

@@ -37,6 +37,7 @@ import uk.gov.govuk.design.ui.component.CardListItem
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.ListHeadingLabel
+import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.SubheadlineRegularLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -140,7 +141,7 @@ private fun EditVisitedScreen(
                 .fillMaxWidth()
         ) {
             item {
-                SmallVerticalSpacer()
+                MediumVerticalSpacer()
             }
 
             item {

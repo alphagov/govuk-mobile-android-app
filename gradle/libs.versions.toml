@@ -42,6 +42,7 @@ browser = "1.9.0-alpha01"
 openid = "0.11.1"
 
 gov-secure-store = "0.12.1"
+animation = "1.9.1"
 
 [libraries]
 compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "composeMarkdown" }
@@ -89,6 +90,7 @@ gov-securestore = { group = "uk.gov.securestore", name = "app", version.ref = "g
 # A library that provides Android runtime permissions support for Jetpack Compose
 google-accompanist = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "googleAccompanist" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
+androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "animation" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

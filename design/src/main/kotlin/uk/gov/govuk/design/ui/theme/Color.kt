@@ -18,7 +18,9 @@ private val BlueLighter90 = Color(0xFFE8F1F8)
 private val BlueLighter95 = Color(0xFFF4F8FB)
 private val BlueDarker25 = Color(0xFF16548A)
 private val BlueDarker50 = Color(0xFF0F385C)
+private val BlueDarker65 = Color(0xFF0A2740)
 private val BlueDarker80 = Color(0xFF061625)
+private val BlueDarker80Alpha50 = Color(0x80061625)
 private val BlueDarkMode = Color(0xFF263D54)
 private val TealAccent = Color(0xFF00FFE0)
 
@@ -53,6 +55,7 @@ private val BlackAlpha75 = Color(0x4B000000)
 
 private val White = Color(0xFFFFFFFF)
 private val WhiteAlpha30 = Color(0x4DFFFFFF)
+private val WhiteAlpha50 = Color(0x80FFFFFF)
 private val WhiteAlpha75 = Color(0x4BFFFFFF)
 
 data class GovUkColourScheme(
@@ -94,7 +97,6 @@ data class GovUkColourScheme(
         val chatUserMessageText: Color,
         val chatBotMessageText: Color,
         val chatBotHeaderText: Color,
-        val chatLoadingTextDark: Color,
         val chatLoadingTextLight: Color,
         val chatLoadingIcon: Color
     )
@@ -106,6 +108,7 @@ data class GovUkColourScheme(
         val cardDefault: Color,
         val cardBlue: Color,
         val cardHighlight: Color,
+        val cardNonTappable: Color,
         val cardSelected: Color,
         val listBlue: Color,
         val listHeadingBlue: Color,
@@ -162,8 +165,6 @@ data class GovUkColourScheme(
         val radioDivider: Color,
         val chatTextFieldBorder: Color,
         val chatTextFieldBorderDisabled: Color,
-        val chatUserMessageBorder: Color,
-        val chatBotMessageBorder: Color,
         val chatDivider: Color,
         val chatIntroCardBorder: Color
     )
@@ -204,7 +205,6 @@ internal val LightColorScheme = GovUkColourScheme(
         chatUserMessageText = Black,
         chatBotMessageText = Black,
         chatBotHeaderText = Grey700,
-        chatLoadingTextDark = Grey700,
         chatLoadingTextLight = Grey300,
         chatLoadingIcon = BluePrimary
     ),
@@ -215,6 +215,7 @@ internal val LightColorScheme = GovUkColourScheme(
         cardDefault = White,
         cardBlue = BlueLighter95,
         cardHighlight = Grey400,
+        cardNonTappable = BlueLighter80,
         cardSelected = GreenLighter95,
         listBlue = BlueLighter95,
         listHeadingBlue = BlueLighter95,
@@ -249,7 +250,7 @@ internal val LightColorScheme = GovUkColourScheme(
         chatTextFieldBackground = White,
         chatButtonBackgroundDisabled = Grey100,
         chatButtonBackgroundEnabled = BluePrimary,
-        chatUserMessageBackground = BlueLighter80,
+        chatUserMessageBackground = WhiteAlpha50,
         chatBotMessageBackground = White,
         chatIntroCardBackground = BlueLighter95
     ),
@@ -270,8 +271,6 @@ internal val LightColorScheme = GovUkColourScheme(
         radioDivider = Grey300,
         chatTextFieldBorder = BluePrimary,
         chatTextFieldBorderDisabled = Grey300,
-        chatUserMessageBorder = BlueLighter80,
-        chatBotMessageBorder = BlueLighter80,
         chatDivider = BlueLighter80,
         chatIntroCardBorder = BlueLighter80
     )
@@ -311,8 +310,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatButtonIconEnabled = BlueDarker80,
         chatUserMessageText = White,
         chatBotMessageText = White,
-        chatBotHeaderText = BlueLighter25,
-        chatLoadingTextDark = BlueLighter25,
+        chatBotHeaderText = Grey300,
         chatLoadingTextLight = BlueLighter80,
         chatLoadingIcon = BluePrimary
     ),
@@ -323,6 +321,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         cardDefault = BlueDarkMode,
         cardBlue = BlueDarker50,
         cardHighlight = Grey850,
+        cardNonTappable = BlueDarker65,
         cardSelected = GreenDarker50,
         listBlue = BlueDarker80,
         listHeadingBlue = BlueDarker50,
@@ -354,11 +353,11 @@ internal val DarkColorScheme = GovUkColourScheme(
         radioSelected = GreenAccent,
         radioUnselected = Grey500,
         chatBackground = BlueDarker80,
-        chatTextFieldBackground = BlueDarker50,
+        chatTextFieldBackground = BlueDarker80,
         chatButtonBackgroundDisabled = Grey400,
         chatButtonBackgroundEnabled = BlueAccent,
-        chatUserMessageBackground = Grey850,
-        chatBotMessageBackground = BlueDarker50,
+        chatUserMessageBackground = BlueDarker80Alpha50,
+        chatBotMessageBackground = BlueDarker80,
         chatIntroCardBackground = Blue99
     ),
     strokes = Strokes(
@@ -378,8 +377,6 @@ internal val DarkColorScheme = GovUkColourScheme(
         radioDivider = Grey500,
         chatTextFieldBorder = BlueAccent,
         chatTextFieldBorderDisabled = BlueLighter25,
-        chatUserMessageBorder = Grey500,
-        chatBotMessageBorder = BlueDarker25,
         chatDivider = BlueDarker25,
         chatIntroCardBorder = BlueDarker50
     )
@@ -421,7 +418,6 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             chatUserMessageText = Color.Unspecified,
             chatBotMessageText = Color.Unspecified,
             chatBotHeaderText = Color.Unspecified,
-            chatLoadingTextDark = Color.Unspecified,
             chatLoadingTextLight = Color.Unspecified,
             chatLoadingIcon = Color.Unspecified
         ),
@@ -432,6 +428,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             cardDefault = Color.Unspecified,
             cardBlue = Color.Unspecified,
             cardHighlight = Color.Unspecified,
+            cardNonTappable = Color.Unspecified,
             cardSelected = Color.Unspecified,
             listBlue = Color.Unspecified,
             listHeadingBlue = Color.Unspecified,
@@ -487,8 +484,6 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             radioDivider = Color.Unspecified,
             chatTextFieldBorder = Color.Unspecified,
             chatTextFieldBorderDisabled = Color.Unspecified,
-            chatUserMessageBorder = Color.Unspecified,
-            chatBotMessageBorder = Color.Unspecified,
             chatDivider = Color.Unspecified,
             chatIntroCardBorder = Color.Unspecified
         )

@@ -29,6 +29,7 @@ import uk.gov.govuk.home.R
 @Composable
 internal fun HomeRoute(
     widgets: List<@Composable (Modifier) -> Unit>,
+    userChatOptInState: Boolean,
     modifier: Modifier = Modifier,
     headerWidget: (@Composable (Modifier) -> Unit)? = null,
 ) {
@@ -36,7 +37,7 @@ internal fun HomeRoute(
 
     HomeScreen(
         widgets = widgets,
-        onPageView = { viewModel.onPageView() },
+        onPageView = { viewModel.onPageView(userChatOptInState = userChatOptInState) },
         modifier = modifier,
         headerWidget = headerWidget
     )

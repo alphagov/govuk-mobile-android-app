@@ -8,6 +8,13 @@ interface ChatFeature {
 
     fun hasOptedIn(): Flow<Boolean>
 
-    suspend fun userHasNotYetChosen(): Boolean
+    suspend fun shouldDisplayOptIn(
+        isChatOptInEnabled: Boolean,
+        isChatTestActive: Boolean
+    ): Boolean
+
+    suspend fun shouldDisplayTestEnded(
+        isChatTestActive: Boolean
+    ): Boolean
 
 }

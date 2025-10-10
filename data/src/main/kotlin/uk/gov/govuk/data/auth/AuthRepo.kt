@@ -10,6 +10,8 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.ExperimentalEphemeralBrowsing
 import androidx.core.content.edit
 import androidx.fragment.app.FragmentActivity
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
@@ -24,6 +26,8 @@ import uk.gov.android.securestore.authentication.AuthenticatorPromptConfiguratio
 import uk.gov.android.securestore.error.SecureStorageError
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.BuildConfig
+import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.ERROR
+import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.SUCCESS
 import uk.gov.govuk.data.auth.model.Tokens
 import uk.gov.govuk.data.remote.AuthApi
 import javax.inject.Inject
@@ -69,12 +73,16 @@ class AuthRepo @Inject constructor(
         }
     }
 
-    suspend fun refreshTokens(
+    enum class RefreshStatus {
+        LOADING, SUCCESS, ERROR
+    }
+
+    fun refreshTokens(
         activity: FragmentActivity,
         title: String,
         subtitle: String? = null,
         description: String? = null
-    ): Boolean {
+    ): Flow<RefreshStatus> = flow {
         val result = retrieveRefreshToken(
             activity = activity,
             title = title,
@@ -82,18 +90,18 @@ class AuthRepo @Inject constructor(
             description = description
         )
 
-        return if (result is RetrievalEvent.Success) {
+        if (result is RetrievalEvent.Success) {
             val refreshToken = result.value[REFRESH_TOKEN_KEY]
-
             if (refreshToken.isNullOrBlank()) {
                 secureStore.delete(REFRESH_TOKEN_KEY)
                 analyticsClient.logException(IllegalArgumentException("refresh token is null or blank"))
-                false
+                emit(ERROR)
             } else {
-                refreshTokens(refreshToken)
+                emit(RefreshStatus.LOADING)
+                emit(if (refreshTokens(refreshToken)) SUCCESS else ERROR)
             }
         } else {
-            false
+            emit(ERROR)
         }
     }
 
@@ -240,7 +248,7 @@ class AuthRepo @Inject constructor(
         return getIdTokenProperty("email")
     }
 
-    fun getIdTokenIssueDate(): Long? {
+    fun getIdTokenIssuedAtDate(): Long? {
         return getIdTokenProperty("iat").toLongOrNull()
     }
 

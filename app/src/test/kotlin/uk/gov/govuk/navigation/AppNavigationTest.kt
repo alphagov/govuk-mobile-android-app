@@ -3,7 +3,6 @@ package uk.gov.govuk.navigation
 import android.net.Uri
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
-import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -16,6 +15,7 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.analytics.navigation.ANALYTICS_GRAPH_ROUTE
 import uk.gov.govuk.chat.ChatFeature
 import uk.gov.govuk.chat.navigation.CHAT_OPT_IN_GRAPH_ROUTE
+import uk.gov.govuk.chat.navigation.CHAT_TEST_ENDED_ROUTE
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.data.AppRepo
 import uk.gov.govuk.data.auth.AuthRepo
@@ -102,203 +102,7 @@ class AppNavigationTest {
             deeplinkHandler.handleDeeplink(navController)
         }
     }
-
-    @Test
-    fun `On next navigates to analytics consent`() {
-        every { analyticsClient.isAnalyticsConsentRequired() } returns true
-        runTest {
-            appLaunchNav.onNext(navController)
-
-            verify {
-                navController.popBackStack()
-                navController.navigate(ANALYTICS_GRAPH_ROUTE)
-            }
-        }
-    }
-
-    @Test
-    fun `On next navigates to topic selection`() {
-        every { analyticsClient.isAnalyticsConsentRequired() } returns false
-        every { flagRepo.isTopicsEnabled() } returns true
-        coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { topicsFeature.hasTopics() } returns true
-
-        runTest {
-            appLaunchNav.onNext(navController)
-
-            verify {
-                navController.popBackStack()
-                navController.navigate(TOPIC_SELECTION_GRAPH_ROUTE)
-            }
-        }
-    }
-
-    @Test
-    fun `On next navigates to notifications onboarding - topics disabled`() {
-        every { analyticsClient.isAnalyticsConsentRequired() } returns false
-        every { flagRepo.isTopicsEnabled() } returns false
-        coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { topicsFeature.hasTopics() } returns true
-        every { flagRepo.isNotificationsEnabled() } returns true
-
-        runTest {
-            appLaunchNav.onNext(navController)
-
-            verify {
-                navController.popBackStack()
-                navController.navigate(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            }
-        }
-    }
-
-    @Test
-    fun `On next navigates to notifications onboarding - topic selection completed`() {
-        every { analyticsClient.isAnalyticsConsentRequired() } returns false
-        every { flagRepo.isTopicsEnabled() } returns true
-        coEvery { appRepo.isTopicSelectionCompleted() } returns true
-        coEvery { topicsFeature.hasTopics() } returns true
-        every { flagRepo.isNotificationsEnabled() } returns true
-
-        runTest {
-            appLaunchNav.onNext(navController)
-
-            verify {
-                navController.popBackStack()
-                navController.navigate(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            }
-        }
-    }
-
-    @Test
-    fun `On next navigates to notifications onboarding - no topics`() {
-        every { analyticsClient.isAnalyticsConsentRequired() } returns false
-        every { flagRepo.isTopicsEnabled() } returns true
-        coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { topicsFeature.hasTopics() } returns false
-        every { flagRepo.isNotificationsEnabled() } returns true
-
-        runTest {
-            appLaunchNav.onNext(navController)
-
-            verify {
-                navController.popBackStack()
-                navController.navigate(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE)
-            }
-        }
-    }
-
-    @Test
-    fun `On next navigates to notifications consent - no topics`() {
-        every { analyticsClient.isAnalyticsConsentRequired() } returns false
-        every { flagRepo.isTopicsEnabled() } returns true
-        coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { topicsFeature.hasTopics() } returns false
-        every { flagRepo.isNotificationsEnabled() } returns true
-        coEvery { notificationsRepo.isNotificationsOnboardingCompleted() } returns true
-        every { notificationsClient.permissionGranted(any()) } returns true
-        every { notificationsClient.consentGiven() } returns false
-
-        runTest {
-            appLaunchNav.onNext(navController)
-
-            verify {
-                navController.popBackStack()
-                navController.navigate(NOTIFICATIONS_CONSENT_ON_NEXT_ROUTE)
-            }
-        }
-    }
-
-    @Test
-    fun `On next navigates to home - notifications disabled`() {
-        every { analyticsClient.isAnalyticsConsentRequired() } returns false
-        every { flagRepo.isTopicsEnabled() } returns true
-        coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { topicsFeature.hasTopics() } returns false
-        every { flagRepo.isNotificationsEnabled() } returns false
-
-        runTest {
-            appLaunchNav.onNext(navController)
-
-            verify {
-                navController.popBackStack()
-                navController.navigate(HOME_GRAPH_ROUTE)
-                deeplinkHandler.handleDeeplink(navController)
-            }
-        }
-    }
-
-    @Test
-    fun `On next navigates to home - notifications onboarding completed`() {
-        every { analyticsClient.isAnalyticsConsentRequired() } returns false
-        every { flagRepo.isTopicsEnabled() } returns true
-        coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { topicsFeature.hasTopics() } returns false
-        every { flagRepo.isNotificationsEnabled() } returns true
-
-        runTest {
-            appLaunchNav.onNotificationsOnboardingCompleted(navController)
-
-            clearAllMocks()
-
-            appLaunchNav.onNext(navController)
-
-            verify {
-                navController.popBackStack()
-                navController.navigate(HOME_GRAPH_ROUTE)
-                deeplinkHandler.handleDeeplink(navController)
-            }
-        }
-    }
-
-    @Test
-    fun `On next navigates to home - notifications onboarding completed, notifications permissions not granted`() {
-        every { analyticsClient.isAnalyticsConsentRequired() } returns false
-        every { flagRepo.isTopicsEnabled() } returns true
-        coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { topicsFeature.hasTopics() } returns false
-        every { flagRepo.isNotificationsEnabled() } returns true
-        every { notificationsClient.permissionGranted(any()) } returns false
-
-        runTest {
-            appLaunchNav.onNotificationsOnboardingCompleted(navController)
-
-            clearAllMocks()
-
-            appLaunchNav.onNext(navController)
-
-            verify {
-                navController.popBackStack()
-                navController.navigate(HOME_GRAPH_ROUTE)
-                deeplinkHandler.handleDeeplink(navController)
-            }
-        }
-    }
-
-    @Test
-    fun `On next navigates to home - notifications onboarding completed, notifications permissions granted, consent given`() {
-        every { analyticsClient.isAnalyticsConsentRequired() } returns false
-        every { flagRepo.isTopicsEnabled() } returns true
-        coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { topicsFeature.hasTopics() } returns false
-        every { flagRepo.isNotificationsEnabled() } returns true
-        every { notificationsClient.permissionGranted(any()) } returns true
-        every { notificationsClient.consentGiven() } returns true
-
-        runTest {
-            appLaunchNav.onNotificationsOnboardingCompleted(navController)
-
-            clearAllMocks()
-
-            appLaunchNav.onNext(navController)
-
-            verify {
-                navController.popBackStack()
-                navController.navigate(HOME_GRAPH_ROUTE)
-                deeplinkHandler.handleDeeplink(navController)
-            }
-        }
-    }
-
+    
     @Test
     fun `On notifications onboarding completed navigates to home`() {
         every { analyticsClient.isAnalyticsConsentRequired() } returns false
@@ -491,109 +295,259 @@ class AppNavigationTest {
             navController.navigate(LOGIN_GRAPH_ROUTE, any<NavOptionsBuilder.() -> Unit>())
         }
     }
+    
+    // --- onNext ---
+
+    // --- Analytics ---
 
     @Test
-    fun `On next navigates to chat opt in, when all remote flags are true and the user has not yet chosen to opt in or opt out`() = runTest {
-        every { analyticsClient.isAnalyticsConsentRequired() } returns false
-        every { flagRepo.isTopicsEnabled() } returns true
-        coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { topicsFeature.hasTopics() } returns false
-        every { flagRepo.isNotificationsEnabled() } returns false
-
-        every { flagRepo.isChatEnabled() } returns true
-        every { flagRepo.isChatOptInEnabled() } returns true
-        every { flagRepo.isChatTestActiveEnabled() } returns true
-        coEvery { chatFeature.userHasNotYetChosen() } returns true
+    fun `navigates to Analytics when consent required`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns true
 
         appLaunchNav.onNext(navController)
 
-        verify {
-            navController.popBackStack()
-            navController.navigate(CHAT_OPT_IN_GRAPH_ROUTE)
-        }
+        verify { navController.navigate(ANALYTICS_GRAPH_ROUTE) }
     }
 
     @Test
-    fun `On next navigates to home, when all remote flags are true and the user has chosen to opt in or opt out`() = runTest {
+    fun `falls through to Home when consent not required`() = runTest {
         every { analyticsClient.isAnalyticsConsentRequired() } returns false
-        every { flagRepo.isTopicsEnabled() } returns true
-        coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { topicsFeature.hasTopics() } returns false
+        every { flagRepo.isTopicsEnabled() } returns false // force skip topics too
         every { flagRepo.isNotificationsEnabled() } returns false
-
-        every { flagRepo.isChatEnabled() } returns true
-        every { flagRepo.isChatOptInEnabled() } returns true
-        every { flagRepo.isChatTestActiveEnabled() } returns true
-        coEvery { chatFeature.userHasNotYetChosen() } returns false
-
-        appLaunchNav.onNext(navController)
-
-        verify {
-            navController.popBackStack()
-            navController.navigate(HOME_GRAPH_ROUTE)
-        }
-    }
-
-    @Test
-    fun `On next navigates to home, when all remote flags are true except isChatTestActiveEnabled and the user has not yet chosen to opt in or opt out`() = runTest {
-        every { analyticsClient.isAnalyticsConsentRequired() } returns false
-        every { flagRepo.isTopicsEnabled() } returns true
-        coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { topicsFeature.hasTopics() } returns false
-        every { flagRepo.isNotificationsEnabled() } returns false
-
-        every { flagRepo.isChatEnabled() } returns true
-        every { flagRepo.isChatOptInEnabled() } returns true
-        every { flagRepo.isChatTestActiveEnabled() } returns false
-        coEvery { chatFeature.userHasNotYetChosen() } returns true
-
-        appLaunchNav.onNext(navController)
-
-        verify {
-            navController.popBackStack()
-            navController.navigate(HOME_GRAPH_ROUTE)
-        }
-    }
-
-    @Test
-    fun `On next navigates to home, when all remote flags are true except isChatOptInEnabled and the user has not yet chosen to opt in or opt out`() = runTest {
-        every { analyticsClient.isAnalyticsConsentRequired() } returns false
-        every { flagRepo.isTopicsEnabled() } returns true
-        coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { topicsFeature.hasTopics() } returns false
-        every { flagRepo.isNotificationsEnabled() } returns false
-
-        every { flagRepo.isChatEnabled() } returns true
-        every { flagRepo.isChatOptInEnabled() } returns false
-        every { flagRepo.isChatTestActiveEnabled() } returns true
-        coEvery { chatFeature.userHasNotYetChosen() } returns true
-
-        appLaunchNav.onNext(navController)
-
-        verify {
-            navController.popBackStack()
-            navController.navigate(HOME_GRAPH_ROUTE)
-        }
-    }
-
-    @Test
-    fun `On next navigates to home, when all remote flags are true except isChatEnabled and the user has not yet chosen to opt in or opt out`() = runTest {
-        every { analyticsClient.isAnalyticsConsentRequired() } returns false
-        every { flagRepo.isTopicsEnabled() } returns true
-        coEvery { appRepo.isTopicSelectionCompleted() } returns false
-        coEvery { topicsFeature.hasTopics() } returns false
-        every { flagRepo.isNotificationsEnabled() } returns false
-
         every { flagRepo.isChatEnabled() } returns false
-        every { flagRepo.isChatOptInEnabled() } returns true
-        every { flagRepo.isChatTestActiveEnabled() } returns true
-        coEvery { chatFeature.userHasNotYetChosen() } returns true
+        coEvery { chatFeature.shouldDisplayTestEnded(any()) } returns false
 
         appLaunchNav.onNext(navController)
 
-        verify {
-            navController.popBackStack()
-            navController.navigate(HOME_GRAPH_ROUTE)
-        }
+        verify { navController.navigate(HOME_GRAPH_ROUTE) }
+        verify { deeplinkHandler.handleDeeplink(navController) }
+    }
+
+    // --- Topics ---
+
+    @Test
+    fun `navigates to Topic Selection when all conditions true`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns true
+        coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        coEvery { topicsFeature.hasTopics() } returns true
+
+        appLaunchNav.onNext(navController)
+
+        verify { navController.navigate(TOPIC_SELECTION_GRAPH_ROUTE) }
+    }
+
+    @Test
+    fun `falls through to Home when Topics not enabled`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns false
+        every { flagRepo.isChatEnabled() } returns false
+        coEvery { chatFeature.shouldDisplayTestEnded(any()) } returns false
+
+        appLaunchNav.onNext(navController)
+
+        verify { navController.navigate(HOME_GRAPH_ROUTE) }
+        verify { deeplinkHandler.handleDeeplink(navController) }
+    }
+
+    @Test
+    fun `falls through to Home when Topic Selection already completed`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns true
+        coEvery { appRepo.isTopicSelectionCompleted() } returns true
+        every { flagRepo.isNotificationsEnabled() } returns false
+        every { flagRepo.isChatEnabled() } returns false
+        coEvery { chatFeature.shouldDisplayTestEnded(any()) } returns false
+
+        appLaunchNav.onNext(navController)
+
+        verify { navController.navigate(HOME_GRAPH_ROUTE) }
+        verify { deeplinkHandler.handleDeeplink(navController) }
+    }
+
+    @Test
+    fun `falls through to Home when no Topics available`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns true
+        coEvery { appRepo.isTopicSelectionCompleted() } returns false
+        coEvery { topicsFeature.hasTopics() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns false
+        every { flagRepo.isChatEnabled() } returns false
+        coEvery { chatFeature.shouldDisplayTestEnded(any()) } returns false
+
+        appLaunchNav.onNext(navController)
+
+        verify { navController.navigate(HOME_GRAPH_ROUTE) }
+        verify { deeplinkHandler.handleDeeplink(navController) }
+    }
+
+    // --- Notifications Onboarding ---
+
+    @Test
+    fun `navigates to Notifications Onboarding when enabled and not completed`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns true
+        coEvery { notificationsRepo.isNotificationsOnboardingCompleted() } returns false
+
+        appLaunchNav.onNext(navController)
+
+        verify { navController.navigate(NOTIFICATIONS_ONBOARDING_GRAPH_ROUTE) }
+    }
+
+    @Test
+    fun `falls through to Home when Notifications disabled`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns false
+        every { flagRepo.isChatEnabled() } returns false
+        coEvery { chatFeature.shouldDisplayTestEnded(any()) } returns false
+
+        appLaunchNav.onNext(navController)
+
+        verify { navController.navigate(HOME_GRAPH_ROUTE) }
+        verify { deeplinkHandler.handleDeeplink(navController) }
+    }
+
+    @Test
+    fun `falls through to Home when Notifications onboarding already completed`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns true
+        coEvery { notificationsRepo.isNotificationsOnboardingCompleted() } returns true
+        every { flagRepo.isChatEnabled() } returns false
+        coEvery { chatFeature.shouldDisplayTestEnded(any()) } returns false
+
+        appLaunchNav.onNext(navController)
+
+        verify { navController.navigate(HOME_GRAPH_ROUTE) }
+        verify { deeplinkHandler.handleDeeplink(navController) }
+    }
+
+    // --- Notifications Consent ---
+
+    @Test
+    fun `navigates to Notifications Consent when all conditions true`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns true
+        coEvery { notificationsRepo.isNotificationsOnboardingCompleted() } returns true
+        every { notificationsClient.permissionGranted(any()) } returns true
+        every { notificationsClient.consentGiven() } returns false
+
+        appLaunchNav.onNext(navController)
+
+        verify { navController.navigate(NOTIFICATIONS_CONSENT_ON_NEXT_ROUTE) }
+    }
+
+    @Test
+    fun `falls through to Home when Notifications consent already given`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns true
+        coEvery { notificationsRepo.isNotificationsOnboardingCompleted() } returns true
+        every { notificationsClient.permissionGranted(any()) } returns true
+        every { notificationsClient.consentGiven() } returns true
+        every { flagRepo.isChatEnabled() } returns false
+        coEvery { chatFeature.shouldDisplayTestEnded(any()) } returns false
+
+        appLaunchNav.onNext(navController)
+
+        verify { navController.navigate(HOME_GRAPH_ROUTE) }
+        verify { deeplinkHandler.handleDeeplink(navController) }
+    }
+
+    @Test
+    fun `falls through to Home when Notifications permission not granted`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns true
+        coEvery { notificationsRepo.isNotificationsOnboardingCompleted() } returns true
+        every { notificationsClient.permissionGranted(any()) } returns false
+        every { flagRepo.isChatEnabled() } returns false
+        coEvery { chatFeature.shouldDisplayTestEnded(any()) } returns false
+
+        appLaunchNav.onNext(navController)
+
+        verify { navController.navigate(HOME_GRAPH_ROUTE) }
+        verify { deeplinkHandler.handleDeeplink(navController) }
+    }
+
+    // --- Chat Opt-in ---
+
+    @Test
+    fun `navigates to Chat Opt-in when enabled and should display`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns false
+        every { flagRepo.isChatEnabled() } returns true
+        every { flagRepo.isChatOptInEnabled() } returns true
+        every { flagRepo.isChatTestActiveEnabled() } returns true
+        coEvery { chatFeature.shouldDisplayOptIn(true, true) } returns true
+
+        appLaunchNav.onNext(navController)
+
+        verify { navController.navigate(CHAT_OPT_IN_GRAPH_ROUTE) }
+    }
+
+    @Test
+    fun `falls through to Home when Chat disabled`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns false
+        every { flagRepo.isChatEnabled() } returns false
+        coEvery { chatFeature.shouldDisplayTestEnded(any()) } returns false
+
+        appLaunchNav.onNext(navController)
+
+        verify { navController.navigate(HOME_GRAPH_ROUTE) }
+        verify { deeplinkHandler.handleDeeplink(navController) }
+    }
+
+    @Test
+    fun `falls through to Home when Chat Opt-in returns false`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns false
+        every { flagRepo.isChatEnabled() } returns true
+        every { flagRepo.isChatOptInEnabled() } returns true
+        every { flagRepo.isChatTestActiveEnabled() } returns true
+        coEvery { chatFeature.shouldDisplayOptIn(any(), any()) } returns false
+        coEvery { chatFeature.shouldDisplayTestEnded(any()) } returns false
+
+        appLaunchNav.onNext(navController)
+
+        verify { navController.navigate(HOME_GRAPH_ROUTE) }
+        verify { deeplinkHandler.handleDeeplink(navController) }
+    }
+
+    // --- Chat Test Ended ---
+
+    @Test
+    fun `navigates to Chat Test Ended when condition true`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns false
+        every { flagRepo.isChatEnabled() } returns false
+        coEvery { chatFeature.shouldDisplayTestEnded(any()) } returns true
+
+        appLaunchNav.onNext(navController)
+
+        verify { navController.navigate(CHAT_TEST_ENDED_ROUTE) }
+    }
+
+    @Test
+    fun `falls through to Home when Chat Test Ended condition false`() = runTest {
+        every { analyticsClient.isAnalyticsConsentRequired() } returns false
+        every { flagRepo.isTopicsEnabled() } returns false
+        every { flagRepo.isNotificationsEnabled() } returns false
+        every { flagRepo.isChatEnabled() } returns false
+        coEvery { chatFeature.shouldDisplayTestEnded(any()) } returns false
+
+        appLaunchNav.onNext(navController)
+
+        verify { navController.navigate(HOME_GRAPH_ROUTE) }
+        verify { deeplinkHandler.handleDeeplink(navController) }
     }
 }

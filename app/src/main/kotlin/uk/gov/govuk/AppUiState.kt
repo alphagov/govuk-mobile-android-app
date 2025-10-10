@@ -4,7 +4,8 @@ internal sealed class AppUiState {
     internal class Default(
         val shouldDisplayRecommendUpdate: Boolean = false,
         val shouldShowExternalBrowser: Boolean = false,
-        val isChatEnabled: Boolean = false
+        val isChatEnabled: Boolean = false,
+        val userChatOptInState: Boolean = false
     ) : AppUiState()
 
     internal data object Loading : AppUiState()

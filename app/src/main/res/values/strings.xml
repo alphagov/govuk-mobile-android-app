@@ -36,6 +36,7 @@
     <string name="login_description">Government information and services for you</string>
     <string name="login_continue_button">Continue</string>
     <string name="login_back_and_try_again_button">Go back and try again</string>
+    <string name="login_loading_accessibility_text">Signing you in</string>
 
     <string name="login_success_title">You have successfully signed in</string>
 

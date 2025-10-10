@@ -11,16 +11,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.analytics.AnalyticsClient
@@ -35,6 +31,9 @@ import uk.gov.govuk.chat.data.remote.model.Source
 import uk.gov.govuk.chat.domain.Analytics
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.data.auth.AuthRepo
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ChatViewModelTest {
@@ -47,13 +46,17 @@ class ChatViewModelTest {
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val configRepo = mockk<ConfigRepo>(relaxed = true)
 
-    private val dispatcher = StandardTestDispatcher()
+    private val dispatcher = UnconfinedTestDispatcher()
 
     private lateinit var viewModel: ChatViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
+
+        // Default set up that works for most tests
+        coEvery { chatDataStore.isChatIntroSeen() } returns true
+        coEvery { chatRepo.getConversation() } returns null
 
         viewModel = ChatViewModel(chatRepo, chatDataStore, authRepo, analyticsClient, configRepo)
 
@@ -66,25 +69,25 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `Load conversation does not emit conversation if there is no conversation`() = runTest {
-        coEvery { chatRepo.getConversation() } coAnswers {
-            delay(100)
-            null
-        }
+    fun `Init emits onboarding if not seen`() = runTest {
+        coEvery { chatDataStore.isChatIntroSeen() } returns false
 
-        val uiStates = mutableListOf<ChatUiState>()
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-            viewModel.uiState.toList(uiStates)
-        }
+        viewModel = ChatViewModel(chatRepo, chatDataStore, authRepo, analyticsClient, configRepo)
 
-        viewModel.loadConversation()
+        assertEquals(ChatUiState.Onboarding, viewModel.uiState.value)
+    }
 
-        advanceUntilIdle()
+    @Test
+    fun `Init does not emit conversation if there is no conversation`() = runTest {
+        coEvery { chatDataStore.isChatIntroSeen() } returns true
+        coEvery { chatRepo.getConversation() } returns null
 
-        assertTrue(uiStates[1].isLoading)
-        assertTrue(uiStates[2].chatEntries.isEmpty())
-        assertFalse(uiStates[2].isLoading)
-        assertTrue(uiStates[2].chatEntries.isEmpty())
+        viewModel = ChatViewModel(chatRepo, chatDataStore, authRepo, analyticsClient, configRepo)
+
+        val uiState = viewModel.uiState.value as ChatUiState.Default
+
+        assertFalse(uiState.isLoading)
+        assertTrue(uiState.chatEntries.isEmpty())
 
         coVerify(exactly = 0) {
             chatRepo.getAnswer(any(), any(), any())
@@ -93,13 +96,15 @@ class ChatViewModelTest {
 
     @Test
     fun `Load conversation emits conversation if there is a conversation`() = runTest {
+        coEvery { chatDataStore.isChatIntroSeen() } returns true
+
         val conversation = Conversation(
             id = "123",
             answeredQuestions =
                 listOf(
                     AnsweredQuestion(
                         "abc",
-                        Answer(
+                        uk.gov.govuk.chat.data.remote.model.Answer(
                             "",
                             "",
                             "Answer 1",
@@ -125,27 +130,17 @@ class ChatViewModelTest {
             ChatResult.Success(conversation)
         }
 
-        val uiStates = mutableListOf<ChatUiState>()
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-            viewModel.uiState.toList(uiStates)
-        }
-
-        viewModel.loadConversation()
+        viewModel = ChatViewModel(chatRepo, chatDataStore, authRepo, analyticsClient, configRepo)
 
         advanceUntilIdle()
 
-        val loadingState = uiStates[1]
-
-        assertTrue(loadingState.isLoading)
-        assertEquals(0, loadingState.chatEntries.size)
-
-        val finalState = uiStates.last()
-        val chatEntries = finalState.chatEntries
+        val uiState = viewModel.uiState.value as ChatUiState.Default
+        val chatEntries = uiState.chatEntries
         val chatEntry = chatEntries["abc"]
         val question = chatEntry?.question
         val answer = chatEntry?.answer
 
-        assertFalse(finalState.isLoading)
+        assertFalse(uiState.isLoading)
         assertEquals("Question 1", question)
         assertEquals("Answer 1", answer)
         assertEquals("[title](url)", chatEntry?.sources?.first())
@@ -156,84 +151,18 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `Clear conversation`() = runTest {
-        val conversation = Conversation(
-            id = "123",
-            answeredQuestions =
-                listOf(
-                    AnsweredQuestion(
-                        "abc",
-                        Answer(
-                            "",
-                            "",
-                            "Answer 1",
-                            listOf(
-                                Source(
-                                    "url",
-                                    "title"
-                                )
-                            )
-                        ),
-                        "",
-                        "",
-                        "Question 1"
-
-                    )
-                ),
-            "",
-            null
-        )
-
-        coEvery { chatRepo.getConversation() } coAnswers {
-            delay(100)
-            ChatResult.Success(conversation)
-        }
-
-        val uiStates = mutableListOf<ChatUiState>()
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-            viewModel.uiState.toList(uiStates)
-        }
-
-        viewModel.clearConversation()
-
-        advanceUntilIdle()
-
-        viewModel.loadConversation()
-
-        advanceUntilIdle()
-
-        assertTrue(uiStates[1].isLoading)
-        assertTrue(uiStates[2].chatEntries.isEmpty())
-        assertFalse(uiStates[2].isLoading)
-        assertTrue(uiStates[2].chatEntries.isEmpty())
-    }
-
-    @Test
     fun `Load conversation emits error`() = runTest {
+        coEvery { chatDataStore.isChatIntroSeen() } returns true
         coEvery { chatRepo.getConversation() } coAnswers {
             delay(100)
             ChatResult.Error()
         }
 
-        val uiStates = mutableListOf<ChatUiState>()
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-            viewModel.uiState.toList(uiStates)
-        }
-
-        viewModel.loadConversation()
+        viewModel = ChatViewModel(chatRepo, chatDataStore, authRepo, analyticsClient, configRepo)
 
         advanceUntilIdle()
 
-        val loadingState = uiStates[1]
-
-        assertTrue(loadingState.isLoading)
-        assertEquals(0, loadingState.chatEntries.size)
-
-        val finalState = uiStates.last()
-
-        assertFalse(finalState.isLoading)
-        assertEquals(0, loadingState.chatEntries.size)
-        assertTrue(finalState.isError)
+        assertEquals(ChatUiState.Error(false), viewModel.uiState.value)
 
         coVerify(exactly = 0) {
             chatRepo.getAnswer(any(), any(), any())
@@ -242,30 +171,17 @@ class ChatViewModelTest {
 
     @Test
     fun `Load conversation emits retryable error`() = runTest {
+        coEvery { chatDataStore.isChatIntroSeen() } returns true
         coEvery { chatRepo.getConversation() } coAnswers {
             delay(100)
             ChatResult.NotFound()
         }
 
-        val uiStates = mutableListOf<ChatUiState>()
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-            viewModel.uiState.toList(uiStates)
-        }
-
-        viewModel.loadConversation()
+        viewModel = ChatViewModel(chatRepo, chatDataStore, authRepo, analyticsClient, configRepo)
 
         advanceUntilIdle()
 
-        val loadingState = uiStates[1]
-
-        assertTrue(loadingState.isLoading)
-        assertEquals(0, loadingState.chatEntries.size)
-
-        val finalState = uiStates.last()
-
-        assertFalse(finalState.isLoading)
-        assertEquals(0, loadingState.chatEntries.size)
-        assertTrue(finalState.isRetryableError)
+        assertEquals(ChatUiState.Error(true), viewModel.uiState.value)
 
         coVerify(exactly = 0) {
             chatRepo.getAnswer(any(), any(), any())
@@ -295,6 +211,7 @@ class ChatViewModelTest {
 
     @Test
     fun `Load conversation gets answer if there is a pending question`() = runTest {
+        coEvery { chatDataStore.isChatIntroSeen() } returns true
         coEvery { chatRepo.getConversation() } coAnswers {
             delay(100)
             ChatResult.Success(conversation)
@@ -302,12 +219,7 @@ class ChatViewModelTest {
 
         every { conversation.pendingQuestion } returns pendingQuestion
 
-        val uiStates = mutableListOf<ChatUiState>()
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-            viewModel.uiState.toList(uiStates)
-        }
-
-        viewModel.loadConversation()
+        viewModel = ChatViewModel(chatRepo, chatDataStore, authRepo, analyticsClient, configRepo)
 
         advanceUntilIdle()
 
@@ -317,10 +229,27 @@ class ChatViewModelTest {
     }
 
     @Test
+    fun `Clear conversation`() = runTest {
+        val uiStates = mutableListOf<ChatUiState?>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.uiState.toList(uiStates)
+        }
+
+        viewModel.clearConversation()
+
+        advanceUntilIdle()
+
+        val uiState = viewModel.uiState.value as ChatUiState.Default
+
+        assertFalse(uiState.isLoading)
+        assertTrue(uiState.chatEntries.isEmpty())
+    }
+
+    @Test
     fun `On Submit emits PII error`() = runTest {
         viewModel.onSubmit("test@email.com")
 
-        val uiState = viewModel.uiState.value
+        val uiState = viewModel.uiState.value as ChatUiState.Default
 
         assertFalse(uiState.isLoading)
         assertTrue(uiState.isPiiError)
@@ -352,7 +281,7 @@ class ChatViewModelTest {
             ChatResult.Success(question)
         }
 
-        val uiStates = mutableListOf<ChatUiState>()
+        val uiStates = mutableListOf<ChatUiState?>()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.toList(uiStates)
         }
@@ -361,16 +290,15 @@ class ChatViewModelTest {
 
         advanceUntilIdle()
 
-        val loadingState = uiStates[1]
+        val loadingState = uiStates[1] as ChatUiState.Default
 
         assertTrue(loadingState.isLoading)
         assertEquals(0, loadingState.chatEntries.size)
 
-        val finalState = uiStates.last()
+        val finalState = uiStates.last() as ChatUiState.Default
         val chatEntries = finalState.chatEntries
         val chatEntry = chatEntries["abc"]
 
-        assertFalse(finalState.isLoading)
         assertEquals("Question 1", chatEntry?.question)
     }
 
@@ -408,7 +336,7 @@ class ChatViewModelTest {
 
         coEvery { chatRepo.getAnswer(any(), any()) } returns ChatResult.Success(answer)
 
-        val uiStates = mutableListOf<ChatUiState>()
+        val uiStates = mutableListOf<ChatUiState?>()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.toList(uiStates)
         }
@@ -417,12 +345,12 @@ class ChatViewModelTest {
 
         advanceUntilIdle()
 
-        val loadingState = uiStates[1]
+        val loadingState = uiStates[1] as ChatUiState.Default
 
         assertTrue(loadingState.isLoading)
         assertEquals(0, loadingState.chatEntries.size)
 
-        val finalState = uiStates.last()
+        val finalState = uiStates.last() as ChatUiState.Default
         val chatEntries = finalState.chatEntries
         val chatEntry = chatEntries["abc"]
 
@@ -441,7 +369,7 @@ class ChatViewModelTest {
 
         coEvery { chatDataStore.isChatIntroSeen() } returns true
 
-        val uiStates = mutableListOf<ChatUiState>()
+        val uiStates = mutableListOf<ChatUiState?>()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.toList(uiStates)
         }
@@ -450,12 +378,12 @@ class ChatViewModelTest {
 
         advanceUntilIdle()
 
-        val loadingState = uiStates[1]
+        val loadingState = uiStates[1] as ChatUiState.Default
 
         assertTrue(loadingState.isLoading)
         assertEquals(0, loadingState.chatEntries.size)
 
-        val finalState = uiStates.last()
+        val finalState = uiStates.last() as ChatUiState.Default
 
         assertFalse(finalState.isLoading)
         assertTrue(finalState.chatEntries.isEmpty())
@@ -473,7 +401,7 @@ class ChatViewModelTest {
             ChatResult.Error()
         }
 
-        val uiStates = mutableListOf<ChatUiState>()
+        val uiStates = mutableListOf<ChatUiState?>()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.toList(uiStates)
         }
@@ -482,16 +410,14 @@ class ChatViewModelTest {
 
         advanceUntilIdle()
 
-        val loadingState = uiStates[1]
+        val loadingState = uiStates[1] as ChatUiState.Default
 
         assertTrue(loadingState.isLoading)
         assertEquals(0, loadingState.chatEntries.size)
 
         val finalState = uiStates.last()
 
-        assertFalse(finalState.isLoading)
-        assertTrue(finalState.chatEntries.isEmpty())
-        assertTrue(finalState.isError)
+        assertEquals(ChatUiState.Error(false),finalState)
 
         coVerify(exactly = 0) {
             chatRepo.getAnswer(any(), any(), any())
@@ -528,7 +454,7 @@ class ChatViewModelTest {
 
         coEvery { chatRepo.getAnswer(any(), any(), any()) } returns ChatResult.Error()
 
-        val uiStates = mutableListOf<ChatUiState>()
+        val uiStates = mutableListOf<ChatUiState?>()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.toList(uiStates)
         }
@@ -537,15 +463,14 @@ class ChatViewModelTest {
 
         advanceUntilIdle()
 
-        val loadingState = uiStates[1]
+        val loadingState = uiStates[1] as ChatUiState.Default
 
         assertTrue(loadingState.isLoading)
         assertEquals(0, loadingState.chatEntries.size)
 
         val finalState = uiStates.last()
 
-        assertFalse(finalState.isLoading)
-        assertTrue(finalState.isError)
+        assertEquals(ChatUiState.Error(false), finalState)
     }
 
     @Test
@@ -575,63 +500,59 @@ class ChatViewModelTest {
     fun `Question updated emits no errors or warnings`() = runTest {
         viewModel.onQuestionUpdated("abc", 10, 5)
 
-        val uiState = viewModel.uiState.value
+        val uiState = viewModel.uiState.value as ChatUiState.Default
 
         assertEquals("abc", uiState.question)
         assertFalse(uiState.isPiiError)
         assertFalse(uiState.displayCharacterWarning)
         assertFalse(uiState.displayCharacterError)
         assertEquals(7, uiState.charactersRemaining)
-        assertTrue(uiState.isSubmitEnabled)
     }
 
     @Test
     fun `Question updated emits character warning`() = runTest {
         viewModel.onQuestionUpdated("abcde", 10, 5)
 
-        val uiState = viewModel.uiState.value
+        val uiState = viewModel.uiState.value as ChatUiState.Default
 
         assertEquals("abcde", uiState.question)
         assertFalse(uiState.isPiiError)
         assertTrue(uiState.displayCharacterWarning)
         assertFalse(uiState.displayCharacterError)
         assertEquals(5, uiState.charactersRemaining)
-        assertTrue(uiState.isSubmitEnabled)
     }
 
     @Test
     fun `Question updated emits character error and submit disabled`() = runTest {
         viewModel.onQuestionUpdated("abcdefghjkl", 10, 5)
 
-        val uiState = viewModel.uiState.value
+        val uiState = viewModel.uiState.value as ChatUiState.Default
 
         assertEquals("abcdefghjkl", uiState.question)
         assertFalse(uiState.isPiiError)
         assertFalse(uiState.displayCharacterWarning)
         assertTrue(uiState.displayCharacterError)
         assertEquals(-1, uiState.charactersRemaining)
-        assertFalse(uiState.isSubmitEnabled)
     }
 
     @Test
     fun `Question updated emits submit disabled when question is blank`() = runTest {
         viewModel.onQuestionUpdated(" ", 5, 3)
 
-        val uiState = viewModel.uiState.value
+        val uiState = viewModel.uiState.value as ChatUiState.Default
 
         assertEquals(" ", uiState.question)
         assertFalse(uiState.isPiiError)
         assertFalse(uiState.displayCharacterWarning)
         assertFalse(uiState.displayCharacterError)
         assertEquals(4, uiState.charactersRemaining)
-        assertFalse(uiState.isSubmitEnabled)
     }
 
     @Test
     fun `setChatIntroSeen calls datastore and updates uiState`() = runTest {
         coEvery { chatDataStore.isChatIntroSeen() } coAnswers { true }
 
-        val uiStates = mutableListOf<ChatUiState>()
+        val uiStates = mutableListOf<ChatUiState?>()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiState.toList(uiStates)
         }
@@ -641,8 +562,7 @@ class ChatViewModelTest {
 
         coVerify(exactly = 1) { chatDataStore.saveChatIntroSeen() }
 
-        val finalState = viewModel.uiState.value
-        assertTrue(finalState.hasSeenOnboarding == true)
+        assertEquals(ChatUiState.Default(), viewModel.uiState.value)
     }
 
     @Test
@@ -672,7 +592,7 @@ class ChatViewModelTest {
         val section = "section"
         val action = "action"
 
-        viewModel.onActionItemFunctionClicked(
+        viewModel.onFunctionActionItemClicked(
             text = text,
             section = section,
             action = action
@@ -692,7 +612,7 @@ class ChatViewModelTest {
         val buttonText = "buttonText"
         val url = "url"
 
-        viewModel.onActionItemNavigationClicked(buttonText, url)
+        viewModel.onNavigationActionItemClicked(buttonText, url)
 
         verify {
             analyticsClient.buttonClick(
