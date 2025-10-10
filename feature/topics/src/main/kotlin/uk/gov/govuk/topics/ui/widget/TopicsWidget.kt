@@ -8,12 +8,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import uk.gov.govuk.design.ui.component.CardListItem
 import uk.gov.govuk.design.ui.component.ConnectedButton
 import uk.gov.govuk.design.ui.component.ConnectedButtonGroup
@@ -63,6 +66,7 @@ private fun TopicsWidgetContent(
     }
 
     var activeButtonState by rememberSaveable { mutableStateOf( ConnectedButton.FIRST) }
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(uiState.yourTopics.isEmpty()) {
         if (uiState.yourTopics.isEmpty()) {
@@ -101,16 +105,14 @@ private fun TopicsWidgetContent(
                         firstText = "Your topics", // Todo - extract string
                         secondText = "All topics", // Todo - extract string
                         onActiveStateChange = { activeButton ->
-                            activeButtonState = when (activeButton) {
-                                ConnectedButton.FIRST -> {
-                                    if (uiState.yourTopics.isNotEmpty()) {
-                                        ConnectedButton.FIRST
-                                    } else {
-                                        onEditClick("") // Todo - what should text be???
-                                        ConnectedButton.SECOND
-                                    }
+                            coroutineScope.launch {
+                                if (activeButton == ConnectedButton.FIRST &&
+                                    uiState.yourTopics.isEmpty()) {
+                                    onEditClick("") // Todo - what should text be???
+                                    delay(500)
                                 }
-                                ConnectedButton.SECOND -> ConnectedButton.SECOND
+
+                                activeButtonState = activeButton
                             }
                         },
                         activeButton = activeButtonState
