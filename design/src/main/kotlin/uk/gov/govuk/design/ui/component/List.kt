@@ -156,7 +156,7 @@ fun ExternalLinkListItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .semantics { contentDescription = "$title $opensInWebBrowser $subtitle" }
+                .semantics { contentDescription = "$title. $opensInWebBrowser. $subtitle" }
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 BodyRegularLabel(
