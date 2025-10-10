@@ -57,6 +57,7 @@ private fun TopicsWidgetContent(
     onEditClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Todo - do we need to send every time the user toggles between your topics and all topics???
     LaunchedEffect(Unit) {
         onPageView(uiState.yourTopics)
     }
@@ -132,10 +133,11 @@ private fun TopicsWidgetContent(
                     title = topic.title,
                     icon = topic.icon,
                     onClick = {
+                        // Todo - do we need to identify your topics vs all topics for analytics???
                         onTopicClick(
                             topic.ref,
                             topic.title,
-                            uiState.yourTopics.indexOf(topic) + 1
+                            index + 1
                         )
                     },
                     isFirst = false,
