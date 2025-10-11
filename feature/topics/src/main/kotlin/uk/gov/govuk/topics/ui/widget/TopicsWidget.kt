@@ -102,8 +102,8 @@ private fun TopicsWidgetContent(
                         .padding(horizontal = GovUkTheme.spacing.medium)
                 ) {
                     ConnectedButtonGroup(
-                        firstText = "Your topics", // Todo - extract string
-                        secondText = "All topics", // Todo - extract string
+                        firstText = stringResource(R.string.your_topics),
+                        secondText = stringResource(R.string.all_topics),
                         onActiveStateChange = { activeButton ->
                             coroutineScope.launch {
                                 if (activeButton == ConnectedButton.FIRST &&
