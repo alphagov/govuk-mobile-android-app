@@ -122,10 +122,10 @@ fun InternalLinkListItem(
                     text = title,
                     color = GovUkTheme.colourScheme.textAndIcons.primary
                 )
-                description?.let {
+                description?.let { description ->
                     ExtraSmallVerticalSpacer()
                     SubheadlineRegularLabel(
-                        text = title,
+                        text = description,
                         color = GovUkTheme.colourScheme.textAndIcons.secondary
                     )
                 }
@@ -146,7 +146,7 @@ fun InternalLinkListItem(
             }
 
             Icon(
-                painter = painterResource(R.drawable.ic_chevron_right),
+                painter = painterResource(R.drawable.ic_arrow),
                 contentDescription = null,
                 tint = GovUkTheme.colourScheme.textAndIcons.iconTertiary
             )
