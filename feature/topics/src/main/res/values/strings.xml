@@ -1,13 +1,14 @@
 <resources>
 
+    <!-- Widget-->
     <string name="topicsWidgetTitle">Topics</string>
-    <string name="customisedTopicsWidgetTitle">Your topics</string>
+    <string name="your_topics">Your topics</string>
+    <string name="all_topics">All topics</string>
     <string name="editButton">Edit</string>
     <string name="editButtonAltText">Edit your topics</string>
+
     <string name="editTitle">Edit your topics</string>
     <string name="editMessage">Topics you select will be shown on the app home page so you can find them more easily</string>
-    <string name="allTopicsButton">See all topics</string>
-    <string name="allTopicsTitle">All topics</string>
     <string name="stepByStepGuidesTitle">Step by step guides</string>
     <string name="popularPagesTitle">Popular pages in this topic</string>
     <string name="servicesTitle">Services and information</string>

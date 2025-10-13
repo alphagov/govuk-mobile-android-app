@@ -7,11 +7,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import uk.gov.govuk.design.ui.component.CardListItem
+import uk.gov.govuk.design.ui.component.ConnectedButton
 import uk.gov.govuk.design.ui.component.ConnectedButtonGroup
 import uk.gov.govuk.design.ui.component.IconLinkListItem
 import uk.gov.govuk.design.ui.component.SectionHeadingLabel
@@ -26,7 +33,6 @@ import uk.gov.govuk.topics.ui.model.TopicItemUi
 fun TopicsWidget(
     onTopicClick: (String, String) -> Unit,
     onEditClick: (String) -> Unit,
-    onAllClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: TopicsWidgetViewModel = hiltViewModel()
@@ -54,8 +60,18 @@ private fun TopicsWidgetContent(
     onEditClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Todo - do we need to send every time the user toggles between your topics and all topics???
     LaunchedEffect(Unit) {
-        onPageView(uiState.topics)
+        onPageView(uiState.yourTopics)
+    }
+
+    var activeButtonState by rememberSaveable { mutableStateOf( ConnectedButton.FIRST) }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(uiState.yourTopics.isEmpty()) {
+        if (uiState.yourTopics.isEmpty()) {
+            activeButtonState = ConnectedButton.SECOND
+        }
     }
 
     Column(modifier = modifier) {
@@ -86,27 +102,48 @@ private fun TopicsWidgetContent(
                         .padding(horizontal = GovUkTheme.spacing.medium)
                 ) {
                     ConnectedButtonGroup(
-                        firstText = "Your topics",
-                        secondText = "All topics",
-                        onActiveStateChange = { }
+                        firstText = stringResource(R.string.your_topics),
+                        secondText = stringResource(R.string.all_topics),
+                        onActiveStateChange = { activeButton ->
+                            coroutineScope.launch {
+                                if (activeButton == ConnectedButton.FIRST &&
+                                    uiState.yourTopics.isEmpty()) {
+                                    onEditClick("") // Todo - what should text be???
+                                    delay(500)
+                                }
+
+                                activeButtonState = activeButton
+                            }
+                        },
+                        activeButton = activeButtonState
                     )
                 }
             }
 
+            val topics = when (activeButtonState) {
+                ConnectedButton.FIRST -> {
+                    uiState.yourTopics.ifEmpty {
+                        uiState.allTopics
+                    }
+                }
+                ConnectedButton.SECOND -> uiState.allTopics
+            }
+
             // Todo - handle error/empty topics!!!
-            uiState.topics.forEachIndexed { index, topic ->
+            topics.forEachIndexed { index, topic ->
                 IconLinkListItem(
                     title = topic.title,
                     icon = topic.icon,
                     onClick = {
+                        // Todo - do we need to identify your topics vs all topics for analytics???
                         onTopicClick(
                             topic.ref,
                             topic.title,
-                            uiState.topics.indexOf(topic) + 1
+                            index + 1
                         )
                     },
                     isFirst = false,
-                    isLast = index == uiState.topics.lastIndex
+                    isLast = index == topics.lastIndex
                 )
             }
         }
@@ -119,7 +156,7 @@ private fun TopicsWidgetPreview() {
     GovUkTheme {
         TopicsWidgetContent(
             uiState = TopicsWidgetUiState(
-                topics = listOf(
+                yourTopics = listOf(
                     TopicItemUi(
                         "",
                         R.drawable.ic_topic_default,
@@ -156,9 +193,8 @@ private fun TopicsWidgetPreview() {
                         isSelected = true
                     ),
                 ),
-                isError = false,
-                isCustomised = true,
-                displayShowAll = true
+                allTopics = emptyList(),
+                isError = false
             ),
             onPageView = { },
             onTopicClick = { _, _, _ -> },
@@ -173,10 +209,9 @@ private fun TopicsWidgetEmptyTopicsPreview() {
     GovUkTheme {
         TopicsWidgetContent(
             uiState = TopicsWidgetUiState(
-                topics = emptyList(),
-                isError = false,
-                isCustomised = true,
-                displayShowAll = true
+                allTopics = emptyList(),
+                yourTopics = emptyList(),
+                isError = false
             ),
             onPageView = { },
             onTopicClick = { _, _, _ -> },
@@ -191,10 +226,9 @@ private fun TopicsWidgetErrorPreview() {
     GovUkTheme {
         TopicsWidgetContent(
             uiState = TopicsWidgetUiState(
-                topics = emptyList(),
-                isError = true,
-                isCustomised = false,
-                displayShowAll = false
+                allTopics = emptyList(),
+                yourTopics = emptyList(),
+                isError = true
             ),
             onPageView = { },
             onTopicClick = { _, _, _ -> },

@@ -88,10 +88,7 @@ internal class TopicSelectionViewModel @Inject constructor(
         analyticsClient.topicsCustomised()
         viewModelScope.launch {
             topicsRepo.topicsCustomised()
-            uiState.value?.topics?.let { topics ->
-                val topicsToDeselect = topics.filter { !selectedTopicRefs.contains(it.ref) }.map { it.ref }
-                topicsRepo.deselectAll(topicsToDeselect)
-            }
+            topicsRepo.selectAll(selectedTopicRefs)
         }
     }
 

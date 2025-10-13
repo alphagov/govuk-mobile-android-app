@@ -9,7 +9,6 @@ import uk.gov.govuk.design.R.drawable.ic_home
 import uk.gov.govuk.design.R.drawable.ic_settings
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.settings.navigation.SETTINGS_GRAPH_ROUTE
-import uk.gov.govuk.topics.navigation.TOPICS_ALL_ROUTE
 import uk.gov.govuk.topics.navigation.TOPICS_ALL_STEP_BY_STEPS_ROUTE
 import uk.gov.govuk.topics.navigation.TOPIC_ROUTE
 import uk.gov.govuk.visited.navigation.VISITED_ROUTE
@@ -27,7 +26,6 @@ internal sealed class TopLevelDestination(
         icon = ic_home,
         associatedRoutes = listOf(
             VISITED_ROUTE,
-            TOPICS_ALL_ROUTE,
             TOPIC_ROUTE,
             TOPICS_ALL_STEP_BY_STEPS_ROUTE
         )
