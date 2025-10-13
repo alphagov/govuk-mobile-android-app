@@ -10,4 +10,8 @@ sealed interface ListItemStyle {
         val altText: String,
         val onClick: () -> Unit
     ) : ListItemStyle
+
+    data class Status(
+        val title: String
+    ) : ListItemStyle
 }

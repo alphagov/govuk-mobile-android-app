@@ -98,9 +98,10 @@ fun InternalLinkListItem(
     title: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    status: String? = null,
+    description: String? = null,
     isFirst: Boolean = true,
-    isLast: Boolean = true
+    isLast: Boolean = true,
+    style: ListItemStyle = ListItemStyle.Default
 ) {
     CardListItem(
         modifier = modifier,
@@ -112,25 +113,42 @@ fun InternalLinkListItem(
             modifier = Modifier.padding(all = GovUkTheme.spacing.medium),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BodyRegularLabel(
-                text = title,
-                modifier = Modifier.weight(1f)
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                BodyRegularLabel(
+                    text = title,
+                    color = GovUkTheme.colourScheme.textAndIcons.primary
+                )
+                description?.let {
+                    ExtraSmallVerticalSpacer()
+                    SubheadlineRegularLabel(
+                        text = title,
+                        color = GovUkTheme.colourScheme.textAndIcons.secondary
+                    )
+                }
+            }
 
             MediumHorizontalSpacer()
 
-            status?.let {
-                BodyRegularLabel(
-                    text = it,
-                    color = GovUkTheme.colourScheme.textAndIcons.link
-                )
-                MediumHorizontalSpacer()
+            when (style) {
+                is ListItemStyle.Status -> {
+                    BodyRegularLabel(
+                        text = style.title,
+                        color = GovUkTheme.colourScheme.textAndIcons.link
+                    )
+                    MediumHorizontalSpacer()
+                }
+
+                else -> { /* Do nothing */ }
             }
 
             Icon(
-                painter = painterResource(R.drawable.ic_chevron),
+                painter = painterResource(R.drawable.ic_chevron_right),
                 contentDescription = null,
-                tint = GovUkTheme.colourScheme.textAndIcons.icon
+                tint = GovUkTheme.colourScheme.textAndIcons.iconTertiary
             )
         }
     }
@@ -206,7 +224,7 @@ fun ExternalLinkListItem(
                         Icon(
                             painter = painterResource(style.icon),
                             contentDescription = null,
-                            tint = GovUkTheme.colourScheme.textAndIcons.iconTertiary
+                            tint = GovUkTheme.colourScheme.textAndIcons.secondary
                         )
                     }
                 }
@@ -646,6 +664,30 @@ private fun DrawScope.lastCell(
         color = if (isClicked) backgroundColorHighlight else backgroundColor,
         style = Fill
     )
+}
+
+@Preview
+@Composable
+private fun InternalLinkListItemPreview() {
+    GovUkTheme {
+        InternalLinkListItem("Title", {})
+    }
+}
+
+@Preview
+@Composable
+private fun InternalLinkListItemDescriptionPreview() {
+    GovUkTheme {
+        InternalLinkListItem("Title", {}, description = "Description")
+    }
+}
+
+@Preview
+@Composable
+private fun InternalLinkListItemStatusPreview() {
+    GovUkTheme {
+        InternalLinkListItem("Title", {}, style = ListItemStyle.Status("Status"))
+    }
 }
 
 @Preview
