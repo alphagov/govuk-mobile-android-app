@@ -139,7 +139,7 @@ fun InternalLinkListItem(
 @Composable
 fun ExternalLinkListItem(
     title: String,
-    subtitle: String,
+    description: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isFirst: Boolean = true,
@@ -156,7 +156,7 @@ fun ExternalLinkListItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .semantics { contentDescription = "$title. $opensInWebBrowser. $subtitle" }
+                .semantics { contentDescription = "$title. $opensInWebBrowser. $description" }
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 BodyRegularLabel(
@@ -172,7 +172,7 @@ fun ExternalLinkListItem(
                 ExtraSmallVerticalSpacer()
 
                 SubheadlineRegularLabel(
-                    text = subtitle,
+                    text = description,
                     modifier = Modifier.padding(
                         start = GovUkTheme.spacing.medium,
                         end = GovUkTheme.spacing.medium,
@@ -667,7 +667,7 @@ private fun DrawScope.lastCell(
 @Composable
 private fun ExternalLinkListItemDefaultPreview() {
     GovUkTheme {
-        ExternalLinkListItem("Title", "Subtitle", {})
+        ExternalLinkListItem("Title", "Description", {})
     }
 }
 
@@ -677,7 +677,7 @@ private fun ExternalLinkListItemIconPreview() {
     GovUkTheme {
         ExternalLinkListItem(
             "Title",
-            "Subtitle",
+            "Description",
             {},
             style = ListItemStyle.Icon
         )
@@ -690,7 +690,7 @@ private fun ExternalLinkListItemButtonPreview() {
     GovUkTheme {
         ExternalLinkListItem(
             "Title",
-            "Subtitle",
+            "Description",
             {},
             style = ListItemStyle.Button(R.drawable.ic_cancel_round, "Alt text") {})
     }
