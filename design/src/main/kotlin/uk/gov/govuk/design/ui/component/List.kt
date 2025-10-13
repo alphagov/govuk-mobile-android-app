@@ -137,7 +137,7 @@ fun InternalLinkListItem(
                 is ListItemStyle.Status -> {
                     BodyRegularLabel(
                         text = style.title,
-                        color = GovUkTheme.colourScheme.textAndIcons.link
+                        color = GovUkTheme.colourScheme.textAndIcons.iconTertiary
                     )
                     MediumHorizontalSpacer()
                 }
