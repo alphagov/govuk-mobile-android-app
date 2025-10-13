@@ -86,7 +86,7 @@ private fun VisitedItems(
         items.forEachIndexed { index, visitedUi ->
             ExternalLinkListItem(
                 title = visitedUi.title,
-                subtitle = "${stringResource(R.string.visited_items_last_visited)} ${visitedUi.lastVisited}",
+                description = "${stringResource(R.string.visited_items_last_visited)} ${visitedUi.lastVisited}",
                 onClick = { onItemClick(visitedUi.title, visitedUi.url) },
                 isFirst = index == 0,
                 isLast = index == items.size - 1
