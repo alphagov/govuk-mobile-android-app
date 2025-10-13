@@ -359,9 +359,14 @@ fun CentredCardWithIcon(
     title: String? = null,
     description: String? = null
 ) {
+    val contentText = createTalkBackText(title, description)
+
     Card(
         modifier = modifier
             .fillMaxWidth()
+            .semantics {
+                contentDescription = contentText
+            }
             .drawBottomStroke(
                 colour = GovUkTheme.colourScheme.strokes.cardDefault,
                 cornerRadius = GovUkTheme.numbers.cornerAndroidList
@@ -388,6 +393,7 @@ fun CentredCardWithIcon(
                     color = GovUkTheme.colourScheme.textAndIcons.primary,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .semantics(mergeDescendants = true) { }
                         .padding(horizontal = GovUkTheme.spacing.extraLarge),
                     textAlign = TextAlign.Center,
                 )
@@ -401,6 +407,7 @@ fun CentredCardWithIcon(
                     color = GovUkTheme.colourScheme.textAndIcons.secondary,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .semantics(mergeDescendants = true) { }
                         .padding(horizontal = GovUkTheme.spacing.extraLarge),
                     textAlign = TextAlign.Center,
                 )
@@ -418,9 +425,14 @@ fun NavigationCard(
     modifier: Modifier = Modifier,
     description: String? = null
 ) {
+    val contentText = createTalkBackText(title, description)
+
     Card(
         modifier = modifier
             .fillMaxWidth()
+            .semantics {
+                contentDescription = contentText
+            }
             .drawBottomStroke(
                 colour = GovUkTheme.colourScheme.strokes.cardDefault,
                 cornerRadius = GovUkTheme.numbers.cornerAndroidList
@@ -436,6 +448,7 @@ fun NavigationCard(
                     color = GovUkTheme.colourScheme.textAndIcons.secondary,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .semantics(mergeDescendants = true) { }
                         .padding(horizontal = GovUkTheme.spacing.medium)
                 )
 
@@ -447,12 +460,22 @@ fun NavigationCard(
                 color = GovUkTheme.colourScheme.textAndIcons.link,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .semantics(mergeDescendants = true) { }
                     .padding(horizontal = GovUkTheme.spacing.medium)
             )
 
             MediumVerticalSpacer()
         }
     )
+}
+
+@Composable
+private fun createTalkBackText(title: String?, description: String?): String {
+    val opensInWebBrowser = stringResource(R.string.opens_in_web_browser)
+
+    return listOfNotNull(
+        title, description, opensInWebBrowser
+    ).joinToString(". ")
 }
 
 @Preview
