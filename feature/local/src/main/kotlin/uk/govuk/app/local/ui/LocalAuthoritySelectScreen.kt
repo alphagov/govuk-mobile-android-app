@@ -36,6 +36,7 @@ import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title1BoldLabel
+import uk.gov.govuk.design.ui.model.HeaderStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.govuk.app.local.LocalSelectViewModel
 import uk.govuk.app.local.R
@@ -98,8 +99,10 @@ private fun LocalAuthoritySelectScreen(
                         traversalIndex = -1f
                     },
                 onBack = { onBack() },
-                actionText = stringResource(R.string.local_cancel_button),
-                onAction = onCancel
+                style = HeaderStyle.ActionButton(
+                    title = stringResource(R.string.local_cancel_button),
+                    onClick = onCancel
+                )
             )
         },
         bottomBar = {

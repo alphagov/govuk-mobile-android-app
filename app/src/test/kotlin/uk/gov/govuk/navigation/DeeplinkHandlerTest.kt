@@ -16,7 +16,6 @@ import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.home.navigation.HOME_GRAPH_ROUTE
 import uk.gov.govuk.search.navigation.SEARCH_ROUTE
 import uk.gov.govuk.topics.navigation.TOPICS_EDIT_ROUTE
-import uk.gov.govuk.visited.navigation.EDIT_VISITED_ROUTE
 import uk.gov.govuk.visited.navigation.VISITED_ROUTE
 
 class DeeplinkHandlerTest {
@@ -192,24 +191,6 @@ class DeeplinkHandlerTest {
             navController.navigate(HOME_GRAPH_ROUTE, any<NavOptionsBuilder.() -> Unit>())
             navController.navigate(VISITED_ROUTE, any<NavOptionsBuilder.() -> Unit>())
             analyticsClient.deepLinkEvent(true, "govuk://gov.uk/visited")
-        }
-    }
-
-    @Test
-    fun `Handle visited edit deeplink`() {
-        every { flagRepo.isRecentActivityEnabled() } returns true
-        every { deeplink.path } returns "/visited/edit"
-        every { deeplink.toString() } returns "govuk://gov.uk/visited/edit"
-
-        deeplinkHandler.deepLink = deeplink
-
-        deeplinkHandler.handleDeeplink(navController)
-
-        verify {
-            navController.navigate(HOME_GRAPH_ROUTE, any<NavOptionsBuilder.() -> Unit>())
-            navController.navigate(VISITED_ROUTE, any<NavOptionsBuilder.() -> Unit>())
-            navController.navigate(EDIT_VISITED_ROUTE, any<NavOptionsBuilder.() -> Unit>())
-            analyticsClient.deepLinkEvent(true, "govuk://gov.uk/visited/edit")
         }
     }
 

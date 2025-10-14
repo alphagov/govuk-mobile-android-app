@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.R
+import uk.gov.govuk.design.ui.model.HeaderStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -56,19 +57,18 @@ private fun Header(
     modifier: Modifier = Modifier,
     text: String? = null,
     onBack: (() -> Unit)? = null,
-    onAction: (() -> Unit)? = null,
-    actionText: String? = null,
-    actionAltText: String? = null,
     backgroundColour: Color = GovUkTheme.colourScheme.surfaces.background,
     actionColour: Color = GovUkTheme.colourScheme.textAndIcons.link,
-    titleColour: Color = GovUkTheme.colourScheme.textAndIcons.primary
+    titleColour: Color = GovUkTheme.colourScheme.textAndIcons.primary,
+    style: HeaderStyle = HeaderStyle.Default
 ) {
     Column(
         modifier
             .background(backgroundColour)
             .semantics { this.invisibleToUser() }
     ) {
-        if (onBack != null || onAction != null) {
+        val hasActionButton = style is HeaderStyle.ActionButton
+        if (onBack != null || hasActionButton) {
             Row(
                 modifier = Modifier
                     .height(64.dp)
@@ -86,22 +86,24 @@ private fun Header(
                         )
                     }
                 }
+                when (style) {
+                    is HeaderStyle.ActionButton -> {
+                        Spacer(Modifier.weight(1f))
 
-                if (onAction != null && actionText != null) {
-                    Spacer(Modifier.weight(1f))
-
-                    TextButton(
-                        onClick = onAction
-                    ) {
-                        BodyRegularLabel(
-                            text = actionText,
-                            color = actionColour,
-                            textAlign = TextAlign.End,
-                            modifier = Modifier.semantics {
-                                contentDescription = actionAltText ?: actionText
-                            }
-                        )
+                        TextButton(
+                            onClick = style.onClick
+                        ) {
+                            BodyRegularLabel(
+                                text = style.title,
+                                color = actionColour,
+                                textAlign = TextAlign.End,
+                                modifier = Modifier.semantics {
+                                    contentDescription = style.altText ?: style.title
+                                }
+                            )
+                        }
                     }
+                    else -> { /* Do nothing */ }
                 }
             }
         }
@@ -125,17 +127,13 @@ fun FullScreenHeader(
     modifier: Modifier = Modifier,
     text: String? = null,
     onBack: (() -> Unit)? = null,
-    onAction: (() -> Unit)? = null,
-    actionText: String? = null,
-    actionAltText: String? = null
+    style: HeaderStyle = HeaderStyle.Default
 ) {
     Header(
         modifier = modifier,
         text = text,
         onBack = onBack,
-        onAction = onAction,
-        actionText = actionText,
-        actionAltText = actionAltText
+        style = style
     )
 }
 
@@ -144,20 +142,16 @@ fun ChildPageHeader(
     modifier: Modifier = Modifier,
     text: String? = null,
     onBack: (() -> Unit)? = null,
-    onAction: (() -> Unit)? = null,
-    actionText: String? = null,
-    actionAltText: String? = null
+    style: HeaderStyle = HeaderStyle.Default
 ) {
     Header(
         modifier = modifier,
         text = text,
         onBack = onBack,
-        onAction = onAction,
-        actionText = actionText,
-        actionAltText = actionAltText,
         backgroundColour = GovUkTheme.colourScheme.surfaces.homeHeader,
         actionColour = GovUkTheme.colourScheme.textAndIcons.linkHeader,
-        titleColour = GovUkTheme.colourScheme.textAndIcons.header
+        titleColour = GovUkTheme.colourScheme.textAndIcons.header,
+        style = style
     )
 }
 
@@ -175,8 +169,7 @@ private fun ChildPageHeaderNoTextWithBackAndActionPreview() {
     GovUkTheme {
         ChildPageHeader(
             onBack = {},
-            onAction = {},
-            actionText = "Done"
+            style = HeaderStyle.ActionButton("Done", {}, "Alt text")
         )
     }
 }
@@ -188,8 +181,7 @@ private fun ChildPageHeaderBackAndActionPreview() {
         ChildPageHeader(
             text = "Child page title",
             onBack = {},
-            onAction = {},
-            actionText = "Done"
+            style = HeaderStyle.ActionButton("Done", {}, "Alt text")
         )
     }
 }
@@ -200,8 +192,7 @@ private fun ChildPageHeaderActionNoBackPreview() {
     GovUkTheme {
         ChildPageHeader(
             text = "Child page title",
-            onAction = {},
-            actionText = "Done"
+            style = HeaderStyle.ActionButton("Done", {}, "Alt text")
         )
     }
 }
@@ -243,8 +234,7 @@ private fun FullScreenHeaderNoTextWithBackAndActionPreview() {
     GovUkTheme {
         FullScreenHeader(
             onBack = {},
-            onAction = {},
-            actionText = "Done"
+            style = HeaderStyle.ActionButton("Done", {}, "Alt text")
         )
     }
 }
@@ -256,8 +246,7 @@ private fun FullScreenHeaderBackAndActionPreview() {
         FullScreenHeader(
             text = "Child page title",
             onBack = {},
-            onAction = {},
-            actionText = "Done"
+            style = HeaderStyle.ActionButton("Done", {}, "Alt text")
         )
     }
 }
@@ -268,8 +257,7 @@ private fun FullScreenHeaderActionNoBackPreview() {
     GovUkTheme {
         FullScreenHeader(
             text = "Child page title",
-            onAction = {},
-            actionText = "Done"
+            style = HeaderStyle.ActionButton("Done", {}, "Alt text")
         )
     }
 }

@@ -29,15 +29,11 @@ internal class VisitedViewModel @Inject constructor(
 ) : ViewModel() {
 
     companion object {
-        private const val EDIT_SCREEN_CLASS = "EditVisitedScreen"
         private const val VIEW_SCREEN_CLASS = "VisitedScreen"
         private const val SCREEN_NAME = "Pages you've visited"
         private const val SCREEN_TITLE = "Pages you've visited"
         private const val REMOVE_ACTION = "Remove"
-        private const val EDIT_BUTTON = "Edit"
-        private const val REMOVE_BUTTON = "Remove"
-        private const val SELECT_ALL_BUTTON = "Select all"
-        private const val DESELECT_ALL_BUTTON = "Deselect all"
+        private const val REMOVE_ALL_ACTION = "Remove all"
         private const val DONE_BUTTON = "Done"
     }
 
@@ -65,14 +61,6 @@ internal class VisitedViewModel @Inject constructor(
         )
     }
 
-    fun onEditPageView() {
-        analyticsClient.screenView(
-            screenClass = EDIT_SCREEN_CLASS,
-            screenName = SCREEN_NAME,
-            title = SCREEN_TITLE
-        )
-    }
-
     fun onRemoveVisitedItem(title: String) {
         analyticsClient.buttonFunction(
             text = title,
@@ -81,35 +69,12 @@ internal class VisitedViewModel @Inject constructor(
         )
     }
 
-    fun onEditClick() {
-        analyticsClient.buttonFunction(
-            text = "",
-            section = SCREEN_NAME,
-            action = EDIT_BUTTON
-        )
-    }
 
-    fun onRemoveClick() {
+    fun onRemoveAllVisitedItems() {
         analyticsClient.buttonFunction(
             text = "",
             section = SCREEN_NAME,
-            action = REMOVE_BUTTON
-        )
-    }
-
-    fun onSelectAllClick() {
-        analyticsClient.buttonFunction(
-            text = "",
-            section = SCREEN_NAME,
-            action = SELECT_ALL_BUTTON
-        )
-    }
-
-    fun onDeselectAllClick() {
-        analyticsClient.buttonFunction(
-            text = "",
-            section = SCREEN_NAME,
-            action = DESELECT_ALL_BUTTON
+            action = REMOVE_ALL_ACTION
         )
     }
 
@@ -128,62 +93,22 @@ internal class VisitedViewModel @Inject constructor(
         analyticsClient.visitedItemClick(text = title, url = url)
     }
 
-    fun onRemove() {
+    fun onVisitedItemRemoveClicked(title: String, url: String) {
+        viewModelScope.launch {
+            visitedLocalDataSource.remove(title, url)
+            onRemoveVisitedItem(title)
+        }
+    }
+
+    fun onRemoveAllVisitedItemsClicked() {
         _uiState.value?.visited?.forEach { (_, visitedItems) ->
             visitedItems.forEach { visitedItem ->
-                if (visitedItem.isSelected) {
-                    viewModelScope.launch {
-                        visitedLocalDataSource.remove(visitedItem.title, visitedItem.url)
-                        onRemoveVisitedItem(visitedItem.title)
-                    }
+                viewModelScope.launch {
+                    visitedLocalDataSource.remove(visitedItem.title, visitedItem.url)
+                    onRemoveVisitedItem(visitedItem.title)
                 }
             }
         }
-    }
-
-    fun onSelectAll() {
-        setAll(true)
-    }
-
-    fun onDeselectAll() {
-        setAll(false)
-    }
-
-    fun onSelect(title: String, url: String) {
-        _uiState.value = _uiState.value?.let { currentState ->
-            val updatedVisited = currentState.visited?.mapValues { (_, visitedItems) ->
-                visitedItems.map {
-                    if (it.title == title && it.url == url) {
-                        it.copy(isSelected = !it.isSelected)
-                    } else {
-                        it
-                    }
-                }
-            }
-
-            val hasAllSelectedItems = updatedVisited?.all { (_, visitedItems) ->
-                visitedItems.all { it.isSelected }
-            } ?: false
-
-            val hasSelectedItems = updatedVisited?.any { (_, visitedItems) ->
-                visitedItems.any { it.isSelected }
-            } ?: false
-
-            currentState.copy(
-                visited = updatedVisited,
-                hasAllSelectedItems = hasAllSelectedItems,
-                hasSelectedItems = hasSelectedItems
-            )
-        }
-    }
-
-    private fun setAll(state: Boolean) {
-        _uiState.value = _uiState.value?.copy(
-            visited = _uiState.value?.visited?.mapValues { (_, visitedItems) ->
-                visitedItems.map { it.copy(isSelected = state) }
-            },
-            hasSelectedItems = state,
-            hasAllSelectedItems = state
-        )
+        onRemoveAllVisitedItems()
     }
 }
