@@ -195,7 +195,7 @@ private fun ShowVisitedItems(
                     isLast = index == visitedItems.size - 1,
                     style = ExternalLinkListItemStyle.Button(
                         icon = uk.gov.govuk.design.R.drawable.ic_cancel_round,
-                        altText = "",
+                        altText = "${stringResource(uk.gov.govuk.design.R.string.content_desc_remove)} $title",
                         onClick = {
                             onRemoveClick(title, url)
                         }
