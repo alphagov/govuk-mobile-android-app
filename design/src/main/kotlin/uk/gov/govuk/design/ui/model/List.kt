@@ -2,12 +2,19 @@ package uk.gov.govuk.design.ui.model
 
 import androidx.annotation.DrawableRes
 
-sealed interface ListItemStyle {
-    data object Default : ListItemStyle
-    data object Icon : ListItemStyle
+sealed interface ExternalLinkListItemStyle {
+    data object Default : ExternalLinkListItemStyle
+    data object Icon : ExternalLinkListItemStyle
     data class Button(
         @DrawableRes val icon: Int,
         val altText: String,
         val onClick: () -> Unit
-    ) : ListItemStyle
+    ) : ExternalLinkListItemStyle
+}
+
+sealed interface InternalLinkListItemStyle {
+    data object Default : InternalLinkListItemStyle
+    data class Status(
+        val title: String
+    ) : InternalLinkListItemStyle
 }
