@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.R
 import uk.gov.govuk.design.ui.extension.drawBottomStroke
+import uk.gov.govuk.design.ui.extension.talkBackText
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -359,14 +360,10 @@ fun CentredCardWithIcon(
     title: String? = null,
     description: String? = null
 ) {
-    val contentText = createTalkBackText(title, description)
-
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .semantics {
-                contentDescription = contentText
-            }
+            .talkBackText(title, description)
             .drawBottomStroke(
                 colour = GovUkTheme.colourScheme.strokes.cardDefault,
                 cornerRadius = GovUkTheme.numbers.cornerAndroidList
@@ -425,14 +422,12 @@ fun NavigationCard(
     modifier: Modifier = Modifier,
     description: String? = null
 ) {
-    val contentText = createTalkBackText(title, description)
+    val opensInWebBrowser = stringResource(R.string.opens_in_web_browser)
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .semantics {
-                contentDescription = contentText
-            }
+            .talkBackText(title, description, opensInWebBrowser)
             .drawBottomStroke(
                 colour = GovUkTheme.colourScheme.strokes.cardDefault,
                 cornerRadius = GovUkTheme.numbers.cornerAndroidList
@@ -467,15 +462,6 @@ fun NavigationCard(
             MediumVerticalSpacer()
         }
     )
-}
-
-@Composable
-private fun createTalkBackText(title: String?, description: String?): String {
-    val opensInWebBrowser = stringResource(R.string.opens_in_web_browser)
-
-    return listOfNotNull(
-        title, description, opensInWebBrowser
-    ).joinToString(". ")
 }
 
 @Preview
