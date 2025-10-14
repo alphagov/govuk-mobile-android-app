@@ -67,7 +67,7 @@ private fun HomeScreen(
 
             Image(
                 painter = painterResource(id = uk.gov.govuk.design.R.drawable.logo),
-                contentDescription = stringResource(id = R.string.logoAltText),
+                contentDescription = stringResource(id = R.string.logo_alt_text),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .semantics { heading() }

@@ -73,7 +73,7 @@ class TopicViewModelTest {
             services = emptyList(),
             subtopics = emptyList(),
             subtopicsSection = TopicUi.Section(
-                title = R.string.browseTitle,
+                title = R.string.browse_title,
                 icon = R.drawable.ic_topic_browse
             )
         )
@@ -190,7 +190,7 @@ class TopicViewModelTest {
             services = emptyList(),
             subtopics = emptyList(),
             subtopicsSection = TopicUi.Section(
-                title = R.string.browseTitle,
+                title = R.string.browse_title,
                 icon = R.drawable.ic_topic_browse
             )
         )

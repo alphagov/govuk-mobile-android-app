@@ -52,7 +52,7 @@ private fun EditTopicsScreen(
     onTopicSelectedChanged: (String, String, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val title = stringResource(R.string.editTitle)
+    val title = stringResource(R.string.edit_title)
 
     LaunchedEffect(Unit) {
         onPageView(title)
@@ -70,7 +70,7 @@ private fun EditTopicsScreen(
             item {
                 Column{
                     MediumVerticalSpacer()
-                    BodyRegularLabel(stringResource(R.string.editMessage))
+                    BodyRegularLabel(stringResource(R.string.edit_message))
                     MediumVerticalSpacer()
                 }
             }

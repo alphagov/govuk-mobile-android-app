@@ -95,14 +95,14 @@ private fun Header(
     onEditClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val editButtonText = stringResource(R.string.editButton)
+    val editButtonText = stringResource(R.string.edit_button)
     SectionHeadingLabel(
         modifier = modifier,
-        title3 = stringResource(R.string.topicsWidgetTitle),
+        title3 = stringResource(R.string.topics_widget_title),
         button = if (displayEdit) {
             SectionHeadingLabelButton(
                 title = editButtonText,
-                altText = stringResource(R.string.editButtonAltText),
+                altText = stringResource(R.string.edit_button_alt_text),
                 onClick = { onEditClick(editButtonText) }
             )
         } else null
@@ -203,7 +203,7 @@ private fun ErrorCard(modifier: Modifier = Modifier) {
         colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.list),
         border = BorderStroke(width = 0.dp, color = Color.Unspecified)
     ) {
-        ProblemMessage(description = stringResource(R.string.topicsErrorMessage))
+        ProblemMessage(description = stringResource(R.string.topics_error_message))
     }
 }
 

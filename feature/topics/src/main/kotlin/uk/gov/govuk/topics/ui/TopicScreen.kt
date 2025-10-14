@@ -136,15 +136,15 @@ private fun TopicScreen(
         )
 
         val popularPagesSection = TopicUi.Section(
-            title = R.string.popularPagesTitle,
+            title = R.string.popular_pages_title,
             icon = R.drawable.ic_topic_popular
         )
         val stepByStepSection = TopicUi.Section(
-            title = R.string.stepByStepGuidesTitle,
+            title = R.string.step_by_step_guides_title,
             icon = R.drawable.ic_topic_step_by_step
         )
         val servicesSection = TopicUi.Section(
-            title = R.string.servicesTitle,
+            title = R.string.services_title,
             icon = R.drawable.ic_topic_services_and_info
         )
 
@@ -268,7 +268,7 @@ private fun LazyListScope.contentItems(
         if (displaySeeAll) {
             item {
                 val sectionTitle = stringResource(section.title)
-                val title = stringResource(R.string.seeAllButton)
+                val title = stringResource(R.string.see_all_button)
                 InternalLinkListItemLegacy(
                     title = title,
                     onClick = { onSeeAll(sectionTitle, title, currentItemIndex + contentItems.size) },
