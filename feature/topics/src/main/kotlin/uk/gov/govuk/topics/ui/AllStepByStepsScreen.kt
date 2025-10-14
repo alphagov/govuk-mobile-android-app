@@ -57,7 +57,7 @@ private fun AllStepByStepsScreen(
     modifier: Modifier = Modifier
 ) {
     Column(modifier.fillMaxSize()) {
-        val title = stringResource(R.string.stepByStepGuidesTitle)
+        val title = stringResource(R.string.step_by_step_guides_title)
 
         LaunchedEffect(stepBySteps) {
             onPageView(title)

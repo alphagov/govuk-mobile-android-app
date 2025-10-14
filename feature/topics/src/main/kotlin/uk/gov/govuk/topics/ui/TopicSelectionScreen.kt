@@ -64,7 +64,7 @@ private fun TopicSelectionScreen(
     onSkip: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val title = stringResource(R.string.topicSelectionTitle)
+    val title = stringResource(R.string.topic_selection_title)
 
     LaunchedEffect(Unit) {
         onPageView(title)
@@ -87,7 +87,7 @@ private fun TopicSelectionScreen(
                 .padding(horizontal = GovUkTheme.spacing.medium)
         ) {
             BodyRegularLabel(
-                text = stringResource(R.string.topicSelectionDescription),
+                text = stringResource(R.string.topic_selection_description),
             )
             MediumVerticalSpacer()
 
@@ -127,8 +127,8 @@ private fun TopicSelectionScreen(
         }
 
         uiState?.let {
-            val doneButtonText = stringResource(R.string.doneButton)
-            val skipButtonText = stringResource(R.string.skipButton)
+            val doneButtonText = stringResource(R.string.done_button)
+            val skipButtonText = stringResource(R.string.skip_button)
             val isDoneEnabled = it.isDoneEnabled
 
             FixedDoubleButtonGroup(

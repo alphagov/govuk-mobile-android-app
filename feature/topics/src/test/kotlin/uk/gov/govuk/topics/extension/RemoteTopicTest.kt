@@ -139,7 +139,7 @@ class RemoteTopicTest {
         )
 
         val topicUi = remoteTopic.toTopicUi(1, false)
-        assertEquals(R.string.browseTitle, topicUi.subtopicsSection.title)
+        assertEquals(R.string.browse_title, topicUi.subtopicsSection.title)
         assertEquals(R.drawable.ic_topic_browse, topicUi.subtopicsSection.icon)
     }
 
@@ -153,7 +153,7 @@ class RemoteTopicTest {
         )
 
         val topicUi = remoteTopic.toTopicUi(1, true)
-        assertEquals(R.string.browseTitle, topicUi.subtopicsSection.title)
+        assertEquals(R.string.browse_title, topicUi.subtopicsSection.title)
         assertEquals(R.drawable.ic_topic_browse, topicUi.subtopicsSection.icon)
     }
 
@@ -174,7 +174,7 @@ class RemoteTopicTest {
         )
 
         val topicUi = remoteTopic.toTopicUi(1, true)
-        assertEquals(R.string.relatedTitle, topicUi.subtopicsSection.title)
+        assertEquals(R.string.related_title, topicUi.subtopicsSection.title)
         assertEquals(R.drawable.ic_topic_related, topicUi.subtopicsSection.icon)
     }
 }

@@ -96,7 +96,7 @@ private fun SelectButton(
             tint = GovUkTheme.colourScheme.textAndIcons.link
         )
         BodyRegularLabel(
-            text = stringResource(R.string.selectButton),
+            text = stringResource(R.string.select_button),
             modifier = Modifier.padding(top = 2.dp),
             color = GovUkTheme.colourScheme.textAndIcons.link
         )
@@ -118,7 +118,7 @@ private fun SelectedButton(
         )
         Spacer(Modifier.width(2.dp))
         BodyRegularLabel(
-            text = stringResource(R.string.selectedButton),
+            text = stringResource(R.string.selected_button),
             modifier = Modifier.padding(top = 2.dp),
             color = GovUkTheme.colourScheme.textAndIcons.buttonSuccess
         )
