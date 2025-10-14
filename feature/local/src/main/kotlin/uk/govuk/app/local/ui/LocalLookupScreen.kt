@@ -36,11 +36,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
-import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title1BoldLabel
-import uk.gov.govuk.design.ui.model.HeaderStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.govuk.app.local.LocalLookupViewModel
 import uk.govuk.app.local.LocalUiState
@@ -106,18 +104,7 @@ private fun LocalLookupScreen(
         modifier = modifier.fillMaxWidth(),
 
         topBar = {
-            FullScreenHeader(
-                modifier = Modifier
-                    .semantics {
-                        isTraversalGroup = true
-                        traversalIndex = -1f
-                    },
-                onBack = { onBack() },
-                style = HeaderStyle.ActionButton(
-                    title = stringResource(R.string.local_cancel_button),
-                    onClick = onCancel
-                )
-            )
+            LocalFullScreenHeader(onBack = onBack, onCancel = onCancel)
         },
         bottomBar = {
             BottomNavBar(

@@ -18,20 +18,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
-import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.MediumHorizontalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title1BoldLabel
-import uk.gov.govuk.design.ui.model.HeaderStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.govuk.app.local.LocalConfirmationViewModel
 import uk.govuk.app.local.R
@@ -78,18 +74,7 @@ private fun LocalConfirmationScreen(
         modifier = modifier.fillMaxWidth(),
 
         topBar = {
-            FullScreenHeader(
-                modifier = Modifier
-                    .semantics {
-                        isTraversalGroup = true
-                        traversalIndex = -1f
-                    },
-                onBack = { onBack() },
-                style = HeaderStyle.ActionButton(
-                    title = stringResource(R.string.local_cancel_button),
-                    onClick = onCancel
-                )
-            )
+            LocalFullScreenHeader(onBack = onBack, onCancel = onCancel)
         },
         bottomBar = {
             val buttonText = stringResource(R.string.local_confirmation_button)

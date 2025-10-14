@@ -32,11 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
-import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title1BoldLabel
-import uk.gov.govuk.design.ui.model.HeaderStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.govuk.app.local.LocalSelectViewModel
 import uk.govuk.app.local.R
@@ -92,18 +90,7 @@ private fun LocalAuthoritySelectScreen(
         modifier = modifier.fillMaxWidth(),
 
         topBar = {
-            FullScreenHeader(
-                modifier = Modifier
-                    .semantics {
-                        isTraversalGroup = true
-                        traversalIndex = -1f
-                    },
-                onBack = { onBack() },
-                style = HeaderStyle.ActionButton(
-                    title = stringResource(R.string.local_cancel_button),
-                    onClick = onCancel
-                )
-            )
+            LocalFullScreenHeader(onBack = onBack, onCancel = onCancel)
         },
         bottomBar = {
             BottomNavBar(
