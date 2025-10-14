@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.R
 import uk.gov.govuk.design.ui.extension.drawBottomStroke
+import uk.gov.govuk.design.ui.extension.talkBackText
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -362,6 +363,7 @@ fun CentredCardWithIcon(
     Card(
         modifier = modifier
             .fillMaxWidth()
+            .talkBackText(title, description)
             .drawBottomStroke(
                 colour = GovUkTheme.colourScheme.strokes.cardDefault,
                 cornerRadius = GovUkTheme.numbers.cornerAndroidList
@@ -388,6 +390,7 @@ fun CentredCardWithIcon(
                     color = GovUkTheme.colourScheme.textAndIcons.primary,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .semantics(mergeDescendants = true) { }
                         .padding(horizontal = GovUkTheme.spacing.extraLarge),
                     textAlign = TextAlign.Center,
                 )
@@ -401,6 +404,7 @@ fun CentredCardWithIcon(
                     color = GovUkTheme.colourScheme.textAndIcons.secondary,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .semantics(mergeDescendants = true) { }
                         .padding(horizontal = GovUkTheme.spacing.extraLarge),
                     textAlign = TextAlign.Center,
                 )
@@ -418,9 +422,12 @@ fun NavigationCard(
     modifier: Modifier = Modifier,
     description: String? = null
 ) {
+    val opensInWebBrowser = stringResource(R.string.opens_in_web_browser)
+
     Card(
         modifier = modifier
             .fillMaxWidth()
+            .talkBackText(title, description, opensInWebBrowser)
             .drawBottomStroke(
                 colour = GovUkTheme.colourScheme.strokes.cardDefault,
                 cornerRadius = GovUkTheme.numbers.cornerAndroidList
@@ -436,6 +443,7 @@ fun NavigationCard(
                     color = GovUkTheme.colourScheme.textAndIcons.secondary,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .semantics(mergeDescendants = true) { }
                         .padding(horizontal = GovUkTheme.spacing.medium)
                 )
 
@@ -447,6 +455,7 @@ fun NavigationCard(
                 color = GovUkTheme.colourScheme.textAndIcons.link,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .semantics(mergeDescendants = true) { }
                     .padding(horizontal = GovUkTheme.spacing.medium)
             )
 
