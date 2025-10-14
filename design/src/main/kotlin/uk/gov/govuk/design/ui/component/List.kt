@@ -1,7 +1,6 @@
 package uk.gov.govuk.design.ui.component
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -42,56 +41,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import uk.gov.govuk.design.R
-import uk.gov.govuk.design.ui.model.ListItemStyle
+import uk.gov.govuk.design.ui.model.ExternalLinkListItemStyle
+import uk.gov.govuk.design.ui.model.InternalLinkListItemStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-
-@Composable
-fun ListHeader(
-    @StringRes title: Int,
-    @DrawableRes icon: Int,
-    modifier: Modifier = Modifier
-) {
-    val backgroundColor = GovUkTheme.colourScheme.surfaces.listHeadingBlue
-
-    Box(
-        modifier = modifier
-            .drawBehind {
-                drawCell(
-                    isFirst = true,
-                    isLast = false,
-                    backgroundColor = backgroundColor,
-                    backgroundColorHighlight = backgroundColor,
-                    isClicked = false
-                )
-            }
-    ) {
-        Column {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(
-                        horizontal = GovUkTheme.spacing.medium,
-                        vertical = GovUkTheme.spacing.small
-                    )
-            ) {
-                Title3BoldLabel(
-                    text = stringResource(title),
-                    modifier = Modifier
-                        .padding(end = GovUkTheme.spacing.medium)
-                        .weight(1f)
-                        .semantics { heading() }
-                )
-                Icon(
-                    painter = painterResource(icon),
-                    contentDescription = null,
-                    modifier = Modifier.size(40.dp),
-                    tint = GovUkTheme.colourScheme.textAndIcons.icon
-                )
-            }
-            ListDivider()
-        }
-    }
-}
 
 @Composable
 fun InternalLinkListItem(
@@ -101,7 +53,7 @@ fun InternalLinkListItem(
     description: String? = null,
     isFirst: Boolean = true,
     isLast: Boolean = true,
-    style: ListItemStyle = ListItemStyle.Default
+    style: InternalLinkListItemStyle = InternalLinkListItemStyle.Default
 ) {
     CardListItem(
         modifier = modifier,
@@ -134,7 +86,7 @@ fun InternalLinkListItem(
             MediumHorizontalSpacer()
 
             when (style) {
-                is ListItemStyle.Status -> {
+                is InternalLinkListItemStyle.Status -> {
                     BodyRegularLabel(
                         text = style.title,
                         color = GovUkTheme.colourScheme.textAndIcons.iconTertiary
@@ -157,12 +109,12 @@ fun InternalLinkListItem(
 @Composable
 fun ExternalLinkListItem(
     title: String,
-    description: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    description: String? = null,
     isFirst: Boolean = true,
     isLast: Boolean = true,
-    style: ListItemStyle = ListItemStyle.Default
+    style: ExternalLinkListItemStyle = ExternalLinkListItemStyle.Default
 ) {
     CardListItem(
         modifier = modifier,
@@ -173,53 +125,42 @@ fun ExternalLinkListItem(
         val opensInWebBrowser = stringResource(R.string.opens_in_web_browser)
         Row(
             modifier = Modifier
+                .padding(all = GovUkTheme.spacing.medium)
                 .fillMaxWidth()
                 .semantics { contentDescription = "$title. $opensInWebBrowser. $description" }
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 BodyRegularLabel(
                     text = title,
-                    modifier = Modifier.padding(
-                        start = GovUkTheme.spacing.medium,
-                        top = GovUkTheme.spacing.medium,
-                        end = GovUkTheme.spacing.medium
-                    ),
                     color = GovUkTheme.colourScheme.textAndIcons.link
                 )
 
-                ExtraSmallVerticalSpacer()
+                description?.let { description ->
+                    ExtraSmallVerticalSpacer()
 
-                SubheadlineRegularLabel(
-                    text = description,
-                    modifier = Modifier.padding(
-                        start = GovUkTheme.spacing.medium,
-                        end = GovUkTheme.spacing.medium,
-                        bottom = GovUkTheme.spacing.medium
-                    ),
-                    color = GovUkTheme.colourScheme.textAndIcons.secondary
-                )
+                    SubheadlineRegularLabel(
+                        text = description,
+                        color = GovUkTheme.colourScheme.textAndIcons.secondary
+                    )
+                }
             }
 
             when (style) {
-                is ListItemStyle.Icon -> {
+                is ExternalLinkListItemStyle.Icon -> {
                     Icon(
                         painter = painterResource(R.drawable.ic_external_link),
                         contentDescription = null,
-                        modifier = Modifier.padding(
-                            top = GovUkTheme.spacing.medium,
-                            end = GovUkTheme.spacing.medium
-                        ),
                         tint = GovUkTheme.colourScheme.textAndIcons.link
                     )
                 }
 
-                is ListItemStyle.Button -> {
+                is ExternalLinkListItemStyle.Button -> {
                     TextButton(
                         onClick = style.onClick,
                         modifier = Modifier
                             .semantics { contentDescription = style.altText }
                             .align(Alignment.CenterVertically),
-                        contentPadding = PaddingValues()
+                        contentPadding = PaddingValues(start = 32.dp)
                     ) {
                         Icon(
                             painter = painterResource(style.icon),
@@ -228,7 +169,6 @@ fun ExternalLinkListItem(
                         )
                     }
                 }
-
                 else -> { /* Do nothing */ }
             }
         }
@@ -686,7 +626,7 @@ private fun InternalLinkListItemDescriptionPreview() {
 @Composable
 private fun InternalLinkListItemStatusPreview() {
     GovUkTheme {
-        InternalLinkListItem("Title", {}, style = ListItemStyle.Status("Status"))
+        InternalLinkListItem("Title", {}, style = InternalLinkListItemStyle.Status("Status"))
     }
 }
 
@@ -694,7 +634,7 @@ private fun InternalLinkListItemStatusPreview() {
 @Composable
 private fun ExternalLinkListItemDefaultPreview() {
     GovUkTheme {
-        ExternalLinkListItem("Title", "Description", {})
+        ExternalLinkListItem("Title", {})
     }
 }
 
@@ -704,9 +644,9 @@ private fun ExternalLinkListItemIconPreview() {
     GovUkTheme {
         ExternalLinkListItem(
             "Title",
-            "Description",
             {},
-            style = ListItemStyle.Icon
+            description = "Description",
+            style = ExternalLinkListItemStyle.Icon
         )
     }
 }
@@ -716,9 +656,7 @@ private fun ExternalLinkListItemIconPreview() {
 private fun ExternalLinkListItemButtonPreview() {
     GovUkTheme {
         ExternalLinkListItem(
-            "Title",
-            "Description",
-            {},
-            style = ListItemStyle.Button(R.drawable.ic_cancel_round, "Alt text") {})
+            "Title", {}, description = "Description",
+            style = ExternalLinkListItemStyle.Button(R.drawable.ic_cancel_round, "Alt text") {})
     }
 }
