@@ -160,7 +160,7 @@ fun ExternalLinkListItem(
                         modifier = Modifier
                             .semantics { contentDescription = style.altText }
                             .align(Alignment.CenterVertically),
-                        contentPadding = PaddingValues(start = 32.dp)
+                        contentPadding = PaddingValues(start = GovUkTheme.spacing.extraLarge)
                     ) {
                         Icon(
                             painter = painterResource(style.icon),
