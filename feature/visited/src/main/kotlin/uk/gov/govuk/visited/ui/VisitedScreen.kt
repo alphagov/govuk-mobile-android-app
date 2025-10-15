@@ -242,7 +242,7 @@ private fun RemoveAllConfirmationDialog(
             ) {
                 BodyRegularLabel(
                     text = stringResource(R.string.visited_items_cancel_button),
-                    color = GovUkTheme.colourScheme.textAndIcons.link
+                    color = GovUkTheme.colourScheme.textAndIcons.linkSecondary
                 )
             }
         },
