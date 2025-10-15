@@ -115,7 +115,7 @@ class AuthModule {
     @Singleton
     fun providesAuthApi(): AuthApi {
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.AUTH_BASE_URL)
+            .baseUrl(BuildConfig.TOKEN_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(AuthApi::class.java)
