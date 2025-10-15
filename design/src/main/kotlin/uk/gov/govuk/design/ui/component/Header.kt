@@ -118,6 +118,7 @@ private fun Header(
                     .semantics { heading() },
                 color = titleColour
             )
+            SmallVerticalSpacer()
         }
     }
 }

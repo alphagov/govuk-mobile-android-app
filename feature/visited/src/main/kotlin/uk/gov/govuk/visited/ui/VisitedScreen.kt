@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -119,21 +120,10 @@ private fun VisitedScreen(
                 )
             }
         )
-
-        LazyColumn(
-            Modifier
-                .padding(horizontal = GovUkTheme.spacing.medium)
-        ) {
-            item {
-                MediumVerticalSpacer()
-            }
-            item {
-                if (visitedItems.isNullOrEmpty()) {
-                    NoVisitedItems(modifier)
-                } else {
-                    ShowVisitedItems(visitedItems, onClick, onRemoveClick)
-                }
-            }
+        if (visitedItems.isNullOrEmpty()) {
+            NoVisitedItems()
+        } else {
+            ShowVisitedItems(visitedItems, onClick, onRemoveClick)
         }
 
         if (showRemoveAllDialog) {
@@ -151,6 +141,7 @@ private fun VisitedScreen(
                 delay(500)
                 focusRequester.requestFocus()
             }
+
             else -> { /* Do nothing */ }
         }
     }
@@ -160,9 +151,11 @@ private fun VisitedScreen(
 private fun NoVisitedItems(
     modifier: Modifier = Modifier
 ) {
+    MediumVerticalSpacer()
+
     NonTappableCard(
         body = stringResource(R.string.visited_items_no_pages_description),
-        modifier = modifier
+        modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium)
     )
 }
 
@@ -170,40 +163,54 @@ private fun NoVisitedItems(
 private fun ShowVisitedItems(
     items: Map<String, List<VisitedUi>>,
     onClick: (title: String, url: String) -> Unit,
-    onRemoveClick: (title: String, url: String) -> Unit
+    onRemoveClick: (title: String, url: String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val lastVisitedText = stringResource(R.string.visited_items_last_visited)
+    MediumVerticalSpacer()
 
-    items.forEach { (sectionTitle, visitedItems) ->
-        if (visitedItems.isNotEmpty()) {
-            SectionHeadingLabel(title3 = sectionTitle)
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = GovUkTheme.spacing.medium)
+    ) {
+        items.forEach { (sectionTitle, visitedItems) ->
+            if (visitedItems.isNotEmpty()) {
+                item {
+                    SectionHeadingLabel(title3 = sectionTitle)
+                }
+                item {
+                    SmallVerticalSpacer()
+                }
+                itemsIndexed(
+                    items = visitedItems,
+                    key = { index, _ -> index }
+                ) { index, item ->
+                    val title = item.title
+                    val lastVisited = item.lastVisited
+                    val url = item.url
 
-            SmallVerticalSpacer()
-
-            visitedItems.forEachIndexed { index, item ->
-                val title = item.title
-                val lastVisited = item.lastVisited
-                val url = item.url
-
-                ExternalLinkListItem(
-                    title = title,
-                    description = "$lastVisitedText $lastVisited",
-                    onClick = {
-                        onClick(title, url)
-                    },
-                    isFirst = index == 0,
-                    isLast = index == visitedItems.size - 1,
-                    style = ExternalLinkListItemStyle.Button(
-                        icon = uk.gov.govuk.design.R.drawable.ic_cancel_round,
-                        altText = "${stringResource(uk.gov.govuk.design.R.string.content_desc_remove)} $title",
+                    ExternalLinkListItem(
+                        title = title,
+                        description = "${stringResource(R.string.visited_items_last_visited)} $lastVisited",
                         onClick = {
-                            onRemoveClick(title, url)
-                        }
+                            onClick(title, url)
+                        },
+                        modifier = Modifier.animateItem(),
+                        isFirst = index == 0,
+                        isLast = index == visitedItems.size - 1,
+                        style = ExternalLinkListItemStyle.Button(
+                            icon = uk.gov.govuk.design.R.drawable.ic_cancel_round,
+                            altText = "${stringResource(uk.gov.govuk.design.R.string.content_desc_remove)} $title",
+                            onClick = {
+                                onRemoveClick(title, url)
+                            }
+                        )
                     )
-                )
+                }
+                item {
+                    LargeVerticalSpacer()
+                }
             }
-
-            LargeVerticalSpacer()
         }
     }
 }
