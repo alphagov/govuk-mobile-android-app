@@ -56,6 +56,8 @@ private val Black = Color(0xFF000000)
 private val BlackLighter50 = Color(0xFF858686)
 private val BlackAlpha30 = Color(0x4D000000)
 private val BlackAlpha75 = Color(0x4B000000)
+private val BlackLighter95 = Color(0xFFF3F3F3)
+
 
 private val White = Color(0xFFFFFFFF)
 private val WhiteAlpha30 = Color(0x4DFFFFFF)
@@ -71,6 +73,7 @@ data class GovUkColourScheme(
         val primary: Color,
         val secondary: Color,
         val link: Color,
+        val linkPrimary: Color,
         val linkSecondary: Color,
         val linkHeader: Color,
         val header: Color,
@@ -90,8 +93,10 @@ data class GovUkColourScheme(
         val buttonDestructive: Color,
         val icon: Color,
         val iconPrimary: Color,
+        val iconSecondary: Color,
         val iconTertiary: Color,
         val iconSurroundPrimary: Color,
+        val iconSurroundSecondary: Color,
         val trailingIcon: Color,
         val buttonRemoveDisabled: Color,
         val selectedTick: Color,
@@ -194,6 +199,7 @@ internal val LightColorScheme = GovUkColourScheme(
         primary = Black,
         secondary = Grey700,
         link = BluePrimary,
+        linkPrimary = BluePrimary,
         linkSecondary = BluePrimary,
         linkHeader = White,
         header = White,
@@ -213,8 +219,10 @@ internal val LightColorScheme = GovUkColourScheme(
         buttonDestructive = RedPrimary,
         icon = BluePrimary,
         iconPrimary = White,
+        iconSecondary = BluePrimary,
         iconTertiary = BluePrimary,
         iconSurroundPrimary = BluePrimary,
+        iconSurroundSecondary = BlueLighter80,
         trailingIcon = Grey300,
         buttonRemoveDisabled = Grey700,
         selectedTick = White,
@@ -321,6 +329,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         primary = White,
         secondary = Grey300,
         link = White,
+        linkPrimary = White,
         linkSecondary = BlueAccent,
         linkHeader = BlueAccent,
         header = White,
@@ -340,8 +349,10 @@ internal val DarkColorScheme = GovUkColourScheme(
         buttonDestructive = RedAccent,
         icon = BlueLighter95,
         iconPrimary = White,
+        iconSecondary = BlackLighter95,
         iconTertiary = White,
         iconSurroundPrimary = BlueDarkMode,
+        iconSurroundSecondary = BlueDarkMode,
         trailingIcon = Grey500,
         buttonRemoveDisabled = Grey300,
         selectedTick = White,
@@ -449,6 +460,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             primary = Color.Unspecified,
             secondary = Color.Unspecified,
             link = Color.Unspecified,
+            linkPrimary = Color.Unspecified,
             linkSecondary = Color.Unspecified,
             linkHeader = Color.Unspecified,
             header = Color.Unspecified,
@@ -468,8 +480,10 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             buttonDestructive = Color.Unspecified,
             icon = Color.Unspecified,
             iconPrimary = Color.Unspecified,
+            iconSecondary = Color.Unspecified,
             iconTertiary = Color.Unspecified,
             iconSurroundPrimary = Color.Unspecified,
+            iconSurroundSecondary = Color.Unspecified,
             trailingIcon = Color.Unspecified,
             buttonRemoveDisabled = Color.Unspecified,
             selectedTick = Color.Unspecified,
