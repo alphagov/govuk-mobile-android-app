@@ -356,7 +356,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatLoadingIcon = BluePrimary
     ),
     surfaces = Surfaces(
-        background = Black,
+        background = BlueDarker80,
         primary = BlueAccent,
         splash = BluePrimary,
         cardDefault = BlueDarkMode,
