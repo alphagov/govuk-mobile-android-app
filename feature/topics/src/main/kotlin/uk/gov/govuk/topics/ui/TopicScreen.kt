@@ -33,13 +33,17 @@ import kotlinx.coroutines.delay
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.ExternalLinkListItemLegacy
+import uk.gov.govuk.design.ui.component.HorizontalCardScroller
 import uk.gov.govuk.design.ui.component.InternalLinkListItemLegacy
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.ListHeaderLegacy
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.component.SectionHeadingLabel
 import uk.gov.govuk.design.ui.component.error.OfflineMessage
 import uk.gov.govuk.design.ui.component.error.ProblemMessage
+import uk.gov.govuk.design.ui.model.CardListItem
+import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.R
 import uk.gov.govuk.topics.TopicUiState
@@ -135,10 +139,6 @@ private fun TopicScreen(
             onBack = onBack
         )
 
-        val popularPagesSection = TopicUi.Section(
-            title = R.string.popular_pages_title,
-            icon = R.drawable.ic_topic_popular
-        )
         val stepByStepSection = TopicUi.Section(
             title = R.string.step_by_step_guides_title,
             icon = R.drawable.ic_topic_step_by_step
@@ -186,12 +186,38 @@ private fun TopicScreen(
                 MediumVerticalSpacer()
             }
 
-            contentItems(
-                currentItemIndex = currentItemIndex,
-                contentItems = topic.popularPages,
-                section = popularPagesSection,
-                onClick = onExternalLink
-            )
+            item {
+                val section = stringResource(R.string.popular_pages_title)
+
+                // TODO: make sure this is the right header component
+                SectionHeadingLabel(
+                    modifier = modifier.padding(start = GovUkTheme.spacing.medium),
+                    title3 = stringResource(R.string.popular_pages),
+                    button = if (topic.popularPages.isNotEmpty()) {
+                        SectionHeadingLabelButton(
+                            title = stringResource(R.string.see_all_button),
+                            altText = stringResource(R.string.see_all_button),
+                            onClick = { /* TODO - opens page with all popular pages */ }
+                        )
+                    } else null
+                )
+
+                HorizontalCardScroller(
+                    cards = topic.popularPages.map {
+                        CardListItem(
+                            title = it.title,
+                            onClick = {
+                                onExternalLink(
+                                    section, it.title, it.url, currentItemIndex
+                                )
+                            }
+                        )
+                    },
+                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+                )
+
+                MediumVerticalSpacer()
+            }
 
             if (topic.popularPages.isNotEmpty()) currentItemIndex += topic.popularPages.size
 
