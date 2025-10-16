@@ -408,7 +408,7 @@ fun SectionHeadingLabel(
                             vertical = 9.dp
                         )
                         .semantics { contentDescription = button.altText },
-                    color = GovUkTheme.colourScheme.textAndIcons.link
+                    color = GovUkTheme.colourScheme.textAndIcons.linkSecondary
                 )
             }
         }
