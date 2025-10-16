@@ -26,6 +26,7 @@
     <string name="removed_alt_text">Removed</string>
     <string name="selected_alt_text">Selected</string>
     <string name="empty_topics">No topics selected</string>
+    <string name="popular_pages">Popular pages</string>
 
     <!-- Topic names -->
     <string name="benefits">Benefits</string>

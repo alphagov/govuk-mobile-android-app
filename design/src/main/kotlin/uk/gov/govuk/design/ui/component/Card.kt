@@ -16,6 +16,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -23,6 +26,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.R
 import uk.gov.govuk.design.ui.extension.drawBottomStroke
 import uk.gov.govuk.design.ui.extension.talkBackText
+import uk.gov.govuk.design.ui.model.CardListItem
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -462,6 +470,110 @@ fun NavigationCard(
             MediumVerticalSpacer()
         }
     )
+}
+
+@Composable
+fun HorizontalCardScroller(
+    cards: List<CardListItem>,
+    modifier: Modifier = Modifier
+) {
+    val lazyListState = rememberLazyListState()
+
+    val visibleItems by remember {
+        derivedStateOf {
+            lazyListState.layoutInfo.visibleItemsInfo.map { visibleItemInfo ->
+                cards[visibleItemInfo.index].title
+            }
+        }
+    }
+
+    val nonVisibleItems by remember {
+        derivedStateOf {
+            val visibleIndices = lazyListState.layoutInfo.visibleItemsInfo.map { it.index }.toSet()
+
+            cards.filterIndexed { index, contentItem ->
+                index !in visibleIndices
+            }.map { nonVisibleItem ->
+                nonVisibleItem.title
+            }
+        }
+    }
+
+    LaunchedEffect(visibleItems) {
+        // TODO: fire analytics event via a callback
+        println("Visible items: $visibleItems")
+        println("Non visible items: $nonVisibleItems")
+    }
+
+    Box {
+        LazyRow(
+            state = lazyListState,
+            modifier = modifier.fillMaxWidth(),
+        ) {
+            itemsIndexed(cards) { index, item ->
+                // TODO: handle text sizes and large titles
+                Card(
+                    modifier = Modifier
+                        .size(150.dp)
+                        .fillMaxWidth()
+                        .talkBackText(
+                            item.title,
+                            stringResource(R.string.opens_in_web_browser)
+                        )
+                        .drawBottomStroke(
+                            colour = GovUkTheme.colourScheme.strokes.cardCarousel,
+                            cornerRadius = GovUkTheme.numbers.cornerAndroidList
+                        ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = GovUkTheme.colourScheme.surfaces.cardCarousel
+                    ),
+                    onClick = item.onClick,
+                    content = {
+                        MediumVerticalSpacer()
+                        SubheadlineBoldLabel(
+                            text = item.title,
+                            color = GovUkTheme.colourScheme.textAndIcons.cardCarousel,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .semantics(mergeDescendants = true) { }
+                                .padding(horizontal = GovUkTheme.spacing.medium)
+                        )
+                        MediumVerticalSpacer()
+                    }
+                )
+                if (index < cards.size - 1) {
+                    SmallHorizontalSpacer()
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun HorizontalCardScrollerPreview() {
+    GovUkTheme {
+        HorizontalCardScroller(
+            cards = listOf(
+                CardListItem(
+                    title = "Card content that can go over multiple lines",
+                    onClick = { }
+                ),
+                CardListItem(
+                    title = "Card content that can go over multiple lines",
+                    onClick = { }
+                ),
+                CardListItem(
+                    title = "Card content that can go over multiple lines",
+                    onClick = { }
+                ),
+                CardListItem(
+                    title = "Card content that can go over multiple lines",
+                    onClick = { }
+                )
+            )
+        )
+    }
 }
 
 @Preview

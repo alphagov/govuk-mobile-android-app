@@ -18,3 +18,8 @@ sealed interface InternalLinkListItemStyle {
         val title: String
     ) : InternalLinkListItemStyle
 }
+
+data class CardListItem(
+    val title: String,
+    val onClick: () -> Unit
+)
