@@ -1,6 +1,7 @@
 package uk.gov.govuk.design.ui.component
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,11 +41,12 @@ import uk.gov.govuk.design.ui.extension.talkBackText
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
-fun GovUkCard(
+fun GovUkCardLegacy(
     modifier: Modifier = Modifier,
     isSelected: Boolean = false,
     onClick: (() -> Unit)? = null,
-    backgroundColour: Color = GovUkTheme.colourScheme.surfaces.listUnselected,
+    backgroundColour: Color = GovUkTheme.colourScheme.surfaces.cardBlue,
+    borderColour: Color = GovUkTheme.colourScheme.strokes.cardBlue,
     padding: Dp = GovUkTheme.spacing.medium,
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -53,9 +56,19 @@ fun GovUkCard(
         backgroundColour
     }
 
-    Card(
+    val strokeColour = if (isSelected) {
+        GovUkTheme.colourScheme.strokes.cardSelected
+    } else {
+        borderColour
+    }
+
+    OutlinedCard(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = cardColour)
+        colors = CardDefaults.cardColors(containerColor = cardColour),
+        border = BorderStroke(
+            width = 1.dp,
+            color = strokeColour
+        )
     ) {
         Column(
             modifier = Modifier
@@ -71,7 +84,7 @@ fun GovUkCard(
 }
 
 @Composable
-fun HomeNavigationCard(
+fun HomeNavigationCardLegacy(
     title: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -137,7 +150,7 @@ fun HomeNavigationCard(
 }
 
 @Composable
-fun HomeAlertCard(
+fun HomeAlertCardLegacy(
     modifier: Modifier = Modifier,
     title: String? = null,
     description: String? = null,
@@ -249,7 +262,7 @@ fun HomeAlertCard(
 }
 
 @Composable
-fun SearchResultCard(
+fun SearchResultCardLegacy(
     title: String,
     description: String?,
     url: String,
@@ -293,7 +306,7 @@ fun SearchResultCard(
 }
 
 @Composable
-fun UserFeedbackCard(
+fun UserFeedbackCardLegacy(
     body: String,
     linkTitle: String,
     onClick: () -> Unit,
@@ -324,7 +337,7 @@ fun UserFeedbackCard(
 }
 
 @Composable
-fun NonTappableCard(
+fun NonTappableCardLegacy(
     body: String,
     modifier: Modifier = Modifier
 ) {
@@ -340,7 +353,7 @@ fun NonTappableCard(
 }
 
 @Composable
-fun CentredCardWithIcon(
+fun CentredCardWithIconLegacy(
     onClick: () -> Unit,
     @DrawableRes icon: Int,
     modifier: Modifier = Modifier,
@@ -403,7 +416,7 @@ fun CentredCardWithIcon(
 }
 
 @Composable
-fun NavigationCard(
+fun NavigationCardLegacy(
     title: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -455,7 +468,7 @@ fun NavigationCard(
 @Composable
 private fun HomeNavigationCardPreview() {
     GovUkTheme {
-        HomeNavigationCard(
+        HomeNavigationCardLegacy(
             title = "Card title",
             onClick = { },
             icon = R.drawable.ic_settings,
@@ -468,7 +481,7 @@ private fun HomeNavigationCardPreview() {
 @Composable
 private fun HomeNavigationCardSuppressiblePreview() {
     GovUkTheme {
-        HomeNavigationCard(
+        HomeNavigationCardLegacy(
             title = "Card title",
             onClick = { },
             onSuppressClick = { },
@@ -482,7 +495,7 @@ private fun HomeNavigationCardSuppressiblePreview() {
 @Composable
 private fun HomeNavigationCardNoDescriptionPreview() {
     GovUkTheme {
-        HomeNavigationCard(
+        HomeNavigationCardLegacy(
             title = "Card title",
             onClick = { },
             icon = R.drawable.ic_settings,
@@ -494,7 +507,7 @@ private fun HomeNavigationCardNoDescriptionPreview() {
 @Composable
 private fun HomeNavigationCardNoIconPreview() {
     GovUkTheme {
-        HomeNavigationCard(
+        HomeNavigationCardLegacy(
             title = "Card title",
             onClick = { }
         )
@@ -505,7 +518,7 @@ private fun HomeNavigationCardNoIconPreview() {
 @Composable
 private fun HomeAlertCardPreview() {
     GovUkTheme {
-        HomeAlertCard(
+        HomeAlertCardLegacy(
             title = "Card title",
             description = "Card description that may go over multiple lines",
             onClick = { },
@@ -521,7 +534,7 @@ private fun HomeAlertCardPreview() {
 @Composable
 private fun SearchResultWithDescriptionPreview() {
     GovUkTheme {
-        SearchResultCard(
+        SearchResultCardLegacy(
             title = "Card title",
             description = "Description",
             url = "",
@@ -535,7 +548,7 @@ private fun SearchResultWithDescriptionPreview() {
 @Composable
 private fun SearchResultWithoutDescriptionPreview() {
     GovUkTheme {
-        SearchResultCard(
+        SearchResultCardLegacy(
             title = "Card title",
             description = null,
             url = "",
@@ -549,7 +562,7 @@ private fun SearchResultWithoutDescriptionPreview() {
 @Composable
 private fun UserFeedbackCardPreview() {
     GovUkTheme {
-        UserFeedbackCard("Card body", "A link description", {})
+        UserFeedbackCardLegacy("Card body", "A link description", {})
     }
 }
 
@@ -557,7 +570,7 @@ private fun UserFeedbackCardPreview() {
 @Composable
 private fun NonTappableCardPreview() {
     GovUkTheme {
-        NonTappableCard("Card body")
+        NonTappableCardLegacy("Card body")
     }
 }
 
@@ -565,7 +578,7 @@ private fun NonTappableCardPreview() {
 @Composable
 private fun CentredCardWithIconWithTitleAndDescriptionPreview() {
     GovUkTheme {
-        CentredCardWithIcon(
+        CentredCardWithIconLegacy(
             onClick = { },
             icon = R.drawable.ic_settings,
             title = "Card title",
@@ -578,7 +591,7 @@ private fun CentredCardWithIconWithTitleAndDescriptionPreview() {
 @Composable
 private fun CentredCardWithIconWithTitlePreview() {
     GovUkTheme {
-        CentredCardWithIcon(
+        CentredCardWithIconLegacy(
             onClick = { },
             icon = R.drawable.ic_settings,
             title = "Card title"
@@ -590,7 +603,7 @@ private fun CentredCardWithIconWithTitlePreview() {
 @Composable
 private fun CentredCardWithIconWithDescriptionPreview() {
     GovUkTheme {
-        CentredCardWithIcon(
+        CentredCardWithIconLegacy(
             onClick = { },
             icon = R.drawable.ic_settings,
             description = "Card secondary text that may go over multiple lines."
@@ -602,7 +615,7 @@ private fun CentredCardWithIconWithDescriptionPreview() {
 @Composable
 private fun NavigationCardWithTitleAndDescriptionPreview() {
     GovUkTheme {
-        NavigationCard(
+        NavigationCardLegacy(
             title = "Card title",
             description = "Card secondary text that may go over multiple lines.",
             onClick = {}
@@ -614,7 +627,7 @@ private fun NavigationCardWithTitleAndDescriptionPreview() {
 @Composable
 private fun NavigationCardWithoutDescriptionPreview() {
     GovUkTheme {
-        NavigationCard(
+        NavigationCardLegacy(
             title = "Card title",
             onClick = {}
         )
