@@ -32,7 +32,7 @@ fun TopicSelectionCard(
     modifier: Modifier = Modifier
 ) {
     GovUkCard(
-        modifier,
+        modifier = modifier,
         isSelected = isSelected,
         onClick = { onClick() }
     ) {
