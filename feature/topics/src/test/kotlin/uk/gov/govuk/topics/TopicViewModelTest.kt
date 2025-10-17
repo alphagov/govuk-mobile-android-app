@@ -68,6 +68,7 @@ class TopicViewModelTest {
             title = "title",
             description = "description",
             popularPages = emptyList(),
+            displayPopularPagesSeeAll = false,
             stepBySteps = emptyList(),
             displayStepByStepSeeAll = false,
             services = emptyList(),
@@ -185,6 +186,7 @@ class TopicViewModelTest {
             title = "title",
             description = "description",
             popularPages = popularPagesSection,
+            displayPopularPagesSeeAll = true,
             stepBySteps = emptyList(),
             displayStepByStepSeeAll = false,
             services = emptyList(),
@@ -208,7 +210,7 @@ class TopicViewModelTest {
                     items = popularPagesSection.map {
                         EcommerceEvent.Item(
                             itemName = it.title,
-                            itemCategory = "Popular pages in this topic",
+                            itemCategory = "Popular pages",
                             locationId = it.url
                         )
                     }

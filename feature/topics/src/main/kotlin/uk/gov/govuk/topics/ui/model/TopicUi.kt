@@ -7,6 +7,7 @@ internal data class TopicUi(
     val title: String,
     val description: String?,
     val popularPages: List<TopicContent>,
+    val displayPopularPagesSeeAll: Boolean,
     val stepBySteps: List<TopicContent>,
     val displayStepByStepSeeAll: Boolean,
     val services: List<TopicContent>,

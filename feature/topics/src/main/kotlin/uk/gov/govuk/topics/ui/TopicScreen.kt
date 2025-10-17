@@ -33,13 +33,17 @@ import kotlinx.coroutines.delay
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.ExternalLinkListItemLegacy
+import uk.gov.govuk.design.ui.component.HorizontalCardScroller
 import uk.gov.govuk.design.ui.component.InternalLinkListItemLegacy
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.ListHeaderLegacy
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.component.SectionHeadingLabel
 import uk.gov.govuk.design.ui.component.error.OfflineMessage
 import uk.gov.govuk.design.ui.component.error.ProblemMessage
+import uk.gov.govuk.design.ui.model.CardListItem
+import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.R
 import uk.gov.govuk.topics.TopicUiState
@@ -52,6 +56,7 @@ internal fun TopicRoute(
     onBack: () -> Unit,
     onExternalLink: (url: String, onExternalLink: Int) -> Unit,
     onStepByStepSeeAll: () -> Unit,
+    onPopularPagesSeeAll: () -> Unit,
     onSubtopic: (ref: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -82,6 +87,14 @@ internal fun TopicRoute(
                         },
                         onStepByStepSeeAll = { section, text, selectedItemIndex ->
                             onStepByStepSeeAll()
+                            viewModel.onSeeAllClick(
+                                section = section,
+                                text = text,
+                                selectedItemIndex = selectedItemIndex
+                            )
+                        },
+                        onPopularPagesSeeAll = { section, text, selectedItemIndex ->
+                            onPopularPagesSeeAll()
                             viewModel.onSeeAllClick(
                                 section = section,
                                 text = text,
@@ -122,6 +135,7 @@ private fun TopicScreen(
     onBack: () -> Unit,
     onExternalLink: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit,
     onStepByStepSeeAll: (section: String, text: String, selectedItemIndex: Int) -> Unit,
+    onPopularPagesSeeAll: (section: String, text: String, selectedItemIndex: Int) -> Unit,
     onSubtopic: (text: String, ref: String, selectedItemIndex: Int) -> Unit,
     focusRequester: FocusRequester,
     modifier: Modifier = Modifier
@@ -135,10 +149,6 @@ private fun TopicScreen(
             onBack = onBack
         )
 
-        val popularPagesSection = TopicUi.Section(
-            title = R.string.popular_pages_title,
-            icon = R.drawable.ic_topic_popular
-        )
         val stepByStepSection = TopicUi.Section(
             title = R.string.step_by_step_guides_title,
             icon = R.drawable.ic_topic_step_by_step
@@ -186,14 +196,44 @@ private fun TopicScreen(
                 MediumVerticalSpacer()
             }
 
-            contentItems(
-                currentItemIndex = currentItemIndex,
-                contentItems = topic.popularPages,
-                section = popularPagesSection,
-                onClick = onExternalLink
-            )
+            item {
+                val section = stringResource(R.string.popular_pages_title)
+                val seeAllButton = stringResource(R.string.see_all_button)
+
+                SectionHeadingLabel(
+                    modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium),
+                    title3 = stringResource(R.string.popular_pages_title),
+                    button = if (topic.displayPopularPagesSeeAll) {
+                        SectionHeadingLabelButton(
+                            title = seeAllButton,
+                            altText = seeAllButton,
+                            onClick = {
+                                onPopularPagesSeeAll(section, seeAllButton, currentItemIndex)
+                            }
+                        )
+                    } else null
+                )
+
+                HorizontalCardScroller(
+                    cards = topic.popularPages.map {
+                        // TODO: Yellow focus state
+                        CardListItem(
+                            title = it.title,
+                            onClick = {
+                                onExternalLink(
+                                    section, it.title, it.url, currentItemIndex
+                                )
+                            }
+                        )
+                    },
+                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+                )
+
+                MediumVerticalSpacer()
+            }
 
             if (topic.popularPages.isNotEmpty()) currentItemIndex += topic.popularPages.size
+            if (topic.displayPopularPagesSeeAll) { currentItemIndex += 1 }
 
             contentItems(
                 currentItemIndex = currentItemIndex,
