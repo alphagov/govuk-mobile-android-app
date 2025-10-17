@@ -26,9 +26,10 @@ import kotlinx.coroutines.launch
 import uk.gov.govuk.design.ui.component.CardListItem
 import uk.gov.govuk.design.ui.component.ConnectedButton
 import uk.gov.govuk.design.ui.component.ConnectedButtonGroup
-import uk.gov.govuk.design.ui.component.IconLinkListItem
+import uk.gov.govuk.design.ui.component.IconListItem
 import uk.gov.govuk.design.ui.component.SectionHeadingLabel
 import uk.gov.govuk.design.ui.component.error.ProblemMessage
+import uk.gov.govuk.design.ui.model.IconListItemStyle
 import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.R
@@ -179,7 +180,7 @@ private fun ColumnScope.TopicsList(
     }
 
     topics.forEachIndexed { index, topic ->
-        IconLinkListItem(
+        IconListItem(
             title = topic.title,
             icon = topic.icon,
             onClick = {
@@ -190,6 +191,7 @@ private fun ColumnScope.TopicsList(
                     index + 1
                 )
             },
+            style = IconListItemStyle.Bold,
             isFirst = false,
             isLast = index == topics.lastIndex
         )

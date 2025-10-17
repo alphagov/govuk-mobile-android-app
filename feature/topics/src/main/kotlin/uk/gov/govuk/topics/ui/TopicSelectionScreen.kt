@@ -25,7 +25,7 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.R
 import uk.gov.govuk.topics.TopicSelectionUiState
 import uk.gov.govuk.topics.TopicSelectionViewModel
-import uk.gov.govuk.topics.ui.component.TopicSelectionCard
+import uk.gov.govuk.topics.ui.component.TopicSelectionCardLegacy
 import uk.gov.govuk.topics.ui.component.TopicsGrid
 
 @Composable
@@ -99,7 +99,7 @@ private fun TopicSelectionScreen(
                 val selectedAltText = stringResource(R.string.selected_alt_text)
                 val removedAltText = stringResource(R.string.removed_alt_text)
 
-                TopicSelectionCard(
+                TopicSelectionCardLegacy(
                     icon = topic.icon,
                     title = topic.title,
                     description = topic.description,

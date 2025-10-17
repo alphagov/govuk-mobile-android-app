@@ -36,7 +36,7 @@ sonar {
     properties {
         property(
             "sonar.cpd.exclusions",
-            properties["sonar.cpd.exclusions"].toString() + ",**/ListLegacy.*"
+            properties["sonar.cpd.exclusions"].toString() + ",**/ListLegacy.*" + ",**/CardLegacy.*"
         )
     }
 }

@@ -23,3 +23,7 @@ data class CardListItem(
     val title: String,
     val onClick: () -> Unit
 )
+sealed interface IconListItemStyle {
+    data object Regular : IconListItemStyle
+    data object Bold : IconListItemStyle
+}
