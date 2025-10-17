@@ -479,32 +479,6 @@ fun HorizontalCardScroller(
 ) {
     val lazyListState = rememberLazyListState()
 
-    val visibleItems by remember {
-        derivedStateOf {
-            lazyListState.layoutInfo.visibleItemsInfo.map { visibleItemInfo ->
-                cards[visibleItemInfo.index].title
-            }
-        }
-    }
-
-    val nonVisibleItems by remember {
-        derivedStateOf {
-            val visibleIndices = lazyListState.layoutInfo.visibleItemsInfo.map { it.index }.toSet()
-
-            cards.filterIndexed { index, contentItem ->
-                index !in visibleIndices
-            }.map { nonVisibleItem ->
-                nonVisibleItem.title
-            }
-        }
-    }
-
-    LaunchedEffect(visibleItems) {
-        // TODO: fire analytics event via a callback
-        println("Visible items: $visibleItems")
-        println("Non visible items: $nonVisibleItems")
-    }
-
     Box {
         LazyRow(
             state = lazyListState,
@@ -555,6 +529,14 @@ private fun HorizontalCardScrollerPreview() {
     GovUkTheme {
         HorizontalCardScroller(
             cards = listOf(
+                CardListItem(
+                    title = "Card content that can go over multiple lines",
+                    onClick = { }
+                ),
+                CardListItem(
+                    title = "Card content that can go over multiple lines",
+                    onClick = { }
+                ),
                 CardListItem(
                     title = "Card content that can go over multiple lines",
                     onClick = { }
