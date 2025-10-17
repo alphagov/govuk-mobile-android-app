@@ -21,5 +21,5 @@ sealed interface InternalLinkListItemStyle {
 
 sealed interface IconListItemStyle {
     data object Regular : IconListItemStyle
-    data object Bold: IconListItemStyle
+    data object Bold : IconListItemStyle
 }
