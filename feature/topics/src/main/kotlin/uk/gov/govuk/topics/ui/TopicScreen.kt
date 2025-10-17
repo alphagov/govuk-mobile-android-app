@@ -56,6 +56,7 @@ internal fun TopicRoute(
     onBack: () -> Unit,
     onExternalLink: (url: String, onExternalLink: Int) -> Unit,
     onStepByStepSeeAll: () -> Unit,
+    onPopularPagesSeeAll: () -> Unit,
     onSubtopic: (ref: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -86,6 +87,14 @@ internal fun TopicRoute(
                         },
                         onStepByStepSeeAll = { section, text, selectedItemIndex ->
                             onStepByStepSeeAll()
+                            viewModel.onSeeAllClick(
+                                section = section,
+                                text = text,
+                                selectedItemIndex = selectedItemIndex
+                            )
+                        },
+                        onPopularPagesSeeAll = { section, text, selectedItemIndex ->
+                            onPopularPagesSeeAll()
                             viewModel.onSeeAllClick(
                                 section = section,
                                 text = text,
@@ -126,6 +135,7 @@ private fun TopicScreen(
     onBack: () -> Unit,
     onExternalLink: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit,
     onStepByStepSeeAll: (section: String, text: String, selectedItemIndex: Int) -> Unit,
+    onPopularPagesSeeAll: (section: String, text: String, selectedItemIndex: Int) -> Unit,
     onSubtopic: (text: String, ref: String, selectedItemIndex: Int) -> Unit,
     focusRequester: FocusRequester,
     modifier: Modifier = Modifier
@@ -188,22 +198,25 @@ private fun TopicScreen(
 
             item {
                 val section = stringResource(R.string.popular_pages_title)
+                val seeAllButton = stringResource(R.string.see_all_button)
 
-                // TODO: make sure this is the right header component
                 SectionHeadingLabel(
-                    modifier = modifier.padding(start = GovUkTheme.spacing.medium),
-                    title3 = stringResource(R.string.popular_pages),
-                    button = if (topic.popularPages.isNotEmpty()) {
+                    modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium),
+                    title3 = stringResource(R.string.popular_pages_title),
+                    button = if (topic.displayPopularPagesSeeAll) {
                         SectionHeadingLabelButton(
-                            title = stringResource(R.string.see_all_button),
-                            altText = stringResource(R.string.see_all_button),
-                            onClick = { /* TODO - opens page with all popular pages */ }
+                            title = seeAllButton,
+                            altText = seeAllButton,
+                            onClick = {
+                                onPopularPagesSeeAll(section, seeAllButton, currentItemIndex)
+                            }
                         )
                     } else null
                 )
 
                 HorizontalCardScroller(
                     cards = topic.popularPages.map {
+                        // TODO: Yellow focus state
                         CardListItem(
                             title = it.title,
                             onClick = {
@@ -220,6 +233,7 @@ private fun TopicScreen(
             }
 
             if (topic.popularPages.isNotEmpty()) currentItemIndex += topic.popularPages.size
+            if (topic.displayPopularPagesSeeAll) { currentItemIndex += 1 }
 
             contentItems(
                 currentItemIndex = currentItemIndex,
