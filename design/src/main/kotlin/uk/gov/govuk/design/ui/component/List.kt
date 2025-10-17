@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import uk.gov.govuk.design.R
 import uk.gov.govuk.design.ui.model.ExternalLinkListItemStyle
+import uk.gov.govuk.design.ui.model.IconListItemStyle
 import uk.gov.govuk.design.ui.model.InternalLinkListItemStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
@@ -236,11 +237,12 @@ fun ToggleListItem(
 }
 
 @Composable
-fun IconLinkListItem(
+fun IconListItem(
     title: String,
     @DrawableRes icon: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    style: IconListItemStyle = IconListItemStyle.Regular,
     isFirst: Boolean = true,
     isLast: Boolean = true
 ) {
@@ -258,11 +260,24 @@ fun IconLinkListItem(
                     .padding(all = GovUkTheme.spacing.medium),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val iconConfig = when (style) {
+                    IconListItemStyle.Regular ->
+                        Pair(
+                            GovUkTheme.colourScheme.textAndIcons.iconSurroundSecondary,
+                            GovUkTheme.colourScheme.textAndIcons.iconSecondary
+                        )
+                    IconListItemStyle.Bold ->
+                        Pair(
+                            GovUkTheme.colourScheme.textAndIcons.iconSurroundPrimary,
+                            GovUkTheme.colourScheme.textAndIcons.iconPrimary
+                        )
+                }
+
                 Box(
                     modifier = Modifier
                         .size(40.dp)
                         .background(
-                            color = GovUkTheme.colourScheme.textAndIcons.iconSurroundPrimary,
+                            color = iconConfig.first,
                             shape = CircleShape
                         )
                         .padding(6.dp),
@@ -271,24 +286,36 @@ fun IconLinkListItem(
                     Icon(
                         painter = painterResource(icon),
                         contentDescription = null,
-                        tint = GovUkTheme.colourScheme.textAndIcons.iconPrimary
+                        tint = iconConfig.second
                     )
                 }
 
                 MediumHorizontalSpacer()
 
-                BodyBoldLabel(
-                    text = title,
-                    modifier = Modifier.weight(1f)
-                )
+                when (style) {
+                    IconListItemStyle.Regular -> {
+                        BodyRegularLabel(
+                            text = title,
+                            modifier = Modifier.weight(1f),
+                            color = GovUkTheme.colourScheme.textAndIcons.linkPrimary
+                        )
+                    }
+                    IconListItemStyle.Bold -> {
+                        BodyBoldLabel(
+                            text = title,
+                            modifier = Modifier.weight(1f)
+                        )
 
-                MediumHorizontalSpacer()
+                        MediumHorizontalSpacer()
 
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow),
-                    contentDescription = null,
-                    tint = GovUkTheme.colourScheme.textAndIcons.iconTertiary
-                )
+                        Icon(
+                            painter = painterResource(R.drawable.ic_arrow),
+                            contentDescription = null,
+                            tint = GovUkTheme.colourScheme.textAndIcons.iconTertiary
+                        )
+                    }
+                }
+
             }
         }
 

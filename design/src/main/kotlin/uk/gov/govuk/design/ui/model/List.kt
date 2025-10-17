@@ -18,3 +18,8 @@ sealed interface InternalLinkListItemStyle {
         val title: String
     ) : InternalLinkListItemStyle
 }
+
+sealed interface IconListItemStyle {
+    data object Regular : IconListItemStyle
+    data object Bold : IconListItemStyle
+}
