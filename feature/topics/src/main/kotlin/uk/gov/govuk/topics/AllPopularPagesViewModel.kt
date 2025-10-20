@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.analytics.data.local.model.EcommerceEvent
 import uk.gov.govuk.topics.data.TopicsRepo
@@ -46,45 +45,13 @@ internal class AllPopularPagesViewModel @Inject constructor(
         url: String,
         selectedItemIndex: Int
     ) {
-        analyticsClient.buttonClick(
-            text = text,
-            url = url,
-            external = true,
-            section = section
-        )
-
-        sendSelectItemEvent(
-            title = text,
+        onClick(
+            analyticsClient = analyticsClient,
+            viewModelScope = viewModelScope,
+            visited = visited,
             section = section,
             text = text,
             url = url,
-            selectedItemIndex = selectedItemIndex
-        )
-
-        viewModelScope.launch {
-            visited.visitableItemClick(title = text, url = url)
-        }
-    }
-
-    private fun sendSelectItemEvent(
-        section: String,
-        text: String,
-        title: String?,
-        url: String?,
-        selectedItemIndex: Int
-    ) {
-        analyticsClient.selectItemEvent(
-            ecommerceEvent = EcommerceEvent(
-                itemListName = "Topics",
-                itemListId = title ?: "",
-                items = listOf(
-                    EcommerceEvent.Item(
-                        itemName = text,
-                        itemCategory = section,
-                        locationId = url ?: ""
-                    )
-                )
-            ),
             selectedItemIndex = selectedItemIndex
         )
     }
