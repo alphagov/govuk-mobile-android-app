@@ -130,6 +130,52 @@ class RemoteTopicTest {
     }
 
     @Test
+    fun `Given a remote topic with popular pages that exceed the max number, When mapping to topic ui, then return a topic ui`() {
+        val remoteTopic = RemoteTopic(
+            title = "title",
+            description = "description",
+            subtopics = listOf(
+                RemoteTopicItem(
+                    ref = "ref",
+                    title = "title",
+                    description = "description",
+                )
+            ),
+            content = listOf(
+                RemoteTopicContent(
+                    url = "url-1",
+                    title = "title-1",
+                    isStepByStep = false,
+                    isPopular = true
+                ),
+                RemoteTopicContent(
+                    url = "url-2",
+                    title = "title-2",
+                    isStepByStep = false,
+                    isPopular = true
+                ),
+                RemoteTopicContent(
+                    url = "url-3",
+                    title = "title-3",
+                    isStepByStep = false,
+                    isPopular = true
+                )
+            )
+        )
+
+        val popularPages = listOf(
+            TopicContent(
+                url = "url-1",
+                title = "title-1"
+            )
+        )
+
+        val topicUi = remoteTopic.toTopicUi(1, 1, false)
+        assertEquals(popularPages, topicUi.popularPages)
+        assertTrue(topicUi.displayPopularPagesSeeAll)
+    }
+
+    @Test
     fun `Given a remote topic, When mapping to topic ui, then return with subtopic title and icon of browse`() {
         val remoteTopic = RemoteTopic(
             title = "title",
