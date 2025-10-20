@@ -12,11 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.component.ModalHeader
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
-import uk.gov.govuk.design.ui.model.HeaderDismissStyle
+import uk.gov.govuk.design.ui.model.HeaderActionStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.EditTopicsViewModel
 import uk.gov.govuk.topics.R
@@ -25,7 +25,7 @@ import uk.gov.govuk.topics.ui.model.TopicItemUi
 
 @Composable
 internal fun EditTopicsRoute(
-    onBack: () -> Unit,
+    onDone: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: EditTopicsViewModel = hiltViewModel()
@@ -34,7 +34,7 @@ internal fun EditTopicsRoute(
     EditTopicsScreen(
         topics = topics,
         onPageView = { title -> viewModel.onPageView(title) },
-        onBack = onBack,
+        onDone = onDone,
         onTopicSelectedChanged = { ref, title, isSelected ->
             viewModel.onTopicSelectedChanged(
                 ref = ref,
@@ -50,7 +50,7 @@ internal fun EditTopicsRoute(
 private fun EditTopicsScreen(
     topics: List<TopicItemUi>?,
     onPageView: (String) -> Unit,
-    onBack: () -> Unit,
+    onDone: () -> Unit,
     onTopicSelectedChanged: (String, String, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -61,9 +61,12 @@ private fun EditTopicsScreen(
     }
 
     Column(modifier) {
-        ChildPageHeader(
+        ModalHeader(
             text = title,
-            dismissStyle = HeaderDismissStyle.Back(onBack)
+            actionStyle = HeaderActionStyle.ActionButton(
+                title = stringResource(R.string.done_button),
+                onClick = onDone
+            ),
         )
         LazyColumn(
             Modifier
