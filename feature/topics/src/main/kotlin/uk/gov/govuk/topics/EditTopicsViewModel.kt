@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.topics.data.TopicsRepo
@@ -34,6 +35,9 @@ internal class EditTopicsViewModel @Inject constructor(
         }
     }
 
+    // TODO - check if it happens on topic selection screen
+    // TODO - check if updating compose version fixes it (use onclick on card)
+
     fun onPageView(title: String) {
         analyticsClient.screenView(
             screenClass = SCREEN_CLASS,
@@ -43,11 +47,20 @@ internal class EditTopicsViewModel @Inject constructor(
     }
 
     fun onTopicSelectedChanged(ref: String, title: String, isSelected: Boolean) {
-        viewModelScope.launch {
-            topicsRepo.topicsCustomised()
-            topicsRepo.toggleSelection(ref, isSelected)
-            logTopicToggleFunction(title, isSelected)
+        _topics.update { currentTopics ->
+            currentTopics?.map { topic ->
+                if (topic.ref == ref) {
+                    topic.copy(isSelected = isSelected)
+                } else {
+                    topic
+                }
+            }
         }
+//        viewModelScope.launch {
+//            topicsRepo.topicsCustomised()
+//            topicsRepo.toggleSelection(ref, isSelected)
+//            logTopicToggleFunction(title, isSelected)
+//        }
     }
 
     private fun logTopicToggleFunction(text: String, isSelected: Boolean) {

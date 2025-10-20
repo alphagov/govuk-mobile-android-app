@@ -15,10 +15,11 @@ import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
-import uk.gov.govuk.design.ui.component.ToggleListItemLegacy
+import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.EditTopicsViewModel
 import uk.gov.govuk.topics.R
+import uk.gov.govuk.topics.ui.component.TopicSelectionCard
 import uk.gov.govuk.topics.ui.model.TopicItemUi
 
 @Composable
@@ -77,19 +78,22 @@ private fun EditTopicsScreen(
 
             if (!topics.isNullOrEmpty()) {
                 itemsIndexed(topics) { index, topic ->
-                    ToggleListItemLegacy(
-                        title = topic.title,
-                        checked = topic.isSelected,
-                        onCheckedChange = { checked ->
-                            onTopicSelectedChanged(
-                                topic.ref,
-                                topic.title,
-                                checked
-                            )
-                        },
-                        isFirst = index == 0,
-                        isLast = index == topics.lastIndex
-                    )
+                    Column {
+                        SmallVerticalSpacer()
+                        TopicSelectionCard(
+                            icon = topic.icon,
+                            title = topic.title,
+                            isSelected = topic.isSelected,
+                            onClick = {
+                                onTopicSelectedChanged(
+                                    topic.ref,
+                                    topic.title,
+                                    !topic.isSelected
+                                )
+                            }
+                        )
+                        SmallVerticalSpacer()
+                    }
                 }
 
                 item {
