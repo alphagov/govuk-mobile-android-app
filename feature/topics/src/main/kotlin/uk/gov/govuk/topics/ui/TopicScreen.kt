@@ -216,7 +216,6 @@ private fun TopicScreen(
 
                 HorizontalCardScroller(
                     cards = topic.popularPages.map {
-                        // TODO: Yellow focus state
                         CardListItem(
                             title = it.title,
                             onClick = {

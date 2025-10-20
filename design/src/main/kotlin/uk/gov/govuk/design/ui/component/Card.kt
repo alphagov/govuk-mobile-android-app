@@ -1,8 +1,12 @@
 package uk.gov.govuk.design.ui.component
 
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,13 +28,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -473,8 +477,30 @@ fun HorizontalCardScroller(
         ) {
             itemsIndexed(cards) { index, item ->
                 // TODO: handle text sizes and large titles
+                val focusRequester = remember { FocusRequester() }
+                val interactionSource = remember { MutableInteractionSource() }
+                val isFocused by interactionSource.collectIsFocusedAsState()
+
+                val backgroundColor by animateColorAsState(
+                    if (isFocused) {
+                        GovUkTheme.colourScheme.surfaces.cardCarouselFocused
+                    } else {
+                        GovUkTheme.colourScheme.surfaces.cardCarousel
+                    }
+                )
+
+                val contentColor by animateColorAsState(
+                    if (isFocused) {
+                        GovUkTheme.colourScheme.textAndIcons.cardCarouselFocused
+                    } else {
+                        GovUkTheme.colourScheme.textAndIcons.cardCarousel
+                    }
+                )
+
                 Card(
                     modifier = Modifier
+                        .focusRequester(focusRequester)
+                        .focusable(interactionSource = interactionSource)
                         .size(150.dp)
                         .fillMaxWidth()
                         .talkBackText(
@@ -486,14 +512,15 @@ fun HorizontalCardScroller(
                             cornerRadius = GovUkTheme.numbers.cornerAndroidList
                         ),
                     colors = CardDefaults.cardColors(
-                        containerColor = GovUkTheme.colourScheme.surfaces.cardCarousel
+                        containerColor = backgroundColor,
+                        contentColor = contentColor
                     ),
                     onClick = item.onClick,
                     content = {
                         MediumVerticalSpacer()
                         SubheadlineBoldLabel(
                             text = item.title,
-                            color = GovUkTheme.colourScheme.textAndIcons.cardCarousel,
+                            color = contentColor,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .semantics(mergeDescendants = true) { }

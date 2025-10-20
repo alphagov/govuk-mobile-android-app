@@ -114,7 +114,8 @@ data class GovUkColourScheme(
         val chatBotHeaderText: Color,
         val chatLoadingTextLight: Color,
         val chatLoadingIcon: Color,
-        val cardCarousel: Color
+        val cardCarousel: Color,
+        val cardCarouselFocused: Color
     )
 
     data class Surfaces(
@@ -127,6 +128,7 @@ data class GovUkColourScheme(
         val cardNonTappable: Color,
         val cardSelected: Color,
         val cardCarousel: Color,
+        val cardCarouselFocused: Color,
         val list: Color,
         val listBlue: Color, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         val listHeadingBlue: Color,
@@ -247,7 +249,8 @@ internal val LightColorScheme = GovUkColourScheme(
         chatBotHeaderText = Grey700,
         chatLoadingTextLight = Grey300,
         chatLoadingIcon = BluePrimary,
-        cardCarousel = White
+        cardCarousel = White,
+        cardCarouselFocused = Black
     ),
     surfaces = Surfaces(
         background = White,
@@ -259,6 +262,7 @@ internal val LightColorScheme = GovUkColourScheme(
         cardNonTappable = BlueLighter80,
         cardSelected = GreenLighter95,
         cardCarousel = BluePrimary,
+        cardCarouselFocused = YellowPrimary,
         list = White,
         listBlue = BlueLighter95, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         listHeadingBlue = BlueLighter95,
@@ -384,7 +388,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatBotHeaderText = Grey300,
         chatLoadingTextLight = BlueLighter80,
         chatLoadingIcon = BluePrimary,
-        cardCarousel = White
+        cardCarousel = White,
+        cardCarouselFocused = Black
     ),
     surfaces = Surfaces(
         background = BlueDarker80,
@@ -396,6 +401,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         cardNonTappable = BlueDarker65,
         cardSelected = GreenDarker50,
         cardCarousel = BlueDarker50,
+        cardCarouselFocused = YellowPrimary,
         list = BlueDarker65,
         listBlue = BlueDarker80, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         listHeadingBlue = BlueDarker50,
@@ -522,7 +528,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             chatBotHeaderText = Color.Unspecified,
             chatLoadingTextLight = Color.Unspecified,
             chatLoadingIcon = Color.Unspecified,
-            cardCarousel = Color.Unspecified
+            cardCarousel = Color.Unspecified,
+            cardCarouselFocused = Color.Unspecified
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,
@@ -534,6 +541,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             cardNonTappable = Color.Unspecified,
             cardSelected = Color.Unspecified,
             cardCarousel = Color.Unspecified,
+            cardCarouselFocused = Color.Unspecified,
             list = Color.Unspecified,
             listBlue = Color.Unspecified, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
             listHeadingBlue = Color.Unspecified,
