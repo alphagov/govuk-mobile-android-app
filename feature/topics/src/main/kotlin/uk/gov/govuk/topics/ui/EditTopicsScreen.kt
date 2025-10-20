@@ -16,6 +16,7 @@ import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
+import uk.gov.govuk.design.ui.model.HeaderDismissStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.EditTopicsViewModel
 import uk.gov.govuk.topics.R
@@ -62,7 +63,7 @@ private fun EditTopicsScreen(
     Column(modifier) {
         ChildPageHeader(
             text = title,
-            onBack = onBack
+            dismissStyle = HeaderDismissStyle.Back(onBack)
         )
         LazyColumn(
             Modifier

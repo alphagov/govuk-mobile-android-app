@@ -18,6 +18,7 @@ import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.model.HeaderDismissStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.settings.NavigationEvent
 import uk.gov.govuk.settings.R
@@ -65,7 +66,7 @@ private fun SignOutScreen(
 
     Column(modifier.fillMaxSize()) {
         FullScreenHeader(
-            onBack = onBack
+            dismissStyle = HeaderDismissStyle.Back(onBack)
         )
         Column(Modifier
             .verticalScroll(rememberScrollState())

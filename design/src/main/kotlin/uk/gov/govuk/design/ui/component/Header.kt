@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -24,8 +22,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import uk.gov.govuk.design.R
-import uk.gov.govuk.design.ui.model.HeaderStyle
+import uk.gov.govuk.design.ui.model.HeaderActionStyle
+import uk.gov.govuk.design.ui.model.HeaderDismissStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -53,52 +51,102 @@ fun TabHeader(
 }
 
 @Composable
+fun FullScreenHeader(
+    modifier: Modifier = Modifier,
+    text: String? = null,
+    dismissStyle: HeaderDismissStyle = HeaderDismissStyle.None,
+    actionStyle: HeaderActionStyle = HeaderActionStyle.None
+) {
+    Header(
+        modifier = modifier,
+        text = text,
+        dismissStyle = dismissStyle,
+        actionStyle = actionStyle
+    )
+}
+
+@Composable
+fun ChildPageHeader(
+    modifier: Modifier = Modifier,
+    text: String? = null,
+    dismissStyle: HeaderDismissStyle = HeaderDismissStyle.None,
+    actionStyle: HeaderActionStyle = HeaderActionStyle.None
+) {
+    Header(
+        modifier = modifier,
+        text = text,
+        backgroundColour = GovUkTheme.colourScheme.surfaces.homeHeader,
+        actionColour = GovUkTheme.colourScheme.textAndIcons.linkHeader,
+        titleColour = GovUkTheme.colourScheme.textAndIcons.header,
+        dismissStyle = dismissStyle,
+        actionStyle = actionStyle
+    )
+}
+
+@Composable
+fun ModalHeader(
+    modifier: Modifier = Modifier,
+    text: String? = null,
+    dismissStyle: HeaderDismissStyle = HeaderDismissStyle.None,
+    actionStyle: HeaderActionStyle = HeaderActionStyle.None
+) {
+    Header(
+        modifier = modifier,
+        text = text,
+        dismissStyle = dismissStyle,
+        actionStyle = actionStyle
+    )
+}
+
+@Composable
 private fun Header(
     modifier: Modifier = Modifier,
     text: String? = null,
-    onBack: (() -> Unit)? = null,
     backgroundColour: Color = GovUkTheme.colourScheme.surfaces.background,
     actionColour: Color = GovUkTheme.colourScheme.textAndIcons.link,
     titleColour: Color = GovUkTheme.colourScheme.textAndIcons.primary,
-    style: HeaderStyle = HeaderStyle.Default
+    dismissStyle: HeaderDismissStyle = HeaderDismissStyle.None,
+    actionStyle: HeaderActionStyle = HeaderActionStyle.None
 ) {
     Column(
         modifier
             .background(backgroundColour)
             .semantics { this.invisibleToUser() }
     ) {
-        val hasActionButton = style is HeaderStyle.ActionButton
-        if (onBack != null || hasActionButton) {
+        val hasDismissButton = dismissStyle is HeaderDismissStyle.DismissButton
+        val hasActionButton = actionStyle is HeaderActionStyle.ActionButton
+
+        if (hasDismissButton || hasActionButton) {
             Row(
                 modifier = Modifier
                     .height(64.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (onBack != null) {
+                if (hasDismissButton) {
                     TextButton(
-                        onClick = onBack
+                        onClick = dismissStyle.onClick
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.content_desc_back),
+                            imageVector = dismissStyle.icon,
+                            contentDescription = stringResource(dismissStyle.altText),
                             tint = actionColour
                         )
                     }
                 }
-                when (style) {
-                    is HeaderStyle.ActionButton -> {
+                when (actionStyle) {
+                    is HeaderActionStyle.ActionButton -> {
                         Spacer(Modifier.weight(1f))
 
                         TextButton(
-                            onClick = style.onClick
+                            onClick = actionStyle.onClick
                         ) {
                             BodyRegularLabel(
-                                text = style.title,
+                                text = actionStyle.title,
                                 color = actionColour,
                                 textAlign = TextAlign.End,
                                 modifier = Modifier.semantics {
-                                    contentDescription = style.altText ?: style.title
+                                    contentDescription = actionStyle.altText ?: actionStyle.title
                                 }
                             )
                         }
@@ -118,42 +166,8 @@ private fun Header(
                     .semantics { heading() },
                 color = titleColour
             )
-            SmallVerticalSpacer()
         }
     }
-}
-
-@Composable
-fun FullScreenHeader(
-    modifier: Modifier = Modifier,
-    text: String? = null,
-    onBack: (() -> Unit)? = null,
-    style: HeaderStyle = HeaderStyle.Default
-) {
-    Header(
-        modifier = modifier,
-        text = text,
-        onBack = onBack,
-        style = style
-    )
-}
-
-@Composable
-fun ChildPageHeader(
-    modifier: Modifier = Modifier,
-    text: String? = null,
-    onBack: (() -> Unit)? = null,
-    style: HeaderStyle = HeaderStyle.Default
-) {
-    Header(
-        modifier = modifier,
-        text = text,
-        onBack = onBack,
-        backgroundColour = GovUkTheme.colourScheme.surfaces.homeHeader,
-        actionColour = GovUkTheme.colourScheme.textAndIcons.linkHeader,
-        titleColour = GovUkTheme.colourScheme.textAndIcons.header,
-        style = style
-    )
 }
 
 @Preview(showBackground = true)
@@ -166,11 +180,76 @@ private fun TabHeaderPreview() {
 
 @Preview(showBackground = true)
 @Composable
+private fun FullScreenHeaderNoTextWithBackAndActionPreview() {
+    GovUkTheme {
+        FullScreenHeader(
+            dismissStyle = HeaderDismissStyle.Back {},
+            actionStyle = HeaderActionStyle.ActionButton("Done", {}, "Alt text")
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FullScreenHeaderBackAndActionPreview() {
+    GovUkTheme {
+        FullScreenHeader(
+            text = "Child page title",
+            dismissStyle = HeaderDismissStyle.Back {},
+            actionStyle = HeaderActionStyle.ActionButton("Done", {}, "Alt text")
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FullScreenHeaderActionNoBackPreview() {
+    GovUkTheme {
+        FullScreenHeader(
+            text = "Child page title",
+            actionStyle = HeaderActionStyle.ActionButton("Done", {}, "Alt text")
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FullScreenHeaderBackNoActionPreview() {
+    GovUkTheme {
+        FullScreenHeader(
+            text = "Child page title",
+            dismissStyle = HeaderDismissStyle.Back {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FullScreenHeaderNoActionOrBackPreview() {
+    GovUkTheme {
+        FullScreenHeader(
+            text = "Child page title"
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FullScreenHeaderLongTextNoActionOrBackPreview() {
+    GovUkTheme {
+        FullScreenHeader(
+            text = "This is a very long child page title that goes on and on"
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
 private fun ChildPageHeaderNoTextWithBackAndActionPreview() {
     GovUkTheme {
         ChildPageHeader(
-            onBack = {},
-            style = HeaderStyle.ActionButton("Done", {}, "Alt text")
+            dismissStyle = HeaderDismissStyle.Back {},
+            actionStyle = HeaderActionStyle.ActionButton("Done", {}, "Alt text")
         )
     }
 }
@@ -181,8 +260,8 @@ private fun ChildPageHeaderBackAndActionPreview() {
     GovUkTheme {
         ChildPageHeader(
             text = "Child page title",
-            onBack = {},
-            style = HeaderStyle.ActionButton("Done", {}, "Alt text")
+            dismissStyle = HeaderDismissStyle.Back {},
+            actionStyle = HeaderActionStyle.ActionButton("Done", {}, "Alt text")
         )
     }
 }
@@ -193,7 +272,7 @@ private fun ChildPageHeaderActionNoBackPreview() {
     GovUkTheme {
         ChildPageHeader(
             text = "Child page title",
-            style = HeaderStyle.ActionButton("Done", {}, "Alt text")
+            actionStyle = HeaderActionStyle.ActionButton("Done", {}, "Alt text")
         )
     }
 }
@@ -204,7 +283,7 @@ private fun ChildPageHeaderBackNoActionPreview() {
     GovUkTheme {
         ChildPageHeader(
             text = "Child page title",
-            onBack = {}
+            dismissStyle = HeaderDismissStyle.Back {},
         )
     }
 }
@@ -231,65 +310,29 @@ private fun ChildPageHeaderLongTextNoActionOrBackPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun FullScreenHeaderNoTextWithBackAndActionPreview() {
+private fun ModalHeaderPreview() {
     GovUkTheme {
-        FullScreenHeader(
-            onBack = {},
-            style = HeaderStyle.ActionButton("Done", {}, "Alt text")
+        ModalHeader(
+            text = "Modal title",
+            actionStyle = HeaderActionStyle.ActionButton(
+                title = "Done",
+                onClick = {}
+            )
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun FullScreenHeaderBackAndActionPreview() {
+private fun ModalHeaderWithClosePreview() {
     GovUkTheme {
-        FullScreenHeader(
-            text = "Child page title",
-            onBack = {},
-            style = HeaderStyle.ActionButton("Done", {}, "Alt text")
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun FullScreenHeaderActionNoBackPreview() {
-    GovUkTheme {
-        FullScreenHeader(
-            text = "Child page title",
-            style = HeaderStyle.ActionButton("Done", {}, "Alt text")
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun FullScreenHeaderBackNoActionPreview() {
-    GovUkTheme {
-        FullScreenHeader(
-            text = "Child page title",
-            onBack = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun FullScreenHeaderNoActionOrBackPreview() {
-    GovUkTheme {
-        FullScreenHeader(
-            text = "Child page title"
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun FullScreenHeaderLongTextNoActionOrBackPreview() {
-    GovUkTheme {
-        FullScreenHeader(
-            text = "This is a very long child page title that goes on and on"
+        ModalHeader(
+            text = "Modal title",
+            dismissStyle = HeaderDismissStyle.Close {},
+            actionStyle = HeaderActionStyle.ActionButton(
+                title = "Done",
+                onClick = {}
+            )
         )
     }
 }
