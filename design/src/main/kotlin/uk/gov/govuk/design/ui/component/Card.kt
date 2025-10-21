@@ -478,8 +478,12 @@ fun HorizontalCardScroller(
             modifier = modifier.fillMaxWidth()
         ) {
             cards.forEach { item ->
-                DisplayCard(
+                FocusableCard(
                     item,
+                    GovUkTheme.colourScheme.surfaces.cardCarouselFocused,
+                    GovUkTheme.colourScheme.surfaces.cardCarousel,
+                    GovUkTheme.colourScheme.textAndIcons.cardCarouselFocused,
+                    GovUkTheme.colourScheme.textAndIcons.cardCarousel,
                     modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
                 )
             }
@@ -491,8 +495,12 @@ fun HorizontalCardScroller(
                 modifier = modifier.fillMaxWidth(),
             ) {
                 itemsIndexed(cards) { index, item ->
-                    DisplayCard(
+                    FocusableCard(
                         item,
+                        GovUkTheme.colourScheme.surfaces.cardCarouselFocused,
+                        GovUkTheme.colourScheme.surfaces.cardCarousel,
+                        GovUkTheme.colourScheme.textAndIcons.cardCarouselFocused,
+                        GovUkTheme.colourScheme.textAndIcons.cardCarousel,
                         modifier = Modifier.size(150.dp)
                     )
 
@@ -506,25 +514,24 @@ fun HorizontalCardScroller(
 }
 
 @Composable
-private fun DisplayCard(item: CardListItem, modifier: Modifier = Modifier) {
+fun FocusableCard(
+    item: CardListItem,
+    focusedBackgroundColor: Color,
+    unfocusedBackgroundColor: Color,
+    focusedContentColor: Color,
+    unfocusedContentColor: Color,
+    modifier: Modifier = Modifier
+) {
     val focusRequester = remember { FocusRequester() }
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
     val backgroundColor by animateColorAsState(
-        if (isFocused) {
-            GovUkTheme.colourScheme.surfaces.cardCarouselFocused
-        } else {
-            GovUkTheme.colourScheme.surfaces.cardCarousel
-        }
+        if (isFocused) focusedBackgroundColor else unfocusedBackgroundColor
     )
 
     val contentColor by animateColorAsState(
-        if (isFocused) {
-            GovUkTheme.colourScheme.textAndIcons.cardCarouselFocused
-        } else {
-            GovUkTheme.colourScheme.textAndIcons.cardCarousel
-        }
+        if (isFocused) focusedContentColor else unfocusedContentColor
     )
 
     Card(
