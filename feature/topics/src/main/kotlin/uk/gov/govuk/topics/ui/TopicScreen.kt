@@ -203,15 +203,13 @@ private fun TopicScreen(
                 SectionHeadingLabel(
                     modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium),
                     title3 = stringResource(R.string.popular_pages_title),
-                    button = if (topic.displayPopularPagesSeeAll) {
-                        SectionHeadingLabelButton(
-                            title = seeAllButton,
-                            altText = seeAllButton,
-                            onClick = {
-                                onPopularPagesSeeAll(section, seeAllButton, currentItemIndex)
-                            }
-                        )
-                    } else null
+                    button = SectionHeadingLabelButton(
+                        title = seeAllButton,
+                        altText = seeAllButton,
+                        onClick = {
+                            onPopularPagesSeeAll(section, seeAllButton, currentItemIndex)
+                        }
+                    )
                 )
 
                 HorizontalCardScroller(

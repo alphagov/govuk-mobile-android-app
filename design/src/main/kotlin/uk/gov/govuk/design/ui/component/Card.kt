@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -469,72 +470,94 @@ fun HorizontalCardScroller(
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
+    val fontScale = LocalDensity.current.fontScale
+    val isFontScaledUp = fontScale > 1.0f // TODO: this might need adjusting
 
-    Box {
-        LazyRow(
-            state = lazyListState,
-            modifier = modifier.fillMaxWidth(),
+    if (isFontScaledUp) {
+        Column(
+            modifier = modifier.fillMaxWidth()
         ) {
-            itemsIndexed(cards) { index, item ->
-                // TODO: handle text sizes and large titles
-                val focusRequester = remember { FocusRequester() }
-                val interactionSource = remember { MutableInteractionSource() }
-                val isFocused by interactionSource.collectIsFocusedAsState()
-
-                val backgroundColor by animateColorAsState(
-                    if (isFocused) {
-                        GovUkTheme.colourScheme.surfaces.cardCarouselFocused
-                    } else {
-                        GovUkTheme.colourScheme.surfaces.cardCarousel
-                    }
+            cards.forEach { item ->
+                DisplayCard(
+                    item,
+                    modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
                 )
+            }
+        }
+    } else {
+        Box {
+            LazyRow(
+                state = lazyListState,
+                modifier = modifier.fillMaxWidth(),
+            ) {
+                itemsIndexed(cards) { index, item ->
+                    DisplayCard(
+                        item,
+                        modifier = Modifier.size(150.dp)
+                    )
 
-                val contentColor by animateColorAsState(
-                    if (isFocused) {
-                        GovUkTheme.colourScheme.textAndIcons.cardCarouselFocused
-                    } else {
-                        GovUkTheme.colourScheme.textAndIcons.cardCarousel
+                    if (index < cards.size - 1) {
+                        SmallHorizontalSpacer()
                     }
-                )
-
-                Card(
-                    modifier = Modifier
-                        .focusRequester(focusRequester)
-                        .focusable(interactionSource = interactionSource)
-                        .size(150.dp)
-                        .fillMaxWidth()
-                        .talkBackText(
-                            item.title,
-                            stringResource(R.string.opens_in_web_browser)
-                        )
-                        .drawBottomStroke(
-                            colour = GovUkTheme.colourScheme.strokes.cardCarousel,
-                            cornerRadius = GovUkTheme.numbers.cornerAndroidList
-                        ),
-                    colors = CardDefaults.cardColors(
-                        containerColor = backgroundColor,
-                        contentColor = contentColor
-                    ),
-                    onClick = item.onClick,
-                    content = {
-                        MediumVerticalSpacer()
-                        SubheadlineBoldLabel(
-                            text = item.title,
-                            color = contentColor,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .semantics(mergeDescendants = true) { }
-                                .padding(horizontal = GovUkTheme.spacing.medium)
-                        )
-                        MediumVerticalSpacer()
-                    }
-                )
-                if (index < cards.size - 1) {
-                    SmallHorizontalSpacer()
                 }
             }
         }
     }
+}
+
+@Composable
+private fun DisplayCard(item: CardListItem, modifier: Modifier = Modifier) {
+    val focusRequester = remember { FocusRequester() }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    val backgroundColor by animateColorAsState(
+        if (isFocused) {
+            GovUkTheme.colourScheme.surfaces.cardCarouselFocused
+        } else {
+            GovUkTheme.colourScheme.surfaces.cardCarousel
+        }
+    )
+
+    val contentColor by animateColorAsState(
+        if (isFocused) {
+            GovUkTheme.colourScheme.textAndIcons.cardCarouselFocused
+        } else {
+            GovUkTheme.colourScheme.textAndIcons.cardCarousel
+        }
+    )
+
+    Card(
+        modifier = modifier
+            .focusRequester(focusRequester)
+            .focusable(interactionSource = interactionSource)
+            .fillMaxWidth()
+            .talkBackText(
+                item.title,
+                stringResource(R.string.opens_in_web_browser)
+            )
+            .drawBottomStroke(
+                colour = GovUkTheme.colourScheme.strokes.cardCarousel,
+                cornerRadius = GovUkTheme.numbers.cornerAndroidList
+            ),
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor,
+            contentColor = contentColor
+        ),
+        onClick = item.onClick,
+        content = {
+            MediumVerticalSpacer()
+            SubheadlineBoldLabel(
+                text = item.title,
+                color = contentColor,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics(mergeDescendants = true) { }
+                    .padding(horizontal = GovUkTheme.spacing.medium)
+            )
+            MediumVerticalSpacer()
+        }
+    )
 }
 
 @Preview

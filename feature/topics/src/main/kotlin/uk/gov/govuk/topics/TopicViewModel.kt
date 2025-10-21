@@ -30,9 +30,7 @@ internal class TopicViewModel @Inject constructor(
     companion object {
         private const val SCREEN_CLASS = "TopicScreen"
         private const val SUBTOPIC_SECTION = "Sub topics"
-        // TODO: set MAX_POPULAR_PAGES to 4 - currently 3 so can
-        // see the see all button in development
-        private const val MAX_POPULAR_PAGES = 3
+        private const val MAX_POPULAR_PAGES = 4
         private const val MAX_STEP_BY_STEPS = 3
     }
 
