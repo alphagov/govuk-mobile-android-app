@@ -37,7 +37,8 @@ import uk.gov.govuk.design.ui.component.NonTappableCard
 import uk.gov.govuk.design.ui.component.SectionHeadingLabel
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.model.ExternalLinkListItemStyle
-import uk.gov.govuk.design.ui.model.HeaderStyle
+import uk.gov.govuk.design.ui.model.HeaderActionStyle
+import uk.gov.govuk.design.ui.model.HeaderDismissStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.visited.R
 import uk.gov.govuk.visited.VisitedUiState
@@ -108,12 +109,12 @@ private fun VisitedScreen(
 
         ChildPageHeader(
             text = title,
-            onBack = onBack,
             modifier = Modifier.focusRequester(focusRequester),
-            style = if (visitedItems.isNullOrEmpty()) {
-                HeaderStyle.Default
+            dismissStyle = HeaderDismissStyle.Back(onBack),
+            actionStyle = if (visitedItems.isNullOrEmpty()) {
+                HeaderActionStyle.None
             } else {
-                HeaderStyle.ActionButton(
+                HeaderActionStyle.ActionButton(
                     onClick = { showRemoveAllDialog = true },
                     title = removeAllText,
                     altText = removeAllAltText

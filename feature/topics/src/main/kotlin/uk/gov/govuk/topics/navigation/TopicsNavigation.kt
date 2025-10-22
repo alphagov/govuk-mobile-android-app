@@ -54,7 +54,7 @@ fun NavGraphBuilder.topicsGraph(
         val topicPath = "/{$TOPIC_REF_ARG}?$TOPIC_SUBTOPIC_ARG={$TOPIC_SUBTOPIC_ARG}"
         composable(TOPICS_EDIT_ROUTE) {
             EditTopicsRoute(
-                onBack = { navController.popBackStack() }
+                onDone = { navController.popBackStack() }
             )
         }
         composable(
