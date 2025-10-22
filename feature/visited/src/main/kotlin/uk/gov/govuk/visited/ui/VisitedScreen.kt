@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -171,7 +172,8 @@ private fun ShowVisitedItems(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = GovUkTheme.spacing.medium)
+            .padding(horizontal = GovUkTheme.spacing.medium),
+        state = rememberLazyListState()
     ) {
         items.forEach { (sectionTitle, visitedItems) ->
             if (visitedItems.isNotEmpty()) {
@@ -183,7 +185,7 @@ private fun ShowVisitedItems(
                 }
                 itemsIndexed(
                     items = visitedItems,
-                    key = { index, _ -> index }
+                    key = { _, item -> item.title }
                 ) { index, item ->
                     val title = item.title
                     val lastVisited = item.lastVisited
