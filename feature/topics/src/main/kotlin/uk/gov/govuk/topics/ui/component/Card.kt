@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.stateDescription
@@ -46,11 +47,16 @@ fun TopicSelectionCard(
         GovUkTheme.colourScheme.surfaces.listUnselected
     }
 
+    val selected = stringResource(R.string.selected_alt_text)
+    val notSelected = stringResource(R.string.not_selected_alt_text)
+    val select = stringResource(R.string.select_alt_text)
+    val deselect = stringResource(R.string.deselect_alt_text)
+
     Card(
         modifier = modifier
             .clearAndSetSemantics {
-                stateDescription = "$title, ${if (isSelected) "selected" else "not selected"}"
-                onClick(label = if (isSelected) "deselect" else "Select", action = null)
+                stateDescription = "$title, ${if (isSelected) selected else notSelected}"
+                onClick(label = if (isSelected) deselect else select, action = null)
             }
             .clickable(
                 interactionSource = interactionSource,
