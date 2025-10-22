@@ -2,11 +2,14 @@ package uk.gov.govuk.topics.ui
 
 import android.content.Context
 import android.view.accessibility.AccessibilityManager
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -21,12 +24,12 @@ import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.R
 import uk.gov.govuk.topics.TopicSelectionUiState
 import uk.gov.govuk.topics.TopicSelectionViewModel
-import uk.gov.govuk.topics.ui.component.TopicSelectionCardLegacy
-import uk.gov.govuk.topics.ui.component.TopicsGrid
+import uk.gov.govuk.topics.ui.component.TopicSelectionCard
 
 @Composable
 internal fun TopicSelectionRoute(
@@ -70,39 +73,43 @@ private fun TopicSelectionScreen(
         onPageView(title)
     }
 
-    Column(modifier) {
+    Column(modifier.fillMaxSize()) {
         LargeTitleBoldLabel(
             text = title,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = GovUkTheme.spacing.medium)
                 .padding(horizontal = GovUkTheme.spacing.medium)
                 .semantics { heading() }
         )
 
-        Column(
-            Modifier
-                .verticalScroll(rememberScrollState())
-                .weight(1f)
-                .padding(horizontal = GovUkTheme.spacing.medium)
+        SmallVerticalSpacer()
+
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f, fill = false)
+                .padding(horizontal = GovUkTheme.spacing.medium),
+            state = rememberLazyListState()
         ) {
-            BodyRegularLabel(
-                text = stringResource(R.string.topic_selection_description),
-            )
-            MediumVerticalSpacer()
-
-            TopicsGrid(
-                topics = uiState?.topics ?: emptyList(),
-            ) { modifier, topic ->
+            item {
+                BodyRegularLabel(
+                    text = stringResource(R.string.topic_selection_description),
+                )
+            }
+            item {
+                MediumVerticalSpacer()
+            }
+            items(
+                items = uiState?.topics ?: emptyList(),
+                key = { item -> item.title }
+            ) { topic ->
                 val view = LocalView.current
-
                 val selectedAltText = stringResource(R.string.selected_alt_text)
                 val removedAltText = stringResource(R.string.removed_alt_text)
 
-                TopicSelectionCardLegacy(
+                TopicSelectionCard(
                     icon = topic.icon,
                     title = topic.title,
-                    description = topic.description,
                     isSelected = topic.isSelected,
                     onClick = {
                         val accessibilityManager =
@@ -121,9 +128,8 @@ private fun TopicSelectionScreen(
                     },
                     modifier = modifier
                 )
+                MediumVerticalSpacer()
             }
-
-            MediumVerticalSpacer()
         }
 
         uiState?.let {
@@ -136,6 +142,8 @@ private fun TopicSelectionScreen(
                 onPrimary = { onDone(doneButtonText) },
                 secondaryText = skipButtonText,
                 onSecondary = { onSkip(skipButtonText) },
+                modifier = Modifier
+                    .background(GovUkTheme.colourScheme.surfaces.fixedContainer),
                 primaryEnabled = isDoneEnabled
             )
         }
