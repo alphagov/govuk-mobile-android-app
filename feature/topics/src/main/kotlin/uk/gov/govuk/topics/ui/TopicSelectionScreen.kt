@@ -22,6 +22,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
+import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
@@ -74,13 +75,11 @@ private fun TopicSelectionScreen(
     }
 
     Column(modifier.fillMaxSize()) {
-        LargeTitleBoldLabel(
+        FullScreenHeader(
             text = title,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = GovUkTheme.spacing.medium)
-                .padding(horizontal = GovUkTheme.spacing.medium)
-                .semantics { heading() }
         )
 
         SmallVerticalSpacer()
