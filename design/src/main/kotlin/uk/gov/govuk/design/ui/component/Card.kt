@@ -19,9 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,7 +33,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -465,61 +461,9 @@ fun NavigationCard(
 }
 
 @Composable
-fun HorizontalCardScroller(
-    cards: List<CardListItem>,
-    modifier: Modifier = Modifier
-) {
-    val lazyListState = rememberLazyListState()
-    val fontScale = LocalDensity.current.fontScale
-    val isFontScaledUp = fontScale > 1.0f // TODO: this might need adjusting
-
-    if (isFontScaledUp) {
-        Column(
-            modifier = modifier.fillMaxWidth()
-        ) {
-            cards.forEach { item ->
-                FocusableCard(
-                    item,
-                    GovUkTheme.colourScheme.surfaces.cardCarouselFocused,
-                    GovUkTheme.colourScheme.surfaces.cardCarousel,
-                    GovUkTheme.colourScheme.textAndIcons.cardCarouselFocused,
-                    GovUkTheme.colourScheme.textAndIcons.cardCarousel,
-                    modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
-                )
-            }
-        }
-    } else {
-        Box {
-            LazyRow(
-                state = lazyListState,
-                modifier = modifier.fillMaxWidth(),
-            ) {
-                itemsIndexed(cards) { index, item ->
-                    FocusableCard(
-                        item,
-                        GovUkTheme.colourScheme.surfaces.cardCarouselFocused,
-                        GovUkTheme.colourScheme.surfaces.cardCarousel,
-                        GovUkTheme.colourScheme.textAndIcons.cardCarouselFocused,
-                        GovUkTheme.colourScheme.textAndIcons.cardCarousel,
-                        modifier = Modifier.size(150.dp)
-                    )
-
-                    if (index < cards.size - 1) {
-                        SmallHorizontalSpacer()
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
 fun FocusableCard(
     item: CardListItem,
-    focusedBackgroundColor: Color,
-    unfocusedBackgroundColor: Color,
-    focusedContentColor: Color,
-    unfocusedContentColor: Color,
+    colors: Map<String, Color>,
     modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -527,11 +471,19 @@ fun FocusableCard(
     val isFocused by interactionSource.collectIsFocusedAsState()
 
     val backgroundColor by animateColorAsState(
-        if (isFocused) focusedBackgroundColor else unfocusedBackgroundColor
+        (if (isFocused) {
+            colors["focusedBackgroundColor"]
+        } else {
+            colors["unfocusedBackgroundColor"]
+        })!!
     )
 
     val contentColor by animateColorAsState(
-        if (isFocused) focusedContentColor else unfocusedContentColor
+        (if (isFocused) {
+            colors["focusedContentColor"]
+        } else {
+            colors["unfocusedContentColor"]
+        })!!
     )
 
     Card(
@@ -565,41 +517,6 @@ fun FocusableCard(
             MediumVerticalSpacer()
         }
     )
-}
-
-@Preview
-@Composable
-private fun HorizontalCardScrollerPreview() {
-    GovUkTheme {
-        HorizontalCardScroller(
-            cards = listOf(
-                CardListItem(
-                    title = "Card content that can go over multiple lines",
-                    onClick = { }
-                ),
-                CardListItem(
-                    title = "Card content that can go over multiple lines",
-                    onClick = { }
-                ),
-                CardListItem(
-                    title = "Card content that can go over multiple lines",
-                    onClick = { }
-                ),
-                CardListItem(
-                    title = "Card content that can go over multiple lines",
-                    onClick = { }
-                ),
-                CardListItem(
-                    title = "Card content that can go over multiple lines",
-                    onClick = { }
-                ),
-                CardListItem(
-                    title = "Card content that can go over multiple lines",
-                    onClick = { }
-                )
-            )
-        )
-    }
 }
 
 @Preview

@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -23,23 +25,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.ExternalLinkListItemLegacy
-import uk.gov.govuk.design.ui.component.HorizontalCardScroller
+import uk.gov.govuk.design.ui.component.FocusableCard
 import uk.gov.govuk.design.ui.component.InternalLinkListItemLegacy
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.ListHeaderLegacy
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SectionHeadingLabel
+import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
 import uk.gov.govuk.design.ui.component.error.OfflineMessage
 import uk.gov.govuk.design.ui.component.error.ProblemMessage
 import uk.gov.govuk.design.ui.model.CardListItem
@@ -142,6 +147,8 @@ private fun TopicScreen(
 ) {
     val focusManager = LocalFocusManager.current
     val lazyListState = rememberLazyListState()
+    val fontScale = LocalDensity.current.fontScale
+    val isFontScaledUp = fontScale > 1.0f
 
     Column(modifier.fillMaxWidth()) {
 
@@ -199,32 +206,74 @@ private fun TopicScreen(
             item {
                 val section = stringResource(R.string.popular_pages_title)
                 val seeAllButton = stringResource(R.string.see_all_button)
+                val cards = topic.popularPages.map {
+                    CardListItem(
+                        title = it.title,
+                        onClick = {
+                            onExternalLink(
+                                section, it.title, it.url, currentItemIndex
+                            )
+                        }
+                    )
+                }
 
                 SectionHeadingLabel(
                     modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium),
                     title3 = stringResource(R.string.popular_pages_title),
-                    button = SectionHeadingLabelButton(
-                        title = seeAllButton,
-                        altText = seeAllButton,
-                        onClick = {
-                            onPopularPagesSeeAll(section, seeAllButton, currentItemIndex)
-                        }
-                    )
-                )
-
-                HorizontalCardScroller(
-                    cards = topic.popularPages.map {
-                        CardListItem(
-                            title = it.title,
+                    button = if (!isFontScaledUp) {
+                        SectionHeadingLabelButton(
+                            title = seeAllButton,
+                            altText = seeAllButton,
                             onClick = {
-                                onExternalLink(
-                                    section, it.title, it.url, currentItemIndex
-                                )
+                                onPopularPagesSeeAll(section, seeAllButton, currentItemIndex)
                             }
                         )
-                    },
-                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+                    } else null
                 )
+
+                val colors = mapOf(
+                    "focusedBackgroundColor" to GovUkTheme.colourScheme.surfaces.cardCarouselFocused,
+                    "unfocusedBackgroundColor" to GovUkTheme.colourScheme.surfaces.cardCarousel,
+                    "focusedContentColor" to GovUkTheme.colourScheme.textAndIcons.cardCarouselFocused,
+                    "unfocusedContentColor" to GovUkTheme.colourScheme.textAndIcons.cardCarousel
+                )
+
+                if (isFontScaledUp) {
+                    // vertical list
+                    Column(
+                        modifier = modifier.fillMaxWidth()
+                            .padding(horizontal = GovUkTheme.spacing.medium)
+                    ) {
+                        cards.forEach { item ->
+                            FocusableCard(
+                                item,
+                                colors,
+                                modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
+                            )
+                        }
+                    }
+                } else {
+                    // horizontal list
+                    Box {
+                        LazyRow(
+                            state = lazyListState,
+                            modifier = modifier.fillMaxWidth()
+                                .padding(horizontal = GovUkTheme.spacing.medium),
+                        ) {
+                            itemsIndexed(cards) { index, item ->
+                                FocusableCard(
+                                    item,
+                                    colors,
+                                    modifier = Modifier.size(150.dp)
+                                )
+
+                                if (index < cards.size - 1) {
+                                    SmallHorizontalSpacer()
+                                }
+                            }
+                        }
+                    }
+                }
 
                 MediumVerticalSpacer()
             }
