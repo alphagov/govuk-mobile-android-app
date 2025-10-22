@@ -7,7 +7,8 @@ import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import uk.gov.govuk.design.ui.component.FullScreenHeader
-import uk.gov.govuk.design.ui.model.HeaderStyle
+import uk.gov.govuk.design.ui.model.HeaderActionStyle
+import uk.gov.govuk.design.ui.model.HeaderDismissStyle
 import uk.govuk.app.local.R
 
 @Composable
@@ -17,12 +18,12 @@ internal fun LocalFullScreenHeader(
     onCancel: (() -> Unit)? = null
 ) {
     val style = onCancel?.let {
-        HeaderStyle.ActionButton(
+        HeaderActionStyle.ActionButton(
             title = stringResource(R.string.local_cancel_button),
             onClick = onCancel
         )
     } ?: run {
-        HeaderStyle.Default
+        HeaderActionStyle.None
     }
 
     FullScreenHeader(
@@ -31,7 +32,7 @@ internal fun LocalFullScreenHeader(
                 isTraversalGroup = true
                 traversalIndex = -1f
             },
-        onBack = { onBack() },
-        style = style
+        dismissStyle = HeaderDismissStyle.Back(onBack),
+        actionStyle = style
     )
 }

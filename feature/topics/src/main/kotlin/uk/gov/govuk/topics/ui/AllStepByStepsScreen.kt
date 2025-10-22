@@ -17,6 +17,7 @@ import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.ExternalLinkListItemLegacy
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.model.HeaderDismissStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.AllStepByStepsViewModel
 import uk.gov.govuk.topics.R
@@ -65,7 +66,7 @@ private fun AllStepByStepsScreen(
 
         ChildPageHeader(
             text = title,
-            onBack = onBack
+            dismissStyle = HeaderDismissStyle.Back(onBack)
         )
 
         LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
