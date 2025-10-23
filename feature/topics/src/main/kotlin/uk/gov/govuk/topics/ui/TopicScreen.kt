@@ -256,8 +256,10 @@ private fun TopicScreen(
                 } else {
                     // horizontal list
                     Box {
+                        val horizontalListState = rememberLazyListState()
+
                         LazyRow(
-                            state = lazyListState,
+                            state = horizontalListState,
                             modifier = modifier.fillMaxWidth()
                                 .padding(horizontal = GovUkTheme.spacing.medium),
                         ) {
