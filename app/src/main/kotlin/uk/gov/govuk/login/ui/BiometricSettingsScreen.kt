@@ -27,6 +27,7 @@ import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.ToggleListItemLegacy
+import uk.gov.govuk.design.ui.model.HeaderDismissStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.login.BiometricSettingsViewModel
 
@@ -65,7 +66,7 @@ private fun BiometricSettingsScreen(
 
     Column(modifier.fillMaxWidth()) {
         ChildPageHeader(
-            onBack = onBack
+            dismissStyle = HeaderDismissStyle.Back(onBack)
         )
 
         Column(

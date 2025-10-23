@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -37,7 +38,8 @@ import uk.gov.govuk.design.ui.component.NonTappableCard
 import uk.gov.govuk.design.ui.component.SectionHeadingLabel
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.model.ExternalLinkListItemStyle
-import uk.gov.govuk.design.ui.model.HeaderStyle
+import uk.gov.govuk.design.ui.model.HeaderActionStyle
+import uk.gov.govuk.design.ui.model.HeaderDismissStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.visited.R
 import uk.gov.govuk.visited.VisitedUiState
@@ -108,12 +110,12 @@ private fun VisitedScreen(
 
         ChildPageHeader(
             text = title,
-            onBack = onBack,
             modifier = Modifier.focusRequester(focusRequester),
-            style = if (visitedItems.isNullOrEmpty()) {
-                HeaderStyle.Default
+            dismissStyle = HeaderDismissStyle.Back(onBack),
+            actionStyle = if (visitedItems.isNullOrEmpty()) {
+                HeaderActionStyle.None
             } else {
-                HeaderStyle.ActionButton(
+                HeaderActionStyle.ActionButton(
                     onClick = { showRemoveAllDialog = true },
                     title = removeAllText,
                     altText = removeAllAltText
@@ -171,7 +173,8 @@ private fun ShowVisitedItems(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = GovUkTheme.spacing.medium)
+            .padding(horizontal = GovUkTheme.spacing.medium),
+        state = rememberLazyListState()
     ) {
         items.forEach { (sectionTitle, visitedItems) ->
             if (visitedItems.isNotEmpty()) {
@@ -183,7 +186,7 @@ private fun ShowVisitedItems(
                 }
                 itemsIndexed(
                     items = visitedItems,
-                    key = { index, _ -> index }
+                    key = { _, item -> item.title }
                 ) { index, item ->
                     val title = item.title
                     val lastVisited = item.lastVisited

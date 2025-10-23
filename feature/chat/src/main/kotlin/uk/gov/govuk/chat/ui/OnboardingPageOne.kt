@@ -18,7 +18,7 @@ import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FullScreenHeader
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.PrimaryButton
-import uk.gov.govuk.design.ui.model.HeaderStyle
+import uk.gov.govuk.design.ui.model.HeaderActionStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -74,7 +74,7 @@ private fun OnboardingPageOneScreen(
         modifier = modifier,
         headerContent = {
             FullScreenHeader(
-                style = HeaderStyle.ActionButton(
+                actionStyle = HeaderActionStyle.ActionButton(
                     title = stringResource(id = R.string.onboarding_page_cancel_text),
                     onClick = onCancel
                 )

@@ -4,21 +4,29 @@ import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
-import uk.gov.govuk.design.ui.component.GovUkCard
 import uk.gov.govuk.design.ui.component.MediumHorizontalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.R
@@ -31,13 +39,37 @@ fun TopicSelectionCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    GovUkCard(
-        modifier = modifier,
-        isSelected = isSelected,
-        onClick = { onClick() }
+    val interactionSource = remember { MutableInteractionSource() }
+
+    val backgroundColor = if (isSelected) {
+        GovUkTheme.colourScheme.surfaces.listSelected
+    } else {
+        GovUkTheme.colourScheme.surfaces.listUnselected
+    }
+
+    val selected = stringResource(R.string.selected_alt_text)
+    val notSelected = stringResource(R.string.not_selected_alt_text)
+    val select = stringResource(R.string.select_alt_text)
+    val deselect = stringResource(R.string.deselect_alt_text)
+
+    Card(
+        modifier = modifier
+            .clearAndSetSemantics {
+                stateDescription = "$title, ${if (isSelected) selected else notSelected}"
+                onClick(label = if (isSelected) deselect else select, action = null)
+            }
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) {
+                onClick()
+            },
+        colors = CardDefaults.cardColors(containerColor = backgroundColor)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(GovUkTheme.spacing.medium),
             verticalAlignment = Alignment.CenterVertically
         ) {
 

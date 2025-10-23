@@ -49,6 +49,7 @@ import uk.gov.govuk.design.ui.component.error.OfflineMessage
 import uk.gov.govuk.design.ui.component.error.ProblemMessage
 import uk.gov.govuk.design.ui.model.CardListItem
 import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
+import uk.gov.govuk.design.ui.model.HeaderDismissStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.R
 import uk.gov.govuk.topics.TopicUiState
@@ -153,7 +154,7 @@ private fun TopicScreen(
     Column(modifier.fillMaxWidth()) {
 
         ChildPageHeader(
-            onBack = onBack
+            dismissStyle = HeaderDismissStyle.Back(onBack)
         )
 
         val stepByStepSection = TopicUi.Section(
@@ -419,7 +420,7 @@ private fun ErrorScreen(
 
         ChildPageHeader(
             text = topicName,
-            onBack = onBack
+            dismissStyle = HeaderDismissStyle.Back(onBack)
         )
 
         content()

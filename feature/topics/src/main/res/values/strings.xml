@@ -25,6 +25,9 @@
     <string name="skip_button">Skip</string>
     <string name="removed_alt_text">Removed</string>
     <string name="selected_alt_text">Selected</string>
+    <string name="not_selected_alt_text">Not selected</string>
+    <string name="select_alt_text">Select</string>
+    <string name="deselect_alt_text">Deselect</string>
     <string name="empty_topics">No topics selected</string>
 
     <!-- Topic names -->
