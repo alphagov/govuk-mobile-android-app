@@ -1,5 +1,6 @@
 package uk.gov.govuk.topics.ui
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
@@ -24,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -150,6 +152,7 @@ private fun TopicScreen(
     val lazyListState = rememberLazyListState()
     val fontScale = LocalDensity.current.fontScale
     val isFontScaledUp = fontScale > 1.0f
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     Column(modifier.fillMaxWidth()) {
 
@@ -221,7 +224,7 @@ private fun TopicScreen(
                 SectionHeadingLabel(
                     modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium),
                     title3 = stringResource(R.string.popular_pages_title),
-                    button = if (!isFontScaledUp) {
+                    button = if (!isFontScaledUp && !isLandscape) {
                         SectionHeadingLabelButton(
                             title = seeAllButton,
                             altText = seeAllButton,
