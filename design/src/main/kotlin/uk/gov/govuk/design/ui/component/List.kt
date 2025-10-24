@@ -3,7 +3,6 @@ package uk.gov.govuk.design.ui.component
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,22 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -36,9 +26,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 import uk.gov.govuk.design.R
 import uk.gov.govuk.design.ui.model.ExternalLinkListItemStyle
 import uk.gov.govuk.design.ui.model.IconListItemStyle
@@ -339,297 +327,30 @@ fun CardListItem(
     drawDivider: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-    val backgroundColor = GovUkTheme.colourScheme.surfaces.list
-    val backgroundColorHighlight = GovUkTheme.colourScheme.surfaces.cardHighlight
-
-    val interactionSource = remember { MutableInteractionSource() }
-
-    var isClicked by remember { mutableStateOf(false) }
-    if (onClick != null) {
-        LaunchedEffect(isClicked) {
-            delay(200)
-            isClicked = false
-        }
-    }
-
-    Box(
+    val cornerRadius = 12.dp
+    Column(
         modifier = modifier
-            .then(
-                if (onClick != null) {
-                    Modifier.clickable(
-                        interactionSource = interactionSource,
-                        indication = null
-                    ) {
-                        isClicked = true
-                        onClick()
-                    }
-                } else Modifier
-            )
-            .semantics(mergeDescendants = true) { }
-            .drawBehind {
-                drawCell(
-                    isFirst = isFirst,
-                    isLast = isLast,
-                    backgroundColor = backgroundColor,
-                    backgroundColorHighlight = backgroundColorHighlight,
-                    isClicked = isClicked
+            .clip(
+                RoundedCornerShape(
+                    topStart = if (isFirst) cornerRadius else 0.dp,
+                    topEnd = if (isFirst) cornerRadius else 0.dp,
+                    bottomStart = if (isLast) cornerRadius else 0.dp,
+                    bottomEnd = if (isLast) cornerRadius else 0.dp
                 )
-            }
+            )
+            .background(GovUkTheme.colourScheme.surfaces.list)
+            .then(
+                onClick?.let {
+                    Modifier.clickable { it() }
+                } ?: Modifier
+            )
     ) {
-        Column {
-            content()
+        content()
 
-            if (!isLast && drawDivider) {
-                ListDivider(Modifier.padding(horizontal = GovUkTheme.spacing.medium))
-            }
+        if (!isLast && drawDivider) {
+            ListDivider(Modifier.padding(horizontal = GovUkTheme.spacing.medium))
         }
     }
-}
-
-private fun DrawScope.drawCell(
-    isFirst: Boolean,
-    isLast: Boolean,
-    backgroundColor: Color,
-    backgroundColorHighlight: Color,
-    isClicked: Boolean
-) {
-    val cornerRadius: Dp = 12.dp
-
-    when {
-        isFirst && isLast ->
-            singleCell(
-                cornerRadius = cornerRadius.toPx(),
-                backgroundColor = backgroundColor,
-                backgroundColorHighlight = backgroundColorHighlight,
-                isClicked = isClicked
-            )
-        isFirst ->
-            firstCell(
-                cornerRadius = cornerRadius.toPx(),
-                backgroundColor = backgroundColor,
-                backgroundColorHighlight = backgroundColorHighlight,
-                isClicked = isClicked
-            )
-        isLast ->
-            lastCell(
-                cornerRadius = cornerRadius.toPx(),
-                backgroundColor = backgroundColor,
-                backgroundColorHighlight = backgroundColorHighlight,
-                isClicked = isClicked
-            )
-        else ->
-            intermediateCell(
-                backgroundColor = backgroundColor,
-                backgroundColorHighlight = backgroundColorHighlight,
-                isClicked = isClicked
-            )
-    }
-}
-
-private fun DrawScope.singleCell(
-    cornerRadius: Float,
-    backgroundColor: Color,
-    backgroundColorHighlight: Color,
-    isClicked: Boolean
-) {
-    // Path for top, bottom and side borders with rounded corners
-    val path = Path().apply {
-        // Start at bottom left
-        moveTo(0f, size.height - cornerRadius)
-
-        // Line to top left
-        lineTo(0f, 0f + cornerRadius)
-
-        // Top left corner
-        arcTo(
-            rect = Rect(
-                0f,
-                0f,
-                cornerRadius * 2,
-                cornerRadius * 2
-            ),
-            startAngleDegrees = 180f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        )
-
-        // Line to top right
-        lineTo(size.width - cornerRadius, 0f)
-
-        // Top right corner
-        arcTo(
-            rect = Rect(
-                size.width - cornerRadius * 2,
-                0f,
-                size.width,
-                cornerRadius * 2
-            ),
-            startAngleDegrees = -90f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        )
-
-        // Line to bottom right
-        lineTo(size.width, size.height - cornerRadius)
-
-        // Bottom right corner
-        arcTo(
-            rect = Rect(
-                size.width - 2 * cornerRadius,
-                size.height - 2 * cornerRadius,
-                size.width,
-                size.height
-            ),
-            startAngleDegrees = 0f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        )
-
-        // Line to bottom left
-        lineTo(cornerRadius, size.height)
-
-        // Bottom left corner
-        arcTo(
-            rect = Rect(
-                0f,
-                size.height - 2 * cornerRadius,
-                2 * cornerRadius,
-                size.height
-            ),
-            startAngleDegrees = 90f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        )
-    }
-
-    // Draw background colour
-    drawPath(
-        path = path,
-        color = if (isClicked) backgroundColorHighlight else backgroundColor,
-        style = Fill
-    )
-}
-
-private fun DrawScope.firstCell(
-    cornerRadius: Float,
-    backgroundColor: Color,
-    backgroundColorHighlight: Color,
-    isClicked: Boolean
-) {
-    // Path for top and side borders with rounded corners
-    val path = Path().apply {
-        // Start at bottom left
-        moveTo(0f, size.height)
-
-        // Line to top left
-        lineTo(0f, 0f + cornerRadius)
-
-        // Top left corner
-        arcTo(
-            rect = Rect(
-                0f,
-                0f,
-                cornerRadius * 2,
-                cornerRadius * 2
-            ),
-            startAngleDegrees = 180f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        )
-
-        // Line to top right
-        lineTo(size.width - cornerRadius, 0f)
-
-        // Top right corner
-        arcTo(
-            rect = Rect(
-                size.width - cornerRadius * 2,
-                0f,
-                size.width,
-                cornerRadius * 2
-            ),
-            startAngleDegrees = -90f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        )
-
-        // Line to bottom right
-        lineTo(size.width, size.height)
-    }
-
-    // Draw background colour
-    drawPath(
-        path = path,
-        color = if (isClicked) backgroundColorHighlight else backgroundColor,
-        style = Fill
-    )
-}
-
-private fun DrawScope.intermediateCell(
-    backgroundColor: Color,
-    backgroundColorHighlight: Color,
-    isClicked: Boolean
-) {
-    // Draw background colour
-    drawRect(
-        color = if (isClicked) backgroundColorHighlight else backgroundColor,
-        size = size
-    )
-}
-
-private fun DrawScope.lastCell(
-    cornerRadius: Float,
-    backgroundColor: Color,
-    backgroundColorHighlight: Color,
-    isClicked: Boolean
-) {
-    // Path for bottom and side borders with rounded corners
-    val path = Path().apply {
-        // Start at top-right corner
-        moveTo(size.width, 0f)
-
-        // Line to bottom right
-        lineTo(size.width, size.height - cornerRadius)
-
-        // Bottom right corner
-        arcTo(
-            rect = Rect(
-                size.width - 2 * cornerRadius,
-                size.height - 2 * cornerRadius,
-                size.width,
-                size.height
-            ),
-            startAngleDegrees = 0f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        )
-
-        // Line to bottom left
-        lineTo(cornerRadius, size.height)
-
-        // Bottom left corner
-        arcTo(
-            rect = Rect(
-                0f,
-                size.height - 2 * cornerRadius,
-                2 * cornerRadius,
-                size.height
-            ),
-            startAngleDegrees = 90f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        )
-
-        // Line to top left
-        lineTo(0f, 0f)
-    }
-
-    // Draw background colour
-    drawPath(
-        path = path,
-        color = if (isClicked) backgroundColorHighlight else backgroundColor,
-        style = Fill
-    )
 }
 
 @Preview
