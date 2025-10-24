@@ -150,14 +150,16 @@ private fun TopicScreen(
 ) {
     val focusManager = LocalFocusManager.current
     val lazyListState = rememberLazyListState()
-    val fontScale = LocalDensity.current.fontScale
-    val isFontScaledUp = fontScale > 1.0f
-    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     Column(modifier.fillMaxWidth()) {
 
         ChildPageHeader(
             dismissStyle = HeaderDismissStyle.Back(onBack)
+        )
+
+        val popularPagesSection = TopicUi.Section(
+            title = R.string.popular_pages_title,
+            icon = R.drawable.ic_topic_popular
         )
 
         val stepByStepSection = TopicUi.Section(
@@ -207,85 +209,32 @@ private fun TopicScreen(
                 MediumVerticalSpacer()
             }
 
-            item {
-                val section = stringResource(R.string.popular_pages_title)
-                val seeAllButton = stringResource(R.string.see_all_button)
-                val cards = topic.popularPages.map {
-                    CardListItem(
-                        title = it.title,
-                        onClick = {
-                            onExternalLink(
-                                section, it.title, it.url, currentItemIndex
-                            )
-                        }
+            val showHorizontalScrollView = false
+
+            if (showHorizontalScrollView) {
+                item {
+                    HorizontalScrollView(
+                        topic = topic,
+                        currentItemIndex = currentItemIndex,
+                        onExternalLink = onExternalLink,
+                        onPopularPagesSeeAll = onPopularPagesSeeAll,
+                        modifier = Modifier.fillMaxWidth()
                     )
-                }
 
-                SectionHeadingLabel(
-                    modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium),
-                    title3 = stringResource(R.string.popular_pages_title),
-                    button = if (!isFontScaledUp && !isLandscape) {
-                        SectionHeadingLabelButton(
-                            title = seeAllButton,
-                            altText = seeAllButton,
-                            onClick = {
-                                onPopularPagesSeeAll(section, seeAllButton, currentItemIndex)
-                            }
-                        )
-                    } else null
-                )
-
-                val colors = mapOf(
-                    "focusedBackgroundColor" to GovUkTheme.colourScheme.surfaces.cardCarouselFocused,
-                    "unfocusedBackgroundColor" to GovUkTheme.colourScheme.surfaces.cardCarousel,
-                    "focusedContentColor" to GovUkTheme.colourScheme.textAndIcons.cardCarouselFocused,
-                    "unfocusedContentColor" to GovUkTheme.colourScheme.textAndIcons.cardCarousel
-                )
-
-                if (isFontScaledUp) {
-                    // vertical list
-                    Column(
-                        modifier = modifier.fillMaxWidth()
-                            .padding(horizontal = GovUkTheme.spacing.medium)
-                    ) {
-                        cards.forEach { item ->
-                            FocusableCard(
-                                item,
-                                colors,
-                                modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
-                            )
-                        }
-                    }
-                } else {
-                    // horizontal list
-                    Box {
-                        val horizontalListState = rememberLazyListState()
-
-                        LazyRow(
-                            state = horizontalListState,
-                            modifier = modifier.fillMaxWidth()
-                                .padding(horizontal = GovUkTheme.spacing.medium),
-                        ) {
-                            itemsIndexed(cards) { index, item ->
-                                FocusableCard(
-                                    item,
-                                    colors,
-                                    modifier = Modifier.size(150.dp)
-                                )
-
-                                if (index < cards.size - 1) {
-                                    SmallHorizontalSpacer()
-                                }
-                            }
-                        }
+                    if (topic.displayPopularPagesSeeAll) {
+                        currentItemIndex += 1
                     }
                 }
-
-                MediumVerticalSpacer()
+            } else {
+                contentItems(
+                    currentItemIndex = currentItemIndex,
+                    contentItems = topic.popularPages,
+                    section = popularPagesSection,
+                    onClick = onExternalLink
+                )
             }
 
             if (topic.popularPages.isNotEmpty()) currentItemIndex += topic.popularPages.size
-            if (topic.displayPopularPagesSeeAll) { currentItemIndex += 1 }
 
             contentItems(
                 currentItemIndex = currentItemIndex,
@@ -324,6 +273,94 @@ private fun TopicScreen(
             focusRequester.requestFocus()
         }
     }
+}
+
+@Composable
+private fun HorizontalScrollView(
+    topic: TopicUi,
+    currentItemIndex: Int,
+    onExternalLink: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit,
+    onPopularPagesSeeAll: (section: String, text: String, selectedItemIndex: Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val fontScale = LocalDensity.current.fontScale
+    val isFontScaledUp = fontScale > 1.0f
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    val section = stringResource(R.string.popular_pages_title)
+    val seeAllButton = stringResource(R.string.see_all_button)
+    val cards = topic.popularPages.map {
+        CardListItem(
+            title = it.title,
+            onClick = {
+                onExternalLink(
+                    section, it.title, it.url, currentItemIndex
+                )
+            }
+        )
+    }
+
+    SectionHeadingLabel(
+        modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium),
+        title3 = stringResource(R.string.popular_pages_title),
+        button = if (!isFontScaledUp && !isLandscape) {
+            SectionHeadingLabelButton(
+                title = seeAllButton,
+                altText = seeAllButton,
+                onClick = {
+                    onPopularPagesSeeAll(section, seeAllButton, currentItemIndex)
+                }
+            )
+        } else null
+    )
+
+    val colors = mapOf(
+        "focusedBackgroundColor" to GovUkTheme.colourScheme.surfaces.cardCarouselFocused,
+        "unfocusedBackgroundColor" to GovUkTheme.colourScheme.surfaces.cardCarousel,
+        "focusedContentColor" to GovUkTheme.colourScheme.textAndIcons.cardCarouselFocused,
+        "unfocusedContentColor" to GovUkTheme.colourScheme.textAndIcons.cardCarousel
+    )
+
+    if (isFontScaledUp) {
+        // vertical list
+        Column(
+            modifier = modifier.fillMaxWidth()
+                .padding(horizontal = GovUkTheme.spacing.medium)
+        ) {
+            cards.forEach { item ->
+                FocusableCard(
+                    item,
+                    colors,
+                    modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
+                )
+            }
+        }
+    } else {
+        // horizontal list
+        Box {
+            val horizontalListState = rememberLazyListState()
+
+            LazyRow(
+                state = horizontalListState,
+                modifier = modifier.fillMaxWidth()
+                    .padding(horizontal = GovUkTheme.spacing.medium),
+            ) {
+                itemsIndexed(cards) { index, item ->
+                    FocusableCard(
+                        item,
+                        colors,
+                        modifier = Modifier.size(150.dp)
+                    )
+
+                    if (index < cards.size - 1) {
+                        SmallHorizontalSpacer()
+                    }
+                }
+            }
+        }
+    }
+
+    MediumVerticalSpacer()
 }
 
 private fun LazyListScope.contentItems(
