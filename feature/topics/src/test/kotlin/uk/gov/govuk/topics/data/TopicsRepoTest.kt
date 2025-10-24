@@ -163,6 +163,32 @@ class TopicsRepoTest{
     }
 
     @Test
+    fun `Given a successful topic response with a body, then return success with topic and cache popular pages`() {
+        val popularPages = listOf(
+            RemoteTopicContent(
+                url = "url-1",
+                title = "title-1",
+                isStepByStep = false,
+                isPopular = true
+            )
+        )
+
+        coEvery { topicsApi.getTopic("ref") } returns topicResponse
+        coEvery { topicResponse.isSuccessful } returns true
+        coEvery { topicResponse.body() } returns topic
+        coEvery { topic.content } returns popularPages
+
+        val repo = TopicsRepo(topicsApi, localDataSource)
+
+        val expected = Success(topic)
+
+        runTest {
+            assertEquals(expected, repo.getTopic("ref"))
+            assertEquals(popularPages, repo.popularPages)
+        }
+    }
+
+    @Test
     fun `Given the user it toggling the selection of a topic, when toggle selection, then update local data source`() {
         val repo = TopicsRepo(topicsApi, localDataSource)
 

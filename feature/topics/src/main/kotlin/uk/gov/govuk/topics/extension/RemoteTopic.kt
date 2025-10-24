@@ -8,15 +8,21 @@ import uk.gov.govuk.topics.ui.model.TopicUi.Subtopic
 import uk.gov.govuk.topics.ui.model.TopicUi.TopicContent
 import kotlin.math.min
 
-internal fun RemoteTopic.toTopicUi(maxStepBySteps: Int, isSubtopic: Boolean): TopicUi {
+internal fun RemoteTopic.toTopicUi(
+    maxPopularPages: Int,
+    maxStepBySteps: Int,
+    isSubtopic: Boolean
+): TopicUi {
     val stepBySteps = content.filter { it.isStepByStep }
+    val popularPages = content.filter { it.isPopular }
 
     return TopicUi(
         title = title,
         description = description,
-        popularPages = content
-            .filter { it.isPopular }
+        popularPages = popularPages
+            .subList(0, min(popularPages.size, maxPopularPages))
             .map { it.toTopicContent() },
+        displayPopularPagesSeeAll = popularPages.size > maxPopularPages,
         stepBySteps = stepBySteps
             .subList(0, min(stepBySteps.size, maxStepBySteps))
             .map { it.toTopicContent()},

@@ -30,6 +30,7 @@ internal class TopicViewModel @Inject constructor(
     companion object {
         private const val SCREEN_CLASS = "TopicScreen"
         private const val SUBTOPIC_SECTION = "Sub topics"
+        private const val MAX_POPULAR_PAGES = 4
         private const val MAX_STEP_BY_STEPS = 3
     }
 
@@ -47,7 +48,13 @@ internal class TopicViewModel @Inject constructor(
                 val result = topicsRepo.getTopic(ref)
                 _uiState.value = when (result) {
                     is Success -> {
-                        TopicUiState.Default(result.value.toTopicUi(MAX_STEP_BY_STEPS, isSubtopic))
+                        TopicUiState.Default(
+                            result.value.toTopicUi(
+                                MAX_POPULAR_PAGES,
+                                MAX_STEP_BY_STEPS,
+                                isSubtopic
+                            )
+                        )
                     }
                     is DeviceOffline -> TopicUiState.Offline(ref)
                     else -> TopicUiState.ServiceError(ref)
@@ -170,7 +177,7 @@ internal class TopicViewModel @Inject constructor(
          * Passing in the context is a memory leak.
          * So, not sure if that's possible!
          */
-        val popularPagesTitle = "Popular pages in this topic"
+        val popularPagesTitle = "Popular pages"
         val stepByStepsTitle = "Step by step guides"
         val browseTitle = "Browse"
         val servicesTitle = "Services and information"

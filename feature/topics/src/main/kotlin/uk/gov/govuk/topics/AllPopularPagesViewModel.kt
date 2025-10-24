@@ -14,32 +14,32 @@ import uk.gov.govuk.visited.Visited
 import javax.inject.Inject
 
 @HiltViewModel
-internal class AllStepByStepsViewModel @Inject constructor(
+internal class AllPopularPagesViewModel @Inject constructor(
     topicsRepo: TopicsRepo,
     private val analyticsClient: AnalyticsClient,
     private val visited: Visited
 ): ViewModel() {
 
     companion object {
-        private const val SCREEN_CLASS = "AllStepByStepsScreen"
+        private const val SCREEN_CLASS = "AllPopularPagesScreen"
     }
 
-    private val _stepBySteps: MutableStateFlow<List<TopicContent>> = MutableStateFlow(
-        topicsRepo.stepBySteps.map { it.toTopicContent() }
+    private val _popularPages: MutableStateFlow<List<TopicContent>> = MutableStateFlow(
+        topicsRepo.popularPages.map { it.toTopicContent() }
     )
-    val stepBySteps = _stepBySteps.asStateFlow()
+    val popularPages = _popularPages.asStateFlow()
 
-    fun onPageView(stepBySteps: List<TopicContent>, title: String) {
+    fun onPageView(popularPages: List<TopicContent>, title: String) {
         analyticsClient.screenView(
             screenClass = SCREEN_CLASS,
             screenName = title,
             title = title
         )
 
-        sendViewItemListEvent(stepBySteps = stepBySteps, title = title)
+        sendViewItemListEvent(popularPages = popularPages, title = title)
     }
 
-    fun onStepByStepClick(
+    fun onPopularPagesClick(
         section: String,
         text: String,
         url: String,
@@ -57,16 +57,16 @@ internal class AllStepByStepsViewModel @Inject constructor(
     }
 
     private fun sendViewItemListEvent(
-        stepBySteps: List<TopicContent>,
+        popularPages: List<TopicContent>,
         title: String
     ) {
         var topicItems = listOf<EcommerceEvent.Item>()
 
-        if (stepBySteps.isNotEmpty()) {
-            val stepByStepsTitle = "Step by step guides"
+        if (popularPages.isNotEmpty()) {
+            val popularPagesTitle = "Popular pages"
 
             topicItems = listOf(
-                stepBySteps to stepByStepsTitle,
+                popularPages to popularPagesTitle,
             ).flatMap { (items, category) ->
                 items.map { item ->
                     EcommerceEvent.Item(

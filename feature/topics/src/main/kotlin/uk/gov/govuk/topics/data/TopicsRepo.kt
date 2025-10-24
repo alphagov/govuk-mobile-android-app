@@ -19,9 +19,13 @@ internal class TopicsRepo @Inject constructor(
 ) {
 
     private lateinit var _stepBySteps: List<RemoteTopicContent>
+    private lateinit var _popularPages: List<RemoteTopicContent>
 
     val stepBySteps
         get() = _stepBySteps
+
+    val popularPages
+        get() = _popularPages
 
     suspend fun sync() {
         val result = safeApiCall { topicsApi.getTopics() }
@@ -57,6 +61,7 @@ internal class TopicsRepo @Inject constructor(
         val result = safeApiCall { topicsApi.getTopic(ref) }
         if (result is Success) {
             _stepBySteps = result.value.content.filter { it.isStepByStep }
+            _popularPages = result.value.content.filter { it.isPopular }
         }
         return result
     }
