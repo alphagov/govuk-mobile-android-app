@@ -156,7 +156,7 @@ private fun NoLocalAuthorityCard(
 
             CentredCardWithIcon(
                 onClick = { onClick(description) },
-                icon = R.drawable.outline_add_circle_outline_24,
+                icon = uk.gov.govuk.design.R.drawable.ic_add,
                 description = description
             )
         }
