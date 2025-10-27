@@ -471,19 +471,19 @@ fun FocusableCard(
     val isFocused by interactionSource.collectIsFocusedAsState()
 
     val backgroundColor by animateColorAsState(
-        (if (isFocused) {
+        if (isFocused) {
             colors["focusedBackgroundColor"]
         } else {
             colors["unfocusedBackgroundColor"]
-        })!!
+        } ?: Color.Transparent
     )
 
     val contentColor by animateColorAsState(
-        (if (isFocused) {
+        if (isFocused) {
             colors["focusedContentColor"]
         } else {
             colors["unfocusedContentColor"]
-        })!!
+        } ?: Color.Transparent
     )
 
     Card(
