@@ -1,7 +1,6 @@
 package uk.gov.govuk.design.ui.component
 
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -45,6 +44,7 @@ import uk.gov.govuk.design.R
 import uk.gov.govuk.design.ui.extension.drawBottomStroke
 import uk.gov.govuk.design.ui.extension.talkBackText
 import uk.gov.govuk.design.ui.model.CardListItem
+import uk.gov.govuk.design.ui.model.FocusableCardColours
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -463,28 +463,24 @@ fun NavigationCard(
 @Composable
 fun FocusableCard(
     item: CardListItem,
-    colors: Map<String, Color>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    colourMapper: @Composable (FocusableCardColours) -> Color
 ) {
     val focusRequester = remember { FocusRequester() }
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
-    val backgroundColor by animateColorAsState(
-        if (isFocused) {
-            colors["focusedBackgroundColor"]
-        } else {
-            colors["unfocusedBackgroundColor"]
-        } ?: Color.Transparent
-    )
+    val backgroundColor = if (isFocused) {
+        colourMapper(FocusableCardColours.Focussed.Background)
+    } else {
+        colourMapper(FocusableCardColours.UnFocussed.Background)
+    }
 
-    val contentColor by animateColorAsState(
-        if (isFocused) {
-            colors["focusedContentColor"]
-        } else {
-            colors["unfocusedContentColor"]
-        } ?: Color.Transparent
-    )
+    val contentColor = if (isFocused) {
+        colourMapper(FocusableCardColours.Focussed.Content)
+    } else {
+        colourMapper(FocusableCardColours.UnFocussed.Content)
+    }
 
     Card(
         modifier = modifier

@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -50,8 +51,9 @@ import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
 import uk.gov.govuk.design.ui.component.error.OfflineMessage
 import uk.gov.govuk.design.ui.component.error.ProblemMessage
 import uk.gov.govuk.design.ui.model.CardListItem
-import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
+import uk.gov.govuk.design.ui.model.FocusableCardColours
 import uk.gov.govuk.design.ui.model.HeaderDismissStyle
+import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.R
 import uk.gov.govuk.topics.TopicUiState
@@ -299,6 +301,17 @@ private fun HorizontalScrollView(
             }
         )
     }
+    val colourMapper = @Composable { cardColour: FocusableCardColours ->
+        when (cardColour) {
+            FocusableCardColours.Focussed.Background -> GovUkTheme.colourScheme.surfaces.cardCarouselFocused
+            FocusableCardColours.Focussed.Content -> GovUkTheme.colourScheme.textAndIcons.cardCarouselFocused
+            FocusableCardColours.UnFocussed.Background -> GovUkTheme.colourScheme.surfaces.cardCarousel
+            FocusableCardColours.UnFocussed.Content -> GovUkTheme.colourScheme.textAndIcons.cardCarousel
+            else -> {
+                Color.Transparent
+            }
+        }
+    }
 
     SectionHeadingLabel(
         modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium),
@@ -314,13 +327,6 @@ private fun HorizontalScrollView(
         } else null
     )
 
-    val colors = mapOf(
-        "focusedBackgroundColor" to GovUkTheme.colourScheme.surfaces.cardCarouselFocused,
-        "unfocusedBackgroundColor" to GovUkTheme.colourScheme.surfaces.cardCarousel,
-        "focusedContentColor" to GovUkTheme.colourScheme.textAndIcons.cardCarouselFocused,
-        "unfocusedContentColor" to GovUkTheme.colourScheme.textAndIcons.cardCarousel
-    )
-
     if (isFontScaledUp) {
         // vertical list
         Column(
@@ -330,8 +336,8 @@ private fun HorizontalScrollView(
             cards.forEach { item ->
                 FocusableCard(
                     item,
-                    colors,
-                    modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium)
+                    modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium),
+                    colourMapper = colourMapper
                 )
             }
         }
@@ -348,8 +354,8 @@ private fun HorizontalScrollView(
                 itemsIndexed(cards) { index, item ->
                     FocusableCard(
                         item,
-                        colors,
-                        modifier = Modifier.size(150.dp)
+                        modifier = Modifier.size(150.dp),
+                        colourMapper = colourMapper
                     )
 
                     if (index < cards.size - 1) {
