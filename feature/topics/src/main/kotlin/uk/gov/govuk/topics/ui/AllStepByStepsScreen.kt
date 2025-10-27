@@ -19,7 +19,7 @@ import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.model.HeaderDismissStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-import uk.gov.govuk.topics.AllStepByStepsViewModel
+import uk.gov.govuk.topics.AllViewModel
 import uk.gov.govuk.topics.R
 import uk.gov.govuk.topics.ui.model.TopicUi.TopicContent
 
@@ -29,12 +29,12 @@ internal fun AllStepByStepRoute(
     onClick: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: AllStepByStepsViewModel = hiltViewModel()
+    val viewModel: AllViewModel = hiltViewModel()
     val stepBySteps by viewModel.stepBySteps.collectAsState()
 
     AllStepByStepsScreen(
         stepBySteps = stepBySteps,
-        onPageView = { title -> viewModel.onPageView(stepBySteps, title) },
+        onPageView = { title -> viewModel.onStepByStepPageView(stepBySteps, title) },
         onBack = onBack,
         onExternalLink = { section, text, url, selectedItemIndex ->
             viewModel.onStepByStepClick(

@@ -19,7 +19,7 @@ import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.model.HeaderDismissStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-import uk.gov.govuk.topics.AllPopularPagesViewModel
+import uk.gov.govuk.topics.AllViewModel
 import uk.gov.govuk.topics.R
 import uk.gov.govuk.topics.ui.model.TopicUi.TopicContent
 
@@ -29,12 +29,12 @@ internal fun AllPopularPagesRoute(
     onClick: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: AllPopularPagesViewModel = hiltViewModel()
+    val viewModel: AllViewModel = hiltViewModel()
     val popularPages by viewModel.popularPages.collectAsState()
 
     AllPopularPagesScreen(
         popularPages = popularPages,
-        onPageView = { title -> viewModel.onPageView(popularPages, title) },
+        onPageView = { title -> viewModel.onPopularPagesView(popularPages, title) },
         onBack = onBack,
         onExternalLink = { section, text, url, selectedItemIndex ->
             viewModel.onPopularPagesClick(
