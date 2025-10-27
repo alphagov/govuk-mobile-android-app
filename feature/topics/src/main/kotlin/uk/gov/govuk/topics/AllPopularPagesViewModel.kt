@@ -22,6 +22,8 @@ internal class AllPopularPagesViewModel @Inject constructor(
 
     companion object {
         private const val SCREEN_CLASS = "AllPopularPagesScreen"
+        private const val SCREEN_TITLE = "Popular pages"
+        private const val LIST_NAME = "Topics"
     }
 
     private val _popularPages: MutableStateFlow<List<TopicContent>> = MutableStateFlow(
@@ -63,10 +65,8 @@ internal class AllPopularPagesViewModel @Inject constructor(
         var topicItems = listOf<EcommerceEvent.Item>()
 
         if (popularPages.isNotEmpty()) {
-            val popularPagesTitle = "Popular pages"
-
             topicItems = listOf(
-                popularPages to popularPagesTitle,
+                popularPages to SCREEN_TITLE,
             ).flatMap { (items, category) ->
                 items.map { item ->
                     EcommerceEvent.Item(
@@ -80,7 +80,7 @@ internal class AllPopularPagesViewModel @Inject constructor(
 
         analyticsClient.viewItemListEvent(
             ecommerceEvent = EcommerceEvent(
-                itemListName = "Topics",
+                itemListName = LIST_NAME,
                 itemListId = title,
                 items = topicItems
             )

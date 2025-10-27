@@ -24,6 +24,12 @@ internal class TopicsWidgetViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient
 ): ViewModel() {
 
+    companion object {
+        private const val LIST_ID = "Homepage"
+        private const val LIST_NAME = "HomeScreen"
+        private const val ITEM_CATEGORY = "Topics"
+    }
+
     private val _uiState: MutableStateFlow<TopicsWidgetUiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
 
@@ -64,12 +70,12 @@ internal class TopicsWidgetViewModel @Inject constructor(
     ) {
         analyticsClient.selectItemEvent(
             ecommerceEvent = EcommerceEvent(
-                itemListName = "HomeScreen",
-                itemListId = "Homepage",
+                itemListName = LIST_NAME,
+                itemListId = LIST_ID,
                 items = listOf(
                     EcommerceEvent.Item(
                         itemName = title,
-                        itemCategory = "Topics",
+                        itemCategory = ITEM_CATEGORY,
                         locationId = section
                     )
                 )
@@ -84,15 +90,15 @@ internal class TopicsWidgetViewModel @Inject constructor(
         topics.forEach { topic ->
             items += EcommerceEvent.Item(
                 itemName = topic.title,
-                itemCategory = "Topics",
+                itemCategory = ITEM_CATEGORY,
                 locationId = topic.ref
             )
         }
 
         analyticsClient.viewItemListEvent(
             ecommerceEvent = EcommerceEvent(
-                itemListName = "HomeScreen",
-                itemListId = "Homepage",
+                itemListName = LIST_NAME,
+                itemListId = LIST_ID,
                 items = items
             )
         )

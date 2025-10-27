@@ -22,6 +22,8 @@ internal class AllStepByStepsViewModel @Inject constructor(
 
     companion object {
         private const val SCREEN_CLASS = "AllStepByStepsScreen"
+        private const val SCREEN_TITLE = "Step by step guides"
+        private const val LIST_NAME = "Topics"
     }
 
     private val _stepBySteps: MutableStateFlow<List<TopicContent>> = MutableStateFlow(
@@ -63,10 +65,8 @@ internal class AllStepByStepsViewModel @Inject constructor(
         var topicItems = listOf<EcommerceEvent.Item>()
 
         if (stepBySteps.isNotEmpty()) {
-            val stepByStepsTitle = "Step by step guides"
-
             topicItems = listOf(
-                stepBySteps to stepByStepsTitle,
+                stepBySteps to SCREEN_TITLE,
             ).flatMap { (items, category) ->
                 items.map { item ->
                     EcommerceEvent.Item(
@@ -80,7 +80,7 @@ internal class AllStepByStepsViewModel @Inject constructor(
 
         analyticsClient.viewItemListEvent(
             ecommerceEvent = EcommerceEvent(
-                itemListName = "Topics",
+                itemListName = LIST_NAME,
                 itemListId = title,
                 items = topicItems
             )
