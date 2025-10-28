@@ -28,6 +28,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.R
+import uk.gov.govuk.design.ui.extension.talkBackText
 import uk.gov.govuk.design.ui.model.ExternalLinkListItemStyle
 import uk.gov.govuk.design.ui.model.IconListItemStyle
 import uk.gov.govuk.design.ui.model.InternalLinkListItemStyle
@@ -115,7 +116,7 @@ fun ExternalLinkListItem(
             modifier = Modifier
                 .padding(all = GovUkTheme.spacing.medium)
                 .fillMaxWidth()
-                .semantics { contentDescription = "$title. $opensInWebBrowser. $description" }
+                .talkBackText(title, description, opensInWebBrowser)
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 BodyRegularLabel(
