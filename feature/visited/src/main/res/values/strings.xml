@@ -2,7 +2,7 @@
   <string name="visited_items_title">Pages you\'ve visited</string>
 
   <string name="visited_items_no_pages_title">No pages</string>
-  <string name="visited_items_no_pages_description">You have not used the app to visit any GOV.UK pages</string>
+  <string name="visited_items_no_pages_description">Pages you visit in the app will appear here</string>
 
   <string name="visited_items_last_visited">Last visited on</string>
 
