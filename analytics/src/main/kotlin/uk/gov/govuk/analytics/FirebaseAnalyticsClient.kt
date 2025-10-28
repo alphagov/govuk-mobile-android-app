@@ -36,16 +36,20 @@ class FirebaseAnalyticsClient @Inject constructor(
     ) {
         val bundle = Bundle()
 
-        bundle.putString(FirebaseAnalytics.Param.ITEM_LIST_NAME, ecommerceEvent.itemListName)
         bundle.putString(FirebaseAnalytics.Param.ITEM_LIST_ID, ecommerceEvent.itemListId)
-        bundle.putInt("results", ecommerceEvent.items.size)
+        bundle.putString(FirebaseAnalytics.Param.ITEM_LIST_NAME, ecommerceEvent.itemListName)
 
         val itemsArrayList = ArrayList<Bundle>()
         ecommerceEvent.items.forEachIndexed { index, item ->
             val itemsBundle = Bundle()
-            itemsBundle.putInt("index", selectedItemIndex ?: index + 1)
             itemsBundle.putString(FirebaseAnalytics.Param.ITEM_NAME, item.itemName)
-            itemsBundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, item.itemCategory)
+            itemsBundle.putInt("index", selectedItemIndex ?: (index + 1))
+            itemsBundle.putInt("results", ecommerceEvent.items.size) // TODO - this should be the total number of items???
+            itemsBundle.putString(FirebaseAnalytics.Param.ITEM_LIST_ID, ecommerceEvent.itemListId)
+            itemsBundle.putString(FirebaseAnalytics.Param.ITEM_LIST_NAME, ecommerceEvent.itemListName)
+            item.itemCategory?.let { category ->
+                itemsBundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, category)
+            }
             itemsBundle.putString(FirebaseAnalytics.Param.LOCATION_ID, item.locationId)
             itemsArrayList.add(itemsBundle)
         }
