@@ -12,7 +12,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -21,9 +20,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import uk.gov.govuk.design.ui.component.CardListItem
+import uk.gov.govuk.design.ui.component.CentredContentWithIcon
 import uk.gov.govuk.design.ui.component.ConnectedButton
 import uk.gov.govuk.design.ui.component.ConnectedButtonGroup
 import uk.gov.govuk.design.ui.component.IconListItem
@@ -119,13 +117,6 @@ private fun TopicsCard(
 ) {
     var activeButtonState by rememberSaveable { mutableStateOf( ConnectedButton.FIRST) }
 
-    LaunchedEffect(uiState.yourTopics.isEmpty()) {
-        if (uiState.yourTopics.isEmpty()) {
-            activeButtonState = ConnectedButton.SECOND
-        }
-    }
-    val coroutineScope = rememberCoroutineScope()
-
     Column(modifier) {
         CardListItem(
             isLast = false,
@@ -140,25 +131,22 @@ private fun TopicsCard(
                     firstText = stringResource(R.string.your_topics),
                     secondText = stringResource(R.string.all_topics),
                     onActiveStateChange = { activeButton ->
-                        coroutineScope.launch {
-                            if (activeButton == ConnectedButton.FIRST &&
-                                uiState.yourTopics.isEmpty()
-                            ) {
-                                onEditClick("") // Todo - what should text be???
-                                delay(500)
-                            }
-
-                            activeButtonState = activeButton
-                        }
+                        activeButtonState = activeButton
                     },
                     activeButton = activeButtonState
                 )
             }
         }
+
+        val topics = when (activeButtonState) {
+            ConnectedButton.FIRST -> uiState.yourTopics
+            ConnectedButton.SECOND -> uiState.allTopics
+        }
+
         TopicsList(
-            uiState = uiState,
-            activeButtonState = activeButtonState,
-            onClick = onTopicClick
+            topics = topics,
+            onClick = onTopicClick,
+            onEmptyClick = onEditClick
         )
     }
 }
@@ -166,35 +154,40 @@ private fun TopicsCard(
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.TopicsList(
-    uiState: TopicsWidgetUiState,
-    activeButtonState: ConnectedButton,
-    onClick: (String, String, Int) -> Unit
+    topics: List<TopicItemUi>,
+    onClick: (String, String, Int) -> Unit,
+    onEmptyClick: (String) -> Unit
 ) {
-    val topics = when (activeButtonState) {
-        ConnectedButton.FIRST -> {
-            uiState.yourTopics.ifEmpty {
-                uiState.allTopics
-            }
-        }
-        ConnectedButton.SECOND -> uiState.allTopics
-    }
-
-    topics.forEachIndexed { index, topic ->
-        IconListItem(
-            title = topic.title,
-            icon = topic.icon,
-            onClick = {
-                // Todo - do we need to identify your topics vs all topics for analytics???
-                onClick(
-                    topic.ref,
-                    topic.title,
-                    index + 1
-                )
-            },
-            style = IconListItemStyle.Bold,
+    if (topics.isEmpty()) {
+        val emptyText = stringResource(R.string.empty_topics)
+        CardListItem(
+            onClick = { onEmptyClick(emptyText) },
             isFirst = false,
-            isLast = index == topics.lastIndex
-        )
+            isLast = true
+        ) {
+            CentredContentWithIcon(
+                icon = uk.gov.govuk.design.R.drawable.ic_add,
+                description = emptyText
+            )
+        }
+    } else {
+        topics.forEachIndexed { index, topic ->
+            IconListItem(
+                title = topic.title,
+                icon = topic.icon,
+                onClick = {
+                    // Todo - do we need to identify your topics vs all topics for analytics???
+                    onClick(
+                        topic.ref,
+                        topic.title,
+                        index + 1
+                    )
+                },
+                style = IconListItemStyle.Bold,
+                isFirst = false,
+                isLast = index == topics.lastIndex
+            )
+        }
     }
 }
 

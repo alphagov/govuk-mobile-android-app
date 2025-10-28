@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -355,51 +356,73 @@ fun CentredCardWithIcon(
                 colour = GovUkTheme.colourScheme.strokes.cardDefault,
                 cornerRadius = GovUkTheme.numbers.cornerAndroidList
             ),
-        colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.list),
-        onClick = onClick,
-        content = {
-            ExtraLargeVerticalSpacer()
+        colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.list)
+    ) {
+        CentredContentWithIcon(
+            icon = icon,
+            modifier = Modifier
+                .clickable {
+                    onClick()
+                },
+            title = title,
+            description = description
+        )
+    }
+}
 
-            Icon(
-                painterResource(icon),
-                contentDescription = null,
-                modifier = modifier
+@Composable
+fun CentredContentWithIcon(
+    @DrawableRes icon: Int,
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    description: String? = null
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .talkBackText(title, description)
+    ) {
+        ExtraLargeVerticalSpacer()
+
+        Icon(
+            painterResource(icon),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(32.dp),
+            tint = GovUkTheme.colourScheme.textAndIcons.icon
+        )
+
+        title?.let { title ->
+            SmallVerticalSpacer()
+
+            BodyBoldLabel(
+                text = title,
+                color = GovUkTheme.colourScheme.textAndIcons.primary,
+                modifier = Modifier
                     .fillMaxWidth()
-                    .size(32.dp),
-                tint = GovUkTheme.colourScheme.textAndIcons.icon
+                    .clearAndSetSemantics { }
+                    .padding(horizontal = GovUkTheme.spacing.extraLarge),
+                textAlign = TextAlign.Center,
             )
-
-            title?.let { title ->
-                SmallVerticalSpacer()
-
-                BodyBoldLabel(
-                    text = title,
-                    color = GovUkTheme.colourScheme.textAndIcons.primary,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .semantics(mergeDescendants = true) { }
-                        .padding(horizontal = GovUkTheme.spacing.extraLarge),
-                    textAlign = TextAlign.Center,
-                )
-            }
-
-            description?.let { description ->
-                SmallVerticalSpacer()
-
-                BodyRegularLabel(
-                    text = description,
-                    color = GovUkTheme.colourScheme.textAndIcons.secondary,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .semantics(mergeDescendants = true) { }
-                        .padding(horizontal = GovUkTheme.spacing.extraLarge),
-                    textAlign = TextAlign.Center,
-                )
-            }
-
-            ExtraLargeVerticalSpacer()
         }
-    )
+
+        description?.let { description ->
+            SmallVerticalSpacer()
+
+            BodyRegularLabel(
+                text = description,
+                color = GovUkTheme.colourScheme.textAndIcons.secondary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clearAndSetSemantics { }
+                    .padding(horizontal = GovUkTheme.spacing.extraLarge),
+                textAlign = TextAlign.Center,
+            )
+        }
+
+        ExtraLargeVerticalSpacer()
+    }
 }
 
 @Composable
