@@ -18,6 +18,10 @@ internal data class TopicsWidgetUiState(
     val yourTopics: List<TopicItemUi>
 )
 
+internal enum class TopicsCategory {
+    YOUR, ALL
+}
+
 @HiltViewModel
 internal class TopicsWidgetViewModel @Inject constructor(
     private val topicsRepo: TopicsRepo,
@@ -42,35 +46,60 @@ internal class TopicsWidgetViewModel @Inject constructor(
     }
 
     fun onTopicSelectClick(
-        ref: String,
+        category: TopicsCategory,
         title: String,
+        ref: String,
         selectedItemIndex: Int
     ) {
         sendSelectItemEvent(
+            category = category,
             title = title,
-            section = ref,
+            ref = ref,
             selectedItemIndex = selectedItemIndex
         )
     }
 
-    fun onPageView(topics: List<TopicItemUi>) {
-        sendViewItemListEvent(topics)
+    fun onView(category: TopicsCategory, topics: List<TopicItemUi>) {
+        sendViewItemListEvent(category, topics)
+    }
+
+    private fun sendViewItemListEvent(category: TopicsCategory, topics: List<TopicItemUi>) {
+        val items = mutableListOf<EcommerceEvent.Item>()
+
+        val listCategory = mapCategory(category)
+
+        topics.forEach { topic ->
+            items += EcommerceEvent.Item(
+                itemName = topic.title,
+                locationId = topic.ref
+            )
+        }
+
+        analyticsClient.viewItemListEvent(
+            ecommerceEvent = EcommerceEvent(
+                itemListName = listCategory,
+                itemListId = listCategory,
+                items = items
+            )
+        )
     }
 
     private fun sendSelectItemEvent(
-        section: String,
+        category: TopicsCategory,
         title: String,
+        ref: String,
         selectedItemIndex: Int
     ) {
+        val listCategory = mapCategory(category)
+
         analyticsClient.selectItemEvent(
             ecommerceEvent = EcommerceEvent(
-                itemListName = "HomeScreen",
-                itemListId = "Homepage",
+                itemListName = listCategory,
+                itemListId = listCategory,
                 items = listOf(
                     EcommerceEvent.Item(
                         itemName = title,
-                        itemCategory = "Topics",
-                        locationId = section
+                        locationId = ref
                     )
                 )
             ),
@@ -78,23 +107,10 @@ internal class TopicsWidgetViewModel @Inject constructor(
         )
     }
 
-    private fun sendViewItemListEvent(topics: List<TopicItemUi>) {
-        val items = mutableListOf<EcommerceEvent.Item>()
-
-        topics.forEach { topic ->
-            items += EcommerceEvent.Item(
-                itemName = topic.title,
-                itemCategory = "Topics",
-                locationId = topic.ref
-            )
+    private fun mapCategory(category: TopicsCategory): String {
+        return when (category) {
+            TopicsCategory.YOUR -> "Your topics"
+            TopicsCategory.ALL -> "All topics"
         }
-
-        analyticsClient.viewItemListEvent(
-            ecommerceEvent = EcommerceEvent(
-                itemListName = "HomeScreen",
-                itemListId = "Homepage",
-                items = items
-            )
-        )
     }
 }

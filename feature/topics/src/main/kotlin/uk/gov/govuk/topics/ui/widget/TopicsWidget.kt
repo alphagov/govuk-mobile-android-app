@@ -31,6 +31,7 @@ import uk.gov.govuk.design.ui.model.IconListItemStyle
 import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.R
+import uk.gov.govuk.topics.TopicsCategory
 import uk.gov.govuk.topics.TopicsWidgetUiState
 import uk.gov.govuk.topics.TopicsWidgetViewModel
 import uk.gov.govuk.topics.ui.model.TopicItemUi
@@ -47,9 +48,14 @@ fun TopicsWidget(
     uiState?.let {
         TopicsWidgetContent(
             uiState = it,
-            onPageView = { topics -> viewModel.onPageView(topics) },
-            onTopicClick = { ref, title, index ->
-                viewModel.onTopicSelectClick(ref, title, index)
+            onView = { category, topics -> viewModel.onView(category, topics) },
+            onTopicClick = { category, title, ref, index ->
+                viewModel.onTopicSelectClick(
+                    category = category,
+                    title = title,
+                    ref = ref,
+                    selectedItemIndex = index
+                )
                 onTopicClick(ref, title)
             },
             onEditClick = onEditClick,
@@ -61,16 +67,11 @@ fun TopicsWidget(
 @Composable
 private fun TopicsWidgetContent(
     uiState: TopicsWidgetUiState,
-    onPageView: (List<TopicItemUi>) -> Unit,
-    onTopicClick: (String, String, Int) -> Unit,
+    onView: (TopicsCategory, List<TopicItemUi>) -> Unit,
+    onTopicClick: (TopicsCategory, String, String, Int) -> Unit,
     onEditClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Todo - do we need to send every time the user toggles between your topics and all topics???
-    LaunchedEffect(Unit) {
-        onPageView(uiState.yourTopics)
-    }
-
     Column(modifier = modifier) {
         Header(
             displayEdit = uiState.allTopics.isNotEmpty(),
@@ -79,6 +80,7 @@ private fun TopicsWidgetContent(
         if (uiState.allTopics.isNotEmpty()) {
             TopicsCard(
                 uiState = uiState,
+                onView = onView,
                 onEditClick = onEditClick,
                 onTopicClick = onTopicClick
             )
@@ -111,11 +113,21 @@ private fun Header(
 @Composable
 private fun TopicsCard(
     uiState: TopicsWidgetUiState,
+    onView: (TopicsCategory, List<TopicItemUi>) -> Unit,
     onEditClick: (String) -> Unit,
-    onTopicClick: (String, String, Int) -> Unit,
+    onTopicClick: (TopicsCategory, String, String, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var activeButtonState by rememberSaveable { mutableStateOf( ConnectedButton.FIRST) }
+
+    val (category, topics) = when (activeButtonState) {
+        ConnectedButton.FIRST -> TopicsCategory.YOUR to uiState.yourTopics
+        ConnectedButton.SECOND -> TopicsCategory.ALL to uiState.allTopics
+    }
+
+    LaunchedEffect(activeButtonState) {
+        onView(category, topics)
+    }
 
     Column(modifier) {
         CardListItem(
@@ -138,14 +150,9 @@ private fun TopicsCard(
             }
         }
 
-        val topics = when (activeButtonState) {
-            ConnectedButton.FIRST -> uiState.yourTopics
-            ConnectedButton.SECOND -> uiState.allTopics
-        }
-
         TopicsList(
             topics = topics,
-            onClick = onTopicClick,
+            onClick = { title, ref, index -> onTopicClick(category, title, ref, index) },
             onEmptyClick = onEditClick
         )
     }
@@ -176,10 +183,9 @@ private fun ColumnScope.TopicsList(
                 title = topic.title,
                 icon = topic.icon,
                 onClick = {
-                    // Todo - do we need to identify your topics vs all topics for analytics???
                     onClick(
-                        topic.ref,
                         topic.title,
+                        topic.ref,
                         index + 1
                     )
                 },
@@ -235,8 +241,8 @@ private fun TopicsWidgetPreview() {
                 yourTopics = topics,
                 allTopics = topics
             ),
-            onPageView = { },
-            onTopicClick = { _, _, _ -> },
+            onView = { _, _, -> },
+            onTopicClick = { _, _, _, _ -> },
             onEditClick = { }
         )
     }
@@ -251,8 +257,8 @@ private fun TopicsWidgetEmptyTopicsPreview() {
                 allTopics = emptyList(),
                 yourTopics = emptyList()
             ),
-            onPageView = { },
-            onTopicClick = { _, _, _ -> },
+            onView = { _, _, -> },
+            onTopicClick = { _, _, _, _ -> },
             onEditClick = { }
         )
     }
