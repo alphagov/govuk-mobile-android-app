@@ -1,5 +1,6 @@
 package uk.gov.govuk.topics.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
-import uk.gov.govuk.design.ui.component.ExternalLinkListItemLegacy
+import uk.gov.govuk.design.ui.component.ExternalLinkListItem
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.model.HeaderDismissStyle
@@ -57,7 +58,10 @@ private fun AllStepByStepsScreen(
     onExternalLink: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier.fillMaxSize()) {
+    Column(
+        modifier.fillMaxSize()
+            .background(GovUkTheme.colourScheme.surfaces.screenBackground)
+    ) {
         val title = stringResource(R.string.step_by_step_guides_title)
 
         LaunchedEffect(stepBySteps) {
@@ -91,7 +95,7 @@ private fun LazyListScope.stepBySteps(
     onClick: (text: String, url: String, selectedItemIndex: Int) -> Unit
 ) {
     itemsIndexed(stepBySteps) { index, content ->
-        ExternalLinkListItemLegacy(
+        ExternalLinkListItem(
             title = content.title,
             onClick = { onClick(content.title, content.url, selectedItemIndex + index) },
             isFirst = index == 0,

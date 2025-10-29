@@ -96,52 +96,7 @@ class TopicsWidgetViewModelTest {
     }
 
     @Test
-    fun `Given a homepage topics widget item is clicked, then send a select item event`() {
-        val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
-
-        viewModel.onTopicSelectClick(
-            ref = "benefits",
-            title = "Benefits",
-            selectedItemIndex = 42
-        )
-
-        verify {
-            analyticsClient.selectItemEvent(
-                ecommerceEvent = EcommerceEvent(
-                    itemListName = "HomeScreen",
-                    itemListId = "Homepage",
-                    items = listOf(
-                        EcommerceEvent.Item(
-                            itemName = "Benefits",
-                            itemCategory = "Topics",
-                            locationId = "benefits"
-                        )
-                    )
-                ),
-                selectedItemIndex = 42
-            )
-        }
-    }
-
-    @Test
-    fun `Given topics are empty, When the homepage is viewed, Then send a view item list event`() {
-        val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
-
-        viewModel.onPageView(emptyList())
-
-        verify {
-            analyticsClient.viewItemListEvent(
-                ecommerceEvent = EcommerceEvent(
-                    itemListName = "HomeScreen",
-                    itemListId = "Homepage",
-                    items = emptyList()
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `Given there are selected topics, When the homepage is viewed, Then send a view item list event`() {
+    fun `Given your topics are viewed, Then send a view item list event`() {
         val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
 
         val topics = listOf(
@@ -161,26 +116,140 @@ class TopicsWidgetViewModelTest {
             )
         )
 
-        viewModel.onPageView(topics)
+        viewModel.onView(TopicsCategory.YOUR, topics)
 
         verify {
             analyticsClient.viewItemListEvent(
                 ecommerceEvent = EcommerceEvent(
-                    itemListName = "HomeScreen",
-                    itemListId = "Homepage",
+                    itemListName = "Your topics",
+                    itemListId = "Your topics",
                     items = listOf(
                         EcommerceEvent.Item(
                             itemName = "Benefits",
-                            itemCategory = "Topics",
                             locationId = "benefits"
                         ),
                         EcommerceEvent.Item(
                             itemName = "Care",
-                            itemCategory = "Topics",
                             locationId = "care"
                         )
                     )
                 )
+            )
+        }
+    }
+
+    @Test
+    fun `Given all topics are viewed, Then send a view item list event`() {
+        val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
+
+        val topics = listOf(
+            TopicItemUi(
+                ref = "benefits",
+                title = "Benefits",
+                description = "description",
+                isSelected = true,
+                icon = R.drawable.ic_topic_benefits
+            ),
+            TopicItemUi(
+                ref = "care",
+                title = "Care",
+                description = "description",
+                isSelected = true,
+                icon = R.drawable.ic_topic_care
+            )
+        )
+
+        viewModel.onView(TopicsCategory.ALL, topics)
+
+        verify {
+            analyticsClient.viewItemListEvent(
+                ecommerceEvent = EcommerceEvent(
+                    itemListName = "All topics",
+                    itemListId = "All topics",
+                    items = listOf(
+                        EcommerceEvent.Item(
+                            itemName = "Benefits",
+                            locationId = "benefits"
+                        ),
+                        EcommerceEvent.Item(
+                            itemName = "Care",
+                            locationId = "care"
+                        )
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given empty topics are viewed, Then send a view item list event`() {
+        val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
+
+        viewModel.onView(TopicsCategory.YOUR, emptyList())
+
+        verify {
+            analyticsClient.viewItemListEvent(
+                ecommerceEvent = EcommerceEvent(
+                    itemListName = "Your topics",
+                    itemListId = "Your topics",
+                    items = emptyList()
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a your topics widget item is clicked, then send a select item event`() {
+        val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
+
+        viewModel.onTopicSelectClick(
+            category = TopicsCategory.YOUR,
+            title = "Benefits",
+            ref = "benefits",
+            selectedItemIndex = 42
+        )
+
+        verify {
+            analyticsClient.selectItemEvent(
+                ecommerceEvent = EcommerceEvent(
+                    itemListName = "Your topics",
+                    itemListId = "Your topics",
+                    items = listOf(
+                        EcommerceEvent.Item(
+                            itemName = "Benefits",
+                            locationId = "benefits"
+                        )
+                    )
+                ),
+                selectedItemIndex = 42
+            )
+        }
+    }
+
+    @Test
+    fun `Given an all topics widget item is clicked, then send a select item event`() {
+        val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
+
+        viewModel.onTopicSelectClick(
+            category = TopicsCategory.ALL,
+            title = "Benefits",
+            ref = "benefits",
+            selectedItemIndex = 42
+        )
+
+        verify {
+            analyticsClient.selectItemEvent(
+                ecommerceEvent = EcommerceEvent(
+                    itemListName = "All topics",
+                    itemListId = "All topics",
+                    items = listOf(
+                        EcommerceEvent.Item(
+                            itemName = "Benefits",
+                            locationId = "benefits"
+                        )
+                    )
+                ),
+                selectedItemIndex = 42
             )
         }
     }

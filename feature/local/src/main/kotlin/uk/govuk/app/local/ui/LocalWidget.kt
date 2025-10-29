@@ -4,14 +4,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,8 +18,10 @@ import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.CentredCardWithIcon
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.NavigationCard
+import uk.gov.govuk.design.ui.component.SectionHeadingLabel
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title3BoldLabel
+import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.govuk.app.local.LocalWidgetUiState.LocalAuthoritySelected
 import uk.govuk.app.local.LocalWidgetUiState.NoLocalAuthority
@@ -69,28 +69,18 @@ private fun LocalAuthorityCard(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Title3BoldLabel(
-                text = stringResource(R.string.local_widget_title),
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = GovUkTheme.spacing.large)
-                    .semantics { heading() }
-            )
-
             val editButtonText = stringResource(R.string.local_edit_button)
             val editButtonAltText = stringResource(R.string.local_edit_button_alt_text)
 
-            TextButton(
-                onClick = { onEditClick(editButtonAltText) }
-            ) {
-                BodyRegularLabel(
-                    text = editButtonText,
-                    color = GovUkTheme.colourScheme.textAndIcons.link,
-                    modifier = Modifier.semantics {
-                        contentDescription = editButtonAltText
-                    }
+            SectionHeadingLabel(
+                modifier = modifier.semantics { heading() },
+                title3 = stringResource(R.string.local_widget_title),
+                button = SectionHeadingLabelButton(
+                    title = editButtonText,
+                    altText = editButtonAltText,
+                    onClick = { onEditClick(editButtonAltText) }
                 )
-            }
+            )
         }
 
         val description = if (localAuthority.parent != null) {
@@ -156,7 +146,7 @@ private fun NoLocalAuthorityCard(
 
             CentredCardWithIcon(
                 onClick = { onClick(description) },
-                icon = R.drawable.outline_add_circle_outline_24,
+                icon = uk.gov.govuk.design.R.drawable.ic_add,
                 description = description
             )
         }

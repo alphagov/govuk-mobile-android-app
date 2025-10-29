@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -26,7 +27,7 @@ import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
-import uk.gov.govuk.design.ui.component.ToggleListItemLegacy
+import uk.gov.govuk.design.ui.component.ToggleListItem
 import uk.gov.govuk.design.ui.model.HeaderDismissStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.login.BiometricSettingsViewModel
@@ -64,7 +65,10 @@ private fun BiometricSettingsScreen(
         onPageView()
     }
 
-    Column(modifier.fillMaxWidth()) {
+    Column(
+        modifier.fillMaxSize()
+            .background(GovUkTheme.colourScheme.surfaces.screenBackground)
+    ) {
         ChildPageHeader(
             dismissStyle = HeaderDismissStyle.Back(onBack)
         )
@@ -93,7 +97,7 @@ private fun BiometricSettingsScreen(
 
             Column(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {
                 val title = stringResource(R.string.biometric_settings_toggle)
-                ToggleListItemLegacy(
+                ToggleListItem(
                     title = title,
                     checked = isUserSignedIn,
                     onCheckedChange = { onToggle(title) }

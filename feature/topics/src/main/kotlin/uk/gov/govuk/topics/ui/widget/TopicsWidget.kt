@@ -12,7 +12,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -21,9 +20,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import uk.gov.govuk.design.ui.component.CardListItem
+import uk.gov.govuk.design.ui.component.CentredContentWithIcon
 import uk.gov.govuk.design.ui.component.ConnectedButton
 import uk.gov.govuk.design.ui.component.ConnectedButtonGroup
 import uk.gov.govuk.design.ui.component.IconListItem
@@ -33,6 +31,7 @@ import uk.gov.govuk.design.ui.model.IconListItemStyle
 import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.R
+import uk.gov.govuk.topics.TopicsCategory
 import uk.gov.govuk.topics.TopicsWidgetUiState
 import uk.gov.govuk.topics.TopicsWidgetViewModel
 import uk.gov.govuk.topics.ui.model.TopicItemUi
@@ -49,9 +48,14 @@ fun TopicsWidget(
     uiState?.let {
         TopicsWidgetContent(
             uiState = it,
-            onPageView = { topics -> viewModel.onPageView(topics) },
-            onTopicClick = { ref, title, index ->
-                viewModel.onTopicSelectClick(ref, title, index)
+            onView = { category, topics -> viewModel.onView(category, topics) },
+            onTopicClick = { category, title, ref, index ->
+                viewModel.onTopicSelectClick(
+                    category = category,
+                    title = title,
+                    ref = ref,
+                    selectedItemIndex = index
+                )
                 onTopicClick(ref, title)
             },
             onEditClick = onEditClick,
@@ -63,16 +67,11 @@ fun TopicsWidget(
 @Composable
 private fun TopicsWidgetContent(
     uiState: TopicsWidgetUiState,
-    onPageView: (List<TopicItemUi>) -> Unit,
-    onTopicClick: (String, String, Int) -> Unit,
+    onView: (TopicsCategory, List<TopicItemUi>) -> Unit,
+    onTopicClick: (TopicsCategory, String, String, Int) -> Unit,
     onEditClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Todo - do we need to send every time the user toggles between your topics and all topics???
-    LaunchedEffect(Unit) {
-        onPageView(uiState.yourTopics)
-    }
-
     Column(modifier = modifier) {
         Header(
             displayEdit = uiState.allTopics.isNotEmpty(),
@@ -81,6 +80,7 @@ private fun TopicsWidgetContent(
         if (uiState.allTopics.isNotEmpty()) {
             TopicsCard(
                 uiState = uiState,
+                onView = onView,
                 onEditClick = onEditClick,
                 onTopicClick = onTopicClick
             )
@@ -113,18 +113,21 @@ private fun Header(
 @Composable
 private fun TopicsCard(
     uiState: TopicsWidgetUiState,
+    onView: (TopicsCategory, List<TopicItemUi>) -> Unit,
     onEditClick: (String) -> Unit,
-    onTopicClick: (String, String, Int) -> Unit,
+    onTopicClick: (TopicsCategory, String, String, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var activeButtonState by rememberSaveable { mutableStateOf( ConnectedButton.FIRST) }
 
-    LaunchedEffect(uiState.yourTopics.isEmpty()) {
-        if (uiState.yourTopics.isEmpty()) {
-            activeButtonState = ConnectedButton.SECOND
-        }
+    val (category, topics) = when (activeButtonState) {
+        ConnectedButton.FIRST -> TopicsCategory.YOUR to uiState.yourTopics
+        ConnectedButton.SECOND -> TopicsCategory.ALL to uiState.allTopics
     }
-    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(activeButtonState) {
+        onView(category, topics)
+    }
 
     Column(modifier) {
         CardListItem(
@@ -140,25 +143,17 @@ private fun TopicsCard(
                     firstText = stringResource(R.string.your_topics),
                     secondText = stringResource(R.string.all_topics),
                     onActiveStateChange = { activeButton ->
-                        coroutineScope.launch {
-                            if (activeButton == ConnectedButton.FIRST &&
-                                uiState.yourTopics.isEmpty()
-                            ) {
-                                onEditClick("") // Todo - what should text be???
-                                delay(500)
-                            }
-
-                            activeButtonState = activeButton
-                        }
+                        activeButtonState = activeButton
                     },
                     activeButton = activeButtonState
                 )
             }
         }
+
         TopicsList(
-            uiState = uiState,
-            activeButtonState = activeButtonState,
-            onClick = onTopicClick
+            topics = topics,
+            onClick = { title, ref, index -> onTopicClick(category, title, ref, index) },
+            onEmptyClick = onEditClick
         )
     }
 }
@@ -166,35 +161,39 @@ private fun TopicsCard(
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.TopicsList(
-    uiState: TopicsWidgetUiState,
-    activeButtonState: ConnectedButton,
-    onClick: (String, String, Int) -> Unit
+    topics: List<TopicItemUi>,
+    onClick: (String, String, Int) -> Unit,
+    onEmptyClick: (String) -> Unit
 ) {
-    val topics = when (activeButtonState) {
-        ConnectedButton.FIRST -> {
-            uiState.yourTopics.ifEmpty {
-                uiState.allTopics
-            }
-        }
-        ConnectedButton.SECOND -> uiState.allTopics
-    }
-
-    topics.forEachIndexed { index, topic ->
-        IconListItem(
-            title = topic.title,
-            icon = topic.icon,
-            onClick = {
-                // Todo - do we need to identify your topics vs all topics for analytics???
-                onClick(
-                    topic.ref,
-                    topic.title,
-                    index + 1
-                )
-            },
-            style = IconListItemStyle.Bold,
+    if (topics.isEmpty()) {
+        val emptyText = stringResource(R.string.empty_topics)
+        CardListItem(
+            onClick = { onEmptyClick(emptyText) },
             isFirst = false,
-            isLast = index == topics.lastIndex
-        )
+            isLast = true
+        ) {
+            CentredContentWithIcon(
+                icon = uk.gov.govuk.design.R.drawable.ic_add,
+                description = emptyText
+            )
+        }
+    } else {
+        topics.forEachIndexed { index, topic ->
+            IconListItem(
+                title = topic.title,
+                icon = topic.icon,
+                onClick = {
+                    onClick(
+                        topic.title,
+                        topic.ref,
+                        index + 1
+                    )
+                },
+                style = IconListItemStyle.Bold,
+                isFirst = false,
+                isLast = index == topics.lastIndex
+            )
+        }
     }
 }
 
@@ -242,8 +241,8 @@ private fun TopicsWidgetPreview() {
                 yourTopics = topics,
                 allTopics = topics
             ),
-            onPageView = { },
-            onTopicClick = { _, _, _ -> },
+            onView = { _, _, -> },
+            onTopicClick = { _, _, _, _ -> },
             onEditClick = { }
         )
     }
@@ -258,8 +257,8 @@ private fun TopicsWidgetEmptyTopicsPreview() {
                 allTopics = emptyList(),
                 yourTopics = emptyList()
             ),
-            onPageView = { },
-            onTopicClick = { _, _, _ -> },
+            onView = { _, _, -> },
+            onTopicClick = { _, _, _, _ -> },
             onEditClick = { }
         )
     }

@@ -28,7 +28,7 @@
     <string name="not_selected_alt_text">Not selected</string>
     <string name="select_alt_text">Select</string>
     <string name="deselect_alt_text">Deselect</string>
-    <string name="empty_topics">No topics selected</string>
+    <string name="empty_topics">Add your topics</string>
 
     <!-- Topic names -->
     <string name="benefits">Benefits</string>

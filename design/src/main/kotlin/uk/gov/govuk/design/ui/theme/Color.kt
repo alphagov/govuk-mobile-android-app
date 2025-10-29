@@ -124,7 +124,7 @@ data class GovUkColourScheme(
         val splash: Color,
         val cardDefault: Color,
         val cardBlue: Color,
-        val cardHighlight: Color,
+        val cardHighlight: Color, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         val cardNonTappable: Color,
         val cardSelected: Color,
         val cardCarousel: Color,
@@ -258,7 +258,7 @@ internal val LightColorScheme = GovUkColourScheme(
         splash = BluePrimary,
         cardDefault = White,
         cardBlue = BlueLighter95,
-        cardHighlight = Grey400,
+        cardHighlight = Grey400, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         cardNonTappable = BlueLighter80,
         cardSelected = GreenLighter95,
         cardCarousel = BluePrimary,
@@ -397,7 +397,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         splash = BluePrimary,
         cardDefault = BlueDarkMode,
         cardBlue = BlueDarker50,
-        cardHighlight = Grey850,
+        cardHighlight = Grey850, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         cardNonTappable = BlueDarker65,
         cardSelected = GreenDarker50,
         cardCarousel = BlueDarker50,
@@ -537,7 +537,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             splash = Color.Unspecified,
             cardDefault = Color.Unspecified,
             cardBlue = Color.Unspecified,
-            cardHighlight = Color.Unspecified,
+            cardHighlight = Color.Unspecified, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
             cardNonTappable = Color.Unspecified,
             cardSelected = Color.Unspecified,
             cardCarousel = Color.Unspecified,
