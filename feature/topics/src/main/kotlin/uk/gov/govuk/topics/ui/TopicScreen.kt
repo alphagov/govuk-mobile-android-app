@@ -1,5 +1,6 @@
 package uk.gov.govuk.topics.ui
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
@@ -8,8 +9,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -22,25 +25,35 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.ExternalLinkListItemLegacy
+import uk.gov.govuk.design.ui.component.FocusableCard
 import uk.gov.govuk.design.ui.component.InternalLinkListItemLegacy
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.ListHeaderLegacy
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.component.SectionHeadingLabel
+import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
 import uk.gov.govuk.design.ui.component.error.OfflineMessage
 import uk.gov.govuk.design.ui.component.error.ProblemMessage
+import uk.gov.govuk.design.ui.model.CardListItem
+import uk.gov.govuk.design.ui.model.FocusableCardColours
 import uk.gov.govuk.design.ui.model.HeaderDismissStyle
+import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.R
 import uk.gov.govuk.topics.TopicUiState
@@ -53,6 +66,7 @@ internal fun TopicRoute(
     onBack: () -> Unit,
     onExternalLink: (url: String, onExternalLink: Int) -> Unit,
     onStepByStepSeeAll: () -> Unit,
+    onPopularPagesSeeAll: () -> Unit,
     onSubtopic: (ref: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -83,6 +97,14 @@ internal fun TopicRoute(
                         },
                         onStepByStepSeeAll = { section, text, selectedItemIndex ->
                             onStepByStepSeeAll()
+                            viewModel.onSeeAllClick(
+                                section = section,
+                                text = text,
+                                selectedItemIndex = selectedItemIndex
+                            )
+                        },
+                        onPopularPagesSeeAll = { section, text, selectedItemIndex ->
+                            onPopularPagesSeeAll()
                             viewModel.onSeeAllClick(
                                 section = section,
                                 text = text,
@@ -123,6 +145,7 @@ private fun TopicScreen(
     onBack: () -> Unit,
     onExternalLink: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit,
     onStepByStepSeeAll: (section: String, text: String, selectedItemIndex: Int) -> Unit,
+    onPopularPagesSeeAll: (section: String, text: String, selectedItemIndex: Int) -> Unit,
     onSubtopic: (text: String, ref: String, selectedItemIndex: Int) -> Unit,
     focusRequester: FocusRequester,
     modifier: Modifier = Modifier
@@ -140,6 +163,7 @@ private fun TopicScreen(
             title = R.string.popular_pages_title,
             icon = R.drawable.ic_topic_popular
         )
+
         val stepByStepSection = TopicUi.Section(
             title = R.string.step_by_step_guides_title,
             icon = R.drawable.ic_topic_step_by_step
@@ -187,12 +211,30 @@ private fun TopicScreen(
                 MediumVerticalSpacer()
             }
 
-            contentItems(
-                currentItemIndex = currentItemIndex,
-                contentItems = topic.popularPages,
-                section = popularPagesSection,
-                onClick = onExternalLink
-            )
+            val showHorizontalScrollView = false
+
+            if (showHorizontalScrollView) {
+                item {
+                    HorizontalScrollView(
+                        topic = topic,
+                        currentItemIndex = currentItemIndex,
+                        onExternalLink = onExternalLink,
+                        onPopularPagesSeeAll = onPopularPagesSeeAll,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    if (topic.displayPopularPagesSeeAll) {
+                        currentItemIndex += 1
+                    }
+                }
+            } else {
+                contentItems(
+                    currentItemIndex = currentItemIndex,
+                    contentItems = topic.popularPages,
+                    section = popularPagesSection,
+                    onClick = onExternalLink
+                )
+            }
 
             if (topic.popularPages.isNotEmpty()) currentItemIndex += topic.popularPages.size
 
@@ -233,6 +275,98 @@ private fun TopicScreen(
             focusRequester.requestFocus()
         }
     }
+}
+
+@Composable
+private fun HorizontalScrollView(
+    topic: TopicUi,
+    currentItemIndex: Int,
+    onExternalLink: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit,
+    onPopularPagesSeeAll: (section: String, text: String, selectedItemIndex: Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val fontScale = LocalDensity.current.fontScale
+    val isFontScaledUp = fontScale > 1.0f
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    val section = stringResource(R.string.popular_pages_title)
+    val seeAllButton = stringResource(R.string.see_all_button)
+    val cards = topic.popularPages.map {
+        CardListItem(
+            title = it.title,
+            onClick = {
+                onExternalLink(
+                    section, it.title, it.url, currentItemIndex
+                )
+            }
+        )
+    }
+    val colourMapper = @Composable { cardColour: FocusableCardColours ->
+        when (cardColour) {
+            FocusableCardColours.Focussed.Background -> GovUkTheme.colourScheme.surfaces.cardCarouselFocused
+            FocusableCardColours.Focussed.Content -> GovUkTheme.colourScheme.textAndIcons.cardCarouselFocused
+            FocusableCardColours.UnFocussed.Background -> GovUkTheme.colourScheme.surfaces.cardCarousel
+            FocusableCardColours.UnFocussed.Content -> GovUkTheme.colourScheme.textAndIcons.cardCarousel
+            else -> {
+                Color.Transparent
+            }
+        }
+    }
+
+    SectionHeadingLabel(
+        modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium),
+        title3 = stringResource(R.string.popular_pages_title),
+        button = if (!isFontScaledUp && !isLandscape) {
+            SectionHeadingLabelButton(
+                title = seeAllButton,
+                altText = seeAllButton,
+                onClick = {
+                    onPopularPagesSeeAll(section, seeAllButton, currentItemIndex)
+                }
+            )
+        } else null
+    )
+
+    if (isFontScaledUp) {
+        // vertical list
+        Column(
+            modifier = modifier.fillMaxWidth()
+                .padding(horizontal = GovUkTheme.spacing.medium)
+        ) {
+            cards.forEach { item ->
+                FocusableCard(
+                    item,
+                    modifier = Modifier.padding(bottom = GovUkTheme.spacing.medium),
+                    colourMapper = colourMapper
+                )
+            }
+        }
+    } else {
+        // horizontal list
+        Box {
+            val horizontalListState = rememberLazyListState()
+
+            LazyRow(
+                state = horizontalListState,
+                modifier = modifier.fillMaxWidth()
+                    .padding(horizontal = GovUkTheme.spacing.medium),
+            ) {
+                itemsIndexed(cards) { index, item ->
+                    FocusableCard(
+                        item,
+                        modifier = Modifier.size(150.dp),
+                        colourMapper = colourMapper
+                    )
+
+                    if (index < cards.size - 1) {
+                        SmallHorizontalSpacer()
+                    }
+                }
+            }
+        }
+    }
+
+    MediumVerticalSpacer()
 }
 
 private fun LazyListScope.contentItems(

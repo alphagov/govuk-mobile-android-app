@@ -1,6 +1,5 @@
 package uk.gov.govuk.topics.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
-import uk.gov.govuk.design.ui.component.ExternalLinkListItem
+import uk.gov.govuk.design.ui.component.ExternalLinkListItemLegacy
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.model.HeaderDismissStyle
@@ -25,20 +24,20 @@ import uk.gov.govuk.topics.R
 import uk.gov.govuk.topics.ui.model.TopicUi.TopicContent
 
 @Composable
-internal fun AllStepByStepRoute(
+internal fun AllPopularPagesRoute(
     onBack: () -> Unit,
     onClick: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: AllViewModel = hiltViewModel()
-    val stepBySteps by viewModel.stepBySteps.collectAsState()
+    val popularPages by viewModel.popularPages.collectAsState()
 
-    AllStepByStepsScreen(
-        stepBySteps = stepBySteps,
-        onPageView = { title -> viewModel.onStepByStepPageView(stepBySteps, title) },
+    AllPopularPagesScreen(
+        popularPages = popularPages,
+        onPageView = { title -> viewModel.onPopularPagesView(popularPages, title) },
         onBack = onBack,
         onExternalLink = { section, text, url, selectedItemIndex ->
-            viewModel.onStepByStepClick(
+            viewModel.onPopularPagesClick(
                 section = section,
                 text = text,
                 url = url,
@@ -51,20 +50,17 @@ internal fun AllStepByStepRoute(
 }
 
 @Composable
-private fun AllStepByStepsScreen(
-    stepBySteps: List<TopicContent>,
+private fun AllPopularPagesScreen(
+    popularPages: List<TopicContent>,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
     onExternalLink: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier.fillMaxSize()
-            .background(GovUkTheme.colourScheme.surfaces.screenBackground)
-    ) {
-        val title = stringResource(R.string.step_by_step_guides_title)
+    Column(modifier.fillMaxSize()) {
+        val title = stringResource(R.string.popular_pages_title)
 
-        LaunchedEffect(stepBySteps) {
+        LaunchedEffect(popularPages) {
             onPageView(title)
         }
 
@@ -78,9 +74,9 @@ private fun AllStepByStepsScreen(
                 MediumVerticalSpacer()
             }
 
-            stepBySteps(
+            popularPages(
                 selectedItemIndex = 1,
-                stepBySteps = stepBySteps,
+                popularPages = popularPages,
                 onClick = { text, url, selectedItemIndex ->
                     onExternalLink(title, text, url, selectedItemIndex)
                 }
@@ -89,17 +85,17 @@ private fun AllStepByStepsScreen(
     }
 }
 
-private fun LazyListScope.stepBySteps(
+private fun LazyListScope.popularPages(
     selectedItemIndex: Int,
-    stepBySteps: List<TopicContent>,
+    popularPages: List<TopicContent>,
     onClick: (text: String, url: String, selectedItemIndex: Int) -> Unit
 ) {
-    itemsIndexed(stepBySteps) { index, content ->
-        ExternalLinkListItem(
+    itemsIndexed(popularPages) { index, content ->
+        ExternalLinkListItemLegacy(
             title = content.title,
             onClick = { onClick(content.title, content.url, selectedItemIndex + index) },
             isFirst = index == 0,
-            isLast = index == stepBySteps.lastIndex
+            isLast = index == popularPages.lastIndex
         )
     }
 

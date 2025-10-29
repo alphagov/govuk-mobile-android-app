@@ -3,6 +3,9 @@ package uk.gov.govuk.design.ui.component
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,9 +24,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.R
 import uk.gov.govuk.design.ui.extension.drawBottomStroke
 import uk.gov.govuk.design.ui.extension.talkBackText
+import uk.gov.govuk.design.ui.model.CardListItem
+import uk.gov.govuk.design.ui.model.FocusableCardColours
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -469,6 +478,61 @@ fun NavigationCard(
                     .padding(horizontal = GovUkTheme.spacing.medium)
             )
 
+            MediumVerticalSpacer()
+        }
+    )
+}
+
+@Composable
+fun FocusableCard(
+    item: CardListItem,
+    modifier: Modifier = Modifier,
+    colourMapper: @Composable (FocusableCardColours) -> Color
+) {
+    val focusRequester = remember { FocusRequester() }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    val backgroundColor = if (isFocused) {
+        colourMapper(FocusableCardColours.Focussed.Background)
+    } else {
+        colourMapper(FocusableCardColours.UnFocussed.Background)
+    }
+
+    val contentColor = if (isFocused) {
+        colourMapper(FocusableCardColours.Focussed.Content)
+    } else {
+        colourMapper(FocusableCardColours.UnFocussed.Content)
+    }
+
+    Card(
+        modifier = modifier
+            .focusRequester(focusRequester)
+            .focusable(interactionSource = interactionSource)
+            .fillMaxWidth()
+            .talkBackText(
+                item.title,
+                stringResource(R.string.opens_in_web_browser)
+            )
+            .drawBottomStroke(
+                colour = GovUkTheme.colourScheme.strokes.cardCarousel,
+                cornerRadius = GovUkTheme.numbers.cornerAndroidList
+            ),
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor,
+            contentColor = contentColor
+        ),
+        onClick = item.onClick,
+        content = {
+            MediumVerticalSpacer()
+            SubheadlineBoldLabel(
+                text = item.title,
+                color = contentColor,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics(mergeDescendants = true) { }
+                    .padding(horizontal = GovUkTheme.spacing.medium)
+            )
             MediumVerticalSpacer()
         }
     )

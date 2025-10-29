@@ -30,6 +30,12 @@ internal class TopicViewModel @Inject constructor(
     companion object {
         private const val SCREEN_CLASS = "TopicScreen"
         private const val SUBTOPIC_SECTION = "Sub topics"
+        private const val LIST_NAME = "Topics"
+        private const val  POPULAR_PAGES_TITLE = "Popular pages"
+        private const val  STEP_BY_STEPS_TITLE = "Step by step guides"
+        private const val  BROWSE_TITLE = "Browse"
+        private const val  SERVICES_TITLE = "Services and information"
+        private const val MAX_POPULAR_PAGES = 4
         private const val MAX_STEP_BY_STEPS = 3
     }
 
@@ -47,7 +53,13 @@ internal class TopicViewModel @Inject constructor(
                 val result = topicsRepo.getTopic(ref)
                 _uiState.value = when (result) {
                     is Success -> {
-                        TopicUiState.Default(result.value.toTopicUi(MAX_STEP_BY_STEPS, isSubtopic))
+                        TopicUiState.Default(
+                            result.value.toTopicUi(
+                                MAX_POPULAR_PAGES,
+                                MAX_STEP_BY_STEPS,
+                                isSubtopic
+                            )
+                        )
                     }
                     is DeviceOffline -> TopicUiState.Offline(ref)
                     else -> TopicUiState.ServiceError(ref)
@@ -146,7 +158,7 @@ internal class TopicViewModel @Inject constructor(
     ) {
         analyticsClient.selectItemEvent(
             ecommerceEvent = EcommerceEvent(
-                itemListName = "Topics",
+                itemListName = LIST_NAME,
                 itemListId = title ?: "",
                 items = listOf(
                     EcommerceEvent.Item(
@@ -164,21 +176,10 @@ internal class TopicViewModel @Inject constructor(
         topicUi: TopicUi,
         title: String
     ) {
-        /*
-         * Tried to get these from the resource strings file, but
-         * that doesn't work as it's not a Composable and needs a Context.
-         * Passing in the context is a memory leak.
-         * So, not sure if that's possible!
-         */
-        val popularPagesTitle = "Popular pages in this topic"
-        val stepByStepsTitle = "Step by step guides"
-        val browseTitle = "Browse"
-        val servicesTitle = "Services and information"
-
         var topicItems = listOf(
-            topicUi.popularPages to popularPagesTitle,
-            topicUi.stepBySteps to stepByStepsTitle,
-            topicUi.services to servicesTitle,
+            topicUi.popularPages to POPULAR_PAGES_TITLE,
+            topicUi.stepBySteps to STEP_BY_STEPS_TITLE,
+            topicUi.services to SERVICES_TITLE,
         ).flatMap { (items, category) ->
             items.map { item ->
                 EcommerceEvent.Item(
@@ -192,14 +193,14 @@ internal class TopicViewModel @Inject constructor(
         topicUi.subtopics.forEach { subtopic ->
             topicItems += EcommerceEvent.Item(
                 itemName = subtopic.title,
-                itemCategory = browseTitle,
+                itemCategory = BROWSE_TITLE,
                 locationId = subtopic.ref
             )
         }
 
         analyticsClient.viewItemListEvent(
             ecommerceEvent = EcommerceEvent(
-                itemListName = "Topics",
+                itemListName = LIST_NAME,
                 itemListId = title,
                 items = topicItems
             )

@@ -7,6 +7,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import uk.gov.govuk.topics.ui.AllPopularPagesRoute
 import uk.gov.govuk.topics.ui.AllStepByStepRoute
 import uk.gov.govuk.topics.ui.EditTopicsRoute
 import uk.gov.govuk.topics.ui.TopicRoute
@@ -20,6 +21,7 @@ internal const val TOPIC_REF_ARG = "ref"
 internal const val TOPIC_SUBTOPIC_ARG = "isSubtopic"
 const val TOPICS_EDIT_ROUTE = "topics_edit_route"
 const val TOPICS_ALL_STEP_BY_STEPS_ROUTE = "topics_all_step_by_steps_route"
+const val TOPICS_ALL_POPULAR_PAGES_ROUTE = "topics_all_popular_pages_route"
 
 val topicsDeepLinks = mapOf(
     // Todo - individual topic with args
@@ -71,6 +73,7 @@ fun NavGraphBuilder.topicsGraph(
                     launchBrowser(url)
                 },
                 onStepByStepSeeAll = { navController.navigate(TOPICS_ALL_STEP_BY_STEPS_ROUTE) },
+                onPopularPagesSeeAll = { navController.navigate(TOPICS_ALL_POPULAR_PAGES_ROUTE) },
                 onSubtopic = { ref -> navController.navigateToTopic(ref, true) },
                 modifier = modifier
             )
@@ -81,6 +84,15 @@ fun NavGraphBuilder.topicsGraph(
                 onClick = { url ->
                     launchBrowser(url)
                  },
+                modifier = modifier
+            )
+        }
+        composable(TOPICS_ALL_POPULAR_PAGES_ROUTE) {
+            AllPopularPagesRoute(
+                onBack = { navController.popBackStack()},
+                onClick = { url ->
+                    launchBrowser(url)
+                },
                 modifier = modifier
             )
         }

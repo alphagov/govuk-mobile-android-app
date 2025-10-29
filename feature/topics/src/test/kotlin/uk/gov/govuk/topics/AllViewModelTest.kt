@@ -26,7 +26,7 @@ import uk.gov.govuk.topics.ui.model.TopicUi.TopicContent
 import uk.gov.govuk.visited.Visited
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class AllStepByStepsViewModelTest {
+class AllViewModelTest {
 
     companion object {
         private const val REF = "ref"
@@ -50,6 +50,152 @@ class AllStepByStepsViewModelTest {
     }
 
     @Test
+    fun `Given a topic with popular pages, When init, then emit popular pages`() {
+        coEvery { topicsRepo.popularPages } returns listOf(
+            RemoteTopicContent(
+                url = "url",
+                title = "title",
+                isStepByStep = false,
+                isPopular = true
+            )
+        )
+
+        val expected = listOf(
+            TopicContent(
+                url = "url",
+                title = "title"
+            )
+        )
+
+        val viewModel = AllViewModel(topicsRepo, analyticsClient, visited)
+
+        runTest {
+            val result = viewModel.popularPages.first()
+            assertEquals(expected, result)
+        }
+    }
+
+    @Test
+    fun `Given a popular pages page view, then log analytics`() {
+        val viewModel = AllViewModel(topicsRepo, analyticsClient, visited)
+
+        viewModel.onPopularPagesView(
+            title = "title",
+            topicContentItems = listOf(
+                TopicContent(
+                    url = "url",
+                    title = "title"
+                )
+            )
+        )
+
+        verify {
+            analyticsClient.screenView(
+                screenClass = "AllPopularPagesScreen",
+                screenName = "title",
+                title = "title"
+            )
+        }
+    }
+
+    @Test
+    fun `Given a popular pages page view, then log ecommerce analytics`() {
+        val viewModel = AllViewModel(topicsRepo, analyticsClient, visited)
+
+        viewModel.onPopularPagesView(
+            title = "title",
+            topicContentItems = listOf(
+                TopicContent(
+                    url = "url",
+                    title = "title"
+                )
+            )
+        )
+
+        verify {
+            analyticsClient.viewItemListEvent(
+                ecommerceEvent = EcommerceEvent(
+                    itemListName = "Topics",
+                    itemListId = "title",
+                    items = listOf(
+                        EcommerceEvent.Item(
+                            itemName = "title",
+                            itemCategory = "Popular pages",
+                            locationId = "url"
+                        )
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a popular page click, then log analytics`() {
+        val viewModel = AllViewModel(topicsRepo, analyticsClient, visited)
+
+        viewModel.onPopularPagesClick(
+            section = "section",
+            text = "text",
+            url = "url",
+            selectedItemIndex = 42
+        )
+
+        verify {
+            analyticsClient.buttonClick(
+                text = "text",
+                url = "url",
+                external = true,
+                section = "section"
+            )
+        }
+    }
+
+    @Test
+    fun `Given a popular page click, then log ecommerce analytics`() {
+        val viewModel = AllViewModel(topicsRepo, analyticsClient, visited)
+
+        viewModel.onPopularPagesClick(
+            section = "section",
+            text = "text",
+            url = "url",
+            selectedItemIndex = 42
+        )
+
+        verify {
+            analyticsClient.selectItemEvent(
+                ecommerceEvent = EcommerceEvent(
+                    itemListName = "Topics",
+                    itemListId = "text",
+                    items = listOf(
+                        EcommerceEvent.Item(
+                            itemName = "text",
+                            itemCategory = "section",
+                            locationId = "url"
+                        )
+                    )
+                ),
+                selectedItemIndex = 42
+            )
+        }
+    }
+
+    @Test
+    fun `Given a popular page click, then log visited item`() {
+        val viewModel = AllViewModel(topicsRepo, analyticsClient, visited)
+
+        viewModel.onPopularPagesClick(
+            section = "section",
+            text = "text",
+            url = "url",
+            selectedItemIndex = 42
+        )
+
+        coVerify {
+            visited.visitableItemClick(title = "text", url = "url")
+        }
+    }
+
+    @Test
     fun `Given a topic with step by steps, When init, then emit step by steps`() {
         coEvery { topicsRepo.stepBySteps } returns listOf(
             RemoteTopicContent(
@@ -67,7 +213,7 @@ class AllStepByStepsViewModelTest {
             )
         )
 
-        val viewModel = AllStepByStepsViewModel(topicsRepo, analyticsClient, visited)
+        val viewModel = AllViewModel(topicsRepo, analyticsClient, visited)
 
         runTest {
             val result = viewModel.stepBySteps.first()
@@ -76,12 +222,12 @@ class AllStepByStepsViewModelTest {
     }
 
     @Test
-    fun `Given a page view, then log analytics`() {
-        val viewModel = AllStepByStepsViewModel(topicsRepo, analyticsClient, visited)
+    fun `Given a step by steps page view, then log analytics`() {
+        val viewModel = AllViewModel(topicsRepo, analyticsClient, visited)
 
-        viewModel.onPageView(
+        viewModel.onStepByStepPageView(
             title = "title",
-            stepBySteps = listOf(
+            topicContentItems = listOf(
                 TopicContent(
                     url = "url",
                     title = "title"
@@ -99,12 +245,12 @@ class AllStepByStepsViewModelTest {
     }
 
     @Test
-    fun `Given a page view, then log ecommerce analytics`() {
-        val viewModel = AllStepByStepsViewModel(topicsRepo, analyticsClient, visited)
+    fun `Given a step by steps page view, then log ecommerce analytics`() {
+        val viewModel = AllViewModel(topicsRepo, analyticsClient, visited)
 
-        viewModel.onPageView(
+        viewModel.onStepByStepPageView(
             title = "title",
-            stepBySteps = listOf(
+            topicContentItems = listOf(
                 TopicContent(
                     url = "url",
                     title = "title"
@@ -131,7 +277,7 @@ class AllStepByStepsViewModelTest {
 
     @Test
     fun `Given a step by step click, then log analytics`() {
-        val viewModel = AllStepByStepsViewModel(topicsRepo, analyticsClient, visited)
+        val viewModel = AllViewModel(topicsRepo, analyticsClient, visited)
 
         viewModel.onStepByStepClick(
             section = "section",
@@ -152,7 +298,7 @@ class AllStepByStepsViewModelTest {
 
     @Test
     fun `Given a step by step click, then log ecommerce analytics`() {
-        val viewModel = AllStepByStepsViewModel(topicsRepo, analyticsClient, visited)
+        val viewModel = AllViewModel(topicsRepo, analyticsClient, visited)
 
         viewModel.onStepByStepClick(
             section = "section",
@@ -181,7 +327,7 @@ class AllStepByStepsViewModelTest {
 
     @Test
     fun `Given a step by step click, then log visited item`() {
-        val viewModel = AllStepByStepsViewModel(topicsRepo, analyticsClient, visited)
+        val viewModel = AllViewModel(topicsRepo, analyticsClient, visited)
 
         viewModel.onStepByStepClick(
             section = "section",

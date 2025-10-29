@@ -113,7 +113,9 @@ data class GovUkColourScheme(
         val chatBotMessageText: Color,
         val chatBotHeaderText: Color,
         val chatLoadingTextLight: Color,
-        val chatLoadingIcon: Color
+        val chatLoadingIcon: Color,
+        val cardCarousel: Color,
+        val cardCarouselFocused: Color
     )
 
     data class Surfaces(
@@ -124,6 +126,9 @@ data class GovUkColourScheme(
         val cardBlue: Color,
         val cardHighlight: Color, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         val cardNonTappable: Color,
+        val cardSelected: Color,
+        val cardCarousel: Color,
+        val cardCarouselFocused: Color,
         val list: Color,
         val listBlue: Color, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         val listHeadingBlue: Color,
@@ -193,7 +198,8 @@ data class GovUkColourScheme(
         val chatTextFieldBorder: Color,
         val chatTextFieldBorderDisabled: Color,
         val chatDivider: Color,
-        val chatIntroCardBorder: Color
+        val chatIntroCardBorder: Color,
+        val cardCarousel: Color
     )
 }
 
@@ -242,7 +248,9 @@ internal val LightColorScheme = GovUkColourScheme(
         chatBotMessageText = Black,
         chatBotHeaderText = Grey700,
         chatLoadingTextLight = Grey300,
-        chatLoadingIcon = BluePrimary
+        chatLoadingIcon = BluePrimary,
+        cardCarousel = White,
+        cardCarouselFocused = Black
     ),
     surfaces = Surfaces(
         background = White,
@@ -252,6 +260,9 @@ internal val LightColorScheme = GovUkColourScheme(
         cardBlue = BlueLighter95,
         cardHighlight = Grey400, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         cardNonTappable = BlueLighter80,
+        cardSelected = GreenLighter95,
+        cardCarousel = BluePrimary,
+        cardCarouselFocused = YellowPrimary,
         list = White,
         listBlue = BlueLighter95, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         listHeadingBlue = BlueLighter95,
@@ -326,7 +337,8 @@ internal val LightColorScheme = GovUkColourScheme(
         chatTextFieldBorder = BluePrimary,
         chatTextFieldBorderDisabled = Grey300,
         chatDivider = BlueLighter80,
-        chatIntroCardBorder = BlueLighter80
+        chatIntroCardBorder = BlueLighter80,
+        cardCarousel = BlueDarker50
     )
 )
 
@@ -375,7 +387,9 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatBotMessageText = White,
         chatBotHeaderText = Grey300,
         chatLoadingTextLight = BlueLighter80,
-        chatLoadingIcon = BluePrimary
+        chatLoadingIcon = BluePrimary,
+        cardCarousel = White,
+        cardCarouselFocused = Black
     ),
     surfaces = Surfaces(
         background = BlueDarker80,
@@ -385,6 +399,9 @@ internal val DarkColorScheme = GovUkColourScheme(
         cardBlue = BlueDarker50,
         cardHighlight = Grey850, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         cardNonTappable = BlueDarker65,
+        cardSelected = GreenDarker50,
+        cardCarousel = BlueDarker50,
+        cardCarouselFocused = YellowPrimary,
         list = BlueDarker65,
         listBlue = BlueDarker80, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         listHeadingBlue = BlueDarker50,
@@ -459,7 +476,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatTextFieldBorder = BlueAccent,
         chatTextFieldBorderDisabled = BlueLighter25,
         chatDivider = BlueDarker25,
-        chatIntroCardBorder = BlueDarker50
+        chatIntroCardBorder = BlueDarker50,
+        cardCarousel = BlueDarker50
     )
 )
 
@@ -509,7 +527,9 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             chatBotMessageText = Color.Unspecified,
             chatBotHeaderText = Color.Unspecified,
             chatLoadingTextLight = Color.Unspecified,
-            chatLoadingIcon = Color.Unspecified
+            chatLoadingIcon = Color.Unspecified,
+            cardCarousel = Color.Unspecified,
+            cardCarouselFocused = Color.Unspecified
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,
@@ -519,6 +539,9 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             cardBlue = Color.Unspecified,
             cardHighlight = Color.Unspecified, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
             cardNonTappable = Color.Unspecified,
+            cardSelected = Color.Unspecified,
+            cardCarousel = Color.Unspecified,
+            cardCarouselFocused = Color.Unspecified,
             list = Color.Unspecified,
             listBlue = Color.Unspecified, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
             listHeadingBlue = Color.Unspecified,
@@ -587,7 +610,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             chatTextFieldBorder = Color.Unspecified,
             chatTextFieldBorderDisabled = Color.Unspecified,
             chatDivider = Color.Unspecified,
-            chatIntroCardBorder = Color.Unspecified
+            chatIntroCardBorder = Color.Unspecified,
+            cardCarousel = Color.Unspecified
         )
     )
 }
