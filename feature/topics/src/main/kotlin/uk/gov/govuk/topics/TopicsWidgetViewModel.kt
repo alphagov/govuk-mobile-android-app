@@ -113,26 +113,6 @@ internal class TopicsWidgetViewModel @Inject constructor(
         )
     }
 
-    private fun sendViewItemListEvent(topics: List<TopicItemUi>) {
-        val items = mutableListOf<EcommerceEvent.Item>()
-
-        topics.forEach { topic ->
-            items += EcommerceEvent.Item(
-                itemName = topic.title,
-                itemCategory = ITEM_CATEGORY,
-                locationId = topic.ref
-            )
-        }
-
-        analyticsClient.viewItemListEvent(
-            ecommerceEvent = EcommerceEvent(
-                itemListName = LIST_NAME,
-                itemListId = LIST_ID,
-                items = items
-            )
-        )
-    }
-    
     private fun mapCategory(category: TopicsCategory): String {
         return when (category) {
             TopicsCategory.YOUR -> "Your topics"
