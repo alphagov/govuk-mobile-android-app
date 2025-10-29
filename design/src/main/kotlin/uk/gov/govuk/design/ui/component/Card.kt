@@ -318,7 +318,7 @@ fun UserFeedbackCard(
                 .semantics {
                     contentDescription = "$linkTitle $opensInWebBrowser"
                 },
-            color = GovUkTheme.colourScheme.textAndIcons.link,
+            color = GovUkTheme.colourScheme.textAndIcons.linkSecondary,
             textAlign = TextAlign.Center
         )
     }
