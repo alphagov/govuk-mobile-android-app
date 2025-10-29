@@ -66,10 +66,7 @@ internal class TopicsWidgetViewModel @Inject constructor(
     private fun sendViewItemListEvent(category: TopicsCategory, topics: List<TopicItemUi>) {
         val items = mutableListOf<EcommerceEvent.Item>()
 
-        val listCategory = when (category) {
-            TopicsCategory.YOUR -> "Your topics"
-            TopicsCategory.ALL -> "All topics"
-        }
+        val listCategory = mapCategory(category)
 
         topics.forEach { topic ->
             items += EcommerceEvent.Item(
@@ -93,10 +90,7 @@ internal class TopicsWidgetViewModel @Inject constructor(
         ref: String,
         selectedItemIndex: Int
     ) {
-        val listCategory = when (category) {
-            TopicsCategory.YOUR -> "Your topics"
-            TopicsCategory.ALL -> "All topics"
-        }
+        val listCategory = mapCategory(category)
 
         analyticsClient.selectItemEvent(
             ecommerceEvent = EcommerceEvent(
@@ -111,5 +105,12 @@ internal class TopicsWidgetViewModel @Inject constructor(
             ),
             selectedItemIndex = selectedItemIndex
         )
+    }
+
+    private fun mapCategory(category: TopicsCategory): String {
+        return when (category) {
+            TopicsCategory.YOUR -> "Your topics"
+            TopicsCategory.ALL -> "All topics"
+        }
     }
 }
