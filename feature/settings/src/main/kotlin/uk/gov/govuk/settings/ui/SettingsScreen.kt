@@ -1,7 +1,7 @@
 package uk.gov.govuk.settings.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,23 +20,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.CaptionRegularLabel
-import uk.gov.govuk.design.ui.component.CardListItemLegacy
-import uk.gov.govuk.design.ui.component.ExternalLinkListItemLegacy
-import uk.gov.govuk.design.ui.component.InternalLinkListItemLegacy
+import uk.gov.govuk.design.ui.component.CardListItem
+import uk.gov.govuk.design.ui.component.ExternalLinkListItem
+import uk.gov.govuk.design.ui.component.InternalLinkListItem
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.SubheadlineRegularLabel
 import uk.gov.govuk.design.ui.component.TabHeader
-import uk.gov.govuk.design.ui.component.ToggleListItemLegacy
+import uk.gov.govuk.design.ui.component.ToggleListItem
+import uk.gov.govuk.design.ui.model.ExternalLinkListItemStyle
+import uk.gov.govuk.design.ui.model.InternalLinkListItemStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.settings.R
 import uk.gov.govuk.settings.SettingsUiState
@@ -137,7 +138,7 @@ private fun SettingsScreen(
     }
 
     Column(
-        modifier = modifier
+        modifier = modifier.background(GovUkTheme.colourScheme.surfaces.screenBackground)
     ) {
         TabHeader(stringResource(R.string.screen_title))
         Column(
@@ -188,7 +189,7 @@ private fun ManageLogin(
     Column(
         modifier = modifier
     ) {
-        CardListItemLegacy(
+        CardListItem(
             isFirst = true,
             isLast = false
         ) {
@@ -211,10 +212,11 @@ private fun ManageLogin(
             }
         }
 
-        ExternalLinkListItemLegacy(
+        ExternalLinkListItem(
             title = stringResource(R.string.manage_login_link),
             onClick = onAccountClick,
-            isFirst = false
+            isFirst = false,
+            style = ExternalLinkListItemStyle.Icon
         )
 
         SmallVerticalSpacer()
@@ -226,7 +228,7 @@ private fun ManageLogin(
 
         MediumVerticalSpacer()
 
-        CardListItemLegacy(
+        CardListItem(
             modifier = Modifier.fillMaxWidth(),
             onClick = onSignOutClick
         ) {
@@ -257,7 +259,7 @@ private fun NotificationsAndPrivacy(
 
         if (uiState.isAuthenticationEnabled) {
             val biometricTitle = stringResource(R.string.biometric_title)
-            InternalLinkListItemLegacy(
+            InternalLinkListItem(
                 title = biometricTitle,
                 onClick = { actions.onBiometricsClick(biometricTitle) },
                 isFirst = !uiState.isNotificationsEnabled,
@@ -265,7 +267,7 @@ private fun NotificationsAndPrivacy(
             )
         }
 
-        ToggleListItemLegacy(
+        ToggleListItem(
             title = stringResource(R.string.share_setting),
             checked = uiState.isAnalyticsEnabled,
             onCheckedChange = actions.onAnalyticsConsentChange,
@@ -278,20 +280,6 @@ private fun NotificationsAndPrivacy(
             text = stringResource(R.string.privacy_description),
             modifier = Modifier
                 .padding(horizontal = GovUkTheme.spacing.medium)
-        )
-
-        val altText = "${stringResource(R.string.privacy_read_more)} " +
-                stringResource(id = R.string.link_opens_in)
-
-        CaptionRegularLabel(
-            text = stringResource(R.string.privacy_read_more),
-            modifier = Modifier
-                .semantics {
-                    contentDescription = altText
-                }
-                .padding(horizontal = GovUkTheme.spacing.medium)
-                .clickable(onClick = actions.onPrivacyPolicyClick),
-            color = GovUkTheme.colourScheme.textAndIcons.link,
         )
     }
 }
@@ -315,13 +303,13 @@ private fun Notifications(
         }
     }
 
-    InternalLinkListItemLegacy(
+    InternalLinkListItem(
         title = stringResource(R.string.notifications_title),
-        status = stringResource(status),
         onClick = onNotificationsClick,
         modifier = modifier,
         isFirst = true,
         isLast = false,
+        style = InternalLinkListItemStyle.Status(stringResource(status))
     )
 }
 
@@ -334,7 +322,8 @@ private fun AboutTheApp(
     Column(
         modifier = modifier
     ) {
-        CardListItemLegacy(
+        CardListItem(
+            modifier = Modifier.semantics(mergeDescendants = true) { },
             isFirst = true,
             isLast = false
         ) {
@@ -353,7 +342,7 @@ private fun AboutTheApp(
             }
         }
 
-        ExternalLinkListItemLegacy(
+        ExternalLinkListItem(
             title = stringResource(R.string.help_and_feedback_title),
             onClick = onHelpClick,
             isFirst = false,
@@ -367,7 +356,7 @@ private fun PrivacyPolicy(
     onPrivacyPolicyClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ExternalLinkListItemLegacy(
+    ExternalLinkListItem(
         title = stringResource(R.string.privacy_policy_title),
         onClick = onPrivacyPolicyClick,
         modifier = modifier,
@@ -381,7 +370,7 @@ private fun AccessibilityStatement(
     onAccessibilityStatementClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ExternalLinkListItemLegacy(
+    ExternalLinkListItem(
         title = stringResource(R.string.accessibility_title),
         onClick = onAccessibilityStatementClick,
         modifier = modifier,
@@ -395,7 +384,7 @@ private fun OpenSourceLicenses(
     onLicenseClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    InternalLinkListItemLegacy(
+    InternalLinkListItem(
         title = stringResource(R.string.oss_licenses_title),
         onClick = onLicenseClick,
         modifier = modifier,
@@ -409,7 +398,7 @@ private fun TermsAndConditions(
     onLicenseClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ExternalLinkListItemLegacy(
+    ExternalLinkListItem(
         title = stringResource(R.string.terms_and_conditions_title),
         onClick = onLicenseClick,
         modifier = modifier,

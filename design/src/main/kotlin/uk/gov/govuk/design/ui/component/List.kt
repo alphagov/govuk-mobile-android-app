@@ -80,17 +80,16 @@ fun InternalLinkListItem(
                         text = style.title,
                         color = GovUkTheme.colourScheme.textAndIcons.iconTertiary
                     )
-                    MediumHorizontalSpacer()
                 }
 
-                else -> { /* Do nothing */ }
+                else -> {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow),
+                        contentDescription = null,
+                        tint = GovUkTheme.colourScheme.textAndIcons.iconTertiary
+                    )
+                }
             }
-
-            Icon(
-                painter = painterResource(R.drawable.ic_arrow),
-                contentDescription = null,
-                tint = GovUkTheme.colourScheme.textAndIcons.iconTertiary
-            )
         }
     }
 }
