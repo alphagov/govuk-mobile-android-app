@@ -328,7 +328,7 @@ fun CaptionBoldLabel(
 fun CaptionRegularLabel(
     text: String,
     modifier: Modifier = Modifier,
-    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.secondary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
