@@ -538,6 +538,52 @@ fun FocusableCard(
     )
 }
 
+@Composable
+fun DrillInCard(
+    title: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    description: String? = null
+) {
+    Card(
+        modifier = modifier.drawBottomStroke(
+            colour = GovUkTheme.colourScheme.strokes.cardDefault,
+            cornerRadius = GovUkTheme.numbers.cornerAndroidList
+        ),
+        colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.list),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier.padding(all = GovUkTheme.spacing.medium),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                BodyBoldLabel(
+                    text = title
+                )
+                description?.let { description ->
+                    SmallVerticalSpacer()
+                    BodyRegularLabel(
+                        text = description,
+                        color = GovUkTheme.colourScheme.textAndIcons.secondary
+                    )
+                }
+            }
+
+            MediumHorizontalSpacer()
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow),
+                contentDescription = null,
+                tint = GovUkTheme.colourScheme.textAndIcons.iconTertiary
+            )
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun HomeNavigationCardPreview() {
@@ -704,6 +750,29 @@ private fun NavigationCardWithoutDescriptionPreview() {
         NavigationCard(
             title = "Card title",
             onClick = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DrillInCardPreview() {
+    GovUkTheme {
+        DrillInCard(
+            title = "Card title",
+            onClick = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DrillInCardDescriptionPreview() {
+    GovUkTheme {
+        DrillInCard(
+            title = "Card title",
+            onClick = {},
+            description = "Card description"
         )
     }
 }

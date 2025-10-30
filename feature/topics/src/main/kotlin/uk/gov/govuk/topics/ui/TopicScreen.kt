@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -37,16 +36,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
-import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
+import uk.gov.govuk.design.ui.component.DrillInCard
 import uk.gov.govuk.design.ui.component.FocusableCard
 import uk.gov.govuk.design.ui.component.IconListItem
-import uk.gov.govuk.design.ui.component.InternalLinkListItem
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SectionHeadingLabel
 import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
+import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
+import uk.gov.govuk.design.ui.component.Title3RegularLabel
 import uk.gov.govuk.design.ui.component.error.OfflineMessage
 import uk.gov.govuk.design.ui.component.error.ProblemMessage
 import uk.gov.govuk.design.ui.model.CardListItem
@@ -154,7 +154,11 @@ private fun TopicScreen(
     val focusManager = LocalFocusManager.current
     val lazyListState = rememberLazyListState()
 
-    Column(modifier.fillMaxWidth()) {
+    Column(
+        modifier
+            .fillMaxWidth()
+            .background(GovUkTheme.colourScheme.surfaces.screenBackground)
+    ) {
 
         ChildPageHeader(
             dismissStyle = HeaderDismissStyle.Back(onBack)
@@ -179,32 +183,31 @@ private fun TopicScreen(
         LazyColumn(state = lazyListState) {
             item {
                 Column(
-                    Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(GovUkTheme.colourScheme.surfaces.homeHeader)
                 ) {
-                    Row(
+                    LargeTitleBoldLabel(
+                        text = topic.title,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .background(GovUkTheme.colourScheme.surfaces.homeHeader)
-                    ) {
-                        LargeTitleBoldLabel(
-                            text = topic.title,
-                            modifier = Modifier
-                                .padding(horizontal = GovUkTheme.spacing.medium)
-                                .semantics { heading() }
-                                .focusRequester(focusRequester)
-                                .focusable(),
-                            color = GovUkTheme.colourScheme.textAndIcons.header
-                        )
-                    }
+                            .padding(horizontal = GovUkTheme.spacing.medium)
+                            .semantics { heading() }
+                            .focusRequester(focusRequester)
+                            .focusable(),
+                        color = GovUkTheme.colourScheme.textAndIcons.header
+                    )
                     topic.description?.let { description ->
-                        MediumVerticalSpacer()
-                        BodyRegularLabel(
+                        SmallVerticalSpacer()
+
+                        Title3RegularLabel(
                             text = description,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = GovUkTheme.spacing.medium)
+                                .padding(horizontal = GovUkTheme.spacing.medium),
+                            color = GovUkTheme.colourScheme.textAndIcons.header
                         )
                     }
+                    SmallVerticalSpacer()
                 }
             }
 
@@ -390,12 +393,20 @@ private fun LazyListScope.contentItems(
                     SectionHeadingLabelButton(
                         title = seeAllButton,
                         altText = "$seeAllButton $sectionTitle",
-                        onClick = { onSeeAll(sectionTitle, seeAllButton, currentItemIndex + contentItems.size) },
+                        onClick = {
+                            onSeeAll(
+                                sectionTitle,
+                                seeAllButton,
+                                currentItemIndex + contentItems.size
+                            )
+                        },
                     )
                 } else null
             )
         }
-
+        item {
+            SmallVerticalSpacer()
+        }
         itemsIndexed(contentItems) { index, content ->
             val sectionTitle = stringResource(section.title)
             IconListItem(
@@ -422,26 +433,29 @@ private fun LazyListScope.subtopics(
 ) {
     if (subtopics.isNotEmpty()) {
         item {
-            val sectionTitle = stringResource(section.title)
-
             SectionHeadingLabel(
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
-                title3 = sectionTitle,
-            )
-        }
-
-        itemsIndexed(subtopics) { index, subtopic ->
-            InternalLinkListItem(
-                title = subtopic.title,
-                onClick = { onClick(subtopic.title, subtopic.ref, currentItemIndex + index) },
-                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
-                isFirst = index == 0,
-                isLast = index == subtopics.lastIndex
+                title3 = stringResource(section.title)
             )
         }
 
         item {
-            LargeVerticalSpacer()
+            SmallVerticalSpacer()
+        }
+
+        itemsIndexed(subtopics) { index, subtopic ->
+            DrillInCard(
+                title = subtopic.title,
+                onClick = { onClick(subtopic.title, subtopic.ref, currentItemIndex + index) },
+                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+            )
+            if (index < subtopics.size - 1) {
+                SmallVerticalSpacer()
+            }
+        }
+
+        item {
+            MediumVerticalSpacer()
         }
     }
 }

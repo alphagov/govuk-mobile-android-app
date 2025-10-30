@@ -11,7 +11,7 @@
 
     <string name="edit_title">Edit your topics</string>
     <string name="edit_message">Topics you select will be shown on the app home page so you can find them more easily</string>
-    <string name="step_by_step_guides_title">Step by step guides</string>
+    <string name="step_by_step_guides_title">Step-by-step guides</string>
     <string name="popular_pages_title">Popular pages</string>
     <string name="services_title">Services and information</string>
     <string name="see_all_button">See all</string>
