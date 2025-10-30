@@ -39,12 +39,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
-import uk.gov.govuk.design.ui.component.ExternalLinkListItemLegacy
 import uk.gov.govuk.design.ui.component.FocusableCard
-import uk.gov.govuk.design.ui.component.InternalLinkListItemLegacy
+import uk.gov.govuk.design.ui.component.IconListItem
+import uk.gov.govuk.design.ui.component.InternalLinkListItem
 import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
-import uk.gov.govuk.design.ui.component.ListHeaderLegacy
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SectionHeadingLabel
 import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
@@ -74,7 +73,9 @@ internal fun TopicRoute(
     val uiState by viewModel.uiState.collectAsState()
     val focusRequester = remember { FocusRequester() }
 
-    Box(modifier.fillMaxSize()) {
+    Box(modifier.fillMaxSize()
+        .background(GovUkTheme.colourScheme.surfaces.screenBackground)
+    ) {
         uiState?.let {
             when (it) {
                 is TopicUiState.Default -> {
@@ -315,11 +316,11 @@ private fun HorizontalScrollView(
 
     SectionHeadingLabel(
         modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium),
-        title3 = stringResource(R.string.popular_pages_title),
+        title3 = section,
         button = if (!isFontScaledUp && !isLandscape) {
             SectionHeadingLabelButton(
                 title = seeAllButton,
-                altText = seeAllButton,
+                altText = "$seeAllButton $section",
                 onClick = {
                     onPopularPagesSeeAll(section, seeAllButton, currentItemIndex)
                 }
@@ -379,39 +380,32 @@ private fun LazyListScope.contentItems(
 ) {
     if (contentItems.isNotEmpty()) {
         item {
-            ListHeaderLegacy(
-                title = section.title,
-                icon = section.icon,
-                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+            val sectionTitle = stringResource(section.title)
+            val seeAllButton = stringResource(R.string.see_all_button)
+
+            SectionHeadingLabel(
+                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
+                title3 = sectionTitle,
+                button = if (displaySeeAll) {
+                    SectionHeadingLabelButton(
+                        title = seeAllButton,
+                        altText = "$seeAllButton $sectionTitle",
+                        onClick = { onSeeAll(sectionTitle, seeAllButton, currentItemIndex + contentItems.size) },
+                    )
+                } else null
             )
         }
-
-        var lastIndex = contentItems.lastIndex
-        if (displaySeeAll) lastIndex += 1
 
         itemsIndexed(contentItems) { index, content ->
             val sectionTitle = stringResource(section.title)
-            ExternalLinkListItemLegacy(
+            IconListItem(
                 title = content.title,
+                icon = section.icon,
                 onClick = { onClick(sectionTitle, content.title, content.url, currentItemIndex + index) },
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
-                isFirst = false,
-                isLast = index == lastIndex
+                isFirst = index == 0,
+                isLast = index == contentItems.lastIndex
             )
-        }
-
-        if (displaySeeAll) {
-            item {
-                val sectionTitle = stringResource(section.title)
-                val title = stringResource(R.string.see_all_button)
-                InternalLinkListItemLegacy(
-                    title = title,
-                    onClick = { onSeeAll(sectionTitle, title, currentItemIndex + contentItems.size) },
-                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
-                    isFirst = lastIndex == 0,
-                    isLast = true
-                )
-            }
         }
 
         item {
@@ -428,19 +422,20 @@ private fun LazyListScope.subtopics(
 ) {
     if (subtopics.isNotEmpty()) {
         item {
-            ListHeaderLegacy(
-                title = section.title,
-                icon = section.icon,
-                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+            val sectionTitle = stringResource(section.title)
+
+            SectionHeadingLabel(
+                modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
+                title3 = sectionTitle,
             )
         }
 
         itemsIndexed(subtopics) { index, subtopic ->
-            InternalLinkListItemLegacy(
+            InternalLinkListItem(
                 title = subtopic.title,
                 onClick = { onClick(subtopic.title, subtopic.ref, currentItemIndex + index) },
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
-                isFirst = false,
+                isFirst = index == 0,
                 isLast = index == subtopics.lastIndex
             )
         }
