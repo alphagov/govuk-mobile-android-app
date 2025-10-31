@@ -170,6 +170,41 @@ private fun Header(
     }
 }
 
+@Composable
+fun Title(
+    title: String,
+    modifier: Modifier = Modifier,
+    description: String? = null
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(GovUkTheme.colourScheme.surfaces.homeHeader)
+    ) {
+        LargeTitleBoldLabel(
+            text = title,
+            modifier = Modifier
+                .padding(horizontal = GovUkTheme.spacing.medium)
+                .semantics { heading() }
+                .focusable(),
+            color = GovUkTheme.colourScheme.textAndIcons.header
+        )
+
+        description?.let { description ->
+            SmallVerticalSpacer()
+
+            BodyRegularLabel(
+                text = description,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = GovUkTheme.spacing.medium),
+                color = GovUkTheme.colourScheme.textAndIcons.header
+            )
+        }
+        SmallVerticalSpacer()
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun TabHeaderPreview() {
@@ -333,6 +368,17 @@ private fun ModalHeaderWithClosePreview() {
                 title = "Done",
                 onClick = {}
             )
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun TitlePreview() {
+    GovUkTheme {
+        Title(
+            title = "Title",
+            description = "Description"
         )
     }
 }

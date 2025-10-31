@@ -46,6 +46,7 @@ import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SectionHeadingLabel
 import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
+import uk.gov.govuk.design.ui.component.Title
 import uk.gov.govuk.design.ui.component.Title3RegularLabel
 import uk.gov.govuk.design.ui.component.error.OfflineMessage
 import uk.gov.govuk.design.ui.component.error.ProblemMessage
@@ -182,33 +183,11 @@ private fun TopicScreen(
 
         LazyColumn(state = lazyListState) {
             item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(GovUkTheme.colourScheme.surfaces.homeHeader)
-                ) {
-                    LargeTitleBoldLabel(
-                        text = topic.title,
-                        modifier = Modifier
-                            .padding(horizontal = GovUkTheme.spacing.medium)
-                            .semantics { heading() }
-                            .focusRequester(focusRequester)
-                            .focusable(),
-                        color = GovUkTheme.colourScheme.textAndIcons.header
-                    )
-                    topic.description?.let { description ->
-                        SmallVerticalSpacer()
-
-                        Title3RegularLabel(
-                            text = description,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = GovUkTheme.spacing.medium),
-                            color = GovUkTheme.colourScheme.textAndIcons.header
-                        )
-                    }
-                    SmallVerticalSpacer()
-                }
+                Title(
+                    title = topic.title,
+                    modifier = Modifier.focusRequester(focusRequester),
+                    description = topic.description
+                )
             }
 
             item {
