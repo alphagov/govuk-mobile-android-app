@@ -245,7 +245,8 @@ fun IconListItem(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(all = GovUkTheme.spacing.medium),
+                    .padding(all = GovUkTheme.spacing.medium)
+                    .talkBackText(title, stringResource(R.string.opens_in_web_browser)),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 val iconConfig = when (style) {
