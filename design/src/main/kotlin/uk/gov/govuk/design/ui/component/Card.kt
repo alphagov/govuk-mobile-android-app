@@ -188,7 +188,7 @@ fun HomeAlertCard(
                         title?.let { title ->
                             BodyBoldLabel(
                                 title,
-                                modifier = Modifier.padding(start = 16.dp)
+                                modifier = Modifier.padding(start = GovUkTheme.spacing.medium)
                             )
                         }
 
@@ -199,7 +199,7 @@ fun HomeAlertCard(
                         description?.let { description ->
                             BodyRegularLabel(
                                 description,
-                                modifier = Modifier.padding(start = 16.dp)
+                                modifier = Modifier.padding(start = GovUkTheme.spacing.medium)
                             )
                         }
                         MediumVerticalSpacer()
@@ -242,7 +242,7 @@ fun HomeAlertCard(
                         text = linkTitle,
                         color = GovUkTheme.colourScheme.textAndIcons.link,
                         modifier = Modifier
-                            .padding(horizontal = 16.dp)
+                            .padding(horizontal = GovUkTheme.spacing.medium)
                             .clickable {
                                 onClick()
                                 launchBrowser(linkUrl)
@@ -320,7 +320,7 @@ fun UserFeedbackCard(
             text = linkTitle,
             modifier = modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp)
+                .padding(vertical = GovUkTheme.spacing.medium)
                 .clickable {
                     onClick()
                 }
@@ -342,9 +342,9 @@ fun NonTappableCard(
         text = body,
         modifier = modifier
             .fillMaxWidth()
-            .clip(shape = RoundedCornerShape(12.dp))
+            .clip(shape = RoundedCornerShape(GovUkTheme.numbers.cornerAndroidList))
             .background(GovUkTheme.colourScheme.surfaces.cardNonTappable)
-            .padding(16.dp),
+            .padding(GovUkTheme.spacing.medium),
         color = GovUkTheme.colourScheme.textAndIcons.secondary
     )
 }
@@ -538,6 +538,52 @@ fun FocusableCard(
     )
 }
 
+@Composable
+fun DrillInCard(
+    title: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    description: String? = null
+) {
+    Card(
+        modifier = modifier.drawBottomStroke(
+            colour = GovUkTheme.colourScheme.strokes.cardDefault,
+            cornerRadius = GovUkTheme.numbers.cornerAndroidList
+        ),
+        colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.cardDefault),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier.padding(all = GovUkTheme.spacing.medium),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                BodyBoldLabel(
+                    text = title
+                )
+                description?.let { description ->
+                    SmallVerticalSpacer()
+                    BodyRegularLabel(
+                        text = description,
+                        color = GovUkTheme.colourScheme.textAndIcons.secondary
+                    )
+                }
+            }
+
+            MediumHorizontalSpacer()
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow),
+                contentDescription = null,
+                tint = GovUkTheme.colourScheme.textAndIcons.iconTertiary
+            )
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun HomeNavigationCardPreview() {
@@ -704,6 +750,29 @@ private fun NavigationCardWithoutDescriptionPreview() {
         NavigationCard(
             title = "Card title",
             onClick = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DrillInCardPreview() {
+    GovUkTheme {
+        DrillInCard(
+            title = "Card title",
+            onClick = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DrillInCardDescriptionPreview() {
+    GovUkTheme {
+        DrillInCard(
+            title = "Card title",
+            onClick = {},
+            description = "Card description"
         )
     }
 }
