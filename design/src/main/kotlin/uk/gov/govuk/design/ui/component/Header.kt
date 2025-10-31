@@ -196,7 +196,6 @@ fun Title(
             BodyRegularLabel(
                 text = description,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(horizontal = GovUkTheme.spacing.medium),
                 color = GovUkTheme.colourScheme.textAndIcons.header
             )
