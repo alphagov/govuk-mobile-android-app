@@ -12,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
+import uk.gov.govuk.design.ui.model.SINGLE_COLUMN_THRESHOLD_DP
 import uk.gov.govuk.topics.ui.model.TopicItemUi
 
-private const val SINGLE_COLUMN_THRESHOLD_DP = 380
 private const val COMPACT_THRESHOLD_DP = 600
 private const val THREE_COLUMN_THRESHOLD_DP = 650
 private const val MEDIUM_THRESHOLD_DP = 840
