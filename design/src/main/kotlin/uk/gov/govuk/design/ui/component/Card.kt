@@ -550,7 +550,7 @@ fun DrillInCard(
             colour = GovUkTheme.colourScheme.strokes.cardDefault,
             cornerRadius = GovUkTheme.numbers.cornerAndroidList
         ),
-        colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.list),
+        colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.cardDefault),
         onClick = onClick
     ) {
         Row(
