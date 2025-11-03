@@ -166,7 +166,8 @@ internal class TopicViewModel @Inject constructor(
                         itemCategory = section,
                         locationId = url ?: ""
                     )
-                )
+                ),
+                totalItemCount = totalItemCount
             ),
             selectedItemIndex = selectedItemIndex
         )
@@ -176,7 +177,7 @@ internal class TopicViewModel @Inject constructor(
         topicUi: TopicUi,
         title: String
     ) {
-        var topicItems = listOf(
+        val topicItems = listOf(
             topicUi.popularPages to POPULAR_PAGES_TITLE,
             topicUi.stepBySteps to STEP_BY_STEPS_TITLE,
             topicUi.services to SERVICES_TITLE,
@@ -202,8 +203,17 @@ internal class TopicViewModel @Inject constructor(
             ecommerceEvent = EcommerceEvent(
                 itemListName = LIST_NAME,
                 itemListId = title,
-                items = topicItems
+                items = topicItems,
+                totalItemCount = totalItemCount
             )
         )
     }
+
+    private val totalItemCount = (_uiState.value as? TopicUiState.Default)?.let {
+        it.topicUi.popularPages.size +
+                it.topicUi.stepBySteps.size +
+                if (it.topicUi.displayStepByStepSeeAll) 1 else 0
+                it.topicUi.services.size +
+                it.topicUi.subtopics.size
+    } ?: 0
 }

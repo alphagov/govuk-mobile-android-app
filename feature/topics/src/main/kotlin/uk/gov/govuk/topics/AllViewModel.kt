@@ -68,7 +68,8 @@ internal class AllViewModel @Inject constructor(
         section: String,
         text: String,
         url: String,
-        selectedItemIndex: Int
+        selectedItemIndex: Int,
+        popularPagesCount: Int
     ) {
         onClick(
             analyticsClient = analyticsClient,
@@ -77,7 +78,8 @@ internal class AllViewModel @Inject constructor(
             section = section,
             text = text,
             url = url,
-            selectedItemIndex = selectedItemIndex
+            selectedItemIndex = selectedItemIndex,
+            itemCount = popularPagesCount
         )
     }
 
@@ -85,7 +87,8 @@ internal class AllViewModel @Inject constructor(
         section: String,
         text: String,
         url: String,
-        selectedItemIndex: Int
+        selectedItemIndex: Int,
+        stepByStepsCount: Int
     ) {
         onClick(
             analyticsClient = analyticsClient,
@@ -94,7 +97,8 @@ internal class AllViewModel @Inject constructor(
             section = section,
             text = text,
             url = url,
-            selectedItemIndex = selectedItemIndex
+            selectedItemIndex = selectedItemIndex,
+            itemCount = stepByStepsCount
         )
     }
 
@@ -142,7 +146,8 @@ internal class AllViewModel @Inject constructor(
             ecommerceEvent = EcommerceEvent(
                 itemListName = LIST_NAME,
                 itemListId = title,
-                items = topicItems
+                items = topicItems,
+                totalItemCount = topicItems.size
             )
         )
     }
@@ -154,7 +159,8 @@ internal class AllViewModel @Inject constructor(
         section: String,
         text: String,
         url: String,
-        selectedItemIndex: Int
+        selectedItemIndex: Int,
+        itemCount: Int
     ) {
         analyticsClient.buttonClick(
             text = text,
@@ -169,7 +175,8 @@ internal class AllViewModel @Inject constructor(
             section = section,
             text = text,
             url = url,
-            selectedItemIndex = selectedItemIndex
+            selectedItemIndex = selectedItemIndex,
+            itemCount = itemCount
         )
 
         viewModelScope.launch {
@@ -183,7 +190,8 @@ internal class AllViewModel @Inject constructor(
         text: String,
         title: String?,
         url: String?,
-        selectedItemIndex: Int
+        selectedItemIndex: Int,
+        itemCount: Int
     ) {
         analyticsClient.selectItemEvent(
             ecommerceEvent = EcommerceEvent(
@@ -195,7 +203,8 @@ internal class AllViewModel @Inject constructor(
                         itemCategory = section,
                         locationId = url ?: ""
                     )
-                )
+                ),
+                totalItemCount = itemCount
             ),
             selectedItemIndex = selectedItemIndex
         )

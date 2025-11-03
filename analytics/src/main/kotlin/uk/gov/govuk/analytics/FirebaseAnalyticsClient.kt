@@ -44,7 +44,7 @@ class FirebaseAnalyticsClient @Inject constructor(
             val itemsBundle = Bundle()
             itemsBundle.putString(FirebaseAnalytics.Param.ITEM_NAME, item.itemName)
             itemsBundle.putInt("index", selectedItemIndex ?: (index + 1))
-            itemsBundle.putInt("results", ecommerceEvent.items.size) // TODO - this should be the total number of items???
+            itemsBundle.putInt("results", ecommerceEvent.totalItemCount)
             itemsBundle.putString(FirebaseAnalytics.Param.ITEM_LIST_ID, ecommerceEvent.itemListId)
             itemsBundle.putString(FirebaseAnalytics.Param.ITEM_LIST_NAME, ecommerceEvent.itemListName)
             item.itemCategory?.let { category ->
