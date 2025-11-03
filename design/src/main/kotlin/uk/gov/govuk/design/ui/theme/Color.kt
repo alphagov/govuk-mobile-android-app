@@ -100,6 +100,7 @@ data class GovUkColourScheme(
         val iconSurroundPrimary: Color,
         val iconSurroundSecondary: Color,
         val trailingIcon: Color,
+        val iconBiometric: Color,
         val buttonRemoveDisabled: Color,
         val selectedTick: Color,
         val logo: Color,
@@ -199,7 +200,8 @@ data class GovUkColourScheme(
         val chatTextFieldBorderDisabled: Color,
         val chatDivider: Color,
         val chatIntroCardBorder: Color,
-        val cardCarousel: Color
+        val cardCarousel: Color,
+        val iconSeparator: Color
     )
 }
 
@@ -235,6 +237,7 @@ internal val LightColorScheme = GovUkColourScheme(
         iconSurroundPrimary = BluePrimary,
         iconSurroundSecondary = BlueLighter80,
         trailingIcon = Grey300,
+        iconBiometric = BluePrimary,
         buttonRemoveDisabled = Grey700,
         selectedTick = White,
         logo = White,
@@ -338,7 +341,8 @@ internal val LightColorScheme = GovUkColourScheme(
         chatTextFieldBorderDisabled = Grey300,
         chatDivider = BlueLighter80,
         chatIntroCardBorder = BlueLighter80,
-        cardCarousel = BlueDarker50
+        cardCarousel = BlueDarker50,
+        iconSeparator = BluePrimary
     )
 )
 
@@ -374,6 +378,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         iconSurroundPrimary = BlueDarkMode,
         iconSurroundSecondary = BlueDarkMode,
         trailingIcon = Grey500,
+        iconBiometric = BlueAccent,
         buttonRemoveDisabled = Grey300,
         selectedTick = White,
         logo = White,
@@ -477,7 +482,8 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatTextFieldBorderDisabled = BlueLighter25,
         chatDivider = BlueDarker25,
         chatIntroCardBorder = BlueDarker50,
-        cardCarousel = BlueDarker50
+        cardCarousel = BlueDarker50,
+        iconSeparator = BlueAccent
     )
 )
 
@@ -514,6 +520,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             iconSurroundPrimary = Color.Unspecified,
             iconSurroundSecondary = Color.Unspecified,
             trailingIcon = Color.Unspecified,
+            iconBiometric = Color.Unspecified,
             buttonRemoveDisabled = Color.Unspecified,
             selectedTick = Color.Unspecified,
             logo = Color.Unspecified,
@@ -611,7 +618,8 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             chatTextFieldBorderDisabled = Color.Unspecified,
             chatDivider = Color.Unspecified,
             chatIntroCardBorder = Color.Unspecified,
-            cardCarousel = Color.Unspecified
+            cardCarousel = Color.Unspecified,
+            iconSeparator = Color.Unspecified
         )
     )
 }
