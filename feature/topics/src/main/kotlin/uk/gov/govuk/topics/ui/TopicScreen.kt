@@ -389,7 +389,8 @@ private fun LazyListScope.contentItems(
                 onClick = { onClick(sectionTitle, content.title, content.url, currentItemIndex + index) },
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
                 isFirst = index == 0,
-                isLast = index == contentItems.lastIndex
+                isLast = index == contentItems.lastIndex,
+                altText = "${content.title}. ${stringResource(uk.gov.govuk.design.R.string.opens_in_web_browser)}"
             )
         }
 
