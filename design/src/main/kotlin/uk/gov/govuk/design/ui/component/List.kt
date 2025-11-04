@@ -232,7 +232,8 @@ fun IconListItem(
     modifier: Modifier = Modifier,
     style: IconListItemStyle = IconListItemStyle.Regular,
     isFirst: Boolean = true,
-    isLast: Boolean = true
+    isLast: Boolean = true,
+    altText: String? = null
 ) {
     CardListItem(
         modifier = modifier.fillMaxWidth(),
@@ -246,7 +247,11 @@ fun IconListItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(all = GovUkTheme.spacing.medium)
-                    .talkBackText(title, stringResource(R.string.opens_in_web_browser)),
+                    .semantics {
+                        altText?.let {
+                            contentDescription = it
+                        }
+                    },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 val iconConfig = when (style) {
