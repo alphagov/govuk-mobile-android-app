@@ -114,14 +114,14 @@ private fun IconRow(
         Icon(
             painter = painterResource(id = R.drawable.ic_face),
             contentDescription = null,
-            tint = GovUkTheme.colourScheme.textAndIcons.primary
+            tint = GovUkTheme.colourScheme.textAndIcons.iconBiometric
         )
 
         LargeHorizontalSpacer()
 
         VerticalDivider(
             thickness = 2.dp,
-            color = GovUkTheme.colourScheme.textAndIcons.secondary // Todo - should probably be a stroke colour
+            color = GovUkTheme.colourScheme.strokes.iconSeparator
         )
 
         LargeHorizontalSpacer()
@@ -129,14 +129,14 @@ private fun IconRow(
         Icon(
             painter = painterResource(id = R.drawable.ic_fingerprint),
             contentDescription = null,
-            tint = GovUkTheme.colourScheme.textAndIcons.primary
+            tint = GovUkTheme.colourScheme.textAndIcons.iconBiometric
         )
 
         LargeHorizontalSpacer()
 
         VerticalDivider(
             thickness = 2.dp,
-            color = GovUkTheme.colourScheme.textAndIcons.secondary // Todo - should probably be a stroke colour
+            color = GovUkTheme.colourScheme.strokes.iconSeparator
         )
 
         LargeHorizontalSpacer()
@@ -144,7 +144,7 @@ private fun IconRow(
         Icon(
             painter = painterResource(id = R.drawable.ic_iris),
             contentDescription = null,
-            tint = GovUkTheme.colourScheme.textAndIcons.primary
+            tint = GovUkTheme.colourScheme.textAndIcons.iconBiometric
         )
     }
 }
