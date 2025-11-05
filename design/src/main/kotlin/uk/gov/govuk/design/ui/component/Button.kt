@@ -238,7 +238,7 @@ private fun BaseButton(
     )
 
     val interactionSource = remember { MutableInteractionSource() }
-    val focusRequester = FocusRequester()
+    val focusRequester = remember { FocusRequester() }
     val isFocused by interactionSource.collectIsFocusedAsState()
     val isPressed by interactionSource.collectIsPressedAsState()
     val isHovered by interactionSource.collectIsHoveredAsState()
