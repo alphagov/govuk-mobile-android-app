@@ -115,8 +115,8 @@ private fun HomeScreen(
                         .height(iconHeight)
                         .onVisibilityChanged(
                             viewportBounds = viewport
-                        ) {
-                            showIcon = it
+                        ) { visible ->
+                            showIcon = visible
                         }
                 ) {
                     AnimateIcon(
