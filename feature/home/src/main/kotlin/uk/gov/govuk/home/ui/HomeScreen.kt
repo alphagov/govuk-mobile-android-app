@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,8 +15,15 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.LayoutBoundsHolder
+import androidx.compose.ui.layout.layoutBounds
+import androidx.compose.ui.layout.onVisibilityChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -27,6 +35,7 @@ import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.home.HomeViewModel
 import uk.gov.govuk.home.R
+import uk.gov.govuk.home.ui.animation.AnimateIcon
 
 @Composable
 internal fun HomeRoute(
@@ -81,8 +90,13 @@ private fun HomeScreen(
             }
         }
 
+        val iconHeight = 38.dp
+        val viewport = remember { LayoutBoundsHolder() }
+        var showIcon by remember { mutableStateOf(false) }
+
         LazyColumn (
             modifier = Modifier
+                .layoutBounds(viewport)
                 .padding(horizontal = GovUkTheme.spacing.medium),
             state = rememberLazyListState()
         ) {
@@ -98,17 +112,29 @@ private fun HomeScreen(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .height(iconHeight)
+                        .onVisibilityChanged(
+                            viewportBounds = viewport
+                        ) { visible ->
+                            showIcon = visible
+                        }
                 ) {
-                    Icon(
-                        painter = painterResource(id = uk.gov.govuk.design.R.drawable.crown),
-                        contentDescription = stringResource(id = uk.gov.govuk.design.R.string.crown_alt_text),
-                        tint = GovUkTheme.colourScheme.textAndIcons.logoCrown,
-                        modifier = Modifier.height(64.dp)
+                    AnimateIcon(
+                        showIcon,
+                        {
+                            Icon(
+                                painter = painterResource(id = uk.gov.govuk.design.R.drawable.crown),
+                                contentDescription = stringResource(id = uk.gov.govuk.design.R.string.crown_alt_text),
+                                tint = GovUkTheme.colourScheme.textAndIcons.logoCrown,
+                                modifier = Modifier
+                                    .height(iconHeight)
+                            )
+                        }
                     )
                 }
             }
-            item{
-                LargeVerticalSpacer()
+            item {
+                Spacer(modifier = Modifier.height(64.dp))
             }
         }
     }
