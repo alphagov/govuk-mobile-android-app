@@ -20,7 +20,10 @@ import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.analytics.data.local.model.EcommerceEvent
-import uk.gov.govuk.data.model.Result.*
+import uk.gov.govuk.data.model.Result.DeviceOffline
+import uk.gov.govuk.data.model.Result.Error
+import uk.gov.govuk.data.model.Result.ServiceNotResponding
+import uk.gov.govuk.data.model.Result.Success
 import uk.gov.govuk.topics.data.TopicsRepo
 import uk.gov.govuk.topics.data.remote.model.RemoteTopic
 import uk.gov.govuk.topics.navigation.TOPIC_REF_ARG
@@ -161,13 +164,7 @@ class TopicViewModelTest {
         viewModel.onPageView(title = "title")
 
         verify(exactly = 0) {
-            analyticsClient.viewItemListEvent(
-                ecommerceEvent = EcommerceEvent(
-                    itemListName = "Topics",
-                    itemListId = "title",
-                    items = emptyList()
-                )
-            )
+            analyticsClient.viewItemListEvent(any())
         }
     }
 
@@ -178,8 +175,12 @@ class TopicViewModelTest {
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
         val popularPagesSection = listOf(
             TopicUi.TopicContent(
-                title = "title",
-                url = "url"
+                title = "title1",
+                url = "url1"
+            ),
+            TopicUi.TopicContent(
+                title = "title2",
+                url = "url2"
             )
         )
         val topicUi = TopicUi(
@@ -213,7 +214,8 @@ class TopicViewModelTest {
                             itemCategory = "Popular pages",
                             locationId = it.url
                         )
-                    }
+                    },
+                    totalItemCount = 2
                 )
             )
         }
@@ -230,7 +232,8 @@ class TopicViewModelTest {
             text = "text",
             url = "url",
             title = "title",
-            selectedItemIndex = 42
+            selectedItemIndex = 1,
+            totalItemCount = 1
         )
 
         verify {
@@ -254,7 +257,8 @@ class TopicViewModelTest {
             text = "text",
             url = "url",
             title = "title",
-            selectedItemIndex = 42
+            selectedItemIndex = 1,
+            totalItemCount = 5
         )
 
         verify {
@@ -268,9 +272,10 @@ class TopicViewModelTest {
                             itemCategory = "section",
                             locationId = "url"
                         )
-                    )
+                    ),
+                    totalItemCount = 5
                 ),
-                selectedItemIndex = 42
+                selectedItemIndex = 1
             )
         }
     }
@@ -286,7 +291,8 @@ class TopicViewModelTest {
             text = "text",
             url = "url",
             title = "title",
-            selectedItemIndex = 42
+            selectedItemIndex = 1,
+            totalItemCount = 5
         )
 
         coVerify {
@@ -302,8 +308,7 @@ class TopicViewModelTest {
 
         viewModel.onSeeAllClick(
             section = "section",
-            text = "text",
-            selectedItemIndex = 42
+            text = "text"
         )
 
         verify {
@@ -321,7 +326,7 @@ class TopicViewModelTest {
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
-        viewModel.onSubtopicClick("text", selectedItemIndex = 42)
+        viewModel.onSubtopicClick("text", 1, 1)
 
         verify {
             analyticsClient.buttonClick(
@@ -338,7 +343,7 @@ class TopicViewModelTest {
 
         val viewModel = TopicViewModel(topicsRepo, analyticsClient, visited, savedStateHandle)
 
-        viewModel.onSubtopicClick("text", selectedItemIndex = 42)
+        viewModel.onSubtopicClick("text", 1, 5)
 
         verify {
             analyticsClient.selectItemEvent(
@@ -351,9 +356,10 @@ class TopicViewModelTest {
                             itemCategory = "Sub topics",
                             locationId = ""
                         )
-                    )
+                    ),
+                    totalItemCount = 5
                 ),
-                selectedItemIndex = 42
+                selectedItemIndex = 1
             )
         }
     }

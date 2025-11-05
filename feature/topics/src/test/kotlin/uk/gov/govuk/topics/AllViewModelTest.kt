@@ -106,8 +106,12 @@ class AllViewModelTest {
             title = "title",
             topicContentItems = listOf(
                 TopicContent(
-                    url = "url",
-                    title = "title"
+                    url = "url1",
+                    title = "title1"
+                ),
+                TopicContent(
+                    url = "url2",
+                    title = "title2"
                 )
             )
         )
@@ -119,11 +123,17 @@ class AllViewModelTest {
                     itemListId = "title",
                     items = listOf(
                         EcommerceEvent.Item(
-                            itemName = "title",
+                            itemName = "title1",
                             itemCategory = "Popular pages",
-                            locationId = "url"
+                            locationId = "url1",
+                        ),
+                        EcommerceEvent.Item(
+                            itemName = "title2",
+                            itemCategory = "Popular pages",
+                            locationId = "url2",
                         )
-                    )
+                    ),
+                    totalItemCount = 2
                 )
             )
         }
@@ -137,7 +147,8 @@ class AllViewModelTest {
             section = "section",
             text = "text",
             url = "url",
-            selectedItemIndex = 42
+            selectedItemIndex = 1,
+            popularPagesCount = 1
         )
 
         verify {
@@ -158,7 +169,8 @@ class AllViewModelTest {
             section = "section",
             text = "text",
             url = "url",
-            selectedItemIndex = 42
+            selectedItemIndex = 1,
+            popularPagesCount = 5
         )
 
         verify {
@@ -172,9 +184,10 @@ class AllViewModelTest {
                             itemCategory = "section",
                             locationId = "url"
                         )
-                    )
+                    ),
+                    totalItemCount = 5
                 ),
-                selectedItemIndex = 42
+                selectedItemIndex = 1
             )
         }
     }
@@ -187,7 +200,8 @@ class AllViewModelTest {
             section = "section",
             text = "text",
             url = "url",
-            selectedItemIndex = 42
+            selectedItemIndex = 1,
+            popularPagesCount = 1
         )
 
         coVerify {
@@ -252,8 +266,12 @@ class AllViewModelTest {
             title = "title",
             topicContentItems = listOf(
                 TopicContent(
-                    url = "url",
-                    title = "title"
+                    url = "url1",
+                    title = "title1"
+                ),
+                TopicContent(
+                    url = "url2",
+                    title = "title2"
                 )
             )
         )
@@ -265,11 +283,17 @@ class AllViewModelTest {
                     itemListId = "title",
                     items = listOf(
                         EcommerceEvent.Item(
-                            itemName = "title",
+                            itemName = "title1",
                             itemCategory = "Step by step guides",
-                            locationId = "url"
+                            locationId = "url1"
+                        ),
+                        EcommerceEvent.Item(
+                            itemName = "title2",
+                            itemCategory = "Step by step guides",
+                            locationId = "url2"
                         )
-                    )
+                    ),
+                    totalItemCount = 2
                 )
             )
         }
@@ -283,7 +307,8 @@ class AllViewModelTest {
             section = "section",
             text = "text",
             url = "url",
-            selectedItemIndex = 42
+            selectedItemIndex = 1,
+            stepByStepsCount = 1
         )
 
         verify {
@@ -304,7 +329,8 @@ class AllViewModelTest {
             section = "section",
             text = "text",
             url = "url",
-            selectedItemIndex = 42
+            selectedItemIndex = 1,
+            stepByStepsCount = 5
         )
 
         verify {
@@ -318,9 +344,10 @@ class AllViewModelTest {
                             itemCategory = "section",
                             locationId = "url"
                         )
-                    )
+                    ),
+                    totalItemCount = 5
                 ),
-                selectedItemIndex = 42
+                selectedItemIndex = 1
             )
         }
     }
@@ -333,7 +360,8 @@ class AllViewModelTest {
             section = "section",
             text = "text",
             url = "url",
-            selectedItemIndex = 42
+            selectedItemIndex = 1,
+            stepByStepsCount = 1
         )
 
         coVerify {
