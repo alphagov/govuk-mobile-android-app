@@ -362,7 +362,7 @@ fun SectionHeadingLabel(
     button: SectionHeadingLabelButton? = null
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.padding(bottom = GovUkTheme.spacing.small),
         verticalAlignment = Alignment.CenterVertically
     ) {
         val titleModifier = Modifier

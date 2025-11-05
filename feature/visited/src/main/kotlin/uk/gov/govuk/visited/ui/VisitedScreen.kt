@@ -36,7 +36,6 @@ import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.NonTappableCard
 import uk.gov.govuk.design.ui.component.SectionHeadingLabel
-import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.model.ExternalLinkListItemStyle
 import uk.gov.govuk.design.ui.model.HeaderActionStyle
 import uk.gov.govuk.design.ui.model.HeaderDismissStyle
@@ -180,9 +179,6 @@ private fun ShowVisitedItems(
             if (visitedItems.isNotEmpty()) {
                 item {
                     SectionHeadingLabel(title3 = sectionTitle)
-                }
-                item {
-                    SmallVerticalSpacer()
                 }
                 itemsIndexed(
                     items = visitedItems,
