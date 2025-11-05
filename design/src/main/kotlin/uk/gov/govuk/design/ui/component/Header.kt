@@ -103,7 +103,7 @@ private fun Header(
     modifier: Modifier = Modifier,
     text: String? = null,
     backgroundColour: Color = GovUkTheme.colourScheme.surfaces.background,
-    actionColour: Color = GovUkTheme.colourScheme.textAndIcons.link,
+    actionColour: Color = GovUkTheme.colourScheme.textAndIcons.linkSecondary,
     titleColour: Color = GovUkTheme.colourScheme.textAndIcons.primary,
     dismissStyle: HeaderDismissStyle = HeaderDismissStyle.None,
     actionStyle: HeaderActionStyle = HeaderActionStyle.None
