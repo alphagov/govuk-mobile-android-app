@@ -24,6 +24,7 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 fun CentreAlignedScreen(
     modifier: Modifier = Modifier,
     screenContent: @Composable ColumnScope.() -> Unit,
+    bottomContent: @Composable (ColumnScope.() -> Unit)? = null,
     footerContent: @Composable () -> Unit
 ) {
     Column(modifier.fillMaxSize()) {
@@ -45,6 +46,10 @@ fun CentreAlignedScreen(
             }
 
             Spacer(Modifier.weight(1f))
+
+            bottomContent?.let { bottomContent ->
+                bottomContent()
+            }
         }
 
         footerContent()

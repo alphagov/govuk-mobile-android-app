@@ -34,6 +34,7 @@
 
     <string name="login_title">Your GOV.UK app</string>
     <string name="login_description">Government information and services for you</string>
+    <string name="version">Version</string>
     <string name="login_continue_button">Continue</string>
     <string name="login_back_and_try_again_button">Go back and try again</string>
     <string name="login_loading_accessibility_text">Signing you in</string>

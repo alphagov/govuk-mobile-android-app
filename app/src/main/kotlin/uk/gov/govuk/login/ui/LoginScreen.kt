@@ -7,6 +7,9 @@ import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -22,7 +25,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
+import uk.gov.govuk.BuildConfig
 import uk.gov.govuk.R
+import uk.gov.govuk.design.ui.component.CaptionRegularLabel
 import uk.gov.govuk.design.ui.component.CentreAlignedScreen
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
@@ -120,6 +125,18 @@ private fun LoginScreen(
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.extraLarge),
                 textAlign = TextAlign.Center
             )
+        },
+        bottomContent = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                CaptionRegularLabel(
+                    "${stringResource(id = R.string.version)} ${BuildConfig.VERSION_NAME}",
+                    textAlign = TextAlign.Center
+                )
+            }
+            MediumVerticalSpacer()
         },
         footerContent = {
             FixedPrimaryButton(
