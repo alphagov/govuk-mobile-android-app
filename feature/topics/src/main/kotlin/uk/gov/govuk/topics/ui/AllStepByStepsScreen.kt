@@ -42,7 +42,8 @@ internal fun AllStepByStepRoute(
                 section = section,
                 text = text,
                 url = url,
-                selectedItemIndex = selectedItemIndex
+                selectedItemIndex = selectedItemIndex,
+                stepByStepsCount = stepBySteps.size
             )
             onClick(url)
         },

@@ -82,34 +82,37 @@ internal fun TopicRoute(
                             title = title
                         ) },
                         onBack = onBack,
-                        onExternalLink = { section, text, url, selectedItemIndex ->
+                        onExternalLink = { section, text, url, selectedItemIndex, totalItemCount ->
                             viewModel.onContentClick(
                                 title = it.topicUi.title,
                                 section = section,
                                 text = text,
                                 url = url,
-                                selectedItemIndex = selectedItemIndex
+                                selectedItemIndex = selectedItemIndex,
+                                totalItemCount = totalItemCount
                             )
                             onExternalLink(url, selectedItemIndex)
                         },
-                        onStepByStepSeeAll = { section, text, selectedItemIndex ->
+                        onStepByStepSeeAll = { section, text ->
                             onStepByStepSeeAll()
                             viewModel.onSeeAllClick(
                                 section = section,
-                                text = text,
-                                selectedItemIndex = selectedItemIndex
+                                text = text
                             )
                         },
-                        onPopularPagesSeeAll = { section, text, selectedItemIndex ->
+                        onPopularPagesSeeAll = { section, text ->
                             onPopularPagesSeeAll()
                             viewModel.onSeeAllClick(
                                 section = section,
-                                text = text,
-                                selectedItemIndex = selectedItemIndex
+                                text = text
                             )
                         },
-                        onSubtopic = { text, ref, selectedItemIndex ->
-                            viewModel.onSubtopicClick(text, selectedItemIndex)
+                        onSubtopic = { text, ref, selectedItemIndex, totalItemCount ->
+                            viewModel.onSubtopicClick(
+                                text = text,
+                                selectedItemIndex = selectedItemIndex,
+                                totalItemCount = totalItemCount
+                            )
                             onSubtopic(ref)
                         },
                         focusRequester = focusRequester
@@ -140,15 +143,30 @@ private fun TopicScreen(
     topic: TopicUi,
     onPageView: (String) -> Unit,
     onBack: () -> Unit,
-    onExternalLink: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit,
-    onStepByStepSeeAll: (section: String, text: String, selectedItemIndex: Int) -> Unit,
-    onPopularPagesSeeAll: (section: String, text: String, selectedItemIndex: Int) -> Unit,
-    onSubtopic: (text: String, ref: String, selectedItemIndex: Int) -> Unit,
+    onExternalLink: (section: String, text: String, url: String, selectedItemIndex: Int, totalItemCount: Int) -> Unit,
+    onStepByStepSeeAll: (section: String, text: String) -> Unit,
+    onPopularPagesSeeAll: (section: String, text: String) -> Unit,
+    onSubtopic: (text: String, ref: String, selectedItemIndex: Int, totalItemCount: Int) -> Unit,
     focusRequester: FocusRequester,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
     val lazyListState = rememberLazyListState()
+
+    val popularPagesIndex = 1
+    val stepByStepsIndex = popularPagesIndex + topic.popularPages.size
+    val servicesIndex = stepByStepsIndex + topic.stepBySteps.size
+    val subtopicsIndex = servicesIndex + topic.services.size
+
+    val totalItemCount = topic.popularPages.size +
+            topic.stepBySteps.size +
+            topic.services.size +
+            topic.subtopics.size
+
+    val onExternalLinkClick: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit = {
+            section, text, url, selectedItemIndex ->
+        onExternalLink(section, text, url, selectedItemIndex, totalItemCount)
+    }
 
     Column(
         modifier
@@ -174,8 +192,6 @@ private fun TopicScreen(
             icon = R.drawable.ic_topic_services_and_info
         )
 
-        var currentItemIndex = 1
-
         LazyColumn(state = lazyListState) {
             item {
                 Title(
@@ -195,53 +211,44 @@ private fun TopicScreen(
                 item {
                     HorizontalScrollView(
                         topic = topic,
-                        currentItemIndex = currentItemIndex,
-                        onExternalLink = onExternalLink,
+                        startIndex = popularPagesIndex,
+                        onExternalLink = onExternalLinkClick,
                         onPopularPagesSeeAll = onPopularPagesSeeAll,
                         modifier = Modifier.fillMaxWidth()
                     )
-
-                    if (topic.displayPopularPagesSeeAll) {
-                        currentItemIndex += 1
-                    }
                 }
             } else {
                 contentItems(
-                    currentItemIndex = currentItemIndex,
+                    startIndex = popularPagesIndex,
                     contentItems = topic.popularPages,
                     section = popularPagesSection,
-                    onClick = onExternalLink
+                    onClick = onExternalLinkClick
                 )
             }
 
-            if (topic.popularPages.isNotEmpty()) currentItemIndex += topic.popularPages.size
-
             contentItems(
-                currentItemIndex = currentItemIndex,
+                startIndex = stepByStepsIndex,
                 contentItems = topic.stepBySteps,
                 section = stepByStepSection,
-                onClick = onExternalLink,
+                onClick = onExternalLinkClick,
                 displaySeeAll = topic.displayStepByStepSeeAll,
                 onSeeAll = onStepByStepSeeAll
             )
 
-            if (topic.stepBySteps.isNotEmpty()) currentItemIndex += topic.stepBySteps.size
-            if (topic.displayStepByStepSeeAll) { currentItemIndex += 1 }
-
             contentItems(
-                currentItemIndex = currentItemIndex,
+                startIndex = servicesIndex,
                 contentItems = topic.services,
                 section = servicesSection,
-                onClick = onExternalLink
+                onClick = onExternalLinkClick
             )
 
-            if (topic.services.isNotEmpty()) currentItemIndex += topic.services.size
-
             subtopics(
-                currentItemIndex = currentItemIndex,
+                startIndex = subtopicsIndex,
                 subtopics = topic.subtopics,
                 section = topic.subtopicsSection,
-                onClick = onSubtopic
+                onClick = { text, ref, selectedItemIndex ->
+                    onSubtopic(text, ref, selectedItemIndex, totalItemCount)
+                }
             )
         }
     }
@@ -258,9 +265,9 @@ private fun TopicScreen(
 @Composable
 private fun HorizontalScrollView(
     topic: TopicUi,
-    currentItemIndex: Int,
+    startIndex: Int,
     onExternalLink: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit,
-    onPopularPagesSeeAll: (section: String, text: String, selectedItemIndex: Int) -> Unit,
+    onPopularPagesSeeAll: (section: String, text: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val fontScale = LocalDensity.current.fontScale
@@ -269,12 +276,12 @@ private fun HorizontalScrollView(
 
     val section = stringResource(R.string.popular_pages_title)
     val seeAllButton = stringResource(R.string.see_all_button)
-    val cards = topic.popularPages.map {
+    val cards = topic.popularPages.mapIndexed { index, topic ->
         CardListItem(
-            title = it.title,
+            title = topic.title,
             onClick = {
                 onExternalLink(
-                    section, it.title, it.url, currentItemIndex
+                    section, topic.title, topic.url, startIndex + index
                 )
             }
         )
@@ -299,7 +306,7 @@ private fun HorizontalScrollView(
                 title = seeAllButton,
                 altText = "$seeAllButton $section",
                 onClick = {
-                    onPopularPagesSeeAll(section, seeAllButton, currentItemIndex)
+                    onPopularPagesSeeAll(section, seeAllButton)
                 }
             )
         } else null
@@ -348,12 +355,12 @@ private fun HorizontalScrollView(
 }
 
 private fun LazyListScope.contentItems(
-    currentItemIndex: Int,
+    startIndex: Int,
     contentItems: List<TopicUi.TopicContent>,
     section: TopicUi.Section,
     onClick: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit,
     displaySeeAll: Boolean = false,
-    onSeeAll: (section: String, text: String, selectedItemIndex: Int) -> Unit = { _, _, _ -> }
+    onSeeAll: (section: String, text: String) -> Unit = { _, _ -> }
 ) {
     if (contentItems.isNotEmpty()) {
         item {
@@ -370,8 +377,7 @@ private fun LazyListScope.contentItems(
                         onClick = {
                             onSeeAll(
                                 sectionTitle,
-                                seeAllButton,
-                                currentItemIndex + contentItems.size
+                                seeAllButton
                             )
                         },
                     )
@@ -386,7 +392,7 @@ private fun LazyListScope.contentItems(
             IconListItem(
                 title = content.title,
                 icon = section.icon,
-                onClick = { onClick(sectionTitle, content.title, content.url, currentItemIndex + index) },
+                onClick = { onClick(sectionTitle, content.title, content.url, startIndex + index) },
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
                 isFirst = index == 0,
                 isLast = index == contentItems.lastIndex,
@@ -401,7 +407,7 @@ private fun LazyListScope.contentItems(
 }
 
 private fun LazyListScope.subtopics(
-    currentItemIndex: Int,
+    startIndex: Int,
     subtopics: List<TopicUi.Subtopic>,
     section: TopicUi.Section,
     onClick: (text: String, ref: String, selectedItemIndex: Int) -> Unit,
@@ -421,7 +427,7 @@ private fun LazyListScope.subtopics(
         itemsIndexed(subtopics) { index, subtopic ->
             DrillInCard(
                 title = subtopic.title,
-                onClick = { onClick(subtopic.title, subtopic.ref, currentItemIndex + index) },
+                onClick = { onClick(subtopic.title, subtopic.ref, startIndex + index) },
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
             )
             if (index < subtopics.size - 1) {

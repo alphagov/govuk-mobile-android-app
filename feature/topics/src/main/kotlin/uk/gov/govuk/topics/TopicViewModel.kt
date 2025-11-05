@@ -31,10 +31,10 @@ internal class TopicViewModel @Inject constructor(
         private const val SCREEN_CLASS = "TopicScreen"
         private const val SUBTOPIC_SECTION = "Sub topics"
         private const val LIST_NAME = "Topics"
-        private const val  POPULAR_PAGES_TITLE = "Popular pages"
-        private const val  STEP_BY_STEPS_TITLE = "Step by step guides"
-        private const val  BROWSE_TITLE = "Browse"
-        private const val  SERVICES_TITLE = "Services and information"
+        private const val POPULAR_PAGES_TITLE = "Popular pages"
+        private const val STEP_BY_STEPS_TITLE = "Step by step guides"
+        private const val BROWSE_TITLE = "Browse"
+        private const val SERVICES_TITLE = "Services and information"
         private const val MAX_POPULAR_PAGES = 4
         private const val MAX_STEP_BY_STEPS = 3
     }
@@ -88,7 +88,8 @@ internal class TopicViewModel @Inject constructor(
         section: String,
         text: String,
         url: String,
-        selectedItemIndex: Int
+        selectedItemIndex: Int,
+        totalItemCount: Int
     ) {
         analyticsClient.buttonClick(
             text = text,
@@ -102,7 +103,8 @@ internal class TopicViewModel @Inject constructor(
             section = section,
             text = text,
             url = url,
-            selectedItemIndex = selectedItemIndex
+            selectedItemIndex = selectedItemIndex,
+            totalItemCount = totalItemCount
         )
 
         viewModelScope.launch {
@@ -112,27 +114,19 @@ internal class TopicViewModel @Inject constructor(
 
     fun onSeeAllClick(
         section: String,
-        text: String,
-        selectedItemIndex: Int
+        text: String
     ) {
         analyticsClient.buttonClick(
             text = text,
             external = false,
             section = section
         )
-
-        sendSelectItemEvent(
-            title = text,
-            section = section,
-            text = text,
-            url = null,
-            selectedItemIndex = selectedItemIndex
-        )
     }
 
     fun onSubtopicClick(
         text: String,
-        selectedItemIndex: Int
+        selectedItemIndex: Int,
+        totalItemCount: Int
     ) {
         analyticsClient.buttonClick(
             text = text,
@@ -145,7 +139,8 @@ internal class TopicViewModel @Inject constructor(
             section = SUBTOPIC_SECTION,
             text = text,
             url = null,
-            selectedItemIndex = selectedItemIndex
+            selectedItemIndex = selectedItemIndex,
+            totalItemCount = totalItemCount
         )
     }
 
@@ -154,7 +149,8 @@ internal class TopicViewModel @Inject constructor(
         text: String,
         title: String?,
         url: String?,
-        selectedItemIndex: Int
+        selectedItemIndex: Int,
+        totalItemCount: Int
     ) {
         analyticsClient.selectItemEvent(
             ecommerceEvent = EcommerceEvent(
@@ -166,7 +162,8 @@ internal class TopicViewModel @Inject constructor(
                         itemCategory = section,
                         locationId = url ?: ""
                     )
-                )
+                ),
+                totalItemCount = totalItemCount
             ),
             selectedItemIndex = selectedItemIndex
         )
@@ -176,7 +173,7 @@ internal class TopicViewModel @Inject constructor(
         topicUi: TopicUi,
         title: String
     ) {
-        var topicItems = listOf(
+        val topicItems = listOf(
             topicUi.popularPages to POPULAR_PAGES_TITLE,
             topicUi.stepBySteps to STEP_BY_STEPS_TITLE,
             topicUi.services to SERVICES_TITLE,
@@ -202,7 +199,8 @@ internal class TopicViewModel @Inject constructor(
             ecommerceEvent = EcommerceEvent(
                 itemListName = LIST_NAME,
                 itemListId = title,
-                items = topicItems
+                items = topicItems,
+                totalItemCount = topicItems.size
             )
         )
     }

@@ -49,12 +49,13 @@ fun TopicsWidget(
         TopicsWidgetContent(
             uiState = it,
             onView = { category, topics -> viewModel.onView(category, topics) },
-            onTopicClick = { category, title, ref, index ->
+            onTopicClick = { category, title, ref, index, count ->
                 viewModel.onTopicSelectClick(
                     category = category,
                     title = title,
                     ref = ref,
-                    selectedItemIndex = index
+                    selectedItemIndex = index,
+                    topicCount = count
                 )
                 onTopicClick(ref, title)
             },
@@ -68,7 +69,7 @@ fun TopicsWidget(
 private fun TopicsWidgetContent(
     uiState: TopicsWidgetUiState,
     onView: (TopicsCategory, List<TopicItemUi>) -> Unit,
-    onTopicClick: (TopicsCategory, String, String, Int) -> Unit,
+    onTopicClick: (TopicsCategory, String, String, Int, Int) -> Unit,
     onEditClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -115,7 +116,7 @@ private fun TopicsCard(
     uiState: TopicsWidgetUiState,
     onView: (TopicsCategory, List<TopicItemUi>) -> Unit,
     onEditClick: (String) -> Unit,
-    onTopicClick: (TopicsCategory, String, String, Int) -> Unit,
+    onTopicClick: (TopicsCategory, String, String, Int, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var activeButtonState by rememberSaveable { mutableStateOf( ConnectedButton.FIRST) }
@@ -152,7 +153,7 @@ private fun TopicsCard(
 
         TopicsList(
             topics = topics,
-            onClick = { title, ref, index -> onTopicClick(category, title, ref, index) },
+            onClick = { title, ref, index -> onTopicClick(category, title, ref, index, topics.size) },
             onEmptyClick = onEditClick
         )
     }
@@ -242,7 +243,7 @@ private fun TopicsWidgetPreview() {
                 allTopics = topics
             ),
             onView = { _, _, -> },
-            onTopicClick = { _, _, _, _ -> },
+            onTopicClick = { _, _, _, _, _ -> },
             onEditClick = { }
         )
     }
@@ -258,7 +259,7 @@ private fun TopicsWidgetEmptyTopicsPreview() {
                 yourTopics = emptyList()
             ),
             onView = { _, _, -> },
-            onTopicClick = { _, _, _, _ -> },
+            onTopicClick = { _, _, _, _, _ -> },
             onEditClick = { }
         )
     }

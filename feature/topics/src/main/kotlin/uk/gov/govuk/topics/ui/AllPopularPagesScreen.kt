@@ -42,7 +42,8 @@ internal fun AllPopularPagesRoute(
                 section = section,
                 text = text,
                 url = url,
-                selectedItemIndex = selectedItemIndex
+                selectedItemIndex = selectedItemIndex,
+                popularPagesCount = popularPages.size
             )
             onClick(url)
         },

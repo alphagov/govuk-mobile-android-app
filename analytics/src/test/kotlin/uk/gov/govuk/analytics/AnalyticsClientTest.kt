@@ -86,7 +86,8 @@ class AnalyticsClientTest {
             ecommerceEvent = EcommerceEvent(
                 itemListName = "Topics",
                 itemListId = "Benefits",
-                items = emptyList()
+                items = emptyList(),
+                totalItemCount = 0
             ),
             selectedItemIndex = 42
         )
@@ -104,7 +105,8 @@ class AnalyticsClientTest {
             ecommerceEvent = EcommerceEvent(
                 itemListName = "Topics",
                 itemListId = "Benefits",
-                items = emptyList()
+                items = emptyList(),
+                totalItemCount = 0
             ),
             selectedItemIndex = 42
         )
@@ -122,7 +124,8 @@ class AnalyticsClientTest {
             ecommerceEvent = EcommerceEvent(
                 itemListName = "Topics",
                 itemListId = "Benefits",
-                items = emptyList()
+                items = emptyList(),
+                totalItemCount = 0
             )
         )
 
@@ -139,7 +142,8 @@ class AnalyticsClientTest {
             ecommerceEvent = EcommerceEvent(
                 itemListName = "Topics",
                 itemListId = "Benefits",
-                items = emptyList()
+                items = emptyList(),
+                totalItemCount = 0
             )
         )
 
@@ -156,7 +160,8 @@ class AnalyticsClientTest {
             ecommerceEvent = EcommerceEvent(
                 itemListName = "Topics",
                 itemListId = "Benefits",
-                items = emptyList()
+                items = emptyList(),
+                totalItemCount = 0
             ),
             selectedItemIndex = 42
         )
@@ -824,7 +829,8 @@ class AnalyticsClientTest {
         val ecommerceEvent = EcommerceEvent(
             itemListName = "Topics",
             itemListId = "Benefits",
-            items = topicItems
+            items = topicItems,
+            totalItemCount = 5
         )
 
         println(ecommerceEvent)
@@ -866,7 +872,8 @@ class AnalyticsClientTest {
         val ecommerceEvent = EcommerceEvent(
             itemListName = "Topics",
             itemListId = "Benefits",
-            items = topicItems
+            items = topicItems,
+            totalItemCount = 5
         )
 
         analyticsClient.viewItemListEvent(
@@ -888,7 +895,8 @@ class AnalyticsClientTest {
         val ecommerceEvent = EcommerceEvent(
             itemListName = "Topics",
             itemListId = "Benefits",
-            items = topicItems
+            items = topicItems,
+            totalItemCount = 5
         )
 
         analyticsClient.viewItemListEvent(

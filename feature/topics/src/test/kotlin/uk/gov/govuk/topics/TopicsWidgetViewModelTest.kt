@@ -132,7 +132,8 @@ class TopicsWidgetViewModelTest {
                             itemName = "Care",
                             locationId = "care"
                         )
-                    )
+                    ),
+                    totalItemCount = 2
                 )
             )
         }
@@ -175,7 +176,8 @@ class TopicsWidgetViewModelTest {
                             itemName = "Care",
                             locationId = "care"
                         )
-                    )
+                    ),
+                    totalItemCount = 2
                 )
             )
         }
@@ -192,7 +194,8 @@ class TopicsWidgetViewModelTest {
                 ecommerceEvent = EcommerceEvent(
                     itemListName = "Your topics",
                     itemListId = "Your topics",
-                    items = emptyList()
+                    items = emptyList(),
+                    totalItemCount = 0
                 )
             )
         }
@@ -206,7 +209,8 @@ class TopicsWidgetViewModelTest {
             category = TopicsCategory.YOUR,
             title = "Benefits",
             ref = "benefits",
-            selectedItemIndex = 42
+            selectedItemIndex = 1,
+            topicCount = 5
         )
 
         verify {
@@ -219,9 +223,10 @@ class TopicsWidgetViewModelTest {
                             itemName = "Benefits",
                             locationId = "benefits"
                         )
-                    )
+                    ),
+                    totalItemCount = 5
                 ),
-                selectedItemIndex = 42
+                selectedItemIndex = 1
             )
         }
     }
@@ -234,7 +239,8 @@ class TopicsWidgetViewModelTest {
             category = TopicsCategory.ALL,
             title = "Benefits",
             ref = "benefits",
-            selectedItemIndex = 42
+            selectedItemIndex = 1,
+            topicCount = 5
         )
 
         verify {
@@ -247,9 +253,10 @@ class TopicsWidgetViewModelTest {
                             itemName = "Benefits",
                             locationId = "benefits"
                         )
-                    )
+                    ),
+                    totalItemCount = 5
                 ),
-                selectedItemIndex = 42
+                selectedItemIndex = 1
             )
         }
     }

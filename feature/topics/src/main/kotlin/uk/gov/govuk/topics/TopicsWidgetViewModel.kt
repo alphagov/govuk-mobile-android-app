@@ -55,13 +55,15 @@ internal class TopicsWidgetViewModel @Inject constructor(
         category: TopicsCategory,
         title: String,
         ref: String,
-        selectedItemIndex: Int
+        selectedItemIndex: Int,
+        topicCount: Int
     ) {
         sendSelectItemEvent(
             category = category,
             title = title,
             ref = ref,
-            selectedItemIndex = selectedItemIndex
+            selectedItemIndex = selectedItemIndex,
+            topicCount = topicCount
         )
     }
 
@@ -85,7 +87,8 @@ internal class TopicsWidgetViewModel @Inject constructor(
             ecommerceEvent = EcommerceEvent(
                 itemListName = listCategory,
                 itemListId = listCategory,
-                items = items
+                items = items,
+                totalItemCount = items.size
             )
         )
     }
@@ -94,7 +97,8 @@ internal class TopicsWidgetViewModel @Inject constructor(
         category: TopicsCategory,
         title: String,
         ref: String,
-        selectedItemIndex: Int
+        selectedItemIndex: Int,
+        topicCount: Int
     ) {
         val listCategory = mapCategory(category)
 
@@ -107,7 +111,8 @@ internal class TopicsWidgetViewModel @Inject constructor(
                         itemName = title,
                         locationId = ref
                     )
-                )
+                ),
+                totalItemCount = topicCount
             ),
             selectedItemIndex = selectedItemIndex
         )
