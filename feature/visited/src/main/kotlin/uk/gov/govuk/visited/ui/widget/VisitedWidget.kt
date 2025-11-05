@@ -82,7 +82,6 @@ private fun VisitedItems(
             title3 = title,
             button = button
         )
-        SmallVerticalSpacer()
         items.forEachIndexed { index, visitedUi ->
             ExternalLinkListItem(
                 title = visitedUi.title,
