@@ -127,7 +127,7 @@ private fun Header(
                     .semantics {
                         contentDescription = context.getString(R.string.content_desc_delete_all)
                     },
-                color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
+                color = GovUkTheme.colourScheme.textAndIcons.buttonSecondary,
             )
         }
     }
