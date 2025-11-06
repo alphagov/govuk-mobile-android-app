@@ -3,15 +3,12 @@ package uk.govuk.app.local.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
@@ -20,7 +17,6 @@ import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.NavigationCard
 import uk.gov.govuk.design.ui.component.SectionHeadingLabel
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
-import uk.gov.govuk.design.ui.component.Title3BoldLabel
 import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.govuk.app.local.LocalWidgetUiState.LocalAuthoritySelected
@@ -73,7 +69,6 @@ private fun LocalAuthorityCard(
             val editButtonAltText = stringResource(R.string.local_edit_button_alt_text)
 
             SectionHeadingLabel(
-                modifier = modifier.semantics { heading() },
                 title3 = stringResource(R.string.local_widget_title),
                 button = SectionHeadingLabelButton(
                     title = editButtonText,
@@ -123,19 +118,9 @@ private fun NoLocalAuthorityCard(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = GovUkTheme.spacing.small),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Title3BoldLabel(
-                text = stringResource(R.string.local_widget_title),
-                modifier = Modifier
-                    .padding(end = GovUkTheme.spacing.large)
-                    .semantics { heading() }
-            )
-        }
+        SectionHeadingLabel(
+            title3 = stringResource(R.string.local_widget_title),
+        )
 
         Row(
             modifier = Modifier

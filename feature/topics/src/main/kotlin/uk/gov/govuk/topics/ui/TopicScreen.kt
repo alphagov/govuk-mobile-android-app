@@ -384,9 +384,6 @@ private fun LazyListScope.contentItems(
                 } else null
             )
         }
-        item {
-            SmallVerticalSpacer()
-        }
         itemsIndexed(contentItems) { index, content ->
             val sectionTitle = stringResource(section.title)
             IconListItem(
@@ -418,10 +415,6 @@ private fun LazyListScope.subtopics(
                 modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium),
                 title3 = stringResource(section.title)
             )
-        }
-
-        item {
-            SmallVerticalSpacer()
         }
 
         itemsIndexed(subtopics) { index, subtopic ->
