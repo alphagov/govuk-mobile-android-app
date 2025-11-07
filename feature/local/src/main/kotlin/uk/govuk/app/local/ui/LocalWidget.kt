@@ -89,9 +89,7 @@ private fun LocalAuthorityCard(
             SmallVerticalSpacer()
             NavigationCard(
                 title = parent.name,
-                description = stringResource(
-                    R.string.local_parent_authority_description
-                ),
+                description = stringResource(R.string.local_parent_authority_description),
                 onClick = {
                     onClick(parent.name, parent.url)
                     launchBrowser(parent.url)
