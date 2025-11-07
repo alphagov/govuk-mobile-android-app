@@ -79,7 +79,7 @@ private fun LocalAuthorityCard(
         }
 
         val description = if (localAuthority.parent != null) {
-            stringResource(R.string.local_child_authority_description, localAuthority.name)
+            stringResource(R.string.local_child_authority_description)
         } else {
             null
         }
@@ -89,10 +89,7 @@ private fun LocalAuthorityCard(
             SmallVerticalSpacer()
             NavigationCard(
                 title = parent.name,
-                description = stringResource(
-                    R.string.local_parent_authority_description,
-                    parent.name
-                ),
+                description = stringResource(R.string.local_parent_authority_description),
                 onClick = {
                     onClick(parent.name, parent.url)
                     launchBrowser(parent.url)
