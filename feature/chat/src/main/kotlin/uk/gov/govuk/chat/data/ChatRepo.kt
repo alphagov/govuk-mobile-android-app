@@ -13,6 +13,7 @@ import uk.gov.govuk.chat.data.remote.model.ConversationQuestionRequest
 import uk.gov.govuk.chat.data.remote.safeChatApiCall
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.data.auth.AuthRepo
+import uk.gov.govuk.data.remote.HtmlCleaner
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
@@ -50,8 +51,10 @@ internal class ChatRepo @Inject constructor(
     }
 
     private suspend fun startConversation(question: String): ChatResult<AnsweredQuestion> {
+        val cleanedQuestion = HtmlCleaner.toPlainText(question)
+
         val requestBody = ConversationQuestionRequest(
-            userQuestion = question
+            userQuestion = cleanedQuestion
         )
 
         val result = safeChatApiCall(
@@ -65,8 +68,10 @@ internal class ChatRepo @Inject constructor(
     }
 
     private suspend fun updateConversation(conversationId: String, question: String): ChatResult<AnsweredQuestion> {
+        val cleanedQuestion = HtmlCleaner.toPlainText(question)
+
         val requestBody = ConversationQuestionRequest(
-            userQuestion = question
+            userQuestion = cleanedQuestion
         )
 
         return safeChatApiCall(

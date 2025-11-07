@@ -2,6 +2,7 @@ package uk.gov.govuk.search.data
 
 import kotlinx.coroutines.flow.map
 import uk.gov.govuk.data.model.Result
+import uk.gov.govuk.data.remote.HtmlCleaner
 import uk.gov.govuk.data.remote.safeApiCall
 import uk.gov.govuk.search.data.local.SearchLocalDataSource
 import uk.gov.govuk.search.data.remote.AutocompleteApi
@@ -34,12 +35,14 @@ internal class SearchRepo @Inject constructor(
     suspend fun performSearch(
         searchTerm: String, count: Int = SearchConfig.DEFAULT_RESULTS_PER_PAGE
     ): Result<SearchResponse> {
-        localDataSource.insertOrUpdatePreviousSearch(searchTerm)
-        return safeApiCall { searchApi.getSearchResults(searchTerm, count) }
+        val cleanedSearchTerm = HtmlCleaner.toPlainText(searchTerm)
+        localDataSource.insertOrUpdatePreviousSearch(cleanedSearchTerm)
+        return safeApiCall { searchApi.getSearchResults(cleanedSearchTerm, count) }
     }
 
     suspend fun performLookup(searchTerm: String): Result<AutocompleteResponse> {
-        return safeApiCall { autocompleteApi.getSuggestions(searchTerm) }
+        val cleanedSearchTerm = HtmlCleaner.toPlainText(searchTerm)
+        return safeApiCall { autocompleteApi.getSuggestions(cleanedSearchTerm) }
     }
 
     suspend fun clear() {
