@@ -19,7 +19,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 
-const val ALLOW_LIST_REGEX = "[^a-zA-Z0-9\\s,.!?]"
+private const val ALLOW_LIST_REGEX = "[^a-zA-Z0-9\\s,.!?]"
 
 @Composable
 fun CleanedTextField(
