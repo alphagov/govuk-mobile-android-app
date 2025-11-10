@@ -45,9 +45,9 @@ internal class LocalRepo @Inject constructor(
         postcode: String
     ): Result<LocalAuthorityResult> {
         mutex.withLock {
-            val cleanedPostcode = HtmlCleaner.toPlainText(postcode)
+            val sanitisedPostcode = HtmlCleaner.toPlainText(postcode)
 
-            val result = safeLocalApiCall { localApi.fromPostcode(cleanedPostcode) }
+            val result = safeLocalApiCall { localApi.fromPostcode(sanitisedPostcode) }
             if (result is Result.Success) {
                 when (val value = result.value) {
                     is LocalAuthorityResult.Addresses -> cacheAddresses(value.addresses)

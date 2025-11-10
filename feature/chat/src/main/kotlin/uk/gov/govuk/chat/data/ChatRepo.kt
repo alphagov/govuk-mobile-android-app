@@ -51,10 +51,10 @@ internal class ChatRepo @Inject constructor(
     }
 
     private suspend fun startConversation(question: String): ChatResult<AnsweredQuestion> {
-        val cleanedQuestion = HtmlCleaner.toPlainText(question)
+        val sanitizedQuestion = HtmlCleaner.toPlainText(question)
 
         val requestBody = ConversationQuestionRequest(
-            userQuestion = cleanedQuestion
+            userQuestion = sanitizedQuestion
         )
 
         val result = safeChatApiCall(
@@ -68,10 +68,10 @@ internal class ChatRepo @Inject constructor(
     }
 
     private suspend fun updateConversation(conversationId: String, question: String): ChatResult<AnsweredQuestion> {
-        val cleanedQuestion = HtmlCleaner.toPlainText(question)
+        val sanitisedQuestion = HtmlCleaner.toPlainText(question)
 
         val requestBody = ConversationQuestionRequest(
-            userQuestion = cleanedQuestion
+            userQuestion = sanitisedQuestion
         )
 
         return safeChatApiCall(

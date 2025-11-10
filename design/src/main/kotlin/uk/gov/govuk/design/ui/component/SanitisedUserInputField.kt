@@ -22,7 +22,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 private const val ALLOW_LIST_REGEX = "[^a-zA-Z0-9\\s,.!?]"
 
 @Composable
-fun CleanedTextField(
+fun SanitisedTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -49,8 +49,8 @@ fun CleanedTextField(
     TextField(
         value = value,
         onValueChange = { newValue ->
-            val cleaned = newValue.replace(allowlistRegex, "")
-            onValueChange(cleaned)
+            val sanitisedText = newValue.replace(allowlistRegex, "")
+            onValueChange(sanitisedText)
         },
         modifier = modifier,
         enabled = enabled,
@@ -74,7 +74,7 @@ fun CleanedTextField(
 }
 
 @Composable
-fun CleanedBasicTextField(
+fun SanitisedBasicTextField(
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
@@ -100,9 +100,9 @@ fun CleanedBasicTextField(
         value = value,
         onValueChange = { newValue ->
             val originalText = newValue.text
-            val cleanedText = originalText.replace(allowlistRegex, "")
+            val sanitisedText = originalText.replace(allowlistRegex, "")
 
-            if (originalText == cleanedText) {
+            if (originalText == sanitisedText) {
                 onValueChange(newValue)
                 return@BasicTextField
             }
@@ -115,7 +115,7 @@ fun CleanedBasicTextField(
 
             onValueChange(
                 newValue.copy(
-                    text = cleanedText,
+                    text = sanitisedText,
                     selection = TextRange(newCursorPos)
                 )
             )

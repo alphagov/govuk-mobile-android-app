@@ -35,14 +35,14 @@ internal class SearchRepo @Inject constructor(
     suspend fun performSearch(
         searchTerm: String, count: Int = SearchConfig.DEFAULT_RESULTS_PER_PAGE
     ): Result<SearchResponse> {
-        val cleanedSearchTerm = HtmlCleaner.toPlainText(searchTerm)
-        localDataSource.insertOrUpdatePreviousSearch(cleanedSearchTerm)
-        return safeApiCall { searchApi.getSearchResults(cleanedSearchTerm, count) }
+        val sanitisedSearchTerm = HtmlCleaner.toPlainText(searchTerm)
+        localDataSource.insertOrUpdatePreviousSearch(sanitisedSearchTerm)
+        return safeApiCall { searchApi.getSearchResults(sanitisedSearchTerm, count) }
     }
 
     suspend fun performLookup(searchTerm: String): Result<AutocompleteResponse> {
-        val cleanedSearchTerm = HtmlCleaner.toPlainText(searchTerm)
-        return safeApiCall { autocompleteApi.getSuggestions(cleanedSearchTerm) }
+        val sanitisedSearchTerm = HtmlCleaner.toPlainText(searchTerm)
+        return safeApiCall { autocompleteApi.getSuggestions(sanitisedSearchTerm) }
     }
 
     suspend fun clear() {

@@ -34,7 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.CleanedTextField
+import uk.gov.govuk.design.ui.component.SanitisedTextField
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
@@ -135,7 +135,7 @@ private fun LocalLookupScreen(
                 text = stringResource(R.string.local_postcode_example)
             )
             SmallVerticalSpacer()
-            CleanedTextField(
+            SanitisedTextField(
                 value = postcode,
                 onValueChange = {
                     onPostcodeChange()
