@@ -23,15 +23,15 @@
   <string name="bot_sources_header_text">GOV.UK Chat can make mistakes.\nCheck GOV.UK pages for important information.</string>
   <string name="bot_sources_list_description">GOV.UK pages used in this answer</string>
   <string name="sources_open_in_text">opens in web browser</string>
-  <string name="error_page_header">Thereʼs a problem</string>
-  <string name="error_page_subtext">Thereʼs a problem with GOV.UK Chat.</string>
+  <string name="error_page_header">There\'s a problem</string>
+  <string name="error_page_subtext">There\'s a problem with GOV.UK Chat.</string>
   <string name="error_page_additional_text_intro">Try again later or return to the</string>
   <string name="error_page_additional_text_link_text">GOV.UK app homepage</string>
   <string name="error_page_additional_text_outro">if you need information now.</string>
   <string name="error_page_additional_text_url">https://www.gov.uk</string>
   <string name="bot_message_availability_text">Messages will be available until the end of the GOV.UK Chat trial</string>
-  <string name="bot_message_1">Hi 👋 Iʼm GOV.UK Chat.</string>
-  <string name="bot_message_2">Iʼm an experimental AI tool.\n\nWhen you ask a question, Iʼll find the most relevant information from GOV.UK and use it to create an answer.</string>
+  <string name="bot_message_1">Hi 👋 I\'m GOV.UK Chat.</string>
+  <string name="bot_message_2">I\'m an experimental AI tool.\n\nWhen you ask a question, I\'ll find the most relevant information from GOV.UK and use it to create an answer.</string>
   <string name="bot_message_3">Ask a question to get started.</string>
   <string name="error_retry_page_subtext">Your previous conversation is no longer available.</string>
   <string name="error_retry_page_additional_text">To continue using GOV.UK Chat, you need to start a new chat.</string>
@@ -45,7 +45,7 @@
   <string name="onboarding_page_one_button">Continue</string>
   <string name="onboarding_page_two_header">Double-check the answers</string>
   <string name="onboarding_page_two_text_one">GOV.UK Chat is an AI tool and can sometimes make mistakes.</string>
-  <string name="onboarding_page_two_text_two">Itʼs simple to double-check information. Use the links provided with each answer.</string>
+  <string name="onboarding_page_two_text_two">It\'s simple to double-check information. Use the links provided with each answer.</string>
   <string name="onboarding_page_two_button">I understand</string>
   <string name="onboarding_page_cancel_text">Cancel</string>
   <string name="optin_title">Get early access to GOV.UK Chat?</string>
@@ -58,7 +58,7 @@
   <string name="optin_opt_out">Do not add GOV.UK Chat</string>
   <string name="test_ended_title">GOV.UK Chat early access has ended</string>
   <string name="test_ended_para_1">Early access to GOV.UK Chat has now ended. GOV.UK Chat and your conversations are no longer available.</string>
-  <string name="test_ended_para_2">Weʼre working on improving this feature and it may return soon.</string>
+  <string name="test_ended_para_2">We\'re working on improving this feature and it may return soon.</string>
   <string name="test_ended_feedback">Give feedback on GOV.UK Chat</string>
   <string name="test_ended_button">Continue</string>
 </resources>
