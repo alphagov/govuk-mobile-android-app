@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -30,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
+import uk.gov.govuk.design.ui.component.SanitisedBasicTextField
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 class SearchFieldActions(
@@ -74,7 +74,7 @@ fun SearchField(
 
             val contentDescSearchEntry =
                 stringResource(uk.gov.govuk.search.R.string.content_desc_search_entry)
-            BasicTextField(
+            SanitisedBasicTextField(
                 value = searchTerm,
                 onValueChange = {
                     actions.onSearchTermChange(it)

@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import uk.gov.govuk.data.model.Result
+import uk.gov.govuk.data.remote.HtmlCleaner
 import uk.govuk.app.local.data.local.LocalDataSource
 import uk.govuk.app.local.data.remote.LocalApi
 import uk.govuk.app.local.data.remote.model.LocalAuthorityResult
@@ -44,7 +45,9 @@ internal class LocalRepo @Inject constructor(
         postcode: String
     ): Result<LocalAuthorityResult> {
         mutex.withLock {
-            val result = safeLocalApiCall { localApi.fromPostcode(postcode) }
+            val sanitisedPostcode = HtmlCleaner.toPlainText(postcode)
+
+            val result = safeLocalApiCall { localApi.fromPostcode(sanitisedPostcode) }
             if (result is Result.Success) {
                 when (val value = result.value) {
                     is LocalAuthorityResult.Addresses -> cacheAddresses(value.addresses)

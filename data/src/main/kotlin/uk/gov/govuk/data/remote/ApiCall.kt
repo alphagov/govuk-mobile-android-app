@@ -3,7 +3,10 @@ package uk.gov.govuk.data.remote
 import retrofit2.HttpException
 import retrofit2.Response
 import uk.gov.govuk.data.model.Result
-import uk.gov.govuk.data.model.Result.*
+import uk.gov.govuk.data.model.Result.DeviceOffline
+import uk.gov.govuk.data.model.Result.Error
+import uk.gov.govuk.data.model.Result.ServiceNotResponding
+import uk.gov.govuk.data.model.Result.Success
 import java.net.UnknownHostException
 
 suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): Result<T> {
