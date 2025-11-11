@@ -22,6 +22,7 @@ private val BlueDarker65 = Color(0xFF0A2740)
 private val BlueDarker80 = Color(0xFF061625)
 private val BlueDarker80Alpha50 = Color(0x80061625)
 private val BlueDarkMode = Color(0xFF263D54)
+private val TealPrimary = Color(0xFF158187)
 private val TealAccent = Color(0xFF00FFE0)
 
 private val YellowPrimary = Color(0xFFFFDD00)
@@ -125,6 +126,10 @@ data class GovUkColourScheme(
         val splash: Color,
         val cardDefault: Color,
         val cardBlue: Color,
+        val cardEmergencyNotableDeath: Color,
+        val cardEmergencyNational: Color,
+        val cardEmergencyLocal: Color,
+        val cardEmergencyInformation: Color,
         val cardHighlight: Color, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         val cardNonTappable: Color,
         val cardSelected: Color,
@@ -261,6 +266,10 @@ internal val LightColorScheme = GovUkColourScheme(
         splash = BluePrimary,
         cardDefault = White,
         cardBlue = BlueLighter95,
+        cardEmergencyNotableDeath = Black,
+        cardEmergencyNational = RedPrimary,
+        cardEmergencyLocal = TealAccent,
+        cardEmergencyInformation = White,
         cardHighlight = Grey400, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         cardNonTappable = BlueLighter80,
         cardSelected = GreenLighter95,
@@ -402,6 +411,10 @@ internal val DarkColorScheme = GovUkColourScheme(
         splash = BluePrimary,
         cardDefault = BlueDarker65,
         cardBlue = BlueDarker50,
+        cardEmergencyNotableDeath = Black,
+        cardEmergencyNational = RedPrimary,
+        cardEmergencyLocal = TealPrimary,
+        cardEmergencyInformation = BlueDarkMode,
         cardHighlight = Grey850, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         cardNonTappable = BlueDarker65,
         cardSelected = GreenDarker50,
@@ -544,6 +557,10 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             splash = Color.Unspecified,
             cardDefault = Color.Unspecified,
             cardBlue = Color.Unspecified,
+            cardEmergencyNotableDeath = Color.Unspecified,
+            cardEmergencyNational = Color.Unspecified,
+            cardEmergencyLocal = Color.Unspecified,
+            cardEmergencyInformation = Color.Unspecified,
             cardHighlight = Color.Unspecified, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
             cardNonTappable = Color.Unspecified,
             cardSelected = Color.Unspecified,
