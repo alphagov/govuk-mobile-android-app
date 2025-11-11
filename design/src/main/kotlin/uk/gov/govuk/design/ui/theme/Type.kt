@@ -5,6 +5,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.sp
 import uk.gov.govuk.design.R
 
@@ -34,132 +36,134 @@ private val transport = FontFamily(
     Font(R.font.transport_light, FontWeight.Light),
 )
 
+private val letterSpacing = TextUnit(0.5f, TextUnitType.Sp)
+
 internal val Typography = GovUkTypography(
     titleLargeBold = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Bold,
         fontSize = 34.sp,
         lineHeight = 41.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     ),
     titleLargeRegular = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Light,
         fontSize = 34.sp,
         lineHeight = 41.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     ),
     title1Bold = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Bold,
         fontSize = 28.sp,
         lineHeight = 34.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     ),
     title1Regular = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Light,
         fontSize = 28.sp,
         lineHeight = 34.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     ),
     title2Bold = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Bold,
         fontSize = 22.sp,
         lineHeight = 28.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     ),
     title2Regular = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Light,
         fontSize = 22.sp,
         lineHeight = 28.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     ),
     title3Bold = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     ),
     title3Regular = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Light,
         fontSize = 20.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     ),
     bodyBold = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Bold,
         fontSize = 17.sp,
         lineHeight = 22.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     ),
     bodyRegular = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Light,
         fontSize = 17.sp,
         lineHeight = 22.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     ),
     calloutBold = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
         lineHeight = 21.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     ),
     calloutRegular = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Light,
         fontSize = 16.sp,
         lineHeight = 21.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     ),
     subheadlineBold = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Bold,
         fontSize = 15.sp,
         lineHeight = 20.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     ),
     subheadlineRegular = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Light,
         fontSize = 15.sp,
         lineHeight = 20.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     ),
     footnoteBold = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
         lineHeight = 16.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     ),
     footnoteRegular = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Light,
         fontSize = 14.sp,
         lineHeight = 16.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     ),
     captionBold = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Bold,
         fontSize = 12.sp,
         lineHeight = 17.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     ),
     captionRegular = TextStyle(
         fontFamily = transport,
         fontWeight = FontWeight.Light,
         fontSize = 12.sp,
         lineHeight = 17.sp,
-        letterSpacing = 0.sp
+        letterSpacing = letterSpacing
     )
 )
 

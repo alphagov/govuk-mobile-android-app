@@ -6,8 +6,8 @@
     <string name="all_topics">All topics</string>
     <string name="edit_button">Edit</string>
     <string name="edit_button_alt_text">Edit your topics</string>
-    <string name="error_title">There’s a problem</string>
-    <string name="topics_error_message">Topics are not working at the moment. Try again later, or go to the GOV.UK website to find the page you\'re looking for.</string>
+    <string name="error_title">Thereʼs a problem</string>
+    <string name="topics_error_message">Topics are not working at the moment. Try again later, or go to the GOV.UK website to find the page youʼre looking for.</string>
 
     <string name="edit_title">Edit your topics</string>
     <string name="edit_message">Topics you select will be shown on the app home page so you can find them more easily</string>
