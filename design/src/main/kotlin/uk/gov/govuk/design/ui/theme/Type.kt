@@ -36,7 +36,7 @@ private val transport = FontFamily(
     Font(R.font.transport_light, FontWeight.Light),
 )
 
-private val letterSpacing = TextUnit(0.5f, TextUnitType.Sp)
+private val letterSpacing = TextUnit(0.01f, TextUnitType.Sp)
 
 internal val Typography = GovUkTypography(
     titleLargeBold = TextStyle(
