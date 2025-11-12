@@ -37,9 +37,8 @@ private fun BaseLabel(
         stringResource(R.string.gov_uk),
         stringResource(R.string.gov_uk_alt_text)
     )
-    val formattedText = text.replace("'", "ʼ")
     Text(
-        text = formattedText,
+        text = text,
         modifier = modifier
             .semantics {
                 contentDescription = altText

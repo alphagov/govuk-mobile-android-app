@@ -3,7 +3,7 @@
   <string name="local_section_title">For you</string>
   <string name="local_title">Your local services</string>
   <string name="local_description">Enter your postcode to see services for your area</string>
-  <string name="local_explainer">We\'ll use your postcode to add a link from the app home page to your local council\'s website</string>
+  <string name="local_explainer">Weʼll use your postcode to add a link from the app home page to your local councilʼs website</string>
   <string name="local_continue_button">Continue</string>
   <string name="local_confirm_button">Confirm postcode</string>
   <string name="local_whats_your_postcode">What is your postcode?</string>
@@ -12,11 +12,11 @@
   <string name="local_postcode_use_title">How we use this information</string>
   <string name="local_postcode_use_description">
     We only use your postcode to find out what your local council is.
-    It\'s not saved or shared anywhere.
+    Itʼs not saved or shared anywhere.
     You can enter a different postcode at any time on the app home page.
   </string>
   <string name="local_widget_title">Your local services</string>
-  <string name="local_widget_description">Add a link to your local council\'s website</string>
+  <string name="local_widget_description">Add a link to your local councilʼs website</string>
   <string name="local_edit_button">Edit</string>
   <string name="local_edit_button_alt_text">Edit your local council</string>
   <string name="local_child_authority_description">District, borough and city councils are usually responsible for services like rubbish, council tax and housing</string>
@@ -35,15 +35,15 @@
   <string name="local_select_council_confirm">Confirm local council</string>
   <string name="local_select_by_address">Select your address instead</string>
   <string name="local_select_address_title">What is your address?</string>
-  <string name="local_select_address_description">We\'ll use your address to find your local council</string>
+  <string name="local_select_address_description">Weʼll use your address to find your local council</string>
   <string name="local_select_address_error">Select your address</string>
   <string name="local_select_address_confirm">Confirm address</string>
   <string name="local_confirmation_unitary_title">Your local council is %1$s</string>
-  <string name="local_confirmation_unitary_description">You can now access your local council\'s website from the bottom of the app home page.</string>
+  <string name="local_confirmation_unitary_description">You can now access your local councilʼs website from the bottom of the app home page.</string>
   <string name="local_confirmation_two_tier_title">Services in your area are provided by 2 local councils</string>
   <string name="local_confirmation_two_tier_description_1">Different local councils are responsible for different services.</string>
   <string name="local_confirmation_two_tier_bullet_title">Your local councils are:</string>
-  <string name="local_confirmation_two_tier_description_2">You can now access your local councils\' websites from the bottom of the app home page.</string>
+  <string name="local_confirmation_two_tier_description_2">You can now access your local councilsʼ websites from the bottom of the app home page.</string>
   <string name="local_confirmation_button">Done</string>
   <string name="local_content_desc_postcode_entry">Postcode entry field</string>
 </resources>
