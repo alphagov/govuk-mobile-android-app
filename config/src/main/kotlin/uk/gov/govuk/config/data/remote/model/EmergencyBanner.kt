@@ -7,12 +7,11 @@ data class EmergencyBanner(
     @SerializedName("title") val title: String?,
     @SerializedName("body") val body: String?,
     @SerializedName("link") val link: Link?,
-    @SerializedName("type") val type: BannerType,
-    @SerializedName("image") val image: String,
-    @SerializedName("allowsDismissal") val allowsDismissal: Boolean = true
+    @SerializedName("type") val type: EmergencyBannerType,
+    @SerializedName("allowsDismissal") val allowsDismissal: Boolean
 )
 
-enum class BannerType {
+enum class EmergencyBannerType {
     @SerializedName("notable-death")
     NOTABLE_DEATH,
 
