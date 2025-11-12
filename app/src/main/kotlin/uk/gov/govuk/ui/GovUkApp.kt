@@ -294,7 +294,7 @@ private fun BottomNav(
                             Text(
                                 text = tabText,
                                 style = GovUkTheme.typography.captionBold,
-                                letterSpacing = TextUnit(0.5f, TextUnitType.Sp)
+                                letterSpacing = TextUnit(0.05f, TextUnitType.Sp)
                             )
                         },
                         colors = NavigationBarItemDefaults
