@@ -155,20 +155,28 @@ fun HomeNavigationCard(
 }
 
 @Composable
-fun HomeAlertCard(
+private fun BaseAlertBannerCard(
     modifier: Modifier = Modifier,
-    title: String? = null,
-    description: String? = null,
+    title: String?,
+    description: String?,
     linkTitle: String?,
     linkUrl: String?,
+    isDismissible: Boolean,
     onClick: () -> Unit,
     launchBrowser: (url: String) -> Unit,
-    onSuppressClick: (() -> Unit)? = null
+    onSuppressClick: (() -> Unit)?,
+    backgroundColour: Color,
+    borderColour: Color,
+    textColour: Color,
+    dismissIconColour: Color,
+    linkTitleColour: Color,
+    showDivider: Boolean,
+    dividerColour: Color
 ) {
     GovUkCardLegacy(
         modifier = modifier,
-        backgroundColour = GovUkTheme.colourScheme.surfaces.cardDefault,
-        borderColour = GovUkTheme.colourScheme.strokes.cardAlert,
+        backgroundColour = backgroundColour,
+        borderColour = borderColour,
         padding = 0.dp
     ) {
         Row(
@@ -181,7 +189,6 @@ fun HomeAlertCard(
                     .weight(1f, fill = false),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 Row(
                     modifier = Modifier
                         .height(IntrinsicSize.Min),
@@ -196,6 +203,7 @@ fun HomeAlertCard(
                         title?.let { title ->
                             BodyBoldLabel(
                                 title,
+                                color = textColour,
                                 modifier = Modifier.padding(start = GovUkTheme.spacing.medium)
                             )
                         }
@@ -207,122 +215,7 @@ fun HomeAlertCard(
                         description?.let { description ->
                             BodyRegularLabel(
                                 description,
-                                modifier = Modifier.padding(start = GovUkTheme.spacing.medium)
-                            )
-                        }
-                        MediumVerticalSpacer()
-                    }
-                }
-            }
-            onSuppressClick?.let {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clickable {
-                            onSuppressClick()
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painterResource(R.drawable.ic_cancel),
-                        contentDescription = "${stringResource(R.string.content_desc_remove)} ${title ?: ""}",
-                        tint = GovUkTheme.colourScheme.textAndIcons.secondary
-                    )
-                }
-            }
-        }
-        Row(
-            modifier = Modifier
-                .height(IntrinsicSize.Min)
-                .fillMaxWidth()
-        ) {
-            if (linkTitle != null && linkUrl != null) {
-                Column {
-                    HorizontalDivider(
-                        thickness = 1.dp,
-                        color = GovUkTheme.colourScheme.strokes.cardAlert
-                    )
-
-                    MediumVerticalSpacer()
-
-                    val opensInWebBrowser = stringResource(R.string.opens_in_web_browser)
-                    BodyRegularLabel(
-                        text = linkTitle,
-                        color = GovUkTheme.colourScheme.textAndIcons.link,
-                        modifier = Modifier
-                            .padding(horizontal = GovUkTheme.spacing.medium)
-                            .clickable {
-                                onClick()
-                                launchBrowser(linkUrl)
-                            }
-                            .semantics {
-                                contentDescription = "$linkTitle $opensInWebBrowser"
-                            }
-                    )
-                    MediumVerticalSpacer()
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun HomeBannerCard(
-    modifier: Modifier = Modifier,
-    title: String? = null,
-    description: String? = null,
-    linkTitle: String?,
-    linkUrl: String?,
-    isDismissible: Boolean = true,
-    type: EmergencyBannerUiType,
-    onClick: () -> Unit,
-    launchBrowser: (url: String) -> Unit,
-    onSuppressClick: (() -> Unit)? = null
-) {
-    GovUkCardLegacy(
-        modifier = modifier,
-        backgroundColour = type.backgroundColour,
-        borderColour = type.borderColour,
-        padding = 0.dp
-    ) {
-        Row(
-            modifier = Modifier
-                .height(IntrinsicSize.Min)
-                .fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f, fill = false),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                Row(
-                    modifier = Modifier
-                        .height(IntrinsicSize.Min),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .weight(1f, fill = false)
-                            .fillMaxWidth()
-                    ) {
-                        MediumVerticalSpacer()
-                        title?.let { title ->
-                            BodyBoldLabel(
-                                title,
-                                color = type.textColour,
-                                modifier = Modifier.padding(start = GovUkTheme.spacing.medium)
-                            )
-                        }
-
-                        if (title != null && description != null) {
-                            SmallVerticalSpacer()
-                        }
-
-                        description?.let { description ->
-                            BodyRegularLabel(
-                                description,
-                                color = type.textColour,
+                                color = textColour,
                                 modifier = Modifier.padding(start = GovUkTheme.spacing.medium)
                             )
                         }
@@ -343,7 +236,7 @@ fun HomeBannerCard(
                         Icon(
                             painterResource(R.drawable.ic_cancel),
                             contentDescription = "${stringResource(R.string.content_desc_remove)} ${title ?: ""}",
-                            tint = type.dismissIconColour
+                            tint = dismissIconColour
                         )
                     }
                 }
@@ -356,10 +249,10 @@ fun HomeBannerCard(
         ) {
             if (linkTitle != null && linkUrl != null) {
                 Column {
-                    if (type.showDivider) {
+                    if (showDivider) {
                         HorizontalDivider(
                             thickness = 1.dp,
-                            color = GovUkTheme.colourScheme.strokes.cardEmergencyBannerDivider
+                            color = dividerColour
                         )
                     }
 
@@ -368,7 +261,7 @@ fun HomeBannerCard(
                     val opensInWebBrowser = stringResource(R.string.opens_in_web_browser)
                     BodyRegularLabel(
                         text = linkTitle,
-                        color = type.linkTitleColour,
+                        color = linkTitleColour,
                         modifier = Modifier
                             .padding(horizontal = GovUkTheme.spacing.medium)
                             .clickable {
@@ -384,6 +277,70 @@ fun HomeBannerCard(
             }
         }
     }
+}
+
+@Composable
+fun HomeAlertCard(
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    description: String? = null,
+    linkTitle: String?,
+    linkUrl: String?,
+    onClick: () -> Unit,
+    launchBrowser: (url: String) -> Unit,
+    onSuppressClick: (() -> Unit)? = null
+) {
+    BaseAlertBannerCard(
+        modifier = modifier,
+        title = title,
+        description = description,
+        linkTitle = linkTitle,
+        linkUrl = linkUrl,
+        isDismissible = true, // always shown if onSuppressClick is provided
+        onClick = onClick,
+        launchBrowser = launchBrowser,
+        onSuppressClick = onSuppressClick,
+        backgroundColour = GovUkTheme.colourScheme.surfaces.cardDefault,
+        borderColour = GovUkTheme.colourScheme.strokes.cardAlert,
+        textColour = GovUkTheme.colourScheme.textAndIcons.primary, // Uses the default text color from the Label composables
+        dismissIconColour = GovUkTheme.colourScheme.textAndIcons.secondary,
+        linkTitleColour = GovUkTheme.colourScheme.textAndIcons.link,
+        showDivider = true,
+        dividerColour = GovUkTheme.colourScheme.strokes.cardAlert
+    )
+}
+
+@Composable
+fun HomeBannerCard(
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    description: String? = null,
+    linkTitle: String?,
+    linkUrl: String?,
+    isDismissible: Boolean = true,
+    type: EmergencyBannerUiType,
+    onClick: () -> Unit,
+    launchBrowser: (url: String) -> Unit,
+    onSuppressClick: (() -> Unit)? = null
+) {
+    BaseAlertBannerCard(
+        modifier = modifier,
+        title = title,
+        description = description,
+        linkTitle = linkTitle,
+        linkUrl = linkUrl,
+        isDismissible = isDismissible,
+        onClick = onClick,
+        launchBrowser = launchBrowser,
+        onSuppressClick = onSuppressClick,
+        backgroundColour = type.backgroundColour,
+        borderColour = type.borderColour,
+        textColour = type.textColour,
+        dismissIconColour = type.dismissIconColour,
+        linkTitleColour = type.linkTitleColour,
+        showDivider = type.showDivider,
+        dividerColour = GovUkTheme.colourScheme.strokes.cardEmergencyBannerDivider
+    )
 }
 
 @Composable
