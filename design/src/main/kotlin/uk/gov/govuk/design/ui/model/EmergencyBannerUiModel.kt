@@ -11,7 +11,8 @@ enum class EmergencyBannerUiType {
     INFORMATION
 }
 
-val EmergencyBannerUiType.showDivider: Boolean
+// show divider and right arrow
+val EmergencyBannerUiType.hasDecoratedLink: Boolean
     get() = this != EmergencyBannerUiType.INFORMATION
 
 val EmergencyBannerUiType.backgroundColour: Color

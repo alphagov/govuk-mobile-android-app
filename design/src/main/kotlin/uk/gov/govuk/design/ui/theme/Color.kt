@@ -428,7 +428,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         cardCarousel = White,
         cardCarouselFocused = Black,
         cardInformationEmergencyBannerPrimary = White,
-        cardInformationEmergencyBannerLink = BluePrimary,
+        cardInformationEmergencyBannerLink = BlueAccent,
     ),
     surfaces = Surfaces(
         background = BlueDarker80,
