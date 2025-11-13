@@ -54,6 +54,7 @@ import uk.gov.govuk.design.ui.model.linkTitleColour
 import uk.gov.govuk.design.ui.model.showDivider
 import uk.gov.govuk.design.ui.model.textColour
 import uk.gov.govuk.design.ui.theme.GovUkTheme
+import uk.gov.govuk.design.ui.theme.ThemePreviews
 
 @Composable
 fun GovUkCard(
@@ -765,7 +766,7 @@ private fun HomeLocalEmergencyBannerCardPreview() {
     }
 }
 
-@Preview
+@ThemePreviews
 @Composable
 private fun HomeInformationEmergencyBannerCardPreview() {
     GovUkTheme {
