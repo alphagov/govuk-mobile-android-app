@@ -72,8 +72,10 @@ data class GovUkColourScheme(
 ) {
     data class TextAndIcons(
         val primary: Color,
+        val primaryInverse: Color,
         val secondary: Color,
         val link: Color,
+        val linkInverse: Color,
         val linkPrimary: Color,
         val linkSecondary: Color,
         val linkHeader: Color,
@@ -118,7 +120,9 @@ data class GovUkColourScheme(
         val chatLoadingTextLight: Color,
         val chatLoadingIcon: Color,
         val cardCarousel: Color,
-        val cardCarouselFocused: Color
+        val cardCarouselFocused: Color,
+        val cardInformationEmergencyBannerPrimary: Color,
+        val cardInformationEmergencyBannerLink: Color,
     )
 
     data class Surfaces(
@@ -219,8 +223,10 @@ data class GovUkColourScheme(
 internal val LightColorScheme = GovUkColourScheme(
     textAndIcons = TextAndIcons(
         primary = Black,
+        primaryInverse = White,
         secondary = Grey700,
         link = BluePrimary,
+        linkInverse = White,
         linkPrimary = BluePrimary,
         linkSecondary = BluePrimary,
         linkHeader = White,
@@ -265,7 +271,9 @@ internal val LightColorScheme = GovUkColourScheme(
         chatLoadingTextLight = Grey300,
         chatLoadingIcon = BluePrimary,
         cardCarousel = White,
-        cardCarouselFocused = Black
+        cardCarouselFocused = Black,
+        cardInformationEmergencyBannerPrimary = Black,
+        cardInformationEmergencyBannerLink = BluePrimary,
     ),
     surfaces = Surfaces(
         background = White,
@@ -370,8 +378,10 @@ internal val LightColorScheme = GovUkColourScheme(
 internal val DarkColorScheme = GovUkColourScheme(
     textAndIcons = TextAndIcons(
         primary = White,
+        primaryInverse = White,
         secondary = Grey300,
         link = White,
+        linkInverse = White,
         linkPrimary = White,
         linkSecondary = BlueAccent,
         linkHeader = BlueAccent,
@@ -416,7 +426,9 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatLoadingTextLight = BlueLighter80,
         chatLoadingIcon = BluePrimary,
         cardCarousel = White,
-        cardCarouselFocused = Black
+        cardCarouselFocused = Black,
+        cardInformationEmergencyBannerPrimary = White,
+        cardInformationEmergencyBannerLink = BluePrimary,
     ),
     surfaces = Surfaces(
         background = BlueDarker80,
@@ -522,8 +534,10 @@ internal val LocalColourScheme = staticCompositionLocalOf {
     GovUkColourScheme(
         textAndIcons = TextAndIcons(
             primary = Color.Unspecified,
+            primaryInverse = Color.Unspecified,
             secondary = Color.Unspecified,
             link = Color.Unspecified,
+            linkInverse = Color.Unspecified,
             linkPrimary = Color.Unspecified,
             linkSecondary = Color.Unspecified,
             linkHeader = Color.Unspecified,
@@ -568,7 +582,9 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             chatLoadingTextLight = Color.Unspecified,
             chatLoadingIcon = Color.Unspecified,
             cardCarousel = Color.Unspecified,
-            cardCarouselFocused = Color.Unspecified
+            cardCarouselFocused = Color.Unspecified,
+            cardInformationEmergencyBannerPrimary = Color.Unspecified,
+            cardInformationEmergencyBannerLink = Color.Unspecified,
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,

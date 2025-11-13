@@ -17,8 +17,11 @@ fun EmergencyBanner(
 ) {
     HomeBannerCard(
         modifier = modifier,
+        title = emergencyBanner.title,
+        description = emergencyBanner.body,
         linkTitle = emergencyBanner.link?.title,
         linkUrl = emergencyBanner.link?.url,
+        isDismissible = emergencyBanner.allowsDismissal,
         type = emergencyBanner.type.toEmergencyBannerUiType(),
         onClick = { onClick(emergencyBanner.id) },
         launchBrowser = launchBrowser,

@@ -36,10 +36,10 @@ val EmergencyBannerUiType.textColour: Color
         EmergencyBannerUiType.NOTABLE_DEATH,
         EmergencyBannerUiType.NATIONAL_EMERGENCY,
         EmergencyBannerUiType.LOCAL_EMERGENCY ->
-            GovUkTheme.colourScheme.textAndIcons.linkHeader
+            GovUkTheme.colourScheme.textAndIcons.primaryInverse
 
         EmergencyBannerUiType.INFORMATION ->
-            GovUkTheme.colourScheme.textAndIcons.primary
+            GovUkTheme.colourScheme.textAndIcons.cardInformationEmergencyBannerPrimary
     }
 
 val EmergencyBannerUiType.linkTitleColour: Color
@@ -48,10 +48,10 @@ val EmergencyBannerUiType.linkTitleColour: Color
         EmergencyBannerUiType.NOTABLE_DEATH,
         EmergencyBannerUiType.NATIONAL_EMERGENCY,
         EmergencyBannerUiType.LOCAL_EMERGENCY ->
-            GovUkTheme.colourScheme.textAndIcons.linkHeader
+            GovUkTheme.colourScheme.textAndIcons.linkInverse
 
         EmergencyBannerUiType.INFORMATION ->
-            GovUkTheme.colourScheme.textAndIcons.link
+            GovUkTheme.colourScheme.textAndIcons.cardInformationEmergencyBannerLink
     }
 
 val EmergencyBannerUiType.borderColour: Color

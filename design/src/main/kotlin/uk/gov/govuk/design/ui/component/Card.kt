@@ -712,7 +712,7 @@ fun DrillInCard(
     }
 }
 
-@Preview
+@ThemePreviews
 @Composable
 private fun HomeNotableDeathBannerCardPreview() {
     GovUkTheme {
@@ -730,7 +730,7 @@ private fun HomeNotableDeathBannerCardPreview() {
     }
 }
 
-@Preview
+@ThemePreviews
 @Composable
 private fun HomeNationalEmergencyBannerCardPreview() {
     GovUkTheme {
@@ -748,7 +748,7 @@ private fun HomeNationalEmergencyBannerCardPreview() {
     }
 }
 
-@Preview
+@ThemePreviews
 @Composable
 private fun HomeLocalEmergencyBannerCardPreview() {
     GovUkTheme {
