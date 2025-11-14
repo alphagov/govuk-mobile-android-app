@@ -19,6 +19,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 
+// TODO: pending a decision - this may need to be removed
+
 private const val ALLOW_LIST_REGEX = "[^a-zA-Z0-9\\s,.!?]"
 
 @Composable

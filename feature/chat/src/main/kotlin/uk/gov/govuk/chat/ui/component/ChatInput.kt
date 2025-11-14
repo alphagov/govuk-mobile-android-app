@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -51,7 +52,6 @@ import androidx.compose.ui.unit.dp
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.config.data.remote.model.ChatUrls
-import uk.gov.govuk.design.ui.component.SanitisedTextField
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import kotlin.math.abs
 
@@ -115,7 +115,7 @@ internal fun ChatInput(
                     )
                     .clip(RoundedCornerShape(24.dp))
             ) {
-                SanitisedTextField(
+                TextField(
                     textStyle = TextStyle(
                         color = GovUkTheme.colourScheme.textAndIcons.primary,
                         fontSize = GovUkTheme.typography.bodyRegular.fontSize,

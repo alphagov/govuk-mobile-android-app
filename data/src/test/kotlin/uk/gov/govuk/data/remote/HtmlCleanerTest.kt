@@ -3,6 +3,8 @@ package uk.gov.govuk.data.remote
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
+// TODO: pending a decision - this may need to be removed
+
 class HtmlCleanerTest {
     @Test
     fun `Given an empty string, then return an empty string`() {
