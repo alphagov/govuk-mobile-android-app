@@ -152,6 +152,13 @@ internal class AppViewModel @Inject constructor(
                         widgets.add(HomeWidget.Alert(alertBanner = alertBanner))
                     }
                 }
+
+                configRepo.config.emergencyBanners?.forEach { emergencyBanner ->
+                    if (!suppressedWidgets.contains(emergencyBanner.id)) {
+                        widgets.add(HomeWidget.Banner(emergencyBanner = emergencyBanner))
+                    }
+                }
+
                 if (isLocalServicesEnabled() && !hasLocalAuthority) {
                     widgets.add(HomeWidget.Local)
                 }

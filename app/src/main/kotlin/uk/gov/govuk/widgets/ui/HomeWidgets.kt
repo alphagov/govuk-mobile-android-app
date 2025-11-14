@@ -42,6 +42,21 @@ internal fun homeWidgets(
                     }
             }
 
+            is HomeWidget.Banner -> {
+                widgets.add { modifier ->
+                    EmergencyBanner(
+                        emergencyBanner = it.emergencyBanner,
+                        onClick = { text ->
+                            onExternalClick(text, null)
+                        },
+                        launchBrowser = launchBrowser,
+                        onSuppressClick = onSuppressClick,
+                        modifier = modifier
+                    )
+                    LargeVerticalSpacer()
+                }
+            }
+
             is HomeWidget.RecentActivity -> {
                 widgets.add { modifier ->
                     VisitedWidget(
