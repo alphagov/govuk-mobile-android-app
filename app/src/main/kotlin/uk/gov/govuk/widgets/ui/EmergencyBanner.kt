@@ -22,6 +22,7 @@ fun EmergencyBanner(
         linkTitle = emergencyBanner.link?.title,
         linkUrl = emergencyBanner.link?.url,
         isDismissible = emergencyBanner.allowsDismissal,
+        dismissAltText = emergencyBanner.dismissAltText,
         type = emergencyBanner.type.toEmergencyBannerUiType(),
         onClick = { onClick(emergencyBanner.id) },
         launchBrowser = launchBrowser,
