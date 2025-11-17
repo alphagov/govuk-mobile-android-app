@@ -41,7 +41,7 @@ internal fun InfoAlert(
             ) {
                 BodyBoldLabel(
                     text = stringResource(id = R.string.close_alert_button),
-                    color = GovUkTheme.colourScheme.textAndIcons.link
+                    color = GovUkTheme.colourScheme.textAndIcons.linkSecondary
                 )
             }
         },

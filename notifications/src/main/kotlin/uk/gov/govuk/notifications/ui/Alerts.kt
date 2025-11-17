@@ -67,7 +67,7 @@ internal fun NotificationsSettingsAlert(
             ) {
                 BodyBoldLabel(
                     text = continueButton,
-                    color = GovUkTheme.colourScheme.textAndIcons.link
+                    color = GovUkTheme.colourScheme.textAndIcons.linkSecondary
                 )
             }
         },
@@ -81,7 +81,7 @@ internal fun NotificationsSettingsAlert(
             ) {
                 BodyRegularLabel(
                     text = cancelButton,
-                    color = GovUkTheme.colourScheme.textAndIcons.link
+                    color = GovUkTheme.colourScheme.textAndIcons.linkSecondary
                 )
             }
         },
