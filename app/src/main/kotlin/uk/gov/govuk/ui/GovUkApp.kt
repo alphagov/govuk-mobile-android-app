@@ -1,8 +1,6 @@
 package uk.gov.govuk.ui
 
 import android.app.Activity
-import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -325,16 +323,18 @@ private fun GovUkNavHost(
     val appNavigation = viewModel.appNavigation
     val browserLauncher = rememberBrowserLauncher(shouldShowExternalBrowser)
     val context = LocalContext.current
+    var showDeepLinkNotFoundAlert by remember { mutableStateOf(false) }
+    var showBrowserNotFoundAlert by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         appNavigation.setOnLaunchBrowser { url ->
-            browserLauncher.launch(url) { showBrowserNotFoundAlert(context) }
+            browserLauncher.launch(url) { showBrowserNotFoundAlert = true }
         }
 
         appNavigation.setOnDeeplinkNotFound {
-            showDeepLinkNotFoundAlert(context)
+            showDeepLinkNotFoundAlert = true
         }
 
         intentFlow.collectLatest { intent ->
@@ -362,7 +362,7 @@ private fun GovUkNavHost(
                 browserLauncher.launchPartial(
                     context = context,
                     url = url
-                ) { showBrowserNotFoundAlert(context) }
+                ) { showBrowserNotFoundAlert = true }
             }
         )
         topicSelectionGraph(
@@ -375,7 +375,7 @@ private fun GovUkNavHost(
         )
         topicsGraph(
             navController = navController,
-            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } },
+            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert = true } },
             modifier = Modifier.padding(paddingValues)
         )
         notificationsGraph(
@@ -399,7 +399,7 @@ private fun GovUkNavHost(
                 browserLauncher.launchPartial(
                     context = context,
                     url = url
-                ) { showBrowserNotFoundAlert(context) }
+                ) { showBrowserNotFoundAlert = true }
             }
         )
         homeGraph(
@@ -411,9 +411,7 @@ private fun GovUkNavHost(
                 onSuppressClick = onSuppressWidgetClick,
                 launchBrowser = { url ->
                     browserLauncher.launch(url) {
-                        showBrowserNotFoundAlert(
-                            context
-                        )
+                        showBrowserNotFoundAlert = true
                     }
                 }
             ),
@@ -440,7 +438,7 @@ private fun GovUkNavHost(
                 browserLauncher.launchPartial(
                     context = context,
                     url = url
-                ) { showBrowserNotFoundAlert(context) }
+                ) { showBrowserNotFoundAlert = true }
             },
             modifier = Modifier.padding(paddingValues)
         )
@@ -452,10 +450,10 @@ private fun GovUkNavHost(
         )
         searchGraph(
             navController,
-            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } })
+            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert = true } })
         visitedGraph(
             navController = navController,
-            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } },
+            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert = true } },
             modifier = Modifier.padding(paddingValues)
         )
 
@@ -471,39 +469,33 @@ private fun GovUkNavHost(
 
         chatGraph(
             navController = navController,
-            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } },
+            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert = true } },
             onAuthError = { appNavigation.onSignOut(navController) },
             modifier = Modifier.padding(paddingValues)
         )
 
         chatOptInGraph(
             navController = navController,
-            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert(context) } }
+            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert = true } }
         )
     }
-}
 
-private fun showDeepLinkNotFoundAlert(context: Context) {
-    AlertDialog.Builder(context).apply {
-        setTitle(context.getString(R.string.deep_link_not_found_alert_title))
-        setMessage(context.getString(R.string.deep_link_not_found_alert_message))
-        setPositiveButton(context.getString(R.string.deep_link_not_found_alert_button)) { dialog, _ ->
-            dialog.dismiss()
+    if (showDeepLinkNotFoundAlert) {
+        InfoAlert(
+            title = R.string.deep_link_not_found_alert_title,
+            message = R.string.deep_link_not_found_alert_message
+        ) {
+            showDeepLinkNotFoundAlert = false
         }
-    }.also { deepLinkNotFoundAlert ->
-        deepLinkNotFoundAlert.show()
     }
-}
 
-private fun showBrowserNotFoundAlert(context: Context) {
-    AlertDialog.Builder(context).apply {
-        setTitle(context.getString(R.string.browser_not_found_alert_title))
-        setMessage(context.getString(R.string.browser_not_found_alert_message))
-        setPositiveButton(context.getString(R.string.browser_not_found_alert_button)) { dialog, _ ->
-            dialog.dismiss()
+    if (showBrowserNotFoundAlert) {
+        InfoAlert(
+            title = R.string.browser_not_found_alert_title,
+            message = R.string.browser_not_found_alert_message
+        ) {
+            showBrowserNotFoundAlert = false
         }
-    }.also { deepLinkNotFoundAlert ->
-        deepLinkNotFoundAlert.show()
     }
 }
 

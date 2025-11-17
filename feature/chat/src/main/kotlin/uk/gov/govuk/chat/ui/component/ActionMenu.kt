@@ -156,7 +156,7 @@ private fun ClearMenuItem(
     if (openDialog.value) {
         AlertDialog(
             onDismissRequest = { openDialog.value = false },
-            shape = RoundedCornerShape(10.dp),
+            shape = RoundedCornerShape(GovUkTheme.numbers.cornerAndroidList),
             text = {
                 BodyBoldLabel(
                     text = stringResource(id = R.string.clear_dialog_title),
