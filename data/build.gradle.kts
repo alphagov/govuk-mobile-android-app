@@ -86,8 +86,6 @@ dependencies {
         }
     }
 
-    implementation(libs.owasp.java.html.sanitizer)
-
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.coroutine.test)
