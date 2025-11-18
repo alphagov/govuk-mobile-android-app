@@ -185,26 +185,37 @@ private fun ShowVisitedItems(
                     key = { _, item -> item.title }
                 ) { index, item ->
                     val title = item.title
-                    val lastVisited = item.lastVisited
                     val url = item.url
-
-                    ExternalLinkListItem(
-                        title = title,
-                        description = "${stringResource(R.string.visited_items_last_visited)} $lastVisited",
+                    val description = "${stringResource(R.string.visited_items_last_visited)} ${item.lastVisited}"
+                    val style = ExternalLinkListItemStyle.Button(
+                        icon = uk.gov.govuk.design.R.drawable.ic_cancel_round,
+                        altText = "${stringResource(uk.gov.govuk.design.R.string.content_desc_remove)} $title",
                         onClick = {
-                            onClick(title, url)
-                        },
-                        modifier = Modifier.animateItem(),
-                        isFirst = index == 0,
-                        isLast = index == visitedItems.size - 1,
-                        style = ExternalLinkListItemStyle.Button(
-                            icon = uk.gov.govuk.design.R.drawable.ic_cancel_round,
-                            altText = "${stringResource(uk.gov.govuk.design.R.string.content_desc_remove)} $title",
-                            onClick = {
-                                onRemoveClick(title, url)
-                            }
-                        )
+                            onRemoveClick(title, url)
+                        }
                     )
+
+                    if (index == 0) {
+                        ExternalLinkListItem(
+                            title = title,
+                            description = description,
+                            onClick = { onClick(title, url) },
+                            modifier = Modifier.animateItem(),
+                            isFirst = true,
+                            isLast = visitedItems.size == 1,
+                            style = style
+                        )
+                    } else {
+                        ExternalLinkListItem(
+                            title = title,
+                            description = description,
+                            onClick = { onClick(title, url) },
+                            modifier = Modifier.animateItem(),
+                            isFirst = false,
+                            isLast = index == visitedItems.size - 1,
+                            style = style
+                        )
+                    }
                 }
                 item {
                     LargeVerticalSpacer()
