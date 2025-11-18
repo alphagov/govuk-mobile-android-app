@@ -22,6 +22,7 @@ private val BlueDarker65 = Color(0xFF0A2740)
 private val BlueDarker80 = Color(0xFF061625)
 private val BlueDarker80Alpha50 = Color(0x80061625)
 private val BlueDarkMode = Color(0xFF263D54)
+private val TealPrimary = Color(0xFF158187)
 private val TealAccent = Color(0xFF00FFE0)
 
 private val YellowPrimary = Color(0xFFFFDD00)
@@ -71,8 +72,10 @@ data class GovUkColourScheme(
 ) {
     data class TextAndIcons(
         val primary: Color,
+        val primaryInverse: Color,
         val secondary: Color,
         val link: Color,
+        val linkInverse: Color,
         val linkPrimary: Color,
         val linkSecondary: Color,
         val linkHeader: Color,
@@ -107,6 +110,7 @@ data class GovUkColourScheme(
         val logoDot: Color,
         val logoCrown: Color,
         val iconGreen: Color,
+        val iconDismissInformationEmergencyBanner: Color,
         val textFieldError: Color,
         val chatButtonIconDisabled: Color,
         val chatButtonIconEnabled: Color,
@@ -116,7 +120,9 @@ data class GovUkColourScheme(
         val chatLoadingTextLight: Color,
         val chatLoadingIcon: Color,
         val cardCarousel: Color,
-        val cardCarouselFocused: Color
+        val cardCarouselFocused: Color,
+        val cardInformationEmergencyBannerPrimary: Color,
+        val cardInformationEmergencyBannerLink: Color,
     )
 
     data class Surfaces(
@@ -125,6 +131,10 @@ data class GovUkColourScheme(
         val splash: Color,
         val cardDefault: Color,
         val cardBlue: Color,
+        val cardEmergencyNotableDeath: Color,
+        val cardEmergencyNational: Color,
+        val cardEmergencyLocal: Color,
+        val cardEmergencyInformation: Color,
         val cardHighlight: Color, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         val cardNonTappable: Color,
         val cardSelected: Color,
@@ -184,6 +194,11 @@ data class GovUkColourScheme(
         val fixedContainer: Color,
         val listDivider: Color,
         val pageControlsInactive: Color,
+        val cardEmergencyBannerDivider: Color,
+        val cardEmergencyBannerNotableDeathBorder: Color,
+        val cardEmergencyBannerNationalEmergencyBorder: Color,
+        val cardEmergencyBannerLocalEmergencyBorder: Color,
+        val cardEmergencyBannerInformationBorder: Color,
         val cardAlert: Color,
         val cardBlue: Color,
         val cardDefault: Color,
@@ -208,8 +223,10 @@ data class GovUkColourScheme(
 internal val LightColorScheme = GovUkColourScheme(
     textAndIcons = TextAndIcons(
         primary = Black,
+        primaryInverse = White,
         secondary = Grey700,
         link = BluePrimary,
+        linkInverse = White,
         linkPrimary = BluePrimary,
         linkSecondary = BluePrimary,
         linkHeader = White,
@@ -236,6 +253,7 @@ internal val LightColorScheme = GovUkColourScheme(
         iconTertiary = BluePrimary,
         iconSurroundPrimary = BluePrimary,
         iconSurroundSecondary = BlueLighter80,
+        iconDismissInformationEmergencyBanner = Grey700,
         trailingIcon = Grey300,
         iconBiometric = BluePrimary,
         buttonRemoveDisabled = Grey700,
@@ -253,7 +271,9 @@ internal val LightColorScheme = GovUkColourScheme(
         chatLoadingTextLight = Grey300,
         chatLoadingIcon = BluePrimary,
         cardCarousel = White,
-        cardCarouselFocused = Black
+        cardCarouselFocused = Black,
+        cardInformationEmergencyBannerPrimary = Black,
+        cardInformationEmergencyBannerLink = BluePrimary,
     ),
     surfaces = Surfaces(
         background = White,
@@ -261,6 +281,10 @@ internal val LightColorScheme = GovUkColourScheme(
         splash = BluePrimary,
         cardDefault = White,
         cardBlue = BlueLighter95,
+        cardEmergencyNotableDeath = Black,
+        cardEmergencyNational = RedPrimary,
+        cardEmergencyLocal = TealPrimary,
+        cardEmergencyInformation = White,
         cardHighlight = Grey400, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         cardNonTappable = BlueLighter80,
         cardSelected = GreenLighter95,
@@ -326,6 +350,11 @@ internal val LightColorScheme = GovUkColourScheme(
         listDivider = BlueLighter80,
         pageControlsInactive = Grey500,
         cardAlert = BlueLighter25,
+        cardEmergencyBannerDivider = White,
+        cardEmergencyBannerNotableDeathBorder = White,
+        cardEmergencyBannerNationalEmergencyBorder = RedPrimary,
+        cardEmergencyBannerLocalEmergencyBorder = TealPrimary,
+        cardEmergencyBannerInformationBorder = BlueLighter25,
         cardBlue = BlueLighter50,
         cardDefault = BlueLighter80,
         cardSelected = GreenPrimary,
@@ -349,8 +378,10 @@ internal val LightColorScheme = GovUkColourScheme(
 internal val DarkColorScheme = GovUkColourScheme(
     textAndIcons = TextAndIcons(
         primary = White,
+        primaryInverse = White,
         secondary = Grey300,
         link = White,
+        linkInverse = White,
         linkPrimary = White,
         linkSecondary = BlueAccent,
         linkHeader = BlueAccent,
@@ -377,6 +408,7 @@ internal val DarkColorScheme = GovUkColourScheme(
         iconTertiary = White,
         iconSurroundPrimary = BlueDarkMode,
         iconSurroundSecondary = BlueDarkMode,
+        iconDismissInformationEmergencyBanner = Grey300,
         trailingIcon = Grey500,
         iconBiometric = BlueAccent,
         buttonRemoveDisabled = Grey300,
@@ -394,7 +426,9 @@ internal val DarkColorScheme = GovUkColourScheme(
         chatLoadingTextLight = BlueLighter80,
         chatLoadingIcon = BluePrimary,
         cardCarousel = White,
-        cardCarouselFocused = Black
+        cardCarouselFocused = Black,
+        cardInformationEmergencyBannerPrimary = White,
+        cardInformationEmergencyBannerLink = BlueAccent,
     ),
     surfaces = Surfaces(
         background = BlueDarker80,
@@ -402,6 +436,10 @@ internal val DarkColorScheme = GovUkColourScheme(
         splash = BluePrimary,
         cardDefault = BlueDarker65,
         cardBlue = BlueDarker50,
+        cardEmergencyNotableDeath = Black,
+        cardEmergencyNational = RedPrimary,
+        cardEmergencyLocal = TealPrimary,
+        cardEmergencyInformation = BlueDarkMode,
         cardHighlight = Grey850, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
         cardNonTappable = BlueDarker65,
         cardSelected = GreenDarker50,
@@ -466,6 +504,11 @@ internal val DarkColorScheme = GovUkColourScheme(
         fixedContainer = WhiteAlpha30,
         listDivider = BlueDarkMode,
         pageControlsInactive = Grey300,
+        cardEmergencyBannerDivider = White,
+        cardEmergencyBannerNotableDeathBorder = White,
+        cardEmergencyBannerNationalEmergencyBorder = RedPrimary,
+        cardEmergencyBannerLocalEmergencyBorder = TealPrimary,
+        cardEmergencyBannerInformationBorder = BlueLighter25,
         cardAlert = BlueLighter25,
         cardBlue = BlueDarker25,
         cardDefault = BlueDarkMode,
@@ -491,8 +534,10 @@ internal val LocalColourScheme = staticCompositionLocalOf {
     GovUkColourScheme(
         textAndIcons = TextAndIcons(
             primary = Color.Unspecified,
+            primaryInverse = Color.Unspecified,
             secondary = Color.Unspecified,
             link = Color.Unspecified,
+            linkInverse = Color.Unspecified,
             linkPrimary = Color.Unspecified,
             linkSecondary = Color.Unspecified,
             linkHeader = Color.Unspecified,
@@ -519,6 +564,7 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             iconTertiary = Color.Unspecified,
             iconSurroundPrimary = Color.Unspecified,
             iconSurroundSecondary = Color.Unspecified,
+            iconDismissInformationEmergencyBanner = Color.Unspecified,
             trailingIcon = Color.Unspecified,
             iconBiometric = Color.Unspecified,
             buttonRemoveDisabled = Color.Unspecified,
@@ -536,7 +582,9 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             chatLoadingTextLight = Color.Unspecified,
             chatLoadingIcon = Color.Unspecified,
             cardCarousel = Color.Unspecified,
-            cardCarouselFocused = Color.Unspecified
+            cardCarouselFocused = Color.Unspecified,
+            cardInformationEmergencyBannerPrimary = Color.Unspecified,
+            cardInformationEmergencyBannerLink = Color.Unspecified,
         ),
         surfaces = Surfaces(
             background = Color.Unspecified,
@@ -544,6 +592,10 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             splash = Color.Unspecified,
             cardDefault = Color.Unspecified,
             cardBlue = Color.Unspecified,
+            cardEmergencyNotableDeath = Color.Unspecified,
+            cardEmergencyNational = Color.Unspecified,
+            cardEmergencyLocal = Color.Unspecified,
+            cardEmergencyInformation = Color.Unspecified,
             cardHighlight = Color.Unspecified, // TODO - DELETE ON COMPLETION OF DESIGN REFRESH!!!
             cardNonTappable = Color.Unspecified,
             cardSelected = Color.Unspecified,
@@ -602,6 +654,11 @@ internal val LocalColourScheme = staticCompositionLocalOf {
             fixedContainer = Color.Unspecified,
             listDivider = Color.Unspecified,
             pageControlsInactive = Color.Unspecified,
+            cardEmergencyBannerDivider = Color.Unspecified,
+            cardEmergencyBannerNotableDeathBorder = Color.Unspecified,
+            cardEmergencyBannerNationalEmergencyBorder = Color.Unspecified,
+            cardEmergencyBannerLocalEmergencyBorder = Color.Unspecified,
+            cardEmergencyBannerInformationBorder = Color.Unspecified,
             cardAlert = Color.Unspecified,
             cardBlue = Color.Unspecified,
             cardDefault = Color.Unspecified,
