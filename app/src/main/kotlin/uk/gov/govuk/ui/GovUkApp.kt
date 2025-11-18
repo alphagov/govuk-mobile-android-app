@@ -42,6 +42,8 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -292,6 +294,7 @@ private fun BottomNav(
                             Text(
                                 text = tabText,
                                 style = GovUkTheme.typography.captionBold,
+                                letterSpacing = TextUnit(0.05f, TextUnitType.Sp)
                             )
                         },
                         colors = NavigationBarItemDefaults
