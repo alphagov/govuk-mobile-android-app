@@ -1,5 +1,6 @@
 package uk.gov.govuk.topics.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -17,8 +18,9 @@ import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.ExternalLinkListItem
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.model.HeaderDismissStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-import uk.gov.govuk.topics.AllStepByStepsViewModel
+import uk.gov.govuk.topics.AllViewModel
 import uk.gov.govuk.topics.R
 import uk.gov.govuk.topics.ui.model.TopicUi.TopicContent
 
@@ -28,19 +30,20 @@ internal fun AllStepByStepRoute(
     onClick: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: AllStepByStepsViewModel = hiltViewModel()
+    val viewModel: AllViewModel = hiltViewModel()
     val stepBySteps by viewModel.stepBySteps.collectAsState()
 
     AllStepByStepsScreen(
         stepBySteps = stepBySteps,
-        onPageView = { title -> viewModel.onPageView(stepBySteps, title) },
+        onPageView = { title -> viewModel.onStepByStepPageView(stepBySteps, title) },
         onBack = onBack,
         onExternalLink = { section, text, url, selectedItemIndex ->
             viewModel.onStepByStepClick(
                 section = section,
                 text = text,
                 url = url,
-                selectedItemIndex = selectedItemIndex
+                selectedItemIndex = selectedItemIndex,
+                stepByStepsCount = stepBySteps.size
             )
             onClick(url)
         },
@@ -56,8 +59,11 @@ private fun AllStepByStepsScreen(
     onExternalLink: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier.fillMaxSize()) {
-        val title = stringResource(R.string.stepByStepGuidesTitle)
+    Column(
+        modifier.fillMaxSize()
+            .background(GovUkTheme.colourScheme.surfaces.screenBackground)
+    ) {
+        val title = stringResource(R.string.step_by_step_guides_title)
 
         LaunchedEffect(stepBySteps) {
             onPageView(title)
@@ -65,7 +71,7 @@ private fun AllStepByStepsScreen(
 
         ChildPageHeader(
             text = title,
-            onBack = onBack
+            dismissStyle = HeaderDismissStyle.Back(onBack)
         )
 
         LazyColumn(Modifier.padding(horizontal = GovUkTheme.spacing.medium)) {

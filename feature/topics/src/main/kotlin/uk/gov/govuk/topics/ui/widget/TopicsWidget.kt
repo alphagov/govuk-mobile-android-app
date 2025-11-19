@@ -1,41 +1,45 @@
 package uk.gov.govuk.topics.ui.widget
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import uk.gov.govuk.design.ui.component.BodyBoldLabel
-import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.CompactButton
-import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
-import uk.gov.govuk.design.ui.component.Title3BoldLabel
+import uk.gov.govuk.design.ui.component.CardListItem
+import uk.gov.govuk.design.ui.component.CentredContentWithIcon
+import uk.gov.govuk.design.ui.component.ConnectedButton
+import uk.gov.govuk.design.ui.component.ConnectedButtonGroup
+import uk.gov.govuk.design.ui.component.IconListItem
+import uk.gov.govuk.design.ui.component.SectionHeadingLabel
 import uk.gov.govuk.design.ui.component.error.ProblemMessage
+import uk.gov.govuk.design.ui.model.IconListItemStyle
+import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.R
+import uk.gov.govuk.topics.TopicsCategory
 import uk.gov.govuk.topics.TopicsWidgetUiState
 import uk.gov.govuk.topics.TopicsWidgetViewModel
-import uk.gov.govuk.topics.ui.component.TopicVerticalCard
-import uk.gov.govuk.topics.ui.component.TopicsGrid
 import uk.gov.govuk.topics.ui.model.TopicItemUi
 
 @Composable
 fun TopicsWidget(
     onTopicClick: (String, String) -> Unit,
     onEditClick: (String) -> Unit,
-    onAllClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: TopicsWidgetViewModel = hiltViewModel()
@@ -44,13 +48,18 @@ fun TopicsWidget(
     uiState?.let {
         TopicsWidgetContent(
             uiState = it,
-            onPageView = { topics -> viewModel.onPageView(topics) },
-            onTopicClick = { ref, title, index ->
-                viewModel.onTopicSelectClick(ref, title, index)
+            onView = { category, topics -> viewModel.onView(category, topics) },
+            onTopicClick = { category, title, ref, index, count ->
+                viewModel.onTopicSelectClick(
+                    category = category,
+                    title = title,
+                    ref = ref,
+                    selectedItemIndex = index,
+                    topicCount = count
+                )
                 onTopicClick(ref, title)
             },
             onEditClick = onEditClick,
-            onAllClick = onAllClick,
             modifier = modifier
         )
     }
@@ -59,150 +68,183 @@ fun TopicsWidget(
 @Composable
 private fun TopicsWidgetContent(
     uiState: TopicsWidgetUiState,
-    onPageView: (List<TopicItemUi>) -> Unit,
-    onTopicClick: (String, String, Int) -> Unit,
+    onView: (TopicsCategory, List<TopicItemUi>) -> Unit,
+    onTopicClick: (TopicsCategory, String, String, Int, Int) -> Unit,
     onEditClick: (String) -> Unit,
-    onAllClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(Unit) {
-        onPageView(uiState.topics)
+    Column(modifier = modifier) {
+        Header(
+            displayEdit = uiState.allTopics.isNotEmpty(),
+            onEditClick = onEditClick
+        )
+        if (uiState.allTopics.isNotEmpty()) {
+            TopicsCard(
+                uiState = uiState,
+                onView = onView,
+                onEditClick = onEditClick,
+                onTopicClick = onTopicClick
+            )
+        } else {
+            ErrorCard()
+        }
+    }
+}
+
+@Composable
+private fun Header(
+    displayEdit: Boolean,
+    onEditClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val editButtonText = stringResource(R.string.edit_button)
+    SectionHeadingLabel(
+        modifier = modifier,
+        title3 = stringResource(R.string.topics_widget_title),
+        button = if (displayEdit) {
+            SectionHeadingLabelButton(
+                title = editButtonText,
+                altText = stringResource(R.string.edit_button_alt_text),
+                onClick = { onEditClick(editButtonText) }
+            )
+        } else null
+    )
+}
+
+@Composable
+private fun TopicsCard(
+    uiState: TopicsWidgetUiState,
+    onView: (TopicsCategory, List<TopicItemUi>) -> Unit,
+    onEditClick: (String) -> Unit,
+    onTopicClick: (TopicsCategory, String, String, Int, Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var activeButtonState by rememberSaveable { mutableStateOf( ConnectedButton.FIRST) }
+
+    val (category, topics) = when (activeButtonState) {
+        ConnectedButton.FIRST -> TopicsCategory.YOUR to uiState.yourTopics
+        ConnectedButton.SECOND -> TopicsCategory.ALL to uiState.allTopics
     }
 
-    Column(modifier = modifier) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+    LaunchedEffect(activeButtonState) {
+        onView(category, topics)
+    }
+
+    Column(modifier) {
+        CardListItem(
+            isLast = false,
+            drawDivider = false
         ) {
-            val title = if (uiState.isCustomised) {
-                stringResource(R.string.customisedTopicsWidgetTitle)
-            } else {
-                stringResource(R.string.topicsWidgetTitle)
-            }
-            Title3BoldLabel(
-                text = title,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = GovUkTheme.spacing.large)
-                    .semantics { heading() }
-            )
-
-            if (!uiState.isError) {
-                val editButtonText = stringResource(R.string.editButton)
-                val editButtonAltText = stringResource(R.string.editButtonAltText)
-
-                TextButton(
-                    onClick = { onEditClick(editButtonText) }
-                ) {
-                    BodyBoldLabel(
-                        text = editButtonText,
-                        color = GovUkTheme.colourScheme.textAndIcons.link,
-                        modifier = Modifier.semantics {
-                            contentDescription = editButtonAltText
-                        }
-                    )
-                }
-            }
-        }
-
-        when {
-            uiState.isError -> {
-                ProblemMessage(
-                    description = stringResource(R.string.topics_error_message)
+            Box(
+                Modifier
+                    .padding(top = GovUkTheme.spacing.medium)
+                    .padding(horizontal = GovUkTheme.spacing.medium)
+            ) {
+                ConnectedButtonGroup(
+                    firstText = stringResource(R.string.your_topics),
+                    secondText = stringResource(R.string.all_topics),
+                    onActiveStateChange = { activeButton ->
+                        activeButtonState = activeButton
+                    },
+                    activeButton = activeButtonState
                 )
             }
-            uiState.topics.isEmpty() -> {
-                BodyRegularLabel(
-                    text = stringResource(R.string.empty_topics),
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(vertical = GovUkTheme.spacing.small)
-                )
-            }
-            else -> {
-                TopicsGrid(
-                    topics = uiState.topics,
-                ) { modifier, topic ->
-                    TopicVerticalCard(
-                        icon = topic.icon,
-                        title = topic.title,
-                        onClick = {
-                            onTopicClick(
-                                topic.ref,
-                                topic.title,
-                                uiState.topics.indexOf(topic) + 1
-                             )
-                        },
-                        modifier = modifier
-                    )
-                }
-            }
         }
 
-        if (uiState.displayShowAll) {
-            LargeVerticalSpacer()
-            val seeAllButtonText = stringResource(R.string.allTopicsButton)
-            CompactButton(
-                text = seeAllButtonText,
-                onClick = { onAllClick(seeAllButtonText) },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+        TopicsList(
+            topics = topics,
+            onClick = { title, ref, index -> onTopicClick(category, title, ref, index, topics.size) },
+            onEmptyClick = onEditClick
+        )
+    }
+}
+
+@Suppress("UnusedReceiverParameter")
+@Composable
+private fun ColumnScope.TopicsList(
+    topics: List<TopicItemUi>,
+    onClick: (String, String, Int) -> Unit,
+    onEmptyClick: (String) -> Unit
+) {
+    if (topics.isEmpty()) {
+        val emptyText = stringResource(R.string.empty_topics)
+        CardListItem(
+            onClick = { onEmptyClick(emptyText) },
+            isFirst = false,
+            isLast = true
+        ) {
+            CentredContentWithIcon(
+                icon = uk.gov.govuk.design.R.drawable.ic_add,
+                description = emptyText
             )
         }
+    } else {
+        topics.forEachIndexed { index, topic ->
+            IconListItem(
+                title = topic.title,
+                icon = topic.icon,
+                onClick = {
+                    onClick(
+                        topic.title,
+                        topic.ref,
+                        index + 1
+                    )
+                },
+                style = IconListItemStyle.Bold,
+                isFirst = false,
+                isLast = index == topics.lastIndex
+            )
+        }
+    }
+}
+
+@Composable
+private fun ErrorCard(modifier: Modifier = Modifier) {
+    OutlinedCard(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.list),
+        border = BorderStroke(width = 0.dp, color = Color.Unspecified)
+    ) {
+        ProblemMessage(description = stringResource(R.string.topics_error_message))
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun TopicsWidgetPreview() {
+    val topics = listOf(
+        TopicItemUi(
+            "",
+            R.drawable.ic_topic_default,
+            "A really really really really really really long topic title",
+            "",
+            isSelected = true
+        ),
+        TopicItemUi(
+            "",
+            R.drawable.ic_topic_benefits,
+            "Benefits",
+            "",
+            isSelected = true
+        ),
+        TopicItemUi(
+            "",
+            R.drawable.ic_topic_transport,
+            "Driving",
+            "",
+            isSelected = true
+        )
+    )
+
     GovUkTheme {
         TopicsWidgetContent(
             uiState = TopicsWidgetUiState(
-                topics = listOf(
-                    TopicItemUi(
-                        "",
-                        R.drawable.ic_topic_default,
-                        "A really really really really really really long topic title",
-                        "",
-                        isSelected = true
-                    ),
-                    TopicItemUi(
-                        "",
-                        R.drawable.ic_topic_benefits,
-                        "Benefits",
-                        "",
-                        isSelected = true
-                    ),
-                    TopicItemUi(
-                        "",
-                        R.drawable.ic_topic_transport,
-                        "Driving",
-                        "",
-                        isSelected = true
-                    ),
-                    TopicItemUi(
-                        "",
-                        R.drawable.ic_topic_money,
-                        "Tax",
-                        "",
-                        isSelected = true
-                    ),
-                    TopicItemUi(
-                        "",
-                        R.drawable.ic_topic_parenting,
-                        "Child Benefit",
-                        "",
-                        isSelected = true
-                    ),
-                ),
-                isError = false,
-                isCustomised = true,
-                displayShowAll = true
+                yourTopics = topics,
+                allTopics = topics
             ),
-            onPageView = { },
-            onTopicClick = { _, _, _ -> },
-            onEditClick = { },
-            onAllClick = { }
+            onView = { _, _, -> },
+            onTopicClick = { _, _, _, _, _ -> },
+            onEditClick = { }
         )
     }
 }
@@ -213,34 +255,12 @@ private fun TopicsWidgetEmptyTopicsPreview() {
     GovUkTheme {
         TopicsWidgetContent(
             uiState = TopicsWidgetUiState(
-                topics = emptyList(),
-                isError = false,
-                isCustomised = true,
-                displayShowAll = true
+                allTopics = emptyList(),
+                yourTopics = emptyList()
             ),
-            onPageView = { },
-            onTopicClick = { _, _, _ -> },
-            onEditClick = { },
-            onAllClick = { }
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun TopicsWidgetErrorPreview() {
-    GovUkTheme {
-        TopicsWidgetContent(
-            uiState = TopicsWidgetUiState(
-                topics = emptyList(),
-                isError = true,
-                isCustomised = false,
-                displayShowAll = false
-            ),
-            onPageView = { },
-            onTopicClick = { _, _, _ -> },
-            onEditClick = { },
-            onAllClick = { }
+            onView = { _, _, -> },
+            onTopicClick = { _, _, _, _, _ -> },
+            onEditClick = { }
         )
     }
 }

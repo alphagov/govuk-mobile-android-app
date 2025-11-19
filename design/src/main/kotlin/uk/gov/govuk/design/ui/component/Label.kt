@@ -1,8 +1,13 @@
 package uk.gov.govuk.design.ui.component
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -14,7 +19,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.R
+import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -321,7 +328,7 @@ fun CaptionBoldLabel(
 fun CaptionRegularLabel(
     text: String,
     modifier: Modifier = Modifier,
-    color: Color = GovUkTheme.colourScheme.textAndIcons.primary,
+    color: Color = GovUkTheme.colourScheme.textAndIcons.secondary,
     textAlign: TextAlign = TextAlign.Start
 ) {
     BaseLabel(
@@ -345,6 +352,67 @@ fun ListHeadingLabel(
             end = GovUkTheme.spacing.medium,
         ).semantics { heading() }
     )
+}
+
+@Composable
+fun SectionHeadingLabel(
+    modifier: Modifier = Modifier,
+    title1: String? = null,
+    title3: String? = null,
+    button: SectionHeadingLabelButton? = null
+) {
+    Row(
+        modifier = modifier.padding(bottom = GovUkTheme.spacing.small),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        val titleModifier = Modifier
+            .padding(
+                vertical = GovUkTheme.spacing.medium
+            )
+            .weight(1f)
+            .semantics { heading() }
+        val titleColour = GovUkTheme.colourScheme.textAndIcons.primary
+
+        title1?.let { title1 ->
+            Title1BoldLabel(
+                text = title1,
+                modifier = titleModifier,
+                color = titleColour
+            )
+        }
+
+        title3?.let { title3 ->
+            Title3BoldLabel(
+                text = title3,
+                modifier = titleModifier,
+                color = titleColour
+            )
+        }
+
+        button?.let { button ->
+            TextButton(
+                onClick = button.onClick,
+                modifier = Modifier.padding(
+                    top = GovUkTheme.spacing.extraSmall,
+                    start = GovUkTheme.spacing.medium,
+                    bottom = GovUkTheme.spacing.extraSmall
+                ),
+                contentPadding = PaddingValues()
+            ) {
+                BodyRegularLabel(
+                    text = button.title,
+                    modifier = Modifier
+                        .background(GovUkTheme.colourScheme.surfaces.cardDefault)
+                        .padding(
+                            horizontal = GovUkTheme.spacing.medium,
+                            vertical = 9.dp
+                        )
+                        .semantics { contentDescription = button.altText },
+                    color = GovUkTheme.colourScheme.textAndIcons.linkSecondary
+                )
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)
@@ -496,5 +564,37 @@ private fun CaptionRegular() {
 private fun ListHeadingLabelPreview() {
     GovUkTheme {
         ListHeadingLabel("Settings text")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SectionHeadingLabelTitle1Preview() {
+    val button = SectionHeadingLabelButton(
+        title = "Button Title",
+        altText = "Alt text",
+        onClick = {}
+    )
+    GovUkTheme {
+        SectionHeadingLabel(
+            title1 = "Section Heading Label",
+            button = button
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SectionHeadingLabelTitle3Preview() {
+    val button = SectionHeadingLabelButton(
+        title = "Button Title",
+        altText = "Alt text",
+        onClick = {}
+    )
+    GovUkTheme {
+        SectionHeadingLabel(
+            title3 = "Section Heading Label",
+            button = button
+        )
     }
 }

@@ -14,7 +14,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.analytics.AnalyticsClient
@@ -48,43 +47,6 @@ class TopicsWidgetViewModelTest {
                 title = "Benefits",
                 description = "description",
                 isSelected = true
-            )
-        )
-
-        every { topicsRepo.topics } returns flowOf(topics)
-        coEvery { topicsRepo.isTopicsCustomised() } returns true
-
-        val expected =
-            TopicsWidgetUiState(
-                topics = listOf(
-                    TopicItemUi(
-                        ref = "benefits",
-                        icon = R.drawable.ic_topic_benefits,
-                        title = "Benefits",
-                        description = "description",
-                        isSelected = true
-                    )
-                ),
-                isError = false,
-                isCustomised = true,
-                displayShowAll = false
-            )
-
-        val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
-
-        runTest {
-            assertEquals(expected, viewModel.uiState.first())
-        }
-    }
-
-    @Test
-    fun `Given topics are emitted, When init, then filter selected topics and emit ui state`() {
-        val topics = listOf(
-            TopicItem(
-                ref = "benefits",
-                title = "Benefits",
-                description = "description",
-                isSelected = true
             ),
             TopicItem(
                 ref = "care",
@@ -99,7 +61,7 @@ class TopicsWidgetViewModelTest {
 
         val expected =
             TopicsWidgetUiState(
-                topics = listOf(
+                yourTopics = listOf(
                     TopicItemUi(
                         ref = "benefits",
                         icon = R.drawable.ic_topic_benefits,
@@ -108,9 +70,22 @@ class TopicsWidgetViewModelTest {
                         isSelected = true
                     )
                 ),
-                isError = false,
-                isCustomised = false,
-                displayShowAll = true
+                allTopics = listOf(
+                    TopicItemUi(
+                        ref = "benefits",
+                        icon = R.drawable.ic_topic_benefits,
+                        title = "Benefits",
+                        description = "description",
+                        isSelected = true
+                    ),
+                    TopicItemUi(
+                        ref = "care",
+                        icon = R.drawable.ic_topic_care,
+                        title = "Care",
+                        description = "description",
+                        isSelected = false
+                    )
+                )
             )
 
         val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
@@ -121,63 +96,7 @@ class TopicsWidgetViewModelTest {
     }
 
     @Test
-    fun `Given topics are empty, When init, then emit error ui state`() {
-        every { topicsRepo.topics } returns flowOf(emptyList())
-
-        val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
-
-        runTest {
-            assertTrue(viewModel.uiState.first()?.isError == true)
-        }
-    }
-
-    @Test
-    fun `Given a homepage topics widget item is clicked, then send a select item event`() {
-        val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
-
-        viewModel.onTopicSelectClick(
-            ref = "benefits",
-            title = "Benefits",
-            selectedItemIndex = 42
-        )
-
-        verify {
-            analyticsClient.selectItemEvent(
-                ecommerceEvent = EcommerceEvent(
-                    itemListName = "HomeScreen",
-                    itemListId = "Homepage",
-                    items = listOf(
-                        EcommerceEvent.Item(
-                            itemName = "Benefits",
-                            itemCategory = "Topics",
-                            locationId = "benefits"
-                        )
-                    )
-                ),
-                selectedItemIndex = 42
-            )
-        }
-    }
-
-    @Test
-    fun `Given topics are empty, When the homepage is viewed, Then send a view item list event`() {
-        val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
-
-        viewModel.onPageView(emptyList())
-
-        verify {
-            analyticsClient.viewItemListEvent(
-                ecommerceEvent = EcommerceEvent(
-                    itemListName = "HomeScreen",
-                    itemListId = "Homepage",
-                    items = emptyList()
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `Given there are selected topics, When the homepage is viewed, Then send a view item list event`() {
+    fun `Given your topics are viewed, Then send a view item list event`() {
         val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
 
         val topics = listOf(
@@ -197,26 +116,147 @@ class TopicsWidgetViewModelTest {
             )
         )
 
-        viewModel.onPageView(topics)
+        viewModel.onView(TopicsCategory.YOUR, topics)
 
         verify {
             analyticsClient.viewItemListEvent(
                 ecommerceEvent = EcommerceEvent(
-                    itemListName = "HomeScreen",
-                    itemListId = "Homepage",
+                    itemListName = "Your topics",
+                    itemListId = "Your topics",
                     items = listOf(
                         EcommerceEvent.Item(
                             itemName = "Benefits",
-                            itemCategory = "Topics",
                             locationId = "benefits"
                         ),
                         EcommerceEvent.Item(
                             itemName = "Care",
-                            itemCategory = "Topics",
                             locationId = "care"
                         )
-                    )
+                    ),
+                    totalItemCount = 2
                 )
+            )
+        }
+    }
+
+    @Test
+    fun `Given all topics are viewed, Then send a view item list event`() {
+        val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
+
+        val topics = listOf(
+            TopicItemUi(
+                ref = "benefits",
+                title = "Benefits",
+                description = "description",
+                isSelected = true,
+                icon = R.drawable.ic_topic_benefits
+            ),
+            TopicItemUi(
+                ref = "care",
+                title = "Care",
+                description = "description",
+                isSelected = true,
+                icon = R.drawable.ic_topic_care
+            )
+        )
+
+        viewModel.onView(TopicsCategory.ALL, topics)
+
+        verify {
+            analyticsClient.viewItemListEvent(
+                ecommerceEvent = EcommerceEvent(
+                    itemListName = "All topics",
+                    itemListId = "All topics",
+                    items = listOf(
+                        EcommerceEvent.Item(
+                            itemName = "Benefits",
+                            locationId = "benefits"
+                        ),
+                        EcommerceEvent.Item(
+                            itemName = "Care",
+                            locationId = "care"
+                        )
+                    ),
+                    totalItemCount = 2
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given empty topics are viewed, Then send a view item list event`() {
+        val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
+
+        viewModel.onView(TopicsCategory.YOUR, emptyList())
+
+        verify {
+            analyticsClient.viewItemListEvent(
+                ecommerceEvent = EcommerceEvent(
+                    itemListName = "Your topics",
+                    itemListId = "Your topics",
+                    items = emptyList(),
+                    totalItemCount = 0
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Given a your topics widget item is clicked, then send a select item event`() {
+        val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
+
+        viewModel.onTopicSelectClick(
+            category = TopicsCategory.YOUR,
+            title = "Benefits",
+            ref = "benefits",
+            selectedItemIndex = 1,
+            topicCount = 5
+        )
+
+        verify {
+            analyticsClient.selectItemEvent(
+                ecommerceEvent = EcommerceEvent(
+                    itemListName = "Your topics",
+                    itemListId = "Your topics",
+                    items = listOf(
+                        EcommerceEvent.Item(
+                            itemName = "Benefits",
+                            locationId = "benefits"
+                        )
+                    ),
+                    totalItemCount = 5
+                ),
+                selectedItemIndex = 1
+            )
+        }
+    }
+
+    @Test
+    fun `Given an all topics widget item is clicked, then send a select item event`() {
+        val viewModel = TopicsWidgetViewModel(topicsRepo, analyticsClient)
+
+        viewModel.onTopicSelectClick(
+            category = TopicsCategory.ALL,
+            title = "Benefits",
+            ref = "benefits",
+            selectedItemIndex = 1,
+            topicCount = 5
+        )
+
+        verify {
+            analyticsClient.selectItemEvent(
+                ecommerceEvent = EcommerceEvent(
+                    itemListName = "All topics",
+                    itemListId = "All topics",
+                    items = listOf(
+                        EcommerceEvent.Item(
+                            itemName = "Benefits",
+                            locationId = "benefits"
+                        )
+                    ),
+                    totalItemCount = 5
+                ),
+                selectedItemIndex = 1
             )
         }
     }

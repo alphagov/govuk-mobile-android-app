@@ -1,42 +1,23 @@
 package uk.govuk.app.local.ui
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.ExtraSmallVerticalSpacer
+import uk.gov.govuk.design.ui.component.CentredCardWithIcon
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
-import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
-import uk.gov.govuk.design.ui.component.SearchResultCard
-import uk.gov.govuk.design.ui.component.SmallHorizontalSpacer
+import uk.gov.govuk.design.ui.component.NavigationCard
+import uk.gov.govuk.design.ui.component.SectionHeadingLabel
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
-import uk.gov.govuk.design.ui.component.Title3BoldLabel
+import uk.gov.govuk.design.ui.model.SectionHeadingLabelButton
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.govuk.app.local.LocalWidgetUiState.LocalAuthoritySelected
 import uk.govuk.app.local.LocalWidgetUiState.NoLocalAuthority
@@ -84,58 +65,46 @@ private fun LocalAuthorityCard(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Title3BoldLabel(
-                text = stringResource(R.string.local_widget_title),
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = GovUkTheme.spacing.large)
-                    .semantics { heading() }
-            )
-
             val editButtonText = stringResource(R.string.local_edit_button)
             val editButtonAltText = stringResource(R.string.local_edit_button_alt_text)
 
-            TextButton(
-                onClick = { onEditClick(editButtonAltText) }
-            ) {
-                BodyRegularLabel(
-                    text = editButtonText,
-                    color = GovUkTheme.colourScheme.textAndIcons.link,
-                    modifier = Modifier.semantics {
-                        contentDescription = editButtonAltText
-                    }
+            SectionHeadingLabel(
+                title3 = stringResource(R.string.local_widget_title),
+                button = SectionHeadingLabelButton(
+                    title = editButtonText,
+                    altText = editButtonAltText,
+                    onClick = { onEditClick(editButtonAltText) }
                 )
-            }
+            )
         }
 
         val description = if (localAuthority.parent != null) {
-            stringResource(R.string.local_child_authority_description, localAuthority.name)
+            stringResource(R.string.local_child_authority_description)
         } else {
-            stringResource(R.string.local_unitary_authority_description, localAuthority.name)
+            null
         }
 
         localAuthority.parent?.let { parent ->
             BodyRegularLabel(stringResource(R.string.local_two_tier_title))
             SmallVerticalSpacer()
-            SearchResultCard(
+            NavigationCard(
                 title = parent.name,
-                description = stringResource(
-                    R.string.local_parent_authority_description,
-                    parent.name
-                ),
-                url = parent.url,
-                onClick = onClick,
-                launchBrowser = launchBrowser
+                description = stringResource(R.string.local_parent_authority_description),
+                onClick = {
+                    onClick(parent.name, parent.url)
+                    launchBrowser(parent.url)
+                }
             )
             LargeVerticalSpacer()
         }
 
-        SearchResultCard(
+        NavigationCard(
             title = localAuthority.name,
             description = description,
-            url = localAuthority.url,
-            onClick = onClick,
-            launchBrowser = launchBrowser
+            onClick = {
+                onClick(localAuthority.name, localAuthority.url)
+                launchBrowser(localAuthority.url)
+            }
         )
     }
 }
@@ -145,72 +114,28 @@ private fun NoLocalAuthorityCard(
     onClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val title = stringResource(R.string.local_widget_title)
-
-    OutlinedCard(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.cardGreen),
-        border = BorderStroke(
-            width = 1.dp,
-            color = GovUkTheme.colourScheme.strokes.cardGreen
+    Column(modifier) {
+        SectionHeadingLabel(
+            title3 = stringResource(R.string.local_widget_title),
         )
-    ) {
-        Column(
-            Modifier
-                .clickable { onClick(title) }
-                .padding(
-                    top = GovUkTheme.spacing.small,
-                    bottom = GovUkTheme.spacing.medium
-                )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .height(40.dp)
-                    .padding(start = GovUkTheme.spacing.medium),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Title3BoldLabel(stringResource(R.string.local_section_title))
-            }
-            SmallVerticalSpacer()
-            HorizontalDivider(color = GovUkTheme.colourScheme.strokes.cardGreen)
-            MediumVerticalSpacer()
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)
-                    .padding(horizontal = GovUkTheme.spacing.medium),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painterResource(R.drawable.outline_pin_drop_24),
-                    contentDescription = null,
-                    modifier = Modifier.size(40.dp),
-                    tint = GovUkTheme.colourScheme.textAndIcons.iconGreen
-                )
-                SmallHorizontalSpacer()
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(end = GovUkTheme.spacing.medium)
-                ) {
-                    BodyBoldLabel(title)
-                    ExtraSmallVerticalSpacer()
-                    BodyRegularLabel(
-                        stringResource(R.string.local_description),
-                        color = GovUkTheme.colourScheme.textAndIcons.secondary
-                    )
-                }
-                Icon(
-                    painterResource(uk.gov.govuk.design.R.drawable.ic_chevron),
-                    contentDescription = null,
-                    tint = GovUkTheme.colourScheme.textAndIcons.iconGreen
-                )
-            }
+            val description = stringResource(R.string.local_widget_description)
+
+            CentredCardWithIcon(
+                onClick = { onClick(description) },
+                icon = uk.gov.govuk.design.R.drawable.ic_add,
+                description = description
+            )
         }
     }
 }
 
-@Preview
+@Preview (showBackground = true)
 @Composable
 private fun NoLocalAuthorityPreview() {
     GovUkTheme {

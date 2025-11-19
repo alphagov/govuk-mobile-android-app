@@ -1,102 +1,48 @@
 package uk.gov.govuk.design.ui.component
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Fill
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 import uk.gov.govuk.design.R
+import uk.gov.govuk.design.ui.extension.talkBackText
+import uk.gov.govuk.design.ui.model.ExternalLinkListItemStyle
+import uk.gov.govuk.design.ui.model.IconListItemStyle
+import uk.gov.govuk.design.ui.model.InternalLinkListItemStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-
-@Composable
-fun ListHeader(
-    @StringRes title: Int,
-    @DrawableRes icon: Int,
-    modifier: Modifier = Modifier
-) {
-    val borderColor = GovUkTheme.colourScheme.strokes.listBlue
-    val backgroundColor = GovUkTheme.colourScheme.surfaces.listHeadingBlue
-
-    Box(
-        modifier = modifier
-            .drawBehind {
-                drawCell(
-                    isFirst = true,
-                    isLast = false,
-                    borderColor = borderColor,
-                    backgroundColor = backgroundColor,
-                    backgroundColorHighlight = backgroundColor,
-                    isClicked = false
-                )
-            }
-    ) {
-        Column {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(
-                        horizontal = GovUkTheme.spacing.medium,
-                        vertical = GovUkTheme.spacing.small
-                    )
-            ) {
-                Title3BoldLabel(
-                    text = stringResource(title),
-                    modifier = Modifier
-                        .padding(end = GovUkTheme.spacing.medium)
-                        .weight(1f)
-                        .semantics { heading() }
-                )
-                Icon(
-                    painter = painterResource(icon),
-                    contentDescription = null,
-                    modifier = Modifier.size(40.dp),
-                    tint = GovUkTheme.colourScheme.textAndIcons.icon
-                )
-            }
-            ListDivider()
-        }
-    }
-}
 
 @Composable
 fun InternalLinkListItem(
     title: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    status: String? = null,
+    description: String? = null,
     isFirst: Boolean = true,
-    isLast: Boolean = true
+    isLast: Boolean = true,
+    style: InternalLinkListItemStyle = InternalLinkListItemStyle.Default
 ) {
     CardListItem(
         modifier = modifier,
@@ -108,26 +54,42 @@ fun InternalLinkListItem(
             modifier = Modifier.padding(all = GovUkTheme.spacing.medium),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BodyRegularLabel(
-                text = title,
-                modifier = Modifier.weight(1f)
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                BodyRegularLabel(
+                    text = title,
+                    color = GovUkTheme.colourScheme.textAndIcons.primary
+                )
+                description?.let { description ->
+                    ExtraSmallVerticalSpacer()
+                    SubheadlineRegularLabel(
+                        text = description,
+                        color = GovUkTheme.colourScheme.textAndIcons.secondary
+                    )
+                }
+            }
 
             MediumHorizontalSpacer()
 
-            status?.let {
-                BodyRegularLabel(
-                    text = it,
-                    color = GovUkTheme.colourScheme.textAndIcons.link
-                )
-                MediumHorizontalSpacer()
-            }
+            when (style) {
+                is InternalLinkListItemStyle.Status -> {
+                    BodyRegularLabel(
+                        text = style.title,
+                        color = GovUkTheme.colourScheme.textAndIcons.iconTertiary
+                    )
+                }
 
-            Icon(
-                painter = painterResource(R.drawable.ic_chevron),
-                contentDescription = null,
-                tint = GovUkTheme.colourScheme.textAndIcons.icon
-            )
+                else -> {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow),
+                        contentDescription = null,
+                        tint = GovUkTheme.colourScheme.textAndIcons.iconTertiary
+                    )
+                }
+            }
         }
     }
 }
@@ -137,9 +99,10 @@ fun ExternalLinkListItem(
     title: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    description: String? = null,
     isFirst: Boolean = true,
     isLast: Boolean = true,
-    subText: String = ""
+    style: ExternalLinkListItemStyle = ExternalLinkListItemStyle.Default
 ) {
     CardListItem(
         modifier = modifier,
@@ -147,39 +110,56 @@ fun ExternalLinkListItem(
         isFirst = isFirst,
         isLast = isLast
     ) {
+        val opensInWebBrowser = stringResource(R.string.opens_in_web_browser)
         Row(
-            modifier = Modifier.padding(applyPadding(subText))
+            modifier = Modifier
+                .padding(all = GovUkTheme.spacing.medium)
+                .fillMaxWidth()
+                .talkBackText(title, description, opensInWebBrowser)
         ) {
-            BodyRegularLabel(
-                text = title,
-                modifier = Modifier.weight(1f),
-                color = GovUkTheme.colourScheme.textAndIcons.link
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                BodyRegularLabel(
+                    text = title,
+                    color = GovUkTheme.colourScheme.textAndIcons.link
+                )
 
-            MediumHorizontalSpacer()
+                description?.let { description ->
+                    ExtraSmallVerticalSpacer()
 
-            Icon(
-                painter = painterResource(R.drawable.ic_external_link),
-                contentDescription = stringResource(R.string.opens_in_web_browser),
-                tint = GovUkTheme.colourScheme.textAndIcons.link
-            )
+                    SubheadlineRegularLabel(
+                        text = description,
+                        color = GovUkTheme.colourScheme.textAndIcons.secondary
+                    )
+                }
+            }
+
+            when (style) {
+                is ExternalLinkListItemStyle.Icon -> {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_external_link),
+                        contentDescription = null,
+                        tint = GovUkTheme.colourScheme.textAndIcons.link
+                    )
+                }
+
+                is ExternalLinkListItemStyle.Button -> {
+                    TextButton(
+                        onClick = style.onClick,
+                        modifier = Modifier
+                            .semantics { contentDescription = style.altText }
+                            .align(Alignment.CenterVertically),
+                        contentPadding = PaddingValues(start = GovUkTheme.spacing.extraLarge)
+                    ) {
+                        Icon(
+                            painter = painterResource(style.icon),
+                            contentDescription = null,
+                            tint = GovUkTheme.colourScheme.textAndIcons.secondary
+                        )
+                    }
+                }
+                else -> { /* Do nothing */ }
+            }
         }
-
-        ShowSubText(subText)
-    }
-}
-
-@Composable
-private fun applyPadding(subText: String): PaddingValues {
-    return if (subText.isNotEmpty()) {
-        PaddingValues(
-            top = GovUkTheme.spacing.medium,
-            start = GovUkTheme.spacing.medium,
-            end = GovUkTheme.spacing.medium,
-            bottom = 0.dp
-        )
-    } else {
-        PaddingValues(all = GovUkTheme.spacing.medium)
     }
 }
 
@@ -245,365 +225,191 @@ fun ToggleListItem(
 }
 
 @Composable
+fun IconListItem(
+    title: String,
+    @DrawableRes icon: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    style: IconListItemStyle = IconListItemStyle.Regular,
+    isFirst: Boolean = true,
+    isLast: Boolean = true,
+    altText: String? = null
+) {
+    CardListItem(
+        modifier = modifier.fillMaxWidth(),
+        onClick = onClick,
+        isFirst = isFirst,
+        isLast = isLast,
+        drawDivider = false
+    ) {
+        Box(Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = GovUkTheme.spacing.medium)
+                    .semantics {
+                        altText?.let {
+                            contentDescription = it
+                        }
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val iconConfig = when (style) {
+                    IconListItemStyle.Regular ->
+                        Pair(
+                            GovUkTheme.colourScheme.textAndIcons.iconSurroundSecondary,
+                            GovUkTheme.colourScheme.textAndIcons.iconSecondary
+                        )
+                    IconListItemStyle.Bold ->
+                        Pair(
+                            GovUkTheme.colourScheme.textAndIcons.iconSurroundPrimary,
+                            GovUkTheme.colourScheme.textAndIcons.iconPrimary
+                        )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(
+                            color = iconConfig.first,
+                            shape = CircleShape
+                        )
+                        .padding(6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(icon),
+                        contentDescription = null,
+                        tint = iconConfig.second
+                    )
+                }
+
+                MediumHorizontalSpacer()
+
+                when (style) {
+                    IconListItemStyle.Regular -> {
+                        BodyRegularLabel(
+                            text = title,
+                            modifier = Modifier.weight(1f),
+                            color = GovUkTheme.colourScheme.textAndIcons.linkPrimary
+                        )
+                    }
+                    IconListItemStyle.Bold -> {
+                        BodyBoldLabel(
+                            text = title,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        MediumHorizontalSpacer()
+
+                        Icon(
+                            painter = painterResource(R.drawable.ic_arrow),
+                            contentDescription = null,
+                            tint = GovUkTheme.colourScheme.textAndIcons.iconTertiary
+                        )
+                    }
+                }
+
+            }
+        }
+
+        if (!isLast) {
+            ListDivider(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(start = 72.dp)
+                    .padding(end = GovUkTheme.spacing.medium)
+            )
+        }
+    }
+}
+
+@Composable
 fun CardListItem(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     isFirst: Boolean = true,
     isLast: Boolean = true,
+    drawDivider: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-    val borderColor = GovUkTheme.colourScheme.strokes.listBlue
-    val backgroundColor = GovUkTheme.colourScheme.surfaces.listBlue
-    val backgroundColorHighlight = GovUkTheme.colourScheme.surfaces.cardHighlight
-
-    val interactionSource = remember { MutableInteractionSource() }
-
-    var isClicked by remember { mutableStateOf(false) }
-    if (onClick != null) {
-        LaunchedEffect(isClicked) {
-            delay(200)
-            isClicked = false
-        }
-    }
-
-    Box(
+    val cornerRadius = 12.dp
+    Column(
         modifier = modifier
-            .then(
-                if (onClick != null) {
-                    Modifier.clickable(
-                        interactionSource = interactionSource,
-                        indication = null
-                    ) {
-                        isClicked = true
-                        onClick()
-                    }
-                } else Modifier
-            )
-            .semantics(mergeDescendants = true) { }
-            .drawBehind {
-                drawCell(
-                    isFirst = isFirst,
-                    isLast = isLast,
-                    borderColor = borderColor,
-                    backgroundColor = backgroundColor,
-                    backgroundColorHighlight = backgroundColorHighlight,
-                    isClicked = isClicked
+            .clip(
+                RoundedCornerShape(
+                    topStart = if (isFirst) cornerRadius else 0.dp,
+                    topEnd = if (isFirst) cornerRadius else 0.dp,
+                    bottomStart = if (isLast) cornerRadius else 0.dp,
+                    bottomEnd = if (isLast) cornerRadius else 0.dp
                 )
-            }
+            )
+            .background(GovUkTheme.colourScheme.surfaces.list)
+            .then(
+                onClick?.let {
+                    Modifier.clickable { it() }
+                } ?: Modifier
+            )
     ) {
-        Column {
-            content()
+        content()
 
-            if (!isLast) {
-                ListDivider(Modifier.padding(horizontal = GovUkTheme.spacing.medium))
-            }
+        if (!isLast && drawDivider) {
+            ListDivider(Modifier.padding(horizontal = GovUkTheme.spacing.medium))
         }
     }
 }
 
-private fun DrawScope.drawCell(
-    isFirst: Boolean,
-    isLast: Boolean,
-    borderColor: Color,
-    backgroundColor: Color,
-    backgroundColorHighlight: Color,
-    isClicked: Boolean
-) {
-    val borderWidth = 1.dp
-    val cornerRadius: Dp = 12.dp
-
-    when {
-        isFirst && isLast ->
-            singleCell(
-                borderWidth = borderWidth.toPx(),
-                cornerRadius = cornerRadius.toPx(),
-                borderColor = borderColor,
-                backgroundColor = backgroundColor,
-                backgroundColorHighlight = backgroundColorHighlight,
-                isClicked = isClicked
-            )
-        isFirst ->
-            firstCell(
-                borderWidth = borderWidth.toPx(),
-                cornerRadius = cornerRadius.toPx(),
-                borderColor = borderColor,
-                backgroundColor = backgroundColor,
-                backgroundColorHighlight = backgroundColorHighlight,
-                isClicked = isClicked
-            )
-        isLast ->
-            lastCell(
-                borderWidth = borderWidth.toPx(),
-                cornerRadius = cornerRadius.toPx(),
-                borderColor = borderColor,
-                backgroundColor = backgroundColor,
-                backgroundColorHighlight = backgroundColorHighlight,
-                isClicked = isClicked
-            )
-        else ->
-            intermediateCell(
-                borderWidth = borderWidth.toPx(),
-                borderColor = borderColor,
-                backgroundColor = backgroundColor,
-                backgroundColorHighlight = backgroundColorHighlight,
-                isClicked = isClicked
-            )
+@Preview
+@Composable
+private fun InternalLinkListItemPreview() {
+    GovUkTheme {
+        InternalLinkListItem("Title", {})
     }
 }
 
-private fun DrawScope.singleCell(
-    borderWidth: Float,
-    cornerRadius: Float,
-    borderColor: Color,
-    backgroundColor: Color,
-    backgroundColorHighlight: Color,
-    isClicked: Boolean
-) {
-    // Path for top, bottom and side borders with rounded corners
-    val path = Path().apply {
-        // Start at bottom left
-        moveTo(0f, size.height - cornerRadius)
-
-        // Line to top left
-        lineTo(0f, 0f + cornerRadius)
-
-        // Top left corner
-        arcTo(
-            rect = Rect(
-                0f,
-                0f,
-                cornerRadius * 2,
-                cornerRadius * 2
-            ),
-            startAngleDegrees = 180f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        )
-
-        // Line to top right
-        lineTo(size.width - cornerRadius, 0f)
-
-        // Top right corner
-        arcTo(
-            rect = Rect(
-                size.width - cornerRadius * 2,
-                0f,
-                size.width,
-                cornerRadius * 2
-            ),
-            startAngleDegrees = -90f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        )
-
-        // Line to bottom right
-        lineTo(size.width, size.height - cornerRadius)
-
-        // Bottom right corner
-        arcTo(
-            rect = Rect(
-                size.width - 2 * cornerRadius,
-                size.height - 2 * cornerRadius,
-                size.width,
-                size.height
-            ),
-            startAngleDegrees = 0f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        )
-
-        // Line to bottom left
-        lineTo(cornerRadius, size.height)
-
-        // Bottom left corner
-        arcTo(
-            rect = Rect(
-                0f,
-                size.height - 2 * cornerRadius,
-                2 * cornerRadius,
-                size.height
-            ),
-            startAngleDegrees = 90f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        )
+@Preview
+@Composable
+private fun InternalLinkListItemDescriptionPreview() {
+    GovUkTheme {
+        InternalLinkListItem("Title", {}, description = "Description")
     }
-
-    // Draw background colour
-    drawPath(
-        path = path,
-        color = if (isClicked) backgroundColorHighlight else backgroundColor,
-        style = Fill
-    )
-
-    // Draw the path as a border
-    drawPath(
-        path = path,
-        color = borderColor,
-        style = Stroke(width = borderWidth)
-    )
 }
 
-private fun DrawScope.firstCell(
-    borderWidth: Float,
-    cornerRadius: Float,
-    borderColor: Color,
-    backgroundColor: Color,
-    backgroundColorHighlight: Color,
-    isClicked: Boolean
-) {
-    // Path for top and side borders with rounded corners
-    val path = Path().apply {
-        // Start at bottom left
-        moveTo(0f, size.height)
-
-        // Line to top left
-        lineTo(0f, 0f + cornerRadius)
-
-        // Top left corner
-        arcTo(
-            rect = Rect(
-                0f,
-                0f,
-                cornerRadius * 2,
-                cornerRadius * 2
-            ),
-            startAngleDegrees = 180f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        )
-
-        // Line to top right
-        lineTo(size.width - cornerRadius, 0f)
-
-        // Top right corner
-        arcTo(
-            rect = Rect(
-                size.width - cornerRadius * 2,
-                0f,
-                size.width,
-                cornerRadius * 2
-            ),
-            startAngleDegrees = -90f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        )
-
-        // Line to bottom right
-        lineTo(size.width, size.height)
+@Preview
+@Composable
+private fun InternalLinkListItemStatusPreview() {
+    GovUkTheme {
+        InternalLinkListItem("Title", {}, style = InternalLinkListItemStyle.Status("Status"))
     }
-
-    // Draw background colour
-    drawPath(
-        path = path,
-        color = if (isClicked) backgroundColorHighlight else backgroundColor,
-        style = Fill
-    )
-
-    // Draw the path as a border
-    drawPath(
-        path = path,
-        color = borderColor,
-        style = Stroke(width = borderWidth)
-    )
 }
 
-private fun DrawScope.intermediateCell(
-    borderWidth: Float,
-    borderColor: Color,
-    backgroundColor: Color,
-    backgroundColorHighlight: Color,
-    isClicked: Boolean
-) {
-    // Path for only side borders
-    val path = Path().apply {
-        // Start at top right corner
-        moveTo(size.width, 0f)
-
-        // Line to bottom right
-        lineTo(size.width, size.height)
-
-        // Move to bottom left
-        moveTo(0f, size.height)
-
-        // Line to top left
-        lineTo(0f, 0f)
+@Preview
+@Composable
+private fun ExternalLinkListItemDefaultPreview() {
+    GovUkTheme {
+        ExternalLinkListItem("Title", {})
     }
-
-    // Draw background colour
-    drawRect(
-        color = if (isClicked) backgroundColorHighlight else backgroundColor,
-        size = size
-    )
-
-    // Draw the path as a border
-    drawPath(
-        path = path,
-        color = borderColor,
-        style = Stroke(width = borderWidth)
-    )
 }
 
-private fun DrawScope.lastCell(
-    borderWidth: Float,
-    cornerRadius: Float,
-    borderColor: Color,
-    backgroundColor: Color,
-    backgroundColorHighlight: Color,
-    isClicked: Boolean
-) {
-    // Path for bottom and side borders with rounded corners
-    val path = Path().apply {
-        // Start at top-right corner
-        moveTo(size.width, 0f)
-
-        // Line to bottom right
-        lineTo(size.width, size.height - cornerRadius)
-
-        // Bottom right corner
-        arcTo(
-            rect = Rect(
-                size.width - 2 * cornerRadius,
-                size.height - 2 * cornerRadius,
-                size.width,
-                size.height
-            ),
-            startAngleDegrees = 0f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
+@Preview
+@Composable
+private fun ExternalLinkListItemIconPreview() {
+    GovUkTheme {
+        ExternalLinkListItem(
+            "Title",
+            {},
+            description = "Description",
+            style = ExternalLinkListItemStyle.Icon
         )
-
-        // Line to bottom left
-        lineTo(cornerRadius, size.height)
-
-        // Bottom left corner
-        arcTo(
-            rect = Rect(
-                0f,
-                size.height - 2 * cornerRadius,
-                2 * cornerRadius,
-                size.height
-            ),
-            startAngleDegrees = 90f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        )
-
-        // Line to top left
-        lineTo(0f, 0f)
     }
+}
 
-    // Draw background colour
-    drawPath(
-        path = path,
-        color = if (isClicked) backgroundColorHighlight else backgroundColor,
-        style = Fill
-    )
-
-    // Draw the path as a border
-    drawPath(
-        path = path,
-        color = borderColor,
-        style = Stroke(width = borderWidth)
-    )
+@Preview
+@Composable
+private fun ExternalLinkListItemButtonPreview() {
+    GovUkTheme {
+        ExternalLinkListItem(
+            "Title", {}, description = "Description",
+            style = ExternalLinkListItemStyle.Button(R.drawable.ic_cancel_round, "Alt text") {})
+    }
 }

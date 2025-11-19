@@ -14,11 +14,13 @@ import uk.gov.govuk.topics.ui.model.TopicItemUi
 import javax.inject.Inject
 
 internal data class TopicsWidgetUiState(
-    val topics: List<TopicItemUi>,
-    val isError: Boolean,
-    val isCustomised: Boolean,
-    val displayShowAll: Boolean
+    val allTopics: List<TopicItemUi>,
+    val yourTopics: List<TopicItemUi>
 )
+
+internal enum class TopicsCategory {
+    YOUR, ALL
+}
 
 @HiltViewModel
 internal class TopicsWidgetViewModel @Inject constructor(
@@ -26,80 +28,100 @@ internal class TopicsWidgetViewModel @Inject constructor(
     private val analyticsClient: AnalyticsClient
 ): ViewModel() {
 
+    companion object {
+        private const val LIST_ID = "Homepage"
+        private const val LIST_NAME = "HomeScreen"
+        private const val ITEM_CATEGORY = "Topics"
+    }
+
     private val _uiState: MutableStateFlow<TopicsWidgetUiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
             topicsRepo.topics.collect { topics ->
-                val filteredTopics = topics
-                    .filter { it.isSelected }
+                val mappedTopics = topics
                     .map{ topicItem -> topicItem.toTopicItemUi() }
 
                 _uiState.value = TopicsWidgetUiState(
-                    topics = filteredTopics,
-                    isError = topics.isEmpty(),
-                    isCustomised = topicsRepo.isTopicsCustomised(),
-                    displayShowAll = topics.size > filteredTopics.size
+                    allTopics = mappedTopics,
+                    yourTopics = mappedTopics.filter { it.isSelected }
                 )
             }
         }
     }
 
     fun onTopicSelectClick(
-        ref: String,
+        category: TopicsCategory,
         title: String,
-        selectedItemIndex: Int
+        ref: String,
+        selectedItemIndex: Int,
+        topicCount: Int
     ) {
         sendSelectItemEvent(
+            category = category,
             title = title,
-            section = ref,
-            selectedItemIndex = selectedItemIndex
+            ref = ref,
+            selectedItemIndex = selectedItemIndex,
+            topicCount = topicCount
         )
     }
 
-    fun onPageView(topics: List<TopicItemUi>) {
-        sendViewItemListEvent(topics)
+    fun onView(category: TopicsCategory, topics: List<TopicItemUi>) {
+        sendViewItemListEvent(category, topics)
     }
 
-    private fun sendSelectItemEvent(
-        section: String,
-        title: String,
-        selectedItemIndex: Int
-    ) {
-        analyticsClient.selectItemEvent(
-            ecommerceEvent = EcommerceEvent(
-                itemListName = "HomeScreen",
-                itemListId = "Homepage",
-                items = listOf(
-                    EcommerceEvent.Item(
-                        itemName = title,
-                        itemCategory = "Topics",
-                        locationId = section
-                    )
-                )
-            ),
-            selectedItemIndex = selectedItemIndex
-        )
-    }
-
-    private fun sendViewItemListEvent(topics: List<TopicItemUi>) {
+    private fun sendViewItemListEvent(category: TopicsCategory, topics: List<TopicItemUi>) {
         val items = mutableListOf<EcommerceEvent.Item>()
+
+        val listCategory = mapCategory(category)
 
         topics.forEach { topic ->
             items += EcommerceEvent.Item(
                 itemName = topic.title,
-                itemCategory = "Topics",
                 locationId = topic.ref
             )
         }
 
         analyticsClient.viewItemListEvent(
             ecommerceEvent = EcommerceEvent(
-                itemListName = "HomeScreen",
-                itemListId = "Homepage",
-                items = items
+                itemListName = listCategory,
+                itemListId = listCategory,
+                items = items,
+                totalItemCount = items.size
             )
         )
+    }
+
+    private fun sendSelectItemEvent(
+        category: TopicsCategory,
+        title: String,
+        ref: String,
+        selectedItemIndex: Int,
+        topicCount: Int
+    ) {
+        val listCategory = mapCategory(category)
+
+        analyticsClient.selectItemEvent(
+            ecommerceEvent = EcommerceEvent(
+                itemListName = listCategory,
+                itemListId = listCategory,
+                items = listOf(
+                    EcommerceEvent.Item(
+                        itemName = title,
+                        locationId = ref
+                    )
+                ),
+                totalItemCount = topicCount
+            ),
+            selectedItemIndex = selectedItemIndex
+        )
+    }
+
+    private fun mapCategory(category: TopicsCategory): String {
+        return when (category) {
+            TopicsCategory.YOUR -> "Your topics"
+            TopicsCategory.ALL -> "All topics"
+        }
     }
 }

@@ -31,12 +31,23 @@ android {
     }
 }
 
+// TODO - remove on completion of design refresh!!!
+sonar {
+    properties {
+        property(
+            "sonar.cpd.exclusions",
+            properties["sonar.cpd.exclusions"].toString() + ",**/ListLegacy.*" + ",**/CardLegacy.*"
+        )
+    }
+}
+
 dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material3)
     implementation(libs.androidx.adaptive.android)
     implementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.icons)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

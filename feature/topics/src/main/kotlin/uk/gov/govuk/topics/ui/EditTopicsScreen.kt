@@ -12,18 +12,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
-import uk.gov.govuk.design.ui.component.ToggleListItem
+import uk.gov.govuk.design.ui.component.ModalHeader
+import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
+import uk.gov.govuk.design.ui.model.HeaderActionStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.topics.EditTopicsViewModel
 import uk.gov.govuk.topics.R
+import uk.gov.govuk.topics.ui.component.TopicSelectionCard
 import uk.gov.govuk.topics.ui.model.TopicItemUi
 
 @Composable
 internal fun EditTopicsRoute(
-    onBack: () -> Unit,
+    onDone: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: EditTopicsViewModel = hiltViewModel()
@@ -32,7 +34,7 @@ internal fun EditTopicsRoute(
     EditTopicsScreen(
         topics = topics,
         onPageView = { title -> viewModel.onPageView(title) },
-        onBack = onBack,
+        onDone = onDone,
         onTopicSelectedChanged = { ref, title, isSelected ->
             viewModel.onTopicSelectedChanged(
                 ref = ref,
@@ -48,20 +50,23 @@ internal fun EditTopicsRoute(
 private fun EditTopicsScreen(
     topics: List<TopicItemUi>?,
     onPageView: (String) -> Unit,
-    onBack: () -> Unit,
+    onDone: () -> Unit,
     onTopicSelectedChanged: (String, String, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val title = stringResource(R.string.editTitle)
+    val title = stringResource(R.string.edit_title)
 
     LaunchedEffect(Unit) {
         onPageView(title)
     }
 
     Column(modifier) {
-        ChildPageHeader(
+        ModalHeader(
             text = title,
-            onBack = onBack
+            actionStyle = HeaderActionStyle.ActionButton(
+                title = stringResource(R.string.done_button),
+                onClick = onDone
+            ),
         )
         LazyColumn(
             Modifier
@@ -70,26 +75,29 @@ private fun EditTopicsScreen(
             item {
                 Column{
                     MediumVerticalSpacer()
-                    BodyRegularLabel(stringResource(R.string.editMessage))
+                    BodyRegularLabel(stringResource(R.string.edit_message))
                     MediumVerticalSpacer()
                 }
             }
 
             if (!topics.isNullOrEmpty()) {
                 itemsIndexed(topics) { index, topic ->
-                    ToggleListItem(
-                        title = topic.title,
-                        checked = topic.isSelected,
-                        onCheckedChange = { checked ->
-                            onTopicSelectedChanged(
-                                topic.ref,
-                                topic.title,
-                                checked
-                            )
-                        },
-                        isFirst = index == 0,
-                        isLast = index == topics.lastIndex
-                    )
+                    Column {
+                        SmallVerticalSpacer()
+                        TopicSelectionCard(
+                            icon = topic.icon,
+                            title = topic.title,
+                            isSelected = topic.isSelected,
+                            onClick = {
+                                onTopicSelectedChanged(
+                                    topic.ref,
+                                    topic.title,
+                                    !topic.isSelected
+                                )
+                            }
+                        )
+                        SmallVerticalSpacer()
+                    }
                 }
 
                 item {

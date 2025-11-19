@@ -11,8 +11,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
-import uk.gov.govuk.notifications.NotificationsUiState
+import uk.gov.govuk.design.ui.model.HeaderDismissStyle
 import uk.gov.govuk.notifications.NotificationsPermissionViewModel
+import uk.gov.govuk.notifications.NotificationsUiState
 import uk.gov.govuk.notifications.NotificationsViewModel
 import uk.gov.govuk.notifications.R
 
@@ -45,7 +46,7 @@ internal fun NotificationsPermissionRoute(
                     modifier = modifier,
                     header = {
                         ChildPageHeader(
-                            onBack = notificationsPermissionCompleted
+                            dismissStyle = HeaderDismissStyle.Back(notificationsPermissionCompleted)
                         )
                     },
                     footer = {

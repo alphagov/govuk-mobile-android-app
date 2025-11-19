@@ -1,7 +1,7 @@
 package uk.gov.govuk.settings.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -37,6 +36,8 @@ import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.SubheadlineRegularLabel
 import uk.gov.govuk.design.ui.component.TabHeader
 import uk.gov.govuk.design.ui.component.ToggleListItem
+import uk.gov.govuk.design.ui.model.ExternalLinkListItemStyle
+import uk.gov.govuk.design.ui.model.InternalLinkListItemStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.settings.R
 import uk.gov.govuk.settings.SettingsUiState
@@ -137,7 +138,7 @@ private fun SettingsScreen(
     }
 
     Column(
-        modifier = modifier
+        modifier = modifier.background(GovUkTheme.colourScheme.surfaces.screenBackground)
     ) {
         TabHeader(stringResource(R.string.screen_title))
         Column(
@@ -214,7 +215,8 @@ private fun ManageLogin(
         ExternalLinkListItem(
             title = stringResource(R.string.manage_login_link),
             onClick = onAccountClick,
-            isFirst = false
+            isFirst = false,
+            style = ExternalLinkListItemStyle.Icon
         )
 
         SmallVerticalSpacer()
@@ -279,20 +281,6 @@ private fun NotificationsAndPrivacy(
             modifier = Modifier
                 .padding(horizontal = GovUkTheme.spacing.medium)
         )
-
-        val altText = "${stringResource(R.string.privacy_read_more)} " +
-                stringResource(id = R.string.link_opens_in)
-
-        CaptionRegularLabel(
-            text = stringResource(R.string.privacy_read_more),
-            modifier = Modifier
-                .semantics {
-                    contentDescription = altText
-                }
-                .padding(horizontal = GovUkTheme.spacing.medium)
-                .clickable(onClick = actions.onPrivacyPolicyClick),
-            color = GovUkTheme.colourScheme.textAndIcons.link,
-        )
     }
 }
 
@@ -317,11 +305,11 @@ private fun Notifications(
 
     InternalLinkListItem(
         title = stringResource(R.string.notifications_title),
-        status = stringResource(status),
         onClick = onNotificationsClick,
         modifier = modifier,
         isFirst = true,
         isLast = false,
+        style = InternalLinkListItemStyle.Status(stringResource(status))
     )
 }
 
@@ -335,6 +323,7 @@ private fun AboutTheApp(
         modifier = modifier
     ) {
         CardListItem(
+            modifier = Modifier.semantics(mergeDescendants = true) { },
             isFirst = true,
             isLast = false
         ) {

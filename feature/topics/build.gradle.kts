@@ -50,7 +50,7 @@ sonar {
         )
         property(
             "sonar.cpd.exclusions",
-            properties["sonar.cpd.exclusions"].toString() + ",**/TopicsRealmProvider.*"
+            properties["sonar.cpd.exclusions"].toString() + ",**/TopicsRealmProvider.*,**/TopicsWidgetLegacy.*" // TODO - remove legacy entry on completion of design refresh!!!
         )
     }
 }
@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.androidx.adaptive.android)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.icons)
     implementation(libs.hilt.android)
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)

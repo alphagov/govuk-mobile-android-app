@@ -32,7 +32,7 @@ internal class TopicsLocalDataSource @Inject constructor(
             val topicsToDelete =
                 localTopics.filter { !remoteTopics.map { it.ref }.contains(it.ref) }
 
-            val isSelectedOnInsert = !isTopicsCustomised()
+            val isTopicsCustomised = isTopicsCustomised()
 
             realmProvider.open().write {
                 for (topic in topicsToDelete) {
@@ -48,12 +48,15 @@ internal class TopicsLocalDataSource @Inject constructor(
                     localTopic?.apply {
                         this.title = topic.title
                         this.description = topic.description
+                        // Previous impl initially marked all topics as selected by default,
+                        // we need to clear this for the new impl
+                        // if the user has not actively customised their topics
+                        this.isSelected = if (isTopicsCustomised) this.isSelected else false
                     } ?: copyToRealm(
                         LocalTopicItem().apply {
                             this.ref = topic.ref
                             this.title = topic.title
                             this.description = topic.description
-                            this.isSelected = isSelectedOnInsert
                         }
                     )
                 }
@@ -73,11 +76,11 @@ internal class TopicsLocalDataSource @Inject constructor(
         }
     }
 
-    suspend fun deselectAll(refs: List<String>) {
+    suspend fun selectAll(refs: List<String>) {
         realmProvider.open().write {
             val topics = query<LocalTopicItem>("ref IN $0", refs).find()
             topics.forEach { topic ->
-                findLatest(topic)?.isSelected = false
+                findLatest(topic)?.isSelected = true
             }
         }
     }

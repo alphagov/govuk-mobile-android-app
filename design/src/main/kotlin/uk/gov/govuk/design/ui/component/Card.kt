@@ -1,9 +1,11 @@
 package uk.gov.govuk.design.ui.component
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,17 +19,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +42,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.R
+import uk.gov.govuk.design.ui.extension.drawBottomStroke
+import uk.gov.govuk.design.ui.extension.talkBackText
+import uk.gov.govuk.design.ui.model.CardListItem
+import uk.gov.govuk.design.ui.model.FocusableCardColours
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -42,30 +53,19 @@ fun GovUkCard(
     modifier: Modifier = Modifier,
     isSelected: Boolean = false,
     onClick: (() -> Unit)? = null,
-    backgroundColour: Color = GovUkTheme.colourScheme.surfaces.cardBlue,
-    borderColour: Color = GovUkTheme.colourScheme.strokes.cardBlue,
+    backgroundColour: Color = GovUkTheme.colourScheme.surfaces.listUnselected,
     padding: Dp = GovUkTheme.spacing.medium,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val cardColour = if (isSelected) {
-        GovUkTheme.colourScheme.surfaces.cardSelected
+        GovUkTheme.colourScheme.surfaces.listSelected
     } else {
         backgroundColour
     }
 
-    val strokeColour = if (isSelected) {
-        GovUkTheme.colourScheme.strokes.cardSelected
-    } else {
-        borderColour
-    }
-
-    OutlinedCard(
+    Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = cardColour),
-        border = BorderStroke(
-            width = 1.dp,
-            color = strokeColour
-        )
+        colors = CardDefaults.cardColors(containerColor = cardColour)
     ) {
         Column(
             modifier = Modifier
@@ -90,7 +90,7 @@ fun HomeNavigationCard(
     @DrawableRes icon: Int? = null,
     description: String? = null
 ) {
-    GovUkCard(
+    GovUkCardLegacy(
         modifier = modifier,
         isSelected = isSelected,
         onClick = onClick
@@ -157,7 +157,7 @@ fun HomeAlertCard(
     launchBrowser: (url: String) -> Unit,
     onSuppressClick: (() -> Unit)? = null
 ) {
-    GovUkCard(
+    GovUkCardLegacy(
         modifier = modifier,
         backgroundColour = GovUkTheme.colourScheme.surfaces.cardDefault,
         borderColour = GovUkTheme.colourScheme.strokes.cardAlert,
@@ -188,7 +188,7 @@ fun HomeAlertCard(
                         title?.let { title ->
                             BodyBoldLabel(
                                 title,
-                                modifier = Modifier.padding(start = 16.dp)
+                                modifier = Modifier.padding(start = GovUkTheme.spacing.medium)
                             )
                         }
 
@@ -199,7 +199,7 @@ fun HomeAlertCard(
                         description?.let { description ->
                             BodyRegularLabel(
                                 description,
-                                modifier = Modifier.padding(start = 16.dp)
+                                modifier = Modifier.padding(start = GovUkTheme.spacing.medium)
                             )
                         }
                         MediumVerticalSpacer()
@@ -242,7 +242,7 @@ fun HomeAlertCard(
                         text = linkTitle,
                         color = GovUkTheme.colourScheme.textAndIcons.link,
                         modifier = Modifier
-                            .padding(horizontal = 16.dp)
+                            .padding(horizontal = GovUkTheme.spacing.medium)
                             .clickable {
                                 onClick()
                                 launchBrowser(linkUrl)
@@ -267,7 +267,7 @@ fun SearchResultCard(
     launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    GovUkCard(
+    GovUkCardLegacy(
         modifier = modifier,
         onClick = {
             onClick(title, url)
@@ -320,30 +320,268 @@ fun UserFeedbackCard(
             text = linkTitle,
             modifier = modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp)
+                .padding(vertical = GovUkTheme.spacing.medium)
                 .clickable {
                     onClick()
                 }
                 .semantics {
                     contentDescription = "$linkTitle $opensInWebBrowser"
                 },
-            color = GovUkTheme.colourScheme.textAndIcons.link,
+            color = GovUkTheme.colourScheme.textAndIcons.linkSecondary,
             textAlign = TextAlign.Center
         )
     }
 }
 
 @Composable
-fun NonTappableCard(body: String) {
+fun NonTappableCard(
+    body: String,
+    modifier: Modifier = Modifier
+) {
     BodyRegularLabel(
         text = body,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .clip(shape = RoundedCornerShape(12.dp))
+            .clip(shape = RoundedCornerShape(GovUkTheme.numbers.cornerAndroidList))
             .background(GovUkTheme.colourScheme.surfaces.cardNonTappable)
-            .padding(16.dp),
+            .padding(GovUkTheme.spacing.medium),
         color = GovUkTheme.colourScheme.textAndIcons.secondary
     )
+}
+
+@Composable
+fun CentredCardWithIcon(
+    onClick: () -> Unit,
+    @DrawableRes icon: Int,
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    description: String? = null
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .talkBackText(title, description)
+            .drawBottomStroke(
+                colour = GovUkTheme.colourScheme.strokes.cardDefault,
+                cornerRadius = GovUkTheme.numbers.cornerAndroidList
+            ),
+        colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.list)
+    ) {
+        CentredContentWithIcon(
+            icon = icon,
+            modifier = Modifier
+                .clickable {
+                    onClick()
+                },
+            title = title,
+            description = description
+        )
+    }
+}
+
+@Composable
+fun CentredContentWithIcon(
+    @DrawableRes icon: Int,
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    description: String? = null
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .talkBackText(title, description)
+    ) {
+        ExtraLargeVerticalSpacer()
+
+        Icon(
+            painterResource(icon),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(32.dp),
+            tint = GovUkTheme.colourScheme.textAndIcons.icon
+        )
+
+        title?.let { title ->
+            SmallVerticalSpacer()
+
+            BodyBoldLabel(
+                text = title,
+                color = GovUkTheme.colourScheme.textAndIcons.primary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clearAndSetSemantics { }
+                    .padding(horizontal = GovUkTheme.spacing.extraLarge),
+                textAlign = TextAlign.Center,
+            )
+        }
+
+        description?.let { description ->
+            SmallVerticalSpacer()
+
+            BodyRegularLabel(
+                text = description,
+                color = GovUkTheme.colourScheme.textAndIcons.secondary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clearAndSetSemantics { }
+                    .padding(horizontal = GovUkTheme.spacing.extraLarge),
+                textAlign = TextAlign.Center,
+            )
+        }
+
+        ExtraLargeVerticalSpacer()
+    }
+}
+
+@Composable
+fun NavigationCard(
+    title: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    description: String? = null
+) {
+    val opensInWebBrowser = stringResource(R.string.opens_in_web_browser)
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .talkBackText(title, description, opensInWebBrowser)
+            .drawBottomStroke(
+                colour = GovUkTheme.colourScheme.strokes.cardDefault,
+                cornerRadius = GovUkTheme.numbers.cornerAndroidList
+            ),
+        colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.list),
+        onClick = onClick,
+        content = {
+            MediumVerticalSpacer()
+
+            description?.let { description ->
+                BodyRegularLabel(
+                    text = description,
+                    color = GovUkTheme.colourScheme.textAndIcons.secondary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .semantics(mergeDescendants = true) { }
+                        .padding(horizontal = GovUkTheme.spacing.medium)
+                )
+
+                SmallVerticalSpacer()
+            }
+
+            Title2BoldLabel(
+                text = title,
+                color = GovUkTheme.colourScheme.textAndIcons.link,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics(mergeDescendants = true) { }
+                    .padding(horizontal = GovUkTheme.spacing.medium)
+            )
+
+            MediumVerticalSpacer()
+        }
+    )
+}
+
+@Composable
+fun FocusableCard(
+    item: CardListItem,
+    modifier: Modifier = Modifier,
+    colourMapper: @Composable (FocusableCardColours) -> Color
+) {
+    val focusRequester = remember { FocusRequester() }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    val backgroundColor = if (isFocused) {
+        colourMapper(FocusableCardColours.Focussed.Background)
+    } else {
+        colourMapper(FocusableCardColours.UnFocussed.Background)
+    }
+
+    val contentColor = if (isFocused) {
+        colourMapper(FocusableCardColours.Focussed.Content)
+    } else {
+        colourMapper(FocusableCardColours.UnFocussed.Content)
+    }
+
+    Card(
+        modifier = modifier
+            .focusRequester(focusRequester)
+            .focusable(interactionSource = interactionSource)
+            .fillMaxWidth()
+            .talkBackText(
+                item.title,
+                stringResource(R.string.opens_in_web_browser)
+            )
+            .drawBottomStroke(
+                colour = GovUkTheme.colourScheme.strokes.cardCarousel,
+                cornerRadius = GovUkTheme.numbers.cornerAndroidList
+            ),
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor,
+            contentColor = contentColor
+        ),
+        onClick = item.onClick,
+        content = {
+            MediumVerticalSpacer()
+            SubheadlineBoldLabel(
+                text = item.title,
+                color = contentColor,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics(mergeDescendants = true) { }
+                    .padding(horizontal = GovUkTheme.spacing.medium)
+            )
+            MediumVerticalSpacer()
+        }
+    )
+}
+
+@Composable
+fun DrillInCard(
+    title: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    description: String? = null
+) {
+    Card(
+        modifier = modifier.drawBottomStroke(
+            colour = GovUkTheme.colourScheme.strokes.cardDefault,
+            cornerRadius = GovUkTheme.numbers.cornerAndroidList
+        ),
+        colors = CardDefaults.cardColors(containerColor = GovUkTheme.colourScheme.surfaces.cardDefault),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier.padding(all = GovUkTheme.spacing.medium),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                BodyBoldLabel(
+                    text = title
+                )
+                description?.let { description ->
+                    SmallVerticalSpacer()
+                    BodyRegularLabel(
+                        text = description,
+                        color = GovUkTheme.colourScheme.textAndIcons.secondary
+                    )
+                }
+            }
+
+            MediumHorizontalSpacer()
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow),
+                contentDescription = null,
+                tint = GovUkTheme.colourScheme.textAndIcons.iconTertiary
+            )
+        }
+    }
 }
 
 @Preview
@@ -453,5 +691,88 @@ private fun UserFeedbackCardPreview() {
 private fun NonTappableCardPreview() {
     GovUkTheme {
         NonTappableCard("Card body")
+    }
+}
+
+@Preview
+@Composable
+private fun CentredCardWithIconWithTitleAndDescriptionPreview() {
+    GovUkTheme {
+        CentredCardWithIcon(
+            onClick = { },
+            icon = R.drawable.ic_settings,
+            title = "Card title",
+            description = "Card secondary text that may go over multiple lines."
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CentredCardWithIconWithTitlePreview() {
+    GovUkTheme {
+        CentredCardWithIcon(
+            onClick = { },
+            icon = R.drawable.ic_settings,
+            title = "Card title"
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CentredCardWithIconWithDescriptionPreview() {
+    GovUkTheme {
+        CentredCardWithIcon(
+            onClick = { },
+            icon = R.drawable.ic_settings,
+            description = "Card secondary text that may go over multiple lines."
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun NavigationCardWithTitleAndDescriptionPreview() {
+    GovUkTheme {
+        NavigationCard(
+            title = "Card title",
+            description = "Card secondary text that may go over multiple lines.",
+            onClick = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun NavigationCardWithoutDescriptionPreview() {
+    GovUkTheme {
+        NavigationCard(
+            title = "Card title",
+            onClick = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DrillInCardPreview() {
+    GovUkTheme {
+        DrillInCard(
+            title = "Card title",
+            onClick = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DrillInCardDescriptionPreview() {
+    GovUkTheme {
+        DrillInCard(
+            title = "Card title",
+            onClick = {},
+            description = "Card description"
+        )
     }
 }

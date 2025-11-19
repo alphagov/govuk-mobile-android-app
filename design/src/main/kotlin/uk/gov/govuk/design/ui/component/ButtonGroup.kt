@@ -2,14 +2,21 @@ package uk.gov.govuk.design.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.window.core.layout.WindowHeightSizeClass
+import uk.gov.govuk.design.ui.component.ConnectedButton.FIRST
+import uk.gov.govuk.design.ui.component.ConnectedButton.SECOND
+import uk.gov.govuk.design.ui.model.SINGLE_COLUMN_THRESHOLD_DP
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -198,6 +205,109 @@ private fun HorizontalButtonGroup(
     }
 }
 
+enum class ConnectedButton {
+    FIRST, SECOND
+}
+
+private const val FONT_SCALE_THRESHOLD = 2.0
+
+@Composable
+fun ConnectedButtonGroup(
+    firstText: String,
+    secondText: String,
+    onActiveStateChange: (ConnectedButton) -> Unit,
+    activeButton: ConnectedButton,
+    modifier: Modifier = Modifier
+) {
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp
+    val fontScale = configuration.fontScale
+
+    if (screenWidth <= SINGLE_COLUMN_THRESHOLD_DP && fontScale >= FONT_SCALE_THRESHOLD) {
+        VerticalConnectedButtonGroup(
+            firstText = firstText,
+            secondText = secondText,
+            onActiveStateChange = onActiveStateChange,
+            activeButton = activeButton,
+            modifier = modifier
+        )
+    } else {
+        HorizontalConnectedButtonGroup(
+            firstText = firstText,
+            secondText = secondText,
+            onActiveStateChange = onActiveStateChange,
+            activeButton = activeButton,
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+private fun HorizontalConnectedButtonGroup(
+    firstText: String,
+    secondText: String,
+    onActiveStateChange: (ConnectedButton) -> Unit,
+    activeButton: ConnectedButton,
+    modifier: Modifier = Modifier
+) {
+    Row(modifier = modifier
+        .fillMaxWidth()
+        .height(IntrinsicSize.Min),
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
+        ConnectedButton(
+            text = firstText,
+            onClick = {
+                onActiveStateChange(FIRST)
+            },
+            active = activeButton == FIRST,
+            modifier = Modifier
+                .weight(0.5f)
+                .fillMaxHeight()
+        )
+        SmallHorizontalSpacer()
+        ConnectedButton(
+            text = secondText,
+            onClick = {
+                onActiveStateChange(SECOND)
+            },
+            active = activeButton == SECOND,
+            modifier = Modifier
+                .weight(0.5f)
+                .fillMaxHeight()
+        )
+    }
+}
+
+@Composable
+private fun VerticalConnectedButtonGroup(
+    firstText: String,
+    secondText: String,
+    onActiveStateChange: (ConnectedButton) -> Unit,
+    activeButton: ConnectedButton,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        ConnectedButton(
+            text = firstText,
+            onClick = {
+                onActiveStateChange(FIRST)
+            },
+            active = activeButton == FIRST,
+            modifier = Modifier.fillMaxWidth()
+        )
+        SmallVerticalSpacer()
+        ConnectedButton(
+            text = secondText,
+            onClick = {
+                onActiveStateChange(SECOND)
+            },
+            active = activeButton == SECOND,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
 @Preview
 @Composable
 private fun FixedPrimaryButtonPreview()
@@ -280,6 +390,34 @@ private fun HorizontalDestructiveButtonGroupPreview()
             onSecondary = {},
             primaryDestructive = true,
             windowHeightSizeClass = WindowHeightSizeClass.COMPACT
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun HorizontalConnectedButtonGroupPreview()
+{
+    GovUkTheme {
+        HorizontalConnectedButtonGroup(
+            firstText = "First",
+            secondText = "Second",
+            onActiveStateChange = { },
+            activeButton = FIRST
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun VerticalConnectedButtonGroupPreview()
+{
+    GovUkTheme {
+        VerticalConnectedButtonGroup(
+            firstText = "First",
+            secondText = "Second",
+            onActiveStateChange = { },
+            activeButton = FIRST
         )
     }
 }
