@@ -13,9 +13,14 @@ import uk.gov.govuk.config.data.remote.model.EmergencyBannerType
 class EmergencyBannerTypeAdapter : TypeAdapter<EmergencyBannerType>() {
 
     private val bannerTypeMap: Map<String, EmergencyBannerType> =
-        EmergencyBannerType.entries.associateBy {
-            it.javaClass.getField(it.name).getAnnotation(SerializedName::class.java)?.value
-                ?: throw IllegalStateException("Missing @SerializedName annotation for enum constant ${it.name}")
+        EmergencyBannerType.entries.associateBy { enumValue ->
+            val name = enumValue::class.java.getField(enumValue.name)
+                .getAnnotation(SerializedName::class.java)?.value
+
+            require(!name.isNullOrBlank()) {
+                "Missing @SerializedName annotation for enum constant ${enumValue.name}."
+            }
+            name
         }
 
     override fun read(reader: JsonReader): EmergencyBannerType {
@@ -24,9 +29,11 @@ class EmergencyBannerTypeAdapter : TypeAdapter<EmergencyBannerType>() {
     }
 
     override fun write(out: JsonWriter, value: EmergencyBannerType) {
-        val serializedName = bannerTypeMap.entries.find { it.value == value }?.key
-            ?: throw IllegalStateException("Missing @SerializedName annotation for enum constant ${value.name}")
+        val errorMessage =
+            "Internal Error: Missing serialized name for enum constant ${value.name}."
+        val entry = bannerTypeMap.entries.find { it.value == value }
+        requireNotNull(entry) { errorMessage }
 
-        out.value(serializedName)
+        out.value(entry.key)
     }
 }
