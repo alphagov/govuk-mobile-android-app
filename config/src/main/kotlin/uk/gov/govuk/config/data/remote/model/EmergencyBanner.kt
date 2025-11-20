@@ -7,7 +7,7 @@ data class EmergencyBanner(
     @SerializedName("title") val title: String?,
     @SerializedName("body") val body: String?,
     @SerializedName("link") val link: Link?,
-    @SerializedName("type") val type: EmergencyBannerType,
+    @SerializedName("type") val type: EmergencyBannerType? = EmergencyBannerType.INFORMATION,
     @SerializedName("allowsDismissal") val allowsDismissal: Boolean,
     @SerializedName("dismissAltText") val dismissAltText: String? = null
 )
