@@ -7,7 +7,6 @@ import android.util.Base64
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.browser.customtabs.ExperimentalEphemeralBrowsing
 import androidx.core.content.edit
 import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.flow.Flow
@@ -53,7 +52,6 @@ class AuthRepo @Inject constructor(
         private const val SUB_ID_KEY = "subId"
     }
 
-    @ExperimentalEphemeralBrowsing
     val authIntent: Intent by lazy {
         val intent = CustomTabsIntent.Builder()
             .setEphemeralBrowsingEnabled(true)
@@ -260,7 +258,7 @@ class AuthRepo @Inject constructor(
                 val json = JSONObject(payload)
                 return json.getString(name)
             } else ""
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             ""
         }
     }
@@ -276,13 +274,13 @@ class AuthRepo @Inject constructor(
                         clientId = BuildConfig.AUTH_CLIENT_ID
                     )
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Ignore API failure
             }
 
             tokens = Tokens()
             return true
-        } catch (e: SecureStorageError) {
+        } catch (_: SecureStorageError) {
             return false
         }
     }
