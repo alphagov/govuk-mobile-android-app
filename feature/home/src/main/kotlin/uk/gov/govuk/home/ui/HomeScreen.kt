@@ -104,7 +104,9 @@ private fun HomeScreen(
                 LargeVerticalSpacer()
             }
             items(widgets) { widget ->
-                widget(Modifier.fillMaxWidth())
+                widget(Modifier
+                    .fillMaxWidth()
+                    .animateItem())
             }
             item {
                 Row(
