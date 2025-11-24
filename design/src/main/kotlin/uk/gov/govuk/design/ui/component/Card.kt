@@ -162,6 +162,7 @@ private fun BaseAlertBannerCard(
     linkTitle: String?,
     linkUrl: String?,
     isDismissible: Boolean,
+    dismissAltText: String? = null,
     onClick: () -> Unit,
     launchBrowser: (url: String) -> Unit,
     onSuppressClick: (() -> Unit)?,
@@ -242,7 +243,7 @@ private fun BaseAlertBannerCard(
                     if (isDismissible) {
                         Icon(
                             painterResource(R.drawable.ic_cancel),
-                            contentDescription = "${stringResource(R.string.content_desc_remove)} ${title ?: ""}",
+                            contentDescription = dismissAltText ?: "${stringResource(R.string.content_desc_remove)} ${title ?: ""}",
                             tint = dismissIconColour
                         )
                     }
@@ -336,6 +337,7 @@ fun HomeBannerCard(
     linkTitle: String?,
     linkUrl: String?,
     isDismissible: Boolean = true,
+    dismissAltText: String? = null,
     type: EmergencyBannerUiType,
     onClick: () -> Unit,
     launchBrowser: (url: String) -> Unit,
@@ -348,6 +350,7 @@ fun HomeBannerCard(
         linkTitle = linkTitle,
         linkUrl = linkUrl,
         isDismissible = isDismissible,
+        dismissAltText = dismissAltText,
         onClick = onClick,
         launchBrowser = launchBrowser,
         onSuppressClick = onSuppressClick,
@@ -381,7 +384,9 @@ fun HomeBannerCard(
             if (type.hasDecoratedLink) {
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow),
-                    contentDescription = null,
+                    contentDescription = stringResource(
+                        R.string.opens_in_web_browser
+                    ),
                     tint = GovUkTheme.colourScheme.textAndIcons.linkInverse,
                     modifier = Modifier.padding(start = GovUkTheme.spacing.small)
                 )
