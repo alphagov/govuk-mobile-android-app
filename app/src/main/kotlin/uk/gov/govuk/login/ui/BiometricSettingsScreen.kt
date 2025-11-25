@@ -3,7 +3,6 @@ package uk.gov.govuk.login.ui
 import androidx.activity.compose.LocalActivity
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,17 +15,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import uk.gov.govuk.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.ChildPageHeader
-import uk.gov.govuk.design.ui.component.LargeTitleBoldLabel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.component.Title
 import uk.gov.govuk.design.ui.component.ToggleListItem
 import uk.gov.govuk.design.ui.model.HeaderDismissStyle
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -79,19 +76,9 @@ private fun BiometricSettingsScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = GovUkTheme.spacing.large)
         ) {
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .background(GovUkTheme.colourScheme.surfaces.homeHeader)
-            ) {
-                LargeTitleBoldLabel(
-                    text = stringResource(R.string.biometric_settings_title),
-                    modifier = Modifier
-                        .padding(horizontal = GovUkTheme.spacing.medium)
-                        .semantics { heading() },
-                    color = GovUkTheme.colourScheme.textAndIcons.header
-                )
-            }
+            Title(
+                title = stringResource(R.string.biometric_settings_title)
+            )
 
             LargeVerticalSpacer()
 

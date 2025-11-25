@@ -55,7 +55,7 @@ internal fun DeviceOfflineScreen(
     }
 }
 
-@Preview
+@Preview (showBackground = true)
 @Composable
 private fun DeviceOfflinePreview() {
     GovUkTheme {

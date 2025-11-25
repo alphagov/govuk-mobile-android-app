@@ -54,7 +54,7 @@ internal fun ForcedUpdateScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun ForcedUpdatePreview() {
     GovUkTheme {
