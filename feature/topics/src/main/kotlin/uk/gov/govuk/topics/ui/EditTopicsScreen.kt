@@ -81,7 +81,7 @@ private fun EditTopicsScreen(
             }
 
             if (!topics.isNullOrEmpty()) {
-                itemsIndexed(topics) { index, topic ->
+                itemsIndexed(topics) { _, topic ->
                     Column {
                         SmallVerticalSpacer()
                         TopicSelectionCard(
