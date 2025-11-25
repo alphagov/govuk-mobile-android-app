@@ -14,7 +14,6 @@ import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.flags.DebugFlags
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.config.data.remote.ConfigApi
-import uk.gov.govuk.config.data.remote.model.EmergencyBanner
 import uk.gov.govuk.config.data.serialisation.EmergencyBannerTypeAdapter
 import javax.inject.Singleton
 
@@ -37,7 +36,7 @@ class ConfigModule {
     @Singleton
     fun providesGson(): Gson {
         return GsonBuilder()
-            .registerTypeAdapter(EmergencyBanner::class.java, EmergencyBannerTypeAdapter())
+            .registerTypeAdapter(EmergencyBannerTypeAdapter::class.java, EmergencyBannerTypeAdapter())
             .create()
     }
 
