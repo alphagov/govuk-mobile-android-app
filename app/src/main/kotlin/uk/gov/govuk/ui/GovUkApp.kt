@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
@@ -222,7 +222,7 @@ private fun HandleOnResumeNavigation(
                 val controller = navController()
                 try {
                     controller.graph
-                } catch (e: IllegalStateException) {
+                } catch (_: IllegalStateException) {
                     // Nav graph has not been set
                     return@LaunchedEffect
                 }

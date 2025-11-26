@@ -202,7 +202,7 @@ class ConfigRepoTest {
     @Test
     fun `Given a response with a signature header, the specific signature is extracted`() {
         val specificSignature = "signature-123"
-        val headers = Headers.of("x-amz-meta-govuk-sig", specificSignature)
+        val headers = Headers.headersOf("x-amz-meta-govuk-sig", specificSignature)
 
         coEvery { configApi.getConfig() } returns Response.success(
             configResponse.toString(),
@@ -224,7 +224,7 @@ class ConfigRepoTest {
 
     @Test
     fun `Given a response without a signature header, signature defaults to empty string`() {
-        val headers = Headers.of() // Empty headers
+        val headers = Headers.headersOf() // Empty headers
 
         coEvery { configApi.getConfig() } returns Response.success(
             configResponse.toString(),

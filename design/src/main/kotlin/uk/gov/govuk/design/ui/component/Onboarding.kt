@@ -21,7 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
-import androidx.window.core.layout.WindowHeightSizeClass
+import androidx.window.core.layout.WindowSizeClass
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
@@ -33,7 +33,9 @@ fun OnboardingSlide(
     @DrawableRes image: Int? = null,
     focusRequester: FocusRequester = remember { FocusRequester() }
 ) {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    val windowAdaptiveInfo = currentWindowAdaptiveInfo()
+    val isWindowHeightNotCompact =
+        windowAdaptiveInfo.windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
 
     Column(
         modifier = modifier
@@ -42,7 +44,7 @@ fun OnboardingSlide(
             .padding(top = GovUkTheme.spacing.extraLarge),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (windowSizeClass.windowHeightSizeClass != WindowHeightSizeClass.COMPACT) {
+        if (isWindowHeightNotCompact) {
             image?.let { image ->
                 Image(
                     painter = painterResource(id = image),
