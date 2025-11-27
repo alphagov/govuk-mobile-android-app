@@ -264,9 +264,8 @@ private fun BaseAlertBannerCard(
                             thickness = 1.dp,
                             color = dividerColour
                         )
+                        MediumVerticalSpacer()
                     }
-
-                    MediumVerticalSpacer()
 
                     linkContent(
                         linkTitle,
