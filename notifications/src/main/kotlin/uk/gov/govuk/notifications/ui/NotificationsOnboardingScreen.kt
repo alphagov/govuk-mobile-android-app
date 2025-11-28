@@ -38,7 +38,7 @@ internal fun NotificationsOnboardingRoute(
             val primaryText = stringResource(R.string.allow_notifications_button)
             if (permissionStatus.isGranted) {
                 val secondaryText = stringResource(R.string.turn_off_notifications_button)
-                var showNotificationsSettingsAlert by remember { mutableStateOf(true) }
+                var showNotificationsSettingsAlert by remember { mutableStateOf(false) }
                 FixedDoubleButtonGroup(
                     primaryText = primaryText,
                     onPrimary = { notificationsViewModel.onGiveConsentClick(primaryText) { notificationsOnboardingCompleted() } },
@@ -55,7 +55,7 @@ internal fun NotificationsOnboardingRoute(
                             notificationsOnboardingCompleted()
                         },
                         onCancelButtonClick = { notificationsViewModel.onCancelButtonClick(it) },
-                        onDismiss = { showNotificationsSettingsAlert = false }
+                        onDismiss = { }
                     )
                 }
             } else {
