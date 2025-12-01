@@ -8,7 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
@@ -55,9 +58,11 @@ private fun EditTopicsScreen(
     modifier: Modifier = Modifier
 ) {
     val title = stringResource(R.string.edit_title)
+    val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
         onPageView(title)
+        focusRequester.requestFocus()
     }
 
     Column(modifier) {
@@ -67,6 +72,7 @@ private fun EditTopicsScreen(
                 title = stringResource(R.string.done_button),
                 onClick = onDone
             ),
+            modifier = Modifier.focusRequester(focusRequester)
         )
         LazyColumn(
             Modifier
