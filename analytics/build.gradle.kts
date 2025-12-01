@@ -58,6 +58,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
+    implementation(libs.google.tag.manager)
     implementation(libs.androidx.datastore.preferences)
 
     ksp(libs.hilt.compiler)
