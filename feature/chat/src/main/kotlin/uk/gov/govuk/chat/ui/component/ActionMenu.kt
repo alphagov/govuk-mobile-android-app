@@ -1,5 +1,6 @@
 package uk.gov.govuk.chat.ui.component
 
+import android.view.KeyEvent
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
@@ -19,15 +21,22 @@ import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.chat.domain.Analytics
@@ -47,77 +56,104 @@ internal fun ActionMenu(
     modifier: Modifier = Modifier
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
 
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { expanded = false },
+    Box(
         modifier = modifier
-            .background(GovUkTheme.colourScheme.surfaces.alert)
-            .border(
-                1.dp,
-                GovUkTheme.colourScheme.surfaces.alert,
-                RoundedCornerShape(GovUkTheme.spacing.extraSmall)
-            )
-            .width(200.dp)
+            .wrapContentSize(Alignment.TopEnd)
     ) {
-        val aboutText = stringResource(R.string.action_about)
-        MenuItem(
+        val buttonText = stringResource(id = R.string.action_alt)
+        ActionIconButton(
             onClick = {
-                onNavigationItemClicked(aboutText, chatUrls.about)
-                expanded = false
+                expanded = !expanded
+                if (expanded) {
+                    onFunctionItemClicked(
+                        buttonText,
+                        Analytics.ACTION_MENU,
+                        Analytics.ACTION_MENU_ACTION
+                    )
+                }
             },
-            buttonText = aboutText,
-            icon = R.drawable.outline_info_24,
-            modifier = modifier
+            modifier = Modifier.focusRequester(focusRequester)
         )
 
-        val privacyText = stringResource(R.string.action_privacy)
-        MenuItem(
-            onClick = {
-                onNavigationItemClicked(privacyText, chatUrls.privacyNotice)
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
                 expanded = false
+                focusManager.clearFocus()
             },
-            buttonText = privacyText,
-            icon = R.drawable.outline_privacy_24,
+            offset = DpOffset(x = 0.dp, y = -(GovUkTheme.spacing.medium)),
             modifier = modifier
-        )
-
-        val feedbackText = stringResource(R.string.action_feedback)
-        MenuItem(
-            onClick = {
-                onNavigationItemClicked(feedbackText, chatUrls.feedback)
-                expanded = false
-            },
-            buttonText = feedbackText,
-            icon = R.drawable.outline_feedback_24,
-            modifier = modifier
-        )
-
-        if (hasConversation) {
-            ClearMenuItem(
-                enabled = !isLoading,
-                onClear = {
-                    onClear()
+                .background(GovUkTheme.colourScheme.surfaces.alert)
+                .border(
+                    1.dp,
+                    GovUkTheme.colourScheme.surfaces.alert,
+                    RoundedCornerShape(GovUkTheme.spacing.extraSmall)
+                )
+                .width(200.dp)
+                .focusRequester(focusRequester)
+                .onKeyEvent { keyEvent ->
+                    if (keyEvent.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ESCAPE) {
+                        expanded = false
+                        true
+                    } else {
+                        false
+                    }
+                }
+        ) {
+            val aboutText = stringResource(R.string.action_about)
+            MenuItem(
+                onClick = {
+                    onNavigationItemClicked(aboutText, chatUrls.about)
                     expanded = false
                 },
-                onFunctionItemClicked = onFunctionItemClicked
+                buttonText = aboutText,
+                icon = R.drawable.outline_info_24,
+                modifier = Modifier
             )
-        }
-    }
 
-    val buttonText = stringResource(id = R.string.action_alt)
-    ActionIconButton(
-        onClick = {
-            expanded = !expanded
-            if (expanded) {
-                onFunctionItemClicked(
-                    buttonText,
-                    Analytics.ACTION_MENU,
-                    Analytics.ACTION_MENU_ACTION
+            val privacyText = stringResource(R.string.action_privacy)
+            MenuItem(
+                onClick = {
+                    onNavigationItemClicked(privacyText, chatUrls.privacyNotice)
+                    expanded = false
+                },
+                buttonText = privacyText,
+                icon = R.drawable.outline_privacy_24,
+                modifier = Modifier
+            )
+
+            val feedbackText = stringResource(R.string.action_feedback)
+            MenuItem(
+                onClick = {
+                    onNavigationItemClicked(feedbackText, chatUrls.feedback)
+                    expanded = false
+                },
+                buttonText = feedbackText,
+                icon = R.drawable.outline_feedback_24,
+                modifier = Modifier
+            )
+
+            if (hasConversation) {
+                ClearMenuItem(
+                    enabled = !isLoading,
+                    onClear = {
+                        onClear()
+                        expanded = false
+                    },
+                    onFunctionItemClicked = onFunctionItemClicked
                 )
             }
         }
-    )
+
+        LaunchedEffect(expanded) {
+            if (expanded) {
+                focusRequester.requestFocus()
+            }
+        }
+    }
 }
 
 @Composable
