@@ -40,6 +40,7 @@ playServicesMeasurementApi = "23.0.0"
 playServicesOssLicenses = "17.3.0"
 googleAccompanist = "0.37.3"
 browser = "1.9.0"
+googleTagManager = "18.3.0"
 
 openid = "0.11.1"
 
@@ -84,6 +85,7 @@ realm-base = { group = "io.realm.kotlin", name = "library-base", version.ref = "
 play-services-measurement-api = { group = "com.google.android.gms", name = "play-services-measurement-api", version.ref = "playServicesMeasurementApi" }
 play-services-oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-licenses", version.ref = "playServicesOssLicenses" }
 oss-licenses = { group = "com.google.android.gms", name = "oss-licenses-plugin", version.ref = "ossLicenses" }
+google-tag-manager = { group = "com.google.android.gms", name = "play-services-tagmanager", version.ref = "googleTagManager" }
 
 openid = { group = "net.openid", name = "appauth", version.ref = "openid"}
 
