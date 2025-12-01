@@ -50,8 +50,8 @@ import uk.gov.govuk.design.ui.model.FocusableCardColours
 import uk.gov.govuk.design.ui.model.backgroundColour
 import uk.gov.govuk.design.ui.model.borderColour
 import uk.gov.govuk.design.ui.model.dismissIconColour
-import uk.gov.govuk.design.ui.model.linkTitleColour
 import uk.gov.govuk.design.ui.model.hasDecoratedLink
+import uk.gov.govuk.design.ui.model.linkTitleColour
 import uk.gov.govuk.design.ui.model.textColour
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.design.ui.theme.ThemePreviews
@@ -598,7 +598,7 @@ fun NavigationCard(
                     color = GovUkTheme.colourScheme.textAndIcons.secondary,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .semantics(mergeDescendants = true) { }
+                        .clearAndSetSemantics { }
                         .padding(horizontal = GovUkTheme.spacing.medium)
                 )
 
@@ -610,7 +610,7 @@ fun NavigationCard(
                 color = GovUkTheme.colourScheme.textAndIcons.link,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .semantics(mergeDescendants = true) { }
+                    .clearAndSetSemantics { }
                     .padding(horizontal = GovUkTheme.spacing.medium)
             )
 
