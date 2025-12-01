@@ -2,6 +2,7 @@ package uk.gov.govuk.chat.ui.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
@@ -18,6 +19,7 @@ internal fun Answer(
     answer: String,
     onMarkdownLinkClicked: (String, String) -> Unit,
     onSourcesExpanded: () -> Unit,
+    listState: LazyListState,
     modifier: Modifier = Modifier,
     showHeader: Boolean = true,
     sources: List<String>? = null
@@ -54,7 +56,8 @@ internal fun Answer(
             Sources(
                 sources = sources,
                 onMarkdownLinkClicked = onMarkdownLinkClicked,
-                onSourcesExpanded = onSourcesExpanded
+                onSourcesExpanded = onSourcesExpanded,
+                listState = listState
             )
         }
 

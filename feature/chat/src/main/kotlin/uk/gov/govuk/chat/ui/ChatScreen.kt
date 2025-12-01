@@ -220,6 +220,7 @@ private fun ChatScreen(
                         },
                         animationDuration = animationDuration,
                         onSourcesExpanded = analyticsEvents.onSourcesExpanded,
+                        listState = listState
                     )
                 }
 

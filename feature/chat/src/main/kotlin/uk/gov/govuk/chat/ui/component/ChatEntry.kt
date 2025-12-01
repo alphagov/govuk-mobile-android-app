@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,6 +39,7 @@ internal fun ChatEntry(
     onMarkdownLinkClicked: (String, String) -> Unit,
     onSourcesExpanded: () -> Unit,
     animationDuration: Int,
+    listState: LazyListState,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -48,7 +50,8 @@ internal fun ChatEntry(
             chatEntry = chatEntry,
             onMarkdownLinkClicked = onMarkdownLinkClicked,
             animationDuration = animationDuration,
-            onSourcesExpanded = onSourcesExpanded
+            onSourcesExpanded = onSourcesExpanded,
+            listState = listState
         )
     }
 }
@@ -59,6 +62,7 @@ private fun AnimatedChatEntry(
     onMarkdownLinkClicked: (String, String) -> Unit,
     onSourcesExpanded: () -> Unit,
     animationDuration: Int,
+    listState: LazyListState,
     modifier: Modifier = Modifier
 ) {
     var showLoading by rememberSaveable(chatEntry.id) { mutableStateOf(false) }
@@ -97,7 +101,8 @@ private fun AnimatedChatEntry(
                     answer = chatEntry.answer,
                     sources = chatEntry.sources,
                     onMarkdownLinkClicked = onMarkdownLinkClicked,
-                    onSourcesExpanded = onSourcesExpanded
+                    onSourcesExpanded = onSourcesExpanded,
+                    listState = listState
                 )
             }
         } else {
@@ -106,7 +111,8 @@ private fun AnimatedChatEntry(
                 answer = chatEntry.answer,
                 sources = chatEntry.sources,
                 onMarkdownLinkClicked = onMarkdownLinkClicked,
-                onSourcesExpanded = onSourcesExpanded
+                onSourcesExpanded = onSourcesExpanded,
+                listState = listState
             )
         }
     }

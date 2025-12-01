@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -120,6 +121,7 @@ private fun Message1(
         answer = stringResource(id = R.string.bot_message_1),
         onMarkdownLinkClicked = { _, _ -> },
         onSourcesExpanded = { },
+        listState = rememberLazyListState(),
         modifier = modifier.padding(top = GovUkTheme.spacing.medium)
     )
 }
@@ -133,6 +135,7 @@ private fun Message2(
         answer = stringResource(id = R.string.bot_message_2),
         onMarkdownLinkClicked = { _, _ -> },
         onSourcesExpanded = { },
+        listState = rememberLazyListState(),
         modifier = modifier.padding(top = GovUkTheme.spacing.medium)
     )
 }
@@ -146,6 +149,7 @@ private fun Message3(
         answer = stringResource(id = R.string.bot_message_3),
         onMarkdownLinkClicked = { _, _ -> },
         onSourcesExpanded = { },
+        listState = rememberLazyListState(),
         modifier = modifier.padding(top = GovUkTheme.spacing.medium)
     )
 }
