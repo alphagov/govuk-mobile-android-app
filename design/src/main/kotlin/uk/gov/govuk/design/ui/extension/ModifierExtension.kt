@@ -8,10 +8,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import uk.gov.govuk.design.R
 
 @Composable
 fun Modifier.drawBottomStroke(colour: Color?, cornerRadius: Dp): Modifier {
@@ -63,14 +65,21 @@ fun Modifier.drawBottomStroke(colour: Color?, cornerRadius: Dp): Modifier {
         .padding(bottom = strokeWidth)
 }
 
-fun Modifier.talkBackText(vararg textParts: String?): Modifier = this.then(
-    Modifier.semantics {
-        val description = textParts
-            .filterNot { it.isNullOrBlank() }
-            .joinToString(". ")
+@Composable
+fun Modifier.talkBackText(vararg textParts: String?): Modifier {
+    val description = textParts
+        .filterNot { it.isNullOrBlank() }
+        .joinToString(". ")
+        .replace(
+            stringResource(R.string.gov_uk),
+            stringResource(R.string.gov_uk_alt_text)
+        )
 
-        if (description.isNotEmpty()) {
-            contentDescription = description
+    return this.then(
+        Modifier.semantics {
+            if (description.isNotEmpty()) {
+                contentDescription = description
+            }
         }
-    }
-)
+    )
+}
