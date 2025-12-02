@@ -219,8 +219,7 @@ private fun ChatScreen(
                             analyticsEvents.onMarkdownLinkClicked(text, url)
                         },
                         animationDuration = animationDuration,
-                        onSourcesExpanded = analyticsEvents.onSourcesExpanded,
-                        listState = listState
+                        onSourcesExpanded = analyticsEvents.onSourcesExpanded
                     )
                 }
 
