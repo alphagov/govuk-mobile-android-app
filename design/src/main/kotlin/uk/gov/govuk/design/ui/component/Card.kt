@@ -36,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -213,6 +214,7 @@ private fun BaseAlertBannerCard(
                                 title,
                                 color = textColour,
                                 modifier = Modifier.padding(start = GovUkTheme.spacing.medium)
+                                    .semantics { heading() },
                             )
                         }
 
@@ -379,13 +381,12 @@ fun HomeBannerCard(
                 text = linkTitle,
                 color = linkColour,
                 modifier = Modifier.weight(1f)
+                    .clearAndSetSemantics{ }
             )
             if (type.hasDecoratedLink) {
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow),
-                    contentDescription = stringResource(
-                        R.string.opens_in_web_browser
-                    ),
+                    contentDescription = null,
                     tint = GovUkTheme.colourScheme.textAndIcons.linkInverse,
                     modifier = Modifier.padding(start = GovUkTheme.spacing.small)
                 )
