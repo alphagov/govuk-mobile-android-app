@@ -14,13 +14,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,7 +39,6 @@ internal fun Sources(
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val degrees by animateFloatAsState(if (expanded) 0f else -180f)
-    val focusRequester = remember { FocusRequester() }
 
     Column(
         modifier = modifier
@@ -109,7 +105,6 @@ internal fun Sources(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequester(focusRequester)
             ) {
                 sources.forEachIndexed { index, _ ->
                     val linkAddendumText = stringResource(id = R.string.sources_open_in_text)
