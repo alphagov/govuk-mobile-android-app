@@ -1,6 +1,5 @@
 package uk.gov.govuk.design.ui.component
 
-import android.R.attr.clickable
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
