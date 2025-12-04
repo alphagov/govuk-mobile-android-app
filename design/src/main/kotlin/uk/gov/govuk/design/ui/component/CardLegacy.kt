@@ -72,10 +72,7 @@ fun GovUkCardLegacy(
     ) {
         Column(
             modifier = Modifier
-                .clickable(
-                    enabled = onClick != null,
-                    onClick = { onClick?.invoke() }
-                )
+                .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)  // if onClick is null Talkback announces 'disabled'
                 .padding(padding)
         ) {
             content()
