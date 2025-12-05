@@ -264,9 +264,20 @@ private fun ChatScreen(
     }
 
     if (chatEntries.isNotEmpty()) {
-        LaunchedEffect(chatEntries.last().second.answer) {
-            delay(animationDuration.toLong())
-            listState.animateScrollToItem(chatEntries.size)
+        val answer = chatEntries.last().second.answer
+        LaunchedEffect(answer) {
+            if (answer.isEmpty()) {
+                // If the updated entry is the user's question then immediately scroll to the bottom
+                // wait for the loading text to fade in and then scroll to the bottom again if required
+                listState.animateScrollToItem(chatEntries.size + 1)
+                delay(animationDuration.toLong() + 100)
+                listState.animateScrollToItem(chatEntries.size + 1)
+            } else {
+                // If the updated entry is the answer then wait for the answer to fade in and scroll to
+                // the entry
+                delay(animationDuration.toLong() + 100)
+                listState.animateScrollToItem(chatEntries.size)
+            }
         }
     }
 }
