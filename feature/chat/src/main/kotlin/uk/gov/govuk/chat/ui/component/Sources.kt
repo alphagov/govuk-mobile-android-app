@@ -12,21 +12,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.chat.domain.Analytics
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
@@ -44,7 +39,6 @@ internal fun Sources(
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val degrees by animateFloatAsState(if (expanded) 0f else -180f)
-    val focusRequester = remember { FocusRequester() }
 
     Column(
         modifier = modifier
@@ -116,20 +110,13 @@ internal fun Sources(
                     val linkAddendumText = stringResource(id = R.string.sources_open_in_text)
                     val linkText = "${sources[index]} $linkAddendumText"
 
-                    val itemModifier = if (index == 0) {
-                        Modifier.focusRequester(focusRequester)
-                    } else {
-                        Modifier
-                    }
-
                     SmallVerticalSpacer()
 
                     Markdown(
                         text = sources[index],
                         talkbackText = linkText,
                         onMarkdownLinkClicked = onMarkdownLinkClicked,
-                        markdownLinkType = Analytics.RESPONSE_SOURCE_LINK_CLICKED,
-                        modifier = itemModifier
+                        markdownLinkType = Analytics.RESPONSE_SOURCE_LINK_CLICKED
                     )
 
                     if (index < sources.size - 1) {
@@ -141,13 +128,6 @@ internal fun Sources(
                 }
 
                 MediumVerticalSpacer()
-            }
-        }
-
-        if (expanded) {
-            LaunchedEffect(Unit) {
-                delay(150)
-                focusRequester.requestFocus()
             }
         }
     }
