@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -27,12 +26,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import kotlinx.coroutines.delay
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.DrillInCard
 import uk.gov.govuk.design.ui.component.FocusableCard
@@ -150,9 +147,6 @@ private fun TopicScreen(
     focusRequester: FocusRequester,
     modifier: Modifier = Modifier
 ) {
-    val focusManager = LocalFocusManager.current
-    val lazyListState = rememberLazyListState()
-
     val popularPagesIndex = 1
     val stepByStepsIndex = popularPagesIndex + topic.popularPages.size
     val servicesIndex = stepByStepsIndex + topic.stepBySteps.size
@@ -166,6 +160,10 @@ private fun TopicScreen(
     val onExternalLinkClick: (section: String, text: String, url: String, selectedItemIndex: Int) -> Unit = {
             section, text, url, selectedItemIndex ->
         onExternalLink(section, text, url, selectedItemIndex, totalItemCount)
+    }
+
+    LaunchedEffect(Unit) {
+        onPageView(topic.title)
     }
 
     Column(
@@ -192,7 +190,7 @@ private fun TopicScreen(
             icon = R.drawable.ic_topic_services_and_info
         )
 
-        LazyColumn(state = lazyListState) {
+        LazyColumn {
             item {
                 Title(
                     title = topic.title,
@@ -250,14 +248,6 @@ private fun TopicScreen(
                     onSubtopic(text, ref, selectedItemIndex, totalItemCount)
                 }
             )
-        }
-    }
-    LaunchedEffect(Unit) {
-        onPageView(topic.title)
-        focusManager.clearFocus(true)
-        delay(500)
-        if (lazyListState.firstVisibleItemIndex == 0) {
-            focusRequester.requestFocus()
         }
     }
 }
@@ -329,10 +319,7 @@ private fun HorizontalScrollView(
     } else {
         // horizontal list
         Box {
-            val horizontalListState = rememberLazyListState()
-
             LazyRow(
-                state = horizontalListState,
                 modifier = modifier.fillMaxWidth()
                     .padding(horizontal = GovUkTheme.spacing.medium),
             ) {
