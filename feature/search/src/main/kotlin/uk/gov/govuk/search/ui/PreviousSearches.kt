@@ -1,6 +1,7 @@
 package uk.gov.govuk.search.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.pluralStringResource
@@ -48,6 +51,8 @@ internal fun PreviousSearches(
     onRemove: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val focusRequester = remember { FocusRequester() }
+
     if (previousSearches.isNotEmpty()) {
         var showDialog by remember { mutableStateOf(false) }
         val localView = LocalView.current
@@ -69,6 +74,7 @@ internal fun PreviousSearches(
         ) {
             item {
                 Header(
+                    focusRequester,
                     onRemoveAll = {
                         showDialog = true
                     }
@@ -97,6 +103,7 @@ internal fun PreviousSearches(
 
 @Composable
 private fun Header(
+    focusRequester: FocusRequester,
     onRemoveAll: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -114,6 +121,8 @@ private fun Header(
             text = stringResource(R.string.previous_searches_heading),
             modifier = Modifier
                 .weight(1f)
+                .focusRequester(focusRequester)
+                .focusable()
                 .semantics { heading() }
         )
 
