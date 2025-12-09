@@ -19,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import uk.gov.govuk.design.ui.component.ExtraLargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.FixedContainerDivider
@@ -72,7 +74,9 @@ internal fun OnboardingPage(
                 LargeTitleBoldLabel(
                     text = title,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = GovUkTheme.spacing.medium)
+                    modifier = Modifier
+                        .semantics { heading() }
+                        .padding(horizontal = GovUkTheme.spacing.medium)
                 )
 
                 screenContent()

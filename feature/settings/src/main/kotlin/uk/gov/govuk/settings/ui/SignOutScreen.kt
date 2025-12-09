@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -73,7 +75,10 @@ private fun SignOutScreen(
             .weight(1f)
             .padding(horizontal = GovUkTheme.spacing.medium)
         ) {
-            LargeTitleBoldLabel(stringResource(R.string.sign_out_title))
+            LargeTitleBoldLabel(
+                text = stringResource(R.string.sign_out_title),
+                modifier = Modifier.semantics { heading() }
+            )
 
             MediumVerticalSpacer()
 

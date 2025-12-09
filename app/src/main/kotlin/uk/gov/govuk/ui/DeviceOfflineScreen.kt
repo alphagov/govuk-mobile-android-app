@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import uk.gov.govuk.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
@@ -35,7 +37,10 @@ internal fun DeviceOfflineScreen(
                 .padding(horizontal = GovUkTheme.spacing.medium)
                 .padding(top = GovUkTheme.spacing.medium)
         ) {
-            LargeTitleBoldLabel(stringResource(R.string.device_offline_title))
+            LargeTitleBoldLabel(
+                text = stringResource(R.string.device_offline_title),
+                modifier = Modifier.semantics { heading() }
+            )
 
             MediumVerticalSpacer()
 
