@@ -56,7 +56,7 @@ internal fun SearchResults(
         item {
             Header(
                 focusRequester = focusRequester,
-                resultCountAccessibilityLabel = numberOfSearchResults
+                resultCountAltText = numberOfSearchResults
             )
         }
         items(searchResults) { searchResult ->
@@ -93,11 +93,11 @@ internal fun SearchResults(
 @Composable
 private fun Header(
     focusRequester: FocusRequester,
-    resultCountAccessibilityLabel: String,
+    resultCountAltText: String,
     modifier: Modifier = Modifier
 ) {
     val heading = stringResource(R.string.search_results_heading)
-    val combinedDescription = "$resultCountAccessibilityLabel. $heading"
+    val combinedDescription = "$resultCountAltText. $heading"
 
     Title3BoldLabel(
         text = heading,

@@ -67,7 +67,7 @@ internal fun PreviousSearches(
                     onRemoveAll = {
                         showDialog = true
                     },
-                    accessibilityLabel = numberOfPreviousSearches
+                    altText = numberOfPreviousSearches
                 )
             }
             items(previousSearches) { searchTerm ->
@@ -94,7 +94,7 @@ internal fun PreviousSearches(
 @Composable
 private fun Header(
     onRemoveAll: () -> Unit,
-    accessibilityLabel: String,
+    altText: String,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -114,7 +114,7 @@ private fun Header(
                 .weight(1f)
                 .semantics {
                     heading()
-                    contentDescription = "$accessibilityLabel. $title"
+                    contentDescription = "$altText. $title"
                     liveRegion = LiveRegionMode.Polite
                 }
         )
