@@ -1,6 +1,7 @@
 package uk.gov.govuk.search.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -51,6 +54,8 @@ internal fun SearchAutocomplete(
     onSearch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val focusRequester = remember { FocusRequester() }
+
     if (suggestions.isNotEmpty()) {
         val heading = stringResource(R.string.search_autocomplete_heading)
         val searchLabel = stringResource(R.string.content_desc_search)
@@ -88,6 +93,8 @@ internal fun SearchAutocomplete(
                     BodyBoldLabel(
                         text = heading,
                         modifier = Modifier
+                            .focusRequester(focusRequester)
+                            .focusable()
                             .semantics { heading() }
                     )
                 }
