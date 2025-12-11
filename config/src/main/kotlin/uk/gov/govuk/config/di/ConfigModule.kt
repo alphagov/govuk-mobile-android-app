@@ -1,5 +1,9 @@
 package uk.gov.govuk.config.di
 
+import com.google.firebase.Firebase
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -51,5 +55,22 @@ class ConfigModule {
             debugFlags = debugFlags,
             configRepo = configRepo
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseRemoteConfig(): FirebaseRemoteConfig {
+        val remoteConfig = Firebase.remoteConfig
+
+        // firebase caches 12 hours by default
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 30 else 3600
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+
+        // set default values if remote fetch fails
+        // remoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)
+
+        return remoteConfig
     }
 }
