@@ -85,7 +85,7 @@ internal class AppViewModel @Inject constructor(
                             userChatOptInState = it.third
                         )
 
-                        updateHomeWidgets(it.first, it.second)
+                        updateHomeWidgets(it.first)
                     }
                 }
             }
@@ -138,8 +138,7 @@ internal class AppViewModel @Inject constructor(
     }
 
     private fun updateHomeWidgets(
-        suppressedWidgets: Set<String>,
-        hasLocalAuthority: Boolean
+        suppressedWidgets: Set<String>
     ) {
         viewModelScope.launch {
             with(flagRepo) {
