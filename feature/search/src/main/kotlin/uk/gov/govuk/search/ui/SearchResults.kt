@@ -16,9 +16,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -41,7 +41,6 @@ internal fun SearchResults(
     val listState = rememberLazyListState()
     val focusRequester = remember { FocusRequester() }
     var previousSearchTerm by rememberSaveable { mutableStateOf("") }
-    val localView = LocalView.current
     val numberOfSearchResults =
         pluralStringResource(
             id = R.plurals.number_of_search_results,
@@ -49,16 +48,16 @@ internal fun SearchResults(
             searchResults.size
         )
 
-    LaunchedEffect(searchResults) {
-        localView.announceForAccessibility(numberOfSearchResults)
-    }
 
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
         state = listState
     ) {
         item {
-            Header(focusRequester)
+            Header(
+                focusRequester = focusRequester,
+                resultCountAltText = numberOfSearchResults
+            )
         }
         items(searchResults) { searchResult ->
             SearchResultCard(
@@ -80,6 +79,7 @@ internal fun SearchResults(
         }
     }
 
+
     LaunchedEffect(searchTerm) {
         // We only want to trigger scroll and focus if we have a new search (rather than orientation change)
         if (searchTerm != previousSearchTerm) {
@@ -93,15 +93,22 @@ internal fun SearchResults(
 @Composable
 private fun Header(
     focusRequester: FocusRequester,
+    resultCountAltText: String,
     modifier: Modifier = Modifier
 ) {
+    val heading = stringResource(R.string.search_results_heading)
+    val combinedDescription = "$resultCountAltText. $heading"
+
     Title3BoldLabel(
-        text = stringResource(R.string.search_results_heading),
+        text = heading,
         modifier = modifier
             .padding(horizontal = GovUkTheme.spacing.extraLarge)
             .padding(top = GovUkTheme.spacing.medium)
             .focusRequester(focusRequester)
             .focusable()
-            .semantics { heading() }
+            .semantics {
+                heading()
+                contentDescription = combinedDescription
+            }
     )
 }

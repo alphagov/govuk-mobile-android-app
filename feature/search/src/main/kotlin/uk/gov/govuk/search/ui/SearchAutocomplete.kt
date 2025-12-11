@@ -22,9 +22,18 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
@@ -53,7 +62,8 @@ internal fun SearchAutocomplete(
     val focusRequester = remember { FocusRequester() }
 
     if (suggestions.isNotEmpty()) {
-        val localView = LocalView.current
+        val heading = stringResource(R.string.search_autocomplete_heading)
+        val searchLabel = stringResource(R.string.content_desc_search)
         val numberOfSuggestedSearches =
             pluralStringResource(
                 id = R.plurals.number_of_suggested_searches,
@@ -61,11 +71,11 @@ internal fun SearchAutocomplete(
                 suggestions.size
             )
 
-        LaunchedEffect(suggestions) {
-            localView.announceForAccessibility(numberOfSuggestedSearches)
-        }
+        var searchesAnnouncement by remember { mutableStateOf("") }
 
-        val context = LocalContext.current
+        LaunchedEffect(numberOfSuggestedSearches) {
+            searchesAnnouncement = numberOfSuggestedSearches
+        }
 
         LazyColumn(
             modifier
@@ -79,11 +89,14 @@ internal fun SearchAutocomplete(
                         .padding(
                             top = GovUkTheme.spacing.medium,
                             bottom = GovUkTheme.spacing.small
-                        ),
+                        ).semantics {
+                            liveRegion = LiveRegionMode.Polite
+                            contentDescription = searchesAnnouncement
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     BodyBoldLabel(
-                        text = stringResource(R.string.search_autocomplete_heading),
+                        text = heading,
                         modifier = Modifier
                             .focusRequester(focusRequester)
                             .focusable()
@@ -103,7 +116,7 @@ internal fun SearchAutocomplete(
                                 bottom = GovUkTheme.spacing.medium
                             )
                             .semantics {
-                                onClick(label = context.getString(R.string.content_desc_search)) { true }
+                                onClick(label = searchLabel) { true }
                             },
                         verticalAlignment = Alignment.CenterVertically
                     ) {

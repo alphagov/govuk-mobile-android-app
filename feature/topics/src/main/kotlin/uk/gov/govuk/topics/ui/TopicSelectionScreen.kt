@@ -1,7 +1,5 @@
 package uk.gov.govuk.topics.ui
 
-import android.content.Context
-import android.view.accessibility.AccessibilityManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +13,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
@@ -99,27 +96,11 @@ private fun TopicSelectionScreen(
                 items = uiState?.topics ?: emptyList(),
                 key = { item -> item.title }
             ) { topic ->
-                val view = LocalView.current
-                val selectedAltText = stringResource(R.string.selected_alt_text)
-                val removedAltText = stringResource(R.string.removed_alt_text)
-
                 TopicSelectionCard(
                     icon = topic.icon,
                     title = topic.title,
                     isSelected = topic.isSelected,
                     onClick = {
-                        val accessibilityManager =
-                            view.context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-
-                        if (accessibilityManager.isEnabled) {
-                            accessibilityManager.interrupt()
-                        }
-
-                        if (topic.isSelected) {
-                            view.announceForAccessibility(removedAltText)
-                        } else {
-                            view.announceForAccessibility(selectedAltText)
-                        }
                         onClick(topic.ref, topic.title)
                     },
                     modifier = modifier

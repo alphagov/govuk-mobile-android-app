@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.net.toUri
 import uk.gov.govuk.BuildConfig.PLAY_STORE_URL
@@ -37,7 +39,10 @@ internal fun RecommendUpdateScreen(
                 .padding(horizontal = GovUkTheme.spacing.medium)
                 .padding(top = GovUkTheme.spacing.medium)
         ) {
-            LargeTitleBoldLabel(stringResource(R.string.recommend_update_title))
+            LargeTitleBoldLabel(
+                text = stringResource(R.string.recommend_update_title),
+                modifier = Modifier.semantics { heading() }
+            )
             MediumVerticalSpacer()
             BodyRegularLabel(stringResource(R.string.recommend_update_description))
         }

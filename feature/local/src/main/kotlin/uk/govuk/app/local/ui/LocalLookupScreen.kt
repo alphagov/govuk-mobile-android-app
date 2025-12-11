@@ -197,7 +197,10 @@ private fun LocalLookupScreen(
                 )
             )
             LargeVerticalSpacer()
-            BodyBoldLabel(stringResource(R.string.local_postcode_use_title))
+            BodyBoldLabel(
+                text = stringResource(R.string.local_postcode_use_title),
+                modifier = Modifier.semantics { heading() }
+            )
             LargeVerticalSpacer()
             BodyRegularLabel(stringResource(R.string.local_postcode_use_description))
         }
