@@ -159,13 +159,10 @@ internal class AppViewModel @Inject constructor(
                     }
                 }
 
-                if (isLocalServicesEnabled() && !hasLocalAuthority) {
-                    widgets.add(HomeWidget.Local)
-                }
                 if (isTopicsEnabled()) {
                     widgets.add(HomeWidget.Topics)
                 }
-                if (isLocalServicesEnabled() && hasLocalAuthority) {
+                if (isLocalServicesEnabled()) {
                     widgets.add(HomeWidget.Local)
                 }
                 if (isRecentActivityEnabled()) {
