@@ -2,6 +2,7 @@ package uk.gov.govuk.home.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.LayoutBoundsHolder
 import androidx.compose.ui.layout.layoutBounds
 import androidx.compose.ui.layout.onVisibilityChanged
@@ -61,9 +64,7 @@ private fun HomeScreen(
     modifier: Modifier = Modifier,
     headerWidget: (@Composable (Modifier) -> Unit)? = null,
 ) {
-    LaunchedEffect(Unit) {
-        onPageView()
-    }
+    val focusRequester = remember { FocusRequester() }
 
     Column(modifier.background(GovUkTheme.colourScheme.surfaces.screenBackground)) {
         Column(
@@ -80,6 +81,8 @@ private fun HomeScreen(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .semantics { heading() }
+                    .focusRequester(focusRequester)
+                    .focusable()
             )
 
             MediumVerticalSpacer()
@@ -139,5 +142,10 @@ private fun HomeScreen(
                 Spacer(modifier = Modifier.height(64.dp))
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        onPageView()
+        focusRequester.requestFocus()
     }
 }
