@@ -410,8 +410,8 @@ class AppViewModelTest {
 
         runTest {
             val homeWidgets = viewModel.homeWidgets.value!!
-            assertEquals(HomeWidget.Local, homeWidgets.first())
-            assertNotEquals(HomeWidget.Local, homeWidgets.last())
+            assertEquals(HomeWidget.Topics, homeWidgets[0])
+            assertEquals(HomeWidget.Local, homeWidgets[1])
         }
     }
 
@@ -421,14 +421,15 @@ class AppViewModelTest {
         coEvery { flagRepo.isLocalServicesEnabled() } returns true
         coEvery { flagRepo.isTopicsEnabled() } returns true
         every { localFeature.hasLocalAuthority() } returns flowOf(true)
+        coEvery { configRepo.config.alertBanner } returns null
 
         val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
             searchFeature, visited, chatFeature, analyticsClient, appNavigation)
 
         runTest {
             val homeWidgets = viewModel.homeWidgets.value!!
-            assertNotEquals(HomeWidget.Local, homeWidgets.first())
-            assertEquals(HomeWidget.Local, homeWidgets.last())
+            assertEquals(HomeWidget.Topics, homeWidgets[0])
+            assertEquals(HomeWidget.Local, homeWidgets[1])
         }
     }
 
