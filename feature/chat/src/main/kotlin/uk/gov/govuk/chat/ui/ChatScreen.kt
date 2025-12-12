@@ -5,6 +5,7 @@ import android.widget.FrameLayout
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +47,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.ChatViewModel
 import uk.gov.govuk.chat.R
@@ -161,6 +164,7 @@ private fun ChatScreen(
         colorStops = calculateStops(heightPx, 20.dp)
     )
     val animationDuration = 500
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         analyticsEvents.onPageView(
@@ -219,7 +223,13 @@ private fun ChatScreen(
                             analyticsEvents.onMarkdownLinkClicked(text, url)
                         },
                         animationDuration = animationDuration,
-                        onSourcesExpanded = analyticsEvents.onSourcesExpanded,
+                        onSourcesExpanded = {
+                            analyticsEvents.onSourcesExpanded()
+                            coroutineScope.launch {
+                                delay(150)
+                                listState.animateScrollBy(128f)
+                            }
+                        },
                     )
                 }
 
