@@ -42,8 +42,8 @@ import uk.gov.govuk.login.data.LoginRepo
 import uk.gov.govuk.navigation.AppNavigation
 import uk.gov.govuk.search.SearchFeature
 import uk.gov.govuk.topics.TopicsFeature
-import uk.gov.govuk.widgets.model.HomeWidget
 import uk.gov.govuk.visited.Visited
+import uk.gov.govuk.widgets.model.HomeWidget
 import uk.govuk.app.local.LocalFeature
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -76,7 +76,6 @@ class AppViewModelTest {
         every { localFeature.hasLocalAuthority() } returns flowOf(false)
         every { appRepo.suppressedHomeWidgets } returns flowOf(emptySet())
         every { flagRepo.isAppAvailable() } returns true
-        every { chatFeature.hasOptedIn() } returns flowOf(false)
 
         viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature,
             localFeature, searchFeature, visited, chatFeature, analyticsClient, appNavigation)
@@ -587,11 +586,8 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given all remote and local flags are true, When init, then should show chat`() = runTest {
+    fun `Given chat remote and local flags are true, When init, then should show chat`() = runTest {
         every { flagRepo.isChatEnabled() } returns true
-        every { flagRepo.isChatOptInEnabled() } returns true
-        every { flagRepo.isChatTestActiveEnabled() } returns true
-        every { chatFeature.hasOptedIn() } returns flowOf(true)
 
         val viewModel = AppViewModel(
             timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature,
@@ -603,43 +599,8 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given all remote flags are true and the local flag is false, When init, then do not show chat`() = runTest {
-        every { flagRepo.isChatEnabled() } returns true
-        every { flagRepo.isChatOptInEnabled() } returns true
-        every { flagRepo.isChatTestActiveEnabled() } returns true
-        every { chatFeature.hasOptedIn() } returns flowOf(false)
-
-        val viewModel = AppViewModel(
-            timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, chatFeature, analyticsClient, appNavigation
-        )
-
-        val uiState = viewModel.uiState.first() as AppUiState.Default
-        assertFalse(uiState.isChatEnabled)
-    }
-
-    @Test
-    fun `Given all other remote flags are true except isChatTestActiveEnabled and the local flag is true, When init, then do not show chat`() = runTest {
-        every { flagRepo.isChatEnabled() } returns true
-        every { flagRepo.isChatOptInEnabled() } returns true
-        every { flagRepo.isChatTestActiveEnabled() } returns false
-        every { chatFeature.hasOptedIn() } returns flowOf(true)
-
-        val viewModel = AppViewModel(
-            timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature,
-            localFeature, searchFeature, visited, chatFeature, analyticsClient, appNavigation
-        )
-
-        val uiState = viewModel.uiState.first() as AppUiState.Default
-        assertFalse(uiState.isChatEnabled)
-    }
-
-    @Test
-    fun `Given all other remote flags are true except isChatEnabled and the local flag is true, When init, then do not show chat`() = runTest {
+    fun `Given chat remote flag is true and the local flag is false, When init, then do not show chat`() = runTest {
         every { flagRepo.isChatEnabled() } returns false
-        every { flagRepo.isChatOptInEnabled() } returns true
-        every { flagRepo.isChatTestActiveEnabled() } returns true
-        every { chatFeature.hasOptedIn() } returns flowOf(true)
 
         val viewModel = AppViewModel(
             timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature,

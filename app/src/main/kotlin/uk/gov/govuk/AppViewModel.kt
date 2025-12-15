@@ -71,18 +71,14 @@ internal class AppViewModel @Inject constructor(
 
                     combine(
                         appRepo.suppressedHomeWidgets,
-                        localFeature.hasLocalAuthority(),
-                        chatFeature.hasOptedIn()
-                    ) { suppressedWidgets, localAuthority, chatHasOptedIn ->
-                        Triple(suppressedWidgets, localAuthority, chatHasOptedIn)
+                        localFeature.hasLocalAuthority()
+                    ) { suppressedWidgets, localAuthority ->
+                        Pair(suppressedWidgets, localAuthority)
                     }.collect {
                         _uiState.value = AppUiState.Default(
                             shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
                             shouldShowExternalBrowser = flagRepo.isExternalBrowserEnabled(),
-                            isChatEnabled = flagRepo.isChatEnabled() &&
-                                    flagRepo.isChatTestActiveEnabled() &&
-                                    it.third,
-                            userChatOptInState = it.third
+                            isChatEnabled = flagRepo.isChatEnabled()
                         )
 
                         updateHomeWidgets(it.first)

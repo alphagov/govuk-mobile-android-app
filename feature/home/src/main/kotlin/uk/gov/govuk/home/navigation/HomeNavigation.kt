@@ -17,7 +17,6 @@ val homeDeepLinks = mapOf("/home" to listOf(HOME_ROUTE))
 
 fun NavGraphBuilder.homeGraph(
     widgets: List<@Composable (Modifier) -> Unit>,
-    userChatOptInState: Boolean,
     modifier: Modifier = Modifier,
     headerWidget: (@Composable (Modifier) -> Unit)? = null,
     transitionOverrideRoutes: List<String> = emptyList()
@@ -45,7 +44,6 @@ fun NavGraphBuilder.homeGraph(
         ) {
             HomeRoute(
                 widgets = widgets,
-                userChatOptInState = userChatOptInState,
                 modifier = modifier,
                 headerWidget = headerWidget
             )

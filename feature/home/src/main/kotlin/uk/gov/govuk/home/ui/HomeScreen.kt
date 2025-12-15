@@ -43,7 +43,6 @@ import uk.gov.govuk.home.ui.animation.AnimateIcon
 @Composable
 internal fun HomeRoute(
     widgets: List<@Composable (Modifier) -> Unit>,
-    userChatOptInState: Boolean,
     modifier: Modifier = Modifier,
     headerWidget: (@Composable (Modifier) -> Unit)? = null,
 ) {
@@ -51,7 +50,7 @@ internal fun HomeRoute(
 
     HomeScreen(
         widgets = widgets,
-        onPageView = { viewModel.onPageView(userChatOptInState = userChatOptInState) },
+        onPageView = { viewModel.onPageView() },
         modifier = modifier,
         headerWidget = headerWidget
     )
