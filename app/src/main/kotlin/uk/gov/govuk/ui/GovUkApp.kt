@@ -62,7 +62,6 @@ import uk.gov.govuk.R
 import uk.gov.govuk.analytics.navigation.analyticsGraph
 import uk.gov.govuk.chat.navigation.CHAT_GRAPH_ROUTE
 import uk.gov.govuk.chat.navigation.chatGraph
-import uk.gov.govuk.chat.navigation.chatOptInGraph
 import uk.gov.govuk.design.ui.component.LoadingScreen
 import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -197,7 +196,6 @@ private fun BottomNavScaffold(
                         viewModel.onSuppressWidgetClick(id, section)
                     },
                     shouldShowExternalBrowser = uiState.shouldShowExternalBrowser,
-                    userChatOptInState = uiState.userChatOptInState,
                     paddingValues = paddingValues
                 )
                 HandleOnResumeNavigation(
@@ -321,7 +319,6 @@ private fun GovUkNavHost(
     onExternalWidgetClick: (String, String?) -> Unit,
     onSuppressWidgetClick: (id: String) -> Unit,
     shouldShowExternalBrowser: Boolean,
-    userChatOptInState: Boolean,
     paddingValues: PaddingValues
 ) {
     val appNavigation = viewModel.appNavigation
@@ -419,7 +416,6 @@ private fun GovUkNavHost(
                     }
                 }
             ),
-            userChatOptInState = userChatOptInState,
             modifier = Modifier.padding(paddingValues),
             headerWidget = if (homeWidgets.contains(HomeWidget.Search)) {
                 { modifier ->
@@ -476,11 +472,6 @@ private fun GovUkNavHost(
             launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert = true } },
             onAuthError = { appNavigation.onSignOut(navController) },
             modifier = Modifier.padding(paddingValues)
-        )
-
-        chatOptInGraph(
-            navController = navController,
-            launchBrowser = { url -> browserLauncher.launch(url) { showBrowserNotFoundAlert = true } }
         )
     }
 
