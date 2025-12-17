@@ -17,12 +17,12 @@ class FirebaseAnalyticsClient @Inject constructor(
 
     fun enable() {
         firebaseAnalytics.setAnalyticsCollectionEnabled(true)
-        firebaseCrashlytics.setCrashlyticsCollectionEnabled(true)
+        firebaseCrashlytics.isCrashlyticsCollectionEnabled = true
     }
 
     fun disable() {
         firebaseAnalytics.setAnalyticsCollectionEnabled(false)
-        firebaseCrashlytics.setCrashlyticsCollectionEnabled(false)
+        firebaseCrashlytics.isCrashlyticsCollectionEnabled = false
     }
 
     fun logEvent(name: String, parameters: Map<String, Any>) {
