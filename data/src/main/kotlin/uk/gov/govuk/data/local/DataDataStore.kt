@@ -10,13 +10,13 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
-class RealmDataStore @Inject constructor(
+class DataDataStore @Inject constructor(
     @Named("database_prefs") private val dataStore: DataStore<Preferences>
 ) {
-
     companion object {
         internal const val REALM_KEY = "realm_key"
         internal const val REALM_IV = "realm_iv"
+        internal const val SUB_ID = "sub_id"
     }
 
     internal suspend fun getRealmKey(): String? {
@@ -36,6 +36,16 @@ class RealmDataStore @Inject constructor(
     internal suspend fun saveRealmIv(iv: String) {
         dataStore.edit { preferences ->
             preferences[stringPreferencesKey(REALM_IV)] = iv
+        }
+    }
+
+    internal suspend fun getSubId(): String? {
+        return dataStore.data.firstOrNull()?.get(stringPreferencesKey(SUB_ID))
+    }
+
+    internal suspend fun saveSubId(subId: String) {
+        dataStore.edit { preferences ->
+            preferences[stringPreferencesKey(SUB_ID)] = subId
         }
     }
 }

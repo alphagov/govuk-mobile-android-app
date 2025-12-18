@@ -18,7 +18,7 @@ import javax.inject.Singleton
 
 @Singleton
 class RealmEncryptionHelper @Inject constructor(
-    private val dataStore: RealmDataStore
+    private val dataRepo: DataRepo
 ) {
 
     private companion object {
@@ -35,8 +35,8 @@ class RealmEncryptionHelper @Inject constructor(
         dispatcher: CoroutineDispatcher = Dispatchers.IO
     ): ByteArray {
         return withContext(dispatcher) {
-            val encryptedRealmKey = dataStore.getRealmKey()
-            val realmIv = dataStore.getRealmIv()
+            val encryptedRealmKey = dataRepo.getRealmKey()
+            val realmIv = dataRepo.getRealmIv()
 
             if (encryptedRealmKey != null && realmIv != null &&
                 keyStore.containsAlias(KEYSTORE_KEY_ALIAS)
@@ -105,7 +105,7 @@ class RealmEncryptionHelper @Inject constructor(
         val encodedKey = Base64.encodeToString(encryptedKey, Base64.DEFAULT)
         val encodedIv = Base64.encodeToString(iv, Base64.DEFAULT)
 
-        dataStore.saveRealmKey(encodedKey)
-        dataStore.saveRealmIv(encodedIv)
+        dataRepo.saveRealmKey(encodedKey)
+        dataRepo.saveRealmIv(encodedIv)
     }
 }
