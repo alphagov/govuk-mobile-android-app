@@ -12,8 +12,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import uk.gov.govuk.data.local.CryptoProvider
-import uk.gov.govuk.data.local.TinkClient
+import uk.gov.govuk.data.crypto.CryptoProvider
+import uk.gov.govuk.data.crypto.TinkClient
 import javax.inject.Named
 import javax.inject.Singleton
 

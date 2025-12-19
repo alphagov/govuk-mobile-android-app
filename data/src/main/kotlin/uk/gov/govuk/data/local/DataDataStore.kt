@@ -15,8 +15,8 @@ class DataDataStore @Inject constructor(
 ) {
     companion object {
         internal const val REALM_KEY = "realm_key"
-        internal const val REALM_IV = "realm_iv"
-        internal const val SUB_ID = "sub_id"
+        internal const val REALM_IV_KEY = "realm_iv"
+        internal const val SUB_ID_KEY = "sub_id"
     }
 
     internal suspend fun getRealmKey(): String? {
@@ -30,22 +30,22 @@ class DataDataStore @Inject constructor(
     }
 
     internal suspend fun getRealmIv(): String? {
-        return dataStore.data.firstOrNull()?.get(stringPreferencesKey(REALM_IV))
+        return dataStore.data.firstOrNull()?.get(stringPreferencesKey(REALM_IV_KEY))
     }
 
     internal suspend fun saveRealmIv(iv: String) {
         dataStore.edit { preferences ->
-            preferences[stringPreferencesKey(REALM_IV)] = iv
+            preferences[stringPreferencesKey(REALM_IV_KEY)] = iv
         }
     }
 
     internal suspend fun getSubId(): String? {
-        return dataStore.data.firstOrNull()?.get(stringPreferencesKey(SUB_ID))
+        return dataStore.data.firstOrNull()?.get(stringPreferencesKey(SUB_ID_KEY))
     }
 
     internal suspend fun saveSubId(subId: String) {
         dataStore.edit { preferences ->
-            preferences[stringPreferencesKey(SUB_ID)] = subId
+            preferences[stringPreferencesKey(SUB_ID_KEY)] = subId
         }
     }
 }

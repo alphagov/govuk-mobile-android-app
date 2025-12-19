@@ -17,9 +17,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import uk.gov.govuk.data.local.DataDataStore
-import uk.gov.govuk.data.local.DataDataStore.Companion.REALM_IV
+import uk.gov.govuk.data.local.DataDataStore.Companion.REALM_IV_KEY
 import uk.gov.govuk.data.local.DataDataStore.Companion.REALM_KEY
-import uk.gov.govuk.data.local.DataDataStore.Companion.SUB_ID
+import uk.gov.govuk.data.local.DataDataStore.Companion.SUB_ID_KEY
 import java.io.File
 import kotlin.io.path.createTempDirectory
 
@@ -93,7 +93,7 @@ class DataDataStoreTest {
 
         runTest {
             dataStore.edit { prefs ->
-                prefs[stringPreferencesKey(REALM_IV)] = "12345"
+                prefs[stringPreferencesKey(REALM_IV_KEY)] = "12345"
             }
             assertEquals("12345", dataDataStore.getRealmIv())
         }
@@ -125,7 +125,7 @@ class DataDataStoreTest {
 
         runTest {
             dataStore.edit { prefs ->
-                prefs[stringPreferencesKey(SUB_ID)] = "12345"
+                prefs[stringPreferencesKey(SUB_ID_KEY)] = "12345"
             }
             assertEquals("12345", dataDataStore.getSubId())
         }

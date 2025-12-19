@@ -40,7 +40,7 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.ERROR
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.LOADING
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.SUCCESS
-import uk.gov.govuk.data.local.CryptoProvider
+import uk.gov.govuk.data.crypto.CryptoProvider
 import uk.gov.govuk.data.local.DataRepo
 import uk.gov.govuk.data.remote.AuthApi
 import java.io.IOException
@@ -891,13 +891,15 @@ class AuthRepoTest {
         coEvery { dataRepo.getSubId() } returns "54321"
         runTest {
             assertTrue(authRepo.isDifferentUser())
-            coVerify {
+            coVerify(exactly = 1) {
                 cryptoProvider.encrypt("12345".toByteArray(StandardCharsets.UTF_8))
-                dataRepo.saveSubId("54321")
                 sharedPrefs.edit()
                 dataRepo.getSubId()
                 cryptoProvider.decrypt("54321")
                 cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
+            }
+            coVerify(exactly = 2) {
+                dataRepo.saveSubId("54321")
             }
         }
     }
@@ -915,7 +917,7 @@ class AuthRepoTest {
         coEvery { dataRepo.getSubId() } returns "54321"
         runTest {
             assertTrue(authRepo.isDifferentUser())
-            coVerify {
+            coVerify(exactly = 1) {
                 cryptoProvider.decrypt("54321")
                 cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
                 dataRepo.saveSubId("54321")
@@ -933,7 +935,7 @@ class AuthRepoTest {
         coEvery { dataRepo.getSubId() } returns null
         runTest {
             assertFalse(authRepo.isDifferentUser())
-            coVerify {
+            coVerify(exactly = 1) {
                 cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
                 dataRepo.saveSubId("54321")
                 dataRepo.getSubId()
@@ -953,7 +955,7 @@ class AuthRepoTest {
         coEvery { dataRepo.getSubId() } returns "54321"
         runTest {
             assertTrue(authRepo.isDifferentUser())
-            coVerify {
+            coVerify(exactly = 1) {
                 cryptoProvider.decrypt("54321")
                 cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
                 dataRepo.getSubId()
@@ -973,7 +975,7 @@ class AuthRepoTest {
         coEvery { dataRepo.getSubId() } returns "54321"
         runTest {
             assertFalse(authRepo.isDifferentUser())
-            coVerify {
+            coVerify(exactly = 1) {
                 cryptoProvider.decrypt("54321")
                 cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
                 dataRepo.saveSubId("54321")
@@ -994,7 +996,7 @@ class AuthRepoTest {
         coEvery { dataRepo.getSubId() } returns "54321"
         runTest {
             assertTrue(authRepo.isDifferentUser())
-            coVerify {
+            coVerify(exactly = 1) {
                 cryptoProvider.decrypt("54321")
                 cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
                 dataRepo.saveSubId("54321")

@@ -1,4 +1,4 @@
-package uk.gov.govuk.data.local
+package uk.gov.govuk.data.crypto
 
 interface CryptoProvider {
     fun encrypt(input: ByteArray): Result<String>

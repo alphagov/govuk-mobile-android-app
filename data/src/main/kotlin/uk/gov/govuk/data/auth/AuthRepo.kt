@@ -28,7 +28,7 @@ import uk.gov.govuk.data.BuildConfig
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.ERROR
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.SUCCESS
 import uk.gov.govuk.data.auth.model.Tokens
-import uk.gov.govuk.data.local.CryptoProvider
+import uk.gov.govuk.data.crypto.CryptoProvider
 import uk.gov.govuk.data.local.DataRepo
 import uk.gov.govuk.data.remote.AuthApi
 import java.nio.charset.StandardCharsets
