@@ -4,7 +4,6 @@ import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.migration.AutomaticSchemaMigration
 import io.realm.kotlin.types.TypedRealmObject
-import uk.gov.govuk.data.local.RealmEncryptionHelper
 import kotlin.reflect.KClass
 
 abstract class RealmProvider(
