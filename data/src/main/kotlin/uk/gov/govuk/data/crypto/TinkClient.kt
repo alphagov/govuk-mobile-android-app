@@ -19,8 +19,6 @@ class TinkClient @Inject constructor(
         const val PREF_FILENAME = "data_prefs"
     }
 
-    private val packageName: String? = context.packageName
-
     private var aead: Aead
 
     init {
@@ -33,8 +31,8 @@ class TinkClient @Inject constructor(
             .withKeyTemplate(KeyTemplates.get("AES256_GCM"))
             .withSharedPref(
                 context,
-                "$packageName.$KEYSET_NAME",
-                "$packageName.$PREF_FILENAME"
+                "${context.packageName}.$KEYSET_NAME",
+                "${context.packageName}.$PREF_FILENAME"
             )
             .withMasterKeyUri("android-keystore://tink_master_key")
             .build()
