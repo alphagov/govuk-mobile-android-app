@@ -41,7 +41,7 @@ import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.ERROR
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.LOADING
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.SUCCESS
 import uk.gov.govuk.data.crypto.CryptoProvider
-import uk.gov.govuk.data.local.DataRepo
+import uk.gov.govuk.data.DataRepo
 import uk.gov.govuk.data.remote.AuthApi
 import java.io.IOException
 import java.nio.charset.StandardCharsets

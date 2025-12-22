@@ -29,7 +29,7 @@ import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.ERROR
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.SUCCESS
 import uk.gov.govuk.data.auth.model.Tokens
 import uk.gov.govuk.data.crypto.CryptoProvider
-import uk.gov.govuk.data.local.DataRepo
+import uk.gov.govuk.data.DataRepo
 import uk.gov.govuk.data.remote.AuthApi
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
@@ -242,7 +242,7 @@ class AuthRepo @Inject constructor(
     suspend fun isDifferentUser(): Boolean {
         migrateExistingSubIdToDataRepo()
 
-        val newSubId = getIdTokenProperty("sub")
+        val newSubId = getSubId()
         val currentSubId = getDecryptedSubId()
         encryptAndSaveSubId(newSubId)
         return !currentSubId.isNullOrBlank() && currentSubId != newSubId
@@ -279,6 +279,11 @@ class AuthRepo @Inject constructor(
     fun getIdTokenIssuedAtDate(): Long? {
         return getIdTokenProperty("iat").toLongOrNull()
     }
+
+    /**
+     * 'The sub attribute is a unique user identifier within each user pool' ~ AWS Cognito docs
+     */
+    private fun getSubId() = getIdTokenProperty("sub")
 
     private fun getIdTokenProperty(name: String): String {
         val parts = tokens.idToken.split(".")

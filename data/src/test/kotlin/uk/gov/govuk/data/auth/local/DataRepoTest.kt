@@ -7,7 +7,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import uk.gov.govuk.data.local.DataDataStore
-import uk.gov.govuk.data.local.DataRepo
+import uk.gov.govuk.data.DataRepo
 
 class DataRepoTest {
 
