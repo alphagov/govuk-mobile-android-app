@@ -90,72 +90,6 @@ fun GovUkCard(
 }
 
 @Composable
-fun HomeNavigationCard(
-    title: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    onSuppressClick: (() -> Unit)? = null,
-    isSelected: Boolean = false,
-    @DrawableRes icon: Int? = null,
-    description: String? = null
-) {
-    GovUkCardLegacy(
-        modifier = modifier,
-        isSelected = isSelected,
-        onClick = onClick
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            icon?.let {
-                Icon(
-                    painterResource(it),
-                    contentDescription = null,
-                    modifier = Modifier.size(40.dp),
-                    tint = GovUkTheme.colourScheme.textAndIcons.icon
-                )
-                SmallHorizontalSpacer()
-            }
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = GovUkTheme.spacing.medium)
-            ) {
-                BodyBoldLabel(title)
-                description?.let {
-                    ExtraSmallVerticalSpacer()
-                    BodyRegularLabel(it)
-                }
-            }
-            Column(
-                horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxHeight()
-            ) {
-                onSuppressClick?.let {
-                    Icon(
-                        painterResource(R.drawable.ic_cancel),
-                        contentDescription = "${stringResource(R.string.content_desc_remove)} $title",
-                        tint = GovUkTheme.colourScheme.textAndIcons.icon,
-                        modifier = Modifier.clickable { onSuppressClick() }
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                } ?: run {
-                    Icon(
-                        painterResource(R.drawable.ic_chevron),
-                        contentDescription = null,
-                        tint = GovUkTheme.colourScheme.textAndIcons.icon
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun BaseAlertBannerCard(
     modifier: Modifier = Modifier,
     title: String?,
@@ -789,56 +723,6 @@ private fun HomeInformationEmergencyBannerCardPreview() {
             isDismissible = true,
             type = EmergencyBannerUiType.INFORMATION,
             onSuppressClick = { }
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun HomeNavigationCardPreview() {
-    GovUkTheme {
-        HomeNavigationCard(
-            title = "Card title",
-            onClick = { },
-            icon = R.drawable.ic_settings,
-            description = "Card description that may go over multiple lines"
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun HomeNavigationCardSuppressiblePreview() {
-    GovUkTheme {
-        HomeNavigationCard(
-            title = "Card title",
-            onClick = { },
-            onSuppressClick = { },
-            icon = R.drawable.ic_settings,
-            description = "Card description that may go over multiple lines"
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun HomeNavigationCardNoDescriptionPreview() {
-    GovUkTheme {
-        HomeNavigationCard(
-            title = "Card title",
-            onClick = { },
-            icon = R.drawable.ic_settings,
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun HomeNavigationCardNoIconPreview() {
-    GovUkTheme {
-        HomeNavigationCard(
-            title = "Card title",
-            onClick = { }
         )
     }
 }
