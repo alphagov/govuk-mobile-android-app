@@ -7,6 +7,14 @@
 -keep class uk.gov.govuk.config.data.remote.model.ConfigResponse
 -keep class uk.gov.govuk.config.data.remote.model.ReleaseFlags
 -keep class uk.gov.govuk.config.data.remote.model.AlertBanner
+
+-keep class uk.gov.govuk.config.data.remote.model.EmergencyBanner
+-keep class uk.gov.govuk.config.data.remote.model.EmergencyBannerType {
+    **[] values();
+    ** valueOf(java.lang.String);
+    <fields>;
+}
+
 -keep class uk.gov.govuk.config.data.remote.model.UserFeedbackBanner
 -keep class uk.gov.govuk.config.data.remote.model.Link
 -keep class uk.gov.govuk.config.data.remote.model.ChatUrls
