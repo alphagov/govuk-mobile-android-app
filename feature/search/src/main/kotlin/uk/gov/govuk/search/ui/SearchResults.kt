@@ -4,7 +4,7 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,7 +34,7 @@ import uk.gov.govuk.search.domain.StringUtils
 internal fun SearchResults(
     searchTerm: String,
     searchResults: List<SearchResult>,
-    onClick: (String, String) -> Unit,
+    onClick: (SearchResult, Int) -> Unit,
     launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -59,12 +59,14 @@ internal fun SearchResults(
                 resultCountAltText = numberOfSearchResults
             )
         }
-        items(searchResults) { searchResult ->
+        itemsIndexed(searchResults) { index, searchResult ->
             SearchResultCard(
                 title = StringUtils.collapseWhitespace(searchResult.title),
                 description = searchResult.description?.let { StringUtils.collapseWhitespace(it) },
                 url = StringUtils.buildFullUrl(searchResult.link),
-                onClick = onClick,
+                onClick = {
+                    onClick(searchResult, index)
+                },
                 launchBrowser = launchBrowser,
                 modifier = Modifier.padding(
                     GovUkTheme.spacing.medium,

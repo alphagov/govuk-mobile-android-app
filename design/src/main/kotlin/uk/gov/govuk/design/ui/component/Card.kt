@@ -400,14 +400,14 @@ fun SearchResultCard(
     title: String,
     description: String?,
     url: String,
-    onClick: (String, String) -> Unit,
+    onClick: () -> Unit,
     launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     GovUkCardLegacy(
         modifier = modifier,
         onClick = {
-            onClick(title, url)
+            onClick()
             launchBrowser(url)
         }
     ) {
@@ -867,7 +867,7 @@ private fun SearchResultWithDescriptionPreview() {
             title = "Card title",
             description = "Description",
             url = "",
-            onClick = { _, _ -> },
+            onClick = {},
             launchBrowser = {}
         )
     }
@@ -881,7 +881,7 @@ private fun SearchResultWithoutDescriptionPreview() {
             title = "Card title",
             description = null,
             url = "",
-            onClick = { _, _ -> },
+            onClick = {},
             launchBrowser = {}
         )
     }
