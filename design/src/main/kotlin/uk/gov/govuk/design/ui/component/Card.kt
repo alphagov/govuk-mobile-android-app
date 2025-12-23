@@ -37,7 +37,6 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.R
 import uk.gov.govuk.design.ui.extension.drawBottomStroke
@@ -53,38 +52,6 @@ import uk.gov.govuk.design.ui.model.linkTitleColour
 import uk.gov.govuk.design.ui.model.textColour
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.design.ui.theme.ThemePreviews
-
-@Composable
-fun GovUkCard(
-    modifier: Modifier = Modifier,
-    isSelected: Boolean = false,
-    onClick: (() -> Unit)? = null,
-    backgroundColour: Color = GovUkTheme.colourScheme.surfaces.listUnselected,
-    padding: Dp = GovUkTheme.spacing.medium,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    val cardColour = if (isSelected) {
-        GovUkTheme.colourScheme.surfaces.listSelected
-    } else {
-        backgroundColour
-    }
-
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = cardColour)
-    ) {
-        Column(
-            modifier = Modifier
-                .clickable(
-                    enabled = onClick != null,
-                    onClick = { onClick?.invoke() }
-                )
-                .padding(padding)
-        ) {
-            content()
-        }
-    }
-}
 
 @Composable
 private fun BaseAlertBannerCard(
