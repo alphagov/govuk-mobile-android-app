@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.test
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -45,6 +46,10 @@ sonar {
             properties["sonar.cpd.exclusions"].toString() + ",**/VisitedRealmProvider.*"
         )
     }
+}
+
+tasks.withType<Test>().all {
+    jvmArgs("--add-opens=java.base/java.util=ALL-UNNAMED")
 }
 
 dependencies {
