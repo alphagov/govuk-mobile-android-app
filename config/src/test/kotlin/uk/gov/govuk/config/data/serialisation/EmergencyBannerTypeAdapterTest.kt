@@ -7,7 +7,6 @@ import com.google.gson.stream.JsonWriter
 import junit.framework.TestCase.assertEquals
 import org.junit.Before
 import org.junit.Test
-import uk.gov.govuk.config.data.remote.model.EmergencyBanner
 import uk.gov.govuk.config.data.remote.model.EmergencyBannerType
 import java.io.StringReader
 import java.io.StringWriter

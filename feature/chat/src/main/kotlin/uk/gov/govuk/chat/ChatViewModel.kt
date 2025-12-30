@@ -200,7 +200,7 @@ internal class ChatViewModel @Inject constructor(
     }
 
     fun onMarkdownLinkClicked(text: String, url: String) {
-        analyticsClient.chatMarkdownLinkClick(text = text, url = url, )
+        analyticsClient.chatMarkdownLinkClick(text = text, url = url)
     }
 
     fun onSourcesExpanded() {
