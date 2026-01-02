@@ -355,6 +355,7 @@ private fun GovUkNavHost(
         )
         analyticsGraph(
             analyticsConsentCompleted = {
+                // TODO GOVUKAPP-3033 activate Firebase here?
                 coroutineScope.launch {
                     appNavigation.onNext(navController)
                 }
