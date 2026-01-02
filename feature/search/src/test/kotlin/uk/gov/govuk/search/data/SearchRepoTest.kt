@@ -42,6 +42,7 @@ class SearchRepoTest {
             total = 1,
             results = listOf(
                 SearchResult(
+                    contentId = "contentId",
                     title = "title",
                     description = "description",
                     link = "link"
