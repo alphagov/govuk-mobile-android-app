@@ -1,4 +1,4 @@
-package uk.gov.govuk.config
+package uk.gov.govuk.config.data.remote.source
 
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.coroutines.tasks.await

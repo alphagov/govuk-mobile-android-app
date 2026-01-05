@@ -1,6 +1,7 @@
-package uk.gov.govuk.config
+package uk.gov.govuk.config.data.remote.source
 
 import com.google.gson.Gson
+import uk.gov.govuk.config.SignatureValidator
 import uk.gov.govuk.config.data.remote.ConfigApi
 import uk.gov.govuk.config.data.remote.model.Config
 import uk.gov.govuk.config.data.remote.model.ConfigResponse
