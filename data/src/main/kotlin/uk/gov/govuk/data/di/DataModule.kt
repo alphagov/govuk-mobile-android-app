@@ -12,6 +12,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import uk.gov.govuk.data.crypto.CryptoProvider
+import uk.gov.govuk.data.crypto.TinkClient
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -30,4 +32,20 @@ internal class DataModule {
             produceFile = { context.preferencesDataStoreFile("database_preferences") }
         )
     }
+
+    @Singleton
+    @Provides
+    @Named("token_prefs")
+    fun provideTokenPreferencesDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
+        return PreferenceDataStoreFactory.create(
+            corruptionHandler = ReplaceFileCorruptionHandler(
+                produceNewData = { emptyPreferences() }
+            ),
+            produceFile = { context.preferencesDataStoreFile("token_preferences") }
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideCryptoProvider(@ApplicationContext context: Context): CryptoProvider = TinkClient(context)
 }

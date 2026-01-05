@@ -45,6 +45,7 @@ googleTagManager = "18.3.0"
 openid = "0.11.1"
 
 gov-secure-store = "0.12.1"
+tink = "1.20.0"
 
 [libraries]
 compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "composeMarkdown" }
@@ -95,6 +96,7 @@ gov-securestore = { group = "uk.gov.securestore", name = "app", version.ref = "g
 google-accompanist = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "googleAccompanist" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation" }
+google-crypto-tink = { group = "com.google.crypto.tink", name = "tink-android", version.ref = "tink" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

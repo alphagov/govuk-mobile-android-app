@@ -28,7 +28,9 @@ import uk.gov.govuk.data.BuildConfig
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.ERROR
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.SUCCESS
 import uk.gov.govuk.data.auth.model.Tokens
+import uk.gov.govuk.data.crypto.CryptoProvider
 import uk.gov.govuk.data.remote.AuthApi
+import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resume
@@ -45,7 +47,9 @@ class AuthRepo @Inject constructor(
     private val biometricManager: BiometricManager,
     private val sharedPreferences: SharedPreferences,
     private val authApi: AuthApi,
-    private val analyticsClient: AnalyticsClient
+    private val analyticsClient: AnalyticsClient,
+    private val tokenRepo: TokenRepo,
+    private val cryptoProvider: CryptoProvider
 ) {
     companion object {
         private const val REFRESH_TOKEN_KEY = "refreshToken"
@@ -234,12 +238,37 @@ class AuthRepo @Inject constructor(
         return secureStore.exists(REFRESH_TOKEN_KEY)
     }
 
-    fun isDifferentUser(): Boolean {
-        val currentSubId = sharedPreferences.getString(SUB_ID_KEY, "")
-        val newSubId = getIdTokenProperty("sub")
-        sharedPreferences.edit(commit = true) { putString(SUB_ID_KEY, newSubId) }
+    suspend fun isDifferentUser(): Boolean {
+        migrateExistingSubIdToDataRepo()
 
-        return currentSubId != "" && currentSubId != newSubId
+        val newSubId = getSubId()
+        val currentSubId = getDecryptedSubId()
+        encryptAndSaveSubId(newSubId)
+        return !currentSubId.isNullOrBlank() && currentSubId != newSubId
+    }
+
+    // TODO - Remove migration in future version
+    private suspend fun migrateExistingSubIdToDataRepo() {
+        if (sharedPreferences.contains(SUB_ID_KEY)) {
+            sharedPreferences.getString(SUB_ID_KEY, "")?.let { subId ->
+                encryptAndSaveSubId(subId)
+                sharedPreferences.edit(commit = true) { remove(SUB_ID_KEY) }
+            }
+        }
+    }
+
+    private suspend fun getDecryptedSubId(): String? {
+        return tokenRepo.getSubId()?.let { encryptedSubId ->
+            val result = cryptoProvider.decrypt(encryptedSubId)
+            result.getOrNull()?.toString(StandardCharsets.UTF_8)
+        }
+    }
+
+    private suspend fun encryptAndSaveSubId(subId: String) {
+        val result = cryptoProvider.encrypt(subId.toByteArray(StandardCharsets.UTF_8))
+        result.getOrNull()?.let { encryptedSubId ->
+            tokenRepo.saveSubId(encryptedSubId)
+        }
     }
 
     fun getUserEmail(): String {
@@ -249,6 +278,11 @@ class AuthRepo @Inject constructor(
     fun getIdTokenIssuedAtDate(): Long? {
         return getIdTokenProperty("iat").toLongOrNull()
     }
+
+    /**
+     * 'The sub attribute is a unique user identifier within each user pool' ~ AWS Cognito docs
+     */
+    private fun getSubId() = getIdTokenProperty("sub")
 
     private fun getIdTokenProperty(name: String): String {
         val parts = tokens.idToken.split(".")

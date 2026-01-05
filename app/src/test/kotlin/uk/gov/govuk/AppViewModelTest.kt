@@ -497,7 +497,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given a new user or the same user has logged in, When on login, then navigate to next nav destination`() {
-        every { authRepo.isDifferentUser() } returns false
+        coEvery { authRepo.isDifferentUser() } returns false
 
         runTest {
             viewModel.onLogin(navController)
@@ -522,7 +522,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given a different user has logged in, When on login, then clear data and navigate to next destination`() {
-        every { authRepo.isDifferentUser() } returns true
+        coEvery { authRepo.isDifferentUser() } returns true
 
         runTest {
             viewModel.onLogin(navController)
