@@ -69,13 +69,13 @@ class ConfigModule {
     fun provideFirebaseRemoteConfig(): FirebaseRemoteConfig {
         val remoteConfig = Firebase.remoteConfig
 
-        // firebase caches 12 hours by default
         val configSettings = remoteConfigSettings {
-            minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 30 else 3600
+            fetchTimeoutInSeconds = 15
+            minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 0 else 3600
         }
         remoteConfig.setConfigSettingsAsync(configSettings)
 
-        // set default values if remote fetch fails
+        // TODO GOVUKAPP-3033 set default values
         // remoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)
 
         return remoteConfig

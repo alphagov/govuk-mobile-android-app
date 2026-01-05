@@ -2,8 +2,8 @@ package uk.gov.govuk.config.data
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import uk.gov.govuk.config.FirebaseConfigDataSource
-import uk.gov.govuk.config.GovUkConfigDataSource
+import uk.gov.govuk.config.data.remote.source.FirebaseConfigDataSource
+import uk.gov.govuk.config.data.remote.source.GovUkConfigDataSource
 import uk.gov.govuk.config.data.remote.model.ChatUrls
 import uk.gov.govuk.config.data.remote.model.Config
 import uk.gov.govuk.config.data.remote.model.EmergencyBanner
