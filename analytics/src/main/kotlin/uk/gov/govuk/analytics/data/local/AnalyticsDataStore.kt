@@ -19,7 +19,7 @@ enum class AnalyticsEnabledState {
 
 @Singleton
 class AnalyticsDataStore @Inject constructor(
-    @Named("analytics_prefs") private val dataStore: DataStore<Preferences>
+    @param:Named("analytics_prefs") private val dataStore: DataStore<Preferences>
 ) {
 
     companion object {

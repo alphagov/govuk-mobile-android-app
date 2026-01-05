@@ -14,7 +14,7 @@ import javax.inject.Singleton
 
 @Singleton
 internal class AppDataStore @Inject constructor(
-    @Named("app_prefs") private val dataStore: DataStore<Preferences>
+    @param:Named("app_prefs") private val dataStore: DataStore<Preferences>
 ) {
     companion object {
         internal const val SKIPPED_BIOMETRICS_KEY = "skipped_biometrics"

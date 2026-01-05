@@ -11,7 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 internal class TopicsDataStore @Inject constructor(
-    @Named("topics_prefs") private val dataStore: DataStore<Preferences>
+    @param:Named("topics_prefs") private val dataStore: DataStore<Preferences>
 ) {
 
     companion object {
