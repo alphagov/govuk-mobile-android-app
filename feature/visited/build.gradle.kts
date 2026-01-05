@@ -47,6 +47,10 @@ sonar {
     }
 }
 
+tasks.withType<Test>().all {
+    jvmArgs("--add-opens=java.base/java.util=ALL-UNNAMED")
+}
+
 dependencies {
     implementation(projects.design)
     implementation(projects.analytics)

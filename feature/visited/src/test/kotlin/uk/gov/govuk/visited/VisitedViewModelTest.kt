@@ -2,7 +2,9 @@ package uk.gov.govuk.visited
 
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,6 +26,7 @@ import uk.gov.govuk.visited.domain.model.VisitedItemUi
 import uk.gov.govuk.visited.ui.model.VisitedUi
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.util.UUID
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class VisitedViewModelTest {
@@ -122,6 +125,9 @@ class VisitedViewModelTest {
 
     @Test
     fun `Given there are visited items, then the status in the view model is correct`() {
+        mockkStatic(UUID::class)
+        every { UUID.randomUUID() } returns UUID.fromString("5fc03087-d265-11e7-b8c6-83e29cd24f4d")
+
         val today = LocalDateTime.now()
 
         val visitedItems = listOf(
