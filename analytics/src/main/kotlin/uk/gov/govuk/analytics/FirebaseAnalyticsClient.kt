@@ -42,6 +42,9 @@ class FirebaseAnalyticsClient @Inject constructor(
         val itemsArrayList = ArrayList<Bundle>()
         ecommerceEvent.items.forEachIndexed { index, item ->
             val itemsBundle = Bundle()
+            item.itemId?.let { id ->
+                itemsBundle.putString(FirebaseAnalytics.Param.ITEM_ID, id)
+            }
             itemsBundle.putString(FirebaseAnalytics.Param.ITEM_NAME, item.itemName)
             itemsBundle.putInt("index", selectedItemIndex ?: (index + 1))
             itemsBundle.putInt("results", ecommerceEvent.totalItemCount)
@@ -51,6 +54,9 @@ class FirebaseAnalyticsClient @Inject constructor(
                 itemsBundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, category)
             }
             itemsBundle.putString(FirebaseAnalytics.Param.LOCATION_ID, item.locationId)
+            item.term?.let { term ->
+                itemsBundle.putString(FirebaseAnalytics.Param.TERM, term)
+            }
             itemsArrayList.add(itemsBundle)
         }
         bundle.putParcelableArrayList(FirebaseAnalytics.Param.ITEMS, itemsArrayList)

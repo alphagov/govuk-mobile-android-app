@@ -33,6 +33,7 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.search.R
 import uk.gov.govuk.search.SearchUiState
 import uk.gov.govuk.search.SearchViewModel
+import uk.gov.govuk.search.data.remote.model.SearchResult
 import uk.gov.govuk.search.ui.component.SearchField
 import uk.gov.govuk.search.ui.component.SearchFieldActions
 
@@ -59,8 +60,13 @@ internal fun SearchRoute(
             onClear = {
                 viewModel.onClear()
             },
-            onResultClick = { title, url ->
-                viewModel.onSearchResultClicked(title, url)
+            onResultClick = { term, result, index, count ->
+                viewModel.onSearchResultClicked(
+                    term = term,
+                    result = result,
+                    index = index,
+                    count = count
+                )
             },
             onRetry = { searchTerm ->
                 viewModel.onSearch(searchTerm)
@@ -93,7 +99,7 @@ private class SearchScreenActions(
     val onBack: () -> Unit,
     val onSearch: (String) -> Unit,
     val onClear: () -> Unit,
-    val onResultClick: (String, String) -> Unit,
+    val onResultClick: (String, SearchResult, Int, Int) -> Unit,
     val onRetry: (String) -> Unit,
     val onRemoveAllPreviousSearches: () -> Unit,
     val onRemovePreviousSearch: (String) -> Unit,
@@ -209,7 +215,14 @@ private fun SearchContent(
             SearchResults(
                 searchTerm = uiState.searchResults.searchTerm,
                 searchResults = uiState.searchResults.values,
-                onClick = actions.onResultClick,
+                onClick = { result, index ->
+                    actions.onResultClick(
+                        uiState.searchResults.searchTerm,
+                        result,
+                        index,
+                        uiState.searchResults.values.size
+                    )
+                },
                 launchBrowser = launchBrowser,
                 modifier = modifier
             )
