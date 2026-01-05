@@ -19,20 +19,15 @@ class TinkClient @Inject constructor(
         const val PREF_FILENAME = "data_prefs"
     }
 
-    private var aead: Aead
-
-    init {
+    private val aead by lazy {
         AeadConfig.register()
-        aead = getAead(context)
-    }
-
-    private fun getAead(context: Context): Aead {
-        return AndroidKeysetManager.Builder()
+        val packageName = context.packageName
+        AndroidKeysetManager.Builder()
             .withKeyTemplate(KeyTemplates.get("AES256_GCM"))
             .withSharedPref(
                 context,
-                "${context.packageName}.$KEYSET_NAME",
-                "${context.packageName}.$PREF_FILENAME"
+                "$packageName.$KEYSET_NAME",
+                "$packageName.$PREF_FILENAME"
             )
             .withMasterKeyUri("android-keystore://tink_master_key")
             .build()
