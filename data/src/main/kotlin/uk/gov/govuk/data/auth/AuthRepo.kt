@@ -29,7 +29,6 @@ import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.ERROR
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.SUCCESS
 import uk.gov.govuk.data.auth.model.Tokens
 import uk.gov.govuk.data.crypto.CryptoProvider
-import uk.gov.govuk.data.DataRepo
 import uk.gov.govuk.data.remote.AuthApi
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
@@ -49,7 +48,7 @@ class AuthRepo @Inject constructor(
     private val sharedPreferences: SharedPreferences,
     private val authApi: AuthApi,
     private val analyticsClient: AnalyticsClient,
-    private val dataRepo: DataRepo,
+    private val tokenRepo: TokenRepo,
     private val cryptoProvider: CryptoProvider
 ) {
     companion object {
@@ -259,7 +258,7 @@ class AuthRepo @Inject constructor(
     }
 
     private suspend fun getDecryptedSubId(): String? {
-        return dataRepo.getSubId()?.let { encryptedSubId ->
+        return tokenRepo.getSubId()?.let { encryptedSubId ->
             val result = cryptoProvider.decrypt(encryptedSubId)
             result.getOrNull()?.toString(StandardCharsets.UTF_8)
         }
@@ -268,7 +267,7 @@ class AuthRepo @Inject constructor(
     private suspend fun encryptAndSaveSubId(subId: String) {
         val result = cryptoProvider.encrypt(subId.toByteArray(StandardCharsets.UTF_8))
         result.getOrNull()?.let { encryptedSubId ->
-            dataRepo.saveSubId(encryptedSubId)
+            tokenRepo.saveSubId(encryptedSubId)
         }
     }
 

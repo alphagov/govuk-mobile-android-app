@@ -35,5 +35,17 @@ internal class DataModule {
 
     @Singleton
     @Provides
+    @Named("token_prefs")
+    fun provideTokenPreferencesDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
+        return PreferenceDataStoreFactory.create(
+            corruptionHandler = ReplaceFileCorruptionHandler(
+                produceNewData = { emptyPreferences() }
+            ),
+            produceFile = { context.preferencesDataStoreFile("token_preferences") }
+        )
+    }
+
+    @Singleton
+    @Provides
     fun provideCryptoProvider(@ApplicationContext context: Context): CryptoProvider = TinkClient(context)
 }

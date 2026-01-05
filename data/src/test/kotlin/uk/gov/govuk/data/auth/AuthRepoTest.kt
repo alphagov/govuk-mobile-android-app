@@ -41,7 +41,6 @@ import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.ERROR
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.LOADING
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.SUCCESS
 import uk.gov.govuk.data.crypto.CryptoProvider
-import uk.gov.govuk.data.DataRepo
 import uk.gov.govuk.data.remote.AuthApi
 import java.io.IOException
 import java.nio.charset.StandardCharsets
@@ -63,7 +62,7 @@ class AuthRepoTest {
     private val authApi = mockk<AuthApi>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val activity = mockk<FragmentActivity>(relaxed = true)
-    private val dataRepo = mockk<DataRepo>(relaxed = true)
+    private val tokenRepo = mockk<TokenRepo>(relaxed = true)
     private val cryptoProvider = mockk<CryptoProvider>(relaxed = true)
 
     private lateinit var authRepo: AuthRepo
@@ -80,7 +79,7 @@ class AuthRepoTest {
             sharedPrefs,
             authApi,
             analyticsClient,
-            dataRepo,
+            tokenRepo,
             cryptoProvider
         )
     }
@@ -888,18 +887,18 @@ class AuthRepoTest {
         every {
             cryptoProvider.decrypt("54321")
         } returns Result.success("12345".toByteArray(StandardCharsets.UTF_8))
-        coEvery { dataRepo.getSubId() } returns "54321"
+        coEvery { tokenRepo.getSubId() } returns "54321"
         runTest {
             assertTrue(authRepo.isDifferentUser())
             coVerify(exactly = 1) {
                 cryptoProvider.encrypt("12345".toByteArray(StandardCharsets.UTF_8))
                 sharedPrefs.edit()
-                dataRepo.getSubId()
+                tokenRepo.getSubId()
                 cryptoProvider.decrypt("54321")
                 cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
             }
             coVerify(exactly = 2) {
-                dataRepo.saveSubId("54321")
+                tokenRepo.saveSubId("54321")
             }
         }
     }
@@ -914,14 +913,14 @@ class AuthRepoTest {
         every {
             cryptoProvider.decrypt("54321")
         } returns Result.success("12345".toByteArray(StandardCharsets.UTF_8))
-        coEvery { dataRepo.getSubId() } returns "54321"
+        coEvery { tokenRepo.getSubId() } returns "54321"
         runTest {
             assertTrue(authRepo.isDifferentUser())
             coVerify(exactly = 1) {
                 cryptoProvider.decrypt("54321")
                 cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
-                dataRepo.saveSubId("54321")
-                dataRepo.getSubId()
+                tokenRepo.saveSubId("54321")
+                tokenRepo.getSubId()
             }
         }
     }
@@ -932,13 +931,13 @@ class AuthRepoTest {
         every {
             cryptoProvider.encrypt(any())
         } returns Result.success("54321")
-        coEvery { dataRepo.getSubId() } returns null
+        coEvery { tokenRepo.getSubId() } returns null
         runTest {
             assertFalse(authRepo.isDifferentUser())
             coVerify(exactly = 1) {
                 cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
-                dataRepo.saveSubId("54321")
-                dataRepo.getSubId()
+                tokenRepo.saveSubId("54321")
+                tokenRepo.getSubId()
             }
         }
     }
@@ -952,13 +951,13 @@ class AuthRepoTest {
         every {
             cryptoProvider.decrypt("54321")
         } returns Result.success("12345".toByteArray(StandardCharsets.UTF_8))
-        coEvery { dataRepo.getSubId() } returns "54321"
+        coEvery { tokenRepo.getSubId() } returns "54321"
         runTest {
             assertTrue(authRepo.isDifferentUser())
             coVerify(exactly = 1) {
                 cryptoProvider.decrypt("54321")
                 cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
-                dataRepo.getSubId()
+                tokenRepo.getSubId()
             }
         }
     }
@@ -972,14 +971,14 @@ class AuthRepoTest {
         every {
             cryptoProvider.decrypt("54321")
         } returns Result.failure(Throwable())
-        coEvery { dataRepo.getSubId() } returns "54321"
+        coEvery { tokenRepo.getSubId() } returns "54321"
         runTest {
             assertFalse(authRepo.isDifferentUser())
             coVerify(exactly = 1) {
                 cryptoProvider.decrypt("54321")
                 cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
-                dataRepo.saveSubId("54321")
-                dataRepo.getSubId()
+                tokenRepo.saveSubId("54321")
+                tokenRepo.getSubId()
             }
         }
     }
@@ -993,14 +992,14 @@ class AuthRepoTest {
         every {
             cryptoProvider.decrypt("54321")
         } returns Result.success("12345".toByteArray(StandardCharsets.UTF_8))
-        coEvery { dataRepo.getSubId() } returns "54321"
+        coEvery { tokenRepo.getSubId() } returns "54321"
         runTest {
             assertTrue(authRepo.isDifferentUser())
             coVerify(exactly = 1) {
                 cryptoProvider.decrypt("54321")
                 cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
-                dataRepo.saveSubId("54321")
-                dataRepo.getSubId()
+                tokenRepo.saveSubId("54321")
+                tokenRepo.getSubId()
             }
         }
     }

@@ -19,7 +19,7 @@ class TinkClient @Inject constructor(
         const val PREF_FILENAME = "tink_prefs"
     }
 
-    private val aead by lazy {
+    private val aead: Aead by lazy {
         AeadConfig.register()
         val packageName = context.packageName
         AndroidKeysetManager.Builder()
