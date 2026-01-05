@@ -10,9 +10,18 @@ class FirebaseConfigDataSource @Inject constructor(
     private val firebaseRemoteConfig: FirebaseRemoteConfig
 ) {
 
-    suspend fun fetchAndActivate(): Boolean {
+    suspend fun fetch(): Boolean {
         return try {
-            firebaseRemoteConfig.fetchAndActivate().await()
+            firebaseRemoteConfig.fetch().await()
+            true
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    suspend fun activate(): Boolean {
+        return try {
+            firebaseRemoteConfig.activate().await()
         } catch (_: Exception) {
             false
         }

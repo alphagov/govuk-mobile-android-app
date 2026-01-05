@@ -22,4 +22,5 @@ interface ConfigRepo {
     val emergencyBanners: List<EmergencyBanner>?
 
     suspend fun initConfig(): Result<Unit>
+    suspend fun activateRemoteConfig(): Boolean
 }

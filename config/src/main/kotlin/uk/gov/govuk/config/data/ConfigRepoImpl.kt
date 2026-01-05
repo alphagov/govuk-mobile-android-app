@@ -28,7 +28,7 @@ class ConfigRepoImpl @Inject constructor(
         get() = checkNotNull(_config) { "You must init config successfully before use!!!" }
     override suspend fun initConfig(): Result<Unit> = coroutineScope {
         val firebaseConfigDeferred = async {
-            firebaseDataSource.fetchAndActivate()
+            firebaseDataSource.fetch()
         }
 
         val govUkConfigResult = govUkDataSource.fetchConfig()
@@ -43,6 +43,8 @@ class ConfigRepoImpl @Inject constructor(
             govUkConfigResult as Result<Unit>
         }
     }
+
+    override suspend fun activateRemoteConfig() = firebaseDataSource.activate()
 
     override val isAvailable: Boolean
         get() = safeConfig.available

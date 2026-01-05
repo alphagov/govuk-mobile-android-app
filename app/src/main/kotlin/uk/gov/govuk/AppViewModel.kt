@@ -60,6 +60,12 @@ internal class AppViewModel @Inject constructor(
 
     private suspend fun initWithConfig() {
         val configResult = configRepo.initConfig()
+
+        // returning users
+        if (analyticsClient.isAnalyticsEnabled()) {
+            configRepo.activateRemoteConfig()
+        }
+
         when (configResult) {
             is Success -> {
                 if (!flagRepo.isAppAvailable()) {
@@ -126,6 +132,12 @@ internal class AppViewModel @Inject constructor(
                 analyticsClient.clear()
             }
             appNavigation.onNext(navController)
+        }
+    }
+
+    suspend fun onAnalyticsConsentCompleted() {
+        if (analyticsClient.isAnalyticsEnabled()) {
+            configRepo.activateRemoteConfig()
         }
     }
 
