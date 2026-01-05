@@ -133,23 +133,25 @@ class SearchViewModelTest {
                 )
                 viewModel.onSearchResultClicked("search term", searchResult, 0, 10)
 
-                analyticsClient.searchResultClick("search result title", "search result link")
-                analyticsClient.selectItemEvent(
-                    EcommerceEvent(
-                        itemListName = "Search",
-                        itemListId = "search_results",
-                        items = listOf(
-                            EcommerceEvent.Item(
-                                itemId = "1234",
-                                itemName = "search result title",
-                                locationId = "search result link",
-                                term = "search term"
-                            )
+                verify {
+                    analyticsClient.searchResultClick("search result title", "search result link")
+                    analyticsClient.selectItemEvent(
+                        EcommerceEvent(
+                            itemListName = "Search",
+                            itemListId = "search_results",
+                            items = listOf(
+                                EcommerceEvent.Item(
+                                    itemId = "1234",
+                                    itemName = "search result title",
+                                    locationId = "search result link",
+                                    term = "search term"
+                                )
+                            ),
+                            totalItemCount = 10
                         ),
-                        totalItemCount = 10
-                    ),
-                    selectedItemIndex = 1
-                )
+                        selectedItemIndex = 1
+                    )
+                }
             }
         }
 
