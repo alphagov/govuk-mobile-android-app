@@ -14,6 +14,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import uk.gov.govuk.config.BuildConfig
+import uk.gov.govuk.config.R
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.ConfigRepoImpl
 import uk.gov.govuk.config.data.flags.DebugFlags
@@ -47,7 +48,10 @@ class ConfigModule {
     @Singleton
     fun providesGson(): Gson {
         return GsonBuilder()
-            .registerTypeAdapter(EmergencyBannerTypeAdapter::class.java, EmergencyBannerTypeAdapter())
+            .registerTypeAdapter(
+                EmergencyBannerTypeAdapter::class.java,
+                EmergencyBannerTypeAdapter()
+            )
             .create()
     }
 
@@ -66,18 +70,11 @@ class ConfigModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseRemoteConfig(): FirebaseRemoteConfig {
-        val remoteConfig = Firebase.remoteConfig
-
-        val configSettings = remoteConfigSettings {
-            fetchTimeoutInSeconds = 15
-            minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 0 else 3600
-        }
-        remoteConfig.setConfigSettingsAsync(configSettings)
-
-        // TODO GOVUKAPP-3033 set default values
-        // remoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)
-
-        return remoteConfig
+    fun provideFirebaseRemoteConfig(): FirebaseRemoteConfig = Firebase.remoteConfig.apply {
+        setConfigSettingsAsync(remoteConfigSettings {
+            fetchTimeoutInSeconds = 15L
+            minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 0L else 3600L
+        })
+        setDefaultsAsync(R.xml.remote_config_defaults)
     }
 }
