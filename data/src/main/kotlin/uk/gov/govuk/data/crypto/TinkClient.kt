@@ -15,8 +15,8 @@ class TinkClient @Inject constructor(
     context: Context
 ) : CryptoProvider {
     private companion object {
-        const val KEYSET_NAME = "data_key_set"
-        const val PREF_FILENAME = "data_prefs"
+        const val KEYSET_NAME = "tink_key_set"
+        const val PREF_FILENAME = "tink_prefs"
     }
 
     private val aead by lazy {
