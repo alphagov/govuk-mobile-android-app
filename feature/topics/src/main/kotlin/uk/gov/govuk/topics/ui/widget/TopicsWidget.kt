@@ -242,7 +242,7 @@ private fun TopicsWidgetPreview() {
                 yourTopics = topics,
                 allTopics = topics
             ),
-            onView = { _, _, -> },
+            onView = { _, _ -> },
             onTopicClick = { _, _, _, _, _ -> },
             onEditClick = { }
         )
@@ -258,7 +258,7 @@ private fun TopicsWidgetEmptyTopicsPreview() {
                 allTopics = emptyList(),
                 yourTopics = emptyList()
             ),
-            onView = { _, _, -> },
+            onView = { _, _ -> },
             onTopicClick = { _, _, _, _, _ -> },
             onEditClick = { }
         )

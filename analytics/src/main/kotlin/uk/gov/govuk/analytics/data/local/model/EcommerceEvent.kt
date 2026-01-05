@@ -7,8 +7,10 @@ data class EcommerceEvent(
     val totalItemCount: Int
 ) {
     data class Item(
+        val itemId: String? = null,
         val itemName: String,
         val itemCategory: String? = null,
-        val locationId: String
+        val locationId: String,
+        val term: String? = null
     )
 }

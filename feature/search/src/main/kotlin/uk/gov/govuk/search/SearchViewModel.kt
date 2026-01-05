@@ -7,12 +7,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
+import uk.gov.govuk.analytics.data.local.model.EcommerceEvent
+import uk.gov.govuk.analytics.extension.redactPii
 import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.Success
 import uk.gov.govuk.search.SearchUiState.Error
 import uk.gov.govuk.search.SearchUiState.SearchResults
 import uk.gov.govuk.search.SearchUiState.Suggestions
 import uk.gov.govuk.search.data.SearchRepo
+import uk.gov.govuk.search.data.remote.model.SearchResult
 import uk.gov.govuk.search.domain.SearchConfig
 import uk.gov.govuk.visited.Visited
 import java.util.UUID
@@ -29,6 +32,9 @@ internal class SearchViewModel @Inject constructor(
         private const val SCREEN_CLASS = "SearchScreen"
         private const val SCREEN_NAME = "Search"
         private const val TITLE = "Search"
+        private const val LIST_NAME = "Search"
+        private const val LIST_ID = "search_results"
+
     }
 
     private val _uiState: MutableStateFlow<SearchUiState> = MutableStateFlow(SearchUiState())
@@ -52,6 +58,20 @@ internal class SearchViewModel @Inject constructor(
         )
     }
 
+    private fun fetchAutocompleteSuggestions(searchTerm: String) {
+        viewModelScope.launch {
+            val result = searchRepo.performLookup(searchTerm)
+            if (result is Success) {
+                emitUiState(suggestions = Suggestions(searchTerm, result.value.suggestions))
+            }
+        }
+    }
+
+    fun onSearch(searchTerm: String) {
+        fetchSearchResults(searchTerm)
+        analyticsClient.search(searchTerm)
+    }
+
     private fun fetchSearchResults(searchTerm: String) {
         val trimmedSearchTerm = searchTerm.trim()
 
@@ -71,6 +91,7 @@ internal class SearchViewModel @Inject constructor(
                                     result.value.results
                                 )
                             )
+                            sendResultsAnalytics(trimmedSearchTerm, result.value.results)
                         } else {
                             emitUiState(error = Error.Empty(id, trimmedSearchTerm))
                         }
@@ -83,24 +104,49 @@ internal class SearchViewModel @Inject constructor(
         }
     }
 
-    private fun fetchAutocompleteSuggestions(searchTerm: String) {
-        viewModelScope.launch {
-            val result = searchRepo.performLookup(searchTerm)
-            if (result is Success) {
-                emitUiState(suggestions = Suggestions(searchTerm, result.value.suggestions))
-            }
-        }
+    private fun sendResultsAnalytics(term: String, results: List<SearchResult>) {
+        analyticsClient.viewItemListEvent(
+            ecommerceEvent = EcommerceEvent(
+                itemListName = LIST_NAME,
+                itemListId = LIST_ID,
+                items = results.map { result ->
+                    EcommerceEvent.Item(
+                        itemId = result.contentId,
+                        itemName = result.title,
+                        locationId = result.link,
+                        term = term.redactPii()
+                    )
+                },
+                totalItemCount = results.size
+            )
+        )
     }
 
-    fun onSearch(searchTerm: String) {
-        fetchSearchResults(searchTerm)
-        analyticsClient.search(searchTerm)
-    }
-
-    fun onSearchResultClicked(title: String, url: String) {
-        analyticsClient.searchResultClick(text = title, url = url)
+    fun onSearchResultClicked(
+        term: String,
+        result: SearchResult,
+        index: Int,
+        count: Int
+    ) {
+        analyticsClient.searchResultClick(text = result.title, url = result.link)
+        analyticsClient.selectItemEvent(
+            ecommerceEvent = EcommerceEvent(
+                itemListName = LIST_NAME,
+                itemListId = LIST_ID,
+                items = listOf(
+                    EcommerceEvent.Item(
+                        itemId = result.contentId,
+                        itemName = result.title,
+                        locationId = result.link,
+                        term = term
+                    )
+                ),
+                totalItemCount = count
+            ),
+            selectedItemIndex = index + 1 // not zero indexed
+        )
         viewModelScope.launch {
-            visited.visitableItemClick(title = title, url = url)
+            visited.visitableItemClick(title = result.title, url = result.link)
         }
     }
 

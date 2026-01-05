@@ -103,10 +103,12 @@ private fun NoVisitedItemsPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun VisitedItemsPreview() {
-    val items = listOf(VisitedUi(
-        "Title",
-        "www.preview.com",
-        "")
+    val items = listOf(
+        VisitedUi(
+            title = "Title",
+            url = "www.preview.com",
+            lastVisited = ""
+        )
     )
     GovUkTheme {
         VisitedItems(

@@ -6,14 +6,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -40,7 +37,6 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.R
 import uk.gov.govuk.design.ui.extension.drawBottomStroke
@@ -56,104 +52,6 @@ import uk.gov.govuk.design.ui.model.linkTitleColour
 import uk.gov.govuk.design.ui.model.textColour
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.design.ui.theme.ThemePreviews
-
-@Composable
-fun GovUkCard(
-    modifier: Modifier = Modifier,
-    isSelected: Boolean = false,
-    onClick: (() -> Unit)? = null,
-    backgroundColour: Color = GovUkTheme.colourScheme.surfaces.listUnselected,
-    padding: Dp = GovUkTheme.spacing.medium,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    val cardColour = if (isSelected) {
-        GovUkTheme.colourScheme.surfaces.listSelected
-    } else {
-        backgroundColour
-    }
-
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = cardColour)
-    ) {
-        Column(
-            modifier = Modifier
-                .clickable(
-                    enabled = onClick != null,
-                    onClick = { onClick?.invoke() }
-                )
-                .padding(padding)
-        ) {
-            content()
-        }
-    }
-}
-
-@Composable
-fun HomeNavigationCard(
-    title: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    onSuppressClick: (() -> Unit)? = null,
-    isSelected: Boolean = false,
-    @DrawableRes icon: Int? = null,
-    description: String? = null
-) {
-    GovUkCardLegacy(
-        modifier = modifier,
-        isSelected = isSelected,
-        onClick = onClick
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            icon?.let {
-                Icon(
-                    painterResource(it),
-                    contentDescription = null,
-                    modifier = Modifier.size(40.dp),
-                    tint = GovUkTheme.colourScheme.textAndIcons.icon
-                )
-                SmallHorizontalSpacer()
-            }
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = GovUkTheme.spacing.medium)
-            ) {
-                BodyBoldLabel(title)
-                description?.let {
-                    ExtraSmallVerticalSpacer()
-                    BodyRegularLabel(it)
-                }
-            }
-            Column(
-                horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxHeight()
-            ) {
-                onSuppressClick?.let {
-                    Icon(
-                        painterResource(R.drawable.ic_cancel),
-                        contentDescription = "${stringResource(R.string.content_desc_remove)} $title",
-                        tint = GovUkTheme.colourScheme.textAndIcons.icon,
-                        modifier = Modifier.clickable { onSuppressClick() }
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                } ?: run {
-                    Icon(
-                        painterResource(R.drawable.ic_chevron),
-                        contentDescription = null,
-                        tint = GovUkTheme.colourScheme.textAndIcons.icon
-                    )
-                }
-            }
-        }
-    }
-}
 
 @Composable
 private fun BaseAlertBannerCard(
@@ -400,14 +298,14 @@ fun SearchResultCard(
     title: String,
     description: String?,
     url: String,
-    onClick: (String, String) -> Unit,
+    onClick: () -> Unit,
     launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     GovUkCardLegacy(
         modifier = modifier,
         onClick = {
-            onClick(title, url)
+            onClick()
             launchBrowser(url)
         }
     ) {
@@ -795,56 +693,6 @@ private fun HomeInformationEmergencyBannerCardPreview() {
 
 @Preview
 @Composable
-private fun HomeNavigationCardPreview() {
-    GovUkTheme {
-        HomeNavigationCard(
-            title = "Card title",
-            onClick = { },
-            icon = R.drawable.ic_settings,
-            description = "Card description that may go over multiple lines"
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun HomeNavigationCardSuppressiblePreview() {
-    GovUkTheme {
-        HomeNavigationCard(
-            title = "Card title",
-            onClick = { },
-            onSuppressClick = { },
-            icon = R.drawable.ic_settings,
-            description = "Card description that may go over multiple lines"
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun HomeNavigationCardNoDescriptionPreview() {
-    GovUkTheme {
-        HomeNavigationCard(
-            title = "Card title",
-            onClick = { },
-            icon = R.drawable.ic_settings,
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun HomeNavigationCardNoIconPreview() {
-    GovUkTheme {
-        HomeNavigationCard(
-            title = "Card title",
-            onClick = { }
-        )
-    }
-}
-
-@Preview
-@Composable
 private fun HomeAlertCardPreview() {
     GovUkTheme {
         HomeAlertCard(
@@ -867,7 +715,7 @@ private fun SearchResultWithDescriptionPreview() {
             title = "Card title",
             description = "Description",
             url = "",
-            onClick = { _, _ -> },
+            onClick = {},
             launchBrowser = {}
         )
     }
@@ -881,7 +729,7 @@ private fun SearchResultWithoutDescriptionPreview() {
             title = "Card title",
             description = null,
             url = "",
-            onClick = { _, _ -> },
+            onClick = {},
             launchBrowser = {}
         )
     }

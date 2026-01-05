@@ -25,6 +25,7 @@ import org.junit.Test
 import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
 import uk.gov.govuk.analytics.AnalyticsClient
+import uk.gov.govuk.analytics.data.local.model.EcommerceEvent
 import uk.gov.govuk.data.model.Result.DeviceOffline
 import uk.gov.govuk.data.model.Result.Error
 import uk.gov.govuk.data.model.Result.ServiceNotResponding
@@ -124,10 +125,32 @@ class SearchViewModelTest {
         @Test
         fun `Given a search, and a search result is clicked, then log analytics`() {
             runTest {
-                viewModel.onSearchResultClicked("search result title", "search result link")
+                val searchResult = SearchResult(
+                    contentId = "1234",
+                    title = "search result title",
+                    description = "",
+                    link = "search result link"
+                )
+                viewModel.onSearchResultClicked("search term", searchResult, 0, 10)
 
-                coVerify {
+                verify {
                     analyticsClient.searchResultClick("search result title", "search result link")
+                    analyticsClient.selectItemEvent(
+                        EcommerceEvent(
+                            itemListName = "Search",
+                            itemListId = "search_results",
+                            items = listOf(
+                                EcommerceEvent.Item(
+                                    itemId = "1234",
+                                    itemName = "search result title",
+                                    locationId = "search result link",
+                                    term = "search term"
+                                )
+                            ),
+                            totalItemCount = 10
+                        ),
+                        selectedItemIndex = 1
+                    )
                 }
             }
         }
@@ -135,7 +158,13 @@ class SearchViewModelTest {
         @Test
         fun `Given a search, and a search result is clicked, then log visited item`() {
             runTest {
-                viewModel.onSearchResultClicked("search result title", "search result link")
+                val searchResult = SearchResult(
+                    contentId = "1234",
+                    title = "search result title",
+                    description = "",
+                    link = "search result link"
+                )
+                viewModel.onSearchResultClicked("search term", searchResult, 0, 0)
 
                 coVerify {
                     visited.visitableItemClick(title = "search result title", url = "search result link")
@@ -155,9 +184,16 @@ class SearchViewModelTest {
             total = 1,
             results = listOf(
                 SearchResult(
-                    title = "title",
-                    description = "description",
-                    link = "link"
+                    contentId = "contentId1",
+                    title = "title1",
+                    description = "description1",
+                    link = "link1"
+                ),
+                SearchResult(
+                    contentId = "contentId2",
+                    title = "title2",
+                    description = "description2",
+                    link = "link2"
                 )
             )
         )
@@ -272,7 +308,7 @@ class SearchViewModelTest {
         }
 
         @Test
-        fun `Given a search with a result, then emit search results`() {
+        fun `Given a search with a result, then emit search results and log ecomm`() {
             coEvery { repository.performSearch(searchTerm) } returns Success(resultWithOneResult)
 
             val viewModel = SearchViewModel(analyticsClient, visited, repository)
@@ -283,9 +319,33 @@ class SearchViewModelTest {
 
                 assertEquals(searchTerm, uiState.searchResults!!.searchTerm)
                 assertNull(uiState.suggestions)
-                assertEquals(1, uiState.searchResults.values.size)
+                assertEquals(2, uiState.searchResults.values.size)
                 assertFalse(uiState.performingSearch)
                 assertNull(uiState.error)
+
+                verify {
+                    analyticsClient.viewItemListEvent(
+                        EcommerceEvent(
+                            itemListName = "Search",
+                            itemListId = "search_results",
+                            items = listOf(
+                                EcommerceEvent.Item(
+                                    itemId = "contentId1",
+                                    itemName = "title1",
+                                    locationId = "link1",
+                                    term = searchTerm
+                                ),
+                                EcommerceEvent.Item(
+                                    itemId = "contentId2",
+                                    itemName = "title2",
+                                    locationId = "link2",
+                                    term = searchTerm
+                                )
+                            ),
+                            totalItemCount = 2
+                        )
+                    )
+                }
             }
         }
 
