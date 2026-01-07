@@ -54,7 +54,7 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.design.ui.theme.ThemePreviews
 
 @Composable
-private fun BaseAlertBannerCard(
+private fun BaseBannerCard(
     modifier: Modifier = Modifier,
     title: String?,
     description: String?,
@@ -196,7 +196,7 @@ fun HomeBannerCard(
     launchBrowser: (url: String) -> Unit,
     onSuppressClick: (() -> Unit)? = null
 ) {
-    BaseAlertBannerCard(
+    BaseBannerCard(
         modifier = modifier,
         title = title,
         description = description,

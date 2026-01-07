@@ -22,7 +22,6 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -334,11 +333,11 @@ class AppViewModelTest {
     @Test
     fun `When an suppress widget is clicked, then log analytics`() {
         runTest {
-            viewModel.onSuppressWidgetClick("id", "section")
+            viewModel.onSuppressWidgetClick("id", "text", "section")
 
             coVerify {
                 appRepo.suppressHomeWidget("id")
-                analyticsClient.suppressWidgetClick("id", "section")
+                analyticsClient.suppressWidgetClick("text", "section")
             }
         }
     }

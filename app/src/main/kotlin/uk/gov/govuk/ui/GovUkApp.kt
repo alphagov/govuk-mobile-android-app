@@ -192,8 +192,8 @@ private fun BottomNavScaffold(
                             section = section
                         )
                     },
-                    onSuppressWidgetClick = { id ->
-                        viewModel.onSuppressWidgetClick(id, section)
+                    onSuppressWidgetClick = { id, text ->
+                        viewModel.onSuppressWidgetClick(id, text, section)
                     },
                     shouldShowExternalBrowser = uiState.shouldShowExternalBrowser,
                     paddingValues = paddingValues
@@ -315,9 +315,9 @@ private fun GovUkNavHost(
     viewModel: AppViewModel,
     navController: NavHostController,
     homeWidgets: List<HomeWidget>?,
-    onInternalWidgetClick: (String) -> Unit,
-    onExternalWidgetClick: (String, String?) -> Unit,
-    onSuppressWidgetClick: (id: String) -> Unit,
+    onInternalWidgetClick: (text: String) -> Unit,
+    onExternalWidgetClick: (text: String, url: String?) -> Unit,
+    onSuppressWidgetClick: (id: String, text: String) -> Unit,
     shouldShowExternalBrowser: Boolean,
     paddingValues: PaddingValues
 ) {

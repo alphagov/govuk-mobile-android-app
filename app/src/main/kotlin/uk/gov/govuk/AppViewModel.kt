@@ -182,13 +182,14 @@ internal class AppViewModel @Inject constructor(
 
     fun onSuppressWidgetClick(
         id: String,
+        text: String,
         section: String
     ) {
         viewModelScope.launch {
             appRepo.suppressHomeWidget(id)
         }
         analyticsClient.suppressWidgetClick(
-            id,
+            text,
             section
         )
     }
