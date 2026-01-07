@@ -12,7 +12,7 @@ import javax.inject.Singleton
 
 @Singleton
 internal class ChatDataStore @Inject constructor(
-    @Named("chat_prefs") private val dataStore: DataStore<Preferences>
+    @param:Named("chat_prefs") private val dataStore: DataStore<Preferences>
 ) {
 
     companion object {

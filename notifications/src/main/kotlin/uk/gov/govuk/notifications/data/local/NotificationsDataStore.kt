@@ -11,7 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class NotificationsDataStore @Inject constructor(
-    @Named("notification_prefs") private val dataStore: DataStore<Preferences>
+    @param:Named("notification_prefs") private val dataStore: DataStore<Preferences>
 ) {
 
     companion object {
