@@ -6,7 +6,10 @@ import uk.gov.govuk.config.data.remote.ConfigApi
 import uk.gov.govuk.config.data.remote.model.Config
 import uk.gov.govuk.config.data.remote.model.ConfigResponse
 import uk.gov.govuk.data.model.Result
-import uk.gov.govuk.data.model.Result.*
+import uk.gov.govuk.data.model.Result.Success
+import uk.gov.govuk.data.model.Result.DeviceOffline
+import uk.gov.govuk.data.model.Result.InvalidSignature
+import uk.gov.govuk.data.model.Result.Error
 import java.net.UnknownHostException
 import javax.inject.Inject
 import javax.inject.Singleton
