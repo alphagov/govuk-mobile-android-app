@@ -90,7 +90,7 @@ class LoginViewModelTest {
         every { authRepo.isUserSignedIn() } returns true
         coEvery { loginRepo.getRefreshTokenExpiryDate() } returns null
         coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns Date().toInstant().epochSecond
-        coEvery { configRepo.config.refreshTokenExpirySeconds } returns null
+        coEvery { configRepo.refreshTokenExpirySeconds } returns null
         coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
 
         runTest {
@@ -113,7 +113,7 @@ class LoginViewModelTest {
     fun `Given the user is signed in and the refresh token expiry seconds are in the future, then emit loading and login event`() {
         every { authRepo.isUserSignedIn() } returns true
         coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns Date().toInstant().epochSecond
-        coEvery { configRepo.config.refreshTokenExpirySeconds } returns Date().toInstant().epochSecond + 10000
+        coEvery { configRepo.refreshTokenExpirySeconds } returns Date().toInstant().epochSecond + 10000
         coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
 
         runTest {
@@ -136,7 +136,7 @@ class LoginViewModelTest {
     fun `Given the user is signed in and the refresh token expiry seconds are not in the future, then end user session and clear auth repo`() {
         every { authRepo.isUserSignedIn() } returns true
         coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns Date().toInstant().epochSecond
-        coEvery { configRepo.config.refreshTokenExpirySeconds } returns 0
+        coEvery { configRepo.refreshTokenExpirySeconds } returns 0
 
         runTest {
             val events = mutableListOf<LoginEvent>()
@@ -163,7 +163,7 @@ class LoginViewModelTest {
         every { authRepo.isUserSignedIn() } returns true
         coEvery { loginRepo.getRefreshTokenExpiryDate() } returns Date().toInstant().epochSecond + 10000
         coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns null
-        coEvery { configRepo.config.refreshTokenExpirySeconds } returns null
+        coEvery { configRepo.refreshTokenExpirySeconds } returns null
         coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
 
         runTest {
@@ -187,7 +187,7 @@ class LoginViewModelTest {
         every { authRepo.isUserSignedIn() } returns true
         coEvery { loginRepo.getRefreshTokenExpiryDate() } returns 0
         coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns null
-        coEvery { configRepo.config.refreshTokenExpirySeconds } returns null
+        coEvery { configRepo.refreshTokenExpirySeconds } returns null
 
         runTest {
             val events = mutableListOf<LoginEvent>()
@@ -212,7 +212,7 @@ class LoginViewModelTest {
     @Test
     fun `Given the user is signed in, when init is unsuccessful, then emit loading`() {
         every { authRepo.isUserSignedIn() } returns true
-        coEvery { configRepo.config.refreshTokenExpirySeconds } returns 10000L
+        coEvery { configRepo.refreshTokenExpirySeconds } returns 10000L
         coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns Date().toInstant().epochSecond
         coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, ERROR)
 
@@ -261,7 +261,7 @@ class LoginViewModelTest {
     fun `Given an auth response, when success and id token issued at date is stored, then emit loading, login event and set token expiry`() {
         coEvery { authRepo.handleAuthResponse(any()) } returns true
         every { authRepo.getIdTokenIssuedAtDate() } returns 12345L
-        every { configRepo.config.refreshTokenExpirySeconds } returns 601200L
+        every { configRepo.refreshTokenExpirySeconds } returns 601200L
 
         runTest {
             val isLoading = mutableListOf<Boolean?>()

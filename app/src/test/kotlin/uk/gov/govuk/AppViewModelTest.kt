@@ -413,7 +413,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given the local feature is enabled and a local authority is selected, When init, then emit local enabled state`() {
-        every { configRepo.config.userFeedbackBanner } returns null
+        every { configRepo.userFeedbackBanner } returns null
         coEvery { flagRepo.isLocalServicesEnabled() } returns true
         coEvery { flagRepo.isTopicsEnabled() } returns true
         every { localFeature.hasLocalAuthority() } returns flowOf(true)
@@ -432,7 +432,7 @@ class AppViewModelTest {
     fun `Given the config has a user feedback banner, When init, then user feedback is the last home widget`() {
         val userFeedbackBanner = UserFeedbackBanner("body", Link("title", "url"))
         coEvery { flagRepo.isLocalServicesEnabled() } returns true
-        every { configRepo.config.userFeedbackBanner } returns userFeedbackBanner
+        every { configRepo.userFeedbackBanner } returns userFeedbackBanner
 
         val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
             searchFeature, visited, chatFeature, analyticsClient, appNavigation)

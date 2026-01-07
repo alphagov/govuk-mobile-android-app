@@ -26,6 +26,6 @@ internal class HomeViewModel @Inject constructor(
             title = TITLE
         )
 
-        Log.d("HomeViewModel", "local_services_header: ${configRepository.localServicesHeader}")
+//        Log.d("HomeViewModel", "local_services_header: ${configRepository.localServicesHeader}")
     }
 }

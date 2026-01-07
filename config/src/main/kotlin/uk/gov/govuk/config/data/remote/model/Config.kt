@@ -12,5 +12,5 @@ data class Config(
     @SerializedName("userFeedbackBanner") val userFeedbackBanner: UserFeedbackBanner?,
     @SerializedName("chatUrls") val chatUrls: ChatUrls,
     @SerializedName("refreshTokenExpirySeconds") val refreshTokenExpirySeconds: Long?,
-    @SerializedName("emergencyBanners") var emergencyBanners: List<EmergencyBanner>?
+    @SerializedName("emergencyBanners") val emergencyBanners: List<EmergencyBanner>?
 )
