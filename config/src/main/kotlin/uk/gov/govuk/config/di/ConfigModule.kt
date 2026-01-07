@@ -15,6 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import uk.gov.govuk.config.BuildConfig
 import uk.gov.govuk.config.data.ConfigRepo
+import uk.gov.govuk.config.data.ConfigRepoImpl
 import uk.gov.govuk.config.data.flags.DebugFlags
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.config.data.remote.ConfigApi
@@ -24,6 +25,12 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 class ConfigModule {
+
+    @Provides
+    @Singleton
+    fun provideConfigRepo(configRepo: ConfigRepoImpl): ConfigRepo {
+        return configRepo
+    }
 
     @Provides
     @Singleton

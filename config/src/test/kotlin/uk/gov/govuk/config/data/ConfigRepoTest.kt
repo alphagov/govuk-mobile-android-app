@@ -1,5 +1,7 @@
 package uk.gov.govuk.config.data
 
+import com.google.android.gms.tasks.Task
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.gson.Gson
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -8,6 +10,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import okhttp3.Headers
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -31,53 +34,61 @@ class ConfigRepoTest {
     private val config = mockk<Config>(relaxed = true)
     private val gson = mockk<Gson>(relaxed = true)
     private val signatureValidator = mockk<SignatureValidator>(relaxed = true)
+    private val firebaseRemoteConfig = mockk<FirebaseRemoteConfig>(relaxed = true)
+    val mockFirebaseTaskTask = mockk<Task<Boolean>>()
 
     @Test
-    fun `Given a successful config init, when config is requested, then return config`() {
+    fun `Given a successful config init, when config properties are requested, then return correct values`() {
         coEvery { configApi.getConfig() } returns Response.success(configResponse.toString())
         coEvery { signatureValidator.isValidSignature(any(), any()) } returns true
         coEvery { gson.fromJson(any<String>(), ConfigResponse::class.java) } returns ConfigResponse(config, "signature")
+        every { firebaseRemoteConfig.fetchAndActivate() } returns mockFirebaseTaskTask
 
-        val repo = ConfigRepo(configApi, gson, signatureValidator)
+        val repo = ConfigRepoImpl(configApi, gson, signatureValidator, firebaseRemoteConfig)
 
         runTest {
             repo.initConfig()
-            assertEquals(config, repo.config)
+            assertEquals(config.available, repo.isAvailable)
+            assertEquals(config.minimumVersion, repo.minimumVersion)
+            assertEquals(config.releaseFlags.search, repo.isSearchEnabled)
+
+            // Check objects too
+            assertEquals(config.chatUrls, repo.chatUrls)
         }
     }
 
     @Test
-    fun `Given no config init, when config is requested, then throw exception`() {
+    fun `Given no config init, when any config property is requested, then throw exception`() {
         coEvery { configApi.getConfig() } returns response
         coEvery { response.isSuccessful } returns true
         coEvery { response.body() } returns configResponse.toString()
         coEvery { configResponse.config } returns config
+        every { firebaseRemoteConfig.fetchAndActivate() } returns mockFirebaseTaskTask
 
-        val repo = ConfigRepo(configApi, gson, signatureValidator)
+        val repo = ConfigRepoImpl(configApi, gson, signatureValidator, firebaseRemoteConfig)
 
         val exception = assertThrows(IllegalStateException::class.java) {
-            repo.config
+            repo.isAvailable
         }
 
         assertEquals("You must init config successfully before use!!!", exception.message)
     }
 
     @Test
-    fun `Given initialized config, when config is requested multiple times, then return same instance`() {
+    fun `Given initialized config, when object properties are requested multiple times, they remain consistent`() {
         coEvery { configApi.getConfig() } returns Response.success(configResponse.toString())
         coEvery { signatureValidator.isValidSignature(any(), any()) } returns true
         coEvery { gson.fromJson(any<String>(), ConfigResponse::class.java) } returns ConfigResponse(config, "signature")
+        every { firebaseRemoteConfig.fetchAndActivate() } returns mockFirebaseTaskTask
 
-        val repo = ConfigRepo(configApi, gson, signatureValidator)
+        val repo = ConfigRepoImpl(configApi, gson, signatureValidator, firebaseRemoteConfig)
 
         runTest {
             repo.initConfig()
-            val firstCall = repo.config
-            val secondCall = repo.config
+            val firstCall = repo.chatUrls
+            val secondCall = repo.chatUrls
 
-            assertEquals(config, firstCall)
-            assertEquals(config, secondCall)
-            assertEquals(firstCall, secondCall)
+            assertSame(firstCall, secondCall)
         }
     }
 
@@ -86,8 +97,9 @@ class ConfigRepoTest {
         coEvery { configApi.getConfig() } returns Response.success(configResponse.toString())
         coEvery { signatureValidator.isValidSignature(any(), any()) } returns true
         coEvery { gson.fromJson(any<String>(), ConfigResponse::class.java) } returns ConfigResponse(config, "signature")
+        every { firebaseRemoteConfig.fetchAndActivate() } returns mockFirebaseTaskTask
 
-        val repo = ConfigRepo(configApi, gson, signatureValidator)
+        val repo = ConfigRepoImpl(configApi, gson, signatureValidator, firebaseRemoteConfig)
 
         runTest {
             assertTrue(repo.initConfig() is Success)
@@ -99,8 +111,9 @@ class ConfigRepoTest {
         coEvery { configApi.getConfig() } returns response
         coEvery { response.isSuccessful } returns true
         coEvery { response.body() } returns null
+        every { firebaseRemoteConfig.fetchAndActivate() } returns mockFirebaseTaskTask
 
-        val repo = ConfigRepo(configApi, gson, signatureValidator)
+        val repo = ConfigRepoImpl(configApi, gson, signatureValidator, firebaseRemoteConfig)
 
         runTest {
             assertTrue(repo.initConfig() is Error)
@@ -111,8 +124,9 @@ class ConfigRepoTest {
     fun `Given an unsuccessful config response, then return failure`() {
         coEvery { configApi.getConfig() } returns response
         coEvery { response.isSuccessful } returns false
+        every { firebaseRemoteConfig.fetchAndActivate() } returns mockFirebaseTaskTask
 
-        val repo = ConfigRepo(configApi, gson, signatureValidator)
+        val repo = ConfigRepoImpl(configApi, gson, signatureValidator, firebaseRemoteConfig)
 
         runTest {
             assertTrue(repo.initConfig() is Error)
@@ -122,8 +136,9 @@ class ConfigRepoTest {
     @Test
     fun `Given an unknown host exception is thrown fetching the config response, then return device offline failure`() {
         coEvery { configApi.getConfig() } throws UnknownHostException()
+        every { firebaseRemoteConfig.fetchAndActivate() } returns mockFirebaseTaskTask
 
-        val repo = ConfigRepo(configApi, gson, signatureValidator)
+        val repo = ConfigRepoImpl(configApi, gson, signatureValidator, firebaseRemoteConfig)
 
         runTest {
             assertTrue(repo.initConfig() is DeviceOffline)
@@ -133,8 +148,9 @@ class ConfigRepoTest {
     @Test
     fun `Given an exception is thrown fetching the config response, then return failure`() {
         coEvery { configApi.getConfig() } throws IOException()
+        every { firebaseRemoteConfig.fetchAndActivate() } returns mockFirebaseTaskTask
 
-        val repo = ConfigRepo(configApi, gson, signatureValidator)
+        val repo = ConfigRepoImpl(configApi, gson, signatureValidator, firebaseRemoteConfig)
 
         runTest {
             assertTrue(repo.initConfig() is Error)
@@ -146,8 +162,9 @@ class ConfigRepoTest {
         coEvery { configApi.getConfig() } returns Response.success(configResponse.toString())
         coEvery { signatureValidator.isValidSignature(any(), any()) } returns false
         coEvery { gson.fromJson(any<String>(), ConfigResponse::class.java) } returns ConfigResponse(config, "signature")
+        every { firebaseRemoteConfig.fetchAndActivate() } returns mockFirebaseTaskTask
 
-        val repo = ConfigRepo(configApi, gson, signatureValidator)
+        val repo = ConfigRepoImpl(configApi, gson, signatureValidator, firebaseRemoteConfig)
 
         runTest {
             assertTrue(repo.initConfig() is InvalidSignature)
@@ -160,8 +177,9 @@ class ConfigRepoTest {
         coEvery { signatureValidator.isValidSignature(any(), any()) } returns true
         coEvery { gson.fromJson(any<String>(), ConfigResponse::class.java) } returns ConfigResponse(config, "signature")
         every { config.chatPollIntervalSeconds } returns 0.5
+        every { firebaseRemoteConfig.fetchAndActivate() } returns mockFirebaseTaskTask
 
-        val repo = ConfigRepo(configApi, gson, signatureValidator)
+        val repo = ConfigRepoImpl(configApi, gson, signatureValidator, firebaseRemoteConfig)
 
         runTest {
             repo.initConfig()
@@ -175,8 +193,9 @@ class ConfigRepoTest {
         coEvery { signatureValidator.isValidSignature(any(), any()) } returns true
         coEvery { gson.fromJson(any<String>(), ConfigResponse::class.java) } returns ConfigResponse(config, "signature")
         every { config.chatPollIntervalSeconds } returns null
+        every { firebaseRemoteConfig.fetchAndActivate() } returns mockFirebaseTaskTask
 
-        val repo = ConfigRepo(configApi, gson, signatureValidator)
+        val repo = ConfigRepoImpl(configApi, gson, signatureValidator, firebaseRemoteConfig)
 
         runTest {
             repo.initConfig()
@@ -190,8 +209,9 @@ class ConfigRepoTest {
         coEvery { signatureValidator.isValidSignature(any(), any()) } returns true
         coEvery { gson.fromJson(any<String>(), ConfigResponse::class.java) } returns ConfigResponse(config, "signature")
         every { config.chatPollIntervalSeconds } returns 0.0
+        every { firebaseRemoteConfig.fetchAndActivate() } returns mockFirebaseTaskTask
 
-        val repo = ConfigRepo(configApi, gson, signatureValidator)
+        val repo = ConfigRepoImpl(configApi, gson, signatureValidator, firebaseRemoteConfig)
 
         runTest {
             repo.initConfig()
@@ -213,8 +233,9 @@ class ConfigRepoTest {
             config,
             "sig"
         )
+        every { firebaseRemoteConfig.fetchAndActivate() } returns mockFirebaseTaskTask
 
-        val repo = ConfigRepo(configApi, gson, signatureValidator)
+        val repo = ConfigRepoImpl(configApi, gson, signatureValidator, firebaseRemoteConfig)
 
         runTest {
             repo.initConfig()
@@ -235,8 +256,9 @@ class ConfigRepoTest {
             config,
             "sig"
         )
+        every { firebaseRemoteConfig.fetchAndActivate() } returns mockFirebaseTaskTask
 
-        val repo = ConfigRepo(configApi, gson, signatureValidator)
+        val repo = ConfigRepoImpl(configApi, gson, signatureValidator, firebaseRemoteConfig)
 
         runTest {
             repo.initConfig()
