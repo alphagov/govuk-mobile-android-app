@@ -1,6 +1,7 @@
 package uk.gov.govuk.config.data
 
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -8,9 +9,13 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertThrows
 import org.junit.Test
+import uk.gov.govuk.config.data.remote.model.AlertBanner
 import uk.gov.govuk.config.data.remote.model.Config
+import uk.gov.govuk.config.data.remote.model.EmergencyBanner
+import uk.gov.govuk.config.data.remote.model.UserFeedbackBanner
 import uk.gov.govuk.config.data.remote.source.FirebaseConfigDataSource
 import uk.gov.govuk.config.data.remote.source.GovUkConfigDataSource
+import uk.gov.govuk.data.model.Result
 import uk.gov.govuk.data.model.Result.Success
 
 class ConfigRepoTest {
@@ -36,6 +41,17 @@ class ConfigRepoTest {
     }
 
     @Test
+    fun `Given govuk config fetch fails, when initConfig, then return failure result`() = runTest {
+        coEvery { govUkDataSource.fetchConfig() } returns Result.DeviceOffline()
+        coEvery { firebaseDataSource.fetch() } returns true
+
+        val repo = ConfigRepoImpl(govUkDataSource, firebaseDataSource)
+        val result = repo.initConfig()
+
+        assert(result is Result.DeviceOffline)
+    }
+
+    @Test
     fun `Given no config init, when any config property is requested, then throw exception`() {
         val repo = ConfigRepoImpl(govUkDataSource, firebaseDataSource)
         val exception = assertThrows(IllegalStateException::class.java) {
@@ -43,6 +59,17 @@ class ConfigRepoTest {
         }
 
         assertEquals("You must init config successfully before use!!!", exception.message)
+    }
+
+    @Test
+    fun `When activateRemoteConfig is called, then activate firebase data source`() = runTest {
+        coEvery { firebaseDataSource.activate() } returns true
+        val repo = ConfigRepoImpl(govUkDataSource, firebaseDataSource)
+
+        val result = repo.activateRemoteConfig()
+
+        assert(result)
+        coVerify { firebaseDataSource.activate() }
     }
 
     @Test
@@ -90,5 +117,39 @@ class ConfigRepoTest {
         repo.initConfig()
 
         assertEquals(3.0, repo.chatPollIntervalSeconds, 0.0)
+    }
+
+    @Test
+    fun `Given successful init, when accessing remaining properties, then return correct config values`() = runTest {
+        val mockBanners = listOf(mockk<EmergencyBanner>())
+        val mockFeedback = mockk<UserFeedbackBanner>()
+        val mockAlert = mockk<AlertBanner>()
+
+        every { config.recommendedVersion } returns "2.0.0"
+        every { config.releaseFlags.recentActivity } returns true
+        every { config.releaseFlags.topics } returns true
+        every { config.releaseFlags.notifications } returns true
+        every { config.releaseFlags.localServices } returns true
+        every { config.releaseFlags.externalBrowser } returns true
+        every { config.refreshTokenExpirySeconds } returns 3600L
+        every { config.emergencyBanners } returns mockBanners
+        every { config.userFeedbackBanner } returns mockFeedback
+        every { config.alertBanner } returns mockAlert
+        coEvery { govUkDataSource.fetchConfig() } returns Success(config)
+        coEvery { firebaseDataSource.fetch() } returns true
+
+        val repo = ConfigRepoImpl(govUkDataSource, firebaseDataSource)
+        repo.initConfig()
+
+        assertEquals("2.0.0", repo.recommendedVersion)
+        assertEquals(true, repo.isRecentActivityEnabled)
+        assertEquals(true, repo.isTopicsEnabled)
+        assertEquals(true, repo.isNotificationsEnabled)
+        assertEquals(true, repo.isLocalServicesEnabled)
+        assertEquals(true, repo.isExternalBrowserEnabled)
+        assertEquals(3600L, repo.refreshTokenExpirySeconds)
+        assertSame(mockBanners, repo.emergencyBanners)
+        assertSame(mockFeedback, repo.userFeedbackBanner)
+        assertSame(mockAlert, repo.alertBanner)
     }
 }
