@@ -10,11 +10,12 @@ import uk.gov.govuk.design.ui.model.EmergencyBannerUiType
 @Composable
 fun EmergencyBanner(
     emergencyBanner: EmergencyBanner,
-    onClick: (String) -> Unit,
+    onClick: (text: String, url: String?) -> Unit,
     launchBrowser: (url: String) -> Unit,
-    onSuppressClick: ((String) -> Unit),
+    onSuppressClick: (id: String, text: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val analyticsText = emergencyBanner.link?.title ?: emergencyBanner.id
     HomeBannerCard(
         modifier = modifier,
         title = emergencyBanner.title,
@@ -24,9 +25,9 @@ fun EmergencyBanner(
         isDismissible = emergencyBanner.allowsDismissal,
         dismissAltText = emergencyBanner.dismissAltText,
         type = (emergencyBanner.type ?: EmergencyBannerType.INFORMATION).toEmergencyBannerUiType(),
-        onClick = { onClick(emergencyBanner.id) },
+        onClick = { onClick(analyticsText, emergencyBanner.link?.url) },
         launchBrowser = launchBrowser,
-        onSuppressClick = { onSuppressClick(emergencyBanner.id) }
+        onSuppressClick = { onSuppressClick(emergencyBanner.id, analyticsText) }
     )
 }
 

@@ -54,7 +54,7 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.design.ui.theme.ThemePreviews
 
 @Composable
-private fun BaseAlertBannerCard(
+private fun BaseBannerCard(
     modifier: Modifier = Modifier,
     title: String?,
     description: String?,
@@ -183,52 +183,6 @@ private fun BaseAlertBannerCard(
 }
 
 @Composable
-fun HomeAlertCard(
-    modifier: Modifier = Modifier,
-    title: String? = null,
-    description: String? = null,
-    linkTitle: String?,
-    linkUrl: String?,
-    onClick: () -> Unit,
-    launchBrowser: (url: String) -> Unit,
-    onSuppressClick: (() -> Unit)? = null
-) {
-    BaseAlertBannerCard(
-        modifier = modifier,
-        title = title,
-        description = description,
-        linkTitle = linkTitle,
-        linkUrl = linkUrl,
-        isDismissible = true,
-        onClick = onClick,
-        launchBrowser = launchBrowser,
-        onSuppressClick = onSuppressClick,
-        backgroundColour = GovUkTheme.colourScheme.surfaces.cardDefault,
-        borderColour = GovUkTheme.colourScheme.strokes.cardAlert,
-        textColour = Color.Unspecified,
-        dismissIconColour = GovUkTheme.colourScheme.textAndIcons.secondary,
-        linkTitleColour = GovUkTheme.colourScheme.textAndIcons.link,
-        showDivider = true,
-        dividerColour = GovUkTheme.colourScheme.strokes.cardAlert
-    ) { linkTitle, linkUrl, linkColour, onClick, launchBrowser ->
-        val opensInWebBrowser = stringResource(R.string.opens_in_web_browser)
-        BodyRegularLabel(
-            text = linkTitle,
-            color = linkColour,
-            modifier = Modifier
-                .padding(horizontal = GovUkTheme.spacing.medium)
-                .clickable {
-                    onClick()
-                    launchBrowser(linkUrl)
-                }
-                .semantics {
-                    contentDescription = "$linkTitle $opensInWebBrowser"
-                }
-        )
-    }
-}
-
-@Composable
 fun HomeBannerCard(
     modifier: Modifier = Modifier,
     title: String? = null,
@@ -242,7 +196,7 @@ fun HomeBannerCard(
     launchBrowser: (url: String) -> Unit,
     onSuppressClick: (() -> Unit)? = null
 ) {
-    BaseAlertBannerCard(
+    BaseBannerCard(
         modifier = modifier,
         title = title,
         description = description,
@@ -686,22 +640,6 @@ private fun HomeInformationEmergencyBannerCardPreview() {
             linkUrl = "",
             isDismissible = true,
             type = EmergencyBannerUiType.INFORMATION,
-            onSuppressClick = { }
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun HomeAlertCardPreview() {
-    GovUkTheme {
-        HomeAlertCard(
-            title = "Card title",
-            description = "Card description that may go over multiple lines",
-            onClick = { },
-            launchBrowser = { },
-            linkTitle = "A link description",
-            linkUrl = "",
             onSuppressClick = { }
         )
     }

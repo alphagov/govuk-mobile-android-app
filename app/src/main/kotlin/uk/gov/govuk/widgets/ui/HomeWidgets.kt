@@ -19,35 +19,20 @@ internal fun List<HomeWidget>?.contains(widget: HomeWidget) = this?.contains(wid
 internal fun homeWidgets(
     navController: NavHostController,
     homeWidgets: List<HomeWidget>?,
-    onInternalClick: (String) -> Unit,
-    onExternalClick: (String, String?) -> Unit,
-    onSuppressClick: (id: String) -> Unit,
+    onInternalClick: (text: String) -> Unit,
+    onExternalClick: (text: String, url: String?) -> Unit,
+    onSuppressClick: (id: String, text: String) -> Unit,
     launchBrowser: (url: String) -> Unit
 ): List<@Composable (Modifier) -> Unit> {
     val widgets = mutableListOf<@Composable (Modifier) -> Unit>()
     homeWidgets?.forEach {
         when (it) {
-            is HomeWidget.Alert -> {
-                    widgets.add { modifier ->
-                        AlertBanner(
-                            alertBanner = it.alertBanner,
-                            onClick = { text ->
-                                onExternalClick(text, null)
-                            },
-                            launchBrowser = launchBrowser,
-                            onSuppressClick = onSuppressClick,
-                            modifier = modifier
-                        )
-                        LargeVerticalSpacer()
-                    }
-            }
-
             is HomeWidget.Banner -> {
                 widgets.add { modifier ->
                     EmergencyBanner(
                         emergencyBanner = it.emergencyBanner,
-                        onClick = { text ->
-                            onExternalClick(text, null)
+                        onClick = { text, url ->
+                            onExternalClick(text, url)
                         },
                         launchBrowser = launchBrowser,
                         onSuppressClick = onSuppressClick,

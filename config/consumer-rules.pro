@@ -6,7 +6,6 @@
 -keep class uk.gov.govuk.config.data.remote.model.Config
 -keep class uk.gov.govuk.config.data.remote.model.ConfigResponse
 -keep class uk.gov.govuk.config.data.remote.model.ReleaseFlags
--keep class uk.gov.govuk.config.data.remote.model.AlertBanner
 
 -keep class uk.gov.govuk.config.data.remote.model.EmergencyBanner
 -keep class uk.gov.govuk.config.data.remote.model.EmergencyBannerType {

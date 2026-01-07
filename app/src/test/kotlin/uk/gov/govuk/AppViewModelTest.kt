@@ -22,7 +22,6 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -30,7 +29,6 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.chat.ChatFeature
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.flags.FlagRepo
-import uk.gov.govuk.config.data.remote.model.AlertBanner
 import uk.gov.govuk.config.data.remote.model.Link
 import uk.gov.govuk.config.data.remote.model.UserFeedbackBanner
 import uk.gov.govuk.data.AppRepo
@@ -335,11 +333,11 @@ class AppViewModelTest {
     @Test
     fun `When an suppress widget is clicked, then log analytics`() {
         runTest {
-            viewModel.onSuppressWidgetClick("id", "section")
+            viewModel.onSuppressWidgetClick("id", "text", "section")
 
             coVerify {
                 appRepo.suppressHomeWidget("id")
-                analyticsClient.suppressWidgetClick("id", "section")
+                analyticsClient.suppressWidgetClick("text", "section")
             }
         }
     }
@@ -399,10 +397,9 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given the local feature is enabled, alert banner is null and a local authority is not selected, When init, then emit local enabled state`() {
+    fun `Given the local feature is enabled and a local authority is not selected, When init, then emit local enabled state`() {
         coEvery { flagRepo.isLocalServicesEnabled() } returns true
         coEvery { flagRepo.isTopicsEnabled() } returns true
-        coEvery { configRepo.config.alertBanner } returns null
 
         val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
             searchFeature, visited, chatFeature, analyticsClient, appNavigation)
@@ -420,7 +417,6 @@ class AppViewModelTest {
         coEvery { flagRepo.isLocalServicesEnabled() } returns true
         coEvery { flagRepo.isTopicsEnabled() } returns true
         every { localFeature.hasLocalAuthority() } returns flowOf(true)
-        coEvery { configRepo.config.alertBanner } returns null
 
         val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
             searchFeature, visited, chatFeature, analyticsClient, appNavigation)
@@ -429,53 +425,6 @@ class AppViewModelTest {
             val homeWidgets = viewModel.homeWidgets.value!!
             assertEquals(HomeWidget.Topics, homeWidgets[0])
             assertEquals(HomeWidget.Local, homeWidgets[1])
-        }
-    }
-
-    @Test
-    fun `Given the config alert banner and user feedback banner is null, When init, then there are no home widgets`() {
-        every { configRepo.config.alertBanner } returns null
-        every { configRepo.config.userFeedbackBanner } returns null
-
-        val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
-            searchFeature, visited, chatFeature, analyticsClient, appNavigation)
-
-        runTest {
-            val homeWidgets = viewModel.homeWidgets.value!!
-            assert(homeWidgets.isEmpty())
-        }
-    }
-
-    @Test
-    fun `Given the config has an alert banner which has not been suppressed, When init, then alert banner is the first home widget`() {
-        val alertBanner = AlertBanner("id", "body", Link("title", "url"))
-        coEvery { flagRepo.isLocalServicesEnabled() } returns true
-        every { configRepo.config.alertBanner } returns alertBanner
-
-        val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
-            searchFeature, visited, chatFeature, analyticsClient, appNavigation)
-
-        runTest {
-            val homeWidgets = viewModel.homeWidgets.value!!
-            val alertWidget = HomeWidget.Alert(alertBanner)
-            assertEquals(alertWidget, homeWidgets.first())
-        }
-    }
-
-    @Test
-    fun `Given the config has an alert banner which has been suppressed, When init, then alert banner is not the first home widget`() {
-        val alertBanner = AlertBanner("id", "body", Link("title", "url"))
-        coEvery { flagRepo.isLocalServicesEnabled() } returns true
-        every { configRepo.config.alertBanner } returns alertBanner
-        every { appRepo.suppressedHomeWidgets } returns flowOf(setOf("id"))
-
-        val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
-            searchFeature, visited, chatFeature, analyticsClient, appNavigation)
-
-        runTest {
-            val homeWidgets = viewModel.homeWidgets.value!!
-            val alertWidget = HomeWidget.Alert(alertBanner)
-            assertNotEquals(alertWidget, homeWidgets.first())
         }
     }
 
