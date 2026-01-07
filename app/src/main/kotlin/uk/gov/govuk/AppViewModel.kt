@@ -142,11 +142,6 @@ internal class AppViewModel @Inject constructor(
                 if (isSearchEnabled()) {
                     widgets.add(HomeWidget.Search)
                 }
-                configRepo.config.alertBanner?.let { alertBanner ->
-                    if (!suppressedWidgets.contains(alertBanner.id)) {
-                        widgets.add(HomeWidget.Alert(alertBanner = alertBanner))
-                    }
-                }
 
                 configRepo.config.emergencyBanners?.forEach { emergencyBanner ->
                     if (!suppressedWidgets.contains(emergencyBanner.id)) {

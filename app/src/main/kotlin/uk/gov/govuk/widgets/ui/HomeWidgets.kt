@@ -27,21 +27,6 @@ internal fun homeWidgets(
     val widgets = mutableListOf<@Composable (Modifier) -> Unit>()
     homeWidgets?.forEach {
         when (it) {
-            is HomeWidget.Alert -> {
-                    widgets.add { modifier ->
-                        AlertBanner(
-                            alertBanner = it.alertBanner,
-                            onClick = { text ->
-                                onExternalClick(text, null)
-                            },
-                            launchBrowser = launchBrowser,
-                            onSuppressClick = onSuppressClick,
-                            modifier = modifier
-                        )
-                        LargeVerticalSpacer()
-                    }
-            }
-
             is HomeWidget.Banner -> {
                 widgets.add { modifier ->
                     EmergencyBanner(
