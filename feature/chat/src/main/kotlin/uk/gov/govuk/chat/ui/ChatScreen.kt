@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -275,6 +276,9 @@ private fun ChatScreen(
 
     if (chatEntries.isNotEmpty()) {
         val answer = chatEntries.last().second.answer
+        val currentView = LocalView.current
+        val answerReceivedText = stringResource(id = R.string.answer_received_text)
+
         LaunchedEffect(answer) {
             if (answer.isEmpty()) {
                 // If the updated entry is the user's question then immediately scroll to the bottom
@@ -287,6 +291,7 @@ private fun ChatScreen(
                 // the entry
                 delay(animationDuration.toLong() + 100)
                 listState.animateScrollToItem(chatEntries.size)
+                currentView.announceForAccessibility(answerReceivedText)
             }
         }
     }
