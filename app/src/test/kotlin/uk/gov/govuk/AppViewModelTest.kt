@@ -531,6 +531,10 @@ class AppViewModelTest {
         val event = viewModel.signOutEvent.first()
         assertEquals(Unit, event)
 
+        coVerify {
+            authRepo.endUserSession()
+        }
+
         verify(exactly = 0) {
             appNavigation.onSignOut(any())
         }
