@@ -48,6 +48,7 @@ import androidx.core.view.WindowCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -136,12 +137,21 @@ private fun BottomNavScaffold(
     homeWidgets: List<HomeWidget>?
 ) {
     val navController = rememberNavController()
+    val lifecycleOwner = LocalLifecycleOwner.current
     val layoutDirection = LocalLayoutDirection.current
     val navBarPadding = WindowInsets.navigationBars.asPaddingValues()
     val section = stringResource(R.string.homepage)
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentNavParentRoute = navBackStackEntry?.destination?.parent?.route
+
+    LaunchedEffect(Unit) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.signOutEvent.collect {
+                viewModel.appNavigation.onSignOut(navController)
+            }
+        }
+    }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
@@ -164,7 +174,7 @@ private fun BottomNavScaffold(
                     awaitPointerEventScope {
                         while (true) {
                             awaitPointerEvent()
-                            viewModel.onUserInteraction(navController)
+                            viewModel.onUserInteraction()
                         }
                     }
                 },
