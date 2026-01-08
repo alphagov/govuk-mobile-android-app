@@ -493,7 +493,7 @@ class AppViewModelTest {
 
     @Test
     fun `Given a user has interacted with the app, When on user interaction, then call timeout manager`() {
-        viewModel.onUserInteraction(navController, 0L)
+        viewModel.onUserInteraction( 0L)
 
         verify {
             timeoutManager.onUserInteraction(0L, onTimeout = any())
@@ -508,7 +508,7 @@ class AppViewModelTest {
         every { timeoutManager.onUserInteraction(any(), onTimeout = capture(slot)) } returns Unit
         every { authRepo.isUserSessionActive() } returns false
 
-        viewModel.onUserInteraction(navController, 0L)
+        viewModel.onUserInteraction(0L)
         slot.captured.invoke()
 
         coVerify(exactly = 0) {
@@ -518,18 +518,24 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given a user session is active, When the app times out, end user session and navigate`() {
+    fun `Given a user session is active, When the app times out, end user session and navigate`() = runTest {
         clearAllMocks()
 
         val slot = slot<(() -> Unit)>()
         every { timeoutManager.onUserInteraction(any(), onTimeout = capture(slot)) } returns Unit
         every { authRepo.isUserSessionActive() } returns true
 
-        viewModel.onUserInteraction(navController, 0L)
+        viewModel.onUserInteraction(0L)
         slot.captured.invoke()
+
+        val event = viewModel.signOutEvent.first()
+        assertEquals(Unit, event)
 
         coVerify {
             authRepo.endUserSession()
+        }
+
+        verify(exactly = 0) {
             appNavigation.onSignOut(any())
         }
     }

@@ -5,9 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.chat.ChatFeature
@@ -49,6 +51,9 @@ internal class AppViewModel @Inject constructor(
 
     private val _homeWidgets: MutableStateFlow<List<HomeWidget>?> = MutableStateFlow(null)
     internal val homeWidgets = _homeWidgets.asStateFlow()
+
+    private val _signOutEvent = Channel<Unit>(Channel.CONFLATED)
+    val signOutEvent = _signOutEvent.receiveAsFlow()
 
     init {
         analyticsClient.isUserSessionActive = { authRepo.isUserSessionActive() }
@@ -99,14 +104,13 @@ internal class AppViewModel @Inject constructor(
     }
 
     fun onUserInteraction(
-        navController: NavController,
         interactionTime: Long = SystemClock.elapsedRealtime()
     ) {
         timeoutManager.onUserInteraction(interactionTime) {
             if (authRepo.isUserSessionActive()) {
                 authRepo.endUserSession()
                 viewModelScope.launch {
-                    appNavigation.onSignOut(navController)
+                    _signOutEvent.trySend(Unit)
                 }
             }
         }
