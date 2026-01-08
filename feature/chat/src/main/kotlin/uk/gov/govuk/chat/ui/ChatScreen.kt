@@ -277,10 +277,12 @@ private fun ChatScreen(
     if (chatEntries.isNotEmpty()) {
         val answer = chatEntries.last().second.answer
         val currentView = LocalView.current
+        val loadingText = stringResource(id = R.string.loading_text)
         val answerReceivedText = stringResource(id = R.string.answer_received_text)
 
         LaunchedEffect(answer) {
             if (answer.isEmpty()) {
+                currentView.announceForAccessibility(loadingText)
                 // If the updated entry is the user's question then immediately scroll to the bottom
                 // wait for the loading text to fade in and then scroll to the bottom again if required
                 listState.animateScrollToItem(chatEntries.size + 1)
