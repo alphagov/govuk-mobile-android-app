@@ -109,8 +109,8 @@ android {
 
             applicationVariants.all {
                 if (versionName == "release") {
-                    tasks.named("releaseOssLicensesCleanUp") {
-                        dependsOn("releaseOssDependencyTask")
+                    tasks.named(":app:releaseOssLicensesCleanUp") {
+                        dependsOn(":app:releaseOssDependencyTask")
                     }
                 }
             }
