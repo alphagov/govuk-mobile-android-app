@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -39,8 +40,12 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -166,6 +171,7 @@ private fun ChatScreen(
     )
     val animationDuration = 500
     val coroutineScope = rememberCoroutineScope()
+    var accessibilityAnnouncement by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         analyticsEvents.onPageView(
@@ -217,6 +223,22 @@ private fun ChatScreen(
                 }
 
                 items(chatEntries) {
+                    // A ghost node to stop the stateDescription from being
+                    // repeated on each recomposition - caused by the loading
+                    // animation.
+                    // If the animation is removed the .semantics modifier
+                    // can be moved to the ChatEntry, and this Spacer removed.
+                    Spacer(
+                        Modifier
+                            .size(1.dp) // Minimal size, cannot be 0!
+                            .semantics {
+                                liveRegion = LiveRegionMode.Polite
+                                if (accessibilityAnnouncement.isNotEmpty()) {
+                                    stateDescription = AnnotatedString(accessibilityAnnouncement).toString()
+                                }
+                            }
+                    )
+
                     ChatEntry(
                         chatEntry = it.second,
                         onMarkdownLinkClicked = { text, url ->
@@ -276,13 +298,12 @@ private fun ChatScreen(
 
     if (chatEntries.isNotEmpty()) {
         val answer = chatEntries.last().second.answer
-        val currentView = LocalView.current
         val loadingText = stringResource(id = R.string.loading_text)
         val answerReceivedText = stringResource(id = R.string.answer_received_text)
 
         LaunchedEffect(answer) {
             if (answer.isEmpty()) {
-                currentView.announceForAccessibility(loadingText)
+                accessibilityAnnouncement = loadingText
                 // If the updated entry is the user's question then immediately scroll to the bottom
                 // wait for the loading text to fade in and then scroll to the bottom again if required
                 listState.animateScrollToItem(chatEntries.size + 1)
@@ -293,8 +314,11 @@ private fun ChatScreen(
                 // the entry
                 delay(animationDuration.toLong() + 100)
                 listState.animateScrollToItem(chatEntries.size)
-                currentView.announceForAccessibility(answerReceivedText)
+                accessibilityAnnouncement = answerReceivedText
             }
+
+            delay(100)
+            accessibilityAnnouncement = ""
         }
     }
 }
