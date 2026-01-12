@@ -17,6 +17,7 @@ import uk.gov.govuk.search.SearchUiState.Suggestions
 import uk.gov.govuk.search.data.SearchRepo
 import uk.gov.govuk.search.data.remote.model.SearchResult
 import uk.gov.govuk.search.domain.SearchConfig
+import uk.gov.govuk.search.domain.StringUtils
 import uk.gov.govuk.visited.Visited
 import java.util.UUID
 import javax.inject.Inject
@@ -146,7 +147,10 @@ internal class SearchViewModel @Inject constructor(
             selectedItemIndex = index + 1 // not zero indexed
         )
         viewModelScope.launch {
-            visited.visitableItemClick(title = result.title, url = result.link)
+            visited.visitableItemClick(
+                title = result.title,
+                url = StringUtils.buildFullUrl(result.link)
+            )
         }
     }
 
