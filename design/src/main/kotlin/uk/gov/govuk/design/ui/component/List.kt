@@ -164,25 +164,6 @@ fun ExternalLinkListItem(
 }
 
 @Composable
-private fun ShowSubText(subText: String) {
-    if (subText.isNotEmpty()) {
-        Row(
-            modifier = Modifier.padding(
-                start = GovUkTheme.spacing.medium,
-                top = 0.dp,
-                bottom = GovUkTheme.spacing.medium
-            ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            SubheadlineRegularLabel(
-                text = subText,
-                color = GovUkTheme.colourScheme.textAndIcons.primary
-            )
-        }
-    }
-}
-
-@Composable
 fun ToggleListItem(
     title: String,
     checked: Boolean,

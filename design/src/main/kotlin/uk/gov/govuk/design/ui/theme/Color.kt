@@ -8,7 +8,6 @@ import uk.gov.govuk.design.ui.theme.GovUkColourScheme.TextAndIcons
 
 private val BluePrimary = Color(0xFF1D70B8)
 private val BlueAccent = Color(0xFF11E0F1)
-private val Blue2 = Color(0xFF259AFF)
 private val Blue99 = Color(0xFF092237)
 
 private val BlueLighter25 = Color(0xFF5694CA)
