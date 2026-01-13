@@ -3,6 +3,7 @@ package uk.gov.govuk.widgets.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import uk.gov.govuk.chat.ui.widget.ChatWidget
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.topics.navigation.navigateToTopic
 import uk.gov.govuk.topics.navigation.navigateToTopicsEdit
@@ -39,6 +40,12 @@ internal fun homeWidgets(
                         modifier = modifier
                     )
                     LargeVerticalSpacer()
+                }
+            }
+
+            is HomeWidget.Chat -> {
+                widgets.add { modifier ->
+                    ChatWidget(modifier)
                 }
             }
 
