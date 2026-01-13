@@ -1,10 +1,7 @@
 package uk.gov.govuk.chat.ui
 
 import android.content.res.Configuration
-import android.widget.FrameLayout
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -43,7 +39,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
@@ -159,7 +154,6 @@ private fun ChatScreen(
     var heightPx by remember { mutableIntStateOf(0) }
     val listState = rememberLazyListState()
     val chatEntries = uiState.chatEntries.toList()
-    var backgroundVisible  by remember { mutableStateOf(false) }
     val brush = Brush.verticalGradient(
         colorStops = calculateStops(heightPx, 20.dp)
     )
@@ -174,23 +168,10 @@ private fun ChatScreen(
         )
     }
 
-    LaunchedEffect(Unit) {
-        delay(1000)
-        backgroundVisible = true
-    }
-
-    Box(modifier.fillMaxSize()) {
-        if (chatEntries.isEmpty()) {
-            AnimatedVisibility(
-                visible = backgroundVisible,
-                enter = fadeIn(animationSpec = tween(durationMillis = 2000))
-            ) {
-                BackgroundGradient()
-            }
-        } else {
-            BackgroundGradient()
-        }
-
+    Box(
+        modifier.fillMaxSize()
+            .background(GovUkTheme.colourScheme.surfaces.chatBackground)
+    ) {
         Column(
             Modifier
                 .windowInsetsPadding(WindowInsets.statusBars)
@@ -314,20 +295,6 @@ private fun calculateStops(
         topEnd to Color.White,
         bottomStart to Color.White,
         1f to Color.Transparent
-    )
-}
-
-@Composable
-private fun BackgroundGradient(
-    modifier: Modifier = Modifier
-) {
-    AndroidView(
-        factory = { context ->
-            FrameLayout(context).apply {
-                setBackgroundResource(R.drawable.background_chat)
-            }
-        },
-        modifier = modifier.fillMaxSize()
     )
 }
 
