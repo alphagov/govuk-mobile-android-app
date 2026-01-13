@@ -129,7 +129,6 @@ private fun Message2(
     modifier: Modifier = Modifier
 ) {
     Answer(
-        showHeader = false,
         answer = stringResource(id = R.string.bot_message_2),
         onMarkdownLinkClicked = { _, _ -> },
         onSourcesExpanded = { },
@@ -142,7 +141,6 @@ private fun Message3(
     modifier: Modifier = Modifier
 ) {
     Answer(
-        showHeader = false,
         answer = stringResource(id = R.string.bot_message_3),
         onMarkdownLinkClicked = { _, _ -> },
         onSourcesExpanded = { },
