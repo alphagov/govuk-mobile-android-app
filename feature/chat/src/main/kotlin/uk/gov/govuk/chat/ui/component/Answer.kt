@@ -33,21 +33,11 @@ internal fun Answer(
     ) {
         MediumVerticalSpacer()
 
-        if (showHeader) {
-            BodyBoldLabel(
-                text = stringResource(id = R.string.bot_header_text),
-                modifier = Modifier.padding(
-                    start = GovUkTheme.spacing.medium,
-                    end = GovUkTheme.spacing.medium
-                )
-            )
-
-            MediumVerticalSpacer()
-        }
+        val altText = "${stringResource(R.string.bot_header_text)} $answer"
 
         Markdown(
             text = answer,
-            talkbackText = answer,
+            talkbackText = altText,
             onMarkdownLinkClicked = onMarkdownLinkClicked,
             markdownLinkType = Analytics.RESPONSE_LINK_CLICKED
         )
