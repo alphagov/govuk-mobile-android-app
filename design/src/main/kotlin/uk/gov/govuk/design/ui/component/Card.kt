@@ -173,9 +173,7 @@ fun HomeBannerCard(
                 Box(
                     modifier = Modifier
                         .size(48.dp)
-                        .clickable {
-                            onSuppressClick()
-                        },
+                        .clickable(onClick = onSuppressClick),
                     contentAlignment = Alignment.Center
                 ) {
                     if (isDismissible) {
@@ -209,9 +207,7 @@ fun HomeBannerCard(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                onClick()
-                            }
+                            .clickable(onClick = onClick)
                             .padding(horizontal = GovUkTheme.spacing.medium)
                             .semantics {
                                 contentDescription = "$linkTitle $opensInWebBrowser"
@@ -299,9 +295,7 @@ fun UserFeedbackCard(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(vertical = GovUkTheme.spacing.medium)
-                .clickable {
-                    onClick()
-                }
+                .clickable(onClick = onClick)
                 .semantics {
                     contentDescription = "$linkTitle $opensInWebBrowser"
                 },
@@ -348,9 +342,7 @@ fun CentredCardWithIcon(
         CentredContentWithIcon(
             icon = icon,
             modifier = Modifier
-                .clickable {
-                    onClick()
-                },
+                .clickable(onClick = onClick),
             title = title,
             description = description
         )
