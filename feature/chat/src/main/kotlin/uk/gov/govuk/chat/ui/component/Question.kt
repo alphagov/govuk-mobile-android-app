@@ -34,6 +34,7 @@ internal fun Question(
 
             BodyRegularLabel(
                 text = question,
+                color = GovUkTheme.colourScheme.textAndIcons.chatUserMessageText,
                 modifier = Modifier
                     .padding(GovUkTheme.spacing.medium)
                     .clearAndSetSemantics {
