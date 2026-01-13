@@ -21,23 +21,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -151,12 +139,8 @@ private fun ChatScreen(
     chatUrls: ChatUrls,
     modifier: Modifier = Modifier
 ) {
-    var heightPx by remember { mutableIntStateOf(0) }
     val listState = rememberLazyListState()
     val chatEntries = uiState.chatEntries.toList()
-    val brush = Brush.verticalGradient(
-        colorStops = calculateStops(heightPx, 20.dp)
-    )
     val animationDuration = 500
     val coroutineScope = rememberCoroutineScope()
 
@@ -179,15 +163,6 @@ private fun ChatScreen(
             LazyColumn(
                 state = listState,
                 modifier = Modifier
-                    .onSizeChanged { heightPx = it.height }
-                    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-                    .drawWithContent {
-                        drawContent()
-                        drawRect(
-                            brush = brush,
-                            blendMode = BlendMode.DstIn
-                        )
-                    }
                     .fillMaxWidth()
                     .weight(1f)
                     .padding(horizontal = GovUkTheme.spacing.medium)
@@ -271,31 +246,6 @@ private fun ChatScreen(
             }
         }
     }
-}
-
-@Composable
-private fun calculateStops(
-    heightPx: Int,
-    fadeDp: Dp,
-): Array<Pair<Float, Color>> {
-    val density = LocalDensity.current
-    val topFadePx = with(density) { fadeDp.toPx() }
-    val bottomFadePx = with(density) { fadeDp.toPx() }
-
-    if (heightPx == 0) {
-        // Before layout pass, fallback to full opacity to avoid division by zero
-        return arrayOf(0f to Color.White, 1f to Color.White)
-    }
-
-    val topEnd = (topFadePx / heightPx).coerceIn(0f, 1f)
-    val bottomStart = ((heightPx - bottomFadePx) / heightPx).coerceIn(0f, 1f)
-
-    return arrayOf(
-        0f to Color.Transparent,
-        topEnd to Color.White,
-        bottomStart to Color.White,
-        1f to Color.Transparent
-    )
 }
 
 @Composable
