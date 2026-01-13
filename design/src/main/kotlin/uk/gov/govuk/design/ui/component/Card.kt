@@ -1,6 +1,7 @@
 package uk.gov.govuk.design.ui.component
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -20,6 +21,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -37,6 +39,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.design.R
 import uk.gov.govuk.design.ui.extension.drawBottomStroke
@@ -54,33 +57,68 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.design.ui.theme.ThemePreviews
 
 @Composable
-private fun BaseBannerCard(
+fun GovUkOutlinedCard(
     modifier: Modifier = Modifier,
-    title: String?,
-    description: String?,
+    isSelected: Boolean = false,
+    onClick: (() -> Unit)? = null,
+    backgroundColour: Color = GovUkTheme.colourScheme.surfaces.cardBlue,
+    borderColour: Color = GovUkTheme.colourScheme.strokes.cardBlue,
+    padding: Dp = GovUkTheme.spacing.medium,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    val cardColour = if (isSelected) {
+        GovUkTheme.colourScheme.surfaces.listSelected
+    } else {
+        backgroundColour
+    }
+
+    val strokeColour = if (isSelected) {
+        GovUkTheme.colourScheme.strokes.cardSelected
+    } else {
+        borderColour
+    }
+
+    OutlinedCard(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = cardColour),
+        border = BorderStroke(
+            width = 1.dp,
+            color = strokeColour
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)  // if onClick is null Talkback announces 'disabled'
+                .padding(padding)
+        ) {
+            content()
+        }
+    }
+}
+
+@Composable
+fun HomeBannerCard(
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    description: String? = null,
     linkTitle: String?,
     linkUrl: String?,
-    isDismissible: Boolean,
+    isDismissible: Boolean = true,
     dismissAltText: String? = null,
+    type: EmergencyBannerUiType,
     onClick: () -> Unit,
     launchBrowser: (url: String) -> Unit,
-    onSuppressClick: (() -> Unit)?,
-    backgroundColour: Color,
-    borderColour: Color,
-    textColour: Color,
-    dismissIconColour: Color,
-    linkTitleColour: Color,
-    showDivider: Boolean,
-    dividerColour: Color,
-    linkContent: @Composable ColumnScope.(
-        linkTitle: String,
-        linkUrl: String,
-        linkColour: Color,
-        onClick: () -> Unit,
-        launchBrowser: (url: String) -> Unit
-    ) -> Unit
+    onSuppressClick: (() -> Unit)? = null
 ) {
-    GovUkCardLegacy(
+    val backgroundColour = type.backgroundColour
+    val borderColour = type.borderColour
+    val textColour = type.textColour
+    val dismissIconColour = type.dismissIconColour
+    val linkTitleColour = type.linkTitleColour
+    val showDivider = type.hasDecoratedLink
+    val dividerColour = GovUkTheme.colourScheme.strokes.cardEmergencyBannerDivider
+
+    GovUkOutlinedCard(
         modifier = modifier,
         backgroundColour = backgroundColour,
         borderColour = borderColour,
@@ -131,6 +169,8 @@ private fun BaseBannerCard(
                     }
                 }
             }
+
+            // dismiss Button Logic
             onSuppressClick?.let {
                 Box(
                     modifier = Modifier
@@ -151,13 +191,12 @@ private fun BaseBannerCard(
             }
         }
 
-        // linkContent section
-        Row(
-            modifier = Modifier
-                .height(IntrinsicSize.Min)
-                .fillMaxWidth()
-        ) {
-            if (linkTitle != null && linkUrl != null) {
+        if (linkTitle != null && linkUrl != null) {
+            Row(
+                modifier = Modifier
+                    .height(IntrinsicSize.Min)
+                    .fillMaxWidth()
+            ) {
                 Column {
                     if (showDivider) {
                         HorizontalDivider(
@@ -167,13 +206,35 @@ private fun BaseBannerCard(
                         MediumVerticalSpacer()
                     }
 
-                    linkContent(
-                        linkTitle,
-                        linkUrl,
-                        linkTitleColour,
-                        onClick,
-                        launchBrowser
-                    )
+                    val opensInWebBrowser = stringResource(R.string.opens_in_web_browser)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                onClick()
+                                launchBrowser(linkUrl)
+                            }
+                            .padding(horizontal = GovUkTheme.spacing.medium)
+                            .semantics {
+                                contentDescription = "$linkTitle $opensInWebBrowser"
+                            },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        BodyRegularLabel(
+                            text = linkTitle,
+                            color = linkTitleColour,
+                            modifier = Modifier.weight(1f)
+                                .clearAndSetSemantics{ }
+                        )
+                        if (type.hasDecoratedLink) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_arrow),
+                                contentDescription = null,
+                                tint = GovUkTheme.colourScheme.textAndIcons.linkInverse,
+                                modifier = Modifier.padding(start = GovUkTheme.spacing.small)
+                            )
+                        }
+                    }
 
                     MediumVerticalSpacer()
                 }
@@ -181,72 +242,6 @@ private fun BaseBannerCard(
         }
     }
 }
-
-@Composable
-fun HomeBannerCard(
-    modifier: Modifier = Modifier,
-    title: String? = null,
-    description: String? = null,
-    linkTitle: String?,
-    linkUrl: String?,
-    isDismissible: Boolean = true,
-    dismissAltText: String? = null,
-    type: EmergencyBannerUiType,
-    onClick: () -> Unit,
-    launchBrowser: (url: String) -> Unit,
-    onSuppressClick: (() -> Unit)? = null
-) {
-    BaseBannerCard(
-        modifier = modifier,
-        title = title,
-        description = description,
-        linkTitle = linkTitle,
-        linkUrl = linkUrl,
-        isDismissible = isDismissible,
-        dismissAltText = dismissAltText,
-        onClick = onClick,
-        launchBrowser = launchBrowser,
-        onSuppressClick = onSuppressClick,
-        backgroundColour = type.backgroundColour,
-        borderColour = type.borderColour,
-        textColour = type.textColour,
-        dismissIconColour = type.dismissIconColour,
-        linkTitleColour = type.linkTitleColour,
-        showDivider = type.hasDecoratedLink,
-        dividerColour = GovUkTheme.colourScheme.strokes.cardEmergencyBannerDivider
-    ) { linkTitle, linkUrl, linkColour, onClick, launchBrowser ->
-        val opensInWebBrowser = stringResource(R.string.opens_in_web_browser)
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    onClick()
-                    launchBrowser(linkUrl)
-                }
-                .padding(horizontal = GovUkTheme.spacing.medium)
-                .semantics {
-                    contentDescription = "$linkTitle $opensInWebBrowser"
-                },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            BodyRegularLabel(
-                text = linkTitle,
-                color = linkColour,
-                modifier = Modifier.weight(1f)
-                    .clearAndSetSemantics{ }
-            )
-            if (type.hasDecoratedLink) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow),
-                    contentDescription = null,
-                    tint = GovUkTheme.colourScheme.textAndIcons.linkInverse,
-                    modifier = Modifier.padding(start = GovUkTheme.spacing.small)
-                )
-            }
-        }
-    }
-}
-
 @Composable
 fun SearchResultCard(
     title: String,
@@ -256,7 +251,7 @@ fun SearchResultCard(
     launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    GovUkCardLegacy(
+    GovUkOutlinedCard(
         modifier = modifier,
         onClick = {
             onClick()
