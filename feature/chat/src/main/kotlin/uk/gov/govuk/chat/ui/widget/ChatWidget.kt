@@ -1,11 +1,14 @@
 package uk.gov.govuk.chat.ui.widget
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
@@ -19,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import uk.gov.govuk.design.R
+import uk.gov.govuk.chat.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
@@ -33,11 +36,11 @@ fun ChatWidget(
 ) {
     val title = "Introducing GOV.UK Chat" // Todo - extract string
 
-    Card(modifier) {
+    Card(modifier.height(IntrinsicSize.Min)) {
         Column(
             modifier = Modifier
                 .weight(1f, fill = false)
-                .background(GovUkTheme.colourScheme.surfaces.cardEmergencyInformation)
+                .background(GovUkTheme.colourScheme.surfaces.list)
             ,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -62,16 +65,25 @@ fun ChatWidget(
                         BodyRegularLabel("An experimental AI tool for finding quick answers")
                     }
 
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clickable { },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.ic_cancel),
-                            contentDescription = "${stringResource(R.string.content_desc_remove)} $title",
+                    Box {
+                        Image(
+                            painter = painterResource(id = R.drawable.background_chat_widget),
+                            contentDescription = null,
                         )
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .align(Alignment.TopEnd)
+                                .clickable { },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painterResource(uk.gov.govuk.design.R.drawable.ic_cancel),
+                                contentDescription =
+                                    "${stringResource(uk.gov.govuk.design.R.string.content_desc_remove)} $title",
+                                tint = GovUkTheme.colourScheme.textAndIcons.primary
+                            )
+                        }
                     }
 
                 }
