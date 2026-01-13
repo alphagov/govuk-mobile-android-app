@@ -25,6 +25,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -41,6 +44,7 @@ import uk.gov.govuk.chat.ui.component.IntroMessages
 import uk.gov.govuk.config.data.remote.model.ChatUrls
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
+import uk.gov.govuk.design.ui.component.Title2BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 internal class AnalyticsEvents(
@@ -155,6 +159,7 @@ private fun ChatScreen(
     Box(
         modifier.fillMaxSize()
             .background(GovUkTheme.colourScheme.surfaces.chatBackground)
+            .padding(top = GovUkTheme.spacing.medium)
     ) {
         Column(
             Modifier
@@ -167,6 +172,19 @@ private fun ChatScreen(
                     .weight(1f)
                     .padding(horizontal = GovUkTheme.spacing.medium)
             ) {
+                item {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Title2BoldLabel(
+                            text = stringResource(R.string.bot_header_text),
+                            modifier = Modifier
+                                .padding(vertical = GovUkTheme.spacing.medium)
+                                .weight(1f)
+                                .semantics { heading() },
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
                 item {
                     IntroMessages(chatEntries.isEmpty()) // only animate if no conversation
                 }

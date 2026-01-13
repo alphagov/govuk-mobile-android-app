@@ -5,7 +5,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -16,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.delay
 import uk.gov.govuk.chat.R
-import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 @Composable
 internal fun IntroMessages(
@@ -58,6 +56,6 @@ private fun Message(
         answer = stringResource(id = R.string.bot_message),
         onMarkdownLinkClicked = { _, _ -> },
         onSourcesExpanded = { },
-        modifier = modifier.padding(top = GovUkTheme.spacing.medium)
+        modifier = modifier
     )
 }
