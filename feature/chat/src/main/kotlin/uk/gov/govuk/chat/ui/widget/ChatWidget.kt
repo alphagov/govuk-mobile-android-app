@@ -32,7 +32,8 @@ import uk.gov.govuk.design.ui.theme.ThemePreviews
 
 @Composable
 fun ChatWidget(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     val title = "Introducing GOV.UK Chat" // Todo - extract string
 
@@ -41,6 +42,7 @@ fun ChatWidget(
             modifier = Modifier
                 .weight(1f, fill = false)
                 .background(GovUkTheme.colourScheme.surfaces.list)
+                .clickable { onClick() }
             ,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -109,6 +111,6 @@ fun ChatWidget(
 @Composable
 private fun ChatWidgetPreview() {
     GovUkTheme {
-        ChatWidget()
+        ChatWidget { }
     }
 }
