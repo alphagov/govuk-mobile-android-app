@@ -246,17 +246,13 @@ fun HomeBannerCard(
 fun SearchResultCard(
     title: String,
     description: String?,
-    url: String,
     onClick: () -> Unit,
-    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     GovUkOutlinedCard(
         modifier = modifier,
-        onClick = {
-            onClick()
-            launchBrowser(url)
-        }
+        onClick = onClick
+
     ) {
         Row(
             verticalAlignment = Alignment.Top
@@ -647,9 +643,7 @@ private fun SearchResultWithDescriptionPreview() {
         SearchResultCard(
             title = "Card title",
             description = "Description",
-            url = "",
             onClick = {},
-            launchBrowser = {}
         )
     }
 }
@@ -661,9 +655,7 @@ private fun SearchResultWithoutDescriptionPreview() {
         SearchResultCard(
             title = "Card title",
             description = null,
-            url = "",
             onClick = {},
-            launchBrowser = {}
         )
     }
 }
