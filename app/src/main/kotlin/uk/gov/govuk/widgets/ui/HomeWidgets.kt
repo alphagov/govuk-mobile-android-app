@@ -46,9 +46,16 @@ internal fun homeWidgets(
 
             is HomeWidget.ChatBanner -> {
                 widgets.add { modifier ->
-                    ChatBanner(modifier) {
-                        navController.navigateToChat()
-                    }
+                    ChatBanner(
+                        onClick = { text ->
+                            onInternalClick(text)
+                            navController.navigateToChat()
+                        },
+                        onDismiss = { text ->
+                            onSuppressClick(it.ID, text)
+                        },
+                        modifier = modifier
+                    )
                 }
             }
 

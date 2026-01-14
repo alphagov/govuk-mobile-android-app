@@ -153,7 +153,8 @@ internal class AppViewModel @Inject constructor(
                     }
                 }
 
-                if (isChatEnabled()) {
+                if (isChatEnabled() &&
+                    !suppressedWidgets.contains(HomeWidget.ChatBanner.ID)) {
                     widgets.add(HomeWidget.ChatBanner)
                 }
 

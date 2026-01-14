@@ -32,18 +32,19 @@ import uk.gov.govuk.design.ui.theme.ThemePreviews
 
 @Composable
 fun ChatBanner(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: (String) -> Unit,
+    onDismiss: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val title = "Introducing GOV.UK Chat" // Todo - extract string
+    val title = stringResource(R.string.chat_banner_title)
 
-    Card(modifier.height(IntrinsicSize.Min)) {
+    Card(modifier
+        .height(IntrinsicSize.Min)
+    ) {
         Column(
             modifier = Modifier
                 .weight(1f, fill = false)
-                .background(GovUkTheme.colourScheme.surfaces.list)
-                .clickable { onClick() }
-            ,
+                .background(GovUkTheme.colourScheme.surfaces.list),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(
@@ -63,8 +64,7 @@ fun ChatBanner(
                                 .semantics { heading() },
                         )
                         SmallVerticalSpacer()
-                        // Todo - extract string
-                        BodyRegularLabel("An experimental AI tool for finding quick answers")
+                        BodyRegularLabel(stringResource(R.string.chat_banner_desc))
                     }
 
                     Box {
@@ -76,13 +76,12 @@ fun ChatBanner(
                             modifier = Modifier
                                 .size(48.dp)
                                 .align(Alignment.TopEnd)
-                                .clickable { },
+                                .clickable { onDismiss(title) },
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 painterResource(uk.gov.govuk.design.R.drawable.ic_cancel),
-                                contentDescription =
-                                    "${stringResource(uk.gov.govuk.design.R.string.content_desc_remove)} $title",
+                                contentDescription = stringResource(R.string.chat_banner_dismiss_content_desc),
                                 tint = GovUkTheme.colourScheme.textAndIcons.primary
                             )
                         }
@@ -95,13 +94,20 @@ fun ChatBanner(
                     thickness = 1.dp,
                     color = GovUkTheme.colourScheme.strokes.listDivider
                 )
-                MediumVerticalSpacer()
-                BodyRegularLabel(
-                    text = "Ask a question", // Todo - extract string
-                    modifier = Modifier.padding(start = GovUkTheme.spacing.medium),
-                    color = GovUkTheme.colourScheme.textAndIcons.linkSecondary
-                )
-                MediumVerticalSpacer()
+                val cta = stringResource(R.string.chat_banner_cta)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onClick(cta) }
+                ) {
+                    MediumVerticalSpacer()
+                    BodyRegularLabel(
+                        text = cta,
+                        modifier = Modifier.padding(start = GovUkTheme.spacing.medium),
+                        color = GovUkTheme.colourScheme.textAndIcons.linkSecondary
+                    )
+                    MediumVerticalSpacer()
+                }
             }
         }
     }
@@ -111,6 +117,9 @@ fun ChatBanner(
 @Composable
 private fun ChatBannerPreview() {
     GovUkTheme {
-        ChatBanner { }
+        ChatBanner(
+            { },
+            { }
+        )
     }
 }
