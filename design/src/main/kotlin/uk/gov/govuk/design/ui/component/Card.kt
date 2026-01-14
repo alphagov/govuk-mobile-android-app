@@ -102,12 +102,10 @@ fun HomeBannerCard(
     title: String? = null,
     description: String? = null,
     linkTitle: String?,
-    linkUrl: String?,
     isDismissible: Boolean = true,
     dismissAltText: String? = null,
     type: EmergencyBannerUiType,
-    onClick: () -> Unit,
-    launchBrowser: (url: String) -> Unit,
+    onClick: (() -> Unit)? = null,
     onSuppressClick: (() -> Unit)? = null
 ) {
     val backgroundColour = type.backgroundColour
@@ -175,9 +173,7 @@ fun HomeBannerCard(
                 Box(
                     modifier = Modifier
                         .size(48.dp)
-                        .clickable {
-                            onSuppressClick()
-                        },
+                        .clickable(onClick = onSuppressClick),
                     contentAlignment = Alignment.Center
                 ) {
                     if (isDismissible) {
@@ -191,7 +187,8 @@ fun HomeBannerCard(
             }
         }
 
-        if (linkTitle != null && linkUrl != null) {
+        // link section
+        if (linkTitle != null && onClick != null) {
             Row(
                 modifier = Modifier
                     .height(IntrinsicSize.Min)
@@ -210,10 +207,7 @@ fun HomeBannerCard(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                onClick()
-                                launchBrowser(linkUrl)
-                            }
+                            .clickable(onClick = onClick)
                             .padding(horizontal = GovUkTheme.spacing.medium)
                             .semantics {
                                 contentDescription = "$linkTitle $opensInWebBrowser"
@@ -246,17 +240,13 @@ fun HomeBannerCard(
 fun SearchResultCard(
     title: String,
     description: String?,
-    url: String,
     onClick: () -> Unit,
-    launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     GovUkOutlinedCard(
         modifier = modifier,
-        onClick = {
-            onClick()
-            launchBrowser(url)
-        }
+        onClick = onClick
+
     ) {
         Row(
             verticalAlignment = Alignment.Top
@@ -305,9 +295,7 @@ fun UserFeedbackCard(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(vertical = GovUkTheme.spacing.medium)
-                .clickable {
-                    onClick()
-                }
+                .clickable(onClick = onClick)
                 .semantics {
                     contentDescription = "$linkTitle $opensInWebBrowser"
                 },
@@ -354,9 +342,7 @@ fun CentredCardWithIcon(
         CentredContentWithIcon(
             icon = icon,
             modifier = Modifier
-                .clickable {
-                    onClick()
-                },
+                .clickable(onClick = onClick),
             title = title,
             description = description
         )
@@ -575,10 +561,7 @@ private fun HomeNotableDeathBannerCardPreview() {
         HomeBannerCard(
             title = "His Majesty King Henry VIII",
             description = "1491 to 1547",
-            onClick = { },
-            launchBrowser = { },
             linkTitle = "A link description",
-            linkUrl = "",
             isDismissible = true,
             type = EmergencyBannerUiType.NOTABLE_DEATH,
             onSuppressClick = { }
@@ -593,10 +576,7 @@ private fun HomeNationalEmergencyBannerCardPreview() {
         HomeBannerCard(
             title = "National emergency",
             description = "This is a level 1 incident",
-            onClick = { },
-            launchBrowser = { },
             linkTitle = "A link description",
-            linkUrl = "",
             isDismissible = true,
             type = EmergencyBannerUiType.NATIONAL_EMERGENCY,
             onSuppressClick = { }
@@ -611,10 +591,7 @@ private fun HomeLocalEmergencyBannerCardPreview() {
         HomeBannerCard(
             title = "Local emergency",
             description = "This is a level 2 incident",
-            onClick = { },
-            launchBrowser = { },
             linkTitle = "A link description",
-            linkUrl = "",
             isDismissible = true,
             type = EmergencyBannerUiType.LOCAL_EMERGENCY,
             onSuppressClick = { }
@@ -629,10 +606,7 @@ private fun HomeInformationEmergencyBannerCardPreview() {
         HomeBannerCard(
             title = "Emergency alerts",
             description = "Test on Sunday 7 September, 3pm",
-            onClick = { },
-            launchBrowser = { },
             linkTitle = "A link description",
-            linkUrl = "",
             isDismissible = true,
             type = EmergencyBannerUiType.INFORMATION,
             onSuppressClick = { }
@@ -647,9 +621,7 @@ private fun SearchResultWithDescriptionPreview() {
         SearchResultCard(
             title = "Card title",
             description = "Description",
-            url = "",
             onClick = {},
-            launchBrowser = {}
         )
     }
 }
@@ -661,9 +633,7 @@ private fun SearchResultWithoutDescriptionPreview() {
         SearchResultCard(
             title = "Card title",
             description = null,
-            url = "",
             onClick = {},
-            launchBrowser = {}
         )
     }
 }
