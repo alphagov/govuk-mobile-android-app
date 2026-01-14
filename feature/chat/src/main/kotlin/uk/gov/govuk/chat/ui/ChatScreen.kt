@@ -1,10 +1,7 @@
 package uk.gov.govuk.chat.ui
 
 import android.content.res.Configuration
-import android.widget.FrameLayout
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,26 +21,15 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
@@ -58,6 +44,7 @@ import uk.gov.govuk.chat.ui.component.IntroMessages
 import uk.gov.govuk.config.data.remote.model.ChatUrls
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
+import uk.gov.govuk.design.ui.component.Title2BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
 internal class AnalyticsEvents(
@@ -156,13 +143,8 @@ private fun ChatScreen(
     chatUrls: ChatUrls,
     modifier: Modifier = Modifier
 ) {
-    var heightPx by remember { mutableIntStateOf(0) }
     val listState = rememberLazyListState()
     val chatEntries = uiState.chatEntries.toList()
-    var backgroundVisible  by remember { mutableStateOf(false) }
-    val brush = Brush.verticalGradient(
-        colorStops = calculateStops(heightPx, 20.dp)
-    )
     val animationDuration = 500
     val coroutineScope = rememberCoroutineScope()
 
@@ -174,23 +156,11 @@ private fun ChatScreen(
         )
     }
 
-    LaunchedEffect(Unit) {
-        delay(1000)
-        backgroundVisible = true
-    }
-
-    Box(modifier.fillMaxSize()) {
-        if (chatEntries.isEmpty()) {
-            AnimatedVisibility(
-                visible = backgroundVisible,
-                enter = fadeIn(animationSpec = tween(durationMillis = 2000))
-            ) {
-                BackgroundGradient()
-            }
-        } else {
-            BackgroundGradient()
-        }
-
+    Box(
+        modifier.fillMaxSize()
+            .background(GovUkTheme.colourScheme.surfaces.chatBackground)
+            .padding(top = GovUkTheme.spacing.medium)
+    ) {
         Column(
             Modifier
                 .windowInsetsPadding(WindowInsets.statusBars)
@@ -198,19 +168,23 @@ private fun ChatScreen(
             LazyColumn(
                 state = listState,
                 modifier = Modifier
-                    .onSizeChanged { heightPx = it.height }
-                    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-                    .drawWithContent {
-                        drawContent()
-                        drawRect(
-                            brush = brush,
-                            blendMode = BlendMode.DstIn
-                        )
-                    }
                     .fillMaxWidth()
                     .weight(1f)
                     .padding(horizontal = GovUkTheme.spacing.medium)
             ) {
+                item {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Title2BoldLabel(
+                            text = stringResource(R.string.bot_header_text),
+                            modifier = Modifier
+                                .padding(vertical = GovUkTheme.spacing.medium)
+                                .weight(1f)
+                                .semantics { heading() },
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
                 item {
                     IntroMessages(chatEntries.isEmpty()) // only animate if no conversation
                 }
@@ -290,45 +264,6 @@ private fun ChatScreen(
             }
         }
     }
-}
-
-@Composable
-private fun calculateStops(
-    heightPx: Int,
-    fadeDp: Dp,
-): Array<Pair<Float, Color>> {
-    val density = LocalDensity.current
-    val topFadePx = with(density) { fadeDp.toPx() }
-    val bottomFadePx = with(density) { fadeDp.toPx() }
-
-    if (heightPx == 0) {
-        // Before layout pass, fallback to full opacity to avoid division by zero
-        return arrayOf(0f to Color.White, 1f to Color.White)
-    }
-
-    val topEnd = (topFadePx / heightPx).coerceIn(0f, 1f)
-    val bottomStart = ((heightPx - bottomFadePx) / heightPx).coerceIn(0f, 1f)
-
-    return arrayOf(
-        0f to Color.Transparent,
-        topEnd to Color.White,
-        bottomStart to Color.White,
-        1f to Color.Transparent
-    )
-}
-
-@Composable
-private fun BackgroundGradient(
-    modifier: Modifier = Modifier
-) {
-    AndroidView(
-        factory = { context ->
-            FrameLayout(context).apply {
-                setBackgroundResource(R.drawable.background_chat)
-            }
-        },
-        modifier = modifier.fillMaxSize()
-    )
 }
 
 @Composable

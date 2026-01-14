@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.unit.dp
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -28,7 +29,8 @@ internal fun Question(
             colors = CardDefaults.cardColors(
                 containerColor = GovUkTheme.colourScheme.surfaces.chatUserMessageBackground,
                 contentColor = GovUkTheme.colourScheme.textAndIcons.chatUserMessageText
-            )
+            ),
+            modifier = Modifier.padding(start = 60.dp)
         ) {
             val altText = "${stringResource(R.string.answer_alt)} $question"
 
