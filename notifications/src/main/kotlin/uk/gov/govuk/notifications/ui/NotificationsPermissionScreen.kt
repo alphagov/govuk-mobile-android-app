@@ -4,10 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import uk.gov.govuk.design.ui.component.ChildPageHeader
 import uk.gov.govuk.design.ui.component.FixedDoubleButtonGroup
@@ -70,12 +72,17 @@ internal fun NotificationsPermissionRoute(
             }
 
             NotificationsUiState.Alert -> {
-                val context = LocalContext.current
-                showNotificationsAlert(
-                    context,
-                    onCancelButtonClick = { notificationsViewModel.onCancelButtonClick(it) },
-                    onContinueButtonClick = { notificationsViewModel.onContinueButtonClick(it) })
-                notificationsPermissionCompleted()
+                var showNotificationsSettingsAlert by remember { mutableStateOf(true) }
+                if (showNotificationsSettingsAlert) {
+                    NotificationsSettingsAlert(
+                        onContinueButtonClick = { notificationsViewModel.onContinueButtonClick(it) },
+                        onCancelButtonClick = { notificationsViewModel.onCancelButtonClick(it) },
+                        onDismiss = {
+                            notificationsPermissionCompleted()
+                            showNotificationsSettingsAlert = false
+                        }
+                    )
+                }
             }
         }
     }

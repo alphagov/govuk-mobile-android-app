@@ -24,15 +24,9 @@ class ConfigRepo @Inject constructor(
         private const val CHAT_POLL_INTERVAL_FALLBACK = 3.0
     }
 
-    private lateinit var _config: Config
+    private var _config: Config? = null
     val config: Config
-        get() {
-            if (::_config.isInitialized) {
-                return _config
-            } else {
-                error("You must init config successfully before use!!!")
-            }
-        }
+        get() = _config ?: error("You must init config successfully before use!!!")
 
     suspend fun initConfig(): uk.gov.govuk.data.model.Result<Unit> {
         return try {

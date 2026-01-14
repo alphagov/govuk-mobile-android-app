@@ -8,7 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.ExternalLinkListItem
 import uk.gov.govuk.design.ui.component.NonTappableCard
 import uk.gov.govuk.design.ui.component.SectionHeadingLabel
@@ -103,10 +103,12 @@ private fun NoVisitedItemsPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun VisitedItemsPreview() {
-    val items = listOf(VisitedUi(
-        "Title",
-        "www.preview.com",
-        "")
+    val items = listOf(
+        VisitedUi(
+            title = "Title",
+            url = "www.preview.com",
+            lastVisited = ""
+        )
     )
     GovUkTheme {
         VisitedItems(

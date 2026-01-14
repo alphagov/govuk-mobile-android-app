@@ -40,8 +40,11 @@ import uk.gov.govuk.analytics.AnalyticsClient
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.ERROR
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.LOADING
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.SUCCESS
+import uk.gov.govuk.data.crypto.CryptoProvider
 import uk.gov.govuk.data.remote.AuthApi
 import java.io.IOException
+import java.nio.charset.StandardCharsets
+import kotlin.text.toByteArray
 
 class AuthRepoTest {
 
@@ -59,6 +62,8 @@ class AuthRepoTest {
     private val authApi = mockk<AuthApi>(relaxed = true)
     private val analyticsClient = mockk<AnalyticsClient>(relaxed = true)
     private val activity = mockk<FragmentActivity>(relaxed = true)
+    private val tokenRepo = mockk<TokenRepo>(relaxed = true)
+    private val cryptoProvider = mockk<CryptoProvider>(relaxed = true)
 
     private lateinit var authRepo: AuthRepo
 
@@ -66,8 +71,17 @@ class AuthRepoTest {
     fun setup() {
         mockkStatic(AuthorizationResponse::class)
 
-        authRepo = AuthRepo(attestationProvider, authRequest, authService, tokenRequestBuilder,
-            tokenResponseMapper, secureStore, biometricManager, sharedPrefs, authApi, analyticsClient)
+        authRepo = AuthRepo(
+            attestationProvider, authRequest, authService, tokenRequestBuilder,
+            tokenResponseMapper,
+            secureStore,
+            biometricManager,
+            sharedPrefs,
+            authApi,
+            analyticsClient,
+            tokenRepo,
+            cryptoProvider
+        )
     }
 
     @After
@@ -860,6 +874,133 @@ class AuthRepoTest {
         runTest {
             authRepo.handleAuthResponse(intent)
             assertEquals("accessToken", authRepo.getAccessToken())
+        }
+    }
+
+    @Test
+    fun `Given a user is logging in again and has a sub id stored in shared prefs, when isDifferentUser() called, then returns true`() {
+        every { sharedPrefs.contains("subId") } returns true
+        every { sharedPrefs.getString("subId", "") } returns "12345"
+        every {
+            cryptoProvider.encrypt(any())
+        } returns Result.success("54321")
+        every {
+            cryptoProvider.decrypt("54321")
+        } returns Result.success("12345".toByteArray(StandardCharsets.UTF_8))
+        coEvery { tokenRepo.getSubId() } returns "54321"
+        runTest {
+            assertTrue(authRepo.isDifferentUser())
+            coVerify(exactly = 1) {
+                cryptoProvider.encrypt("12345".toByteArray(StandardCharsets.UTF_8))
+                sharedPrefs.edit()
+                tokenRepo.getSubId()
+                cryptoProvider.decrypt("54321")
+                cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
+            }
+            coVerify(exactly = 2) {
+                tokenRepo.saveSubId("54321")
+            }
+        }
+    }
+
+    @Test
+    fun `Given a user is logging in again and has a null sub id stored in shared prefs, when isDifferentUser() called, then returns true`() {
+        every { sharedPrefs.contains("subId") } returns true
+        every { sharedPrefs.getString("subId", "") } returns null
+        every {
+            cryptoProvider.encrypt(any())
+        } returns Result.success("54321")
+        every {
+            cryptoProvider.decrypt("54321")
+        } returns Result.success("12345".toByteArray(StandardCharsets.UTF_8))
+        coEvery { tokenRepo.getSubId() } returns "54321"
+        runTest {
+            assertTrue(authRepo.isDifferentUser())
+            coVerify(exactly = 1) {
+                cryptoProvider.decrypt("54321")
+                cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
+                tokenRepo.saveSubId("54321")
+                tokenRepo.getSubId()
+            }
+        }
+    }
+
+    @Test
+    fun `Given a user is logging in again and has no sub id stored in shared prefs but the data repo has no sub id, when isDifferentUser() called, then returns false`() {
+        every { sharedPrefs.contains("subId") } returns false
+        every {
+            cryptoProvider.encrypt(any())
+        } returns Result.success("54321")
+        coEvery { tokenRepo.getSubId() } returns null
+        runTest {
+            assertFalse(authRepo.isDifferentUser())
+            coVerify(exactly = 1) {
+                cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
+                tokenRepo.saveSubId("54321")
+                tokenRepo.getSubId()
+            }
+        }
+    }
+
+    @Test
+    fun `Given a user is logging in again and has no sub id stored in shared prefs but encryption fails, when isDifferentUser() called, then returns true`() {
+        every { sharedPrefs.contains("subId") } returns false
+        every {
+            cryptoProvider.encrypt(any())
+        } returns Result.failure(Throwable())
+        every {
+            cryptoProvider.decrypt("54321")
+        } returns Result.success("12345".toByteArray(StandardCharsets.UTF_8))
+        coEvery { tokenRepo.getSubId() } returns "54321"
+        runTest {
+            assertTrue(authRepo.isDifferentUser())
+            coVerify(exactly = 1) {
+                cryptoProvider.decrypt("54321")
+                cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
+                tokenRepo.getSubId()
+            }
+        }
+    }
+
+    @Test
+    fun `Given a user is logging in again and has no sub id stored in shared prefs but decryption fails, when isDifferentUser() called, then returns false`() {
+        every { sharedPrefs.contains("subId") } returns false
+        every {
+            cryptoProvider.encrypt(any())
+        } returns Result.success("54321")
+        every {
+            cryptoProvider.decrypt("54321")
+        } returns Result.failure(Throwable())
+        coEvery { tokenRepo.getSubId() } returns "54321"
+        runTest {
+            assertFalse(authRepo.isDifferentUser())
+            coVerify(exactly = 1) {
+                cryptoProvider.decrypt("54321")
+                cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
+                tokenRepo.saveSubId("54321")
+                tokenRepo.getSubId()
+            }
+        }
+    }
+
+    @Test
+    fun `Given a user is logging in again and has no sub id stored in shared prefs, when isDifferentUser() called, then returns true`() {
+        every { sharedPrefs.contains("subId") } returns false
+        every {
+            cryptoProvider.encrypt(any())
+        } returns Result.success("54321")
+        every {
+            cryptoProvider.decrypt("54321")
+        } returns Result.success("12345".toByteArray(StandardCharsets.UTF_8))
+        coEvery { tokenRepo.getSubId() } returns "54321"
+        runTest {
+            assertTrue(authRepo.isDifferentUser())
+            coVerify(exactly = 1) {
+                cryptoProvider.decrypt("54321")
+                cryptoProvider.encrypt("".toByteArray(StandardCharsets.UTF_8))
+                tokenRepo.saveSubId("54321")
+                tokenRepo.getSubId()
+            }
         }
     }
 }

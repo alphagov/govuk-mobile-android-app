@@ -11,7 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class LoginDataStore @Inject constructor(
-    @Named("login_prefs") private val dataStore: DataStore<Preferences>
+    @param:Named("login_prefs") private val dataStore: DataStore<Preferences>
 ) {
     companion object {
         internal const val REFRESH_TOKEN_EXPIRY_KEY = "refresh_token_expiry"

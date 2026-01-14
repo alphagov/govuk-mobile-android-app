@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -19,13 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
@@ -95,10 +91,6 @@ private fun VisitedScreen(
     val removeAllText = stringResource(R.string.visited_items_remove_all_button)
     val removeAllAltText = stringResource(R.string.visited_items_remove_all)
     val visitedItems = uiState?.visited
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
-    val focusManager = LocalFocusManager.current
-    val focusRequester = remember { FocusRequester() }
     var showRemoveAllDialog by remember { mutableStateOf(false) }
 
     Column(
@@ -109,7 +101,6 @@ private fun VisitedScreen(
 
         ChildPageHeader(
             text = title,
-            modifier = Modifier.focusRequester(focusRequester),
             dismissStyle = HeaderDismissStyle.Back(onBack),
             actionStyle = if (visitedItems.isNullOrEmpty()) {
                 HeaderActionStyle.None
@@ -132,18 +123,6 @@ private fun VisitedScreen(
                 onConfirm = onRemoveAllClick,
                 onDismiss = { showRemoveAllDialog = false }
             )
-        }
-    }
-
-    LaunchedEffect(lifecycleState) {
-        when (lifecycleState) {
-            Lifecycle.State.RESUMED -> {
-                focusManager.clearFocus(true)
-                delay(500)
-                focusRequester.requestFocus()
-            }
-
-            else -> { /* Do nothing */ }
         }
     }
 }
@@ -182,7 +161,7 @@ private fun ShowVisitedItems(
                 }
                 itemsIndexed(
                     items = visitedItems,
-                    key = { _, item -> item.title }
+                    key = { _, item -> item.id }
                 ) { index, item ->
                     val title = item.title
                     val url = item.url
@@ -233,6 +212,7 @@ private fun RemoveAllConfirmationDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(GovUkTheme.numbers.cornerAndroidList),
         confirmButton = {
             TextButton(
                 onClick = {

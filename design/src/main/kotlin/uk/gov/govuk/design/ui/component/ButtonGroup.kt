@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.window.core.layout.WindowHeightSizeClass
+import androidx.window.core.layout.WindowSizeClass
 import uk.gov.govuk.design.ui.component.ConnectedButton.FIRST
 import uk.gov.govuk.design.ui.component.ConnectedButton.SECOND
 import uk.gov.govuk.design.ui.model.SINGLE_COLUMN_THRESHOLD_DP
@@ -73,7 +73,7 @@ fun FixedDoubleButtonGroup(
     primaryDestructive: Boolean = false,
     primaryEnabled: Boolean = true,
     secondaryEnabled: Boolean = true,
-    windowHeightSizeClass: WindowHeightSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowHeightSizeClass
+    isWindowHeightCompact: Boolean = isWindowHeightCompact()
 ) {
     Column(modifier.fillMaxWidth()) {
         FixedContainerDivider()
@@ -86,7 +86,7 @@ fun FixedDoubleButtonGroup(
             primaryDestructive = primaryDestructive,
             primaryEnabled = primaryEnabled,
             secondaryEnabled = secondaryEnabled,
-            windowHeightSizeClass = windowHeightSizeClass
+            isWindowHeightCompact = isWindowHeightCompact
         )
         ExtraLargeVerticalSpacer()
     }
@@ -102,9 +102,9 @@ fun DoubleButtonGroup(
     primaryDestructive: Boolean = false,
     primaryEnabled: Boolean = true,
     secondaryEnabled: Boolean = true,
-    windowHeightSizeClass: WindowHeightSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowHeightSizeClass
+    isWindowHeightCompact: Boolean = isWindowHeightCompact()
 ) {
-    if (windowHeightSizeClass == WindowHeightSizeClass.COMPACT) {
+    if (isWindowHeightCompact) {
         HorizontalButtonGroup(
             primaryText = primaryText,
             onPrimary = onPrimary,
@@ -127,6 +127,12 @@ fun DoubleButtonGroup(
             secondaryEnabled = secondaryEnabled
         )
     }
+}
+
+@Composable
+private fun isWindowHeightCompact() : Boolean {
+    val windowAdaptiveInfo = currentWindowAdaptiveInfo()
+    return !windowAdaptiveInfo.windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
 }
 
 @Composable
@@ -342,7 +348,7 @@ private fun VerticalButtonGroupPreview()
             onPrimary = {},
             secondaryText = "Secondary",
             onSecondary = {},
-            windowHeightSizeClass = WindowHeightSizeClass.MEDIUM
+            isWindowHeightCompact = false
         )
     }
 }
@@ -357,7 +363,7 @@ private fun HorizontalButtonGroupPreview()
             onPrimary = {},
             secondaryText = "Secondary",
             onSecondary = {},
-            windowHeightSizeClass = WindowHeightSizeClass.COMPACT
+            isWindowHeightCompact = true
         )
     }
 }
@@ -373,7 +379,7 @@ private fun VerticalDestructiveButtonGroupPreview()
             secondaryText = "Secondary",
             onSecondary = {},
             primaryDestructive = true,
-            windowHeightSizeClass = WindowHeightSizeClass.MEDIUM
+            isWindowHeightCompact = false
         )
     }
 }
@@ -389,7 +395,7 @@ private fun HorizontalDestructiveButtonGroupPreview()
             secondaryText = "Secondary",
             onSecondary = {},
             primaryDestructive = true,
-            windowHeightSizeClass = WindowHeightSizeClass.COMPACT
+            isWindowHeightCompact = true
         )
     }
 }

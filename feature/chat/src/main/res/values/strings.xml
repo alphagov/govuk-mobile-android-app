@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="widget_title">Chat</string>
-  <string name="input_label">Ask a question…</string>
-  <string name="button_text">Go</string>
-  <string name="sources_header">Sources</string>
-  <string name="pii_error_message">Personal data has been detected in your question. Please remove it and try again.</string>
+    <string name="input_label">Ask a question…</string>
+    <string name="pii_error_message">Personal data has been detected in your question. Please remove it and try again.</string>
   <plurals name="characterCountUnderOrAtLimit">
     <item quantity="one">1 character remaining</item>
     <item quantity="other">%d characters remaining</item>
@@ -19,6 +16,7 @@
   <string name="action_clear">Clear chat</string>
   <string name="action_alt">More options</string>
   <string name="button_alt">Send message</string>
+  <string name="answer_alt">You said</string>
   <string name="bot_header_text">GOV.UK Chat</string>
   <string name="bot_sources_header_text">GOV.UK Chat can make mistakes.\nCheck GOV.UK pages for important information.</string>
   <string name="bot_sources_list_description">GOV.UK pages used in this answer</string>
@@ -48,17 +46,4 @@
   <string name="onboarding_page_two_text_two">It’s simple to double-check information. Use the links provided with each answer.</string>
   <string name="onboarding_page_two_button">I understand</string>
   <string name="onboarding_page_cancel_text">Cancel</string>
-  <string name="optin_title">Get early access to GOV.UK Chat?</string>
-  <string name="optin_para_1">GOV.UK Chat is a new AI tool that uses GOV.UK pages to answer your questions.  You can try it out for a limited time.</string>
-  <string name="optin_para_2">By trying out GOV.UK Chat, you agree to share statistics about how you use it.</string>
-  <string name="optin_para_3">You can ask us to delete these statistics at any time. Read the privacy notice to find out how.</string>
-  <string name="optin_privacy_notice">GOV.UK Chat privacy notice</string>
-  <string name="optin_terms_and_conditions">GOV.UK Chat terms and conditions</string>
-  <string name="optin_opt_in">Add GOV.UK Chat to the app</string>
-  <string name="optin_opt_out">Do not add GOV.UK Chat</string>
-  <string name="test_ended_title">GOV.UK Chat early access has ended</string>
-  <string name="test_ended_para_1">Early access to GOV.UK Chat has now ended. GOV.UK Chat and your conversations are no longer available.</string>
-  <string name="test_ended_para_2">We’re working on improving this feature and it may return soon.</string>
-  <string name="test_ended_feedback">Give feedback on GOV.UK Chat</string>
-  <string name="test_ended_button">Continue</string>
 </resources>

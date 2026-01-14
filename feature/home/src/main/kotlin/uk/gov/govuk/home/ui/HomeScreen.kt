@@ -2,6 +2,7 @@ package uk.gov.govuk.home.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.LayoutBoundsHolder
 import androidx.compose.ui.layout.layoutBounds
 import androidx.compose.ui.layout.onVisibilityChanged
@@ -29,7 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -40,7 +43,6 @@ import uk.gov.govuk.home.ui.animation.AnimateIcon
 @Composable
 internal fun HomeRoute(
     widgets: List<@Composable (Modifier) -> Unit>,
-    userChatOptInState: Boolean,
     modifier: Modifier = Modifier,
     headerWidget: (@Composable (Modifier) -> Unit)? = null,
 ) {
@@ -48,7 +50,7 @@ internal fun HomeRoute(
 
     HomeScreen(
         widgets = widgets,
-        onPageView = { viewModel.onPageView(userChatOptInState = userChatOptInState) },
+        onPageView = { viewModel.onPageView() },
         modifier = modifier,
         headerWidget = headerWidget
     )
@@ -61,9 +63,7 @@ private fun HomeScreen(
     modifier: Modifier = Modifier,
     headerWidget: (@Composable (Modifier) -> Unit)? = null,
 ) {
-    LaunchedEffect(Unit) {
-        onPageView()
-    }
+    val focusRequester = remember { FocusRequester() }
 
     Column(modifier.background(GovUkTheme.colourScheme.surfaces.screenBackground)) {
         Column(
@@ -80,6 +80,8 @@ private fun HomeScreen(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .semantics { heading() }
+                    .focusRequester(focusRequester)
+                    .focusable()
             )
 
             MediumVerticalSpacer()
@@ -104,7 +106,9 @@ private fun HomeScreen(
                 LargeVerticalSpacer()
             }
             items(widgets) { widget ->
-                widget(Modifier.fillMaxWidth())
+                widget(Modifier
+                    .fillMaxWidth()
+                    .animateItem())
             }
             item {
                 Row(
@@ -137,5 +141,10 @@ private fun HomeScreen(
                 Spacer(modifier = Modifier.height(64.dp))
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        onPageView()
+        focusRequester.requestFocus()
     }
 }

@@ -11,7 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class RealmDataStore @Inject constructor(
-    @Named("database_prefs") private val dataStore: DataStore<Preferences>
+    @param:Named("database_prefs") private val dataStore: DataStore<Preferences>
 ) {
 
     companion object {

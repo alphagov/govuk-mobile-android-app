@@ -13,14 +13,13 @@ class HomeViewModelTest {
     fun `Given a page view, and the user has opted into chat, then log analytics`() {
         val viewModel = HomeViewModel(analyticsClient)
 
-        viewModel.onPageView(userChatOptInState = true)
+        viewModel.onPageView()
 
         verify {
-            analyticsClient.screenViewWithType(
+            analyticsClient.screenView(
                 screenClass = "HomeScreen",
                 screenName = "Homepage",
-                title = "Homepage",
-                type = "chatOptIn"
+                title = "Homepage"
             )
         }
     }
@@ -29,14 +28,13 @@ class HomeViewModelTest {
     fun `Given a page view, and the user has opted out of chat, then log analytics`() {
         val viewModel = HomeViewModel(analyticsClient)
 
-        viewModel.onPageView(userChatOptInState = false)
+        viewModel.onPageView()
 
         verify {
-            analyticsClient.screenViewWithType(
+            analyticsClient.screenView(
                 screenClass = "HomeScreen",
                 screenName = "Homepage",
-                title = "Homepage",
-                type = "chatOptOut"
+                title = "Homepage"
             )
         }
     }

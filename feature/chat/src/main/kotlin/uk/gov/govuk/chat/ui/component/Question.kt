@@ -8,6 +8,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import uk.gov.govuk.chat.R
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
@@ -26,9 +30,15 @@ internal fun Question(
                 contentColor = GovUkTheme.colourScheme.textAndIcons.chatUserMessageText
             )
         ) {
+            val altText = "${stringResource(R.string.answer_alt)} $question"
+
             BodyRegularLabel(
                 text = question,
-                modifier = Modifier.padding(GovUkTheme.spacing.medium)
+                modifier = Modifier
+                    .padding(GovUkTheme.spacing.medium)
+                    .clearAndSetSemantics {
+                        contentDescription = altText
+                    }
             )
         }
     }

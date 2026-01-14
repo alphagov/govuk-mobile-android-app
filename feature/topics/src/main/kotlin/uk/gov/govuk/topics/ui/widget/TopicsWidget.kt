@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.CardListItem
 import uk.gov.govuk.design.ui.component.CentredContentWithIcon
 import uk.gov.govuk.design.ui.component.ConnectedButton
@@ -242,7 +242,7 @@ private fun TopicsWidgetPreview() {
                 yourTopics = topics,
                 allTopics = topics
             ),
-            onView = { _, _, -> },
+            onView = { _, _ -> },
             onTopicClick = { _, _, _, _, _ -> },
             onEditClick = { }
         )
@@ -258,7 +258,7 @@ private fun TopicsWidgetEmptyTopicsPreview() {
                 allTopics = emptyList(),
                 yourTopics = emptyList()
             ),
-            onView = { _, _, -> },
+            onView = { _, _ -> },
             onTopicClick = { _, _, _, _, _ -> },
             onEditClick = { }
         )

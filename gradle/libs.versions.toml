@@ -4,46 +4,48 @@ biometric = "1.1.0"
 composeMarkdown = "0.5.7"
 kotlin = "2.0.21"
 junit = "4.13.2"
-junitVersion = "1.2.1"
-espressoCore = "3.6.1"
+junitVersion = "1.3.0"
+espressoCore = "3.7.0"
 mockwebserver = "4.12.0"
-securityCrypto = "1.0.0"
-testRules = "1.6.1"
-activityCompose = "1.10.1"
-lottieCompose = "6.4.1"
-navigationCompose = "2.8.9"
+securityCrypto = "1.1.0"
+testRules = "1.7.0"
+activityCompose = "1.12.0"
+lottieCompose = "6.7.1"
+navigationCompose = "2.9.6"
 iconsCompose = "1.7.8"
-composeBom = "2025.10.01"
-androidxHilt = "1.2.0"
-adaptiveAndroid = "1.1.0"
-hilt = "2.56.2"
+composeBom = "2025.11.01"
+androidxHilt = "1.3.0"
+adaptiveAndroid = "1.2.0"
+hilt = "2.57.2"
 ksp = "2.0.21-1.0.28"
-datastorePreferences = "1.1.4"
-googlePlayServices = "4.4.2"
-crashlytics = "3.0.3"
 
-oneSignal = "5.1.7"
+datastorePreferences = "1.2.0"
+googlePlayServices = "4.4.4"
+crashlytics = "3.0.6"
+
+oneSignal = "5.4.1"
 ossLicenses = "0.10.6"
-retrofit = "2.11.0"
+retrofit = "3.0.0"
 
-firebaseBom = "33.12.0"
+firebaseBom = "34.6.0"
 
 realm = "3.0.0"
 
-mockk = "1.13.11"
-coroutineTest = "1.8.1"
-firebaseAppDistribution = "5.1.1"
-kover = "0.9.1"
-sonarqube = "5.0.0.4638"
-playServicesMeasurementApi = "22.4.0"
+mockk = "1.14.6"
+coroutineTest = "1.10.2"
+firebaseAppDistribution = "5.2.0"
+kover = "0.9.3"
+sonarqube = "7.1.0.6387"
+playServicesMeasurementApi = "23.0.0"
 playServicesOssLicenses = "17.1.0"
-googleAccompanist = "0.37.0"
-browser = "1.9.0-alpha01"
+googleAccompanist = "0.37.3"
+browser = "1.9.0"
+googleTagManager = "18.3.0"
 
 openid = "0.11.1"
 
 gov-secure-store = "0.12.1"
-animation = "1.9.1"
+tink = "1.20.0"
 
 [libraries]
 compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "composeMarkdown" }
@@ -84,6 +86,7 @@ realm-base = { group = "io.realm.kotlin", name = "library-base", version.ref = "
 play-services-measurement-api = { group = "com.google.android.gms", name = "play-services-measurement-api", version.ref = "playServicesMeasurementApi" }
 play-services-oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-licenses", version.ref = "playServicesOssLicenses" }
 oss-licenses = { group = "com.google.android.gms", name = "oss-licenses-plugin", version.ref = "ossLicenses" }
+google-tag-manager = { group = "com.google.android.gms", name = "play-services-tagmanager", version.ref = "googleTagManager" }
 
 openid = { group = "net.openid", name = "appauth", version.ref = "openid"}
 
@@ -92,7 +95,8 @@ gov-securestore = { group = "uk.gov.securestore", name = "app", version.ref = "g
 # A library that provides Android runtime permissions support for Jetpack Compose
 google-accompanist = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "googleAccompanist" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
-androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "animation" }
+androidx-compose-animation = { group = "androidx.compose.animation", name = "animation" }
+google-crypto-tink = { group = "com.google.crypto.tink", name = "tink-android", version.ref = "tink" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

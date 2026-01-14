@@ -1,6 +1,7 @@
 package uk.gov.govuk.search.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
@@ -15,19 +17,21 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -47,19 +51,16 @@ internal fun PreviousSearches(
     onRemove: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val focusRequester = remember { FocusRequester() }
+
     if (previousSearches.isNotEmpty()) {
         var showDialog by remember { mutableStateOf(false) }
-        val localView = LocalView.current
         val numberOfPreviousSearches =
             pluralStringResource(
                 id = R.plurals.number_of_previous_searches,
                 count = previousSearches.size,
                 previousSearches.size
             )
-
-        LaunchedEffect(previousSearches) {
-            localView.announceForAccessibility(numberOfPreviousSearches)
-        }
 
         LazyColumn(
             modifier
@@ -68,9 +69,11 @@ internal fun PreviousSearches(
         ) {
             item {
                 Header(
+                    focusRequester,
                     onRemoveAll = {
                         showDialog = true
-                    }
+                    },
+                    altText = numberOfPreviousSearches
                 )
             }
             items(previousSearches) { searchTerm ->
@@ -96,10 +99,13 @@ internal fun PreviousSearches(
 
 @Composable
 private fun Header(
+    focusRequester: FocusRequester,
     onRemoveAll: () -> Unit,
+    altText: String,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val title = stringResource(R.string.previous_searches_heading)
 
     Row(
         modifier = modifier
@@ -110,10 +116,16 @@ private fun Header(
         verticalAlignment = Alignment.CenterVertically
     ) {
         BodyBoldLabel(
-            text = stringResource(R.string.previous_searches_heading),
+            text = title,
             modifier = Modifier
                 .weight(1f)
-                .semantics { heading() }
+                .focusRequester(focusRequester)
+                .focusable()
+                .semantics {
+                    heading()
+                    contentDescription = "$altText. $title"
+                    liveRegion = LiveRegionMode.Polite
+                }
         )
 
         SmallHorizontalSpacer()
@@ -187,6 +199,7 @@ private fun RemoveAllConfirmationDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(GovUkTheme.numbers.cornerAndroidList),
         confirmButton = {
             TextButton(
                 onClick = onConfirm

@@ -32,7 +32,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
 import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.component.FixedPrimaryButton
@@ -197,7 +197,10 @@ private fun LocalLookupScreen(
                 )
             )
             LargeVerticalSpacer()
-            BodyBoldLabel(stringResource(R.string.local_postcode_use_title))
+            BodyBoldLabel(
+                text = stringResource(R.string.local_postcode_use_title),
+                modifier = Modifier.semantics { heading() }
+            )
             LargeVerticalSpacer()
             BodyRegularLabel(stringResource(R.string.local_postcode_use_description))
         }

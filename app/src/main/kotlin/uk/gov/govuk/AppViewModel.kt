@@ -71,21 +71,17 @@ internal class AppViewModel @Inject constructor(
 
                     combine(
                         appRepo.suppressedHomeWidgets,
-                        localFeature.hasLocalAuthority(),
-                        chatFeature.hasOptedIn()
-                    ) { suppressedWidgets, localAuthority, chatHasOptedIn ->
-                        Triple(suppressedWidgets, localAuthority, chatHasOptedIn)
+                        localFeature.hasLocalAuthority()
+                    ) { suppressedWidgets, localAuthority ->
+                        Pair(suppressedWidgets, localAuthority)
                     }.collect {
                         _uiState.value = AppUiState.Default(
                             shouldDisplayRecommendUpdate = flagRepo.isRecommendUpdate(BuildConfig.VERSION_NAME),
                             shouldShowExternalBrowser = flagRepo.isExternalBrowserEnabled(),
-                            isChatEnabled = flagRepo.isChatEnabled() &&
-                                    flagRepo.isChatTestActiveEnabled() &&
-                                    it.third,
-                            userChatOptInState = it.third
+                            isChatEnabled = flagRepo.isChatEnabled()
                         )
 
-                        updateHomeWidgets(it.first, it.second)
+                        updateHomeWidgets(it.first)
                     }
                 }
             }
@@ -138,8 +134,7 @@ internal class AppViewModel @Inject constructor(
     }
 
     private fun updateHomeWidgets(
-        suppressedWidgets: Set<String>,
-        hasLocalAuthority: Boolean
+        suppressedWidgets: Set<String>
     ) {
         viewModelScope.launch {
             with(flagRepo) {
@@ -147,18 +142,17 @@ internal class AppViewModel @Inject constructor(
                 if (isSearchEnabled()) {
                     widgets.add(HomeWidget.Search)
                 }
-                configRepo.config.alertBanner?.let { alertBanner ->
-                    if (!suppressedWidgets.contains(alertBanner.id)) {
-                        widgets.add(HomeWidget.Alert(alertBanner = alertBanner))
+
+                configRepo.config.emergencyBanners?.forEach { emergencyBanner ->
+                    if (!suppressedWidgets.contains(emergencyBanner.id)) {
+                        widgets.add(HomeWidget.Banner(emergencyBanner = emergencyBanner))
                     }
                 }
-                if (isLocalServicesEnabled() && !hasLocalAuthority) {
-                    widgets.add(HomeWidget.Local)
-                }
+
                 if (isTopicsEnabled()) {
                     widgets.add(HomeWidget.Topics)
                 }
-                if (isLocalServicesEnabled() && hasLocalAuthority) {
+                if (isLocalServicesEnabled()) {
                     widgets.add(HomeWidget.Local)
                 }
                 if (isRecentActivityEnabled()) {
@@ -188,13 +182,14 @@ internal class AppViewModel @Inject constructor(
 
     fun onSuppressWidgetClick(
         id: String,
+        text: String,
         section: String
     ) {
         viewModelScope.launch {
             appRepo.suppressHomeWidget(id)
         }
         analyticsClient.suppressWidgetClick(
-            id,
+            text,
             section
         )
     }

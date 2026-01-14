@@ -1,6 +1,7 @@
 package uk.gov.govuk.config.di
 
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,6 +14,7 @@ import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.flags.DebugFlags
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.config.data.remote.ConfigApi
+import uk.gov.govuk.config.data.serialisation.EmergencyBannerTypeAdapter
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -21,18 +23,22 @@ class ConfigModule {
 
     @Provides
     @Singleton
-    fun providesConfigApi(): ConfigApi {
+    fun providesConfigApi(gson: Gson): ConfigApi {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.CONFIG_BASE_URL)
             .addConverterFactory(ScalarsConverterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(ConfigApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun providesGson() = Gson()
+    fun providesGson(): Gson {
+        return GsonBuilder()
+            .registerTypeAdapter(EmergencyBannerTypeAdapter::class.java, EmergencyBannerTypeAdapter())
+            .create()
+    }
 
     @Provides
     @Singleton

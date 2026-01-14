@@ -4,7 +4,7 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,9 +16,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -34,14 +34,13 @@ import uk.gov.govuk.search.domain.StringUtils
 internal fun SearchResults(
     searchTerm: String,
     searchResults: List<SearchResult>,
-    onClick: (String, String) -> Unit,
+    onClick: (SearchResult, Int) -> Unit,
     launchBrowser: (url: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
     val focusRequester = remember { FocusRequester() }
     var previousSearchTerm by rememberSaveable { mutableStateOf("") }
-    val localView = LocalView.current
     val numberOfSearchResults =
         pluralStringResource(
             id = R.plurals.number_of_search_results,
@@ -49,23 +48,25 @@ internal fun SearchResults(
             searchResults.size
         )
 
-    LaunchedEffect(searchResults) {
-        localView.announceForAccessibility(numberOfSearchResults)
-    }
 
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
         state = listState
     ) {
         item {
-            Header(focusRequester)
+            Header(
+                focusRequester = focusRequester,
+                resultCountAltText = numberOfSearchResults
+            )
         }
-        items(searchResults) { searchResult ->
+        itemsIndexed(searchResults) { index, searchResult ->
             SearchResultCard(
                 title = StringUtils.collapseWhitespace(searchResult.title),
                 description = searchResult.description?.let { StringUtils.collapseWhitespace(it) },
                 url = StringUtils.buildFullUrl(searchResult.link),
-                onClick = onClick,
+                onClick = {
+                    onClick(searchResult, index)
+                },
                 launchBrowser = launchBrowser,
                 modifier = Modifier.padding(
                     GovUkTheme.spacing.medium,
@@ -80,6 +81,7 @@ internal fun SearchResults(
         }
     }
 
+
     LaunchedEffect(searchTerm) {
         // We only want to trigger scroll and focus if we have a new search (rather than orientation change)
         if (searchTerm != previousSearchTerm) {
@@ -93,15 +95,22 @@ internal fun SearchResults(
 @Composable
 private fun Header(
     focusRequester: FocusRequester,
+    resultCountAltText: String,
     modifier: Modifier = Modifier
 ) {
+    val heading = stringResource(R.string.search_results_heading)
+    val combinedDescription = "$resultCountAltText. $heading"
+
     Title3BoldLabel(
-        text = stringResource(R.string.search_results_heading),
+        text = heading,
         modifier = modifier
             .padding(horizontal = GovUkTheme.spacing.extraLarge)
             .padding(top = GovUkTheme.spacing.medium)
             .focusRequester(focusRequester)
             .focusable()
-            .semantics { heading() }
+            .semantics {
+                heading()
+                contentDescription = combinedDescription
+            }
     )
 }
