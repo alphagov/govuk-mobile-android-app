@@ -69,7 +69,7 @@ fun ChatBanner(
 
                     Box {
                         Image(
-                            painter = painterResource(id = R.drawable.background_chat_widget),
+                            painter = painterResource(id = R.drawable.background_chat_banner),
                             contentDescription = null,
                         )
                         Box(
