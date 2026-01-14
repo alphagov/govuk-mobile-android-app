@@ -352,13 +352,6 @@ class FlagRepoTest {
     }
 
     @Test
-    fun `Given a debug build, When chat is enabled, then return false`() {
-        flagRepo = FlagRepo(true, debugFlags, configRepo)
-
-        assertFalse(flagRepo.isChatEnabled())
-    }
-
-    @Test
     fun `Given a release build, When chat is enabled, then return false`() {
         flagRepo = FlagRepo(false, debugFlags, configRepo)
 

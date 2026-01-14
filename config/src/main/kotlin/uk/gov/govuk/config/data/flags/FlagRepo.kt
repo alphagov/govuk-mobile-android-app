@@ -90,8 +90,8 @@ class FlagRepo @Inject constructor(
     fun isChatEnabled(): Boolean {
         return isEnabled(
             debugEnabled = debugEnabled,
-            debugFlag = true, // Dev only flag, only set to true when actively working on chat
-            remoteFlag = false // Dev only flag, always off for production builds!!!
+            debugFlag = debugFlags.isChatEnabled,
+            remoteFlag = false //  Not yet wired up to remote config, always off for prod builds!!!
         )
     }
 }
