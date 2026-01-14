@@ -154,7 +154,7 @@ internal class AppViewModel @Inject constructor(
                 }
 
                 if (isChatEnabled()) {
-                    widgets.add(HomeWidget.Chat)
+                    widgets.add(HomeWidget.ChatBanner)
                 }
 
                 if (isTopicsEnabled()) {

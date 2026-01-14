@@ -31,7 +31,7 @@ import uk.gov.govuk.design.ui.theme.GovUkTheme
 import uk.gov.govuk.design.ui.theme.ThemePreviews
 
 @Composable
-fun ChatWidget(
+fun ChatBanner(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
@@ -109,8 +109,8 @@ fun ChatWidget(
 
 @ThemePreviews
 @Composable
-private fun ChatWidgetPreview() {
+private fun ChatBannerPreview() {
     GovUkTheme {
-        ChatWidget { }
+        ChatBanner { }
     }
 }

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import uk.gov.govuk.chat.navigation.navigateToChat
-import uk.gov.govuk.chat.ui.widget.ChatWidget
+import uk.gov.govuk.chat.ui.widget.ChatBanner
 import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
 import uk.gov.govuk.topics.navigation.navigateToTopic
 import uk.gov.govuk.topics.navigation.navigateToTopicsEdit
@@ -44,9 +44,9 @@ internal fun homeWidgets(
                 }
             }
 
-            is HomeWidget.Chat -> {
+            is HomeWidget.ChatBanner -> {
                 widgets.add { modifier ->
-                    ChatWidget(modifier) {
+                    ChatBanner(modifier) {
                         navController.navigateToChat()
                     }
                 }
