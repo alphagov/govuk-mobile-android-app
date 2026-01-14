@@ -3,7 +3,8 @@ package uk.gov.govuk.widgets.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import uk.gov.govuk.design.ui.component.LargeVerticalSpacer
+import uk.gov.govuk.chat.navigation.navigateToChat
+import uk.gov.govuk.chat.ui.widget.ChatBanner
 import uk.gov.govuk.topics.navigation.navigateToTopic
 import uk.gov.govuk.topics.navigation.navigateToTopicsEdit
 import uk.gov.govuk.topics.ui.widget.TopicsWidget
@@ -38,7 +39,21 @@ internal fun homeWidgets(
                         onSuppressClick = onSuppressClick,
                         modifier = modifier
                     )
-                    LargeVerticalSpacer()
+                }
+            }
+
+            is HomeWidget.ChatBanner -> {
+                widgets.add { modifier ->
+                    ChatBanner(
+                        onClick = { text ->
+                            onInternalClick(text)
+                            navController.navigateToChat()
+                        },
+                        onDismiss = { text ->
+                            onSuppressClick(it.ID, text)
+                        },
+                        modifier = modifier
+                    )
                 }
             }
 
@@ -52,7 +67,6 @@ internal fun homeWidgets(
                         launchBrowser = launchBrowser,
                         modifier = modifier
                     )
-                    LargeVerticalSpacer()
                 }
             }
 
@@ -69,7 +83,6 @@ internal fun homeWidgets(
                         },
                         modifier = modifier
                     )
-                    LargeVerticalSpacer()
                 }
             }
 
@@ -90,7 +103,6 @@ internal fun homeWidgets(
                         launchBrowser = launchBrowser,
                         modifier = modifier
                     )
-                    LargeVerticalSpacer()
                 }
             }
 
@@ -108,7 +120,6 @@ internal fun homeWidgets(
                         },
                         modifier = modifier
                     )
-                    LargeVerticalSpacer()
                 }
             }
             else -> { /* Do nothing */ }

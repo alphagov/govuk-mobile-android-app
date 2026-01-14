@@ -102,15 +102,14 @@ private fun HomeScreen(
                 .padding(horizontal = GovUkTheme.spacing.medium),
             state = rememberLazyListState()
         ) {
-            item{
-                LargeVerticalSpacer()
-            }
             items(widgets) { widget ->
+                LargeVerticalSpacer()
                 widget(Modifier
                     .fillMaxWidth()
                     .animateItem())
             }
             item {
+                LargeVerticalSpacer()
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,

@@ -5,6 +5,9 @@ import uk.gov.govuk.config.data.remote.model.UserFeedbackBanner
 
 internal sealed interface HomeWidget {
     data class Banner(val emergencyBanner: EmergencyBanner) : HomeWidget
+    data object ChatBanner : HomeWidget {
+        const val ID = "CHAT_BANNER"
+    }
     data object Search : HomeWidget
     data object RecentActivity : HomeWidget
     data object Topics : HomeWidget
