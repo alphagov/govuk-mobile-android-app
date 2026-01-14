@@ -162,12 +162,12 @@ class SearchViewModelTest {
                     contentId = "1234",
                     title = "search result title",
                     description = "",
-                    link = "search result link"
+                    link = "/search_result_link"
                 )
                 viewModel.onSearchResultClicked("search term", searchResult, 0, 0)
 
                 coVerify {
-                    visited.visitableItemClick(title = "search result title", url = "search result link")
+                    visited.visitableItemClick(title = "search result title", url = "https://www.gov.uk/search_result_link")
                 }
             }
         }
