@@ -93,7 +93,7 @@ class ConfigRepoImpl @Inject constructor(
     override val emergencyBanners: List<EmergencyBanner>?
         get() = safeConfig.emergencyBanners
 
-    override suspend fun clear() {
+    override suspend fun clearRemoteConfigValues() {
         firebaseDataSource.clearRemoteValues()
     }
 

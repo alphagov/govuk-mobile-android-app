@@ -134,7 +134,7 @@ internal class AppViewModel @Inject constructor(
                 visitedFeature.clear()
                 chatFeature.clear()
                 analyticsClient.clear()
-                configRepo.clear()
+                configRepo.clearRemoteConfigValues()
             }
             appNavigation.onNext(navController)
         }
