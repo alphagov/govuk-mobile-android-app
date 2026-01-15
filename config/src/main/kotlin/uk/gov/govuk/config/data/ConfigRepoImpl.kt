@@ -2,6 +2,7 @@ package uk.gov.govuk.config.data
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import uk.gov.govuk.config.data.remote.model.ChatBanner
 import uk.gov.govuk.config.data.remote.source.FirebaseConfigDataSource
 import uk.gov.govuk.config.data.remote.source.GovUkConfigDataSource
 import uk.gov.govuk.config.data.remote.model.ChatUrls
@@ -92,6 +93,9 @@ class ConfigRepoImpl @Inject constructor(
 
     override val emergencyBanners: List<EmergencyBanner>?
         get() = safeConfig.emergencyBanners
+
+    override val chatBanner: ChatBanner?
+        get() = safeConfig.chatBanner
 
     override suspend fun clearRemoteConfigValues() {
         firebaseDataSource.clearRemoteValues()

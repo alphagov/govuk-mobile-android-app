@@ -31,6 +31,7 @@ import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.flags.FlagRepo
 import uk.gov.govuk.config.data.remote.model.EmergencyBanner
 import uk.gov.govuk.config.data.remote.model.EmergencyBannerType
+import uk.gov.govuk.config.data.remote.model.ChatBanner
 import uk.gov.govuk.config.data.remote.model.Link
 import uk.gov.govuk.config.data.remote.model.UserFeedbackBanner
 import uk.gov.govuk.data.AppRepo
@@ -382,6 +383,71 @@ class AppViewModelTest {
             coVerify {
                 configRepo.initConfig()
             }
+        }
+    }
+
+    @Test
+    fun `Given the config has no chat banner, When init, then home widgets do not contain a chat banner`() {
+        every { configRepo.chatBanner } returns null
+
+        val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
+            searchFeature, visited, chatFeature, analyticsClient, appNavigation)
+
+        runTest {
+            val homeWidgets = viewModel.homeWidgets.value!!
+            assertFalse(homeWidgets.any { it is HomeWidget.Chat })
+        }
+    }
+
+    @Test
+    fun `Given the chat feature is disabled, When init, then home widgets do not contain a chat banner`() {
+        every { configRepo.chatBanner } returns ChatBanner("", "", "", Link("", ""))
+        coEvery { flagRepo.isChatEnabled() } returns false
+
+        val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
+            searchFeature, visited, chatFeature, analyticsClient, appNavigation)
+
+        runTest {
+            val homeWidgets = viewModel.homeWidgets.value!!
+            assertFalse(homeWidgets.any { it is HomeWidget.Chat })
+        }
+    }
+
+    @Test
+    fun `Given the chat banner has been suppressed, When init, then home widgets do not contain a chat banner`() {
+        every { configRepo.chatBanner } returns ChatBanner("chat_banner_id", "", "", Link("", ""))
+        coEvery { flagRepo.isChatEnabled() } returns true
+        every { appRepo.suppressedHomeWidgets } returns flowOf(setOf("chat_banner_id"))
+
+        val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
+            searchFeature, visited, chatFeature, analyticsClient, appNavigation)
+
+        runTest {
+            val homeWidgets = viewModel.homeWidgets.value!!
+            assertFalse(homeWidgets.any { it is HomeWidget.Chat })
+        }
+    }
+
+    @Test
+    fun `Given a chat banner, When init, then home widgets contains a chat banner`() {
+        val chatBanner = ChatBanner(
+            "id",
+            "title",
+            "body",
+            Link(
+                "title",
+                "url"
+            )
+        )
+        every { configRepo.chatBanner } returns chatBanner
+        coEvery { flagRepo.isChatEnabled() } returns true
+
+        val viewModel = AppViewModel(timeoutManager, appRepo, loginRepo, configRepo, flagRepo, authRepo, topicsFeature, localFeature,
+            searchFeature, visited, chatFeature, analyticsClient, appNavigation)
+
+        runTest {
+            val homeWidgets = viewModel.homeWidgets.value!!
+            assertTrue(homeWidgets.any { it == HomeWidget.Chat(chatBanner) })
         }
     }
 

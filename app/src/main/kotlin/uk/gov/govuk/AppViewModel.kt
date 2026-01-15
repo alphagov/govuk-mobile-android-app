@@ -166,9 +166,11 @@ internal class AppViewModel @Inject constructor(
                     }
                 }
 
-                if (isChatEnabled() &&
-                    !suppressedWidgets.contains(HomeWidget.ChatBanner.ID)) {
-                    widgets.add(HomeWidget.ChatBanner)
+                configRepo.chatBanner?.let { chatBanner ->
+                    if (isChatEnabled() &&
+                        !suppressedWidgets.contains(chatBanner.id)) {
+                        widgets.add(HomeWidget.Chat(chatBanner))
+                    }
                 }
 
                 if (isTopicsEnabled()) {

@@ -1,5 +1,6 @@
 package uk.gov.govuk.config.data
 
+import uk.gov.govuk.config.data.remote.model.ChatBanner
 import uk.gov.govuk.config.data.remote.model.ChatUrls
 import uk.gov.govuk.config.data.remote.model.EmergencyBanner
 import uk.gov.govuk.config.data.remote.model.UserFeedbackBanner
@@ -20,6 +21,7 @@ interface ConfigRepo {
     val userFeedbackBanner: UserFeedbackBanner?
     val refreshTokenExpirySeconds: Long?
     val emergencyBanners: List<EmergencyBanner>?
+    val chatBanner: ChatBanner?
 
     suspend fun initConfig(): Result<Unit>
     suspend fun activateRemoteConfig(): Boolean
