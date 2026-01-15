@@ -42,15 +42,19 @@ internal fun homeWidgets(
                 }
             }
 
-            is HomeWidget.ChatBanner -> {
+            is HomeWidget.Chat -> {
                 widgets.add { modifier ->
+                    val banner = it.chatBanner
                     ChatBanner(
+                        title = banner.title,
+                        body = banner.body,
+                        linkText = banner.link.title,
                         onClick = { text ->
                             onInternalClick(text)
                             navController.navigateToChat()
                         },
                         onDismiss = { text ->
-                            onSuppressClick(it.ID, text)
+                            onSuppressClick(banner.id, text)
                         },
                         modifier = modifier
                     )
