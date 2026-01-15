@@ -635,12 +635,12 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given analytics is enabled, when analytics consent completed, then activate remote config`() {
+    fun `Given analytics is enabled, when analytics consent completed, then refresh remote config`() {
         every { analyticsClient.isAnalyticsEnabled() } returns true
 
         runTest {
             viewModel.onAnalyticsConsentCompleted()
-            coVerify { configRepo.activateRemoteConfig() }
+            coVerify { configRepo.refreshRemoteConfig() }
         }
     }
 
@@ -650,6 +650,7 @@ class AppViewModelTest {
 
         runTest {
             viewModel.onAnalyticsConsentCompleted()
+            coVerify(exactly = 0) { configRepo.refreshRemoteConfig() }
             coVerify(exactly = 0) { configRepo.activateRemoteConfig() }
         }
     }
