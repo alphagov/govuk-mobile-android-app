@@ -46,6 +46,10 @@ class ConfigRepoImpl @Inject constructor(
 
     override suspend fun activateRemoteConfig() = firebaseDataSource.activate()
 
+    override suspend fun refreshRemoteConfig() {
+        firebaseDataSource.fetchAndActivate()
+    }
+
     override val isAvailable: Boolean
         get() = safeConfig.available
 
@@ -88,5 +92,9 @@ class ConfigRepoImpl @Inject constructor(
 
     override val emergencyBanners: List<EmergencyBanner>?
         get() = safeConfig.emergencyBanners
+
+    override suspend fun clear() {
+        firebaseDataSource.clearRemoteValues()
+    }
 
 }

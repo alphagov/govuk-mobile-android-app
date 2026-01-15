@@ -70,11 +70,6 @@ class ConfigModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseRemoteConfig(): FirebaseRemoteConfig = Firebase.remoteConfig.apply {
-        setConfigSettingsAsync(remoteConfigSettings {
-            fetchTimeoutInSeconds = 15L
-            minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 0L else 3600L
-        })
-        setDefaultsAsync(R.xml.remote_config_defaults)
-    }
+    fun provideFirebaseRemoteConfig(): FirebaseRemoteConfig = Firebase.remoteConfig
+
 }

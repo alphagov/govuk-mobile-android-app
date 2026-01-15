@@ -23,4 +23,6 @@ interface ConfigRepo {
 
     suspend fun initConfig(): Result<Unit>
     suspend fun activateRemoteConfig(): Boolean
+    suspend fun refreshRemoteConfig()
+    suspend fun clear()
 }

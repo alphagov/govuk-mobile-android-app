@@ -134,6 +134,7 @@ internal class AppViewModel @Inject constructor(
                 visitedFeature.clear()
                 chatFeature.clear()
                 analyticsClient.clear()
+                configRepo.clear()
             }
             appNavigation.onNext(navController)
         }
@@ -141,7 +142,7 @@ internal class AppViewModel @Inject constructor(
 
     suspend fun onAnalyticsConsentCompleted() {
         if (analyticsClient.isAnalyticsEnabled()) {
-            configRepo.activateRemoteConfig()
+            configRepo.refreshRemoteConfig()
         }
     }
 
