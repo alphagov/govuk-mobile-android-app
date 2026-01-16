@@ -366,6 +366,7 @@ private fun GovUkNavHost(
         analyticsGraph(
             analyticsConsentCompleted = {
                 coroutineScope.launch {
+                    viewModel.onAnalyticsConsentCompleted()
                     appNavigation.onNext(navController)
                 }
             },
