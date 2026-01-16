@@ -3,7 +3,6 @@ package uk.gov.govuk.chat.ui
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.animateScrollBy
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -43,7 +41,6 @@ import uk.gov.govuk.chat.ui.component.ChatInput
 import uk.gov.govuk.chat.ui.component.IntroMessages
 import uk.gov.govuk.config.data.remote.model.ChatUrls
 import uk.gov.govuk.design.ui.component.BodyBoldLabel
-import uk.gov.govuk.design.ui.component.SmallVerticalSpacer
 import uk.gov.govuk.design.ui.component.Title2BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
@@ -213,11 +210,6 @@ private fun ChatScreen(
             }
 
             Column {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
                     ChatInput(
                         uiState,
                         hasConversation = hasConversation,
@@ -234,15 +226,19 @@ private fun ChatScreen(
                             uiEvents.onSubmit(question)
                             analyticsEvents.onQuestionSubmit()
                         },
-                        chatUrls = chatUrls
+                        chatUrls = chatUrls,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = GovUkTheme.spacing.medium)
+                            .padding(
+                                top = GovUkTheme.spacing.small,
+                                bottom = GovUkTheme.spacing.medium
+                            )
                     )
-                }
 
                 if (uiState.isPiiError) {
                     PiiErrorMessage()
                 }
-
-                SmallVerticalSpacer()
             }
         }
     }

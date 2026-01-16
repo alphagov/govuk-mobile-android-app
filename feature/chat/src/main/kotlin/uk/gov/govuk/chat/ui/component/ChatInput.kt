@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.config.data.remote.model.ChatUrls
+import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import kotlin.math.abs
 
@@ -74,32 +74,18 @@ internal fun ChatInput(
         modifier = modifier
             .semantics { isTraversalGroup = true }
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = GovUkTheme.spacing.medium)
-                .height(32.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            if (isFocused) {
-                CharacterCountMessage(
-                    charactersRemaining = uiState.charactersRemaining,
-                    displayCharacterWarning = uiState.displayCharacterWarning,
-                    displayCharacterError = uiState.displayCharacterError
-                )
-            }
+        if (isFocused) {
+            CharacterCountMessage(
+                charactersRemaining = uiState.charactersRemaining,
+                displayCharacterWarning = uiState.displayCharacterWarning,
+                displayCharacterError = uiState.displayCharacterError
+            )
         }
 
         Row(
-            modifier = Modifier
-                .padding(
-                    start = GovUkTheme.spacing.medium,
-                    end = GovUkTheme.spacing.medium,
-                    bottom = GovUkTheme.spacing.medium
-                ),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
             Box(
                 modifier = Modifier
@@ -109,11 +95,6 @@ internal fun ChatInput(
                     .animateContentSize(
                         animationSpec = tween(durationMillis = 100)
                     )
-                    .background(
-                        color = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-                        shape = RoundedCornerShape(24.dp)
-                    )
-                    .clip(RoundedCornerShape(24.dp))
             ) {
                 TextField(
                     textStyle = TextStyle(
@@ -269,36 +250,36 @@ private fun CharacterCountMessage(
     modifier: Modifier = Modifier
 ) {
     val charactersRemaining = abs(charactersRemaining)
-    var color = GovUkTheme.colourScheme.textAndIcons.primary
-    var text = ""
+    val paddingModifier = modifier
+        .padding(horizontal = GovUkTheme.spacing.medium)
+        .padding(bottom = 12.dp)
 
     when {
         displayCharacterWarning -> {
-            text = pluralStringResource(
+            val text = pluralStringResource(
                 id = R.plurals.characterCountUnderOrAtLimit,
                 count = charactersRemaining,
                 charactersRemaining
             )
+            BodyRegularLabel(
+                text = text,
+                modifier = paddingModifier,
+                color = GovUkTheme.colourScheme.textAndIcons.primary
+            )
         }
         displayCharacterError -> {
-            text = pluralStringResource(
+            val text = pluralStringResource(
                 id = R.plurals.characterCountOverLimit,
                 count = charactersRemaining,
                 charactersRemaining
             )
-            color = GovUkTheme.colourScheme.textAndIcons.textFieldError
+            BodyRegularLabel(
+                text = text,
+                modifier = paddingModifier,
+                color = GovUkTheme.colourScheme.textAndIcons.textFieldError
+            )
         }
     }
-
-    Text(
-        text = text,
-        color = color,
-        fontSize = GovUkTheme.typography.bodyRegular.fontSize,
-        fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
-        fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
-        lineHeight = GovUkTheme.typography.bodyRegular.lineHeight,
-        modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium)
-    )
 }
 
 @Composable
