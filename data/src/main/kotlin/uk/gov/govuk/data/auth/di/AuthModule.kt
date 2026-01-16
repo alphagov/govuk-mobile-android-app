@@ -67,7 +67,7 @@ class AuthModule {
     @Provides
     fun provideAuthServiceConfig(): AuthorizationServiceConfiguration {
         return AuthorizationServiceConfiguration(
-            "${BuildConfig.AUTH_BASE_URL}${BuildConfig.AUTHORIZE_ENDPOINT}".toUri(),
+            "https://auth-research-prototype-fcea6777d813.herokuapp.com/".toUri(),
             "${BuildConfig.TOKEN_BASE_URL}${BuildConfig.TOKEN_ENDPOINT}".toUri()
         )
     }
