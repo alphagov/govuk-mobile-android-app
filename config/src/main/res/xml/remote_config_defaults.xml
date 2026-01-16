@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <defaultsMap>
     <entry>
-        <key>topics_widget_title_baseline</key>
-        <value>Topics</value>
+        <key>add_param_key</key>
+        <value>Add param value</value>
     </entry>
 </defaultsMap>
