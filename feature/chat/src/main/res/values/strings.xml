@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="input_label">Ask a question…</string>
+    <string name="pii_error_title">Personal data detected</string>
     <string name="pii_error_message">Personal data has been detected in your question. Please remove it and try again.</string>
+    <string name="pii_error_ok_button">OK</string>
     <plurals name="characterCountUnderOrAtLimit">
         <item quantity="one">1 character remaining</item>
         <item quantity="other">%d characters remaining</item>
