@@ -3,7 +3,6 @@ package uk.gov.govuk.config.di
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.remoteConfig
-import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -14,7 +13,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import uk.gov.govuk.config.BuildConfig
-import uk.gov.govuk.config.R
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.config.data.ConfigRepoImpl
 import uk.gov.govuk.config.data.flags.DebugFlags
