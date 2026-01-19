@@ -17,13 +17,13 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -43,9 +43,7 @@ import uk.gov.govuk.chat.ui.component.ChatEntry
 import uk.gov.govuk.chat.ui.component.ChatInput
 import uk.gov.govuk.chat.ui.component.IntroMessages
 import uk.gov.govuk.config.data.remote.model.ChatUrls
-import uk.gov.govuk.design.ui.component.BodyBoldLabel
-import uk.gov.govuk.design.ui.component.BodyRegularLabel
-import uk.gov.govuk.design.ui.component.MediumVerticalSpacer
+import uk.gov.govuk.design.ui.component.InfoAlert
 import uk.gov.govuk.design.ui.component.Title2BoldLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 
@@ -62,7 +60,6 @@ internal class UiEvents(
     val onQuestionUpdated: (String) -> Unit,
     val onSubmit: (String) -> Unit,
     val onClear: () -> Unit,
-    val onClearPiiError: () -> Unit,
 )
 
 @Composable
@@ -120,9 +117,6 @@ internal fun ChatRoute(
                         },
                         onClear = {
                             viewModel.clearConversation()
-                        },
-                        onClearPiiError = {
-                            viewModel.clearPiiError()
                         }
                     ),
                     chatUrls = viewModel.chatUrls,
@@ -153,6 +147,13 @@ private fun ChatScreen(
     val chatEntries = uiState.chatEntries.toList()
     val animationDuration = 500
     val coroutineScope = rememberCoroutineScope()
+    var showPiiErrorDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(uiState.isPiiError) {
+        if (uiState.isPiiError) {
+            showPiiErrorDialog = true
+        }
+    }
 
     LaunchedEffect(Unit) {
         analyticsEvents.onPageView(
@@ -248,8 +249,13 @@ private fun ChatScreen(
         }
     }
 
-    if (uiState.isPiiError) {
-        PiiErrorAlert(onDismiss = uiEvents.onClearPiiError)
+    if (showPiiErrorDialog) {
+        InfoAlert(
+            title = R.string.pii_error_title,
+            message = R.string.pii_error_message,
+            buttonText = R.string.pii_error_ok_button,
+            onDismiss = { showPiiErrorDialog = false }
+        )
     }
 
     if (chatEntries.isNotEmpty()) {
@@ -271,38 +277,6 @@ private fun ChatScreen(
     }
 }
 
-@Composable
-private fun PiiErrorAlert(
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        shape = RoundedCornerShape(GovUkTheme.numbers.cornerAndroidList),
-        text = {
-            Column {
-                BodyBoldLabel(
-                    text = stringResource(id = R.string.pii_error_title),
-                    color = GovUkTheme.colourScheme.textAndIcons.primary
-                )
-                MediumVerticalSpacer()
-                BodyRegularLabel(
-                    text = stringResource(id = R.string.pii_error_message),
-                    color = GovUkTheme.colourScheme.textAndIcons.secondary
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                BodyBoldLabel(
-                    text = stringResource(id = R.string.pii_error_ok_button),
-                    color = GovUkTheme.colourScheme.textAndIcons.linkSecondary
-                )
-            }
-        },
-        containerColor = GovUkTheme.colourScheme.surfaces.alert
-    )
-}
-
 private fun analyticsEvents() = AnalyticsEvents(
     onPageView = { _, _, _ -> },
     onFunctionActionItemClicked = { _, _, _ -> },
@@ -315,8 +289,7 @@ private fun analyticsEvents() = AnalyticsEvents(
 private fun clickEvents() = UiEvents(
     onQuestionUpdated = { _ -> },
     onSubmit = { _ -> },
-    onClear = { },
-    onClearPiiError = { }
+    onClear = { }
 )
 
 @Preview(

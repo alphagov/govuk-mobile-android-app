@@ -63,6 +63,7 @@ import uk.gov.govuk.R
 import uk.gov.govuk.analytics.navigation.analyticsGraph
 import uk.gov.govuk.chat.navigation.CHAT_GRAPH_ROUTE
 import uk.gov.govuk.chat.navigation.chatGraph
+import uk.gov.govuk.design.ui.component.InfoAlert
 import uk.gov.govuk.design.ui.component.LoadingScreen
 import uk.gov.govuk.design.ui.component.error.AppUnavailableScreen
 import uk.gov.govuk.design.ui.theme.GovUkTheme
@@ -488,7 +489,8 @@ private fun GovUkNavHost(
     if (showDeepLinkNotFoundAlert) {
         InfoAlert(
             title = R.string.deep_link_not_found_alert_title,
-            message = R.string.deep_link_not_found_alert_message
+            message = R.string.deep_link_not_found_alert_message,
+            buttonText = R.string.close_alert_button
         ) {
             showDeepLinkNotFoundAlert = false
         }
@@ -497,7 +499,8 @@ private fun GovUkNavHost(
     if (showBrowserNotFoundAlert) {
         InfoAlert(
             title = R.string.browser_not_found_alert_title,
-            message = R.string.browser_not_found_alert_message
+            message = R.string.browser_not_found_alert_message,
+            buttonText = R.string.close_alert_button
         ) {
             showBrowserNotFoundAlert = false
         }

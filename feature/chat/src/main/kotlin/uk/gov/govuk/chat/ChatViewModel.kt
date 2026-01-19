@@ -145,10 +145,6 @@ internal class ChatViewModel @Inject constructor(
         }
     }
 
-    fun clearPiiError() {
-        _uiState.updateDefault { it.copy(isPiiError = false) }
-    }
-
     fun onQuestionUpdated(
         question: String,
         characterLimit: Int = 300,
