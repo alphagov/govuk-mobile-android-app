@@ -12,9 +12,12 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -118,16 +121,20 @@ internal fun ChatInput(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .height(IntrinsicSize.Min)
                                 .defaultMinSize(minHeight = 48.dp)
                                 .clip(RoundedCornerShape(24.dp))
                                 .background(GovUkTheme.colourScheme.surfaces.chatTextFieldBackground)
-                                .padding(start = 16.dp, end = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .padding(vertical = 12.dp),
+                                    .padding(
+                                        start = 16.dp,
+                                        end = GovUkTheme.spacing.medium,
+                                    )
+                                    .padding(vertical = 8.dp)
+                                    .defaultMinSize(minHeight = 32.dp),
                                 contentAlignment = Alignment.CenterStart
                             ) {
                                 if (value.isEmpty()) {
@@ -135,18 +142,26 @@ internal fun ChatInput(
                                 }
                                 innerTextField()
                             }
-                            AnimateIcon(
-                                focusedWithInput(isFocused, uiState),
-                                {
-                                    SubmitIconButton(
-                                        onClick = {
-                                            onSubmit(uiState.question)
-                                        },
-                                        enabled = !uiState.displayCharacterError
-                                                && !uiState.isPiiError && !uiState.isLoading
-                                    )
-                                }
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .padding(end = 8.dp)
+                                    .padding(vertical = 6.dp),
+                                contentAlignment = Alignment.BottomCenter
+                            ) {
+                                AnimateIcon(
+                                    focusedWithInput(isFocused, uiState),
+                                    {
+                                        SubmitIconButton(
+                                            onClick = {
+                                                onSubmit(uiState.question)
+                                            },
+                                            enabled = !uiState.displayCharacterError
+                                                    && !uiState.isPiiError && !uiState.isLoading
+                                        )
+                                    }
+                                )
+                            }
                         }
                     }
                 )
