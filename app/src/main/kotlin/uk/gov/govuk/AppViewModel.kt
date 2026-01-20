@@ -65,6 +65,12 @@ internal class AppViewModel @Inject constructor(
 
     private suspend fun initWithConfig() {
         val configResult = configRepo.initConfig()
+
+        // returning users
+        if (analyticsClient.isAnalyticsEnabled()) {
+            configRepo.activateRemoteConfig()
+        }
+
         when (configResult) {
             is Success -> {
                 if (!flagRepo.isAppAvailable()) {
@@ -128,8 +134,15 @@ internal class AppViewModel @Inject constructor(
                 visitedFeature.clear()
                 chatFeature.clear()
                 analyticsClient.clear()
+                configRepo.clearRemoteConfigValues()
             }
             appNavigation.onNext(navController)
+        }
+    }
+
+    suspend fun onAnalyticsConsentCompleted() {
+        if (analyticsClient.isAnalyticsEnabled()) {
+            configRepo.refreshRemoteConfig()
         }
     }
 
@@ -147,13 +160,13 @@ internal class AppViewModel @Inject constructor(
                     widgets.add(HomeWidget.Search)
                 }
 
-                configRepo.config.emergencyBanners?.forEach { emergencyBanner ->
+                configRepo.emergencyBanners?.forEach { emergencyBanner ->
                     if (!suppressedWidgets.contains(emergencyBanner.id)) {
                         widgets.add(HomeWidget.Banner(emergencyBanner = emergencyBanner))
                     }
                 }
 
-                configRepo.config.chatBanner?.let { chatBanner ->
+                configRepo.chatBanner?.let { chatBanner ->
                     if (isChatEnabled() &&
                         !suppressedWidgets.contains(chatBanner.id)) {
                         widgets.add(HomeWidget.Chat(chatBanner))
@@ -169,7 +182,7 @@ internal class AppViewModel @Inject constructor(
                 if (isRecentActivityEnabled()) {
                     widgets.add(HomeWidget.RecentActivity)
                 }
-                configRepo.config.userFeedbackBanner?.let { userFeedbackBanner ->
+                configRepo.userFeedbackBanner?.let { userFeedbackBanner ->
                     widgets.add(HomeWidget.UserFeedback(userFeedbackBanner = userFeedbackBanner))
                 }
                 _homeWidgets.value = widgets
