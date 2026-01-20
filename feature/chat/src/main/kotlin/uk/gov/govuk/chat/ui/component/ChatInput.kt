@@ -14,18 +14,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,7 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import uk.gov.govuk.chat.ChatUiState
 import uk.gov.govuk.chat.R
 import uk.gov.govuk.config.data.remote.model.ChatUrls
+import uk.gov.govuk.design.ui.component.BodyRegularLabel
 import uk.gov.govuk.design.ui.theme.GovUkTheme
 import kotlin.math.abs
 
@@ -74,32 +75,18 @@ internal fun ChatInput(
         modifier = modifier
             .semantics { isTraversalGroup = true }
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = GovUkTheme.spacing.medium)
-                .height(32.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            if (isFocused) {
-                CharacterCountMessage(
-                    charactersRemaining = uiState.charactersRemaining,
-                    displayCharacterWarning = uiState.displayCharacterWarning,
-                    displayCharacterError = uiState.displayCharacterError
-                )
-            }
+        if (isFocused) {
+            CharacterCountMessage(
+                charactersRemaining = uiState.charactersRemaining,
+                displayCharacterWarning = uiState.displayCharacterWarning,
+                displayCharacterError = uiState.displayCharacterError
+            )
         }
 
         Row(
-            modifier = Modifier
-                .padding(
-                    start = GovUkTheme.spacing.medium,
-                    end = GovUkTheme.spacing.medium,
-                    bottom = GovUkTheme.spacing.medium
-                ),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
             Box(
                 modifier = Modifier
@@ -109,13 +96,11 @@ internal fun ChatInput(
                     .animateContentSize(
                         animationSpec = tween(durationMillis = 100)
                     )
-                    .background(
-                        color = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-                        shape = RoundedCornerShape(24.dp)
-                    )
-                    .clip(RoundedCornerShape(24.dp))
             ) {
-                TextField(
+                val value = if (isFocused) uiState.question else ""
+                BasicTextField(
+                    value = value,
+                    onValueChange = onQuestionUpdated,
                     textStyle = TextStyle(
                         color = GovUkTheme.colourScheme.textAndIcons.primary,
                         fontSize = GovUkTheme.typography.bodyRegular.fontSize,
@@ -130,31 +115,54 @@ internal fun ChatInput(
                         .onFocusChanged {
                             isFocused = it.isFocused
                         }
-                        .height(IntrinsicSize.Min)
                         .semantics { this.traversalIndex = 0f },
-                    value = if (isFocused) uiState.question else "",
-                    shape = RoundedCornerShape(24.dp),
-                    singleLine = false,
-                    minLines = 1,
-                    onValueChange = onQuestionUpdated,
-                    placeholder = {
-                        PlaceholderText(question = uiState.question)
-                    },
-                    isError = uiState.isPiiError,
-                    colors = inputTextFieldDefaults(),
-                    trailingIcon = {
-                        AnimateIcon(
-                            focusedWithInput(isFocused, uiState),
-                            {
-                                SubmitIconButton(
-                                    onClick = {
-                                        onSubmit(uiState.question)
-                                    },
-                                    enabled = !uiState.displayCharacterError
-                                            && !uiState.isPiiError && !uiState.isLoading
+                    cursorBrush = SolidColor(GovUkTheme.colourScheme.textAndIcons.primary),
+                    decorationBox = { innerTextField ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(IntrinsicSize.Min)
+                                .defaultMinSize(minHeight = 48.dp)
+                                .clip(RoundedCornerShape(24.dp))
+                                .background(GovUkTheme.colourScheme.surfaces.chatTextFieldBackground)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(
+                                        start = 16.dp,
+                                        end = GovUkTheme.spacing.medium,
+                                    )
+                                    .padding(vertical = 8.dp)
+                                    .defaultMinSize(minHeight = 32.dp),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                if (value.isEmpty()) {
+                                    PlaceholderText(question = uiState.question)
+                                }
+                                innerTextField()
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .padding(end = 8.dp)
+                                    .padding(vertical = 6.dp),
+                                contentAlignment = Alignment.BottomCenter
+                            ) {
+                                AnimateIcon(
+                                    focusedWithInput(isFocused, uiState),
+                                    {
+                                        SubmitIconButton(
+                                            onClick = {
+                                                onSubmit(uiState.question)
+                                            },
+                                            enabled = !uiState.displayCharacterError
+                                                    && !uiState.isPiiError && !uiState.isLoading
+                                        )
+                                    }
                                 )
                             }
-                        )
+                        }
                     }
                 )
             }
@@ -211,53 +219,28 @@ private fun PlaceholderText(
 }
 
 @Composable
-private fun inputTextFieldDefaults() = TextFieldDefaults.colors(
-    cursorColor = GovUkTheme.colourScheme.textAndIcons.primary,
-    focusedTextColor = GovUkTheme.colourScheme.textAndIcons.primary,
-    unfocusedTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-    disabledTextColor = GovUkTheme.colourScheme.textAndIcons.secondary,
-    focusedContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-    unfocusedContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-    disabledContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-    focusedIndicatorColor = Color.Transparent,
-    unfocusedIndicatorColor = Color.Transparent,
-    disabledIndicatorColor = Color.Transparent,
-    errorContainerColor = GovUkTheme.colourScheme.surfaces.chatTextFieldBackground,
-    errorLabelColor = GovUkTheme.colourScheme.textAndIcons.primary,
-    errorCursorColor = GovUkTheme.colourScheme.textAndIcons.primary,
-    errorIndicatorColor = Color.Transparent
-)
-
-@Composable
 private fun SubmitIconButton(
     onClick: () -> Unit,
     enabled: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        contentAlignment = Alignment.BottomCenter,
-        modifier = Modifier
-            .fillMaxHeight()
-            .padding(9.dp)
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+            .clip(RoundedCornerShape(60.dp))
+            .size(36.dp),
+        enabled = enabled,
+        colors = IconButtonColors(
+            containerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
+            contentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconEnabled,
+            disabledContainerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundDisabled,
+            disabledContentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconDisabled
+        )
     ) {
-        IconButton(
-            onClick = onClick,
-            modifier = modifier
-                .clip(RoundedCornerShape(60.dp))
-                .size(36.dp),
-            enabled = enabled,
-            colors = IconButtonColors(
-                containerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundEnabled,
-                contentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconEnabled,
-                disabledContainerColor = GovUkTheme.colourScheme.surfaces.chatButtonBackgroundDisabled,
-                disabledContentColor = GovUkTheme.colourScheme.textAndIcons.chatButtonIconDisabled
-            )
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.outline_arrow_upward_24),
-                contentDescription = stringResource(id = R.string.button_alt),
-            )
-        }
+        Icon(
+            painter = painterResource(R.drawable.outline_arrow_upward_24),
+            contentDescription = stringResource(id = R.string.button_alt),
+        )
     }
 }
 
@@ -269,36 +252,36 @@ private fun CharacterCountMessage(
     modifier: Modifier = Modifier
 ) {
     val charactersRemaining = abs(charactersRemaining)
-    var color = GovUkTheme.colourScheme.textAndIcons.primary
-    var text = ""
+    val paddingModifier = modifier
+        .padding(horizontal = GovUkTheme.spacing.medium)
+        .padding(bottom = 12.dp)
 
     when {
         displayCharacterWarning -> {
-            text = pluralStringResource(
+            val text = pluralStringResource(
                 id = R.plurals.characterCountUnderOrAtLimit,
                 count = charactersRemaining,
                 charactersRemaining
             )
+            BodyRegularLabel(
+                text = text,
+                modifier = paddingModifier,
+                color = GovUkTheme.colourScheme.textAndIcons.primary
+            )
         }
         displayCharacterError -> {
-            text = pluralStringResource(
+            val text = pluralStringResource(
                 id = R.plurals.characterCountOverLimit,
                 count = charactersRemaining,
                 charactersRemaining
             )
-            color = GovUkTheme.colourScheme.textAndIcons.textFieldError
+            BodyRegularLabel(
+                text = text,
+                modifier = paddingModifier,
+                color = GovUkTheme.colourScheme.textAndIcons.textFieldError
+            )
         }
     }
-
-    Text(
-        text = text,
-        color = color,
-        fontSize = GovUkTheme.typography.bodyRegular.fontSize,
-        fontWeight = GovUkTheme.typography.bodyRegular.fontWeight,
-        fontFamily = GovUkTheme.typography.bodyRegular.fontFamily,
-        lineHeight = GovUkTheme.typography.bodyRegular.lineHeight,
-        modifier = modifier.padding(horizontal = GovUkTheme.spacing.medium)
-    )
 }
 
 @Composable
