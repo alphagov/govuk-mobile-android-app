@@ -18,6 +18,10 @@ import uk.gov.govuk.design.ui.component.ConnectedButton.FIRST
 import uk.gov.govuk.design.ui.component.ConnectedButton.SECOND
 import uk.gov.govuk.design.ui.model.SINGLE_COLUMN_THRESHOLD_DP
 import uk.gov.govuk.design.ui.theme.GovUkTheme
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.Role
 
 @Composable
 fun FixedPrimaryButton(
@@ -270,6 +274,10 @@ private fun HorizontalConnectedButtonGroup(
             modifier = Modifier
                 .weight(0.5f)
                 .fillMaxHeight()
+                .semantics {
+                    role = Role.Tab
+                    selected = activeButton == FIRST
+                }
         )
         SmallHorizontalSpacer()
         ConnectedButton(
@@ -281,6 +289,10 @@ private fun HorizontalConnectedButtonGroup(
             modifier = Modifier
                 .weight(0.5f)
                 .fillMaxHeight()
+                .semantics {
+                    role = Role.Tab
+                    selected = activeButton == SECOND
+                }
         )
     }
 }
@@ -300,7 +312,12 @@ private fun VerticalConnectedButtonGroup(
                 onActiveStateChange(FIRST)
             },
             active = activeButton == FIRST,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics {
+                    role = Role.Tab
+                    selected = activeButton == FIRST
+                }
         )
         SmallVerticalSpacer()
         ConnectedButton(
@@ -309,7 +326,12 @@ private fun VerticalConnectedButtonGroup(
                 onActiveStateChange(SECOND)
             },
             active = activeButton == SECOND,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics {
+                    role = Role.Tab
+                    selected = activeButton == SECOND
+                }
         )
     }
 }
