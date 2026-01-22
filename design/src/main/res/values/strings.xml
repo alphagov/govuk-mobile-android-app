@@ -8,6 +8,10 @@
     <string name="opens_in_web_browser">Opens in web browser</string>
     <string name="privacy_policy_read_more">Read more about this in the privacy notice</string>
 
+    <string name="on_button">On</string>
+    <string name="off_button">Off</string>
+    <string name="action_toggle">toggle</string>
+
     <!-- Error-->
     <string name="app_unavailable_description">You cannot use the GOV.UK app at the moment. Try again later.</string>
     <string name="app_unavailable_title">Sorry, the app is unavailable</string>
