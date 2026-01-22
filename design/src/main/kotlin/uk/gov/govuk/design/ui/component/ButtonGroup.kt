@@ -274,10 +274,6 @@ private fun HorizontalConnectedButtonGroup(
             modifier = Modifier
                 .weight(0.5f)
                 .fillMaxHeight()
-                .semantics {
-                    role = Role.Tab
-                    selected = activeButton == FIRST
-                }
         )
         SmallHorizontalSpacer()
         ConnectedButton(
@@ -289,10 +285,6 @@ private fun HorizontalConnectedButtonGroup(
             modifier = Modifier
                 .weight(0.5f)
                 .fillMaxHeight()
-                .semantics {
-                    role = Role.Tab
-                    selected = activeButton == SECOND
-                }
         )
     }
 }
@@ -314,10 +306,6 @@ private fun VerticalConnectedButtonGroup(
             active = activeButton == FIRST,
             modifier = Modifier
                 .fillMaxWidth()
-                .semantics {
-                    role = Role.Tab
-                    selected = activeButton == FIRST
-                }
         )
         SmallVerticalSpacer()
         ConnectedButton(
@@ -328,10 +316,6 @@ private fun VerticalConnectedButtonGroup(
             active = activeButton == SECOND,
             modifier = Modifier
                 .fillMaxWidth()
-                .semantics {
-                    role = Role.Tab
-                    selected = activeButton == SECOND
-                }
         )
     }
 }
