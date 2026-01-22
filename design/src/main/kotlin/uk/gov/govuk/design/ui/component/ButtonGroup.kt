@@ -18,10 +18,6 @@ import uk.gov.govuk.design.ui.component.ConnectedButton.FIRST
 import uk.gov.govuk.design.ui.component.ConnectedButton.SECOND
 import uk.gov.govuk.design.ui.model.SINGLE_COLUMN_THRESHOLD_DP
 import uk.gov.govuk.design.ui.theme.GovUkTheme
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.semantics.Role
 
 @Composable
 fun FixedPrimaryButton(
