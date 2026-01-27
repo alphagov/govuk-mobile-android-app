@@ -14,7 +14,9 @@ import uk.gov.govuk.R
 import uk.gov.govuk.config.data.ConfigRepo
 import uk.gov.govuk.data.auth.AuthRepo
 import uk.gov.govuk.data.auth.ErrorEvent
+import uk.gov.govuk.data.flex.FlexRepo
 import uk.gov.govuk.login.data.LoginRepo
+import uk.gov.govuk.notifications.NotificationsProvider
 import java.util.Date
 import javax.inject.Inject
 
@@ -24,7 +26,9 @@ internal data class LoginEvent(val isBiometricLogin: Boolean)
 internal class LoginViewModel @Inject constructor(
     private val authRepo: AuthRepo,
     private val loginRepo: LoginRepo,
-    private val configRepo: ConfigRepo
+    private val configRepo: ConfigRepo,
+    private val flexRepo: FlexRepo,
+    private val notificationsProvider: NotificationsProvider
 ) : ViewModel() {
 
     private val _isLoading: MutableStateFlow<Boolean?> = MutableStateFlow(null)
@@ -49,8 +53,14 @@ internal class LoginViewModel @Inject constructor(
                             AuthRepo.RefreshStatus.LOADING -> {
                                 _isLoading.value = true
                             }
-                            AuthRepo.RefreshStatus.SUCCESS ->
-                                _loginCompleted.emit(LoginEvent(isBiometricLogin = true))
+                            AuthRepo.RefreshStatus.SUCCESS -> {
+                                val success = loginToNotifications()
+                                if (success) {
+                                    _loginCompleted.emit(LoginEvent(isBiometricLogin = true))
+                                } else {
+                                    _errorEvent.emit(ErrorEvent.FlexError)
+                                }
+                            }
                             AuthRepo.RefreshStatus.ERROR -> {
                                 _isLoading.value = false
                             }
@@ -70,10 +80,24 @@ internal class LoginViewModel @Inject constructor(
             val result = authRepo.handleAuthResponse(data)
             if (result) {
                 saveRefreshTokenIssuedAtDate()
-                _loginCompleted.emit(LoginEvent(isBiometricLogin = false))
+                val success = loginToNotifications()
+                if (success) {
+                    _loginCompleted.emit(LoginEvent(isBiometricLogin = false))
+                } else {
+                    _errorEvent.emit(ErrorEvent.FlexError)
+                }
             } else {
                 _errorEvent.emit(ErrorEvent.UnableToSignInError)
             }
+        }
+    }
+
+    private suspend fun loginToNotifications(): Boolean {
+        return flexRepo.getUserId(authRepo.getAccessToken())?.let { flexUserId ->
+            notificationsProvider.login(flexUserId)
+            true
+        } ?: run {
+            false
         }
     }
 

@@ -5,6 +5,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -25,7 +26,9 @@ import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.ERROR
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.LOADING
 import uk.gov.govuk.data.auth.AuthRepo.RefreshStatus.SUCCESS
 import uk.gov.govuk.data.auth.ErrorEvent
+import uk.gov.govuk.data.flex.FlexRepo
 import uk.gov.govuk.login.data.LoginRepo
+import uk.gov.govuk.notifications.NotificationsProvider
 import java.util.Date
 import kotlin.test.assertEquals
 
@@ -35,6 +38,8 @@ class LoginViewModelTest {
     private val authRepo = mockk<AuthRepo>(relaxed = true)
     private val loginRepo = mockk<LoginRepo>(relaxed = true)
     private val configRepo = mockk<ConfigRepo>(relaxed = true)
+    private val flexRepo = mockk<FlexRepo>(relaxed = true)
+    private val notificationsProvider = mockk<NotificationsProvider>()
     private val activity = mockk<FragmentActivity>(relaxed = true)
     private val dispatcher = UnconfinedTestDispatcher()
 
@@ -43,7 +48,7 @@ class LoginViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = LoginViewModel(authRepo, loginRepo, configRepo)
+        viewModel = LoginViewModel(authRepo, loginRepo, configRepo, flexRepo, notificationsProvider)
     }
 
     @After
@@ -68,6 +73,9 @@ class LoginViewModelTest {
         coEvery { loginRepo.getRefreshTokenExpiryDate() } returns null
         coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns null
         coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
+        every { authRepo.getAccessToken() } returns "12345"
+        coEvery { flexRepo.getUserId("12345") } returns "12345"
+        every { notificationsProvider.login("12345") } returns Unit
 
         runTest {
             val isLoading = mutableListOf<Boolean?>()
@@ -80,6 +88,9 @@ class LoginViewModelTest {
             }
             viewModel.init(activity)
 
+            verify(exactly = 1) {
+                notificationsProvider.login("12345")
+            }
             assertTrue(isLoading.last() == true)
             assertTrue(events.first().isBiometricLogin)
         }
@@ -92,6 +103,9 @@ class LoginViewModelTest {
         coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns Date().toInstant().epochSecond
         coEvery { configRepo.refreshTokenExpirySeconds } returns null
         coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
+        every { authRepo.getAccessToken() } returns "12345"
+        coEvery { flexRepo.getUserId("12345") } returns "12345"
+        every { notificationsProvider.login("12345") } returns Unit
 
         runTest {
             val isLoading = mutableListOf<Boolean?>()
@@ -104,6 +118,9 @@ class LoginViewModelTest {
             }
             viewModel.init(activity)
 
+            verify(exactly = 1) {
+                notificationsProvider.login("12345")
+            }
             assertTrue(isLoading.last() == true)
             assertTrue(events.first().isBiometricLogin)
         }
@@ -115,6 +132,9 @@ class LoginViewModelTest {
         coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns Date().toInstant().epochSecond
         coEvery { configRepo.refreshTokenExpirySeconds } returns Date().toInstant().epochSecond + 10000
         coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
+        every { authRepo.getAccessToken() } returns "12345"
+        coEvery { flexRepo.getUserId("12345") } returns "12345"
+        every { notificationsProvider.login("12345") } returns Unit
 
         runTest {
             val isLoading = mutableListOf<Boolean?>()
@@ -127,6 +147,9 @@ class LoginViewModelTest {
             }
             viewModel.init(activity)
 
+            verify(exactly = 1) {
+                notificationsProvider.login("12345")
+            }
             assertTrue(isLoading.last() == true)
             assertTrue(events.first().isBiometricLogin)
         }
@@ -165,6 +188,9 @@ class LoginViewModelTest {
         coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns null
         coEvery { configRepo.refreshTokenExpirySeconds } returns null
         coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
+        every { authRepo.getAccessToken() } returns "12345"
+        coEvery { flexRepo.getUserId("12345") } returns "12345"
+        every { notificationsProvider.login("12345") } returns Unit
 
         runTest {
             val isLoading = mutableListOf<Boolean?>()
@@ -177,8 +203,45 @@ class LoginViewModelTest {
             }
             viewModel.init(activity)
 
+            verify(exactly = 1) {
+                notificationsProvider.login("12345")
+            }
             assertTrue(isLoading.last() == true)
             assertTrue(events.first().isBiometricLogin)
+        }
+    }
+
+    @Test
+    fun `Given the user is signed in and the refresh token issued at date and refresh expiry seconds are null, the refresh token expiry date is in the future and getting the flex id is unsuccessful, then emit flex error`() {
+        every { authRepo.isUserSignedIn() } returns true
+        coEvery { loginRepo.getRefreshTokenExpiryDate() } returns Date().toInstant().epochSecond + 10000
+        coEvery { loginRepo.getRefreshTokenIssuedAtDate() } returns null
+        coEvery { configRepo.refreshTokenExpirySeconds } returns null
+        coEvery { authRepo.refreshTokens(any(), any()) } returns flowOf(LOADING, SUCCESS)
+        every { authRepo.getAccessToken() } returns "12345"
+        coEvery { flexRepo.getUserId("12345") } returns null
+
+        runTest {
+            val isLoading = mutableListOf<Boolean?>()
+            val loginEvents = mutableListOf<LoginEvent>()
+            val errorEvents = mutableListOf<ErrorEvent>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.isLoading.toList(isLoading)
+            }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(loginEvents)
+            }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.errorEvent.toList(errorEvents)
+            }
+            viewModel.init(activity)
+
+            verify(exactly = 0) {
+                notificationsProvider.login("12345")
+            }
+            assertTrue(isLoading.last() == true)
+            assertTrue(loginEvents.isEmpty())
+            assertEquals(ErrorEvent.FlexError, errorEvents.first())
         }
     }
 
@@ -233,9 +296,12 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Given an auth response, when success and id token issued at date is not stored, then emit loading and login event`() {
+    fun `Given an auth response, when success, flex returns a user id and id token issued at date is not stored, then emit loading and login event`() {
         coEvery { authRepo.handleAuthResponse(any()) } returns true
+        every { authRepo.getAccessToken() } returns "12345"
         every { authRepo.getIdTokenIssuedAtDate() } returns null
+        coEvery { flexRepo.getUserId("12345") } returns "12345"
+        every { notificationsProvider.login("12345") } returns Unit
 
         runTest {
             val isLoading = mutableListOf<Boolean?>()
@@ -251,6 +317,9 @@ class LoginViewModelTest {
             assertTrue(isLoading.last() == true)
             assertFalse(events.first().isBiometricLogin)
 
+            verify(exactly = 1) {
+                notificationsProvider.login("12345")
+            }
             coVerify(exactly = 0) {
                 loginRepo.setRefreshTokenIssuedAtDate(any())
             }
@@ -258,10 +327,13 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Given an auth response, when success and id token issued at date is stored, then emit loading, login event and set token expiry`() {
+    fun `Given an auth response, when success, flex returns a user id and id token issued at date is stored, then emit loading, login event and set token expiry`() {
         coEvery { authRepo.handleAuthResponse(any()) } returns true
         every { authRepo.getIdTokenIssuedAtDate() } returns 12345L
         every { configRepo.refreshTokenExpirySeconds } returns 601200L
+        every { authRepo.getAccessToken() } returns "12345"
+        coEvery { flexRepo.getUserId("12345") } returns "12345"
+        every { notificationsProvider.login("12345") } returns Unit
 
         runTest {
             val isLoading = mutableListOf<Boolean?>()
@@ -277,6 +349,46 @@ class LoginViewModelTest {
             assertTrue(isLoading.last() == true)
             assertFalse(events.first().isBiometricLogin)
 
+            verify(exactly = 1) {
+                notificationsProvider.login("12345")
+            }
+            coVerify(exactly = 1) {
+                authRepo.getIdTokenIssuedAtDate()
+                loginRepo.setRefreshTokenIssuedAtDate(12345L)
+            }
+        }
+    }
+
+    @Test
+    fun `Given an auth response, when success, id token issued at date is stored and flex returns null, then emit flex error`() {
+        coEvery { authRepo.handleAuthResponse(any()) } returns true
+        every { authRepo.getIdTokenIssuedAtDate() } returns 12345L
+        every { configRepo.refreshTokenExpirySeconds } returns 601200L
+        every { authRepo.getAccessToken() } returns "12345"
+        coEvery { flexRepo.getUserId("12345") } returns null
+
+        runTest {
+            val isLoading = mutableListOf<Boolean?>()
+            val loginEvents = mutableListOf<LoginEvent>()
+            val errorEvents = mutableListOf<ErrorEvent>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.isLoading.toList(isLoading)
+            }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.loginCompleted.toList(loginEvents)
+            }
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                viewModel.errorEvent.toList(errorEvents)
+            }
+            viewModel.onAuthResponse(null)
+
+            assertTrue(isLoading.last() == true)
+            assertTrue(loginEvents.isEmpty())
+            assertEquals(ErrorEvent.FlexError, errorEvents.first())
+
+            verify(exactly = 0) {
+                notificationsProvider.login("12345")
+            }
             coVerify(exactly = 1) {
                 authRepo.getIdTokenIssuedAtDate()
                 loginRepo.setRefreshTokenIssuedAtDate(12345L)
