@@ -138,27 +138,21 @@ internal fun ActionMenu(
                 modifier = Modifier
             )
 
-            if (hasConversation) {
-                ClearMenuItem(
-                    enabled = !isLoading,
-                    onClear = {
-                        onClear()
-                        expanded = false
-                    },
-                    onFunctionItemClicked = onFunctionItemClicked
-                )
-            }
+            ClearMenuItem(
+                hasConversation = hasConversation,
+                enabled = !isLoading,
+                onClear = {
+                    onClear()
+                    expanded = false
+                },
+                onFunctionItemClicked = onFunctionItemClicked
+            )
 
-            val closeText = stringResource(R.string.action_close)
-            if (isTalkBackActive) {
-                HorizontalDivider()
-                MenuItem(
-                    onClick = { expanded = false },
-                    buttonText = closeText,
-                    icon = R.drawable.outline_close_24,
-                    modifier = Modifier
-                )
-            }
+            CloseMenuItem(
+                isTalkBackActive = isTalkBackActive,
+                onClick = { expanded = false },
+                modifier = Modifier
+            )
         }
 
         LaunchedEffect(expanded) {
@@ -170,88 +164,109 @@ internal fun ActionMenu(
 }
 
 @Composable
+private fun CloseMenuItem(
+    isTalkBackActive: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (isTalkBackActive) {
+        val closeText = stringResource(R.string.action_close)
+        HorizontalDivider()
+        MenuItem(
+            onClick = onClick,
+            buttonText = closeText,
+            icon = R.drawable.outline_close_24,
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
 private fun ClearMenuItem(
+    hasConversation: Boolean,
     enabled: Boolean,
     onClear: () -> Unit,
     onFunctionItemClicked: (String, String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val openDialog = rememberSaveable { mutableStateOf(false) }
-    val buttonText = stringResource(id = R.string.action_clear)
+    if (hasConversation) {
+        val openDialog = rememberSaveable { mutableStateOf(false) }
+        val buttonText = stringResource(id = R.string.action_clear)
 
-    val colours = MenuDefaults.itemColors().copy(
-        textColor = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
-        trailingIconColor = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
-        disabledTextColor = GovUkTheme.colourScheme.textAndIcons.buttonRemoveDisabled,
-        disabledTrailingIconColor = GovUkTheme.colourScheme.textAndIcons.buttonRemoveDisabled
-    )
+        val colours = MenuDefaults.itemColors().copy(
+            textColor = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
+            trailingIconColor = GovUkTheme.colourScheme.textAndIcons.buttonDestructive,
+            disabledTextColor = GovUkTheme.colourScheme.textAndIcons.buttonRemoveDisabled,
+            disabledTrailingIconColor = GovUkTheme.colourScheme.textAndIcons.buttonRemoveDisabled
+        )
 
-    MenuItem(
-        onClick = {
-            openDialog.value = true
-            onFunctionItemClicked(
-                buttonText,
-                Analytics.ACTION_MENU,
-                Analytics.ACTION_MENU_CLEAR_ACTION
-            )
-        },
-        buttonText = buttonText,
-        icon = R.drawable.outline_delete_24,
-        modifier = modifier,
-        enabled = enabled,
-        colours = colours
-    )
-
-    if (openDialog.value) {
-        AlertDialog(
-            onDismissRequest = { openDialog.value = false },
-            shape = RoundedCornerShape(GovUkTheme.numbers.cornerAndroidList),
-            text = {
-                BodyBoldLabel(
-                    text = stringResource(id = R.string.clear_dialog_title),
-                    color = GovUkTheme.colourScheme.textAndIcons.primary
+        MenuItem(
+            onClick = {
+                openDialog.value = true
+                onFunctionItemClicked(
+                    buttonText,
+                    Analytics.ACTION_MENU,
+                    Analytics.ACTION_MENU_CLEAR_ACTION
                 )
             },
-            confirmButton = {
-                val buttonText = stringResource(id = R.string.clear_dialog_positive_button)
-
-                TextButton(
-                    onClick = {
-                        onFunctionItemClicked(
-                            buttonText,
-                            Analytics.ACTION_MENU,
-                            Analytics.ACTION_MENU_CLEAR_YES
-                        )
-                        onClear()
-                        openDialog.value = false
-                    }
-                ) {
-                    BodyBoldLabel(
-                        text = buttonText,
-                        color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
-                    )
-                }
-            },
-            dismissButton = {
-                val buttonText = stringResource(id = R.string.clear_dialog_negative_button)
-                TextButton(
-                    onClick = {
-                        onFunctionItemClicked(
-                            buttonText,
-                            Analytics.ACTION_MENU,
-                            Analytics.ACTION_MENU_CLEAR_NO
-                        )
-                        openDialog.value = false
-                    }
-                ) {
-                    BodyRegularLabel(
-                        text = buttonText,
-                        color = GovUkTheme.colourScheme.textAndIcons.link
-                    )
-                }
-            },
-            containerColor = GovUkTheme.colourScheme.surfaces.alert
+            buttonText = buttonText,
+            icon = R.drawable.outline_delete_24,
+            modifier = modifier,
+            enabled = enabled,
+            colours = colours
         )
+
+        if (openDialog.value) {
+            AlertDialog(
+                onDismissRequest = { openDialog.value = false },
+                shape = RoundedCornerShape(GovUkTheme.numbers.cornerAndroidList),
+                text = {
+                    BodyBoldLabel(
+                        text = stringResource(id = R.string.clear_dialog_title),
+                        color = GovUkTheme.colourScheme.textAndIcons.primary
+                    )
+                },
+                confirmButton = {
+                    val buttonText = stringResource(id = R.string.clear_dialog_positive_button)
+
+                    TextButton(
+                        onClick = {
+                            onFunctionItemClicked(
+                                buttonText,
+                                Analytics.ACTION_MENU,
+                                Analytics.ACTION_MENU_CLEAR_YES
+                            )
+                            onClear()
+                            openDialog.value = false
+                        }
+                    ) {
+                        BodyBoldLabel(
+                            text = buttonText,
+                            color = GovUkTheme.colourScheme.textAndIcons.buttonDestructive
+                        )
+                    }
+                },
+                dismissButton = {
+                    val buttonText = stringResource(id = R.string.clear_dialog_negative_button)
+                    TextButton(
+                        onClick = {
+                            onFunctionItemClicked(
+                                buttonText,
+                                Analytics.ACTION_MENU,
+                                Analytics.ACTION_MENU_CLEAR_NO
+                            )
+                            openDialog.value = false
+                        }
+                    ) {
+                        BodyRegularLabel(
+                            text = buttonText,
+                            color = GovUkTheme.colourScheme.textAndIcons.link
+                        )
+                    }
+                },
+                containerColor = GovUkTheme.colourScheme.surfaces.alert
+            )
+        }
     }
 }
 
