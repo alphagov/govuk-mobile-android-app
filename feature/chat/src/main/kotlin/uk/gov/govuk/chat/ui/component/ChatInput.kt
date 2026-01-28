@@ -66,7 +66,8 @@ internal fun ChatInput(
     onQuestionUpdated: (String) -> Unit,
     onSubmit: (String) -> Unit,
     chatUrls: ChatUrls,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isTalkBackActive: Boolean
 ) {
     val focusRequester = remember { FocusRequester() }
     var isFocused by rememberSaveable { mutableStateOf(false) }
@@ -181,7 +182,8 @@ internal fun ChatInput(
                             onFunctionActionItemClicked(text, section, action)
                         },
                         chatUrls = chatUrls,
-                        modifier = Modifier.semantics { this.traversalIndex = 1f }
+                        modifier = Modifier.semantics { this.traversalIndex = 1f },
+                        isTalkBackActive = isTalkBackActive
                     )
                 }
             )
