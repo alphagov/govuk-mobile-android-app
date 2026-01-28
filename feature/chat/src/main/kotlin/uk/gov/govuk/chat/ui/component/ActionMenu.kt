@@ -1,8 +1,6 @@
 package uk.gov.govuk.chat.ui.component
 
-import android.content.Context
 import android.view.KeyEvent
-import android.view.accessibility.AccessibilityManager
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,7 +22,6 @@ import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,13 +34,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.CustomAccessibilityAction
-import androidx.compose.ui.semantics.customActions
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import uk.gov.govuk.chat.R
@@ -61,7 +54,8 @@ internal fun ActionMenu(
     onNavigationItemClicked: (String, String) -> Unit,
     onFunctionItemClicked: (String, String, String) -> Unit,
     chatUrls: ChatUrls,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isTalkBackActive: Boolean
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
@@ -155,7 +149,6 @@ internal fun ActionMenu(
                 )
             }
 
-            val isTalkBackActive = isTalkBackEnabled()
             val closeText = stringResource(R.string.action_close)
             if (isTalkBackActive) {
                 HorizontalDivider()
@@ -174,30 +167,6 @@ internal fun ActionMenu(
             }
         }
     }
-}
-
-@Composable
-private fun isTalkBackEnabled(): Boolean {
-    val context = LocalContext.current
-    val accessibilityManager =
-        context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-
-    var isEnabled by remember {
-        mutableStateOf(accessibilityManager.isTouchExplorationEnabled)
-    }
-
-    DisposableEffect(accessibilityManager) {
-        val listener = AccessibilityManager.TouchExplorationStateChangeListener { enabled ->
-            isEnabled = enabled
-        }
-        accessibilityManager.addTouchExplorationStateChangeListener(listener)
-
-        onDispose {
-            accessibilityManager.removeTouchExplorationStateChangeListener(listener)
-        }
-    }
-
-    return isEnabled
 }
 
 @Composable
