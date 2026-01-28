@@ -1,11 +1,13 @@
 package uk.gov.govuk.chat
 
+import androidx.annotation.StringRes
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,6 +20,13 @@ import kotlin.random.Random
 
 @RunWith(AndroidJUnit4::class)
 class ActionMenuTest {
+    val moreOptionsText = getString(id = R.string.action_alt)
+    val aboutText = getString(R.string.action_about)
+    val privacyText = getString(R.string.action_privacy)
+    val feedbackText = getString(R.string.action_feedback)
+    val clearText = getString(id = R.string.action_clear)
+    val closeText = getString(R.string.action_close)
+
     @get:Rule
     val composeTestRule = createComposeRule()
 
@@ -27,7 +36,7 @@ class ActionMenuTest {
 
         openMoreOptionsMenu()
 
-        composeTestRule.onNodeWithText("About").assertIsDisplayed()
+        composeTestRule.onNodeWithText(aboutText).assertIsDisplayed()
     }
 
     @Test
@@ -36,7 +45,7 @@ class ActionMenuTest {
 
         openMoreOptionsMenu()
 
-        composeTestRule.onNodeWithText("Privacy notice").assertIsDisplayed()
+        composeTestRule.onNodeWithText(privacyText).assertIsDisplayed()
     }
 
     @Test
@@ -45,7 +54,7 @@ class ActionMenuTest {
 
         openMoreOptionsMenu()
 
-        composeTestRule.onNodeWithText("Give feedback").assertIsDisplayed()
+        composeTestRule.onNodeWithText(feedbackText).assertIsDisplayed()
     }
 
     @Test
@@ -54,7 +63,7 @@ class ActionMenuTest {
 
         openMoreOptionsMenu()
 
-        composeTestRule.onNodeWithText("Clear chat").assertIsDisplayed()
+        composeTestRule.onNodeWithText(clearText).assertIsDisplayed()
     }
 
     @Test
@@ -63,7 +72,7 @@ class ActionMenuTest {
 
         openMoreOptionsMenu()
 
-        composeTestRule.onNodeWithText("Clear chat").assertDoesNotExist()
+        composeTestRule.onNodeWithText(clearText).assertDoesNotExist()
     }
 
     @Test
@@ -72,7 +81,7 @@ class ActionMenuTest {
 
         openMoreOptionsMenu()
 
-        composeTestRule.onNodeWithText("Close menu").assertIsDisplayed()
+        composeTestRule.onNodeWithText(closeText).assertIsDisplayed()
     }
 
     @Test
@@ -81,7 +90,7 @@ class ActionMenuTest {
 
         openMoreOptionsMenu()
 
-        composeTestRule.onNodeWithText("Close menu").assertDoesNotExist()
+        composeTestRule.onNodeWithText(closeText).assertDoesNotExist()
     }
 
     private fun setupChatScreen(
@@ -115,6 +124,10 @@ class ActionMenuTest {
     }
 
     private fun openMoreOptionsMenu() {
-        composeTestRule.onNodeWithContentDescription("More options").performClick()
+        composeTestRule.onNodeWithContentDescription(moreOptionsText).performClick()
+    }
+
+    private fun getString(@StringRes id: Int): String {
+        return InstrumentationRegistry.getInstrumentation().targetContext.getString(id)
     }
 }
